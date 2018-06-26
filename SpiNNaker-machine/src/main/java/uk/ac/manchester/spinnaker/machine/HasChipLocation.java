@@ -26,7 +26,7 @@ public interface HasChipLocation {
      *            The other location to compare to.
      * @return If the two locations have the same X and Y coordinates.
      */
-    default public boolean onSameChipAs(HasChipLocation other) {
+    default boolean onSameChipAs(HasChipLocation other) {
         return (getX() == other.getX()) && (getY() == other.getY());
     }
 }

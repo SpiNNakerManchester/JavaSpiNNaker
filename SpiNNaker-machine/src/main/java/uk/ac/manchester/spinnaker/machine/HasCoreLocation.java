@@ -21,7 +21,7 @@ public interface HasCoreLocation extends HasChipLocation {
      *            The other location to compare to.
      * @return If the two locations have the same X, Y and P coordinates.
      */
-    default public boolean onSameCoreAs(HasCoreLocation other) {
+    default boolean onSameCoreAs(HasCoreLocation other) {
         return onSameChipAs(other) && (getP() == other.getP());
     }
 }

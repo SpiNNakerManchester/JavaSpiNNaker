@@ -12,6 +12,8 @@ public class ChipLocation implements HasChipLocation {
     private final int x;
     private final int y;
 
+    static final int COORD_SHIFT = 8;
+
     public ChipLocation(int x, int y) {
         this.x = x;
         this.y = y;
@@ -20,18 +22,19 @@ public class ChipLocation implements HasChipLocation {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!(obj instanceof ChipLocation))
+        }
+        if (!(obj instanceof ChipLocation)) {
             return false;
-
+        }
         ChipLocation that = (ChipLocation) obj;
         return (this.x == that.x) && (this.y == that.y);
     }
 
     @Override
     public int hashCode() {
-        return (x << 4) ^ y;
+        return (x << COORD_SHIFT) ^ y;
     }
 
     @Override
