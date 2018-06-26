@@ -1,4 +1,4 @@
 /**
- * General utilities for the SpiNNaker runtime.
+ * Data specification generator and executor.
  */
 package uk.ac.manchester.spinnaker.data_spec;

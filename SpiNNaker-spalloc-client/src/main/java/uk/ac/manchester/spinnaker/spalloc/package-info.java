@@ -1,4 +1,4 @@
 /**
- * General utilities for the SpiNNaker runtime.
+ * Client for spalloc.
  */
 package uk.ac.manchester.spinnaker.spalloc;
