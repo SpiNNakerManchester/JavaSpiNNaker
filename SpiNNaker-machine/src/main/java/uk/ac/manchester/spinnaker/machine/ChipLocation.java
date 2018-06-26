@@ -12,12 +12,29 @@ public class ChipLocation implements HasChipLocation {
     private final int x;
     private final int y;
 
+    /** The maximum value of any coordinate. */
+    static final int MAX_COORD = 255;
+	/**
+	 * Width of field of hashcode for holding (one dimension of the) chip
+	 * cooordinate.
+	 */
     static final int COORD_SHIFT = 8;
 
+    /**
+     * Create the location of a chip on a SpiNNaker machine.
+     *
+     * @param x The X cooordinate, in range 0..255
+     * @param y The Y cooordinate, in range 0..255
+     */
     public ChipLocation(int x, int y) {
         this.x = x;
         this.y = y;
-        // TODO: validate x and y for physical sanity
+        if (x < 0 || x > MAX_COORD) {
+        	throw new IllegalArgumentException("bad X cooordinate");
+        }
+        if (y < 0 || y > MAX_COORD) {
+        	throw new IllegalArgumentException("bad Y cooordinate");
+        }
     }
 
     @Override
