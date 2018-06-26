@@ -4,6 +4,7 @@
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-transceiver</artifactId>
 </project>
