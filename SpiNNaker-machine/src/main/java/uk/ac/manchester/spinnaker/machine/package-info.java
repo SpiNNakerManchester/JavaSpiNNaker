@@ -1,2 +1,2 @@
-package uk.ac.manchester.spinnaker.machine;
 /** Describes a SpiNNaker machine. */
+package uk.ac.manchester.spinnaker.machine;
