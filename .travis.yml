@@ -1,0 +1,15 @@
+language: java
+jdk: oraclejdk8
+cache:
+  directories:
+    - $HOME/.m2
+before_install:
+  # Work around ludicrous Travis bug
+  - git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
+  - python support/travis_blocking_stdout.py
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dmaven.compiler.showDeprecation=true
+script:
+  - mvn test -B -Dmaven.javadoc.skip=true
+  - mvn checkstyle:check -Dmaven.javadoc.skip=true
+  - mvn javadoc:javadoc
