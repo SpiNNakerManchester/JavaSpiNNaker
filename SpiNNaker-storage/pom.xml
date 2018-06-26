@@ -7,4 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-storage</artifactId>
+	<description>Storage management.</description>
+	<name>SpiNNaker Storage Management</name>
 </project>

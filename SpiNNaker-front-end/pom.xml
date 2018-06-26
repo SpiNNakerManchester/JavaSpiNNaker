@@ -7,4 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-front-end</artifactId>
+	<description>The front-end interface. NB: not a GUI!</description>
+	<name>SpiNNaker Front End Interface</name>
 </project>
