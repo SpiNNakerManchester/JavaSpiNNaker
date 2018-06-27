@@ -8,6 +8,8 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
 /**
  * A processor object included in a SpiNNaker chip.
  *
+ * Note: There is No public Constructor instead use a static factory method.
+ *
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
  * Python Version</a>
@@ -44,7 +46,7 @@ public class Processor {
      * @param isMonitor  Determines if the processor is considered the
      *      monitor processor, and so should not be otherwise allocated.
      */
-    public Processor(int processorId, int clockSpeed, int dtcmAvailable,
+    private Processor(int processorId, int clockSpeed, int dtcmAvailable,
             boolean isMonitor) throws SpinnMachineInvalidParameterException {
         this.processorId = processorId;
         if (clockSpeed <= 0) {
@@ -60,31 +62,6 @@ public class Processor {
         }
         this.dtcmAvailable = dtcmAvailable;
         this.isMonitor = isMonitor;
-    }
-
-    /**
-     * Constructor for a None monitor chip using defaults for all but.
-     *
-     * processor Id
-     *
-     * @param processorId ID of the processor in the chip
-     */
-    public Processor(int processorId) {
-        this(processorId, MachineDefaults.CLOCK_SPEED,
-             MachineDefaults.DTCM_AVAILABLE, false);
-    }
-
-    /**
-     * Constructor for a possible monitor chip using defaults for all but
-     * processor Id and isMmonitor.
-     *
-     * @param processorId ID of the processor in the chip.
-     * @param isMonitor  Determines if the processor is considered the
-     *      monitor processor, and so should not be otherwise allocated.
-     */
-    public Processor(int processorId, boolean isMonitor) {
-        this(processorId, MachineDefaults.CLOCK_SPEED,
-             MachineDefaults.DTCM_AVAILABLE, isMonitor);
     }
 
     /**
@@ -104,8 +81,8 @@ public class Processor {
      */
     public final Processor cloneAsSystemProcessor() {
         if (this.clockSpeed == MachineDefaults.CLOCK_SPEED
-            && this.dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
-                return factory(this.processorId, true);
+                && this.dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
+            return factory(this.processorId, true);
         } else {
             return new Processor(this.processorId, this.clockSpeed,
                 this.dtcmAvailable, true);
@@ -158,24 +135,70 @@ public class Processor {
     }
 
     /**
+     * Obtain a Processor Object for this ID and with these properties.
+     *
+     * @param processorId ID of the processor in the chip.
+     * @param clockSpeed The number of CPU cycles per second of the processor.
+     * @param dtcmAvailable Data Tightly Coupled Memory available.
+     * @param isMonitor  Determines if the processor is considered the
+     *      monitor processor, and so should not be otherwise allocated.
+     *
+     * @return A Processor Object with these properties
+     */
+    public static Processor factory(
+                int processorId, int clockSpeed, int dtcmAvailable,
+                boolean isMonitor) throws SpinnMachineInvalidParameterException {
+        if (clockSpeed == MachineDefaults.CLOCK_SPEED
+                && dtcmAvailable == MachineDefaults.DTCM_AVAILABLE){
+            return factory(processorId, isMonitor);
+        }
+        if (clockSpeed <= 0) {
+            throw new SpinnMachineInvalidParameterException(
+                    "clockSpeed parameter " + clockSpeed
+                    + " cannot be less than or equal to zero");
+        }
+        if (dtcmAvailable <= 0) {
+            throw new SpinnMachineInvalidParameterException(
+                    "dtcmAvailable parameter " + dtcmAvailable
+                    + " cannot be less than or equal to zero");
+        }
+        return new Processor(processorId, MachineDefaults.CLOCK_SPEED,
+            MachineDefaults.DTCM_AVAILABLE, isMonitor);
+    }
+
+    /**
      * Obtain a Processor Object for this ID which could be a monitor.
      *
      * @param processorId ID of the processor in the chip.
      * @param isMonitor  Determines if the processor is considered the
      *      monitor processor, and so should not be otherwise allocated.
-     * @return A Processor Object
+     * @return A default Processor Object with this ID and monitor state
      */
     public static final Processor factory(int processorId, boolean isMonitor) {
         if (isMonitor) {
             if (NON_MONITOR[processorId] == null) {
                 NON_MONITOR[processorId] =
-                    new Processor(processorId, isMonitor);
+                    new Processor(processorId, MachineDefaults.CLOCK_SPEED,
+                        MachineDefaults.DTCM_AVAILABLE, isMonitor);
             }
             return NON_MONITOR[processorId];
         }
         if (NON_MONITOR[processorId] == null) {
-            NON_MONITOR[processorId] = new Processor(processorId, isMonitor);
+            NON_MONITOR[processorId] = new Processor(
+                processorId, MachineDefaults.CLOCK_SPEED,
+                MachineDefaults.DTCM_AVAILABLE, isMonitor);
         }
         return NON_MONITOR[processorId];
     }
+
+    /**
+     * Obtain a none monitor Processor Object for this ID.
+     *
+     * @param processorId ID of the processor in the chip.
+     * @return A default Processor Object with this ID and monitor state
+     */
+    public static final Processor factory(int processorId) {
+        return factory(processorId, false);
+    }
+
 }
