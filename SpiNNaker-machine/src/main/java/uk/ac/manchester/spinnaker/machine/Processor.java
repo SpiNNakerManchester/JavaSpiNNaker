@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  *
  * @author Christian-B
  */
-public class Processor {
+public final class Processor {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
     private static final Processor[] MONITOR =
@@ -47,20 +47,10 @@ public class Processor {
      *      monitor processor, and so should not be otherwise allocated.
      */
     private Processor(int processorId, int clockSpeed, int dtcmAvailable,
-            boolean isMonitor) throws SpinnMachineInvalidParameterException {
+            boolean isMonitor) {
         this.processorId = processorId;
-        if (clockSpeed <= 0) {
-            throw new SpinnMachineInvalidParameterException(
-                "clockSpeed parameter " + clockSpeed
-                + " cannot be less than or equal to zero");
-        }
         this.clockSpeed = clockSpeed;
-        if (dtcmAvailable <= 0) {
-            throw new SpinnMachineInvalidParameterException(
-                "dtcmAvailable parameter " + dtcmAvailable
-                + " cannot be less than or equal to zero");
-        }
-        this.dtcmAvailable = dtcmAvailable;
+       this.dtcmAvailable = dtcmAvailable;
         this.isMonitor = isMonitor;
     }
 
@@ -79,7 +69,7 @@ public class Processor {
      * @return A different Processor with all the same parameter values EXCEPT
      *      isMonitor which will always be true.
      */
-    public final Processor cloneAsSystemProcessor() {
+    public Processor cloneAsSystemProcessor() {
         if (this.clockSpeed == MachineDefaults.CLOCK_SPEED
                 && this.dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(this.processorId, true);
@@ -147,9 +137,10 @@ public class Processor {
      */
     public static Processor factory(
                 int processorId, int clockSpeed, int dtcmAvailable,
-                boolean isMonitor) throws SpinnMachineInvalidParameterException {
+                boolean isMonitor)
+            throws SpinnMachineInvalidParameterException {
         if (clockSpeed == MachineDefaults.CLOCK_SPEED
-                && dtcmAvailable == MachineDefaults.DTCM_AVAILABLE){
+                && dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(processorId, isMonitor);
         }
         if (clockSpeed <= 0) {
@@ -162,8 +153,7 @@ public class Processor {
                     "dtcmAvailable parameter " + dtcmAvailable
                     + " cannot be less than or equal to zero");
         }
-        return new Processor(processorId, MachineDefaults.CLOCK_SPEED,
-            MachineDefaults.DTCM_AVAILABLE, isMonitor);
+        return new Processor(processorId, clockSpeed, dtcmAvailable, isMonitor);
     }
 
     /**
@@ -174,14 +164,14 @@ public class Processor {
      *      monitor processor, and so should not be otherwise allocated.
      * @return A default Processor Object with this ID and monitor state
      */
-    public static final Processor factory(int processorId, boolean isMonitor) {
+    public static Processor factory(int processorId, boolean isMonitor) {
         if (isMonitor) {
-            if (NON_MONITOR[processorId] == null) {
-                NON_MONITOR[processorId] =
+            if (MONITOR[processorId] == null) {
+                MONITOR[processorId] =
                     new Processor(processorId, MachineDefaults.CLOCK_SPEED,
                         MachineDefaults.DTCM_AVAILABLE, isMonitor);
             }
-            return NON_MONITOR[processorId];
+            return MONITOR[processorId];
         }
         if (NON_MONITOR[processorId] == null) {
             NON_MONITOR[processorId] = new Processor(
@@ -197,7 +187,7 @@ public class Processor {
      * @param processorId ID of the processor in the chip.
      * @return A default Processor Object with this ID and monitor state
      */
-    public static final Processor factory(int processorId) {
+    public static Processor factory(int processorId) {
         return factory(processorId, false);
     }
 
