@@ -50,7 +50,7 @@
 			<property name="processJavadoc" value="false" />
 		</module>
 		<module name="LineLength">
-			<property name="ignorePattern" value="^(import|package) " />
+			<property name="ignorePattern" value="^(import |package |^\s*\*[ ]?\S*$)" />
 		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber" />
@@ -75,7 +75,9 @@
 		<module name="EqualsHashCode" />
 		<module name="IllegalInstantiation" />
 		<module name="InnerAssignment" />
-		<module name="MagicNumber" />
+		<module name="MagicNumber">
+			<property name="ignoreHashCodeMethod" value="true"/>
+		</module>
 		<module name="MissingSwitchDefault" />
 		<module name="SimplifyBooleanExpression" />
 		<module name="SimplifyBooleanReturn" />
