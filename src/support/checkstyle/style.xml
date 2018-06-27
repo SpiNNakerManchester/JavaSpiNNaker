@@ -86,6 +86,7 @@
 		<module name="InterfaceIsType" />
 		<module name="VisibilityModifier">
 			<property name="packageAllowed" value="true" />
+			<property name="allowPublicFinalFields" value="true"/>
 		</module>
 		<module name="ArrayTypeStyle" />
 		<module name="UpperEll" />
