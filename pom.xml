@@ -75,6 +75,14 @@
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
+					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>8.10.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -112,10 +120,30 @@
 		<module>SpiNNaker-utils</module>
 		<module>SpiNNaker-machine</module>
 		<module>SpiNNaker-storage</module>
-		<module>SpiNNaker-transceiver</module>
+		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
 		<module>SpiNNaker-spalloc-client</module>
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
+	<name>SpiNNaker Java Host</name>
+	<description>Implementation of the host software for SpiNNaker in Java.</description>
+	<inceptionYear>2018</inceptionYear>
+	<url>http://spinnakermanchester.github.io/</url>
+	<organization>
+		<name>SpiNNaker Team @ University of Manchester</name>
+		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
+	</organization>
+	<scm>
+		<connection>https://github.com/SpiNNakerManchester/JavaSpiNNaker.git</connection>
+		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker</url>
+	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.org/SpiNNakerManchester/JavaSpiNNaker</url>
+	</ciManagement>
 </project>

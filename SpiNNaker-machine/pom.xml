@@ -17,4 +17,6 @@
                         <artifactId>SpiNNaker-utils</artifactId>
                 </dependency>
         </dependencies>
+        <description>Describes a SpiNNaker machine.</description>
+	<name>SpiNNaker Machine Description</name>
 </project>

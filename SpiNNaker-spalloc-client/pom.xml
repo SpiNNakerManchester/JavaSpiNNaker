@@ -7,4 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-spalloc-client</artifactId>
+	<description>Client for spalloc.</description>
+	<name>SpiNNaker Spalloc Client</name>
 </project>
