@@ -69,6 +69,14 @@
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
+					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>8.10.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
