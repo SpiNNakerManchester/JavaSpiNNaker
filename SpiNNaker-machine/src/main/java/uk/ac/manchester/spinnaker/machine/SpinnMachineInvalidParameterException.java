@@ -7,11 +7,11 @@ package uk.ac.manchester.spinnaker.machine;
  *
  * @author Christian_b
  */
-public class SpinnMachineInvalidParameterException extends 
+public class SpinnMachineInvalidParameterException extends
         IllegalArgumentException {
 
     public SpinnMachineInvalidParameterException(String message) {
         super(message);
     }
-    
+
 }

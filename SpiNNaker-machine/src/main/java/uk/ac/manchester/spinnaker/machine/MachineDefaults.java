@@ -7,7 +7,7 @@ package uk.ac.manchester.spinnaker.machine;
  *
  * @author Christian-B
  */
-public class MachineDefaults {
+public final class MachineDefaults {
 
     private MachineDefaults() { }
 
@@ -15,7 +15,7 @@ public class MachineDefaults {
     public static final int CLOCK_SPEED = 200 * 1000 * 1000;
 
     /** DTCM available on each standard Processor. */
-    public static final int DTCM_AVAILABLE = 2 ^ 16;
+    public static final int DTCM_AVAILABLE = 65536; // 2 ** 16;
 
     /** Standard number of Processors on each Chip. */
     public static final int PROCESSORS_PER_CHIP = 18;

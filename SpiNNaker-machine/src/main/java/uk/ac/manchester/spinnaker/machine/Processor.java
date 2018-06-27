@@ -8,7 +8,9 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
 /**
  * A processor object included in a SpiNNaker chip.
  *
- * @see <a href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">Python Version</a>
+ * @see <a
+ * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
+ * Python Version</a>
  *
  * @author Christian-B
  */
@@ -91,7 +93,7 @@ public class Processor {
      * @return The number of CPU cycles available from this processor per ms.
      */
     public int cpuCyclesAvailable() {
-        return clockSpeed / 1000;
+        return clockSpeed / UnitConstants.MEGAHERTZ_PRE_KILOHERTZ;
     }
 
     /**
@@ -113,7 +115,8 @@ public class Processor {
     @Override
     public String toString() {
         return "[CPU: id=" + this.processorId
-            + ", clock_speed=" + this.clockSpeed / 1000000
+            + ", clock_speed="
+            + this.clockSpeed / UnitConstants.MEGAHERTZ_PRE_HERTZ
             + " MHz, monitor=" + this.isMonitor + "]";
     }
 
