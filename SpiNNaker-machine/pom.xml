@@ -7,10 +7,14 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-machine</artifactId>
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-			</dependency>
-		</dependencies>
+        <dependencies>
+                <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>uk.ac.manchester.spinnaker</groupId>
+                        <artifactId>SpiNNaker-utils</artifactId>
+                </dependency>
+        </dependencies>
 </project>
