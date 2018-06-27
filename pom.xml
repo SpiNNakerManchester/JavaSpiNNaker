@@ -140,4 +140,38 @@
 		<system>Travis</system>
 		<url>https://travis-ci.org/SpiNNakerManchester/JavaSpiNNaker</url>
 	</ciManagement>
+	<mailingLists>
+		<mailingList>
+			<name>SpiNNaker Users Group</name>
+			<post>spinnakerusers@googlegroups.com</post>
+			<subscribe>http://groups.google.com/group/spinnakerusers/subscribe</subscribe>
+			<unsubscribe>spinnakerusers+unsubscribe@googlegroups.com</unsubscribe>
+		</mailingList>
+	</mailingLists>
+	<developers>
+		<developer>
+			<id>abs</id>
+			<name>Alan Stokes</name>
+		</developer>
+		<developer>
+			<id>ag</id>
+			<name>Andrew Gait</name>
+		</developer>
+		<developer>
+			<id>agr</id>
+			<name>Andrew Rowley</name>
+		</developer>
+		<developer>
+			<id>cb</id>
+			<name>Christian Brenninkmeijer</name>
+		</developer>
+		<developer>
+			<id>dkf</id>
+			<name>Donal Fellows</name>
+		</developer>
+		<developer>
+			<id>or</id>
+			<name>Oliver Rhodes</name>
+		</developer>
+	</developers>
 </project>
