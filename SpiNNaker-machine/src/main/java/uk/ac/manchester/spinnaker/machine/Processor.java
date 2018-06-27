@@ -7,7 +7,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * A processor object included in a SpiNNaker chip.
- *
+ * <p>
  * Note: There is No public Constructor instead use a static factory method.
  *
  * @see <a
@@ -50,12 +50,12 @@ public final class Processor {
             boolean isMonitor) {
         this.processorId = processorId;
         this.clockSpeed = clockSpeed;
-       this.dtcmAvailable = dtcmAvailable;
+        this.dtcmAvailable = dtcmAvailable;
         this.isMonitor = isMonitor;
     }
 
     /**
-     * The number of CPU cycles available from this processor per ms.
+     * The number of CPU cycles available from this processor per millisecond.
      *
      * @return The number of CPU cycles available from this processor per ms.
      */
@@ -182,7 +182,7 @@ public final class Processor {
     }
 
     /**
-     * Obtain a none monitor Processor Object for this ID.
+     * Obtain a non-monitor Processor Object for this ID.
      *
      * @param processorId ID of the processor in the chip.
      * @return A default Processor Object with this ID and monitor state
