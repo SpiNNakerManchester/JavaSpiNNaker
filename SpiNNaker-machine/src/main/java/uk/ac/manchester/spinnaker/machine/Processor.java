@@ -70,7 +70,7 @@ public final class Processor {
      *      isMonitor which will always be true.
      */
     public Processor cloneAsSystemProcessor() {
-        if (this.clockSpeed == MachineDefaults.CLOCK_SPEED
+        if (this.clockSpeed == MachineDefaults.PROCESSOR_CLOCK_SPEED
                 && this.dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(this.processorId, true);
         } else {
@@ -138,18 +138,18 @@ public final class Processor {
     public static Processor factory(
                 int processorId, int clockSpeed, int dtcmAvailable,
                 boolean isMonitor)
-            throws SpinnMachineInvalidParameterException {
-        if (clockSpeed == MachineDefaults.CLOCK_SPEED
+            throws IllegalArgumentException {
+        if (clockSpeed == MachineDefaults.PROCESSOR_CLOCK_SPEED
                 && dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(processorId, isMonitor);
         }
         if (clockSpeed <= 0) {
-            throw new SpinnMachineInvalidParameterException(
+            throw new IllegalArgumentException(
                     "clockSpeed parameter " + clockSpeed
                     + " cannot be less than or equal to zero");
         }
         if (dtcmAvailable <= 0) {
-            throw new SpinnMachineInvalidParameterException(
+            throw new IllegalArgumentException(
                     "dtcmAvailable parameter " + dtcmAvailable
                     + " cannot be less than or equal to zero");
         }
@@ -168,14 +168,15 @@ public final class Processor {
         if (isMonitor) {
             if (MONITOR[processorId] == null) {
                 MONITOR[processorId] =
-                    new Processor(processorId, MachineDefaults.CLOCK_SPEED,
+                    new Processor(processorId,
+                        MachineDefaults.PROCESSOR_CLOCK_SPEED,
                         MachineDefaults.DTCM_AVAILABLE, isMonitor);
             }
             return MONITOR[processorId];
         }
         if (NON_MONITOR[processorId] == null) {
             NON_MONITOR[processorId] = new Processor(
-                processorId, MachineDefaults.CLOCK_SPEED,
+                processorId, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, isMonitor);
         }
         return NON_MONITOR[processorId];

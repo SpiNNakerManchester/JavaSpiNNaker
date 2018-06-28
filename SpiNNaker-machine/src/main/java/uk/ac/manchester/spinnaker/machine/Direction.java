@@ -25,7 +25,7 @@ public enum Direction {
         this.id = id;
     }
 
-    public Direction byId(int id){
+    public static Direction byId(int id){
         return BY_ID[id];
     }
 

@@ -26,50 +26,45 @@ public final class Link {
     /** The coordinates of the source chip of the link. */
     public final HasChipLocation source;
 
-    /** The ID of the link in the source chip */
-    public final int source_link_id;
+    /** The ID/Direction of the link in the source chip */
+    public final Direction sourceLinkDirection;
 
     /** The coordinate of the destination chip of the link. */
     public final HasChipLocation destination;
 
     /**
-     * Default from direction.
+     *
+     * @param source The coordinates of the source chip of the link.
+     * @param destination The coordinate of the destination chip of the link.
+     * @param sourceLlinkDirection The Direction of the link in the source chip.
      */
-    public final Direction multicastDefaultFrom;
+    public Link(HasChipLocation source, Direction sourceLlinkDirection,
+            HasChipLocation destination) {
+        this.source = source;
+        this.sourceLinkDirection = sourceLlinkDirection;
+        this.destination = destination;
+    }
 
-    /**
-     * Default to direction.
-     */
-    public final Direction multicastDefaultTo;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.source);
+        hash = 47 * hash + Objects.hashCode(this.sourceLinkDirection);
+        hash = 47 * hash + Objects.hashCode(this.destination);
+        return hash;
+    }
 
     /**
      *
      * @param source The coordinates of the source chip of the link.
      * @param destination The coordinate of the destination chip of the link.
-     * @param source_link_id The ID of the link in the source chip.
-     * @param multicastDefaultFrom Default from direction.
-     * @param multicastDefaultTo Default to direction.
+     * @param sourceLinkId The ID of the link in the source chip.
      */
-    public Link(HasChipLocation source, int source_link_id,
-            HasChipLocation destination,
-            Direction multicastDefaultFrom, Direction multicastDefaultTo) {
-        this.source = source;
-        this.source_link_id = source_link_id;
-        this.destination = destination;
-        this.multicastDefaultFrom = multicastDefaultFrom;
-        this.multicastDefaultTo = multicastDefaultTo;
+    public Link(HasChipLocation source, int sourceLinkId,
+            HasChipLocation destination) {
+        this (source, Direction.byId(sourceLinkId), destination);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 53 * hash + this.source.hashCode();
-        hash = 53 * hash + this.source_link_id;
-        hash = 53 * hash + Objects.hashCode(this.destination);
-        hash = 53 * hash + Objects.hashCode(this.multicastDefaultFrom);
-        hash = 53 * hash + Objects.hashCode(this.multicastDefaultTo);
-        return hash;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -83,7 +78,7 @@ public final class Link {
             return false;
         }
         final Link other = (Link) obj;
-        if (this.source_link_id != other.source_link_id) {
+        if (this.sourceLinkDirection != other.sourceLinkDirection) {
             return false;
         }
         if (!Objects.equals(this.source, other.source)) {
@@ -92,21 +87,13 @@ public final class Link {
         if (!Objects.equals(this.destination, other.destination)) {
             return false;
         }
-        if (this.multicastDefaultFrom != other.multicastDefaultFrom) {
-            return false;
-        }
-        if (this.multicastDefaultTo != other.multicastDefaultTo) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public String toString() {
         return "Link{" + "source=" + source + ", source_link_id="
-                + source_link_id + ", destination=" + destination
-                + ", multicastDefaultFrom=" + multicastDefaultFrom
-                + ", multicastDefaultTo=" + multicastDefaultTo + '}';
+                + sourceLinkDirection + ", destination=" + destination + '}';
     }
 
 }
