@@ -30,28 +30,28 @@ public class TestChipLocation {
 		assertEquals(123, (int) m.get(l2));
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesXmin() {
             assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(-1, 0);
             });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesYmin() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(0, -1);
            });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesXmax() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(257, 0);
            });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesYmax() {
           assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(0, 257);

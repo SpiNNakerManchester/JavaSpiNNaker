@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
  * @author Christian-B
  */
 public class TestProcessor {
+    
     @Test
     public void testProcessorBasicUse() {
         Processor p1 = Processor.factory(1);

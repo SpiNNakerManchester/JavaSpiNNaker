@@ -41,42 +41,42 @@ public class TestCoreLocation {
 
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesXmin() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(-1, 0, 0);
            });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesYmin() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, -1, 0);
             });
         }
 
-	@Test()
-	public void testChipLocationRangesPmin() {
+	@Test
+        public void testChipLocationRangesPmin() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 0, -1);
            });
 	}
 
-	@Test()
-	public void testChipLocationRangesXmax() {
+	@Test
+        public void testChipLocationRangesXmax() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(257, 0, 0);
            });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesYmax() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 257, 0);
            });
 	}
 
-	@Test()
+	@Test
 	public void testChipLocationRangesPmax() {
            assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 0, 18);
