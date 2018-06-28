@@ -3,14 +3,15 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
 
 /**
  *
  * @author Christian-B
  */
-public class LinkTest {
+public class TestLink {
 
     ChipLocation chip00 = new ChipLocation(0,0);
     ChipLocation chip01 = new ChipLocation(0,1);

@@ -8,13 +8,6 @@ import java.util.Objects;
 /**
  * Represents a directional link between SpiNNaker chips in the machine.
  * <p>
- * Traffic received on the link identified by multicast_default_from will
- * be sent to the link herein defined if no entry is present in the
- * multicast routing table.
- * On SpiNNaker chips, multicast_default_from is usually the same as
- * multicast_default_to. None if no such default exists, or the link does
- * not exist.
- * <p>
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/link.py">
  * Python Version</a>
@@ -31,6 +24,8 @@ public final class Link {
 
     /** The coordinate of the destination chip of the link. */
     public final HasChipLocation destination;
+
+    //Note: multicast_default_from and multicast_default_to not implemented
 
     /**
      *
