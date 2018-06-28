@@ -1,11 +1,10 @@
 package uk.ac.manchester.spinnaker.machine;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class TestCoreLocation {
 
@@ -42,33 +41,45 @@ public class TestCoreLocation {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesXmin() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(-1, 0, 0);
+           });
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesYmin() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, -1, 0);
-	}
+            });
+        }
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesPmin() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 0, -1);
+           });
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesXmax() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(257, 0, 0);
+           });
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesYmax() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 257, 0);
+           });
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test()
 	public void testChipLocationRangesPmax() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new CoreLocation(0, 0, 18);
-	}
+           });
+        }
 }
