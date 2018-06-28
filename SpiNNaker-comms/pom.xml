@@ -6,5 +6,7 @@
 		<artifactId>SpiNNaker</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>SpiNNaker-transceiver</artifactId>
+	<artifactId>SpiNNaker-comms</artifactId>
+	<description>How to actually talk to a SpiNNaker machine.</description>
+	<name>SpiNNaker Communications</name>
 </project>

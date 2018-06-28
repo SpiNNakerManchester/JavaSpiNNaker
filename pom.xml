@@ -11,6 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+                <spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
 	</properties>
 
 	<dependencyManagement>
@@ -21,6 +22,11 @@
                                 <version>5.1.0</version>
                                 <scope>test</scope>
 			</dependency>
+                        <dependency>
+                            <groupId>uk.ac.manchester.spinnaker</groupId>
+                            <artifactId>SpiNNaker-utils</artifactId>
+                            <version>${spinnaker.version}</version>
+                        </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -69,6 +75,14 @@
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
+					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>8.10.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -106,10 +120,64 @@
 		<module>SpiNNaker-utils</module>
 		<module>SpiNNaker-machine</module>
 		<module>SpiNNaker-storage</module>
-		<module>SpiNNaker-transceiver</module>
+		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
 		<module>SpiNNaker-spalloc-client</module>
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
+	<name>SpiNNaker Java Host</name>
+	<description>Implementation of the host software for SpiNNaker in Java.</description>
+	<inceptionYear>2018</inceptionYear>
+	<url>http://spinnakermanchester.github.io/</url>
+	<organization>
+		<name>SpiNNaker Team @ University of Manchester</name>
+		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
+	</organization>
+	<scm>
+		<connection>https://github.com/SpiNNakerManchester/JavaSpiNNaker.git</connection>
+		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker</url>
+	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.org/SpiNNakerManchester/JavaSpiNNaker</url>
+	</ciManagement>
+	<mailingLists>
+		<mailingList>
+			<name>SpiNNaker Users Group</name>
+			<post>spinnakerusers@googlegroups.com</post>
+			<subscribe>http://groups.google.com/group/spinnakerusers/subscribe</subscribe>
+			<unsubscribe>spinnakerusers+unsubscribe@googlegroups.com</unsubscribe>
+		</mailingList>
+	</mailingLists>
+	<developers>
+		<developer>
+			<id>abs</id>
+			<name>Alan Stokes</name>
+		</developer>
+		<developer>
+			<id>ag</id>
+			<name>Andrew Gait</name>
+		</developer>
+		<developer>
+			<id>agr</id>
+			<name>Andrew Rowley</name>
+		</developer>
+		<developer>
+			<id>cb</id>
+			<name>Christian Brenninkmeijer</name>
+		</developer>
+		<developer>
+			<id>dkf</id>
+			<name>Donal Fellows</name>
+		</developer>
+		<developer>
+			<id>or</id>
+			<name>Oliver Rhodes</name>
+		</developer>
+	</developers>
 </project>

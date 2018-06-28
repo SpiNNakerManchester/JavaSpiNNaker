@@ -7,4 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-utils</artifactId>
+	<description>General utilities for the SpiNNaker runtime.</description>
+	<name>SpiNNaker Utilities</name>
 </project>

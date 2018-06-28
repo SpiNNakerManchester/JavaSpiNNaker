@@ -7,10 +7,16 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-machine</artifactId>
-		<dependencies>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-                                <artifactId>junit-jupiter-api</artifactId>
-			</dependency>
-		</dependencies>
+        <dependencies>
+                <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-api</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>uk.ac.manchester.spinnaker</groupId>
+                        <artifactId>SpiNNaker-utils</artifactId>
+                </dependency>
+        </dependencies>
+        <description>Describes a SpiNNaker machine.</description>
+	<name>SpiNNaker Machine Description</name>
 </project>
