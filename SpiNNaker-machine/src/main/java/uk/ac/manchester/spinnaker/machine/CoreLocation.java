@@ -71,4 +71,10 @@ public class CoreLocation implements HasCoreLocation {
     public final int getP() {
         return p;
     }
+
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY() + " P:" + getP();
+    }
+
 }

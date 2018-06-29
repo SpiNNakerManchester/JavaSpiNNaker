@@ -63,4 +63,9 @@ public class ChipLocation implements HasChipLocation {
     public final int getY() {
         return y;
     }
+
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY();
+    }
 }
