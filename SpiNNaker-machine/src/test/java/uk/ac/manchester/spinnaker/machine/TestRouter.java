@@ -57,6 +57,11 @@ public class TestRouter {
         neighbours.forEach(loc -> {
                 assertEquals(loc, chip01);
             });
+        assertThrows(IllegalStateException.class, () -> {
+            neighbours.forEach(loc -> {
+                assertEquals(loc, chip01);
+            });
+        });
         for (HasChipLocation loc:router.iterNeighbouringChipsCoords()){
             assertEquals(loc, chip01);
         }

@@ -18,25 +18,82 @@ public final class Router {
     private final EnumMap<Direction, Link> links =
             new EnumMap<>(Direction.class);
 
-    /** The router clock speed in cycles per second */
+    /** The router clock speed in cycles per second. */
     public final int clockSpeed;
 
-    /** The number of entries available in the routing table */
+    /** The number of entries available in the routing table. */
     public final int nAvailableMulticastEntries;
 
     // Note: emergency_routing_enabled not implemented as not used
     // TODO convert_routing_table_entry_to_spinnaker_route
 
-    public Router(Collection<Link> links, int clockSpeed,
-            int nAvailableMulticastEntries) {
-        for (Link link:links){
+    /**
+     * Main Constructor that allows setting of all values.
+     *
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @param clockSpeed The router clock speed in cycles per second.
+     * @param nAvailableMulticastEntries
+     *      The number of entries available in the routing table.
+     */
+    public Router(Iterable<Link> links, int clockSpeed,
+            int nAvailableMulticastEntries) throws IllegalArgumentException {
+        for (Link link:links) {
             addLink(link);
         }
         this.clockSpeed = clockSpeed;
         this.nAvailableMulticastEntries = nAvailableMulticastEntries;
     }
 
-    public final void addLink(Link link) {
+    /**
+     * Main Constructor that allows setting of all values.
+     *
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @param clockSpeed The router clock speed in cycles per second.
+     * @param nAvailableMulticastEntries
+     *      The number of entries available in the routing table.
+     */
+    public Router(Stream<Link> links, int clockSpeed,
+            int nAvailableMulticastEntries) throws IllegalArgumentException {
+        links.forEach((link) -> this.addLink(link));
+        this.clockSpeed = clockSpeed;
+        this.nAvailableMulticastEntries = nAvailableMulticastEntries;
+    }
+
+    /**
+     * Pass through Constructor that uses default values.
+     *
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     */
+    public Router(Iterable<Link> links) throws IllegalArgumentException {
+        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
+                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+    }
+
+    /**
+     * Pass through Constructor that uses default values.
+     *
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     */
+    public Router(Stream<Link> links) throws IllegalArgumentException {
+        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
+                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+    }
+
+    /**
+     * Adds a link with a unique sourceLinkDirection to this router.
+     *
+     * @param link Link to add,
+     *     which must have a sourceLinkDirection not yet used.
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     */
+    public void addLink(Link link) throws IllegalArgumentException {
         if (this.links.containsKey(link.sourceLinkDirection)) {
             throw new IllegalArgumentException(
                     "Link already exists: " + link);
@@ -44,31 +101,75 @@ public final class Router {
         this.links.put(link.sourceLinkDirection, link);
     }
 
-    public Router(Collection<Link> links) {
-        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
-    }
-
+    /**
+     * Indicates if there is a Link going in this direction.
+     *
+     * @param direction Direction to find link for.
+     * @return True if and only if there is a link in this direction,
+     */
     public boolean hasLink(Direction direction) {
         return links.containsKey(direction);
     }
 
-    public Link get_link(Direction direction) {
+    /**
+     * Obtains a Link going in this direction.
+     * <p>
+     * None is returned if no link found.
+     *
+     * @param direction Direction to find link for.
+     * @return The Link or none
+     */
+    public Link getLink(Direction direction) {
         return links.get(direction);
     }
 
+    /**
+     * Return a View over the links.
+     * <p>
+     * Each Link is guaranteed to differ in at least the sourceLinkDirection.
+     *
+     * @return An unmodifiable Collection of Link(s).
+     */
     public Collection<Link> links() {
         return Collections.unmodifiableCollection(links.values());
     }
 
-    public Stream<HasChipLocation> streamNeighbouringChipsCoords(){
+    /**
+     * The size of the Router which is the number of Link(s).
+     * <p>
+     * The number of NeighbouringChipsCoords will always be equal to the
+     *     number of links.
+     *
+     * @return The number of Link(s) and therefor NeighbouringChipsCoords
+     */
+    public int size() {
+        return links.size();
+    }
+
+    /**
+     * Stream of the destinations of each link.
+     * <p>
+     * There will be exactly one destination for each Link.
+     * While normally all destinations will be unique the is no guarantee.
+     *
+     * @return A Stream over the destination locations.
+     */
+    public Stream<HasChipLocation> streamNeighbouringChipsCoords() {
         return links.values().stream().map(
             link -> {
                 return link.destination;
             });
     }
 
-    public Iterable<HasChipLocation> iterNeighbouringChipsCoords(){
+    /**
+     * Iterable over the destinations of each link.
+     * <p>
+     * There will be exactly one destination for each Link.
+     * While normally all destinations will be unique the is no guarantee.
+     *
+     * @return A Stream over the destination locations.
+     */
+    public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
         return new Iterable<HasChipLocation>() {
             @Override
             public Iterator<HasChipLocation> iterator() {
@@ -81,7 +182,7 @@ public final class Router {
 
         private Iterator<Link> linksIter;
 
-        NeighbourIterator(Iterator<Link> linksIter){
+        NeighbourIterator(Iterator<Link> linksIter) {
             this.linksIter = linksIter;
         }
 
