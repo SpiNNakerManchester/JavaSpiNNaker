@@ -1,11 +1,11 @@
 package uk.ac.manchester.spinnaker.machine;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
 
 public class TestChipLocation {
 
@@ -30,23 +30,31 @@ public class TestChipLocation {
 		assertEquals(123, (int) m.get(l2));
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
 	public void testChipLocationRangesXmin() {
+            assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(-1, 0);
+            });
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
 	public void testChipLocationRangesYmin() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(0, -1);
+           });
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
 	public void testChipLocationRangesXmax() {
+           assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(257, 0);
+           });
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
 	public void testChipLocationRangesYmax() {
+          assertThrows(IllegalArgumentException.class, () -> {
 		new ChipLocation(0, 257);
+          });
 	}
 }
