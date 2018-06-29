@@ -19,7 +19,7 @@ public final class Link {
     /** The coordinates of the source chip of the link. */
     public final HasChipLocation source;
 
-    /** The ID/Direction of the link in the source chip */
+    /** The ID/Direction of the link in the source chip. */
     public final Direction sourceLinkDirection;
 
     /** The coordinate of the destination chip of the link. */
@@ -28,16 +28,34 @@ public final class Link {
     //Note: multicast_default_from and multicast_default_to not implemented
 
     /**
+     * Main Constructor which sets all parameters.
+     * <p>
+     * Specifically there is NO check that the destination is the typical one
+     *    for this source and direction pair.
      *
      * @param source The coordinates of the source chip of the link.
      * @param destination The coordinate of the destination chip of the link.
-     * @param sourceLlinkDirection The Direction of the link in the source chip.
+     * @param sourceLinkDirection The Direction of the link in the source chip.
      */
-    public Link(HasChipLocation source, Direction sourceLlinkDirection,
+    public Link(HasChipLocation source, Direction sourceLinkDirection,
             HasChipLocation destination) {
         this.source = source;
-        this.sourceLinkDirection = sourceLlinkDirection;
+        this.sourceLinkDirection = sourceLinkDirection;
         this.destination = destination;
+    }
+
+    /**
+     * Pass through constructor that sets the destination as the typical one.
+     * <p>
+     * @see
+     * Direction#typicalMove(uk.ac.manchester.spinnaker.machine.HasChipLocation)
+     *
+     * @param source The coordinates of the source chip of the link.
+     * @param sourceLinkDirection The Direction of the link in the source chip.
+     */
+    public Link(HasChipLocation source, Direction sourceLinkDirection) {
+        this (source, sourceLinkDirection,
+                sourceLinkDirection.typicalMove(source));
     }
 
     @Override
@@ -59,7 +77,6 @@ public final class Link {
             HasChipLocation destination) {
         this (source, Direction.byId(sourceLinkId), destination);
     }
-
 
     @Override
     public boolean equals(Object obj) {
