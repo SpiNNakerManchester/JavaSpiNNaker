@@ -28,6 +28,9 @@ public class TestLink {
         assertEquals(link1, link2);
         assertEquals(link1.hashCode(), link2.hashCode());
         assertEquals(link1.toString(), link2.toString());
+        assertEquals(link1, link1);
+        assertNotEquals(link1, "link1");
+        assertNotEquals(link1, null);
     }
 
     private void checkDifferent(Link link1, Link link2){
@@ -53,4 +56,15 @@ public class TestLink {
         checkDifferent(link1, link2);
     }
 
-}
+    public void testDefault() {
+        Link link = new Link(chip00, Direction.NORTH);
+        assertEquals(chip01, link.destination);
+    }
+
+    public void testById() {
+        Link link1 =  new Link(chip00, Direction.NORTH, chip01);
+        Link link2 =  new Link(chip00, 2, chip01);
+        assertEquals(link1, link2);
+    }
+
+ }

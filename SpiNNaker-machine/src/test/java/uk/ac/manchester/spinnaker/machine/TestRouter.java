@@ -3,11 +3,9 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
@@ -25,6 +23,7 @@ public class TestRouter {
     ChipLocation chip11 = new ChipLocation(1,1);
 
     Link link00_01 = new Link(chip00, Direction.NORTH, chip01);
+    Link link00_01a = new Link(chip00, Direction.NORTH, chip01);
     Link link00_10 = new Link(chip00, Direction.WEST, chip10);
     Link link01_01 = new Link(chip01, Direction.SOUTH, chip01);
 
@@ -68,5 +67,28 @@ public class TestRouter {
             assertEquals(loc, chip01);
         }
     }
+
+    @Test
+    public void testRouterStream() {
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_01);
+        links.add(link01_01);
+        Router router = new Router(links.stream());
+        assertTrue(router.hasLink(Direction.NORTH));
+        assertEquals(link00_01, router.getLink(Direction.NORTH));
+        assertEquals(2, router.size());
+    }
+
+    @Test
+    public void testRouterRepeat() {
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_01);
+        links.add(link00_01a);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Router router = new Router(links);
+        });
+    }
+
+
 
 }

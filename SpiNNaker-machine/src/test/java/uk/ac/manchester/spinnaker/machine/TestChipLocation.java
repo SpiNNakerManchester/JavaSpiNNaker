@@ -20,6 +20,7 @@ public class TestChipLocation {
 		assertEquals(0, l3.getX());
 		assertEquals(1, l3.getY());
 		assertNotEquals(l1,l3);
+		assertNotEquals(l1, "hello");
 		ChipLocation l4 = new ChipLocation(1, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());

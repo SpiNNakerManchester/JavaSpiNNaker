@@ -66,6 +66,7 @@ public class TestProcessor {
 
     @Test
     public void testComparesTo() {
+        Processor p1 = Processor.factory(1);
         Processor standard = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, false);
@@ -81,6 +82,7 @@ public class TestProcessor {
         Processor more = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE + 10, false);
+        assertThat(p1, lessThanOrEqualTo(standard));
         checkLess(standard, two);
         checkLess(standard, monitor);
         checkLess(standard, faster);
