@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  *
  * @author Christian-B
  */
-public final class Processor implements Comparable{
+public final class Processor implements Comparable {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
     private static final Processor[] MONITOR =
@@ -124,6 +124,40 @@ public final class Processor implements Comparable{
         return true;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        Processor other = (Processor) o;
+        if (this.processorId < other.processorId) {
+            return -1;
+        }
+        if (this.processorId > other.processorId) {
+            return 1;
+        }
+        // Check the other parameters for consistentcy with equals.
+        if (this.isMonitor) {
+            if (!other.isMonitor) {
+                return 1;
+            }
+        } else {
+            if (other.isMonitor) {
+                return -1;
+            }
+        }
+        if (this.dtcmAvailable < other.dtcmAvailable) {
+           return -1;
+        }
+        if (this.dtcmAvailable > other.dtcmAvailable) {
+           return 1;
+        }
+        if (this.clockSpeed < other.clockSpeed) {
+           return -1;
+        }
+        if (this.clockSpeed > other.clockSpeed) {
+           return 1;
+        }
+        return 0;
+    }
+
     /**
      * Obtain a Processor Object for this ID and with these properties.
      *
@@ -192,37 +226,4 @@ public final class Processor implements Comparable{
         return factory(processorId, false);
     }
 
-    @Override
-    public int compareTo(Object o) {
-        Processor other = (Processor)o;
-        if (this.processorId < other.processorId) {
-            return -1;
-        }
-        if (this.processorId > other.processorId) {
-            return 1;
-        }
-        // Check the other parameters for consistentcy with equals.
-        if (this.isMonitor) {
-            if (! other.isMonitor) {
-                return 1;
-            }
-        } else {
-            if (other.isMonitor) {
-                return -1;
-            }
-        }
-        if (this.dtcmAvailable < other.dtcmAvailable) {
-           return -1;
-        }
-        if (this.dtcmAvailable > other.dtcmAvailable) {
-           return 1;
-        }
-        if (this.clockSpeed < other.clockSpeed) {
-           return -1;
-        }
-        if (this.clockSpeed > other.clockSpeed) {
-           return 1;
-        }
-        return 0;
-    }
 }
