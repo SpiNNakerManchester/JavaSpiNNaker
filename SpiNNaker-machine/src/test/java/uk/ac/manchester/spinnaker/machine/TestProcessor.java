@@ -89,6 +89,7 @@ public class TestProcessor {
         checkLess2(standard, more);
      }
 
+    @Test
     public void testClone() {
         Processor p1 = Processor.factory(1);
         Processor p1m = Processor.factory(1, true);
@@ -104,11 +105,13 @@ public class TestProcessor {
         checkSame(fasterM, clone);
     }
 
+    @Test
     public void testCpuCyclesAvailable() {
         Processor p1 = Processor.factory(1);
         assertEquals(200000, p1.cpuCyclesAvailable());
     }
 
+    @Test
     public void testBad() {
         assertThrows(IllegalArgumentException.class, () -> {
             Processor bad = Processor.factory(

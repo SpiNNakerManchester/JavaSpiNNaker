@@ -188,6 +188,7 @@ public class Chip implements HasChipLocation {
             if (!entry.getValue().isMonitor) {
                 Processor monitor = entry.getValue().cloneAsSystemProcessor();
                 processors.replace(entry.getKey(), monitor);
+                nUserProssors-= 1;
                 return entry.getKey();
             }
         }
