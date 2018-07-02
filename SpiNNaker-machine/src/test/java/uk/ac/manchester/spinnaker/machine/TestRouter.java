@@ -3,6 +3,8 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -48,7 +50,7 @@ public class TestRouter {
     }
 
     @Test
-    public void testgetNeighbouringChipsCoords() {
+    public void testgetNeighbouringChipsCoords() throws UnknownHostException {
         ArrayList<Link> links = new ArrayList<>();
         links.add(link00_01);
         links.add(link01_01);
