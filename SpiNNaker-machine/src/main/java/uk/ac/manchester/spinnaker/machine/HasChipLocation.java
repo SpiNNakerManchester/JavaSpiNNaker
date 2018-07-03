@@ -29,4 +29,11 @@ public interface HasChipLocation {
     default boolean onSameChipAs(HasChipLocation other) {
         return (getX() == other.getX()) && (getY() == other.getY());
     }
+
+    /**
+     * Converts (if required) this to a simple X, Y tuple
+     *
+     * @return A ChipLocation representation of the X and Y tuple
+     */
+    ChipLocation asChipLocation();
 }

@@ -5,6 +5,7 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
 import java.util.Objects;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDefaults;
@@ -19,8 +20,7 @@ public class AbstractDataLink implements HasChipLocation {
     /** IP address of the Datalink on the board. */
     public final InetAddress boardAddress;
 
-    //Private to enforce HasChipLocation methods.
-    private final HasChipLocation location;
+    public final ChipLocation location;
 
     /** link Direction/id for this link. */
     public final Direction linkId;
@@ -30,7 +30,7 @@ public class AbstractDataLink implements HasChipLocation {
      * Main Constructor of a DataLink.
      *
      * @param location The location/Chip being linked to
-     * @param linkId The id/Direction comeing out of the Chip
+     * @param linkId The id/Direction coming out of the Chip
      * @param boardAddress IP address of the Datalink on the board.
      */
     AbstractDataLink(HasChipLocation location, Direction linkId,
@@ -41,7 +41,7 @@ public class AbstractDataLink implements HasChipLocation {
         if (linkId == null) {
             throw new IllegalArgumentException("linkId was null");
         }
-        this.location = location;
+        this.location = location.asChipLocation();
         this.linkId = linkId;
         this.boardAddress = boardAddress;
     }
@@ -54,6 +54,11 @@ public class AbstractDataLink implements HasChipLocation {
     @Override
     public int getY() {
         return location.getY();
+    }
+
+    @Override
+    public ChipLocation asChipLocation() {
+        return location;
     }
 
     @Override

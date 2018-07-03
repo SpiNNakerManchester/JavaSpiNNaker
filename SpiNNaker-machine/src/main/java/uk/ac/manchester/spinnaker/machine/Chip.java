@@ -20,15 +20,12 @@ import java.util.TreeMap;
  */
 public class Chip implements HasChipLocation {
 
-    // This is private to force use of HasChipLocation methods
-    private final int x;
-    // This is private to force use of HasChipLocation methods
-    private final int y;
+    public final ChipLocation location;
 
     // This is private as mutable and implementation could change
     private final TreeMap<Integer, Processor> processors;
 
-    // This is not final as will chane as processors become monitors
+    // This is not final as will change as processors become monitors
     private int nUserProssors;
 
     /** A router for the chip. */
@@ -73,8 +70,7 @@ public class Chip implements HasChipLocation {
             int sdram, InetAddress ipAddress, boolean virtual, int nTagIds,
             HasChipLocation nearestEthernet) {
         MachineDefaults.validateChipLocation(x, y);
-        this.x = x;
-        this.y = y;
+        this.location = new ChipLocation(x, y);
         this.processors = new TreeMap<>();
         nUserProssors = 0;
         processors.forEach((processor) -> {
@@ -98,12 +94,17 @@ public class Chip implements HasChipLocation {
 
     @Override
     public int getX() {
-        return x;
+        return location.getX();
     }
 
     @Override
     public int getY() {
-        return y;
+        return location.getX();
+    }
+
+    @Override
+    public ChipLocation asChipLocation() {
+        return location;
     }
 
     /**

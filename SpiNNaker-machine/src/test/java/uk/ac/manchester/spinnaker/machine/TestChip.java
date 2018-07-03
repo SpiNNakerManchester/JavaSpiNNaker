@@ -20,12 +20,12 @@ public class TestChip {
 
     ChipLocation location00 = new ChipLocation(0,0);
     ChipLocation location01 = new ChipLocation(0,1);
-    ChipLocation location0 = new ChipLocation(1,0);
+    ChipLocation location10 = new ChipLocation(1,0);
     ChipLocation location11 = new ChipLocation(1,1);
 
     Link link00_01 = new Link(location00, Direction.NORTH, location01);
     //Link link00_01a = new Link(location00, Direction.NORTH, location01);
-    Link link00_10 = new Link(location00, Direction.WEST, location0);
+    Link link00_10 = new Link(location00, Direction.WEST, location10);
     //Link link01_01 = new Link(location01, Direction.SOUTH, location01);
 
 

@@ -4,11 +4,14 @@
 package uk.ac.manchester.spinnaker.machine;
 
 /**
+ * The location of a Chip as an X and Y tuple.
+ * <p>
+ * This class is final as it is used a key in maps.
  *
  * @author alan
  * @author dkf
  */
-public class ChipLocation implements HasChipLocation {
+public final class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
 
@@ -42,6 +45,23 @@ public class ChipLocation implements HasChipLocation {
     }
 
     @Override
+    public int compareTo(ChipLocation o) {
+        if (this.x < o.x) {
+            return -1;
+        }
+        if (this.x > o.x) {
+            return 1;
+        }
+        if (this.y < o.y) {
+            return -1;
+        }
+        if (this.y > o.y) {
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
     public final int getX() {
         return x;
     }
@@ -55,4 +75,10 @@ public class ChipLocation implements HasChipLocation {
     public String toString() {
         return "X:" + getX() + " Y:" + getY();
     }
-}
+
+    @Override
+    public ChipLocation asChipLocation() {
+        return this;
+    }
+
+ }

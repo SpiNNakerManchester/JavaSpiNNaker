@@ -8,7 +8,7 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public class CoreLocation implements HasCoreLocation {
+public final class CoreLocation implements HasCoreLocation {
     private final int x;
     private final int y;
     private final int p;
@@ -53,6 +53,11 @@ public class CoreLocation implements HasCoreLocation {
     @Override
     public final int getY() {
         return y;
+    }
+
+    @Override
+    public ChipLocation asChipLocation() {
+        return new ChipLocation(getX(), getY());
     }
 
     @Override
