@@ -9,4 +9,10 @@
 	<artifactId>SpiNNaker-comms</artifactId>
 	<description>How to actually talk to a SpiNNaker machine.</description>
 	<name>SpiNNaker Communications</name>
+	<dependencies>
+		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-utils</artifactId>
+		</dependency>
+	</dependencies>
 </project>

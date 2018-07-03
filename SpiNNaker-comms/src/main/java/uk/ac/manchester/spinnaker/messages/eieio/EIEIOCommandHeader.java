@@ -4,10 +4,14 @@ import java.nio.ByteBuffer;
 
 /** EIEIO header for command packets */
 public class EIEIOCommandHeader {
-	public final int command;
+	public final EIEIOCommandID command;
 
 	// Must be power of 2
 	private static final int MAX_COMMAND = 0x3FFF;
+
+	public EIEIOCommandHeader(EIEIOCommandID command) {
+		this(command.getValue());
+	}
 
 	public EIEIOCommandHeader(int command) {
 		if (command < 0 || command > MAX_COMMAND) {
@@ -15,7 +19,7 @@ public class EIEIOCommandHeader {
 					"parameter command is outside the allowed range (0 to "
 							+ MAX_COMMAND + ")");
 		}
-		this.command = command;
+		this.command = EIEIOCommandID.get(command);
 	}
 
 	/**
@@ -27,7 +31,7 @@ public class EIEIOCommandHeader {
 	 *            The offset where the valid data starts
 	 */
 	public EIEIOCommandHeader(ByteBuffer buffer, int offset) {
-		command = buffer.getShort(offset) & MAX_COMMAND;
+		command = EIEIOCommandID.get(buffer.getShort(offset) & MAX_COMMAND);
 	}
 
 	/**
@@ -37,7 +41,7 @@ public class EIEIOCommandHeader {
 	 *            The buffer to append to.
 	 */
 	public void addToBuffer(ByteBuffer buffer) {
-		short value = (short) (0 << 15 | 1 << 14 | command);
+		short value = (short) (0 << 15 | 1 << 14 | command.getValue());
 		buffer.putShort(value);
 	}
 }
