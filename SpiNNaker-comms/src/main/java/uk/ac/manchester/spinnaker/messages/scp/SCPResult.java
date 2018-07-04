@@ -37,11 +37,11 @@ public enum SCPResult {
 	RC_P2P_TIMEOUT(0x8e),
 	/** Pkt Transmission failed */
 	RC_PKT_TX(0x8f);
-	public final byte value;
-	private static final Map<Byte, SCPResult> map = new HashMap<>();
+	public final short value;
+	private static final Map<Short, SCPResult> map = new HashMap<>();
 
 	private SCPResult(int value) {
-		this.value = (byte) value;
+		this.value = (short) value;
 	}
 
 	static {
@@ -50,7 +50,7 @@ public enum SCPResult {
 		}
 	}
 
-	public static SCPResult get(byte value) {
+	public static SCPResult get(short value) {
 		return map.get(value);
 	}
 }

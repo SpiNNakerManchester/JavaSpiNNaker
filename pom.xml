@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-                <spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
+		<spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
 	</properties>
 
 	<dependencyManagement>
@@ -22,11 +22,16 @@
 				<version>4.12</version>
 				<scope>test</scope>
 			</dependency>
-                        <dependency>
-                            <groupId>uk.ac.manchester.spinnaker</groupId>
-                            <artifactId>SpiNNaker-utils</artifactId>
-                            <version>${spinnaker.version}</version>
-                        </dependency>
+			<dependency>
+				<groupId>uk.ac.manchester.spinnaker</groupId>
+				<artifactId>SpiNNaker-utils</artifactId>
+				<version>${spinnaker.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.ac.manchester.spinnaker</groupId>
+				<artifactId>SpiNNaker-machine</artifactId>
+				<version>${spinnaker.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
