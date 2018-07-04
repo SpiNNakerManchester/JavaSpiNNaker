@@ -11,13 +11,13 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
-public class FPGALinkData extends AbstractDataLink {
+public final class FPGALinkData extends AbstractDataLink {
 
     /** The link id from the fdga prospective.  */
     public final int fpgaLinkId;
 
     /** The id if the fpga port being used. */
-    public final int fpgaId;
+    public final FpgaId fpgaId;
 
     /**
      * Main Constructor of an FPGALinkData.
@@ -28,7 +28,7 @@ public class FPGALinkData extends AbstractDataLink {
      * @param linkId The id/Direction comeing out of the Chip
      * @param boardAddress IP address of the Datalink on the board.
      */
-    public FPGALinkData(int fpgaLinkId, int fpgaId,
+    public FPGALinkData(int fpgaLinkId, FpgaId fpgaId,
             HasChipLocation location, Direction linkId,
             InetAddress boardAddress) {
         super(location, linkId, boardAddress);
@@ -40,7 +40,7 @@ public class FPGALinkData extends AbstractDataLink {
     public int hashCode() {
         int hash = super.hashCode();
         hash = 53 * hash + this.fpgaLinkId;
-        hash = 53 * hash + this.fpgaId;
+        hash = 53 * hash + this.fpgaId.id;
         return hash;
     }
 

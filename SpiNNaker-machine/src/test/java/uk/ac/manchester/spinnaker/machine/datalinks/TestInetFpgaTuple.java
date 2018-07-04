@@ -22,8 +22,8 @@ public class TestInetFpgaTuple {
         byte[] bytes1 = {127,0,0,0};
         InetAddress addr1 = InetAddress.getByAddress(bytes1);
         InetAddress addr2 = InetAddress.getByAddress(bytes1);
-        InetFpgaTuple t1 = new InetFpgaTuple(addr1, 1, 23);
-        InetFpgaTuple t2 = new InetFpgaTuple(addr2, 1, 23);
+        InetFpgaTuple t1 = new InetFpgaTuple(addr1, FpgaId.TOP_RIGHT, 23);
+        InetFpgaTuple t2 = new InetFpgaTuple(addr2, FpgaId.TOP_RIGHT, 23);
 
         assertEquals(t1, t1);
         assertEquals(t1, t2);
@@ -32,8 +32,8 @@ public class TestInetFpgaTuple {
 
     @Test
     public void testEqualsWithNull() throws UnknownHostException {
-        InetFpgaTuple t1 = new InetFpgaTuple(null, 1, 23);
-        InetFpgaTuple t2 = new InetFpgaTuple(null, 1, 23);
+        InetFpgaTuple t1 = new InetFpgaTuple(null, FpgaId.TOP_RIGHT, 23);
+        InetFpgaTuple t2 = new InetFpgaTuple(null, FpgaId.TOP_RIGHT, 23);
 
         assertEquals(t1, t2);
         assertEquals(t1.hashCode(), t2.hashCode());
@@ -46,11 +46,11 @@ public class TestInetFpgaTuple {
         byte[] bytes2 = {127,0,0,1};
         InetAddress addr2 = InetAddress.getByAddress(bytes2);
 
-        InetFpgaTuple t1 = new InetFpgaTuple(addr1, 1, 23);
-        InetFpgaTuple t2 = new InetFpgaTuple(addr2, 1, 23);
-        InetFpgaTuple t3 = new InetFpgaTuple(null, 1, 23);
-        InetFpgaTuple t4 = new InetFpgaTuple(addr1, 2, 23);
-        InetFpgaTuple t5 = new InetFpgaTuple(addr1, 1, 24);
+        InetFpgaTuple t1 = new InetFpgaTuple(addr1, FpgaId.TOP_RIGHT, 23);
+        InetFpgaTuple t2 = new InetFpgaTuple(addr2, FpgaId.TOP_RIGHT, 23);
+        InetFpgaTuple t3 = new InetFpgaTuple(null, FpgaId.TOP_RIGHT, 23);
+        InetFpgaTuple t4 = new InetFpgaTuple(addr1, FpgaId.BOTTOM, 23);
+        InetFpgaTuple t5 = new InetFpgaTuple(addr1, FpgaId.TOP_RIGHT, 24);
 
         assertNotEquals(t1, t2);
         assertNotEquals(t1.hashCode(), t2.hashCode());
