@@ -74,7 +74,7 @@ public enum Direction {
      * @param source Location moving from.
      * @return The typical location this direction goes to from this source.
      */
-    public HasChipLocation typicalMove(HasChipLocation source) {
+    public ChipLocation typicalMove(HasChipLocation source) {
         return new ChipLocation(
             source.getX() + xChange, source.getY() + yChange);
     }

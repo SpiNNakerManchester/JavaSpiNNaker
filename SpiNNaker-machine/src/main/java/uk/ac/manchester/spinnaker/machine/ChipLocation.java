@@ -3,6 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+
 /**
  * The location of a Chip as an X and Y tuple.
  * <p>
@@ -11,9 +12,12 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public final class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
+public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
+
+    public static ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
+    public static ChipLocation ONE_ZERO = new ChipLocation(1, 0);
 
     /**
      * Create the location of a chip on a SpiNNaker machine.
@@ -22,13 +26,27 @@ public final class ChipLocation implements HasChipLocation, Comparable<ChipLocat
      * @param y The Y coordinate
      */
     public ChipLocation(int x, int y) {
-        MachineDefaults.validateChipLocation(x, y);
+        validateChipLocation(x, y);
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Checks the x and y parameter are legal ones
+     *    regardless of the type of machine.
+     *
+     * @param x X part of the chips location
+     * @param y Y part of the chips location
+     * @throws IllegalArgumentException
+     */
+    void validateChipLocation(int x, int y)
+            throws IllegalArgumentException {
+        MachineDefaults.validateChipLocation(x, y);
+    }
+
+
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -40,7 +58,7 @@ public final class ChipLocation implements HasChipLocation, Comparable<ChipLocat
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return (x << MachineDefaults.COORD_SHIFT) ^ y;
     }
 

@@ -20,7 +20,7 @@ import java.util.TreeMap;
  */
 public class Chip implements HasChipLocation {
 
-    public final ChipLocation location;
+    private final ChipLocation location;
 
     // This is private as mutable and implementation could change
     private final TreeMap<Integer, Processor> processors;
@@ -86,9 +86,28 @@ public class Chip implements HasChipLocation {
         });
         this.router = router;
         this.sdram = sdram;
+
+        //if (ipAddress == null) {
+        //    if (legalEthernetLocation()) {
+        //        throw new IllegalArgumentException(
+        //                "Found an none ethernet chip at " + asChipLocation());
+        //    }
+        //} else {
+        //    if (!legalEthernetLocation()) {
+        //        throw new IllegalArgumentException(
+        //                "Found an ethernet chip at " + asChipLocation());
+        //    }
+        //}
         this.ipAddress = ipAddress;
+
         this.virtual = virtual;
         this.nTagIds = nTagIds;
+
+        //if (!nearestEthernet.legalEthernetLocation()) {
+        //    throw new IllegalArgumentException(
+        //            "nearestEthernet can not be at "
+        //            + nearestEthernet.asChipLocation());
+        //}
         this.nearestEthernet = nearestEthernet;
     }
 
