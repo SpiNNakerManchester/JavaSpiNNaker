@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.bmp;
 
 /** The SCP BMP Information Types */
 public enum BMPInfo {

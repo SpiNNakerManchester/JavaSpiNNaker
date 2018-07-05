@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import java.nio.ByteBuffer;
 
-/** Represents the header of an SCP Response */
+/** Represents the header of an SCP BMPResponse */
 public final class SCPResponseHeader {
 	/** The result of the SCP response */
 	public final SCPResult result;

@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read the chip information from a core */
@@ -53,11 +53,5 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 			super("Version", CMD_INFO, buffer);
 			this.chipInfo = new ChipSummaryInfo(buffer, sdpHeader.getSource());
 		}
-	}
-}
-
-class ChipSummaryInfo {// FIXME
-	public ChipSummaryInfo(ByteBuffer buffer, HasCoreLocation source) {
-		// TODO Auto-generated constructor stub
 	}
 }

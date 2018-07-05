@@ -6,18 +6,13 @@ import java.nio.ByteBuffer;
 
 /** An SCP response to a request which returns nothing other than OK */
 public class CheckOKResponse extends SCPResponse {
-	public CheckOKResponse(String operation, String command, ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
+	public CheckOKResponse(String operation, SCPCommand command,
+			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
 		SCPResult result = scpResponseHeader.result;
 		if (result != RC_OK) {
 			throw new UnexpectedResponseCodeException(operation, command,
-					result.name());
+					result);
 		}
-	}
-
-	public CheckOKResponse(String operation, SCPCommand command,
-			ByteBuffer buffer) throws UnexpectedResponseCodeException {
-		this(operation, command.name(), buffer);
 	}
 }

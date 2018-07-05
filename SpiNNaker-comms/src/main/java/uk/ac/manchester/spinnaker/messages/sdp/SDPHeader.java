@@ -38,7 +38,7 @@ public class SDPHeader implements SerializableMessage {
 	 * messages containing this header <i>cannot</i> be sent until a source has
 	 * also been set!
 	 */
-	public SDPHeader(SDPFlag flags, CoreLocation destination,
+	public SDPHeader(SDPFlag flags, HasCoreLocation destination,
 			int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
