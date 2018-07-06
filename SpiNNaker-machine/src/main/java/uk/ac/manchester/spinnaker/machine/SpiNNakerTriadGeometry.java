@@ -131,7 +131,8 @@ public class SpiNNakerTriadGeometry {
         Location bestCalc = null;
         float bestDistance = 10000;
         for (Location ethernet:calulationEthernets) {
-            float calc = hexagonalMetricDistance(x, y, ethernet.x + (float)3.6, ethernet.y + (float)3.4);
+            float calc = hexagonalMetricDistance(
+                    x, y, ethernet.x + (float)3.6, ethernet.y + (float)3.4);
             if (calc < bestDistance) {
                 bestDistance = calc;
                 bestCalc = ethernet;
@@ -154,8 +155,10 @@ public class SpiNNakerTriadGeometry {
         ChipLocation localChip = localChipCoordinates.get(adjusted);
 
         return new ChipLocation(
-                (chip.getX() - localChip.getX() + machineHeight) % machineHeight,
-                (chip.getY() - localChip.getY() + machineWidth) % machineWidth);
+                (chip.getX() - localChip.getX() + machineHeight) 
+                        % machineHeight,
+                (chip.getY() - localChip.getY() + machineWidth)
+                        % machineWidth);
     }
 
     public ChipLocation getLocalChipCoordinate(HasChipLocation chip) {
@@ -164,13 +167,44 @@ public class SpiNNakerTriadGeometry {
         }
 
         int x = chip.getX() % triadWidth;
-        int y = chip.getY() % triadWidth;
+        int y = chip.getY() % triadHeight;
         ChipLocation adjusted = new ChipLocation(x, y);
         return localChipCoordinates.get(adjusted);
     }
-
-    //<class 'list'>: [[(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4)], [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5)], [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)], [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (4, 7), (5, 7), (6, 7), (7, 7)], [(4, 0), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (0, 0), (1, 0), (2, 0), (3, 0)], [(4, 1), (5, 1), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5), (0, 1), (1, 1), (2, 1), (3, 1)], [(4, 2), (5, 2), (6, 2), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6), (0, 2), (1, 2), (2, 2), (3, 2)], [(4, 3), (5, 3), (6, 3), (7, 3), (4, 7), (5, 7), (6, 7), (7, 7), (0, 3), (1, 3), (2, 3), (3, 3)], [(4, 4), (5, 4), (6, 4), (7, 4), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (1, 4), (2, 4), (3, 4)], [(4, 5), (5, 5), (6, 5), (7, 5), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (2, 5), (3, 5)], [(4, 6), (5, 6), (6, 6), (7, 6), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (3, 6)], [(4, 7), (5, 7), (6, 7), (7, 7), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3)]]
-
+    
+     /**
+      * Get the coordinates of chips that should be Ethernet chips.
+      *
+      * @param width The width of the machine to find the chips in.
+      * @param height The height of the machine to find the chips in.
+      * @return 
+      */
+    public ArrayList<ChipLocation> getPotentialEthernetChips(
+            int width, int height) {
+        ArrayList<ChipLocation> results = new ArrayList();
+        int maxWidth;
+        int maxHeight;
+        if (width % triadWidth == 0 && height % triadHeight == 0) {
+            maxWidth = width;
+            maxHeight = height;
+        } else {
+            maxWidth = width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
+            maxHeight = height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;  
+            if (maxWidth < 0 || maxHeight < 0) {
+                results.add(ChipLocation.ZERO_ZERO);
+                return results;
+            } 
+        }
+        for (ChipLocation chip:realEthernets) {
+            for (int x = chip.getX(); x < maxWidth; x+=triadWidth) {
+                for (int y = chip.getY(); y < maxHeight; y+=triadHeight) {
+                    results.add(new ChipLocation(x, y));
+                }
+            }
+        }
+        return results;
+    }
+    
    /**
      * Get the geometry object for a SpiNN-5 arrangement of boards.
      * <p>
@@ -192,12 +226,7 @@ public class SpiNNakerTriadGeometry {
         return SPINN5_TRIAD_GEOMETRY;
     }
 
-    public static void main(String[] args) {
-        SpiNNakerTriadGeometry test = getSpinn5Geometry();
-        //System.out.println(test.nearestEthernets());
-    }
-
-    private static class Location {
+    static final class Location {
         final int x;
         final int y;
 

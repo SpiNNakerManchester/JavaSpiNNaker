@@ -3,6 +3,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -94,4 +98,39 @@ public class SpiNNakerTriadGeometryTest {
         assertEquals(new ChipLocation(4,56), instance.getEthernetChip(new ChipLocation(5,0), 96, 60));
 
     }
+    
+    public void testGetPotentialEthernetChips() {
+        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();   
+    
+        Collection<ChipLocation> ethers = instance.getPotentialEthernetChips(2, 2);
+        assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
+ 
+        ethers = instance.getPotentialEthernetChips(8, 8);
+        assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
+        
+        ChipLocation chip48 = new ChipLocation(4, 8);
+        ChipLocation chip84 = new ChipLocation(8, 4);
+        
+        ethers = instance.getPotentialEthernetChips(12, 12);
+        assertThat(ethers, containsInAnyOrder(
+                ChipLocation.ZERO_ZERO, chip48, chip84));
+ 
+        ethers = instance.getPotentialEthernetChips(16, 16);
+        assertThat(ethers, containsInAnyOrder(
+                ChipLocation.ZERO_ZERO, chip48, chip84));
+ 
+        ChipLocation chip12_12 = new ChipLocation(12, 12);
+        ChipLocation chip0_12 = new ChipLocation(0, 12);
+        ChipLocation chip12_0 = new ChipLocation(12, 0);
+
+        ethers = instance.getPotentialEthernetChips(20, 20);
+        assertThat(ethers, containsInAnyOrder(
+                ChipLocation.ZERO_ZERO, chip48, chip84, chip12_0, chip12_12,
+                chip0_12));
+       
+        ethers = instance.getPotentialEthernetChips(24, 24);
+        assertThat(ethers, hasSize(12));
+
+    }
+    
 }
