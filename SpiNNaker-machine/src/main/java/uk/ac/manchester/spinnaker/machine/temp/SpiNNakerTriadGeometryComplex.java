@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  */
-package uk.ac.manchester.spinnaker.machine;
+package uk.ac.manchester.spinnaker.machine.temp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 // TO FINISH
 /**

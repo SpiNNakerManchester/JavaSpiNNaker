@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  */
-package uk.ac.manchester.spinnaker.machine;
+package uk.ac.manchester.spinnaker.machine.temp;
 
 import java.util.ArrayList;
 
