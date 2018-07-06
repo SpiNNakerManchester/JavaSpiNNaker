@@ -32,25 +32,33 @@ public class SpiNNakerTriadGeometry {
     /** Width of a triad in chips. */
     public final int triadWidth;
 
-    /** Locations of the Ethernet connected chips */
-    private final ArrayList<Location> calulationEthernets;
-
     private final ArrayList<ChipLocation> realEthernets;
 
     private final HashMap<ChipLocation, ChipLocation> localChipCoordinates;
-    private final HashMap<ChipLocation, ChipLocation> ethernetMappings;
 
     private final float xCenterer;
 
     private final float yCenterer;
 
-
+    /**
+     * Constructor is private to force reuse of staticlly held Object(s).
+     * 
+     * @param triadHeight Height of a triad in chips.
+     * @param triadWidth Width of a triad in chips.
+     * @param roots Ethernet chips within the triad
+     * @param xCenterer Magic number to adjust X to find the nearest ethernet.
+     * @param yCenterer Magic number to adjust X to find the nearest ethernet.
+     */
     private SpiNNakerTriadGeometry(
-            int triadHeight, int triadWidth, ArrayList<Location> roots, float xCenterer, float yCenterer) {
+            int triadHeight, int triadWidth, ArrayList<ChipLocation> roots, 
+            float xCenterer, float yCenterer) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
-        this.calulationEthernets = roots;
         this.realEthernets = new ArrayList<ChipLocation>();
+  
+        final ArrayList<Location> calulationEthernets = new ArrayList();
+
+       
         for (Location location:roots) {
             if (location.x >= 0 && location.y >= 0) {
                 realEthernets.add(new ChipLocation(location.x, location.y));
@@ -60,7 +68,6 @@ public class SpiNNakerTriadGeometry {
         this.yCenterer = yCenterer;
 
         localChipCoordinates = new HashMap<>();
-        ethernetMappings = new HashMap<>();
 
         for (int x = 0; x < 12; x++) {
             for (int y = 0; y < 12; y++) {
@@ -68,20 +75,6 @@ public class SpiNNakerTriadGeometry {
                 ChipLocation key = new ChipLocation(x, y);
                 localChipCoordinates.put(key,
                         new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
-
-                if (bestCalc.x >= 0) {
-                    if (bestCalc.y >= 0) {
-                        ethernetMappings.put(key, new ChipLocation (bestCalc.x, bestCalc.y));
-                    } else {
-                        ethernetMappings.put(key, new ChipLocation (bestCalc.x, bestCalc.y + this.triadHeight));
-                    }
-                } else {
-                    if (bestCalc.y >= 0) {
-                        ethernetMappings.put(key, new ChipLocation(bestCalc.x + this.triadWidth, bestCalc.y));
-                    } else {
-                        ethernetMappings.put(key, new ChipLocation(bestCalc.x + this.triadWidth, bestCalc.y + this.triadHeight));
-                    }
-                }
             }
         }
     }
@@ -111,7 +104,8 @@ public class SpiNNakerTriadGeometry {
         return Math.max(Math.abs(dx), Math.max(Math.abs(dy), Math.abs(dx - dy)));
     }
 
-    private Location locateNearestCalulationEthernet(int x, int y) {
+    private Location locateNearestCalulationEthernet(
+            int x, int y, ArrayList<Location> calulationEthernets) {
         //""" Get the coordinate of the nearest Ethernet chip down and left from\
         //    a given chip
 
@@ -235,10 +229,10 @@ public class SpiNNakerTriadGeometry {
             this.y = y;
         }
 
-        @Override
-        public String toString(){
-            return ("(" + x + ", " + y + ")");
-        }
+        //@Override
+        //public String toString(){
+        //    return ("(" + x + ", " + y + ")");
+        //}
     }
 
 
