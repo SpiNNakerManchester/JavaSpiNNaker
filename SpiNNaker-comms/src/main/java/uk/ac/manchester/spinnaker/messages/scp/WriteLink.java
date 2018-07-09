@@ -1,0 +1,91 @@
+package uk.ac.manchester.spinnaker.messages.scp;
+
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+
+import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+
+/** A request to write memory on a neighbouring chip */
+public class WriteLink extends SCPRequest<CheckOKResponse> {
+	/**
+	 * @param core
+	 *            the core to write via
+	 * @param link
+	 *            The ID of the link down which to send the write
+	 * @param baseAddress
+	 *            The positive base address to start the write at
+	 * @param data
+	 *            The data to write (up to 256 bytes)
+	 */
+	public WriteLink(HasCoreLocation core, int link, int baseAddress,
+			byte[] data) {
+		super(new SDPHeader(REPLY_EXPECTED, core, 0),
+				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress, data.length,
+				link, data);
+	}
+
+	/**
+	 * @param core
+	 *            the core to write via
+	 * @param link
+	 *            The ID of the link down which to send the write
+	 * @param baseAddress
+	 *            The positive base address to start the write at
+	 * @param data
+	 *            The data to write (up to 256 bytes); the <i>position</i> of
+	 *            the buffer must be the point where the data starts.
+	 */
+	public WriteLink(HasCoreLocation core, int link, int baseAddress,
+			ByteBuffer data) {
+		super(new SDPHeader(REPLY_EXPECTED, core, 0),
+				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress,
+				data.remaining(), link, data);
+	}
+
+	/**
+	 * @param chip
+	 *            the chip to write via
+	 * @param link
+	 *            The ID of the link down which to send the write
+	 * @param baseAddress
+	 *            The positive base address to start the write at
+	 * @param data
+	 *            The data to write (up to 256 bytes)
+	 */
+	public WriteLink(HasChipLocation chip, int link, int baseAddress,
+			byte[] data) {
+		super(new SDPHeader(REPLY_EXPECTED,
+				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress, data.length,
+				link, data);
+	}
+
+	/**
+	 * @param chip
+	 *            the chip to write via
+	 * @param link
+	 *            The ID of the link down which to send the write
+	 * @param baseAddress
+	 *            The positive base address to start the write at
+	 * @param data
+	 *            The data to write (up to 256 bytes); the <i>position</i> of
+	 *            the buffer must be the point where the data starts.
+	 */
+	public WriteLink(HasChipLocation chip, int link, int baseAddress,
+			ByteBuffer data) {
+		super(new SDPHeader(REPLY_EXPECTED,
+				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress,
+				data.remaining(), link, data);
+	}
+
+	@Override
+	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new CheckOKResponse("Write Memory", CMD_LINK_WRITE, buffer);
+	}
+}

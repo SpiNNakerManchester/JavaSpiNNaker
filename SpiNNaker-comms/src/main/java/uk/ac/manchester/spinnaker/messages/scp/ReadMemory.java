@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to read a region of memory via a link on a chip */
+/** An SCP request to read a region of memory */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	private enum ReadType {
 		BYTE, HALF_WORD, WORD
