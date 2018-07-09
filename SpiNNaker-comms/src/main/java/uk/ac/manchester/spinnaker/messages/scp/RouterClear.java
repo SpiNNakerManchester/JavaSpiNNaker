@@ -1,0 +1,28 @@
+package uk.ac.manchester.spinnaker.messages.scp;
+
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+
+import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+
+/** A request to clear the router on a chip */
+public class RouterClear extends SCPRequest<CheckOKResponse> {
+	/**
+	 * @param chip
+	 *            The coordinates of the chip to clear the router of
+	 */
+	public RouterClear(HasChipLocation chip) {
+		super(new SDPHeader(REPLY_EXPECTED,
+				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+				new SCPRequestHeader(CMD_RTR));
+	}
+
+	@Override
+	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new CheckOKResponse("Router Clear", CMD_RTR, buffer);
+	}
+}
