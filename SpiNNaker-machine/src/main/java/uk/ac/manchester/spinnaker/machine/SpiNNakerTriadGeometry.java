@@ -6,7 +6,6 @@ package uk.ac.manchester.spinnaker.machine;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TO FINISH
 /**
  *  Geometry of a "triad" of SpiNNaker boards.
  *  <p>
@@ -14,7 +13,7 @@ import java.util.HashMap;
  *      standard arrangement can be obtained from get_spinn5_geometry.
  *  <p>
  *  Note that the geometry defines what a Triad is in terms of the dimensions
- *      of a triad and where the Ethernet chips occur in the triad.
+ *      of a triad and where the root chips occur in the triad.
  *
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
@@ -22,9 +21,9 @@ import java.util.HashMap;
  *
  * @author Christian-B
  */
-public class SpiNNakerTriadGeometry {
+public final class SpiNNakerTriadGeometry {
 
-    private static SpiNNakerTriadGeometry SPINN5_TRIAD_GEOMETRY = null;
+    private static SpiNNakerTriadGeometry Spinn5_Triad_Geometry = null;
 
     /** Height of a triad in chips. */
     public final int triadHeight;
@@ -32,7 +31,8 @@ public class SpiNNakerTriadGeometry {
     /** Width of a triad in chips. */
     public final int triadWidth;
 
-    private final ArrayList<ChipLocation> realEthernets;
+    /** Bottom Left corner Chips. Typically the Ethernet Chip */
+    private final ArrayList<ChipLocation> roots;
 
     private final HashMap<ChipLocation, ChipLocation> localChipCoordinates;
 
@@ -41,27 +41,33 @@ public class SpiNNakerTriadGeometry {
     private final float yCenterer;
 
     /**
-     * Constructor is private to force reuse of staticlly held Object(s).
-     * 
+     * Constructor is private to force reuse of statically held Object(s).
+     *
      * @param triadHeight Height of a triad in chips.
      * @param triadWidth Width of a triad in chips.
-     * @param roots Ethernet chips within the triad
-     * @param xCenterer Magic number to adjust X to find the nearest ethernet.
-     * @param yCenterer Magic number to adjust X to find the nearest ethernet.
+     * @param roots Bottom Left corner chips within the triad
+     * @param xCenterer Magic number to adjust X to find the nearest root.
+     * @param yCenterer Magic number to adjust X to find the nearest root.
      */
     private SpiNNakerTriadGeometry(
-            int triadHeight, int triadWidth, ArrayList<ChipLocation> roots, 
+            int triadHeight, int triadWidth, ArrayList<ChipLocation> roots,
             float xCenterer, float yCenterer) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
-        this.realEthernets = new ArrayList<ChipLocation>();
-  
+        this.roots = roots;
+
         final ArrayList<Location> calulationEthernets = new ArrayList();
 
-       
-        for (Location location:roots) {
-            if (location.x >= 0 && location.y >= 0) {
-                realEthernets.add(new ChipLocation(location.x, location.y));
+        for (ChipLocation root:roots) {
+            calulationEthernets.add(new Location(root.getX(), root.getY()));
+            //Add fictional roots that are less than a full triad away
+            if (root.getX() > 0) {
+                calulationEthernets.add(new Location(
+                        root.getX() - triadHeight, root.getY()));
+            }
+            if (root.getY() > 0) {
+                calulationEthernets.add(new Location(
+                        root.getX(), root.getY() - triadWidth));
             }
         }
         this.xCenterer = xCenterer;
@@ -69,9 +75,10 @@ public class SpiNNakerTriadGeometry {
 
         localChipCoordinates = new HashMap<>();
 
-        for (int x = 0; x < 12; x++) {
-            for (int y = 0; y < 12; y++) {
-                Location bestCalc = locateNearestCalulationEthernet(x, y);
+        for (int x = 0; x < triadHeight; x++) {
+            for (int y = 0; y < triadWidth; y++) {
+                Location bestCalc = locateNearestRoot(
+                        x, y, calulationEthernets);
                 ChipLocation key = new ChipLocation(x, y);
                 localChipCoordinates.put(key,
                         new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
@@ -90,43 +97,44 @@ public class SpiNNakerTriadGeometry {
      * about to do abs() of them anyway.
      * @param x The x-coordinate of the chip to get the distance for
      * @param y The y-coordinate of the chip to get the distance for
-     * @param x_centre The x-coordinate of the centre of the hexagon.
+     * @param xCentre The x-coordinate of the centre of the hexagon.
      *      Note that this is the theoretical centre,
      *      it might not be an actual chip
-     * @param y_centre The y-coordinate of the centre of the hexagon.
+     * @param yCentre The y-coordinate of the centre of the hexagon.
      *      Note that this is the theoretical centre,
      *      it might not be an actual chip
      * @return how far the chip is away from the centre of the hexagon
      */
-    private float hexagonalMetricDistance(int x, int y, float x_centre, float y_centre) {
-        float dx = x - x_centre;
-        float dy = y - y_centre;
-        return Math.max(Math.abs(dx), Math.max(Math.abs(dy), Math.abs(dx - dy)));
+    private float hexagonalMetricDistance(
+            int x, int y, float xCentre, float yCentre) {
+        float dx = x - xCentre;
+        float dy = y - yCentre;
+        return Math.max(Math.abs(dx), Math.max(
+                Math.abs(dy), Math.abs(dx - dy)));
     }
 
-    private Location locateNearestCalulationEthernet(
-            int x, int y, ArrayList<Location> calulationEthernets) {
-        //""" Get the coordinate of the nearest Ethernet chip down and left from\
-        //    a given chip
-
-        //:param x: The x-coordinate of the chip to find the nearest Ethernet to
-        //:param y: The y-coordinate of the chip to find the nearest Ethernet to
-        //:param ethernet_chips: The locations of the Ethernet chips
-        //:param centre:\
-        //    The distance from the Ethernet chip of the centre of the hexagonal\
-        //    board
-        //:return: The nearest Ethernet coordinates as a tuple of x, y
-        //"""
-
-        // Find the coordinates of the closest Ethernet chip by measuring
+    /**
+     * Get the coordinate of the nearest root chip down and left from
+     *      a given chip.
+     *
+     * @param x Whole machine x part of chip location.
+     * @param y Whole machine x part of chip location.
+     * @param roots List of all the roots to check including fictitious
+     *      negative ones.
+     * @return The nearest root found hopefully on the same board.
+     */
+    private Location locateNearestRoot(
+            int x, int y, ArrayList<Location> roots) {
+        // Find the coordinates of the closest root chip by measuring
         // the distance to the nominal centre of each board; the closest
-        // Ethernet is the one that is on the same board as the one the chip
+        // root is the one that is on the same board as the one the chip
         // is closest to the centre of
         Location bestCalc = null;
-        float bestDistance = 10000;
-        for (Location ethernet:calulationEthernets) {
+        float bestDistance = Float.MAX_VALUE;
+        for (Location ethernet:roots) {
             float calc = hexagonalMetricDistance(
-                    x, y, ethernet.x + (float)3.6, ethernet.y + (float)3.4);
+                    x, y, ethernet.x + (float) xCenterer, ethernet.y
+                    + (float) yCenterer);
             if (calc < bestDistance) {
                 bestDistance = calc;
                 bestCalc = ethernet;
@@ -135,26 +143,39 @@ public class SpiNNakerTriadGeometry {
         return bestCalc;
     }
 
-    public ChipLocation getEthernetChip(
-            HasChipLocation chip, int machineHeight, int machineWidth) {
-        //if (chip.getX() < triadWidth && chip.getY() < triadHeight) {
-        //    ChipLocation localChip = localChipCoordinates.get(
-        //            chip.asChipLocation());
-        //    return new ChipLocation(chip.getX() - localChip.getX(),
-        //        chip.getY() - localChip.getY());
-        //}
-
+    /**
+     * Finds the root Chip for the board this Chip is on.
+     *
+     * <p>
+     * Warning parameter order is width, height to match python.
+     *
+     * @param chip Location of Chip with X and Y expresses as whole machine
+     *    coordinates.
+     * @param width The width of the machine to find the chips in.
+     * @param height The height of the machine to find the chips in.
+     * @return The whole machine location of the Bottom Left Chip
+     *      expressed as whole machine coordinates.
+     */
+    public ChipLocation getRootChip(
+            HasChipLocation chip, int width, int height) {
         ChipLocation adjusted = new ChipLocation(
                 chip.getX() % triadHeight, chip.getY() % triadWidth);
         ChipLocation localChip = localChipCoordinates.get(adjusted);
 
         return new ChipLocation(
-                (chip.getX() - localChip.getX() + machineHeight) 
-                        % machineHeight,
-                (chip.getY() - localChip.getY() + machineWidth)
-                        % machineWidth);
+                (chip.getX() - localChip.getX() + height)
+                        % height,
+                (chip.getY() - localChip.getY() + width)
+                        % width);
     }
 
+    /**
+     * Converts whole machine coordinates into local ones.
+     *
+     * @param chip Location of Chip with X and Y expresses as whole machine
+     *    coordinates.
+     * @return The local coordinates of the Chip on board.
+     */
     public ChipLocation getLocalChipCoordinate(HasChipLocation chip) {
         if (chip.getX() < triadWidth && chip.getY() < triadHeight) {
             return localChipCoordinates.get(chip);
@@ -165,15 +186,22 @@ public class SpiNNakerTriadGeometry {
         ChipLocation adjusted = new ChipLocation(x, y);
         return localChipCoordinates.get(adjusted);
     }
-    
+
      /**
-      * Get the coordinates of chips that should be Ethernet chips.
+      * Get the coordinates of bottom left chip on each board.
+      * <p>
+      * The bottom left Chip(s) are the ones with the local coordinates 0, 0.
+      * This is also typically the ethernet one.
+      * <p>
+      * No check is done to see if all the boards are present,
+      *      nor if the root chip is present and active.
       *
       * @param width The width of the machine to find the chips in.
       * @param height The height of the machine to find the chips in.
-      * @return 
+      * @return List of the root ChipLocation that would be there is all
+      * possible boards in the width and height are present.
       */
-    public ArrayList<ChipLocation> getPotentialEthernetChips(
+    public ArrayList<ChipLocation> getPotentialRootChips(
             int width, int height) {
         ArrayList<ChipLocation> results = new ArrayList();
         int maxWidth;
@@ -183,22 +211,22 @@ public class SpiNNakerTriadGeometry {
             maxHeight = height;
         } else {
             maxWidth = width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
-            maxHeight = height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;  
+            maxHeight = height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
             if (maxWidth < 0 || maxHeight < 0) {
                 results.add(ChipLocation.ZERO_ZERO);
                 return results;
-            } 
+            }
         }
-        for (ChipLocation chip:realEthernets) {
-            for (int x = chip.getX(); x < maxWidth; x+=triadWidth) {
-                for (int y = chip.getY(); y < maxHeight; y+=triadHeight) {
+        for (ChipLocation chip:roots) {
+            for (int x = chip.getX(); x < maxWidth; x += triadWidth) {
+                for (int y = chip.getY(); y < maxHeight; y += triadHeight) {
                     results.add(new ChipLocation(x, y));
                 }
             }
         }
         return results;
     }
-    
+
    /**
      * Get the geometry object for a SpiNN-5 arrangement of boards.
      * <p>
@@ -206,25 +234,27 @@ public class SpiNNakerTriadGeometry {
      *      included where
      * @return SpiNN5 geometry
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public static SpiNNakerTriadGeometry getSpinn5Geometry() {
-        if (SPINN5_TRIAD_GEOMETRY == null) {
-            ArrayList<Location> roots = new ArrayList<>();
-            roots.add(new Location(0, 0));
-            roots.add(new Location(4, 8));
-            roots.add(new Location(8, 4));
-            roots.add(new Location(-4, 4));
-            roots.add(new Location(4, -4));
-            SPINN5_TRIAD_GEOMETRY = new SpiNNakerTriadGeometry(
-                    12, 12, roots, (float)3.6,  (float)3.4);
+        if (Spinn5_Triad_Geometry == null) {
+            ArrayList<ChipLocation> roots = new ArrayList<>();
+            roots.add(new ChipLocation(0, 0));
+            roots.add(new ChipLocation(4, 8));
+            roots.add(new ChipLocation(8, 4));
+            Spinn5_Triad_Geometry = new SpiNNakerTriadGeometry(
+                    12, 12, roots, (float) 3.6,  (float) 3.4);
         }
-        return SPINN5_TRIAD_GEOMETRY;
+        return Spinn5_Triad_Geometry;
     }
 
-    static final class Location {
+    /**
+     * Local class with x and y values that can be negative.
+     */
+    private static final class Location {
         final int x;
         final int y;
 
-        Location(int x, int y){
+        Location(int x, int y) {
             this.x = x;
             this.y = y;
         }
