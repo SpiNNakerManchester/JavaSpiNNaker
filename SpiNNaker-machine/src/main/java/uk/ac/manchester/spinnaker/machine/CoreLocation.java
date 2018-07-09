@@ -46,12 +46,12 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
     @Override
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
@@ -61,7 +61,7 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public final int getP() {
+    public int getP() {
         return p;
     }
 

@@ -31,7 +31,7 @@ public interface HasChipLocation {
     }
 
     /**
-     * Converts (if required) this to a simple X, Y tuple
+     * Converts (if required) this to a simple X, Y tuple.
      *
      * @return A ChipLocation representation of the X and Y tuple
      */
