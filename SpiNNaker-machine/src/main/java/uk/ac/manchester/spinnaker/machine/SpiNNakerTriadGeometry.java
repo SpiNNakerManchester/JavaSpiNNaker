@@ -23,7 +23,7 @@ import java.util.HashMap;
  */
 public final class SpiNNakerTriadGeometry {
 
-    private static SpiNNakerTriadGeometry Spinn5_Triad_Geometry = null;
+    private static SpiNNakerTriadGeometry spinn5TriadGeometry = null;
 
     /** Height of a triad in chips. */
     public final int triadHeight;
@@ -227,6 +227,45 @@ public final class SpiNNakerTriadGeometry {
         return results;
     }
 
+    /**
+     * Calculate the machine version based on the size.
+     *
+     * @param width The width of the machine to find the version for.
+     * @param height The height of the machine to find the version for.
+     * @return A Board version, which may be the INVALID one.
+     */
+    public MachineVersion versionBySize(int width, int height) {
+       if ((width == 2) && (height == 2)) {
+           return MachineVersion.THREE;
+       }
+       if ((width == MachineDefaults.SIZE_X_OF_ONE_BOARD)
+               && (height == MachineDefaults.SIZE_Y_OF_ONE_BOARD)) {
+           return MachineVersion.FIVE;
+       }
+       if ((width % MachineDefaults.TRIAD_HEIGHT == 0)
+               && (height % MachineDefaults.TRIAD_WIDTH == 0)) {
+           return MachineVersion.TRIAD_WITH_WRAPAROUND;
+       }
+       if (((width - MachineDefaults.HALF_SIZE)
+                    % MachineDefaults.TRIAD_HEIGHT == 0)
+                && ((height - MachineDefaults.HALF_SIZE)
+                    % MachineDefaults.TRIAD_WIDTH == 0)) {
+           return MachineVersion.TRIAD_NO_WRAPAROUND;
+       }
+       if (((width - MachineDefaults.HALF_SIZE)
+                    % MachineDefaults.TRIAD_HEIGHT == 0)
+                && ((height - MachineDefaults.HALF_SIZE)
+                    % MachineDefaults.TRIAD_WIDTH == 0)) {
+           return MachineVersion.TRIAD_NO_WRAPAROUND;
+       }
+       if (width % MachineDefaults.HALF_SIZE == 0
+               && height % MachineDefaults.HALF_SIZE == 0) {
+           return MachineVersion.NONE_TRIAD_LARGE;
+       }
+       return MachineVersion.INVALID;
+    }
+
+
    /**
      * Get the geometry object for a SpiNN-5 arrangement of boards.
      * <p>
@@ -236,15 +275,19 @@ public final class SpiNNakerTriadGeometry {
      */
     @SuppressWarnings("checkstyle:magicnumber")
     public static SpiNNakerTriadGeometry getSpinn5Geometry() {
-        if (Spinn5_Triad_Geometry == null) {
+        if (spinn5TriadGeometry == null) {
             ArrayList<ChipLocation> roots = new ArrayList<>();
             roots.add(new ChipLocation(0, 0));
-            roots.add(new ChipLocation(4, 8));
-            roots.add(new ChipLocation(8, 4));
-            Spinn5_Triad_Geometry = new SpiNNakerTriadGeometry(
-                    12, 12, roots, (float) 3.6,  (float) 3.4);
+            roots.add(new ChipLocation(MachineDefaults.HALF_SIZE,
+                    MachineDefaults.SIZE_Y_OF_ONE_BOARD));
+            roots.add(new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
+                    MachineDefaults.HALF_SIZE));
+            spinn5TriadGeometry = new SpiNNakerTriadGeometry(
+                    MachineDefaults.TRIAD_HEIGHT,
+                    MachineDefaults.TRIAD_WIDTH, roots,
+                    (float) 3.6,  (float) 3.4);
         }
-        return Spinn5_Triad_Geometry;
+        return spinn5TriadGeometry;
     }
 
     /**
