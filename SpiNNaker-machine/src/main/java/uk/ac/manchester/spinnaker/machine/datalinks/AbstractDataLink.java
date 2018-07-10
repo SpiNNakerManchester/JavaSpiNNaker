@@ -20,6 +20,7 @@ public class AbstractDataLink implements HasChipLocation {
     /** IP address of the Datalink on the board. */
     public final InetAddress boardAddress;
 
+    /** Coordinates of the location/Chip being linked to. */
     public final ChipLocation location;
 
     /** link Direction/id for this link. */
