@@ -12,7 +12,7 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
+public final class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
 
