@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -11,7 +12,7 @@ public interface SCPSender extends Connection {
 	 * Returns the data of an SCP request as it would be sent down this
 	 * connection
 	 */
-	Object /* FIXME */ getSCPData(SCPRequest<?> scpRequest);
+	ByteBuffer getSCPData(SCPRequest<?> scpRequest);
 
 	/**
 	 * Sends an SCP request down this connection.
