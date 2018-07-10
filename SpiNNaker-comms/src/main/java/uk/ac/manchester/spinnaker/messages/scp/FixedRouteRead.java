@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
@@ -29,8 +28,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	 *            and 255
 	 */
 	public FixedRouteRead(HasChipLocation chip, int entry, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_RTR), argument1(appID), argument2(),
 				null);
 	}

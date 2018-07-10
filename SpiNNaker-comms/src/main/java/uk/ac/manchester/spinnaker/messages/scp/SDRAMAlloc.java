@@ -7,7 +7,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
@@ -40,8 +39,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *            of the allocated block
 	 */
 	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_ALLOC), argument1(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag >= 256) {

@@ -6,7 +6,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -20,8 +19,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	 *            The timeout to set.
 	 */
 	public IPTagSetTTO(HasChipLocation chip, IPTagTimeOutWaitTime tagTimeout) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_IPTAG), TTO.value << 16,
 				tagTimeout.value, null);
 	}

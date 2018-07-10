@@ -6,7 +6,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -18,9 +17,9 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	private static ReadType efficientTransferUnit(int a, int b) {
-		if (a %4 == 0 && b % 4 == 0) {
+		if (a % 4 == 0 && b % 4 == 0) {
 			return ReadType.WORD;
-		} else if (a %4 == 2 || b %4 == 2) {
+		} else if (a % 4 == 2 || b % 4 == 2) {
 			return ReadType.HALF_WORD;
 		} else {
 			return ReadType.BYTE;
@@ -50,8 +49,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasChipLocation chip, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_READ), baseAddress, size & 0xFF,
 				efficientTransferUnit(baseAddress, size).ordinal());
 	}

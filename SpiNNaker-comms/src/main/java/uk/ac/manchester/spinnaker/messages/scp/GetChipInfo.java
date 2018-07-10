@@ -5,7 +5,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -27,8 +26,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	 *            Whether the size should be included in the response
 	 */
 	public GetChipInfo(HasChipLocation chip, boolean withSize) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_INFO), argument1(withSize), null,
 				null);
 	}

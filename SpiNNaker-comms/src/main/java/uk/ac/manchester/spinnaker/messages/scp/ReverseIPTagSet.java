@@ -6,7 +6,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -32,8 +31,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	 */
 	public ReverseIPTagSet(HasChipLocation chip, HasCoreLocation destination,
 			int port, int tag, int sdpPort) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_IPTAG),
 				argument1(sdpPort, destination, tag),
 				argument2(destination, port), 0);

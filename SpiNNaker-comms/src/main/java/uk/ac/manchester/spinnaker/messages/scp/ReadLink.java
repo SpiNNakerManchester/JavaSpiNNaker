@@ -6,7 +6,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -40,8 +39,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadLink(HasChipLocation chip, int link, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_LINK_READ), baseAddress, size & 0xFF,
 				link);
 	}

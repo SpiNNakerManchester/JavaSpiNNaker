@@ -5,7 +5,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -50,8 +49,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_WRITE), baseAddress, data.length,
 				efficientTransferUnit(baseAddress, data.length).ordinal(),
 				data);
@@ -83,8 +81,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            buffer must be the point where the data starts.
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED,
-				new CoreLocation(chip.getX(), chip.getY(), 0), 0),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
 				new SCPRequestHeader(CMD_WRITE), baseAddress, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).ordinal(),
 				data);
