@@ -3,14 +3,15 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Christian-B
  */
 public class TestProcessor {
+    
     @Test
     public void testProcessorBasicUse() {
         Processor p1 = Processor.factory(1);
