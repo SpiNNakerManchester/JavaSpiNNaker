@@ -5,6 +5,8 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  *  Geometry of a "triad" of SpiNNaker boards.
@@ -35,6 +37,8 @@ public final class SpiNNakerTriadGeometry {
     private final ArrayList<ChipLocation> roots;
 
     private final HashMap<ChipLocation, ChipLocation> localChipCoordinates;
+
+    private final ArrayList<ChipLocation> singleBoardCoordinates;
 
     private final float xCenterer;
 
@@ -74,6 +78,7 @@ public final class SpiNNakerTriadGeometry {
         this.yCenterer = yCenterer;
 
         localChipCoordinates = new HashMap<>();
+        singleBoardCoordinates = new ArrayList<>();
 
         for (int x = 0; x < triadHeight; x++) {
             for (int y = 0; y < triadWidth; y++) {
@@ -82,6 +87,9 @@ public final class SpiNNakerTriadGeometry {
                 ChipLocation key = new ChipLocation(x, y);
                 localChipCoordinates.put(key,
                         new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
+                if (bestCalc.x == 0 && bestCalc.y == 0) {
+                    singleBoardCoordinates.add(key);
+                }
             }
         }
     }
@@ -265,6 +273,22 @@ public final class SpiNNakerTriadGeometry {
        return MachineVersion.INVALID;
     }
 
+    public Iterable<ChipLocation> singleBoardIterable() {
+         return new Iterable<ChipLocation>() {
+            @Override
+            public Iterator<ChipLocation> iterator() {
+                return singleBoardIterator();
+            }
+        };
+    }
+
+    public final Iterator<ChipLocation> singleBoardIterator() {
+        return singleBoardCoordinates.iterator();
+    }
+
+    public void singleBoardForEach(Consumer<ChipLocation> action) {
+        singleBoardCoordinates.forEach(action);
+    }
 
    /**
      * Get the geometry object for a SpiNN-5 arrangement of boards.

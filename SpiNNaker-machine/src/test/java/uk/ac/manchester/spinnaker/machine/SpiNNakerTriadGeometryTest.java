@@ -5,10 +5,13 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import uk.ac.manchester.spinnaker.utils.Counter;
 
 /**
  *
@@ -132,4 +135,24 @@ public class SpiNNakerTriadGeometryTest {
 
     }
 
+    public void testSingleBoardIterator() {
+        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        int count = 0;
+        for (ChipLocation chip: instance.singleBoardIterable()) {
+            count+= 1;
+            assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
+        }
+        assertEquals(48, count);
+    }
+
+    public void testSingleBoardForEach() {
+        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        final Counter count = new Counter();
+        Consumer<ChipLocation> checkandCount = chip -> {
+            count.increment();
+            assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
+        };
+        instance.singleBoardForEach(checkandCount);
+        assertEquals(48, count.get());
+    }
 }
