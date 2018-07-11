@@ -7,6 +7,8 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
 import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
 
 /** A connection to the SpiNNaker board that uses UDP to for booting */

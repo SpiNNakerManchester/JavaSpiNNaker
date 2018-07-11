@@ -8,6 +8,8 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
+import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;

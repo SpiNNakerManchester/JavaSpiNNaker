@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.model.EIEIOReceiver;
+import uk.ac.manchester.spinnaker.connections.model.EIEIOSender;
+import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 
 /** A UDP connection for sending and receiving raw EIEIO messages. */

@@ -3,6 +3,8 @@ package uk.ac.manchester.spinnaker.connections;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.model.Listenable;
+
 public class UDPListenableConnection extends UDPConnection implements
 		Listenable<ByteBuffer>, Listenable.MessageReceiver<ByteBuffer> {
 	public UDPListenableConnection(String localHost, Integer localPort,

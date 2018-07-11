@@ -17,6 +17,8 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
+import uk.ac.manchester.spinnaker.connections.model.Connection;
+
 public class UDPConnection implements Connection {
 	private boolean canSend;
 	private Inet4Address remoteIPAddress;

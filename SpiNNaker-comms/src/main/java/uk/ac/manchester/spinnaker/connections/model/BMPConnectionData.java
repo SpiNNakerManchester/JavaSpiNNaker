@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.connections;
+package uk.ac.manchester.spinnaker.connections.model;
 
 import java.util.Collection;
 
@@ -6,7 +6,7 @@ import java.util.Collection;
  * Contains the details of a connection to a SpiNNaker Board Management
  * Processor (BMP).
  */
-class BMPConnectionData {
+public class BMPConnectionData {
 	/** The boards to be addressed. */
 	public final Collection<Integer> boards;
 	/** The cabinet number. */

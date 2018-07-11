@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.model.Listenable;
+import uk.ac.manchester.spinnaker.connections.model.SDPReceiver;
+import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;

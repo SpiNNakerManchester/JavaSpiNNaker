@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.connections;
+package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

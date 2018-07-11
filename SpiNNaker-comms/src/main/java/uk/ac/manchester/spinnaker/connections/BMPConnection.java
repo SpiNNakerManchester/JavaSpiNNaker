@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.connections.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
+import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
