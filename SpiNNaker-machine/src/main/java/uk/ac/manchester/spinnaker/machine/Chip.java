@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 /**
  * A Description of a Spinnaker Chip.
- *
+ * <p>
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
  * Python Version</a>
