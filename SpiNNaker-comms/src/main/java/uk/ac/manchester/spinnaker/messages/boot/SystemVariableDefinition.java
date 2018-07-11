@@ -38,7 +38,12 @@ public enum SystemVariableDefinition {
 	clock_milliseconds(DataType.LONG, 0x10),
 	/** The number of milliseconds in the current second */
 	time_milliseconds(DataType.SHORT, 0x18),
-	/** */ // FIXME what is this?
+	/**
+	 * Local time phase control packet send period (in units of 10ms). Set to
+	 * zero to disable.
+	 *
+	 * @deprecated UNTESTED part of SCAMP
+	 */
 	ltpc_period(DataType.SHORT, 0x1a),
 	/** The time in seconds since midnight, 1st January 1970 */
 	unix_timestamp(DataType.INT, 0x1c),
