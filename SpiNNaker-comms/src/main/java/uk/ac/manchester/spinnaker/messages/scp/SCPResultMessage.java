@@ -13,4 +13,9 @@ public class SCPResultMessage {
 		this.sequenceNumber = sequenceNumber;
 		this.responseData = responseData;
 	}
+
+	public <T extends SCPResponse> T getResponse(SCPRequest<T> request)
+			throws Exception {
+		return request.getSCPResponse(responseData);
+	}
 }

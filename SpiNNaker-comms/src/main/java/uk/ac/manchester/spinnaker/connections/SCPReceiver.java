@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
+import java.io.IOException;
+
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public interface SCPReceiver {
@@ -19,5 +21,5 @@ public interface SCPReceiver {
 	 * @throws SocketTimeoutException
 	 *             If there is a timeout before a message is received
 	 */
-	SCPResultMessage receiveSCPResponse(Integer timeout);
+	SCPResultMessage receiveSCPResponse(Integer timeout) throws IOException;
 }
