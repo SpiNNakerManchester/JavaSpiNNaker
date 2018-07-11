@@ -30,24 +30,24 @@ public class ConnectionListener<MessageType> extends Thread {
 	public ConnectionListener(Listenable<MessageType> connection,
 			int numProcesses, Integer timeout) {
 		super("Connection listener for connection " + connection);
-		this.setDaemon(true);
+		setDaemon(true);
 		this.connection = connection;
 		this.timeout = timeout;
-		this.callbackPool = new ThreadPoolExecutor(1, numProcesses, 1000L,
+		callbackPool = new ThreadPoolExecutor(1, numProcesses, 1000L,
 				MILLISECONDS, new LinkedBlockingQueue<>());
-		this.done = false;
-		this.callbacks = new HashSet<MessageHandler<MessageType>>();
+		done = false;
+		callbacks = new HashSet<MessageHandler<MessageType>>();
 	}
 
 	@Override
 	public final void run() {
 		try {
 			MessageReceiver<MessageType> handler = connection.getReceiver();
-			while (!this.done) {
+			while (!done) {
 				try {
-					this.runStep(handler);
+					runStep(handler);
 				} catch (Exception e) {
-					if (!this.done) {
+					if (!done) {
 						log.warn("problem when dispatching message", e);
 					}
 				}
@@ -65,6 +65,28 @@ public class ConnectionListener<MessageType> extends Thread {
 			for (final MessageHandler<MessageType> callback : callbacks) {
 				callbackPool.submit(() -> callback.handle(message));
 			}
+		}
+	}
+
+	/** Add a callback to be called when a message is received. */
+	public void addCallback(MessageHandler<MessageType> callback) {
+		callbacks.add(callback);
+	}
+
+	/**
+	 * Closes the listener. Note that this does not close the provider of the
+	 * messages; this instead marks the listener as closed. The listener will
+	 * not truly stop until the get message call returns.
+	 *
+	 * @throws InterruptedException
+	 *             If interrupted while waiting for the thread to terminate
+	 */
+	public void close() {
+		done = true;
+		try {
+			join();
+		} catch (InterruptedException e) {
+			log.error("interrupted while waiting for threads to finish", e);
 		}
 	}
 }
