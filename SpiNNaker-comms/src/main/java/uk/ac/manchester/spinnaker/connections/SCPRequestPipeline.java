@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
@@ -148,6 +149,10 @@ public class SCPRequestPipeline {
 			if (callback != null) {
 				callback.accept(response);
 			}
+		}
+
+		HasCoreLocation getDestination() {
+			return request.sdpHeader.getDestination();
 		}
 	}
 
@@ -410,10 +415,8 @@ public class SCPRequestPipeline {
 			throw new IOException(format(
 					"Errors sending request {} to {}, {}, {} over {} retries: {}",
 					req.request.scpRequestHeader.command,
-					req.request.sdpHeader.getDestination().getX(),
-					req.request.sdpHeader.getDestination().getY(),
-					req.request.sdpHeader.getDestination().getP(), numRetries,
-					req.retryReason));
+					req.getDestination().getX(), req.getDestination().getY(),
+					req.getDestination().getP(), numRetries, req.retryReason));
 		}
 
 		// If the request can be retried, retry it
