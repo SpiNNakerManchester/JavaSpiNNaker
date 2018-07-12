@@ -1,9 +1,9 @@
-package uk.ac.manchester.spinnaker.messages.boot;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import java.nio.ByteBuffer;
 
 /** Enum for data types */
-enum DataType {
+public enum DataType {
 	BYTE(1), SHORT(2), INT(4), LONG(8), BYTE_ARRAY(16);
 	public final int value;
 

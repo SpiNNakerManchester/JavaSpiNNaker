@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.connections.model;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import java.util.Collection;
 

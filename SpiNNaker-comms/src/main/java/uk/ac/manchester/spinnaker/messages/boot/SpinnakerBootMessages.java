@@ -14,9 +14,9 @@ import static uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootOpCode.FLOOD
 import static uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootOpCode.FLOOD_FILL_CONTROL;
 import static uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootOpCode.FLOOD_FILL_START;
 import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.BOOT_VARIABLE_SIZE;
-import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableDefinition.boot_signature;
-import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableDefinition.is_root_chip;
-import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableDefinition.unix_timestamp;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.unix_timestamp;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
+
+import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
 /** Represents a set of boot messages to be sent to boot the board */
 public class SpinnakerBootMessages {

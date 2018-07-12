@@ -1,13 +1,14 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableDefinition.hardware_version;
-import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableDefinition.led_0;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.hardware_version;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
+import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
 /**
  * Default values of the system variables that get passed to SpiNNaker during
