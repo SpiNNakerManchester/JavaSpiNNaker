@@ -5,7 +5,9 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,6 +59,9 @@ public class CoreSubsetsTest {
         int hash = instance.hashCode();
         assertThrows(IllegalStateException.class, () -> {
             instance.addCore(new CoreLocation(0,0,2));
+        });
+        assertThrows(IllegalStateException.class, () -> {
+            instance.addCores(new ChipLocation(0,0), Arrays.asList(1, 2, 3));
         });
         assertThrows(IllegalStateException.class, () -> {
             instance.addCore(new ChipLocation(0,0), 2);
@@ -156,9 +161,12 @@ public class CoreSubsetsTest {
                     Arrays.asList(cs21, cs22));
 
         assertNotEquals(css1, css2);
+        assertNotEquals(css1.toString(), css2.toString());
 
         css2.addCore(new CoreLocation (0,1,2));
         assertEquals(css1, css2);
+        assertEquals(css1.toString(), css2.toString());
+        assertEquals(css1, css1);
 
         assertNotEquals(css1, "css1");
         assertNotEquals(css1, null);
@@ -178,6 +186,24 @@ public class CoreSubsetsTest {
             assertThat("p < 4", coreLocation.getP(), lessThan(4));
         }
         assertEquals(6, count);
+    }
+
+    public void testBadIterator() {
+        CoreSubsets css1 = new CoreSubsets();
+        int count = 0;
+        for (CoreLocation coreLocation:css1.coreIterable()) {
+            count += 1;
+        }
+        assertEquals(0, count);
+
+        Collection<CoreLocation>  empty = css1.coreLocations(
+                ChipLocation.ZERO_ZERO);
+        assertEquals(0, empty.size());
+
+        Iterable<CoreLocation> nodata = css1.coreIterable();
+        assertThrows(NoSuchElementException.class, () -> {
+            nodata.iterator().next();
+        });
     }
 
 }

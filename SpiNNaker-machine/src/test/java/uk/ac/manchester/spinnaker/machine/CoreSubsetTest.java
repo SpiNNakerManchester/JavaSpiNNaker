@@ -105,7 +105,7 @@ public class CoreSubsetTest {
         });
     }
 
-    public void testIinterest() {
+    public void testInterect() {
         CoreSubset cs11 = new CoreSubset(
                 new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
         CoreSubset cs12 = new CoreSubset(
@@ -121,5 +121,4 @@ public class CoreSubsetTest {
         });
 
      }
-
 }
