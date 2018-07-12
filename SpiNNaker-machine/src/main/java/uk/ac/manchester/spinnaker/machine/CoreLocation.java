@@ -34,7 +34,7 @@ public final class CoreLocation implements HasCoreLocation {
      * @param p The P coordinate, in range 0..17
      */
     public CoreLocation(HasChipLocation chip, int p) {
-        this(chip.getX(), chip.getX(), p);
+        this(chip.getX(), chip.getY(), p);
     }
 
     @Override
