@@ -111,5 +111,10 @@ public class TestChip {
         });
     }
 
-
-}
+    @Test
+    public void testAsLocation() throws UnknownHostException {
+        Chip chip1 = new Chip(0, 0, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
+        assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
+    }
+ }
