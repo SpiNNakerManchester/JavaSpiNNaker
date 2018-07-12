@@ -30,34 +30,34 @@ public abstract class SCPRequest<T extends SCPResponse>
 	/** The data as a buffer, or <tt>null</tt> if no data this way */
 	public final ByteBuffer dataBuffer;
 	/** The SCP request header of the message */
-	public final SerializableMessage scpRequestHeader;
+	public final SCPRequestHeader scpRequestHeader;
 	/** The SDP header of the message */
 	public final SDPHeader sdpHeader;
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader) {
+			SCPRequestHeader scpRequestHeader) {
 		this(sdpHeader, scpRequestHeader, null, null, null, (byte[]) null);
 	}
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader, Integer argument1,
+			SCPRequestHeader scpRequestHeader, Integer argument1,
 			Integer argument2, Integer argument3) {
 		this(sdpHeader, scpRequestHeader, argument1, argument2, argument3,
 				(byte[]) null);
 	}
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader, byte[] data) {
+			SCPRequestHeader scpRequestHeader, byte[] data) {
 		this(sdpHeader, scpRequestHeader, null, null, null, data);
 	}
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader, ByteBuffer data) {
+			SCPRequestHeader scpRequestHeader, ByteBuffer data) {
 		this(sdpHeader, scpRequestHeader, null, null, null, data);
 	}
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader, Integer argument1,
+			SCPRequestHeader scpRequestHeader, Integer argument1,
 			Integer argument2, Integer argument3, byte[] data) {
 		this.sdpHeader = sdpHeader;
 		this.scpRequestHeader = scpRequestHeader;
@@ -69,7 +69,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	}
 
 	protected SCPRequest(SDPHeader sdpHeader,
-			SerializableMessage scpRequestHeader, Integer argument1,
+			SCPRequestHeader scpRequestHeader, Integer argument1,
 			Integer argument2, Integer argument3, ByteBuffer data) {
 		this.sdpHeader = sdpHeader;
 		this.scpRequestHeader = scpRequestHeader;

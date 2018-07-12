@@ -72,4 +72,6 @@ public interface Constants {
 	static double BMP_POST_POWER_ON_SLEEP_TIME = 5.0;
 	/** number of chips to check are booted fully from the middle */
 	static int NO_MIDDLE_CHIPS_TO_CHECK = 8;
+	/**This is the default timeout when using SCP, in milliseconds*/
+	static int SCP_TIMEOUT = 1000;
 }
