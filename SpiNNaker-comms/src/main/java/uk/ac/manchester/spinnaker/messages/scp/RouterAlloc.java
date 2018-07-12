@@ -1,13 +1,14 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.ALLOC_ROUTING;
+import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_ROUTING;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to allocate space for routing entries */

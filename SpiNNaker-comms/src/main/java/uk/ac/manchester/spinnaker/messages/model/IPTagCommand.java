@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 /** SCP IP tag Commands */
 public enum IPTagCommand {

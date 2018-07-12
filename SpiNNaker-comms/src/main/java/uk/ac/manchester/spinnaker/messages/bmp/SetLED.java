@@ -5,8 +5,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LED;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.messages.scp.LEDAction;
-import uk.ac.manchester.spinnaker.messages.scp.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.model.LEDAction;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 public class SetLED extends BMPRequest<SetLED.Response> {
 

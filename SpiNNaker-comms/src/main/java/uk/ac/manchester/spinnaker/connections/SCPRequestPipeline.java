@@ -80,7 +80,7 @@ public class SCPRequestPipeline {
 	 * The number of outstanding responses to wait for before continuing sending
 	 * requests.
 	 */
-	private Integer intermediateChannelWaits;
+	private int intermediateChannelWaits;
 	/**
 	 * The number of times to resend any packet for any reason before an error
 	 * is triggered.
@@ -203,18 +203,18 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection, Integer numChannels,
 			Integer intermediateChannelWaits, int numRetries,
 			int packetTimeout) {
+		if (numChannels != null && intermediateChannelWaits == null) {
+			intermediateChannelWaits = numChannels - 8;
+			if (intermediateChannelWaits < 0) {
+				intermediateChannelWaits = 0;
+			}
+		}
+
 		this.connection = connection;
 		this.numChannels = numChannels;
 		this.intermediateChannelWaits = intermediateChannelWaits;
 		this.numRetries = numRetries;
 		this.packetTimeout = packetTimeout;
-
-		if (this.numChannels != null && this.intermediateChannelWaits == null) {
-			this.intermediateChannelWaits = this.numChannels - 8;
-			if (this.intermediateChannelWaits < 0) {
-				this.intermediateChannelWaits = 0;
-			}
-		}
 
 		requests = synchronizedMap(new HashMap<>());
 		inProgress = 0;
@@ -405,24 +405,36 @@ public class SCPRequestPipeline {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
 			if (req.allOneReason("timeout")) {
-				throw new SocketTimeoutException(
-						format("Operation {} timed out after {} seconds",
-								req.request.scpRequestHeader.command,
-								packetTimeout / 1000.0));
+				throw new SendTimedOutException(req, packetTimeout);
 			}
 
 			// Report any other exception
-			throw new IOException(format(
-					"Errors sending request {} to {}, {}, {} over {} retries: {}",
-					req.request.scpRequestHeader.command,
-					req.getDestination().getX(), req.getDestination().getY(),
-					req.getDestination().getP(), numRetries, req.retryReason));
+			throw new SendFailedException(req, numRetries);
 		}
 
 		// If the request can be retried, retry it
 		inProgress++;
 		req.resend(reason);
 		numResent++;
+	}
+
+	@SuppressWarnings("serial")
+	static class SendTimedOutException extends SocketTimeoutException {
+		SendTimedOutException(Request<?> req, int timeout) {
+			super(format("Operation {} timed out after {} seconds",
+					req.request.scpRequestHeader.command, timeout / 1000.0));
+		}
+	}
+
+	@SuppressWarnings("serial")
+	static class SendFailedException extends IOException {
+		SendFailedException(Request<?> req, int numRetries) {
+			super(format(
+					"Errors sending request {} to {}, {}, {} over {} retries: {}",
+					req.request.scpRequestHeader.command,
+					req.getDestination().getX(), req.getDestination().getY(),
+					req.getDestination().getP(), numRetries, req.retryReason));
+		}
 	}
 
 	/**

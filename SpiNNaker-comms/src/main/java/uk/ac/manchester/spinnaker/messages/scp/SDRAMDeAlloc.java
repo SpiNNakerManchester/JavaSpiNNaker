@@ -1,13 +1,14 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.FREE_SDRAM_BY_APP_ID;
-import static uk.ac.manchester.spinnaker.messages.scp.AllocFree.FREE_SDRAM_BY_POINTER;
+import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_APP_ID;
+import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_POINTER;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to free space in the SDRAM */

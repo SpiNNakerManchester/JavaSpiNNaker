@@ -5,7 +5,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.scp.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * A request for writing data to a FPGA register.

@@ -6,7 +6,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
-import uk.ac.manchester.spinnaker.messages.scp.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * SCP Request for the data from the BMP including voltages and temperature.

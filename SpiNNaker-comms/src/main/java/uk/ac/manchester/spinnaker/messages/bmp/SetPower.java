@@ -5,8 +5,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_POWER;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.messages.scp.PowerCommand;
-import uk.ac.manchester.spinnaker.messages.scp.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request for the BMP to power on or power off a rack of boards.

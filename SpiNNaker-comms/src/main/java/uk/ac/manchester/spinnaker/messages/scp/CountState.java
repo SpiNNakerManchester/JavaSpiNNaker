@@ -6,6 +6,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to get a count of the cores in a particular state */

@@ -4,8 +4,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.messages.scp.UnexpectedResponseCodeException;
 
 /**
  * An SCP request to read the version of software running on a board's BMP.

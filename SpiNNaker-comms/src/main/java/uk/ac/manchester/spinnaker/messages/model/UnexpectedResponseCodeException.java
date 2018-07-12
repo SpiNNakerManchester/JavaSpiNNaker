@@ -1,6 +1,9 @@
-package uk.ac.manchester.spinnaker.messages.scp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
+
+import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 
 /**
  * Indicate that a response code returned from the board was unexpected for the

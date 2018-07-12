@@ -5,6 +5,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to send a signal to cores */
