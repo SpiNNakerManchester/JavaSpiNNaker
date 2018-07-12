@@ -27,6 +27,16 @@ public final class CoreLocation implements HasCoreLocation {
         this.p = p;
     }
 
+    /**
+     * Create the location of a core on a SpiNNaker machine.
+     *
+     * @param chip The X and Y coordinate, in range 0..255
+     * @param p The P coordinate, in range 0..17
+     */
+    public CoreLocation(HasChipLocation chip, int p) {
+        this(chip.getX(), chip.getX(), p);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -46,12 +56,12 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
     @Override
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
@@ -61,7 +71,7 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public final int getP() {
+    public int getP() {
         return p;
     }
 

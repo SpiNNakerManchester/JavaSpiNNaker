@@ -16,15 +16,18 @@ public class TestChipLocation {
 		assertEquals(0, l2.getX());
 		assertEquals(0, l2.getY());
 		assertEquals(l1, l2);
+		assertEquals(l1.hashCode(), l2.hashCode());
 		ChipLocation l3 = new ChipLocation(0, 1);
 		assertEquals(0, l3.getX());
 		assertEquals(1, l3.getY());
 		assertNotEquals(l1,l3);
+		assertNotEquals(l1.hashCode(),l3.hashCode());
 		assertNotEquals(l1, "hello");
 		ChipLocation l4 = new ChipLocation(1, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());
 		assertNotEquals(l1,l4);
+		assertNotEquals(l1.hashCode(),l4.hashCode());
 
 		Map<ChipLocation, Integer> m = new HashMap<>();
 		m.put(l1, 123);

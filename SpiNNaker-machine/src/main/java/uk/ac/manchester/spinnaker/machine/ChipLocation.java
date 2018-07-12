@@ -12,12 +12,23 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
+public final class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
 
-    public static ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
-    public static ChipLocation ONE_ZERO = new ChipLocation(1, 0);
+    /**
+     * The location (0,0).
+     * Which is in the bottom/left corner and typically the ethernet chip.
+     */
+    public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
+
+    /**
+     * The location (1,0).
+     * Which is the one to the east/right of the bottom/left corner.
+     * <p>
+     * This location has special meaning on a 4 chip board.
+     */
+    public static final ChipLocation ONE_ZERO = new ChipLocation(1, 0);
 
     /**
      * Create the location of a chip on a SpiNNaker machine.

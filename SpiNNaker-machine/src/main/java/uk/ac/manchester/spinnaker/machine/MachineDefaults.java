@@ -41,6 +41,16 @@ public final class MachineDefaults {
     /** The number of columns of chips on each 48 Chip board. */
     public static final int SIZE_Y_OF_ONE_BOARD = 8;
 
+    /** The height of only known Triad in chips. */
+    public static final int TRIAD_HEIGHT = 12;
+
+    /** The width of the Triad in chips. */
+    public static final int TRIAD_WIDTH = 12;
+
+    /** The offset from zero in chips to get half size root values. */
+    public static final int HALF_SIZE = 4;
+
+
     /**
       * Width of field of hashcode for holding (one dimension of the) chip
       * cooordinate.
