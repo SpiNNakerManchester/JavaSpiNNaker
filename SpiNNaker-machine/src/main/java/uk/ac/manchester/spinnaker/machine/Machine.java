@@ -17,6 +17,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
+import uk.ac.manchester.spinnaker.machine.datalinks.FpgaLinkId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetFpgaTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
@@ -227,17 +228,6 @@ public class Machine {
         }
     }
 
-    private int addFpgaLink(FpgaId fpga, int linkId, ChipLocation location,
-            Direction link, InetAddress address) {
-        if (hasChipAt(location) && !hasLinkAt(location, link)) {
-            fpgaLinks.put(new InetFpgaTuple(address, fpga, linkId),
-                    new FPGALinkData(linkId, fpga, location, link, address));
-        }
-        // TODO: Current python implementation increments id every time
-        //      even when not adding a link. IS this required?
-        return linkId + 1;
-    }
-
     /**
      * Converts x and y to a chip location.
      *
@@ -257,187 +247,18 @@ public class Machine {
         return new ChipLocation(x, y);
     }
 
-    private int addLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.SOUTHWEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        return leftLinkId;
-    }
-
-    private int addLeftUpperLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.SOUTHWEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.NORTH, address);
-        return leftLinkId;
-    }
-
-    private int addUpperLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.NORTH, address);
-        return leftLinkId;
-    }
-
-    private int addUpperLeftTopFpgaLinks(
-            int leftLinkId, int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        return topLinkId;
-    }
-
-    private int addTopFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        return topLinkId;
-    }
-
-    private int addTopRightFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.EAST, address);
-        return topLinkId;
-    }
-
-    private int addRightFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.EAST, address);
-        return topLinkId;
-    }
-
-    private int addRightLowerRightFpgaLinks(
-            int topLinkId, int bottomLinkId, int x, int y,
-            InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    private int addLowerRightFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    private int addLowerRightBottomFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTHWEST, address);
-        return bottomLinkId;
-    }
-
-    private int addBottomFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTHWEST, address);
-        return bottomLinkId;
-    }
-
-    private int finishBottomLeftFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = normalizedLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    @SuppressWarnings("checkstyle:magicnumber")
-    private void addFpgaLinks(
-            int rootX, int rootY, InetAddress address) {
-        // the side of the hexagon shape of the board are as follows
-        //                                               Top
-        //                                     (4,7) (5,7) (6,7) (7,7)
-        //                               (3,6) (4,6) (5,6) (6,6) (7,6)
-        //             UpperLeft   (2,5) (3,5) (4,5) (5,5) (6,5) (7,5)   Right
-        //                   (1,4) (2,4) (3,4) (4,4) (5,4) (6,4) (7,4)
-        //             (0,3) (1,3) (2,3) (3,3) (4,3) (5,3) (6,2) (7,3)
-        //             (0,2) (1,2) (2,2) (3,2) (4,2) (5,2) (6,2)
-        //    Left     (0,1) (1,1) (2,1) (3,1) (4,1) (5,1)    LowerRight
-        //             (0,0) (1,0) (2,0) (3,0) (4,0)
-        //                          Bottom
-
-        int leftLinkId = 0;
-        int topLinkId = 0;
-        int bottomLinkId = 0;
-
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY, address);
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY + 1, address);
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY + 2, address);
-
-        leftLinkId = addLeftUpperLeftFpgaLinks(leftLinkId, rootX, rootY + 3, address);
-
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 1, rootY + 4, address);
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 2, rootY + 5, address);
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 3, rootY + 6, address);
-
-        topLinkId = addUpperLeftTopFpgaLinks(leftLinkId, topLinkId, rootX + 4, rootY + 7, address);
-
-        topLinkId = addTopFpgaLinks(topLinkId, rootX + 5, rootY + 7, address);
-        topLinkId = addTopFpgaLinks(topLinkId, rootX + 6, rootY + 7, address);
-
-        topLinkId = addTopRightFpgaLinks(topLinkId, rootX + 7, rootY + 7, address);
-
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 6, address);
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 5, address);
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 4, address);
-
-        bottomLinkId = addRightLowerRightFpgaLinks(topLinkId, bottomLinkId, rootX + 7, rootY + 3, address);
-
-        bottomLinkId = addLowerRightFpgaLinks(bottomLinkId, rootX + 6, rootY + 2, address);
-        bottomLinkId = addLowerRightFpgaLinks(bottomLinkId, rootX + 5, rootY + 1, address);
-
-        bottomLinkId = addLowerRightBottomFpgaLinks(bottomLinkId, rootX + 4, rootY + 0, address);
-
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 3, rootY + 0, address);
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 2, rootY + 0, address);
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 1, rootY + 0, address);
-
-        finishBottomLeftFpgaLinks(bottomLinkId, rootX, rootY, address);
+    private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
+        for (FpgaLinkId fpgaLinkId:FpgaLinkId.values()){
+            ChipLocation location = normalizedLocation(
+                    rootX + fpgaLinkId.getX(), rootY + fpgaLinkId.getY());
+            if (hasChipAt(location) && !hasLinkAt(
+                    location, fpgaLinkId.direction)) {
+                fpgaLinks.put(new InetFpgaTuple(
+                        address, fpgaLinkId.fpgaId, fpgaLinkId.id),
+                    new FPGALinkData(fpgaLinkId.id, fpgaLinkId.fpgaId,
+                            location, fpgaLinkId.direction, address));
+            }
+        }
     }
 
     /**
@@ -497,6 +318,7 @@ public class Machine {
      * There will be exactly one destination for each Link.
      * While normally all destinations will be unique the is no guarantee.
      *
+     * @param chip x and y coordinates for any chip on the board
      * @return A Stream over the destination locations.
      */
     public Iterable<Chip> iterChipsOnBoard(Chip chip) {

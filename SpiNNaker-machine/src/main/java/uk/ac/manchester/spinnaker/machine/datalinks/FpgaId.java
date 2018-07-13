@@ -41,4 +41,7 @@ public enum FpgaId {
         return BY_ID[id];
     }
 
+    public String hello() {
+        return "hello";
+    }
 }
