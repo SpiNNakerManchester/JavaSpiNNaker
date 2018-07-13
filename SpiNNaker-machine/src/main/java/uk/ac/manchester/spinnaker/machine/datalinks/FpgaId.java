@@ -40,8 +40,4 @@ public enum FpgaId {
     public static FpgaId byId(int id) throws ArrayIndexOutOfBoundsException {
         return BY_ID[id];
     }
-
-    public String hello() {
-        return "hello";
-    }
 }
