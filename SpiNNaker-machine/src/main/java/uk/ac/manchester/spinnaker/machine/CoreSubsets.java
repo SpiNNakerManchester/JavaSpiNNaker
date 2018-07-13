@@ -291,7 +291,7 @@ public class CoreSubsets {
      *      and any farther add calls will raise an exception.
      * @return interger to use as the hashcode.
      */
-    public int hashCode() {
+    public final int hashCode() {
         immutable = true;
         int hash = 7;
         for (CoreSubset subset:subsets.values()) {
@@ -312,7 +312,7 @@ public class CoreSubsets {
       * @return True if and only if obj is another CoreSubsets
       *      with exactly the same subsets.
      */
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
