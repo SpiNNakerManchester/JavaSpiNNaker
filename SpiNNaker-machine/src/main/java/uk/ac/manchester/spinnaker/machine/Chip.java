@@ -139,8 +139,7 @@ public class Chip implements HasChipLocation {
      * Obtains the Processor with this ID or returns null.
      *
      * @param processorId Id of the potential processor.
-     * @return The Processor or null if noe is found.
-     * @return
+     * @return The Processor or null if not is found.
      */
     public Processor getProcessor(int processorId) {
         return this.processors.get(processorId);
