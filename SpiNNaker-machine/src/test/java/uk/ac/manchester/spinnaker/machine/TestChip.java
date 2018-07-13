@@ -84,9 +84,7 @@ public class TestChip {
         assertThrows(IllegalStateException.class, () -> {
             Processor bad = chip.getFirstNoneMonitorProcessor();
         });
-        assertThrows(IllegalStateException.class, () -> {
-            int bad = chip.reserveASystemProcessor();
-        });
+        assertEquals(-1, chip.reserveASystemProcessor());
     }
 
     /**

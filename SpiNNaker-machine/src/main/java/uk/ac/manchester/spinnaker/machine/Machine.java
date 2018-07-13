@@ -330,6 +330,24 @@ public class Machine {
         };
     }
 
+    public CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
+        maxUserProssorsOnAChip = 0;
+        CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
+
+        this.chips.values().forEach((chip) -> {
+            int p = chip.reserveASystemProcessor();
+            if (p == -1) {
+                result.addFailedChip(chip);
+            } else {
+                result.addCore(chip.asChipLocation(), p);
+            }
+            if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
+                maxUserProssorsOnAChip = chip.nUserProcessors();
+            }
+        });
+        return result;
+    }
+
     private class ChipOnBoardIterator implements Iterator<Chip> {
 
         private HasChipLocation root;

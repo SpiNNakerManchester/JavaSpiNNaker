@@ -200,7 +200,7 @@ public class Chip implements HasChipLocation {
      * This will reduce by one the result of nUserProcessors()
      *
      * @return ID of the processor converted to a monitor
-     * @throws IllegalStateException If all the Processor(s) are monitors.
+     *      or -1 to report a failure
      */
     public int reserveASystemProcessor() throws IllegalStateException {
         for (Map.Entry<Integer, Processor> entry : processors.entrySet()) {
@@ -211,7 +211,7 @@ public class Chip implements HasChipLocation {
                 return entry.getKey();
             }
         }
-        throw new IllegalStateException("No None monitor processor found!");
+        return -1;
     }
 
     @Override
