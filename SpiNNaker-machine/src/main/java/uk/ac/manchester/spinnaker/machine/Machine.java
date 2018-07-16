@@ -21,6 +21,7 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaLinkId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetFpgaTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
+import uk.ac.manchester.spinnaker.utils.Counter;
 
 /**
  *
@@ -334,18 +335,56 @@ public class Machine {
         maxUserProssorsOnAChip = 0;
         CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
 
-        this.chips.values().forEach((chip) -> {
+        this.chips.forEach((location, chip) -> {
             int p = chip.reserveASystemProcessor();
             if (p == -1) {
                 result.addFailedChip(chip);
             } else {
-                result.addCore(chip.asChipLocation(), p);
+                result.addCore(location, p);
             }
             if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
                 maxUserProssorsOnAChip = chip.nUserProcessors();
             }
         });
         return result;
+    }
+
+    public int maximumUserCoresOnChip() {
+        return maxUserProssorsOnAChip;
+    }
+
+    private int totalAvailableUserCores1() {
+        Counter count = new Counter();
+        this.chips.forEach((location, chip) -> {
+            count.add(chip.nUserProcessors());
+        });
+        return count.get();
+    }
+
+    private int totalAvailableUserCores2() {
+        return chips.values().stream().map(Chip::nUserProcessors).
+                mapToInt(Integer::intValue).sum();
+
+    }
+
+    public int totalAvailableUserCores() {
+        int count = 0;
+        for (Chip chip :chips.values()) {
+            count += chip.nUserProcessors();
+        }
+        return count;
+    }
+
+    public int totalCores() {
+        int count = 0;
+        for (Chip chip :chips.values()) {
+            count += chip.nProcessors();
+        }
+        return count;
+    }
+
+    public MachineVersion version() {
+        return version;
     }
 
     private class ChipOnBoardIterator implements Iterator<Chip> {
