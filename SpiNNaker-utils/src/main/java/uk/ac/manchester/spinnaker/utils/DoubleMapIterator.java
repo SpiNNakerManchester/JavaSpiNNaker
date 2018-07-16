@@ -26,7 +26,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outermap A double map with any type(s) as the keys.
      */
-    DoubleMapIterator(Map<?, Map<?, V>> outermap) {
+    public DoubleMapIterator(Map<?, Map<?, V>> outermap) {
         this(outermap.values().iterator());
     }
 
@@ -35,7 +35,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outerIterable A double map with any type(s) as the keys.
      */
-    DoubleMapIterator(Iterable<Map<?, V>> outerIterable) {
+    public DoubleMapIterator(Iterable<Map<?, V>> outerIterable) {
         this(outerIterable.iterator());
     }
 
@@ -44,7 +44,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outer An iterator of Maps.
      */
-    DoubleMapIterator(Iterator<Map<?, V>> outer) {
+    public DoubleMapIterator(Iterator<Map<?, V>> outer) {
         this.outer = outer;
         if (outer.hasNext()) {
             inner = outer.next().values().iterator();

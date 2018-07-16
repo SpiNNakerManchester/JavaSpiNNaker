@@ -25,7 +25,7 @@ public final class DoubleMapIterable<V> implements Iterable<V> {
      *
      * @param outermap A double map with any type(s) as the keys.
      */
-    DoubleMapIterable(Map<?, Map<?, V>> outermap) {
+    public DoubleMapIterable(Map<?, Map<?, V>> outermap) {
         this(outermap.values());
     }
 
@@ -34,7 +34,7 @@ public final class DoubleMapIterable<V> implements Iterable<V> {
      *.
      * @param outer An iterable of Maps.
      */
-    DoubleMapIterable(Iterable<Map<?, V>> outer) {
+    public DoubleMapIterable(Iterable<Map<?, V>> outer) {
         this.outer = outer;
     }
 

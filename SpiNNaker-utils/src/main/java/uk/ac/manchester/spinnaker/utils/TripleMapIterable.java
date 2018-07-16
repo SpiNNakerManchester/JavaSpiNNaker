@@ -24,7 +24,7 @@ public final class TripleMapIterable<V> implements Iterable<V> {
      *
      * @param outermap A triple map with any type(s) as the keys.
      */
-    TripleMapIterable(Map<?, Map<?, Map<?, V>>> outermap) {
+    public TripleMapIterable(Map<?, Map<?, Map<?, V>>> outermap) {
         this(outermap.values());
     }
 
@@ -33,7 +33,7 @@ public final class TripleMapIterable<V> implements Iterable<V> {
      *
      * @param outer An Iterable of double maps with any type(s) as the keys.
      */
-    TripleMapIterable(Iterable<Map<?, Map<?, V>>> outer) {
+    public TripleMapIterable(Iterable<Map<?, Map<?, V>>> outer) {
         this.outer = outer;
     }
 
