@@ -16,7 +16,7 @@ public class TestFpgaLinkId {
 
     private int checkFpgaLink(
             FpgaId fpga, int linkId, int x, int y, Direction link) {
-        FpgaLinkId found =  FpgaLinkId.findId(x, y, link);
+        FpgaEnum found =  FpgaEnum.findId(x, y, link);
         String message = "x: " + x +  " y: " + y + " direction: " + link;
         assertEquals(fpga, found.fpgaId, message + " fpga");
         assertEquals(linkId, found.id, message + " linkId");
@@ -184,8 +184,8 @@ public class TestFpgaLinkId {
 
     @Test
     public void testStatic() {
-        FpgaLinkId id1 = FpgaLinkId.findId(6, 2, Direction.EAST);
-        FpgaLinkId id2 = FpgaLinkId.findId(FpgaId.BOTTOM, 2);
+        FpgaEnum id1 = FpgaEnum.findId(6, 2, Direction.EAST);
+        FpgaEnum id2 = FpgaEnum.findId(FpgaId.BOTTOM, 2);
 
         assertEquals(id1, id2);
         assertEquals(new ChipLocation(6, 2), id1.asChipLocation());
@@ -193,11 +193,11 @@ public class TestFpgaLinkId {
         assertEquals(2, id1.getY());
 
         assertThrows(IllegalArgumentException.class, () -> {
-            FpgaLinkId.findId(2, 2, Direction.EAST);
+            FpgaEnum.findId(2, 2, Direction.EAST);
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            FpgaLinkId.findId(FpgaId.BOTTOM, 16);
+            FpgaEnum.findId(FpgaId.BOTTOM, 16);
         });
     }
 

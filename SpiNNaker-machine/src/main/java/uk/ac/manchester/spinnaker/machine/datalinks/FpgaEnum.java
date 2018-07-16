@@ -19,7 +19,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
-public enum FpgaLinkId implements HasChipLocation {
+public enum FpgaEnum implements HasChipLocation {
 
     //Left Side
     /**  Link 0 on FPGA 1/Left From Chip(0,0) towards the SouthWest. */
@@ -195,7 +195,7 @@ public enum FpgaLinkId implements HasChipLocation {
      * @param fpgaId Id of the FPGA device.
      * @param id  Id of the link on this FPGA device.
      */
-    FpgaLinkId(int x, int y, Direction direction, FpgaId fpgaId, int id) {
+    FpgaEnum(int x, int y, Direction direction, FpgaId fpgaId, int id) {
         this.x = x;
         this.y = y;
         this.direction = direction;
@@ -218,8 +218,8 @@ public enum FpgaLinkId implements HasChipLocation {
         return new ChipLocation(x, y);
     }
 
-    public static FpgaLinkId findId(int x, int y, Direction direction) {
-        for (FpgaLinkId linkId:FpgaLinkId.values()) {
+    public static FpgaEnum findId(int x, int y, Direction direction) {
+        for (FpgaEnum linkId:FpgaEnum.values()) {
             if (linkId.x == x && linkId.y == y
                     && linkId.direction == direction) {
                 return linkId;
@@ -230,8 +230,8 @@ public enum FpgaLinkId implements HasChipLocation {
                 + " direction: " + direction);
     }
 
-    public static FpgaLinkId findId(FpgaId fpgaId, int id) {
-        for (FpgaLinkId linkId:FpgaLinkId.values()) {
+    public static FpgaEnum findId(FpgaId fpgaId, int id) {
+        for (FpgaEnum linkId:FpgaEnum.values()) {
             if (linkId.fpgaId == fpgaId && linkId.id == id) {
                 return linkId;
             }

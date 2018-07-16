@@ -17,8 +17,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
-import uk.ac.manchester.spinnaker.machine.datalinks.FpgaLinkId;
-import uk.ac.manchester.spinnaker.machine.datalinks.InetFpgaTuple;
+import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.Counter;
@@ -53,7 +52,8 @@ public class Machine {
 
     private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
 
-    private HashMap<InetFpgaTuple, FPGALinkData> fpgaLinks;
+    private final HashMap<InetAddress, Map<FpgaId, Map<Integer, FPGALinkData>>>
+            fpgaLinks;
 
     public final ChipLocation boot;
 
@@ -74,6 +74,7 @@ public class Machine {
 
         ethernetConnectedChips = new ArrayList<>();
         spinnakerLinks = new HashMap();
+        fpgaLinks = new HashMap();
 
         this.boot = boot.asChipLocation();
         bootEthernetAddress = null;
@@ -182,13 +183,6 @@ public class Machine {
         return spinnakerLinks.get(key);
     }
 
-    public FPGALinkData getFpgaLink(InetFpgaTuple key) {
-        if (key.address == null) {
-            key = new InetFpgaTuple(bootEthernetAddress, key.fpga, key.linkId);
-        }
-        return fpgaLinks.get(key);
-    }
-
     public void addSpinnakerLinks() {
         switch (version) {
             case TWO:
@@ -248,16 +242,41 @@ public class Machine {
         return new ChipLocation(x, y);
     }
 
+    public FPGALinkData getFpgaLink(
+            FpgaId fpgaId, int fpgaLinkId, InetAddress address) {
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+        byAddress = fpgaLinks.get(address);
+        if (byAddress == null) {
+            return null;
+        }
+        Map<Integer, FPGALinkData> byId = byAddress.get(fpgaId);
+        if (byId == null) {
+            return null;
+        }
+        return byId.get(fpgaLinkId);
+    }
+
     private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
-        for (FpgaLinkId fpgaLinkId:FpgaLinkId.values()){
+        for (FpgaEnum fpgaEnum:FpgaEnum.values()){
             ChipLocation location = normalizedLocation(
-                    rootX + fpgaLinkId.getX(), rootY + fpgaLinkId.getY());
-            if (hasChipAt(location) && !hasLinkAt(
-                    location, fpgaLinkId.direction)) {
-                fpgaLinks.put(new InetFpgaTuple(
-                        address, fpgaLinkId.fpgaId, fpgaLinkId.id),
-                    new FPGALinkData(fpgaLinkId.id, fpgaLinkId.fpgaId,
-                            location, fpgaLinkId.direction, address));
+                    rootX + fpgaEnum.getX(), rootY + fpgaEnum.getY());
+            if (hasChipAt(location) && !hasLinkAt(location, fpgaEnum.direction)) {
+                FPGALinkData fpgaLinkData = new FPGALinkData(
+                        fpgaEnum.id, fpgaEnum.fpgaId, location,
+                        fpgaEnum.direction, address);
+                Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+                byAddress = fpgaLinks.get(address);
+                if (byAddress == null) {
+                    byAddress = new HashMap();
+                    fpgaLinks.put(address, byAddress);
+                }
+                Map<Integer, FPGALinkData> byId;
+                byId = byAddress.get(fpgaEnum.fpgaId);
+                if (byId == null) {
+                    byId = new HashMap();
+                    byAddress.put(fpgaEnum.fpgaId, byId);
+                }
+                byId.put(fpgaEnum.id, fpgaLinkData);
             }
         }
     }
