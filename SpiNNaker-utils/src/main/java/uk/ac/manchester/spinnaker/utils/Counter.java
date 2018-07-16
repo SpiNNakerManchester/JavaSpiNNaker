@@ -12,7 +12,7 @@ package uk.ac.manchester.spinnaker.utils;
  *
  * @author Christian-B
  */
-public class Counter {
+public final class Counter {
 
     private int count;
 
@@ -30,6 +30,16 @@ public class Counter {
         count+= 1;
     }
 
+    /**
+     * Add any amount to the counter.
+     * <p>
+     * Could also be used to add a negative number.
+     *
+     * @param other int values by which to change the counter.
+     */
+    public void add(int other){
+        count += other;
+    }
     /**
      * Retrieve the current value.
      *
