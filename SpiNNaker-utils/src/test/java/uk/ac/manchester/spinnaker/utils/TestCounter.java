@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
-public class CounterTest {
+public class TestCounter {
 
-    public CounterTest() {
+    public TestCounter() {
     }
 
     /**
