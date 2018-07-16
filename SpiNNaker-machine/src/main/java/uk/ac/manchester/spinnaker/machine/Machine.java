@@ -21,6 +21,8 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.Counter;
+import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
+import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
 /**
  *
@@ -256,6 +258,20 @@ public class Machine {
         return byId.get(fpgaLinkId);
     }
 
+    public Iterable<FPGALinkData> getFpgaLinks() {
+        return new TripleMapIterable(fpgaLinks);
+    }
+
+    public Iterable<FPGALinkData> getFpgaLinks(InetAddress address) {
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+        byAddress = fpgaLinks.get(address);
+        if (byAddress == null) {
+            return Collections.<FPGALinkData>emptyList();
+        } else {
+            return new DoubleMapIterable(byAddress);
+        }
+    }
+
     private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
         for (FpgaEnum fpgaEnum:FpgaEnum.values()){
             ChipLocation location = normalizedLocation(
@@ -449,6 +465,5 @@ public class Machine {
         }
 
     }
-
 
 }
