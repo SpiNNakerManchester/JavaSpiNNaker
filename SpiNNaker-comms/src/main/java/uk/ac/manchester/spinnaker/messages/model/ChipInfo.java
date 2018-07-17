@@ -185,39 +185,8 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** The number of chips in the x- and y-dimensions */
-	public Dimension getSize() {
-		return new Dimension(read(x_size), read(y_size));
-	}
-
-	public final static class Dimension {
-		public final int xSize;
-		public final int ySize;
-
-		public Dimension(int x, int y) {
-			this.xSize = x;
-			this.ySize = y;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return (o instanceof Dimension) && equals((Dimension) o);
-		}
-
-		/**
-		 * Tests whether this object is equal to another dimension.
-		 *
-		 * @param d
-		 *            The other dimension object to compare to.
-		 * @return True exactly when they are equal.
-		 */
-		public boolean equals(Dimension d) {
-			return xSize == d.xSize && ySize == d.ySize;
-		}
-
-		@Override
-		public int hashCode() {
-			return xSize << 16 | ySize;
-		}
+	public MachineDimensions getSize() {
+		return new MachineDimensions(read(x_size), read(y_size));
 	}
 
 	/** The location of the chip to send debug messages to */
