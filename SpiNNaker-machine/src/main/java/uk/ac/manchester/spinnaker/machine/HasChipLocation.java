@@ -47,5 +47,7 @@ public interface HasChipLocation {
      *
      * @return A ChipLocation representation of the X and Y tuple
      */
-    ChipLocation asChipLocation();
+    default ChipLocation asChipLocation() {
+        return new ChipLocation(getX(), getY());
+    }
 }

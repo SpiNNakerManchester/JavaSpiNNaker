@@ -56,11 +56,6 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public ChipLocation asChipLocation() {
-        return new ChipLocation(getX(), getY());
-    }
-
-    @Override
     public int getP() {
         return p;
     }
@@ -68,6 +63,11 @@ public final class CoreLocation implements HasCoreLocation {
     @Override
     public String toString() {
         return "X:" + getX() + " Y:" + getY() + " P:" + getP();
+    }
+
+    @Override
+    public CoreLocation asCoreLocation() {
+        return this;
     }
 
 }

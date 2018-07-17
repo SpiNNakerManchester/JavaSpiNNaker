@@ -19,7 +19,7 @@ public class CoreSubsets {
     private final TreeMap<ChipLocation, CoreSubset> cores;
 
     public CoreSubsets() {
-        cores = new TreeMap();
+        cores = new TreeMap<>();
     }
 
     public void addCore(CoreLocation core) {

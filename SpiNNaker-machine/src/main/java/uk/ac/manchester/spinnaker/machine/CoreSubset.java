@@ -21,7 +21,7 @@ public class CoreSubset {
 
     public CoreSubset(HasChipLocation chip) {
         this.chip = chip;
-        cores = new TreeMap();
+        cores = new TreeMap<>();
     }
 
     public CoreSubset(HasChipLocation chip, Iterable<Integer>processors) {
