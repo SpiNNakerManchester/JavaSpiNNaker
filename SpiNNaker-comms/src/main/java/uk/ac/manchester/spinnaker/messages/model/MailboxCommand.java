@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Commands sent between an application and the monitor processor
  */
@@ -15,8 +18,18 @@ public enum MailboxCommand {
 	/** The mailbox contains a command */
 	SHM_CMD(4);
 	public final int value;
+	private static final Map<Integer, MailboxCommand> map = new HashMap<>();
+	static {
+		for (MailboxCommand v : values()) {
+			map.put(v.value, v);
+		}
+	}
 
 	private MailboxCommand(int value) {
 		this.value = value;
+	}
+
+	public static MailboxCommand get(int value) {
+		return map.get(value);
 	}
 }

@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * SARK Run time errors.
  */
@@ -48,8 +51,18 @@ public enum RunTimeError {
 	/** */
 	SARK_VERSION_INCORRECT(20);
 	public final int value;
+	private static final Map<Integer, RunTimeError> map = new HashMap<>();
+	static {
+		for (RunTimeError v : values()) {
+			map.put(v.value, v);
+		}
+	}
 
 	private RunTimeError(int value) {
 		this.value = value;
+	}
+
+	public static RunTimeError get(int value) {
+		return map.get(value);
 	}
 }
