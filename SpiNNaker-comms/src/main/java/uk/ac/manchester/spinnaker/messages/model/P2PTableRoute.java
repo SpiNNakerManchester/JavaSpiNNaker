@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * P2P Routing table routes
  */
@@ -21,8 +24,18 @@ public enum P2PTableRoute {
 	/** Route to the monitor on the current chip */
 	MONITOR(0b111);
 	public final int value;
+	private static final Map<Integer, P2PTableRoute> map = new HashMap<>();
+	static {
+		for (P2PTableRoute r : values()) {
+			map.put(r.value, r);
+		}
+	}
 
 	private P2PTableRoute(int value) {
 		this.value = value;
+	}
+
+	public static P2PTableRoute get(int value) {
+		return map.get(value);
 	}
 }
