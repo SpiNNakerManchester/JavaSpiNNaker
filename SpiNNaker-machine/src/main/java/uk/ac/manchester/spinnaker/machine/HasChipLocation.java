@@ -41,4 +41,11 @@ public interface HasChipLocation {
         // SCAMP always runs on core 0 or we can't talk to the chip at all
         return new CoreLocation(getX(), getY(), 0);
     }
+
+    /**
+     * Converts (if required) this to a simple X, Y tuple.
+     *
+     * @return A ChipLocation representation of the X and Y tuple
+     */
+    ChipLocation asChipLocation();
 }

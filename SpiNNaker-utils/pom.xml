@@ -9,4 +9,14 @@
 	<artifactId>SpiNNaker-utils</artifactId>
 	<description>General utilities for the SpiNNaker runtime.</description>
 	<name>SpiNNaker Utilities</name>
+        <dependencies>
+                <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-api</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>java-hamcrest</artifactId>
+                        </dependency>
+        </dependencies>
 </project>

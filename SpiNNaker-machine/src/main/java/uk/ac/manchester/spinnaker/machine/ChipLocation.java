@@ -3,42 +3,61 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+
 /**
+ * The location of a Chip as an X and Y tuple.
+ * <p>
+ * This class is final as it is used a key in maps.
  *
  * @author alan
  * @author dkf
  */
-public class ChipLocation implements HasChipLocation {
+public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
 
-    /** The maximum value of any coordinate. */
-    static final int MAX_COORD = 255;
-	/**
-	 * Width of field of hashcode for holding (one dimension of the) chip
-	 * cooordinate.
-	 */
-    static final int COORD_SHIFT = 8;
+    /**
+     * The location (0,0).
+     * Which is in the bottom/left corner and typically the ethernet chip.
+     */
+    public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
+
+    /**
+     * The location (1,0).
+     * Which is the one to the east/right of the bottom/left corner.
+     * <p>
+     * This location has special meaning on a 4 chip board.
+     */
+    public static final ChipLocation ONE_ZERO = new ChipLocation(1, 0);
 
     /**
      * Create the location of a chip on a SpiNNaker machine.
      *
-     * @param x The X cooordinate, in range 0..255
-     * @param y The Y cooordinate, in range 0..255
+     * @param x The X coordinate
+     * @param y The Y coordinate
      */
     public ChipLocation(int x, int y) {
+        validateChipLocation(x, y);
         this.x = x;
         this.y = y;
-        if (x < 0 || x > MAX_COORD) {
-        	throw new IllegalArgumentException("bad X cooordinate");
-        }
-        if (y < 0 || y > MAX_COORD) {
-        	throw new IllegalArgumentException("bad Y cooordinate");
-        }
     }
 
+    /**
+     * Checks the x and y parameter are legal ones
+     *    regardless of the type of machine.
+     *
+     * @param x X part of the chips location
+     * @param y Y part of the chips location
+     * @throws IllegalArgumentException
+     */
+    void validateChipLocation(int x, int y)
+            throws IllegalArgumentException {
+        MachineDefaults.validateChipLocation(x, y);
+    }
+
+
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -50,8 +69,25 @@ public class ChipLocation implements HasChipLocation {
     }
 
     @Override
-    public int hashCode() {
-        return (x << COORD_SHIFT) ^ y;
+    public final int hashCode() {
+        return (x << MachineDefaults.COORD_SHIFT) ^ y;
+    }
+
+    @Override
+    public int compareTo(ChipLocation o) {
+        if (this.x < o.x) {
+            return -1;
+        }
+        if (this.x > o.x) {
+            return 1;
+        }
+        if (this.y < o.y) {
+            return -1;
+        }
+        if (this.y > o.y) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override
@@ -63,4 +99,15 @@ public class ChipLocation implements HasChipLocation {
     public final int getY() {
         return y;
     }
-}
+
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY();
+    }
+
+    @Override
+    public ChipLocation asChipLocation() {
+        return this;
+    }
+
+ }
