@@ -23,9 +23,8 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, int link, int baseAddress,
 			byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress, data.length,
-				link, data);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_WRITE,
+				baseAddress, data.length, link, data);
 	}
 
 	/**
@@ -41,9 +40,8 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress,
-				data.remaining(), link, data);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_WRITE,
+				baseAddress, data.remaining(), link, data);
 	}
 
 	/**
@@ -59,8 +57,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	public WriteLink(HasChipLocation chip, int link, int baseAddress,
 			byte[] data) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress, data.length,
-				link, data);
+				CMD_LINK_WRITE, baseAddress, data.length, link, data);
 	}
 
 	/**
@@ -77,8 +74,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	public WriteLink(HasChipLocation chip, int link, int baseAddress,
 			ByteBuffer data) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_LINK_WRITE), baseAddress,
-				data.remaining(), link, data);
+				CMD_LINK_WRITE, baseAddress, data.remaining(), link, data);
 	}
 
 	@Override

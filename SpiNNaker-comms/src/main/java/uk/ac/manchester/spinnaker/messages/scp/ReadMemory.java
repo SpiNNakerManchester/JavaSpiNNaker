@@ -23,9 +23,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasCoreLocation core, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_READ), baseAddress, size & 0xFF,
-				efficientTransferUnit(baseAddress, size).value);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_READ, baseAddress,
+				size & 0xFF, efficientTransferUnit(baseAddress, size).value);
 	}
 
 	/**
@@ -37,8 +36,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasChipLocation chip, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_READ), baseAddress, size & 0xFF,
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_READ,
+				baseAddress, size & 0xFF,
 				efficientTransferUnit(baseAddress, size).value);
 	}
 

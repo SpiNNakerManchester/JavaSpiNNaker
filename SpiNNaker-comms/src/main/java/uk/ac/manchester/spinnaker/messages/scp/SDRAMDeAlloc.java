@@ -24,8 +24,8 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_ALLOC), argument1(appID), null, null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
+				argument1(appID), null, null);
 		readNumFreedBlocks = true;
 	}
 
@@ -41,8 +41,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *            deallocated
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, int appID, int baseAddress) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_ALLOC),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
 				(int) FREE_SDRAM_BY_POINTER.value, baseAddress, null);
 		readNumFreedBlocks = false;
 	}

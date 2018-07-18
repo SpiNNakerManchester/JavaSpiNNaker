@@ -28,8 +28,8 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	 *            The tag to get the details of.
 	 */
 	public IPTagGet(HasChipLocation chip, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_IPTAG), argument1(tag), 1, null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
+				argument1(tag), 1, null);
 	}
 
 	@Override

@@ -15,8 +15,7 @@ public class RouterClear extends SCPRequest<CheckOKResponse> {
 	 *            The coordinates of the chip to clear the router of
 	 */
 	public RouterClear(HasChipLocation chip) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_RTR));
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR);
 	}
 
 	@Override

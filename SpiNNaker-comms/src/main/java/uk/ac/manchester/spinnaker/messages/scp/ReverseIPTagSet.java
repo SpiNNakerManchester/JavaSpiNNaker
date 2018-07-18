@@ -32,8 +32,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	 */
 	public ReverseIPTagSet(HasChipLocation chip, HasCoreLocation destination,
 			int port, int tag, int sdpPort) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_IPTAG),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
 				argument1(sdpPort, destination, tag),
 				argument2(destination, port), 0);
 	}

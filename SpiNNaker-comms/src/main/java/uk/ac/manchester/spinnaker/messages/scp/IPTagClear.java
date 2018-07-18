@@ -19,8 +19,8 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the tag to clear (0..7)
 	 */
 	public IPTagClear(HasChipLocation chip, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_IPTAG), argument1(tag), null, null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
+				argument1(tag), null, null);
 	}
 
 	private static Integer argument1(int tag) {

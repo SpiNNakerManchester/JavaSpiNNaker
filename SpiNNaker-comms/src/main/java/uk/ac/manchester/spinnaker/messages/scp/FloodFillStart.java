@@ -40,8 +40,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillStart(int nearestNeighbourID, int numBlocks,
 			HasChipLocation chip) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0),
-				new SCPRequestHeader(CMD_NNP),
+		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
 				argument1(nearestNeighbourID, numBlocks), argument2(chip),
 				NNP_FORWARD_RETRY);
 	}

@@ -21,10 +21,9 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write
 	 */
 	public WriteMemory(HasCoreLocation core, int baseAddress, byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_WRITE), baseAddress, data.length,
-				efficientTransferUnit(baseAddress, data.length).value,
-				data);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_WRITE, baseAddress,
+				data.length,
+				efficientTransferUnit(baseAddress, data.length).value, data);
 	}
 
 	/**
@@ -36,10 +35,9 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_WRITE), baseAddress, data.length,
-				efficientTransferUnit(baseAddress, data.length).value,
-				data);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_WRITE,
+				baseAddress, data.length,
+				efficientTransferUnit(baseAddress, data.length).value, data);
 	}
 
 	/**
@@ -52,8 +50,8 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            buffer must be the point where the data starts.
 	 */
 	public WriteMemory(HasCoreLocation core, int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_WRITE), baseAddress, data.remaining(),
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_WRITE, baseAddress,
+				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -68,8 +66,8 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            buffer must be the point where the data starts.
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_WRITE), baseAddress, data.remaining(),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_WRITE,
+				baseAddress, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

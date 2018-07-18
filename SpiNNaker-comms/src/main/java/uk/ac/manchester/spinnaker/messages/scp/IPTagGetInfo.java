@@ -20,9 +20,8 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	 *            The chip to query for information.
 	 */
 	public IPTagGetInfo(HasChipLocation chip, int tagTimeout) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_IPTAG), TTO.value << 16, IPTAG_MAX,
-				null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
+				TTO.value << 16, IPTAG_MAX, null);
 	}
 
 	@Override

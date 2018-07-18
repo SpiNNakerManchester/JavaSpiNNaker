@@ -11,10 +11,9 @@ public class CheckOKResponse extends SCPResponse {
 	public CheckOKResponse(String operation, SCPCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		SCPResult result = scpResponseHeader.result;
-		if (result != RC_OK) {
+		if (scpResponseHeader.result != RC_OK) {
 			throw new UnexpectedResponseCodeException(operation, command,
-					result);
+					scpResponseHeader.result);
 		}
 	}
 }

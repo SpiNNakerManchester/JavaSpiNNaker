@@ -35,8 +35,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 */
 	public ApplicationRun(int appId, HasChipLocation chip,
 			Iterable<Integer> processors, boolean wait) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_AR),
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_AR,
 				argument1(appId, processors, wait), null, null);
 	}
 

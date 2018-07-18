@@ -22,8 +22,8 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	 */
 	public FillRequest(HasChipLocation chip, int baseAddress, int data,
 			int size) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_FILL), baseAddress, data, size);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_FILL,
+				baseAddress, data, size);
 	}
 
 	@Override

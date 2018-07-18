@@ -34,45 +34,43 @@ public abstract class SCPRequest<T extends SCPResponse>
 	/** The SDP header of the message */
 	public final SDPHeader sdpHeader;
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader) {
-		this(sdpHeader, scpRequestHeader, null, null, null, (byte[]) null);
+	private static final byte[] NO_DATA = null;
+
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command) {
+		this(sdpHeader, command, null, null, null, NO_DATA);
 	}
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader, Integer argument1,
-			Integer argument2, Integer argument3) {
-		this(sdpHeader, scpRequestHeader, argument1, argument2, argument3,
-				(byte[]) null);
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3) {
+		this(sdpHeader, command, argument1, argument2, argument3, NO_DATA);
 	}
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader, byte[] data) {
-		this(sdpHeader, scpRequestHeader, null, null, null, data);
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, byte[] data) {
+		this(sdpHeader, command, null, null, null, data);
 	}
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader, ByteBuffer data) {
-		this(sdpHeader, scpRequestHeader, null, null, null, data);
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
+			ByteBuffer data) {
+		this(sdpHeader, command, null, null, null, data);
 	}
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader, Integer argument1,
-			Integer argument2, Integer argument3, byte[] data) {
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3,
+			byte[] data) {
 		this.sdpHeader = sdpHeader;
-		this.scpRequestHeader = scpRequestHeader;
+		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
 		this.argument2 = argument2;
 		this.argument3 = argument3;
-		this.data = (data == null || data.length == 0) ? null : data;
+		this.data = (data == NO_DATA || data.length == 0) ? null : data;
 		this.dataBuffer = null;
 	}
 
-	protected SCPRequest(SDPHeader sdpHeader,
-			SCPRequestHeader scpRequestHeader, Integer argument1,
-			Integer argument2, Integer argument3, ByteBuffer data) {
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3,
+			ByteBuffer data) {
 		this.sdpHeader = sdpHeader;
-		this.scpRequestHeader = scpRequestHeader;
+		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
 		this.argument2 = argument2;
 		this.argument3 = argument3;

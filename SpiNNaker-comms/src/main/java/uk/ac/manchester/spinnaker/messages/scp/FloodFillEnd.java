@@ -50,8 +50,8 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillEnd(int nearestNeighbourID, int appID,
 			Iterable<Integer> processors, boolean wait) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0),
-				new SCPRequestHeader(CMD_NNP), argument1(nearestNeighbourID),
+		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
+				argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 	}
 

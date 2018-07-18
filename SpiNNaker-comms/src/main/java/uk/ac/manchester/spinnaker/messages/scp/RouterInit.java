@@ -24,9 +24,8 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries, int tableAddress,
 			int baseAddress, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_RTR), argument1(numEntries, appID),
-				tableAddress, baseAddress);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
+				argument1(numEntries, appID), tableAddress, baseAddress);
 		if (numEntries < 1) {
 			throw new IllegalArgumentException(
 					"numEntries must be more than 0");

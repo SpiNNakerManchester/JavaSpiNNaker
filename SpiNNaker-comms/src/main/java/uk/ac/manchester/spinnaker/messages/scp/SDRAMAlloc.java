@@ -40,8 +40,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *            of the allocated block
 	 */
 	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_ALLOC), argument1(appID), size, tag);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
+				argument1(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag >= 256) {
 			throw new IllegalArgumentException(

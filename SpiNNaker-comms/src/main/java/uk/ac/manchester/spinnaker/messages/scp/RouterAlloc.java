@@ -25,9 +25,8 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	 *
 	 */
 	public RouterAlloc(HasChipLocation chip, int appID, int numEntries) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_ALLOC), argument1(appID), numEntries,
-				null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
+				argument1(appID), numEntries, null);
 		this.numEntries = numEntries;
 	}
 

@@ -29,9 +29,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	 *            and 255
 	 */
 	public FixedRouteRead(HasChipLocation chip, int entry, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_RTR), argument1(appID), argument2(),
-				null);
+		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
+				argument1(appID), argument2(), null);
 	}
 
 	@Override

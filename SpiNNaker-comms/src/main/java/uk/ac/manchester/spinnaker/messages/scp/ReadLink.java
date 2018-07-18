@@ -24,9 +24,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadLink(HasCoreLocation core, int link, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_LINK_READ), baseAddress, size & 0xFF,
-				link);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_READ,
+				baseAddress, size & 0xFF, link);
 	}
 
 	/**
@@ -41,8 +40,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasChipLocation chip, int link, int baseAddress, int size) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				new SCPRequestHeader(CMD_LINK_READ), baseAddress, size & 0xFF,
-				link);
+				CMD_LINK_READ, baseAddress, size & 0xFF, link);
 	}
 
 	@Override

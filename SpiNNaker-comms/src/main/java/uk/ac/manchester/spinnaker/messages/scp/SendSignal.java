@@ -20,9 +20,8 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 	 *            The coordinates of the chip to run on
 	 */
 	public SendSignal(int appID, Signal signal) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0),
-				new SCPRequestHeader(CMD_SIG), signal.type.ordinal(),
-				argument2(appID, signal), ALL_CORE_MASK);
+		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_SIG,
+				signal.type.ordinal(), argument2(appID, signal), ALL_CORE_MASK);
 		if (appID < 0 || appID > 255) {
 			throw new IllegalArgumentException(
 					"appID must be between 0 and 255");

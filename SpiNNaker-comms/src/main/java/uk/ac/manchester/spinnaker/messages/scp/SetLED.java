@@ -20,9 +20,8 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 	 *            2 inverted.
 	 */
 	public SetLED(HasCoreLocation core, Map<Integer, Integer> ledStates) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_LED), argument1(ledStates), null,
-				null);
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LED,
+				argument1(ledStates), null, null);
 	}
 
 	private static Integer argument1(Map<Integer, Integer> ledStates) {

@@ -24,9 +24,8 @@ public class CountState extends SCPRequest<CountState.Response> {
 	 *            The state to count
 	 */
 	public CountState(int appId, CPUState state) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0),
-				new SCPRequestHeader(CMD_SIG), COUNT_SIGNAL_TYPE,
-				argument2(appId, state), ALL_CORE_MASK);
+		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_SIG,
+				COUNT_SIGNAL_TYPE, argument2(appId, state), ALL_CORE_MASK);
 	}
 
 	private static int argument2(int appId, CPUState state) {

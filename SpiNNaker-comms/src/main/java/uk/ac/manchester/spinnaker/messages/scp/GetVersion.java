@@ -14,8 +14,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public class GetVersion extends SCPRequest<GetVersion.Response> {
 	/** The location of the core to read from */
 	public GetVersion(HasCoreLocation core) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0),
-				new SCPRequestHeader(CMD_VER));
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_VER);
 	}
 
 	@Override

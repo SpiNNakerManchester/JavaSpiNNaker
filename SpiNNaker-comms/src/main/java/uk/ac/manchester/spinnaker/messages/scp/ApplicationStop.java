@@ -30,9 +30,8 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public ApplicationStop(int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0),
-				new SCPRequestHeader(CMD_NNP), argument1(),
-				argument2(appID, STOP), argument3());
+		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
+				argument1(), argument2(appID, STOP), argument3());
 	}
 
 	@Override

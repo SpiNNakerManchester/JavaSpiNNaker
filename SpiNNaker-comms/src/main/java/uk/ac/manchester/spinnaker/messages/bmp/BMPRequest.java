@@ -11,7 +11,6 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -46,14 +45,12 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 
 	protected BMPRequest(int board, SCPCommand command, Integer argument1,
 			Integer argument2, Integer argument3, byte[] data) {
-		super(bmpHeader(board), new SCPRequestHeader(command), argument1,
-				argument2, argument3, data);
+		super(bmpHeader(board), command, argument1, argument2, argument3, data);
 	}
 
 	protected BMPRequest(int board, SCPCommand command, Integer argument1,
 			Integer argument2, Integer argument3, ByteBuffer data) {
-		super(bmpHeader(board), new SCPRequestHeader(command), argument1,
-				argument2, argument3, data);
+		super(bmpHeader(board), command, argument1, argument2, argument3, data);
 	}
 
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command) {
@@ -78,15 +75,15 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			byte[] data) {
-		super(bmpHeader(boards), new SCPRequestHeader(command), argument1,
-				argument2, argument3, data);
+		super(bmpHeader(boards), command, argument1, argument2, argument3,
+				data);
 	}
 
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			ByteBuffer data) {
-		super(bmpHeader(boards), new SCPRequestHeader(command), argument1,
-				argument2, argument3, data);
+		super(bmpHeader(boards), command, argument1, argument2, argument3,
+				data);
 	}
 
 	/** Represents an SCP request thats tailored for the BMP connection. */
