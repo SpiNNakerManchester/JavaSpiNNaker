@@ -7,16 +7,12 @@ public interface AbstractIO extends AutoCloseable {
 	int size();
 
 	// FIXME What does this become in Java?
-	// def __getitem__(self, new_slice):
-	// /** Get a sub-region of this memory object. The index or slice must
-	// be in range of the current region to be valid.
+	// /** Get a sub-region of this memory object. The index or slice must be in range of the current region to be valid.
 	//
-	// :param new_slice:
-	// A single index for a single byte of memory, or a contiguous slice
-	// :rtype: :py:class:`~MemoryIO`
-	// :raise ValueError:
-	// If the index or slice is outside of the current region
+	// @param new_slice A single index for a single byte of memory, or a contiguous slice
+	// @throws Exception If the index or slice is outside of the current region
 	// */
+	// MemoryIO __getitem__(Object new_slice) throws Exception;
 
 	/** Indicates if the object has been closed */
 	boolean isClosed();
