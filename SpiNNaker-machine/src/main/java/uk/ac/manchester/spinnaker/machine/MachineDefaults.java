@@ -9,6 +9,12 @@ package uk.ac.manchester.spinnaker.machine;
  */
 public final class MachineDefaults {
 
+    /** Default sdram per chip after scamp has reserved space for itself. */
+    public static int SDRAM_PER_CHIP = 117 * 1024 * 1024;
+
+    /** Default number of IPTAgs on a chip */
+    public static int N_IPTAGS_PER_CHIP = 8;
+
     private MachineDefaults() { }
 
     /** Clock speed in MHz of a standard Processor. */

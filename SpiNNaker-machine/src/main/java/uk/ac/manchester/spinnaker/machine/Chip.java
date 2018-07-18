@@ -48,6 +48,9 @@ public class Chip implements HasChipLocation {
     /** The nearest Ethernet coordinates or null if none known. */
     public final HasChipLocation nearestEthernet;
 
+    private static final TreeMap<Integer, Processor> DEFAULT_PROCESSORS =
+            defaultProcessors();
+
     /**
      * Main Constructor which sets all parameters.
      *
@@ -87,28 +90,52 @@ public class Chip implements HasChipLocation {
         this.router = router;
         this.sdram = sdram;
 
-        //if (ipAddress == null) {
-        //    if (legalEthernetLocation()) {
-        //        throw new IllegalArgumentException(
-        //                "Found an none ethernet chip at " + asChipLocation());
-        //    }
-        //} else {
-        //    if (!legalEthernetLocation()) {
-        //        throw new IllegalArgumentException(
-        //                "Found an ethernet chip at " + asChipLocation());
-        //    }
-        //}
         this.ipAddress = ipAddress;
 
         this.virtual = virtual;
         this.nTagIds = nTagIds;
 
-        //if (!nearestEthernet.legalEthernetLocation()) {
-        //    throw new IllegalArgumentException(
-        //            "nearestEthernet can not be at "
-        //            + nearestEthernet.asChipLocation());
-        //}
         this.nearestEthernet = nearestEthernet;
+    }
+
+    /**
+     * Main Constructor which sets all parameters.
+     *
+     * @param x The x-coordinate of the chip's position in the two-dimensional
+     *      grid of chips.
+     * @param y The y-coordinate of the chip's position in the two-dimensional
+     *      grid of chips
+     * @param router a router for the chip.
+     * @param ipAddress The IP address of the chip or None if no Ethernet
+     *      attached.
+     * @param nearestEthernet The nearest Ethernet coordinates
+     *      or null if none known.
+     */
+    @SuppressWarnings("checkstyle:parameternumber")
+    public Chip(int x, int y, Router router, InetAddress ipAddress,
+            HasChipLocation nearestEthernet) {
+        MachineDefaults.validateChipLocation(x, y);
+        this.location = new ChipLocation(x, y);
+        processors = (TreeMap<Integer, Processor>)DEFAULT_PROCESSORS.clone();
+        nUserProssors = MachineDefaults.PROCESSORS_PER_CHIP - 1;
+        this.router = router;
+        this.sdram = MachineDefaults.SDRAM_PER_CHIP;
+
+        this.ipAddress = ipAddress;
+
+        this.virtual = true;
+        this.nTagIds = MachineDefaults.N_IPTAGS_PER_CHIP;
+
+        this.nearestEthernet = nearestEthernet;
+    }
+
+    private static TreeMap<Integer, Processor> defaultProcessors() {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        processors.put(0, Processor.factory(0, true));
+        for (int i =1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
+           processors.put(i, Processor.factory(i, true));
+        }
+        return processors;
     }
 
     @Override
