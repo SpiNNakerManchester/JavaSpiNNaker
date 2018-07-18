@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Christian-B
  */
-public class CoreSubsetsTest {
+public class TestCoreSubsets {
 
-    public CoreSubsetsTest() {
+    public TestCoreSubsets() {
     }
 
     /**

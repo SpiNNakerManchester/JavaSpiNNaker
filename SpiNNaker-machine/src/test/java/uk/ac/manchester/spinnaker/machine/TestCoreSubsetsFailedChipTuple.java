@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Christian-B
  */
-public class CoreSubsetsFailedChipTupleTest {
+public class TestCoreSubsetsFailedChipTuple {
 
     ChipLocation location00 = new ChipLocation(0,0);
     ChipLocation location01 = new ChipLocation(0,1);
@@ -46,7 +46,7 @@ public class CoreSubsetsFailedChipTupleTest {
         return processors;
     }
 
-    public CoreSubsetsFailedChipTupleTest() {
+    public TestCoreSubsetsFailedChipTuple() {
     }
 
     @Test

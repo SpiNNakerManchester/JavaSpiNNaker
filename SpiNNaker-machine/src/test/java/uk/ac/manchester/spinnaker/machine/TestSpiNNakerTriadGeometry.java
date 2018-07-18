@@ -17,9 +17,9 @@ import uk.ac.manchester.spinnaker.utils.Counter;
  *
  * @author Christian-B
  */
-public class SpiNNakerTriadGeometryTest {
+public class TestSpiNNakerTriadGeometry {
 
-    public SpiNNakerTriadGeometryTest() {
+    public TestSpiNNakerTriadGeometry() {
     }
     // This table was copied from python (negated)
     //     which claims it was produced using the code in Rig

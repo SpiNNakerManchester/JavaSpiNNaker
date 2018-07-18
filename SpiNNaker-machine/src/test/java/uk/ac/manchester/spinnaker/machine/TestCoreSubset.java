@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
  *
  * @author Christian-B
  */
-public class CoreSubsetTest {
+public class TestCoreSubset {
 
-    public CoreSubsetTest() {
+    public TestCoreSubset() {
     }
 
     @Test
