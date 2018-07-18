@@ -20,6 +20,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
 
+// TODO should this move towards the front end?
 public abstract class Reports {
 	private Reports() {
 	}
