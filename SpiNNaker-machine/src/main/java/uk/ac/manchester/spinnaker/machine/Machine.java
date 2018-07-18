@@ -129,6 +129,13 @@ public class Machine {
         return chips.size();
     }
 
+    /**
+     * A Set of all the Locations of the Chips.
+     * <p>
+     * This set is guaranteed to iterate in the natural order of the locations.
+     *
+     * @return (ordered) set of all the locations of each chip in the Machine.
+     */
     public Set<ChipLocation> chipCoordinates() {
         return Collections.unmodifiableSet(this.chips.keySet());
     }
@@ -141,10 +148,22 @@ public class Machine {
         return chips.get(location);
     }
 
+    public Chip getChipAt(int x, int y) {
+        ChipLocation location = new ChipLocation(x, y);
+        return chips.get(location);
+    }
+
     public boolean hasChipAt(ChipLocation location) {
+        if (location == null) {
+            return false;
+        }
         return chips.containsKey(location);
     }
 
+    public boolean hasChipAt(int x, int y) {
+        ChipLocation location = new ChipLocation(x, y);
+        return chips.containsKey(location);
+    }
     //public Chip getChipAt(int x, int y) {
     //    return this.chipArray[x][y];
     //}
@@ -162,20 +181,32 @@ public class Machine {
         }
     }
 
+    public Chip getChipOverLink(HasChipLocation source, Direction direction) {
+        ChipLocation normalized = this.normalizedLocation(
+                source.getX() + direction.xChange,
+                source.getY() + direction.yChange);
+        return chips.get(normalized);
+    }
+
     public int maxChipX() {
-        return width;
+        return width - 1;
     }
 
     public int maxChipY() {
-        return height;
+        return height - 1;
     }
 
     public List<Chip> ethernetConnectedChips() {
         return Collections.unmodifiableList(this.ethernetConnectedChips);
     }
 
-    public Map<InetIdTuple, SpinnakerLinkData> spinnakerLinks() {
-        return Collections.unmodifiableMap(spinnakerLinks);
+    /**
+     * Iteratable over the spinnaker links on this machine.
+     *
+     * @return An iterable of all the spinnaker links on this machine.
+     */
+    public Iterable<SpinnakerLinkData> spinnakerLinks() {
+        return Collections.unmodifiableCollection(spinnakerLinks.values());
     }
 
     public SpinnakerLinkData getSpinnakerLink(InetIdTuple key) {
@@ -230,18 +261,32 @@ public class Machine {
      *
      * If required (and applicable) adjusting for wrap around.
      * <p>
-     * There is NO check that the location is valid or
-     *      that there is a Chip at this location.
+     * The only check that the coordinates are valid is to check they are
+     *      greater than zero. Otherwise null is returned.
      * @param x X coordinate
      * @param y Y coordinate
-     * @return A ChipLocation based on X and Y with possible wrap around.
+     * @return A ChipLocation based on X and Y with possible wrap around,
+     *  or null if either coordinate is null.
      */
     private ChipLocation normalizedLocation(int x, int y) {
         if (version.wrapAround) {
-            x = x % width;
-            y = y % height;
+            x = (x + width) % width;
+            y = (y + height) % height;
+        } else {
+            if (x < 0 || y < 0) {
+                return null;
+            }
         }
         return new ChipLocation(x, y);
+    }
+
+    private ChipLocation normalizedLocation(HasChipLocation location) {
+         if (version.wrapAround) {
+             return new ChipLocation(
+                     location.getX() % width, location.getY() % height);
+        } else {
+            return location.asChipLocation();
+        }
     }
 
     public FPGALinkData getFpgaLink(
@@ -344,8 +389,8 @@ public class Machine {
         return cores + " cores and " + (everyLink / 2.0) + " links";
     }
 
-    public HasChipLocation bootChip() {
-        return this.boot;
+    public Chip bootChip() {
+        return chips.get(boot);
     }
 
     /**
@@ -422,6 +467,12 @@ public class Machine {
         return version;
     }
 
+    @Override
+    public String toString() {
+        return "[Machine: max_x=" + maxChipX() + ", max_y=" + maxChipY()
+                + ", n_chips=" + nChips() + "]";
+    }
+
     private class ChipOnBoardIterator implements Iterator<Chip> {
 
         private HasChipLocation root;
@@ -455,7 +506,7 @@ public class Machine {
             while (singleBoardIterator.hasNext()) {
                 ChipLocation local = singleBoardIterator.next();
                 ChipLocation global = normalizedLocation(
-                        root.getX() + local.getX(), root.getY() + root.getX());
+                        root.getX() + local.getX(), root.getY() + local.getY());
                 nextChip = getChipAt(global);
                 if (nextChip != null) {
                     return;
