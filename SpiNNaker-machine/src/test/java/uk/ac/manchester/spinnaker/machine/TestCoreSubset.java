@@ -20,7 +20,7 @@ public class TestCoreSubset {
 
     public TestCoreSubset() {
     }
-
+/*
     @Test
     public void testBasic() {
         ArrayList<Integer> processors = new ArrayList();
@@ -121,4 +121,5 @@ public class TestCoreSubset {
         });
 
      }
+*/
 }
