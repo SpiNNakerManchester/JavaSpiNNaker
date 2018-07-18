@@ -73,6 +73,8 @@ public enum Direction {
      *
      * @param source Location moving from.
      * @return The typical location this direction goes to from this source.
+     * @deprecated NOt Sure this method will remain
+     *      as it can not do the negative x and y
      */
     public ChipLocation typicalMove(HasChipLocation source) {
         return new ChipLocation(
