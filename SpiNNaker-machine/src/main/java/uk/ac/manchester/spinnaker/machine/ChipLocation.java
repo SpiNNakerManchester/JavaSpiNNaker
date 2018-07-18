@@ -38,24 +38,10 @@ public final class ChipLocation implements
      * @param y The Y coordinate
      */
     public ChipLocation(int x, int y) {
-        validateChipLocation(x, y);
+        MachineDefaults.validateChipLocation(x, y);
         this.x = x;
         this.y = y;
     }
-
-    /**
-     * Checks the x and y parameter are legal ones
-     *    regardless of the type of machine.
-     *
-     * @param x X part of the chips location
-     * @param y Y part of the chips location
-     * @throws IllegalArgumentException
-     */
-    void validateChipLocation(int x, int y)
-            throws IllegalArgumentException {
-        MachineDefaults.validateChipLocation(x, y);
-    }
-
 
     @Override
     public boolean equals(Object obj) {
