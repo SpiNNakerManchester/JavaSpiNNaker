@@ -27,6 +27,11 @@ public abstract class MultiConnectionProcess extends Process {
 	private final Map<SCPConnection, SCPRequestPipeline> requestPipelines;
 	private final int timeout;
 
+	protected MultiConnectionProcess(ConnectionSelector connectionSelector) {
+		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
+	}
+
 	protected MultiConnectionProcess(ConnectionSelector connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits) {
