@@ -1,9 +1,12 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByName;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
+import static uk.ac.manchester.spinnaker.connections.SDPConnection.updateSDPHeaderForUDPSend;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -18,6 +21,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPFlag;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 public class UDPConnection implements Connection {
 	private boolean canSend;
@@ -329,5 +336,31 @@ public class UDPConnection implements Connection {
 			channel.configureBlocking(true);
 			selector.close();
 		}
+	}
+
+	/**
+	 * Sends a port trigger message using a connection to (hopefully) open a
+	 * port in a NAT and/or firewall to allow incoming packets to be received.
+	 *
+	 * @param hostname
+	 *            The address of the SpiNNaker board to which the message should
+	 *            be sent
+	 * @throws IOException
+	 *             If anything goes wrong
+	 */
+	public void sendPortTriggerMessage(String hostname) throws IOException {
+		/*
+		 * Set up the message so that no reply is expected and it is sent to an
+		 * invalid port for SCAMP. The current version of SCAMP will reject this
+		 * message, but then fail to send a response since the
+		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
+		 */
+		SDPMessage trigger_message = new SDPMessage(new SDPHeader(
+				SDPFlag.REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0), 3));
+		updateSDPHeaderForUDPSend(trigger_message.sdpHeader, 0, 0);
+		ByteBuffer b = allocate(300).order(LITTLE_ENDIAN);
+		trigger_message.addToBuffer(b);
+		InetAddress addr = getByName(hostname);
+		sendTo(b, addr, SCP_SCAMP_PORT);
 	}
 }

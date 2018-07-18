@@ -1,5 +1,13 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.net.InetAddress.getByAddress;
+import static java.net.InetAddress.getByName;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+
+import java.net.UnknownHostException;
 import java.util.Collection;
 
 /**
@@ -28,5 +36,41 @@ public class BMPConnectionData {
 		this.ipAddress = ipAddress;
 		this.boards = boards;
 		this.portNumber = portNumber;
+	}
+
+	/**
+	 * Work out the BMP connection IP address given the machine details. This is
+	 * assumed to be the IP address of the machine, with 1 subtracted from the
+	 * final part e.g. if the machine IP address is 192.168.0.5, the BMP IP
+	 * address is assumed to be 192.168.0.4
+	 *
+	 * @param hostname
+	 *            the SpiNNaker machine main hostname or IP address
+	 * @param numBoards
+	 *            the number of boards in the machine
+	 * @return The BMP connection data
+	 * @throws UnknownHostException
+	 *             If the IP address computations fail
+	 */
+	public BMPConnectionData(String hostname, int numBoards)
+			throws UnknownHostException {
+		// take the IP address, split by dots, and subtract 1 off last bit
+		byte[] ip_bits = getByName(hostname).getAddress();
+		ip_bits[3]--;
+		ipAddress = getByAddress(ip_bits).toString();
+		portNumber = SCP_SCAMP_PORT;
+
+		// Assume a single board with no cabinet or frame specified
+		cabinet = 0;
+		frame = 0;
+
+		// add board scope for each split
+		// if null, the end user didn't enter anything, so assume one board
+		// starting at position 0
+		if (numBoards == 0) {
+			boards = singletonList(0);
+		} else {
+			boards = range(0, numBoards).boxed().collect(toList());
+		}
 	}
 }
