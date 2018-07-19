@@ -2,13 +2,11 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.CoreSubset;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 
 /** Encapsulate the binaries and cores on which to execute them. */
@@ -31,12 +29,9 @@ public class ExecutableTargets {
 	 * @param subsets
 	 *            the subset of cores that the binary needs to be loaded on
 	 */
-	public void addSubsets(String binary, Collection<CoreSubset> subsets) {
-		for (CoreSubset s : subsets) {
-			for (int p : s.processors()) {
-				addProcessor(binary,
-						new CoreLocation(s.chip.getX(), s.chip.getY(), p));
-			}
+	public void addSubsets(String binary, CoreSubsets subsets) {
+		for (CoreLocation core : subsets) {
+			addProcessor(binary, core);
 		}
 	}
 
@@ -86,13 +81,11 @@ public class ExecutableTargets {
 	}
 
 	public boolean known(String binary, CoreLocation core) {
-		if (!allCoreSubsets.coreLocations(core.asChipLocation())
-				.contains(core)) {
+		if (!allCoreSubsets.isCore(core)) {
 			return false;
 		}
 		// OK if and only if the chip is in this binary already
-		if (targets.containsKey(binary) && targets.get(binary)
-				.coreLocations(core.asChipLocation()).contains(core)) {
+		if (targets.containsKey(binary) && targets.get(binary).isCore(core)) {
 			return true;
 		}
 		throw new IllegalArgumentException(format(

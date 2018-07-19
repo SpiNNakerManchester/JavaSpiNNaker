@@ -21,7 +21,7 @@ public class GetCPUInfoProcess extends MultiConnectionProcess {
 	public List<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, Exception {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
-		for (CoreLocation core : coreSubsets.coreIterable()) {
+		for (CoreLocation core : coreSubsets) {
 			sendRequest(
 					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
 							CPU_INFO_BYTES),

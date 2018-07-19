@@ -1,9 +1,8 @@
 package uk.ac.manchester.spinnaker.processes;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 
@@ -23,10 +22,9 @@ public class ApplicationRunProcess extends MultiConnectionProcess {
 
 	public void run(int app_id, CoreSubsets core_subsets, Object wait)
 			throws Exception, IOException {
-		// FIXME Needs fixes to CoreSubsets, Christian
-		for (CoreLocation coreSubset : core_subsets.coreIterable()) {
-			sendRequest(new ApplicationRun(app_id, coreSubset,
-					Collections.singletonList(coreSubset.getP())));
+		for (ChipLocation chip : core_subsets.getChips()) {
+			sendRequest(new ApplicationRun(app_id, chip,
+					core_subsets.pByChip(chip)));
 		}
 		finish();
 		checkForError();
