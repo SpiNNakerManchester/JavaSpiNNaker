@@ -67,6 +67,7 @@ public class TestCoreSubsets {
             instance.addCore(new ChipLocation(0,0), 2);
         });
     }
+
     public void testMultiple() {
         ArrayList<CoreLocation> locations = new ArrayList();
         locations.add(new CoreLocation(0, 0, 1));
@@ -103,7 +104,7 @@ public class TestCoreSubsets {
         assertEquals(9, count);
 
         count = 0;
-        for (CoreLocation coreLocation: css.byChip(ChipLocation.ZERO_ZERO)) {
+        for (CoreLocation coreLocation: css.coreByChip(ChipLocation.ZERO_ZERO)) {
             count += 1;
             assertEquals(0, coreLocation.getX());
             assertEquals(0, coreLocation.getY());
@@ -168,6 +169,30 @@ public class TestCoreSubsets {
         assertEquals(6, count);
     }
 
+    public void testByChip() {
+        CoreSubsets css1 = new CoreSubsets();
+        css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+        int count = 0;
+        for (ChipLocation chip:css1.getChips()) {
+            for (CoreLocation core:css1.coreByChip(chip)) {
+                count += 1;
+                assertEquals(core.getX(), chip.getX());
+                assertEquals(core.getX(), chip.getX());
+            }
+        }
+        assertEquals(6, count);
+        count = 0;
+        for (ChipLocation chip:css1.getChips()) {
+            for (Integer p:css1.pByChip(chip)) {
+                count += 1;
+                assertThat("p > 0", p, greaterThan(0));
+                assertThat("p < 4", p, lessThan(4));
+            }
+        }
+        assertEquals(6, count);
+    }
+
     public void testBadIterator() {
         CoreSubsets css1 = new CoreSubsets();
         int count = 0;
@@ -176,7 +201,7 @@ public class TestCoreSubsets {
         }
         assertEquals(0, count);
 
-        Collection<CoreLocation>  empty = css1.byChip(ChipLocation.ZERO_ZERO);
+        Collection<CoreLocation>  empty = css1.coreByChip(ChipLocation.ZERO_ZERO);
         assertEquals(0, empty.size());
 
         assertThrows(NoSuchElementException.class, () -> {

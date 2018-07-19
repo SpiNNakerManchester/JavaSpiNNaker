@@ -6,9 +6,11 @@ package uk.ac.manchester.spinnaker.machine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
 
@@ -98,8 +100,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             throw new IllegalStateException("The subsets is immutable. "
                     + "Possibly because a hashcode has been generated.");
         }
-        TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
         CoreLocation core = new CoreLocation(chip, p);
+        TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
         subset.put(p, core);
     }
 
@@ -119,9 +121,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             throw new IllegalStateException("The subsets is immutable. "
                     + "Possibly because a hashcode has been generated.");
         }
-        TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
         for (Integer p: processors) {
             CoreLocation core = new CoreLocation(chip, p);
+            TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
             subset.put(p, core);
         }
     }
@@ -298,6 +300,18 @@ public class CoreSubsets implements Iterable<CoreLocation> {
         return results;
     }
 
+    /**
+     * Returns the ChipLocations for which there is at least one CoreLocations
+     *      in the Subsets.
+     * <p>
+     * The order of the locations is guaranteed to be the natural order.
+
+     * @return An ordered set of
+     */
+    public Set<ChipLocation> getChips() {
+        return Collections.unmodifiableSet(locations.keySet());
+    }
+
     @Override
     public Iterator<CoreLocation> iterator() {
         return new DoubleMapIterator(locations);
@@ -311,12 +325,29 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * @param chip x y coordinates
      * @return Unmodifiable (possibly empty) collection of CoreLocation
      */
-    public Collection<CoreLocation> byChip(ChipLocation chip) {
+    public Collection<CoreLocation> coreByChip(ChipLocation chip) {
         if (locations.containsKey(chip)) {
             return Collections.unmodifiableCollection(
                     locations.get(chip).values());
         } else {
             return new ArrayList<CoreLocation>();
+        }
+    }
+
+    /**
+     * Provides the CoreLocations for just a single Chip.
+     * <p>
+     * This will be an empty list when isChip(chip) returns false.
+     *
+     * @param chip x y coordinates
+     * @return Unmodifiable (possibly empty) collection of CoreLocation
+     */
+    public Set<Integer> pByChip(ChipLocation chip) {
+        if (locations.containsKey(chip)) {
+            return Collections.unmodifiableSet(
+                    locations.get(chip).keySet());
+        } else {
+            return new HashSet<Integer>();
         }
     }
 
