@@ -18,14 +18,14 @@ import java.util.Map;
  */
 public final class DoubleMapIterable<V> implements Iterable<V> {
 
-    private final Iterable<Map<?, V>> outer;
+    private final Iterable<? extends Map<?, V>> outer;
 
     /**
      * Creates an Iterable given a Map of Maps.
      *
      * @param outermap A double map with any type(s) as the keys.
      */
-    public DoubleMapIterable(Map<?, Map<?, V>> outermap) {
+    public DoubleMapIterable(Map<?, ? extends Map<?, V>> outermap) {
         this(outermap.values());
     }
 
@@ -34,7 +34,7 @@ public final class DoubleMapIterable<V> implements Iterable<V> {
      *.
      * @param outer An iterable of Maps.
      */
-    public DoubleMapIterable(Iterable<Map<?, V>> outer) {
+    public DoubleMapIterable(Iterable<? extends Map<?, V>> outer) {
         this.outer = outer;
     }
 

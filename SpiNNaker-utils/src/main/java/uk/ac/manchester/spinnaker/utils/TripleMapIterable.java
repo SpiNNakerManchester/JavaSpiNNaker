@@ -17,14 +17,15 @@ import java.util.Map;
  */
 public final class TripleMapIterable<V> implements Iterable<V> {
 
-    private final Iterable<Map<?, Map<?, V>>> outer;
+    private final Iterable<? extends Map<?, ? extends Map<?, V>>> outer;
 
     /**
      * Creates an Iterable given a Map of Maps of Maps.
      *
      * @param outermap A triple map with any type(s) as the keys.
      */
-    public TripleMapIterable(Map<?, Map<?, Map<?, V>>> outermap) {
+    public TripleMapIterable(
+            Map<?, ? extends Map<?, ? extends Map<?, V>>> outermap) {
         this(outermap.values());
     }
 
@@ -33,7 +34,8 @@ public final class TripleMapIterable<V> implements Iterable<V> {
      *
      * @param outer An Iterable of double maps with any type(s) as the keys.
      */
-    public TripleMapIterable(Iterable<Map<?, Map<?, V>>> outer) {
+    public TripleMapIterable(
+            Iterable<? extends Map<?, ? extends Map<?, V>>> outer) {
         this.outer = outer;
     }
 
