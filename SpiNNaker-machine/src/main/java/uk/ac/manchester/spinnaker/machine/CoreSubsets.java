@@ -314,7 +314,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 
     @Override
     public Iterator<CoreLocation> iterator() {
-        return new DoubleMapIterator(locations);
+        return new DoubleMapIterator<CoreLocation>(locations);
     }
 
     /**
