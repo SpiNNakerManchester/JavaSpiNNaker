@@ -1,0 +1,62 @@
+package uk.ac.manchester.spinnaker.processes;
+
+import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.ws.Holder;
+
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.HeapElement;
+import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
+import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+
+public class GetHeapProcess extends MultiConnectionProcess {
+	private static final int HEAP_HEADER_SIZE = 8;
+	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
+
+	public GetHeapProcess(ConnectionSelector connectionSelector) {
+		super(connectionSelector);
+	}
+
+	public List<Object> getBlocks(HasChipLocation chip,
+			SystemVariableDefinition heap) throws IOException, Exception {
+		int heapBase = readFromAddress(chip,
+				SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset, heap.type.value)
+						.get();
+
+		IntBuffer data;
+		data = readFromAddress(chip, heapBase, HEAP_HEADER_SIZE);
+		data.get(); // Advance over one word
+		int nextBlock = data.get();
+
+		List<Object> blocks = new ArrayList<>();
+
+		while (nextBlock != 0) {
+			data = readFromAddress(chip, nextBlock, HEAP_BLOCK_HEADER_SIZE);
+			int next = data.get();
+			int free = data.get();
+			if (next != 0) {
+				blocks.add(new HeapElement(nextBlock, next, free));
+			}
+			nextBlock = next;
+		}
+
+		return unmodifiableList(blocks);
+	}
+
+	private IntBuffer readFromAddress(HasChipLocation chip, int address,
+			int size) throws IOException, Exception {
+		Holder<ByteBuffer> holder = new Holder<>();
+		sendRequest(new ReadMemory(chip, address, size),
+				response -> holder.value = response.data);
+		finish();
+		checkForError();
+		return holder.value.asIntBuffer();
+	}
+}
