@@ -12,6 +12,7 @@ import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnByt
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,20 @@ public class GetMachineProcess extends MultiConnectionProcess {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	private final Map<ChipLocation, ChipSummaryInfo> chip_info = new HashMap<>();
 	private final List<ChipLocation> ignore_chips;
+	private final Iterable<Processor> ignore_cores;
+	private final Iterable<Link> ignore_links;
 
 	public GetMachineProcess(ConnectionSelector connectionSelector,
-			List<Chip> ignoreChips) {
+			Collection<Chip> ignoreChips, Collection<Processor> ignoreCores,
+			Collection<Link> ignoreLinks) {
 		super(connectionSelector);
 		this.ignore_chips = (ignoreChips == null) ? emptyList()
 				: ignoreChips.stream().map(chip -> chip.asChipLocation())
 						.collect(toList());
+		this.ignore_cores = (ignoreCores == null) ? emptyList()
+				: new ArrayList<>(ignoreCores);
+		this.ignore_links = (ignoreLinks == null) ? emptyList()
+				: new ArrayList<>(ignoreLinks);
 	}
 
 	public Machine getMachineDetails(HasChipLocation bootChip,
@@ -86,12 +94,12 @@ public class GetMachineProcess extends MultiConnectionProcess {
 		}
 
 		// Build a Machine
-		List<ChipSummaryInfo> csis = new ArrayList<>(chip_info.values());
-		csis.removeIf(ci -> ignore_chips.contains(ci.chip.asChipLocation()));
-		sort(csis, (c1, c2) -> c1.chip.asChipLocation()
+		List<ChipSummaryInfo> chips = new ArrayList<>(chip_info.values());
+		chips.removeIf(ci -> ignore_chips.contains(ci.chip.asChipLocation()));
+		sort(chips, (c1, c2) -> c1.chip.asChipLocation()
 				.compareTo(c2.chip.asChipLocation()));
-
-		return new Machine(size.width, size.height, bootChip, csis);
+		return new Machine(size.width, size.height, chips, ignore_cores,
+				ignore_links, bootChip);
 	}
 
 	/**
