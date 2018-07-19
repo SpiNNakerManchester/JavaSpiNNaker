@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class CoreSubsetsFailedChipsTuple extends CoreSubsets {
 
     /** List of the Chips that failed. */
-    public final ArrayList<Chip>failedChips;
+    public final ArrayList<Chip> failedChips;
 
     /**
      * Basic Constructor which sets up all the holding objects.
@@ -31,8 +31,9 @@ public class CoreSubsetsFailedChipsTuple extends CoreSubsets {
     }
 
     /**
+     * Adds a failed chip to the list of failed chips.
      *
-     * @param chip
+     * @param chip Chip to add as failed.
      */
     public void addFailedChip(Chip chip) {
         failedChips.add(chip);

@@ -115,4 +115,17 @@ public class TestChip {
                 createInetAddress(), false, 6, location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
     }
+
+    @Test
+    public void testDefault() throws UnknownHostException {
+        Chip chip = new Chip(
+                0, 0, createRouter(), createInetAddress(), location11);
+        assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
+        assertTrue(chip.virtual);
+        assertEquals(17, chip.nUserProcessors());
+        assertEquals(18, chip.nProcessors());
+        assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
+        assertEquals(MachineDefaults.N_IPTAGS_PER_CHIP, chip.nTagIds);
+   }
+
  }

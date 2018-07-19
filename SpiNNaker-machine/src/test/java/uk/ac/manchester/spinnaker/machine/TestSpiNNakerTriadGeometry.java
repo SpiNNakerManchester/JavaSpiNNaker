@@ -17,9 +17,9 @@ import uk.ac.manchester.spinnaker.utils.Counter;
  *
  * @author Christian-B
  */
-public class SpiNNakerTriadGeometryTest {
+public class TestSpiNNakerTriadGeometry {
 
-    public SpiNNakerTriadGeometryTest() {
+    public TestSpiNNakerTriadGeometry() {
     }
     // This table was copied from python (negated)
     //     which claims it was produced using the code in Rig
@@ -137,10 +137,10 @@ public class SpiNNakerTriadGeometryTest {
     }
 
     @Test
-    public void testSingleBoardIterator() {
+    public void testSingleBoard() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
         int count = 0;
-        for (ChipLocation chip: instance.singleBoardIterable()) {
+        for (ChipLocation chip: instance.singleBoard()) {
             count+= 1;
             assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
         }

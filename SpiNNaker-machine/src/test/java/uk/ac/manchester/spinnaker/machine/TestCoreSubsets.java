@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Christian-B
  */
-public class CoreSubsetsTest {
+public class TestCoreSubsets {
 
-    public CoreSubsetsTest() {
+    public TestCoreSubsets() {
     }
 
     /**
@@ -66,46 +66,45 @@ public class CoreSubsetsTest {
         assertThrows(IllegalStateException.class, () -> {
             instance.addCore(new ChipLocation(0,0), 2);
         });
-        CoreSubset cs1 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        assertThrows(IllegalStateException.class, () -> {
-            instance.addSubset(cs1);
-        });
     }
 
     public void testMultiple() {
-        CoreSubset cs1 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs2 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(4, 5, 6));
-        CoreSubset cs3 = new CoreSubset(
-                new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
-        CoreSubset cs4 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs5 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3, 4));
-        CoreSubsets css = new CoreSubsets(
-                Arrays.asList(cs1, cs2, cs3, cs4, cs5));
+        ArrayList<CoreLocation> locations = new ArrayList();
+        locations.add(new CoreLocation(0, 0, 1));
+        locations.add(new CoreLocation(0, 0, 2));
+        locations.add(new CoreLocation(0, 0, 3));
+        locations.add(new CoreLocation(0, 1, 1));
+        locations.add(new CoreLocation(0, 1, 2));
+        locations.add(new CoreLocation(0, 1, 3));
+        locations.add(new CoreLocation(0, 0, 1));
+        locations.add(new CoreLocation(0, 0, 2));
+        locations.add(new CoreLocation(0, 0, 3));
+        locations.add(new CoreLocation(0, 0, 1));
+        locations.add(new CoreLocation(0, 0, 2));
+        locations.add(new CoreLocation(0, 0, 3));
+        locations.add(new CoreLocation(0, 0, 4));
+        CoreSubsets css = new CoreSubsets(locations);
+
+        ArrayList<CoreLocation> locations2 = new ArrayList();
+        locations2.add(new CoreLocation(0, 0, 4));
+        locations2.add(new CoreLocation(0, 0, 5));
+        locations2.add(new CoreLocation(0, 0, 6));
+        css.addCores(locations2);
 
         assertTrue(css.isChip(new ChipLocation(0, 1)));
         assertTrue(css.isCore(new CoreLocation(0, 0, 6)));
-        assertEquals(cs3, css.getCoreSubset(new ChipLocation(0, 1)));
 
-        for (CoreSubset subset:css.coreSubsets()) {
-             assertTrue(subset.contains(3));
-        }
-
-        assertNull(css.getCoreSubset(ChipLocation.ONE_ZERO));
+        assertTrue(css.isCore(new CoreLocation(0, 1, 3)));
 
         int count = 0;
-        for (CoreLocation coreLocation: css.coreIterable()) {
+        for (CoreLocation coreLocation: css) {
             count += 1;
             assertEquals(0, coreLocation.getX());
         }
         assertEquals(9, count);
 
         count = 0;
-        for (CoreLocation coreLocation: css.coreLocations(ChipLocation.ZERO_ZERO)) {
+        for (CoreLocation coreLocation: css.coreByChip(ChipLocation.ZERO_ZERO)) {
             count += 1;
             assertEquals(0, coreLocation.getX());
             assertEquals(0, coreLocation.getY());
@@ -114,27 +113,18 @@ public class CoreSubsetsTest {
     }
 
     public void testInterest() {
-        CoreSubset cs11 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs12 = new CoreSubset(
-                new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
-        CoreSubset cs13 = new CoreSubset(
-                new ChipLocation(1, 1), 1);
-        CoreSubset cs14 = new CoreSubset(
-                new ChipLocation(2, 2), 1);
-        CoreSubsets css1 = new CoreSubsets(
-                    Arrays.asList(cs11, cs12, cs13, cs14));
+        CoreSubsets css1 = new CoreSubsets();
+        css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+        css1.addCore(new ChipLocation(1, 1), 1);
+        css1.addCore(new ChipLocation(2, 2), 1);
+        assertEquals(8, css1.size());
 
-        CoreSubset cs21 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(2, 3, 5));
-        CoreSubset cs22 = new CoreSubset(
-                new ChipLocation(1, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs23 = new CoreSubset(
-                new ChipLocation(1, 1), Arrays.asList(9, 7, 1, 5));
-        CoreSubset cs24 = new CoreSubset(
-                new ChipLocation(2, 2), 2);
-        CoreSubsets css2 = new CoreSubsets(
-                    Arrays.asList(cs21, cs22, cs23, cs24));
+        CoreSubsets css2 = new CoreSubsets();
+        css2.addCores(new ChipLocation(0, 0), Arrays.asList(2, 3, 5));
+        css2.addCores(new ChipLocation(1, 0), Arrays.asList(1, 2, 3));
+        css2.addCores(new ChipLocation(1, 1), Arrays.asList(9, 7, 1, 5));
+        css2.addCore(new ChipLocation(2, 2), 2);
         assertEquals(11, css2.size());
 
         CoreSubsets css3 = css1.intersection(css2);
@@ -146,24 +136,18 @@ public class CoreSubsetsTest {
      }
 
     public void testEquals() {
-        CoreSubset cs11 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs12 = new CoreSubset(
-                new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
-        CoreSubsets css1 = new CoreSubsets(
-                    Arrays.asList(cs11, cs12));
+        CoreSubsets css1 = new CoreSubsets();
+        css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
 
-        CoreSubset cs21 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 3, 2));
-        CoreSubset cs22 = new CoreSubset(
-                new ChipLocation(0, 1), Arrays.asList(1, 3));
-        CoreSubsets css2 = new CoreSubsets(
-                    Arrays.asList(cs21, cs22));
+        CoreSubsets css2 = new CoreSubsets();
+        css2.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css2.addCores(new ChipLocation(0, 1), Arrays.asList(1, 3));
 
         assertNotEquals(css1, css2);
         assertNotEquals(css1.toString(), css2.toString());
 
-        css2.addCore(new CoreLocation (0,1,2));
+        css2.addCore(new CoreLocation (0, 1, 2));
         assertEquals(css1, css2);
         assertEquals(css1.toString(), css2.toString());
         assertEquals(css1, css1);
@@ -173,14 +157,11 @@ public class CoreSubsetsTest {
     }
 
     public void testIterator() {
-        CoreSubset cs11 = new CoreSubset(
-                new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-        CoreSubset cs12 = new CoreSubset(
-                new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
-        CoreSubsets css1 = new CoreSubsets(
-                    Arrays.asList(cs11, cs12));
+        CoreSubsets css1 = new CoreSubsets();
+        css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
         int count = 0;
-        for (CoreLocation coreLocation:css1.coreIterable()) {
+        for (CoreLocation coreLocation:css1) {
             count += 1;
             assertThat("p > 0", coreLocation.getP(), greaterThan(0));
             assertThat("p < 4", coreLocation.getP(), lessThan(4));
@@ -188,21 +169,43 @@ public class CoreSubsetsTest {
         assertEquals(6, count);
     }
 
+    public void testByChip() {
+        CoreSubsets css1 = new CoreSubsets();
+        css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+        css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+        int count = 0;
+        for (ChipLocation chip:css1.getChips()) {
+            for (CoreLocation core:css1.coreByChip(chip)) {
+                count += 1;
+                assertEquals(core.getX(), chip.getX());
+                assertEquals(core.getX(), chip.getX());
+            }
+        }
+        assertEquals(6, count);
+        count = 0;
+        for (ChipLocation chip:css1.getChips()) {
+            for (Integer p:css1.pByChip(chip)) {
+                count += 1;
+                assertThat("p > 0", p, greaterThan(0));
+                assertThat("p < 4", p, lessThan(4));
+            }
+        }
+        assertEquals(6, count);
+    }
+
     public void testBadIterator() {
         CoreSubsets css1 = new CoreSubsets();
         int count = 0;
-        for (CoreLocation coreLocation:css1.coreIterable()) {
+        for (CoreLocation coreLocation:css1) {
             count += 1;
         }
         assertEquals(0, count);
 
-        Collection<CoreLocation>  empty = css1.coreLocations(
-                ChipLocation.ZERO_ZERO);
+        Collection<CoreLocation>  empty = css1.coreByChip(ChipLocation.ZERO_ZERO);
         assertEquals(0, empty.size());
 
-        Iterable<CoreLocation> nodata = css1.coreIterable();
         assertThrows(NoSuchElementException.class, () -> {
-            nodata.iterator().next();
+            css1.iterator().next();
         });
     }
 

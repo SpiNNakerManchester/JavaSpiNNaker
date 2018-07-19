@@ -11,6 +11,12 @@ public final class MachineDefaults {
 
     private MachineDefaults() { }
 
+    /** Default sdram per chip after scamp has reserved space for itself. */
+    public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
+
+    /** Default number of IPTAgs on a chip. */
+    public static final int N_IPTAGS_PER_CHIP = 8;
+
     /** Clock speed in MHz of a standard Processor. */
     public static final int PROCESSOR_CLOCK_SPEED = 200 * 1000 * 1000;
 
