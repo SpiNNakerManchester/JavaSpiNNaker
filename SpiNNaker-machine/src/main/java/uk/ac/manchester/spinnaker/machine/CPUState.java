@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.messages.model;
+package uk.ac.manchester.spinnaker.machine;
 
 import java.util.HashMap;
 import java.util.Map;

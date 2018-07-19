@@ -22,10 +22,21 @@ public class P2PTable {
 	/** The height of the machine that this table represents. */
 	public final int height;
 
+	public P2PTable(MachineDimensions dimensions, Collection<ByteBuffer> columnData) {
+		this.routes = new HashMap<>();
+		this.width = dimensions.width;
+		this.height = dimensions.height;
+		parseColumnData(columnData);
+	}
+
 	public P2PTable(int width, int height, Collection<ByteBuffer> columnData) {
 		this.routes = new HashMap<>();
 		this.width = width;
 		this.height = height;
+		parseColumnData(columnData);
+	}
+
+	private void parseColumnData(Iterable<ByteBuffer> columnData) {
 		Iterator<ByteBuffer> columns = columnData.iterator();
 		for (int x = 0; columns.hasNext(); x++) {
 			ByteBuffer data = columns.next();

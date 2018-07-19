@@ -76,6 +76,13 @@ public class Machine {
     }
 
 
+    public Machine(int width, int height, HasChipLocation bootChip,
+            List<ChipSummaryInfo> csis) {
+        // FIXME Christian!!!
+        throw new UnsupportedOperationException("FIXME");
+    }
+
+
     public void addChip(Chip chip) {
         ChipLocation location = chip.asChipLocation();
         if (chips.containsKey(location)) {

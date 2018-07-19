@@ -5,6 +5,7 @@ import static java.lang.Byte.toUnsignedInt;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /** Represents information about the state of a CPU. */
