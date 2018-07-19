@@ -29,17 +29,6 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @author Christian-B
  */
 public class Machine {
-    /*
-        __slots__ = (
-        "_boot_x",
-        "_boot_y",
-        "_boot_ethernet_address",
-        "_chips",
-        "_ethernet_connected_chips",
-        "_fpga_links",
-        "_spinnaker_links",
-    )
-    */
 
     /** Size of the machine along the x axis in Chips */
     public final int width;

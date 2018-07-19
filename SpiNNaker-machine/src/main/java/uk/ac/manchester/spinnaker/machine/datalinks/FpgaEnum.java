@@ -218,6 +218,15 @@ public enum FpgaEnum implements HasChipLocation {
         return new ChipLocation(x, y);
     }
 
+    /**
+     * Find the Enum by chip coordinates and the direction.
+     *
+     * @param x X coordinate of chip.
+     * @param y X coordinate of chip.
+     * @param direction Direction of the link covered buy the fpga.
+     *
+     * @return The corresponding Enum.
+     */
     public static FpgaEnum findId(int x, int y, Direction direction) {
         for (FpgaEnum linkId:FpgaEnum.values()) {
             if (linkId.x == x && linkId.y == y
@@ -230,6 +239,13 @@ public enum FpgaEnum implements HasChipLocation {
                 + " direction: " + direction);
     }
 
+    /**
+     * Find the Enum by fpga and link ids.
+     *
+     * @param fpgaId Id of the fpga device.
+     * @param id Id of the link on that device.
+     * @return The corresponding Enum.
+     */
     public static FpgaEnum findId(FpgaId fpgaId, int id) {
         for (FpgaEnum linkId:FpgaEnum.values()) {
             if (linkId.fpgaId == fpgaId && linkId.id == id) {

@@ -4,6 +4,8 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -271,16 +273,21 @@ public final class SpiNNakerTriadGeometry {
        return MachineVersion.INVALID;
     }
 
-    public Iterable<ChipLocation> singleBoardIterable() {
-         return new Iterable<ChipLocation>() {
-            @Override
-            public Iterator<ChipLocation> iterator() {
-                return singleBoardIterator();
-            }
-        };
+    /**
+     * An Collection all the chips on a Single board with a root of 0, 0.
+     *
+     * @return An unmodifiable Collection of the Locations on one board.
+     */
+    public Collection<ChipLocation> singleBoard() {
+        return Collections.unmodifiableList(singleBoardCoordinates);
     }
 
-    public final Iterator<ChipLocation> singleBoardIterator() {
+    /**
+     * An Iterator all the chips on a Single board with a root of 0, 0.
+     *
+     * @return All the Locations on one board.
+     */
+    public Iterator<ChipLocation> singleBoardIterator() {
         return singleBoardCoordinates.iterator();
     }
 

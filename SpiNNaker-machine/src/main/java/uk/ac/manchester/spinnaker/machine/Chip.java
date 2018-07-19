@@ -116,7 +116,7 @@ public class Chip implements HasChipLocation {
             HasChipLocation nearestEthernet) {
         MachineDefaults.validateChipLocation(x, y);
         this.location = new ChipLocation(x, y);
-        processors = (TreeMap<Integer, Processor>)DEFAULT_PROCESSORS.clone();
+        processors = (TreeMap<Integer, Processor>) DEFAULT_PROCESSORS.clone();
         nUserProssors = MachineDefaults.PROCESSORS_PER_CHIP - 1;
         this.router = router;
         this.sdram = MachineDefaults.SDRAM_PER_CHIP;
@@ -132,7 +132,7 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> defaultProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         processors.put(0, Processor.factory(0, true));
-        for (int i =1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
+        for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
            processors.put(i, Processor.factory(i, true));
         }
         return processors;

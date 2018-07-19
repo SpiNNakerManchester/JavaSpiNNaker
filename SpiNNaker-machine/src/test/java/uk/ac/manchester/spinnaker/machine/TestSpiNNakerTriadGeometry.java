@@ -137,10 +137,10 @@ public class TestSpiNNakerTriadGeometry {
     }
 
     @Test
-    public void testSingleBoardIterator() {
+    public void testSingleBoard() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
         int count = 0;
-        for (ChipLocation chip: instance.singleBoardIterable()) {
+        for (ChipLocation chip: instance.singleBoard()) {
             count+= 1;
             assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
         }
