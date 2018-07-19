@@ -46,11 +46,12 @@ public class TestFpgaLinkData {
     public void testEquals() throws UnknownHostException {
         FPGALinkData link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTHEAST, createInetAddress());
-        FPGALinkData link2= new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        FPGALinkData link2= new FPGALinkData(34, FpgaId.byId(2),
                 location00, Direction.NORTHEAST, createInetAddress());
         assertTrue(link1.sameAs(link2));
         checkSame(link1, link2);
         assertEquals(link1, link1);
+        assertEquals(ChipLocation.ZERO_ZERO, link1.asChipLocation());
     }
 
     @Test

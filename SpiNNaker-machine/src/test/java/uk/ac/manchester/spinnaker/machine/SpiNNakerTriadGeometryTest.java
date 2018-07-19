@@ -101,6 +101,7 @@ public class SpiNNakerTriadGeometryTest {
         assertEquals(new ChipLocation(4,56), instance.getRootChip(new ChipLocation(5,0), 60, 96));
     }
 
+    @Test
     public void testGetPotentialEthernetChips() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
 
@@ -135,6 +136,7 @@ public class SpiNNakerTriadGeometryTest {
 
     }
 
+    @Test
     public void testSingleBoardIterator() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
         int count = 0;
@@ -145,6 +147,7 @@ public class SpiNNakerTriadGeometryTest {
         assertEquals(48, count);
     }
 
+    @Test
     public void testSingleBoardForEach() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
         final Counter count = new Counter();
@@ -154,5 +157,21 @@ public class SpiNNakerTriadGeometryTest {
         };
         instance.singleBoardForEach(checkandCount);
         assertEquals(48, count.get());
+    }
+
+    @Test
+    public void testMachineVersion() {
+        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        assertEquals(MachineVersion.THREE, instance.versionBySize(2, 2));
+        assertEquals(MachineVersion.FIVE, instance.versionBySize(8, 8));
+        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(12, 12));
+        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(16, 16));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(20, 20));
+        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(12+24, 12+36));
+        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(16+24, 16+36));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(20+24, 20+36));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(12, 16));
+        assertEquals(MachineVersion.INVALID, instance.versionBySize(13, 16));
+        assertEquals(MachineVersion.INVALID, instance.versionBySize(12, 4));
     }
 }

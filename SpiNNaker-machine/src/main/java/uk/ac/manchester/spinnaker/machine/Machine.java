@@ -8,16 +8,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
-import uk.ac.manchester.spinnaker.machine.datalinks.InetFpgaTuple;
+import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
+import uk.ac.manchester.spinnaker.utils.Counter;
+import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
+import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
 /**
  *
@@ -36,9 +41,11 @@ public class Machine {
     )
     */
 
-    private int maxX;
+    /** Size of the machine along the x axis in Chips */
+    public final int width;
 
-    private int maxY;
+    /** Size of the machine along the y axis in Chips */
+    public final int height;
 
     // This is not final as will change as processors become monitors
     private int maxUserProssorsOnAChip;
@@ -47,41 +54,38 @@ public class Machine {
 
     private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
 
-    private HashMap<InetFpgaTuple, FPGALinkData> fpgaLinks;
+    private final HashMap<InetAddress, Map<FpgaId, Map<Integer, FPGALinkData>>>
+            fpgaLinks;
 
-    private final HasChipLocation boot;
+    public final ChipLocation boot;
 
     private InetAddress bootEthernetAddress;
 
     private final TreeMap<ChipLocation, Chip> chips;
+    //private final Chip[][] chipArray;
 
     // Stats
-    private boolean toroid;
     private MachineVersion version;
 
-    //TODO Why not bring in size and board version here?
-    public Machine(Iterable<Chip> chips, HasChipLocation boot) {
-        maxX  = 0;
-        maxY = 0;
+    public Machine(int width, int height, Iterable<Chip> chips, HasChipLocation boot) {
+        this.width = width;
+        this.height = height;
+        version = SpiNNakerTriadGeometry.getSpinn5Geometry().versionBySize(width, height);
 
         maxUserProssorsOnAChip = 0;
 
         ethernetConnectedChips = new ArrayList<>();
-
         spinnakerLinks = new HashMap();
+        fpgaLinks = new HashMap();
 
-        //if (!boot.legalEthernetLocation()) {
-        //    throw new IllegalArgumentException(
-        //            "boot can not be at " + boot.asChipLocation());
-        //}
-        this.boot = boot;
-
+        this.boot = boot.asChipLocation();
         bootEthernetAddress = null;
 
         this.chips = new TreeMap();
+        //this.chipArray = new Chip[width][height];
         addChips(chips);
-        updateStats();
     }
+
 
     public void addChip(Chip chip) {
         ChipLocation location = chip.asChipLocation();
@@ -90,16 +94,16 @@ public class Machine {
                     "There is already a Chip at location: " + location);
         }
 
-        chips.put(location, chip);
-        if (chip.getX() > maxX) {
-            maxX = chip.getX();
-            updateStats();
+        if (chip.getX() >= width) {
+            throw new IllegalArgumentException("Chip x: " + chip.getX()
+                    + " is too high for a machine with width " + width);
         }
-        if (chip.getY() > maxY) {
-            maxY = chip.getY();
-            updateStats();
+        if (chip.getY() >= height) {
+           throw new IllegalArgumentException("Chip y: " + chip.getY()
+                    + " is too high for a machine with height " + width);
         }
 
+        chips.put(location, chip);
         if (chip.ipAddress != null) {
             ethernetConnectedChips.add(chip);
             if (boot.onSameChipAs(chip)) {
@@ -141,6 +145,14 @@ public class Machine {
         return chips.containsKey(location);
     }
 
+    //public Chip getChipAt(int x, int y) {
+    //    return this.chipArray[x][y];
+    //}
+
+    //public boolean hasChipAt(int x, int y) {
+    //    return this.chipArray[x][y] != null;
+    //}
+
     public boolean hasLinkAt(ChipLocation location, Direction link) {
         Chip chip = chips.get(location);
         if (chip == null) {
@@ -151,11 +163,11 @@ public class Machine {
     }
 
     public int maxChipX() {
-        return maxX;
+        return width;
     }
 
     public int maxChipY() {
-        return maxY;
+        return height;
     }
 
     public List<Chip> ethernetConnectedChips() {
@@ -171,13 +183,6 @@ public class Machine {
             key = new InetIdTuple(bootEthernetAddress, key.id);
         }
         return spinnakerLinks.get(key);
-    }
-
-    public FPGALinkData getFpgaLink(InetFpgaTuple key) {
-        if (key.address == null) {
-            key = new InetFpgaTuple(bootEthernetAddress, key.fpga, key.linkId);
-        }
-        return fpgaLinks.get(key);
     }
 
     public void addSpinnakerLinks() {
@@ -212,214 +217,84 @@ public class Machine {
                 break;
             case INVALID:
                 throw new IllegalStateException(
-                        "Based on current maxX:" + maxX + " and maxY:"
-                        + maxY + " no valid board version available.");
+                        "Based on current maxX:" + width + " and maxY:"
+                        + height + " no valid board version available.");
             default:
                 throw new Error("Unexpected BoardVersion Enum: " + version
                         + " Please reraise an issue.");
         }
     }
 
-    private int addFpgaLink(FpgaId fpga, int linkId, ChipLocation location,
-            Direction link, InetAddress address) {
-        if (hasChipAt(location) && !hasLinkAt(location, link)) {
-            fpgaLinks.put(new InetFpgaTuple(address, fpga, linkId),
-                    new FPGALinkData(linkId, fpga, location, link, address));
-        }
-        // TODO: Current python implementation increments id every time
-        //      even when not adding a link. IS this required?
-        return linkId + 1;
-    }
-
-    private ChipLocation toroidLocation(int x, int y) {
-        if (toroid) {
-            x = x % maxX;
-            y = y % maxY;
+    /**
+     * Converts x and y to a chip location.
+     *
+     * If required (and applicable) adjusting for wrap around.
+     * <p>
+     * There is NO check that the location is valid or
+     *      that there is a Chip at this location.
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @return A ChipLocation based on X and Y with possible wrap around.
+     */
+    private ChipLocation normalizedLocation(int x, int y) {
+        if (version.wrapAround) {
+            x = x % width;
+            y = y % height;
         }
         return new ChipLocation(x, y);
     }
 
-    private int addLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.SOUTHWEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        return leftLinkId;
+    public FPGALinkData getFpgaLink(
+            FpgaId fpgaId, int fpgaLinkId, InetAddress address) {
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+        byAddress = fpgaLinks.get(address);
+        if (byAddress == null) {
+            return null;
+        }
+        Map<Integer, FPGALinkData> byId = byAddress.get(fpgaId);
+        if (byId == null) {
+            return null;
+        }
+        return byId.get(fpgaLinkId);
     }
 
-    private int addLeftUpperLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.SOUTHWEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.NORTH, address);
-        return leftLinkId;
+    public Iterable<FPGALinkData> getFpgaLinks() {
+        return new TripleMapIterable(fpgaLinks);
     }
 
-    private int addUpperLeftFpgaLinks(
-            int leftLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.NORTH, address);
-        return leftLinkId;
+    public Iterable<FPGALinkData> getFpgaLinks(InetAddress address) {
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+        byAddress = fpgaLinks.get(address);
+        if (byAddress == null) {
+            return Collections.<FPGALinkData>emptyList();
+        } else {
+            return new DoubleMapIterable(byAddress);
+        }
     }
 
-    private int addUpperLeftTopFpgaLinks(
-            int leftLinkId, int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        leftLinkId = addFpgaLink(FpgaId.LEFT, leftLinkId, location,
-                Direction.WEST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        return topLinkId;
-    }
-
-    private int addTopFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        return topLinkId;
-    }
-
-    private int addTopRightFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTH, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.EAST, address);
-        return topLinkId;
-    }
-
-    private int addRightFpgaLinks(
-            int topLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.EAST, address);
-        return topLinkId;
-    }
-
-    private int addRightLowerRightFpgaLinks(
-            int topLinkId, int bottomLinkId, int x, int y,
-            InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        topLinkId = addFpgaLink(FpgaId.TOP_RIGHT, topLinkId, location,
-                Direction.NORTHEAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    private int addLowerRightFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    private int addLowerRightBottomFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.EAST, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTHWEST, address);
-        return bottomLinkId;
-    }
-
-    private int addBottomFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTHWEST, address);
-        return bottomLinkId;
-    }
-
-    private int finishBottomLeftFpgaLinks(
-            int bottomLinkId, int x, int y, InetAddress address) {
-        ChipLocation location = new ChipLocation(x, y);
-        bottomLinkId = addFpgaLink(FpgaId.BOTTOM, bottomLinkId, location,
-                Direction.SOUTH, address);
-        return bottomLinkId;
-    }
-
-    @SuppressWarnings("checkstyle:magicnumber")
-    private void addFpgaLinks(
-            int rootX, int rootY, InetAddress address) {
-        // the side of the hexagon shape of the board are as follows
-        //                                               Top
-        //                                     (4,7) (5,7) (6,7) (7,7)
-        //                               (3,6) (4,6) (5,6) (6,6) (7,6)
-        //             UpperLeft   (2,5) (3,5) (4,5) (5,5) (6,5) (7,5)   Right
-        //                   (1,4) (2,4) (3,4) (4,4) (5,4) (6,4) (7,4)
-        //             (0,3) (1,3) (2,3) (3,3) (4,3) (5,3) (6,2) (7,3)
-        //             (0,2) (1,2) (2,2) (3,2) (4,2) (5,2) (6,2)
-        //    Left     (0,1) (1,1) (2,1) (3,1) (4,1) (5,1)    LowerRight
-        //             (0,0) (1,0) (2,0) (3,0) (4,0)
-        //                          Bottom
-
-        int leftLinkId = 0;
-        int topLinkId = 0;
-        int bottomLinkId = 0;
-
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY, address);
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY + 1, address);
-        leftLinkId = addLeftFpgaLinks(leftLinkId, rootX, rootY + 2, address);
-
-        leftLinkId = addLeftUpperLeftFpgaLinks(leftLinkId, rootX, rootY + 3, address);
-
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 1, rootY + 4, address);
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 2, rootY + 5, address);
-        leftLinkId = addUpperLeftFpgaLinks(leftLinkId, rootX + 3, rootY + 6, address);
-
-        topLinkId = addUpperLeftTopFpgaLinks(leftLinkId, topLinkId, rootX + 4, rootY + 7, address);
-
-        topLinkId = addTopFpgaLinks(topLinkId, rootX + 5, rootY + 7, address);
-        topLinkId = addTopFpgaLinks(topLinkId, rootX + 6, rootY + 7, address);
-
-        topLinkId = addTopRightFpgaLinks(topLinkId, rootX + 7, rootY + 7, address);
-
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 6, address);
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 5, address);
-        topLinkId = addRightFpgaLinks(topLinkId, rootX + 7, rootY + 4, address);
-
-        bottomLinkId = addRightLowerRightFpgaLinks(topLinkId, bottomLinkId, rootX + 7, rootY + 3, address);
-
-        bottomLinkId = addLowerRightFpgaLinks(bottomLinkId, rootX + 6, rootY + 2, address);
-        bottomLinkId = addLowerRightFpgaLinks(bottomLinkId, rootX + 5, rootY + 1, address);
-
-        bottomLinkId = addLowerRightBottomFpgaLinks(bottomLinkId, rootX + 4, rootY + 0, address);
-
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 3, rootY + 0, address);
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 2, rootY + 0, address);
-        bottomLinkId = addBottomFpgaLinks(bottomLinkId, rootX + 1, rootY + 0, address);
-
-        finishBottomLeftFpgaLinks(bottomLinkId, rootX, rootY, address);
+    private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
+        for (FpgaEnum fpgaEnum:FpgaEnum.values()){
+            ChipLocation location = normalizedLocation(
+                    rootX + fpgaEnum.getX(), rootY + fpgaEnum.getY());
+            if (hasChipAt(location) && !hasLinkAt(location, fpgaEnum.direction)) {
+                FPGALinkData fpgaLinkData = new FPGALinkData(
+                        fpgaEnum.id, fpgaEnum.fpgaId, location,
+                        fpgaEnum.direction, address);
+                Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
+                byAddress = fpgaLinks.get(address);
+                if (byAddress == null) {
+                    byAddress = new HashMap();
+                    fpgaLinks.put(address, byAddress);
+                }
+                Map<Integer, FPGALinkData> byId;
+                byId = byAddress.get(fpgaEnum.fpgaId);
+                if (byId == null) {
+                    byId = new HashMap();
+                    byAddress.put(fpgaEnum.fpgaId, byId);
+                }
+                byId.put(fpgaEnum.id, fpgaLinkData);
+            }
+        }
     }
 
     /**
@@ -449,8 +324,8 @@ public class Machine {
                 break;
             case INVALID:
                 throw new IllegalStateException(
-                        "Based on current maxX:" + maxX + " and maxY:"
-                        + maxY + " no valid board version available.");
+                        "Based on current maxX:" + width + " and maxY:"
+                        + height + " no valid board version available.");
             default:
                 throw new Error("Unexpected BoardVersion Enum: " + version
                         + " Please reraise an issue.");
@@ -473,14 +348,122 @@ public class Machine {
         return this.boot;
     }
 
-    public List<ChipLocation> getLocationsOnBoard(HasChipLocation chip) {
-        return new ArrayList<ChipLocation>();
+    /**
+     * Iterable over the destinations of each link.
+     * <p>
+     * There will be exactly one destination for each Link.
+     * While normally all destinations will be unique the is no guarantee.
+     *
+     * @param chip x and y coordinates for any chip on the board
+     * @return A Stream over the destination locations.
+     */
+    public Iterable<Chip> iterChipsOnBoard(Chip chip) {
+        return new Iterable<Chip>() {
+            @Override
+            public Iterator<Chip> iterator() {
+                return new ChipOnBoardIterator(chip.nearestEthernet);
+            }
+        };
     }
 
-    private void updateStats() {
-        version = SpiNNakerTriadGeometry.getSpinn5Geometry().versionBySize(
-                maxX, maxY);
-        toroid = version.wrapAround;
+    public CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
+        maxUserProssorsOnAChip = 0;
+        CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
+
+        this.chips.forEach((location, chip) -> {
+            int p = chip.reserveASystemProcessor();
+            if (p == -1) {
+                result.addFailedChip(chip);
+            } else {
+                result.addCore(location, p);
+            }
+            if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
+                maxUserProssorsOnAChip = chip.nUserProcessors();
+            }
+        });
+        return result;
+    }
+
+    public int maximumUserCoresOnChip() {
+        return maxUserProssorsOnAChip;
+    }
+
+    private int totalAvailableUserCores1() {
+        Counter count = new Counter();
+        this.chips.forEach((location, chip) -> {
+            count.add(chip.nUserProcessors());
+        });
+        return count.get();
+    }
+
+    private int totalAvailableUserCores2() {
+        return chips.values().stream().map(Chip::nUserProcessors).
+                mapToInt(Integer::intValue).sum();
+
+    }
+
+    public int totalAvailableUserCores() {
+        int count = 0;
+        for (Chip chip :chips.values()) {
+            count += chip.nUserProcessors();
+        }
+        return count;
+    }
+
+    public int totalCores() {
+        int count = 0;
+        for (Chip chip :chips.values()) {
+            count += chip.nProcessors();
+        }
+        return count;
+    }
+
+    public MachineVersion version() {
+        return version;
+    }
+
+    private class ChipOnBoardIterator implements Iterator<Chip> {
+
+        private HasChipLocation root;
+        private Chip nextChip;
+        private Iterator<ChipLocation> singleBoardIterator;
+
+        ChipOnBoardIterator(HasChipLocation root) {
+            this.root = root;
+            SpiNNakerTriadGeometry geometry =
+                    SpiNNakerTriadGeometry.getSpinn5Geometry();
+            singleBoardIterator = geometry.singleBoardIterator();
+            prepareNextChip();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return nextChip != null;
+        }
+
+        @Override
+        public Chip next() {
+            if (nextChip == null) {
+                throw new NoSuchElementException ("No more chips available.");
+            }
+            Chip result = nextChip;
+            prepareNextChip();
+            return result;
+        }
+
+        private void prepareNextChip() {
+            while (singleBoardIterator.hasNext()) {
+                ChipLocation local = singleBoardIterator.next();
+                ChipLocation global = normalizedLocation(
+                        root.getX() + local.getX(), root.getY() + root.getX());
+                nextChip = getChipAt(global);
+                if (nextChip != null) {
+                    return;
+                }
+            }
+            nextChip = null;
+        }
+
     }
 
 }

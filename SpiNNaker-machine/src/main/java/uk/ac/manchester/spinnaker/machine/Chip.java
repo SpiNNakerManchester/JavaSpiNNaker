@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 /**
  * A Description of a Spinnaker Chip.
- *
+ * <p>
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
  * Python Version</a>
@@ -139,8 +139,7 @@ public class Chip implements HasChipLocation {
      * Obtains the Processor with this ID or returns null.
      *
      * @param processorId Id of the potential processor.
-     * @return The Processor or null if noe is found.
-     * @return
+     * @return The Processor or null if not is found.
      */
     public Processor getProcessor(int processorId) {
         return this.processors.get(processorId);
@@ -201,7 +200,7 @@ public class Chip implements HasChipLocation {
      * This will reduce by one the result of nUserProcessors()
      *
      * @return ID of the processor converted to a monitor
-     * @throws IllegalStateException If all the Processor(s) are monitors.
+     *      or -1 to report a failure
      */
     public int reserveASystemProcessor() throws IllegalStateException {
         for (Map.Entry<Integer, Processor> entry : processors.entrySet()) {
@@ -212,7 +211,7 @@ public class Chip implements HasChipLocation {
                 return entry.getKey();
             }
         }
-        throw new IllegalStateException("No None monitor processor found!");
+        return -1;
     }
 
     @Override

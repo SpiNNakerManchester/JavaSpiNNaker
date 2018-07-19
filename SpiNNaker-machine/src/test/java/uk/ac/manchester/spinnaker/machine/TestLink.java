@@ -22,7 +22,6 @@ public class TestLink {
      */
     @Test
     public void testEquals() {
-        System.out.println("equals");
         Link link1 = new Link(chip00, Direction.EAST, chip01);
         Link link2 = new Link(chip00, Direction.EAST, chip01);
         assertEquals(link1, link2);
@@ -44,7 +43,6 @@ public class TestLink {
      */
     @Test
     public void testDifferent() {
-        System.out.println("equals");
         Link link1 =  new Link(chip00, Direction.EAST, chip01);
         Link link2 =  new Link(chip11, Direction.EAST, chip01);
         checkDifferent(link1, link2);

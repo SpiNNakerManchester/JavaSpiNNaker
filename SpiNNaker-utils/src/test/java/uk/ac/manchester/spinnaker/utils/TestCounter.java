@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
-public class CounterTest {
+public class TestCounter {
 
-    public CounterTest() {
+    public TestCounter() {
     }
 
     /**
@@ -27,4 +27,12 @@ public class CounterTest {
         assertEquals(2, counter.get());
     }
 
+    @Test
+    public void testAdd() {
+        Counter counter = new Counter();
+        assertEquals(0, counter.get());
+        counter.add(4);
+        counter.add(-2);
+        assertEquals(2, counter.get());
+    }
 }

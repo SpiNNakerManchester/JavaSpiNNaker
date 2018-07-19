@@ -29,7 +29,7 @@ public class TestCoreLocation {
 		assertNotEquals(l1, l3);
 		assertNotEquals(l1.toString(), l3.toString());
 
-                CoreLocation l4 = new CoreLocation(1, 0, 0);
+                CoreLocation l4 = new CoreLocation(ChipLocation.ONE_ZERO, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());
 		assertEquals(0, l4.getP());

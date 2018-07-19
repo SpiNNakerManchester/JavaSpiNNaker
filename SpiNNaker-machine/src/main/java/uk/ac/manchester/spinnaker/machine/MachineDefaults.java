@@ -70,6 +70,7 @@ public final class MachineDefaults {
      * @param x X part of the chips location
      * @param y Y part of the chips location
      * @throws IllegalArgumentException
+     *      Thrown is either x or y is negative or too big.
      */
     public static void validateChipLocation(int x, int y)
             throws IllegalArgumentException {
@@ -89,6 +90,7 @@ public final class MachineDefaults {
      * @param y Y part of the core/chip's location
      * @param p P part of the core's location
      * @throws IllegalArgumentException
+     *      Thrown is x, y or p are negative or too big.
      */
     public static void validateCoreLocation(int x, int y, int p)
             throws IllegalArgumentException {

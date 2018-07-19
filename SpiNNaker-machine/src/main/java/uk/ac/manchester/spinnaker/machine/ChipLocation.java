@@ -12,7 +12,8 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
+public final class ChipLocation implements
+        HasChipLocation, Comparable<ChipLocation> {
     private final int x;
     private final int y;
 
@@ -57,7 +58,7 @@ public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
 
 
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -69,7 +70,7 @@ public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return (x << MachineDefaults.COORD_SHIFT) ^ y;
     }
 
@@ -91,12 +92,12 @@ public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
     }
 
     @Override
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
     @Override
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
@@ -110,4 +111,4 @@ public class ChipLocation implements HasChipLocation, Comparable<ChipLocation> {
         return this;
     }
 
- }
+}

@@ -260,11 +260,9 @@ public final class SpiNNakerTriadGeometry {
                     % MachineDefaults.TRIAD_WIDTH == 0)) {
            return MachineVersion.TRIAD_NO_WRAPAROUND;
        }
-       if (((width - MachineDefaults.HALF_SIZE)
-                    % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((height - MachineDefaults.HALF_SIZE)
-                    % MachineDefaults.TRIAD_WIDTH == 0)) {
-           return MachineVersion.TRIAD_NO_WRAPAROUND;
+       if (width < MachineDefaults.SIZE_X_OF_ONE_BOARD
+               || height < MachineDefaults.SIZE_Y_OF_ONE_BOARD) {
+           return MachineVersion.INVALID;
        }
        if (width % MachineDefaults.HALF_SIZE == 0
                && height % MachineDefaults.HALF_SIZE == 0) {
