@@ -1,0 +1,24 @@
+package uk.ac.manchester.spinnaker.processes;
+
+import java.io.IOException;
+
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
+import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+
+// TODO refactor this to have the functionality exposed higher up
+public class SendSingleCommandProcess extends MultiConnectionProcess {
+	public SendSingleCommandProcess(ConnectionSelector connectionSelector) {
+		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT);
+	}
+
+	public SendSingleCommandProcess(ConnectionSelector connectionSelector,
+			int numRetries, int timeout) {
+		super(connectionSelector, numRetries, timeout, DEFAULT_NUM_CHANNELS,
+				DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
+	}
+
+	public <T extends SCPResponse> T execute(SCPRequest<T> r)
+			throws IOException, Exception {
+		return synchronousCall(r);
+	}
+}

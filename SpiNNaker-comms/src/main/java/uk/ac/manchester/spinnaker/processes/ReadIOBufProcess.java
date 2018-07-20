@@ -22,6 +22,10 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
+/**
+ * A process for reading IOBUF memory (mostly log messages) from a SpiNNaker
+ * core.
+ */
 public class ReadIOBufProcess extends MultiConnectionProcess {
 	private static final int BLOCK_HEADER_BYTES = 16;
 	private final Queue<NextRead> nextReads = new LinkedList<>();
