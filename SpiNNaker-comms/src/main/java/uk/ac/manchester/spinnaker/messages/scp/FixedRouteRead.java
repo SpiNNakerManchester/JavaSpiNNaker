@@ -4,10 +4,9 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
@@ -28,7 +27,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	 *            The ID of the application associated with the route, between 0
 	 *            and 255
 	 */
-	public FixedRouteRead(HasChipLocation chip, int entry, int appID) {
+	public FixedRouteRead(HasChipLocation chip, int appID) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
 				argument1(appID), argument2(), null);
 	}
@@ -43,26 +42,13 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 		private final int route;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Fixed Route route", CMD_RTR, buffer);
+			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
 			route = buffer.getInt();
 		}
 
 		/** @return the fixed route router route */
-		public Object getRoute() {
-			List<Integer> processorIDs = new ArrayList<Integer>();
-			for (int i = 0; i < 25; i++) {
-				if ((route & (1 << (6 + i))) != 0) {
-					processorIDs.add(i);
-				}
-			}
-			List<Integer> linkIDs = new ArrayList<Integer>();
-			for (int i = 0; i < 6; i++) {
-				if ((route & (1 << i)) != 0) {
-					linkIDs.add(i);
-				}
-			}
-			// return new FixedRouteEntry(processorIDs, linkIDs);// FIXME
-			return route;
+		public RoutingEntry getRoute() {
+			return new RoutingEntry(route);
 		}
 	}
 }

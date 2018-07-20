@@ -23,7 +23,7 @@ public abstract class MultiConnectionProcess extends Process {
 	private final int numWaits;
 	private final int numChannels;
 	private final int numRetries;
-	private final ConnectionSelector selector;
+	final ConnectionSelector selector;
 	private final Map<SCPConnection, SCPRequestPipeline> requestPipelines;
 	private final int timeout;
 

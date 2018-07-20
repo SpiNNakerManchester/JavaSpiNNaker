@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for reading the multicast routing table of a SpiNNaker chip. */
