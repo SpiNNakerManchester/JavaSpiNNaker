@@ -1,11 +1,19 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.nio.ByteBuffer.wrap;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /** The contents of IOBUF for a core */
 public class IOBuffer implements HasCoreLocation {
+	private static final Charset ASCII = Charset.forName("ascii");
 	private final HasCoreLocation core;
-	private final Object iobuf;
+	private final byte[] iobuf;
 
 	/**
 	 * @param core
@@ -13,9 +21,36 @@ public class IOBuffer implements HasCoreLocation {
 	 * @param contents
 	 *            The contents of the buffer for the chip
 	 */
-	public IOBuffer(HasCoreLocation core, Object contents) {// FIXME what type for contents?
+	public IOBuffer(HasCoreLocation core, byte[] contents) {
 		this.core = core;
-		this.iobuf = contents;
+		iobuf = contents;
+	}
+
+	/**
+	 * @param core
+	 *            The coordinates of a core
+	 * @param contents
+	 *            The contents of the buffer for the chip
+	 */
+	public IOBuffer(HasCoreLocation core, ByteBuffer contents) {
+		this.core = core;
+		iobuf = new byte[contents.remaining()];
+		contents.asReadOnlyBuffer().get(iobuf);
+	}
+
+	/**
+	 * @param core
+	 *            The coordinates of a core
+	 * @param contents
+	 *            The contents of the buffer for the chip
+	 */
+	public IOBuffer(HasCoreLocation core, Iterable<ByteBuffer> contents) {
+		this.core = core;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		for (ByteBuffer b : contents) {
+			baos.write(b.array(), 0, b.limit());
+		}
+		iobuf = baos.toByteArray();
 	}
 
 	@Override
@@ -34,7 +69,22 @@ public class IOBuffer implements HasCoreLocation {
 	}
 
 	/** The contents of the buffer */
-	public Object getContents() {
+	public byte[] getContents() {
 		return iobuf;
+	}
+
+	/** The contents of the buffer as a little-endian byte buffer */
+	public ByteBuffer getContentsBuffer() {
+		return wrap(iobuf).order(LITTLE_ENDIAN);
+	}
+
+	/** The contents of the buffer as a little-endian byte buffer */
+	public String getContentsString() {
+		return getContentsString(ASCII);
+	}
+
+	/** The contents of the buffer as a string in the specified encoding */
+	public String getContentsString(Charset charset) {
+		return new String(iobuf, charset);
 	}
 }
