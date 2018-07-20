@@ -5,6 +5,8 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import javax.xml.ws.Holder;
+
 import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -41,7 +43,7 @@ public abstract class Process {
 
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request) throws IOException {
-		sendRequest(request, null, null);
+		sendRequest(request, null, this::receiveError);
 	}
 
 	protected final <T extends SCPResponse> void sendRequest(
@@ -52,7 +54,7 @@ public abstract class Process {
 
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request, Consumer<T> callback) throws IOException {
-		sendRequest(request, callback, null);
+		sendRequest(request, callback, this::receiveError);
 	}
 
 	protected abstract <T extends SCPResponse> void sendRequest(
@@ -60,6 +62,57 @@ public abstract class Process {
 			SCPErrorHandler errorCallback) throws IOException;
 
 	protected abstract void finish() throws IOException;
+
+	/**
+	 * Do a synchronous call of an SCP operation, sending the given message and
+	 * completely processing the interaction before returning its response.
+	 *
+	 * @param <T>
+	 *            The type of the response; implicit in the type of the request.
+	 * @param request
+	 *            The request to send
+	 * @param errorCallback
+	 *            A custom error handler
+	 * @return The successful response to the request
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws Exception
+	 *             If the other side responds with a failure code
+	 */
+	protected final <T extends SCPResponse> T synchronousCall(
+			SCPRequest<T> request, SCPErrorHandler errorCallback)
+			throws IOException, Exception {
+		Holder<T> holder = new Holder<>();
+		sendRequest(request, response -> holder.value = response,
+				errorCallback);
+		finish();
+		checkForError();
+		return holder.value;
+	}
+
+	/**
+	 * Do a synchronous call of an SCP operation, sending the given message and
+	 * completely processing the interaction before returning its response.
+	 *
+	 * @param <T>
+	 *            The type of the response; implicit in the type of the request.
+	 * @param request
+	 *            The request to send
+	 * @return The successful response to the request
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws Exception
+	 *             If the other side responds with a failure code
+	 */
+	protected final <T extends SCPResponse> T synchronousCall(
+			SCPRequest<T> request) throws IOException, Exception {
+		Holder<T> holder = new Holder<>();
+		sendRequest(request, response -> holder.value = response,
+				this::receiveError);
+		finish();
+		checkForError();
+		return holder.value;
+	}
 
 	/**
 	 * Encapsulates exceptions from processes which communicate with some

@@ -6,11 +6,10 @@ import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.ws.Holder;
-
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
 
 public class GetTagsProcess extends MultiConnectionProcess {
 	public GetTagsProcess(ConnectionSelector connectionSelector) {
@@ -19,13 +18,10 @@ public class GetTagsProcess extends MultiConnectionProcess {
 
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {
-		Holder<IPTagGetInfo.Response> tag_info = new Holder<>();
-		sendRequest(new IPTagGetInfo(connection.getChip()),
-				response -> tag_info.value = response);
-		finish();
-		checkForError();
+		Response tag_info = synchronousCall(
+				new IPTagGetInfo(connection.getChip()));
 
-		int numTags = tag_info.value.poolSize + tag_info.value.fixedSize;
+		int numTags = tag_info.poolSize + tag_info.fixedSize;
 		List<Tag> tags = asList(new Tag[numTags]);
 		for (int t = 0; t < numTags; t++) {
 			final int tag = t;

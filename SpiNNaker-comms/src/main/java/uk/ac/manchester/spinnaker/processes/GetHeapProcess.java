@@ -4,12 +4,9 @@ import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.ws.Holder;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
@@ -52,11 +49,7 @@ public class GetHeapProcess extends MultiConnectionProcess {
 
 	private IntBuffer readFromAddress(HasChipLocation chip, int address,
 			int size) throws IOException, Exception {
-		Holder<ByteBuffer> holder = new Holder<>();
-		sendRequest(new ReadMemory(chip, address, size),
-				response -> holder.value = response.data);
-		finish();
-		checkForError();
-		return holder.value.asIntBuffer();
+		return synchronousCall(new ReadMemory(chip, address, size)).data
+				.asIntBuffer();
 	}
 }

@@ -24,10 +24,8 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess {
 	 */
 	public int deallocSDRAM(HasChipLocation chip, int appID)
 			throws IOException, Exception {
-		sendRequest(new SDRAMDeAlloc(chip, appID),
-				response -> numBlocksFreed = response.numFreedBlocks);
-		finish();
-		checkForError();
+		numBlocksFreed = synchronousCall(
+				new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
 		return numBlocksFreed;
 	}
 
@@ -44,9 +42,7 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess {
 	 */
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
 			throws IOException, Exception {
-		sendRequest(new SDRAMDeAlloc(chip, appID, baseAddress));
-		finish();
-		checkForError();
+		synchronousCall(new SDRAMDeAlloc(chip, appID, baseAddress));
 	}
 
 	public int getNumBlocksFreed() {
