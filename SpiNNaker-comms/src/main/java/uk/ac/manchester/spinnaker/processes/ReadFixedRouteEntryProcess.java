@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.processes;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.RoutingEntry;
+import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 
 /** A process for reading a chip's fixed route routing entry. */

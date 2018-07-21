@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.MulticastRoutingEntry;
+import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
 
