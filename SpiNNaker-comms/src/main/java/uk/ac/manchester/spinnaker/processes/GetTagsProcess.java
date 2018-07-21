@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
+import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
