@@ -1,10 +1,13 @@
 package uk.ac.manchester.spinnaker.processes;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -25,31 +28,29 @@ public class GetTagsProcess extends MultiConnectionProcess {
 				new IPTagGetInfo(connection.getChip()));
 
 		int numTags = tag_info.poolSize + tag_info.fixedSize;
-		List<Tag> tags = asList(new Tag[numTags]);
-		for (int t = 0; t < numTags; t++) {
-			final int tag = t;
+		Map<Integer, Tag> tags = new TreeMap<>();
+		for (final int tag : range(0, numTags).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
 				if (response.isInUse()) {
-					if (response.isReverse()) {
-						tags.set(tag,
-								new ReverseIPTag(
-										connection.getRemoteIPAddress(), tag,
-										response.rxPort, response.spinCore,
-										response.spinPort));
-					} else {
-						tags.set(tag,
-								new IPTag(connection.getRemoteIPAddress(),
-										response.sdpHeader.getSource()
-												.asChipLocation(),
-										tag, response.ipAddress, response.port,
-										response.isStrippingSDP()));
-					}
+					tags.put(tag, createTag(connection.getRemoteIPAddress(),
+							tag, response));
 				}
 			});
 		}
 		finish();
 		checkForError();
-		return tags.stream().filter(t -> t != null).collect(toList());
+		return new ArrayList<>(tags.values());
+	}
+
+	private static Tag createTag(InetAddress host, int tag,
+			IPTagGet.Response res) {
+		if (res.isReverse()) {
+			return new ReverseIPTag(host, tag, res.rxPort, res.spinCore,
+					res.spinPort);
+		} else {
+			return new IPTag(host, res.sdpHeader.getSource().asChipLocation(),
+					tag, res.ipAddress, res.port, res.isStrippingSDP());
+		}
 	}
 
 }
