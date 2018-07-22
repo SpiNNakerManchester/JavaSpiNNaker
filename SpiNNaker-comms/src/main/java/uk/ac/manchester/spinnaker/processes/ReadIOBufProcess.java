@@ -20,6 +20,7 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**

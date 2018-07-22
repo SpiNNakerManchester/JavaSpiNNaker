@@ -12,6 +12,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class GetHeapProcess extends MultiConnectionProcess {
 	private static final int HEAP_HEADER_SIZE = 8;

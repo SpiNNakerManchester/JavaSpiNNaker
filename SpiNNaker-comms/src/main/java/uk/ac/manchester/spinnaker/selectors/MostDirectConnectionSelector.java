@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.selectors;
 
 import java.util.Collection;
 import java.util.HashMap;

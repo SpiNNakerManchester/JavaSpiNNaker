@@ -16,6 +16,7 @@ import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class WriteMemoryProcess extends MultiConnectionProcess {
 	public WriteMemoryProcess(ConnectionSelector connectionSelector) {

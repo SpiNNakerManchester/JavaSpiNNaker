@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 // TODO refactor this to have the functionality exposed higher up
 public class SendSingleCommandProcess extends MultiConnectionProcess {

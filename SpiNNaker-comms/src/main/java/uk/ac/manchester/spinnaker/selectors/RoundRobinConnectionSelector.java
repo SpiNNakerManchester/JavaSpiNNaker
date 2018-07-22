@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.selectors;
 
 import static java.util.Collections.unmodifiableList;
 

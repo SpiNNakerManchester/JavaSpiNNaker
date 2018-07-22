@@ -5,6 +5,7 @@ import java.io.IOException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class ApplicationRunProcess extends MultiConnectionProcess {
 

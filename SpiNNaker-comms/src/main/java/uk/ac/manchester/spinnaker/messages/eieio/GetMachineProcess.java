@@ -30,8 +30,8 @@ import uk.ac.manchester.spinnaker.messages.model.MachineDimensions;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.processes.ConnectionSelector;
 import uk.ac.manchester.spinnaker.processes.MultiConnectionProcess;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess {

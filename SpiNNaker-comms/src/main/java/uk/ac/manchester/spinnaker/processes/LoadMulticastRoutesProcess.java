@@ -11,6 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for loading the multicast routing table on a SpiNNaker chip. */
 public class LoadMulticastRoutesProcess extends MultiConnectionProcess {

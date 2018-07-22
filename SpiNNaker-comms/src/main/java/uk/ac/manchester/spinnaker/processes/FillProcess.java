@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for filling memory. */
 public class FillProcess extends MultiConnectionProcess {

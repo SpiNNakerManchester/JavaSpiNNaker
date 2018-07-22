@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for reading memory on a SpiNNaker chip. */
 public class ReadMemoryProcess extends MultiConnectionProcess {

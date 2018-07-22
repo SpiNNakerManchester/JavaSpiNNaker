@@ -12,6 +12,7 @@ import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process that uses multiple connections in communication. */
 public abstract class MultiConnectionProcess extends Process {

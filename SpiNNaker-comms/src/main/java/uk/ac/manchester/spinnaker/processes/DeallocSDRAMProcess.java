@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** Deallocate space in the SDRAM */
 public class DeallocSDRAMProcess extends MultiConnectionProcess {

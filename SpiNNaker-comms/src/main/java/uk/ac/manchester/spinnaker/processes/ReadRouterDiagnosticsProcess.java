@@ -7,6 +7,7 @@ import javax.xml.ws.Holder;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for reading the diagnostic data block from a SpiNNaker router. */
 public class ReadRouterDiagnosticsProcess extends MultiConnectionProcess {

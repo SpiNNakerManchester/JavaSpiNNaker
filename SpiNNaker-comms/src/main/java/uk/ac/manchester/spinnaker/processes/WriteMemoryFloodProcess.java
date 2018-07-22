@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 public class WriteMemoryFloodProcess extends MultiConnectionProcess {

@@ -16,6 +16,7 @@ import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
+import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class GetTagsProcess extends MultiConnectionProcess {
 	public GetTagsProcess(ConnectionSelector connectionSelector) {
