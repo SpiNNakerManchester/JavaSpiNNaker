@@ -44,7 +44,7 @@ public class WriteMemoryFloodProcess extends MultiConnectionProcess {
 	 *            The data, from the <i>position</i> (inclusive) to the
 	 *            <i>limit</i> (exclusive)
 	 */
-	public void writeMemory(int nearestNeighbourID, int baseAddress,
+	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
@@ -84,7 +84,7 @@ public class WriteMemoryFloodProcess extends MultiConnectionProcess {
 	 *            you do so, the fill will terminate early and this may cause
 	 *            problems.
 	 */
-	public void writeMemory(int nearestNeighbourID, int baseAddress,
+	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, Exception {
 		synchronousCall(
@@ -121,7 +121,7 @@ public class WriteMemoryFloodProcess extends MultiConnectionProcess {
 	 * @param dataFile
 	 *            The data in a file, which will be fully transferred.
 	 */
-	public void writeMemory(int nearestNeighbourID, int baseAddress,
+	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			File dataFile) throws IOException, Exception {
 		try (InputStream s = new BufferedInputStream(
 				new FileInputStream(dataFile))) {

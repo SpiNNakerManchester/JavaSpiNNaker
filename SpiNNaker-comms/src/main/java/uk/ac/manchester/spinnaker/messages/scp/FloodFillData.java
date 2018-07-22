@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FFD;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -26,7 +27,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 * @param length
 	 *            The length of the data; must be divisible by 4.
 	 */
-	public FloodFillData(int nearestNeighbourID, int blockNumber,
+	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, byte[] data) {
 		this(nearestNeighbourID, blockNumber, baseAddress, data, 0,
 				data.length);
@@ -47,7 +48,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 * @param length
 	 *            The length of the data; must be divisible by 4.
 	 */
-	public FloodFillData(int nearestNeighbourID, int blockNumber,
+	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, byte[] data, int offset, int length) {
 		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_FFD,
 				argument1(nearestNeighbourID), argument2(blockNumber, length),
@@ -66,15 +67,15 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 *            the <i>limit</i>. Must be between 4 and 256 bytes and the size
 	 *            must be divisible by 4
 	 */
-	public FloodFillData(int nearestNeighbourID, int blockNumber,
+	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, ByteBuffer data) {
 		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_FFD,
 				argument1(nearestNeighbourID),
 				argument2(blockNumber, data.remaining()), baseAddress, data);
 	}
 
-	private static int argument1(int nearestNeighbourID) {
-		return NNP_FORWARD_RETRY | nearestNeighbourID;
+	private static int argument1(byte nearestNeighbourID) {
+		return NNP_FORWARD_RETRY | toUnsignedInt(nearestNeighbourID);
 	}
 
 	private static int argument2(int blockNumber, int size) {

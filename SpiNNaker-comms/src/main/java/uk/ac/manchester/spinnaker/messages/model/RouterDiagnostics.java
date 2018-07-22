@@ -36,15 +36,18 @@ public class RouterDiagnostics {
 	 */
 	public final int[] registerValues;
 
+	private static final int BYTE_MASK = 0xFF;
+
 	public RouterDiagnostics(int controlRegister, int errorStatus,
 			int[] registerValues) {
 		if (registerValues.length != 16) {
 			throw new IllegalArgumentException(
 					"must be exactly 16 router register values");
 		}
-		this.mon = (controlRegister >> 8) & 0x1F;// FIXME overlap with wait_2?
-		this.wait_1 = (controlRegister >> 16) & 0xFF;
-		this.wait_2 = (controlRegister >> 8) & 0xFF;// FIXME overlap with mon?
+		// TODO mon and wait_2 overlap; is this right?!
+		this.mon = (controlRegister >> 8) & 0x1F;
+		this.wait_1 = (controlRegister >> 16) & BYTE_MASK;
+		this.wait_2 = (controlRegister >> 8) & BYTE_MASK;
 		this.errorStatus = errorStatus;
 		this.registerValues = registerValues;
 	}

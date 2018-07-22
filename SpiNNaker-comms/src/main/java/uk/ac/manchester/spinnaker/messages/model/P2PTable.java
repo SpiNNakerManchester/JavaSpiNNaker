@@ -2,17 +2,19 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Math.min;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 
 /** Represents a P2P routing table read from the machine. */
 public class P2PTable {
@@ -22,7 +24,8 @@ public class P2PTable {
 	/** The height of the machine that this table represents. */
 	public final int height;
 
-	public P2PTable(MachineDimensions dimensions, Collection<ByteBuffer> columnData) {
+	public P2PTable(MachineDimensions dimensions,
+			Collection<ByteBuffer> columnData) {
 		this.routes = new HashMap<>();
 		this.width = dimensions.width;
 		this.height = dimensions.height;
@@ -37,25 +40,23 @@ public class P2PTable {
 	}
 
 	private void parseColumnData(Iterable<ByteBuffer> columnData) {
-		Iterator<ByteBuffer> columns = columnData.iterator();
-		for (int x = 0; columns.hasNext(); x++) {
-			ByteBuffer data = columns.next();
-			int y = 0;
-			int pos = 0;
-			while (y < height) {
-				int next_word = data.getInt(pos * 4);
-				pos++;
-				int chunkSize = min(8, height - y);
-				for (int entry = 0; entry < chunkSize; entry++) {
-					P2PTableRoute route = P2PTableRoute
-							.get((next_word >> (3 * entry)) & 0b111);
-					if (route != null && route != NONE) {
-						routes.put(new ChipLocation(x, y), route);
-					}
-					y++;
-				}
+		int x = 0;
+		for (ByteBuffer buffer : columnData) {
+			IntBuffer data = buffer.asIntBuffer();
+			int chipX = x++;
+			for (int y = 0; y < height; y += 8) {
+				extractRoutes(chipX, y, data.get());
 			}
 		}
+	}
+
+	private void extractRoutes(int chipX, int chipYBase, int word) {
+		range(0, min(8, height - chipYBase)).forEach(y -> {
+			P2PTableRoute route = P2PTableRoute.get((word >> (3 * y)) & 0b111);
+			if (route != null && route != NONE) {
+				routes.put(new ChipLocation(chipX, chipYBase + y), route);
+			}
+		});
 	}
 
 	/**

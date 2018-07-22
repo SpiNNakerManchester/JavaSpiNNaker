@@ -5,6 +5,7 @@ import java.util.Map;
 
 /** SCP Signals */
 public enum Signal {
+	// TODO Document these values
 	/** */
 	INITIALISE(0, Type.NEAREST_NEIGHBOUR),
 	/** */

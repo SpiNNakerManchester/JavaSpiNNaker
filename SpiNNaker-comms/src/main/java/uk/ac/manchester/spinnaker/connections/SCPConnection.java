@@ -160,7 +160,7 @@ public class SCPConnection extends SDPConnection
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
 				"SCPConnection only meaningful with a real remote host"),
 				(remotePort == null) ? SCP_SCAMP_PORT : remotePort);
-		this.chip = new ChipLocation(chip.getX(), chip.getY());// TODO tidy
+		this.chip = chip.asChipLocation();
 	}
 
 	@Override

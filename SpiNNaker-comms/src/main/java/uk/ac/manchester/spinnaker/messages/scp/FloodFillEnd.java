@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -16,7 +17,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 */
-	public FloodFillEnd(int nearestNeighbourID) {
+	public FloodFillEnd(byte nearestNeighbourID) {
 		this(nearestNeighbourID, 0, null, false);
 	}
 
@@ -30,7 +31,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            A list of processors on which to start the application, each
 	 *            between 1 and 17. If not specified, no application is started.
 	 */
-	public FloodFillEnd(int nearestNeighbourID, int appID,
+	public FloodFillEnd(byte nearestNeighbourID, int appID,
 			Iterable<Integer> processors) {
 		this(nearestNeighbourID, appID, processors, false);
 	}
@@ -48,15 +49,15 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            True if the binary should go into a "wait" state before
 	 *            executing
 	 */
-	public FloodFillEnd(int nearestNeighbourID, int appID,
+	public FloodFillEnd(byte nearestNeighbourID, int appID,
 			Iterable<Integer> processors, boolean wait) {
 		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
 				argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 	}
 
-	private static int argument1(int nearestNeighbourID) {
-		return (NNP_FLOOD_FILL_END << 24) | nearestNeighbourID;
+	private static int argument1(byte nearestNeighbourID) {
+		return (NNP_FLOOD_FILL_END << 24) | toUnsignedInt(nearestNeighbourID);
 	}
 
 	private static int argument2(int appID, Iterable<Integer> processors,

@@ -6,13 +6,12 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import uk.ac.manchester.spinnaker.machine.CPUState;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /** Represents information about the state of a CPU. */
 public class CPUInfo implements HasCoreLocation {
-	private final int x;
-	private final int y;
-	private final int p;
+	private final CoreLocation core;
 
 	private final int[] registers;
 	private final int processor_state_register;
@@ -70,10 +69,7 @@ public class CPUInfo implements HasCoreLocation {
 	 *            buffer.
 	 */
 	public CPUInfo(HasCoreLocation location, ByteBuffer buffer) {
-		// TODO should we hold the original location object instead?
-		x = location.getX();
-		y = location.getY();
-		p = location.getP();
+		core = location.asCoreLocation();
 		registers = getInts(buffer, NUM_REGISTERS);
 		processor_state_register = buffer.getInt();
 		stack_pointer = buffer.getInt();
@@ -99,17 +95,17 @@ public class CPUInfo implements HasCoreLocation {
 
 	@Override
 	public int getX() {
-		return x;
+		return core.getX();
 	}
 
 	@Override
 	public int getY() {
-		return y;
+		return core.getY();
 	}
 
 	@Override
 	public int getP() {
-		return p;
+		return core.getP();
 	}
 
 	/** The current register values (r0&hellip;r7). */

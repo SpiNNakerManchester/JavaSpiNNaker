@@ -91,6 +91,7 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 
 /**
  * Represents the system variables for a chip, received from the chip SDRAM
