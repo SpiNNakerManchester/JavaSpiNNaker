@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -18,12 +19,14 @@ import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
-public class WriteMemoryProcess extends MultiConnectionProcess {
-	public WriteMemoryProcess(ConnectionSelector connectionSelector) {
+public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+	public WriteMemoryProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
-	public WriteMemoryProcess(ConnectionSelector connectionSelector,
+	public WriteMemoryProcess(
+			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits) {
 		super(connectionSelector, numRetries, timeout, numChannels,

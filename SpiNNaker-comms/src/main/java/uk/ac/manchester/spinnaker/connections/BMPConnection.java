@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.connections.SDPConnection.updateSDPHeaderForUDPSend;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -9,8 +8,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SCPSender;
+import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
@@ -19,7 +17,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public class BMPConnection extends UDPConnection
-		implements SCPReceiver, SCPSender {
+		implements SCPSenderReceiver {
 	/** Defined to satisfy the SCPSender; always 0,0 for a BMP */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
 	public final int cabinet;
@@ -39,7 +37,7 @@ public class BMPConnection extends UDPConnection
 	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
 		ByteBuffer buffer = ByteBuffer.allocate(300).order(LITTLE_ENDIAN);
 		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-			updateSDPHeaderForUDPSend(scpRequest.sdpHeader, 0, 0);
+			scpRequest.updateSDPHeaderForUDPSend(BMP_LOCATION);
 		}
 		scpRequest.addToBuffer(buffer);
 		buffer.flip();

@@ -4,11 +4,8 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.SerializableMessage;
-
 /** Wraps up an SDP message with a header and optional data. */
-public class SDPMessage implements SerializableMessage {
-	public final SDPHeader sdpHeader;
+public class SDPMessage extends SpinnakerRequest {
 	private byte[] data;
 	private int offset;
 	private int length;
@@ -62,7 +59,7 @@ public class SDPMessage implements SerializableMessage {
 	 *            the length of the payload in the array.
 	 */
 	public SDPMessage(SDPHeader header, byte[] data, int offset, int length) {
-		sdpHeader = header;
+		super(header);
 		this.data = data;
 		this.offset = offset;
 		this.length = length;
@@ -87,7 +84,7 @@ public class SDPMessage implements SerializableMessage {
 	 *            The buffer holding the message.
 	 */
 	public SDPMessage(ByteBuffer buffer) {
-		sdpHeader = new SDPHeader(buffer);
+		super(new SDPHeader(buffer));
 		data = buffer.array();
 		offset = buffer.position();
 		length = buffer.remaining();

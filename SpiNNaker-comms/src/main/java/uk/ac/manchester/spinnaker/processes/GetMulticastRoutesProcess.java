@@ -9,13 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for reading the multicast routing table of a SpiNNaker chip. */
-public class GetMulticastRoutesProcess extends MultiConnectionProcess {
+public class GetMulticastRoutesProcess
+		extends MultiConnectionProcess<SCPConnection> {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
 	/** There are 1024 entries in a routing table */
 	private static final int NUM_ENTRIES = 1024;
@@ -29,13 +31,14 @@ public class GetMulticastRoutesProcess extends MultiConnectionProcess {
 
 	private final Integer appID;
 
-	public GetMulticastRoutesProcess(ConnectionSelector connectionSelector) {
+	public GetMulticastRoutesProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 		appID = null;
 	}
 
-	public GetMulticastRoutesProcess(ConnectionSelector connectionSelector,
-			int appID) {
+	public GetMulticastRoutesProcess(
+			ConnectionSelector<SCPConnection> connectionSelector, int appID) {
 		super(connectionSelector);
 		this.appID = appID;
 	}

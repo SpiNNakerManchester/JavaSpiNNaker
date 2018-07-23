@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
@@ -34,14 +35,15 @@ import uk.ac.manchester.spinnaker.processes.MultiConnectionProcess;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for getting the machine details over a set of connections. */
-public class GetMachineProcess extends MultiConnectionProcess {
+public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	private final Map<ChipLocation, ChipSummaryInfo> chip_info = new HashMap<>();
 	private final List<ChipLocation> ignore_chips;
 	private final Iterable<Processor> ignore_cores;
 	private final Iterable<Link> ignore_links;
 
-	public GetMachineProcess(ConnectionSelector connectionSelector,
+	public GetMachineProcess(
+			ConnectionSelector<SCPConnection> connectionSelector,
 			Collection<Chip> ignoreChips, Collection<Processor> ignoreCores,
 			Collection<Link> ignoreLinks) {
 		super(connectionSelector);

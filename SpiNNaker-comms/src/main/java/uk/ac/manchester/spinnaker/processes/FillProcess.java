@@ -10,22 +10,24 @@ import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for filling memory. */
-public class FillProcess extends MultiConnectionProcess {
+public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(FillProcess.class);
 	private static final int ALIGNMENT = 4;
 
-	public FillProcess(ConnectionSelector connectionSelector) {
+	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
-	public FillProcess(ConnectionSelector connectionSelector, int numRetries,
-			int timeout, int numChannels, int intermediateChannelWaits) {
+	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
+			int numRetries, int timeout, int numChannels,
+			int intermediateChannelWaits) {
 		super(connectionSelector, numRetries, timeout, numChannels,
 				intermediateChannelWaits);
 	}

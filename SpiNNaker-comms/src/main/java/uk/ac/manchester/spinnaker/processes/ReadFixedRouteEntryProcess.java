@@ -2,14 +2,17 @@ package uk.ac.manchester.spinnaker.processes;
 
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for reading a chip's fixed route routing entry. */
-public class ReadFixedRouteEntryProcess extends MultiConnectionProcess {
-	public ReadFixedRouteEntryProcess(ConnectionSelector connectionSelector) {
+public class ReadFixedRouteEntryProcess
+		extends MultiConnectionProcess<SCPConnection> {
+	public ReadFixedRouteEntryProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 

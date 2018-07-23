@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class DefaultMap<K, V> extends HashMap<K, V> {
 	private final boolean direct;
 	private final V defValue;
-	private final Supplier<V> defFactory;
+	private final Supplier<? extends V> defFactory;
 
 	/**
 	 * Create a new map.
@@ -28,7 +28,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            immutable value as it can be potentially inserted for many
 	 *            keys.
 	 */
-	public DefaultMap(V defaultValue) {
+	public <DV extends V> DefaultMap(DV defaultValue) {
 		direct = true;
 		defValue = defaultValue;
 		defFactory = null;
@@ -40,7 +40,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * @param defaultFactory
 	 *            A method to create a new value to insert in the map.
 	 */
-	public DefaultMap(Supplier<V> defaultFactory) {
+	public <DV extends V> DefaultMap(Supplier<DV> defaultFactory) {
 		direct = false;
 		defValue = null;
 		defFactory = defaultFactory;

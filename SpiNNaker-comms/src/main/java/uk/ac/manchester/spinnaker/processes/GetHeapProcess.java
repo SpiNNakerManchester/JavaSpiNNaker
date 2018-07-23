@@ -8,21 +8,23 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
-public class GetHeapProcess extends MultiConnectionProcess {
+public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int HEAP_HEADER_SIZE = 8;
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
 
-	public GetHeapProcess(ConnectionSelector connectionSelector) {
+	public GetHeapProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
-	public List<Object> getBlocks(HasChipLocation chip,
+	public List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {
 		int heapBase = readFromAddress(chip,
 				SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset, heap.type.value)
@@ -33,7 +35,7 @@ public class GetHeapProcess extends MultiConnectionProcess {
 		data.get(); // Advance over one word
 		int nextBlock = data.get();
 
-		List<Object> blocks = new ArrayList<>();
+		List<HeapElement> blocks = new ArrayList<>();
 
 		while (nextBlock != 0) {
 			data = readFromAddress(chip, nextBlock, HEAP_BLOCK_HEADER_SIZE);

@@ -5,7 +5,6 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
-import static uk.ac.manchester.spinnaker.connections.SDPConnection.updateSDPHeaderForUDPSend;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -21,6 +20,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPFlag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -338,6 +338,8 @@ public class UDPConnection implements Connection {
 		}
 	}
 
+	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
+
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
@@ -357,7 +359,7 @@ public class UDPConnection implements Connection {
 		 */
 		SDPMessage trigger_message = new SDPMessage(new SDPHeader(
 				SDPFlag.REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0), 3));
-		updateSDPHeaderForUDPSend(trigger_message.sdpHeader, 0, 0);
+		trigger_message.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = allocate(300).order(LITTLE_ENDIAN);
 		trigger_message.addToBuffer(b);
 		InetAddress addr = getByName(hostname);

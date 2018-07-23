@@ -1,10 +1,15 @@
 package uk.ac.manchester.spinnaker.selectors;
 
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
-/** A connection selector for multi-connection processes */
-public interface ConnectionSelector {
+/**
+ * A connection selector for multi-connection processes.
+ *
+ * @param <T>
+ *            The type of connections handled by this selector.
+ */
+public interface ConnectionSelector<T extends Connection> {
 	/**
 	 * Get the next connection for the process from a list of connections that
 	 * might satisfy the request.
@@ -12,5 +17,5 @@ public interface ConnectionSelector {
 	 * @param request
 	 *            The SCP message to be sent
 	 */
-	SCPConnection getNextConnection(SCPRequest<?> request);
+	T getNextConnection(SCPRequest<?> request);
 }

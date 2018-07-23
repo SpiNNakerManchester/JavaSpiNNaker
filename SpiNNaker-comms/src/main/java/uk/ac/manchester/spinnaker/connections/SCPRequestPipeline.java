@@ -3,6 +3,8 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
@@ -10,14 +12,13 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
@@ -48,7 +50,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
-@SuppressWarnings("unused")
 public class SCPRequestPipeline {
 	private Logger log = getLogger(SCPRequestPipeline.class);
 	/** The default number of requests to send before checking for responses. */
@@ -123,11 +124,22 @@ public class SCPRequestPipeline {
 		Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
-			this.requestData = connection.getSCPData(request);
+			this.requestData = getSCPData(request, connection.getChip());
 			this.callback = callback;
 			this.errorCallback = errorCallback;
 			retryReason = new ArrayList<>();
 			retries = numRetries;
+		}
+
+		private ByteBuffer getSCPData(SCPRequest<?> scpRequest,
+				ChipLocation chip) {
+			ByteBuffer buffer = allocate(300).order(LITTLE_ENDIAN);
+			if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
+				scpRequest.updateSDPHeaderForUDPSend(chip);
+			}
+			scpRequest.addToBuffer(buffer);
+			buffer.flip();
+			return buffer;
 		}
 
 		private void send() throws IOException {

@@ -8,8 +8,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SCPSender;
+import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -18,11 +17,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 /** A UDP connection to SC&MP on the board. */
 public class SCPConnection extends SDPConnection
-		implements SCPSender, SCPReceiver {
-
+		implements SCPSenderReceiver {
 	private static final HasChipLocation DEFAULT_CHIP = new ChipLocation(255,
 			255);
-	private ChipLocation chip;
 
 	/**
 	 * Create a connection to a particular instance of SCAMP.
@@ -160,7 +157,6 @@ public class SCPConnection extends SDPConnection
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
 				"SCPConnection only meaningful with a real remote host"),
 				(remotePort == null) ? SCP_SCAMP_PORT : remotePort);
-		this.chip = chip.asChipLocation();
 	}
 
 	@Override
@@ -176,8 +172,7 @@ public class SCPConnection extends SDPConnection
 	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
 		ByteBuffer buffer = ByteBuffer.allocate(300).order(LITTLE_ENDIAN);
 		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-			updateSDPHeaderForUDPSend(scpRequest.sdpHeader, chip.getX(),
-					chip.getY());
+			scpRequest.updateSDPHeaderForUDPSend(getChip());
 		}
 		scpRequest.addToBuffer(buffer);
 		buffer.flip();
@@ -187,14 +182,5 @@ public class SCPConnection extends SDPConnection
 	@Override
 	public void sendSCPRequest(SCPRequest<?> scpRequest) throws IOException {
 		send(getSCPData(scpRequest));
-	}
-
-	@Override
-	public ChipLocation getChip() {
-		return chip;
-	}
-
-	public void setChip(HasChipLocation chip) {
-		this.chip = new ChipLocation(chip.getX(), chip.getY());
 	}
 }

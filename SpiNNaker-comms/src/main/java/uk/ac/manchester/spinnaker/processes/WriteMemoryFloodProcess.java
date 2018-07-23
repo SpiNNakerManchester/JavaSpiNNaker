@@ -11,18 +11,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-public class WriteMemoryFloodProcess extends MultiConnectionProcess {
-	public WriteMemoryFloodProcess(ConnectionSelector connectionSelector) {
+public class WriteMemoryFloodProcess
+		extends MultiConnectionProcess<SCPConnection> {
+	public WriteMemoryFloodProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
-	public WriteMemoryFloodProcess(ConnectionSelector connectionSelector,
+	public WriteMemoryFloodProcess(
+			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits) {
 		super(connectionSelector, numRetries, timeout, numChannels,

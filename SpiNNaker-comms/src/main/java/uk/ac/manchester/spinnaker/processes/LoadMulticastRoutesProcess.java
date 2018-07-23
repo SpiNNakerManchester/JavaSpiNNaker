@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
@@ -14,8 +15,10 @@ import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for loading the multicast routing table on a SpiNNaker chip. */
-public class LoadMulticastRoutesProcess extends MultiConnectionProcess {
-	public LoadMulticastRoutesProcess(ConnectionSelector connectionSelector) {
+public class LoadMulticastRoutesProcess
+		extends MultiConnectionProcess<SCPConnection> {
+	public LoadMulticastRoutesProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 

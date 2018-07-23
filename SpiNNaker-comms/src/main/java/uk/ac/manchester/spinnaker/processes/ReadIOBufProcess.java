@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
@@ -27,14 +28,15 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * A process for reading IOBUF memory (mostly log messages) from a SpiNNaker
  * core.
  */
-public class ReadIOBufProcess extends MultiConnectionProcess {
+public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int BLOCK_HEADER_BYTES = 16;
 	private final Queue<NextRead> nextReads = new LinkedList<>();
 	private final Queue<ExtraRead> extraReads = new LinkedList<>();
 	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf = new DefaultMap<>(
 			TreeMap::new);
 
-	public ReadIOBufProcess(ConnectionSelector connectionSelector) {
+	public ReadIOBufProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 

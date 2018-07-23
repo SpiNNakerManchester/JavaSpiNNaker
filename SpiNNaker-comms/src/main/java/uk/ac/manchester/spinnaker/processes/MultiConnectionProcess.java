@@ -15,7 +15,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process that uses multiple connections in communication. */
-public abstract class MultiConnectionProcess extends Process {
+public abstract class MultiConnectionProcess<T extends SCPConnection>
+		extends Process {
 	public static final int DEFAULT_NUM_RETRIES = 3;
 	public static final int DEFAULT_TIMEOUT = SCP_TIMEOUT;
 	public static final int DEFAULT_NUM_CHANNELS = 8;
@@ -24,16 +25,16 @@ public abstract class MultiConnectionProcess extends Process {
 	private final int numWaits;
 	private final int numChannels;
 	private final int numRetries;
-	final ConnectionSelector selector;
-	private final Map<SCPConnection, SCPRequestPipeline> requestPipelines;
+	final ConnectionSelector<T> selector;
+	private final Map<T, SCPRequestPipeline> requestPipelines;
 	private final int timeout;
 
-	protected MultiConnectionProcess(ConnectionSelector connectionSelector) {
+	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector) {
 		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
 				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
 	}
 
-	protected MultiConnectionProcess(ConnectionSelector connectionSelector,
+	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits) {
 		this.requestPipelines = new HashMap<>();
@@ -45,13 +46,13 @@ public abstract class MultiConnectionProcess extends Process {
 	}
 
 	@Override
-	protected <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler errorCallback)
+	protected <R extends SCPResponse> void sendRequest(SCPRequest<R> request,
+			Consumer<R> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		if (errorCallback == null) {
 			errorCallback = this::receiveError;
 		}
-		SCPConnection connection = selector.getNextConnection(request);
+		T connection = selector.getNextConnection(request);
 		if (!requestPipelines.containsKey(connection)) {
 			SCPRequestPipeline pipeline = new SCPRequestPipeline(connection,
 					numChannels, numWaits, numRetries, timeout);

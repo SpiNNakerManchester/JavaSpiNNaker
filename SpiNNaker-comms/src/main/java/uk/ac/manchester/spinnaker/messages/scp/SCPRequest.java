@@ -3,8 +3,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
 
 /**
  * Represents an Abstract SCP Request
@@ -13,7 +13,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  *            The type of response expected to the request, if any.
  */
 public abstract class SCPRequest<T extends SCPResponse>
-		implements SerializableMessage {
+		extends SpinnakerRequest {
 	static final int DEFAULT_DEST_X_COORD = 255;
 	static final int DEFAULT_DEST_Y_COORD = 255;
 	static final CoreLocation DEFAULT_MONITOR_CORE = new CoreLocation(
@@ -31,8 +31,6 @@ public abstract class SCPRequest<T extends SCPResponse>
 	public final ByteBuffer dataBuffer;
 	/** The SCP request header of the message */
 	public final SCPRequestHeader scpRequestHeader;
-	/** The SDP header of the message */
-	public final SDPHeader sdpHeader;
 
 	private static final byte[] NO_DATA = null;
 
@@ -57,7 +55,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			byte[] data) {
-		this.sdpHeader = sdpHeader;
+		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
 		this.argument2 = argument2;
@@ -69,7 +67,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			ByteBuffer data) {
-		this.sdpHeader = sdpHeader;
+		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
 		this.argument2 = argument2;

@@ -2,15 +2,15 @@ package uk.ac.manchester.spinnaker.processes;
 
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** Deallocate space in the SDRAM */
-public class DeallocSDRAMProcess extends MultiConnectionProcess {
-	private int numBlocksFreed;
-
-	public DeallocSDRAMProcess(ConnectionSelector connectionSelector) {
+public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+	public DeallocSDRAMProcess(
+			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
@@ -25,9 +25,7 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess {
 	 */
 	public int deallocSDRAM(HasChipLocation chip, int appID)
 			throws IOException, Exception {
-		numBlocksFreed = synchronousCall(
-				new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
-		return numBlocksFreed;
+		return synchronousCall(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
 	}
 
 	/**
@@ -44,9 +42,5 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess {
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
 			throws IOException, Exception {
 		synchronousCall(new SDRAMDeAlloc(chip, appID, baseAddress));
-	}
-
-	public int getNumBlocksFreed() {
-		return numBlocksFreed;
 	}
 }
