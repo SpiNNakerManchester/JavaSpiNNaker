@@ -1,6 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.lang.String.format;
+import static uk.ac.manchester.spinnaker.machine.CPUState.RUN_TIME_EXCEPTION;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -215,5 +217,22 @@ public class CPUInfo implements HasCoreLocation {
 	/** The current user values (user<sub>0</sub>&hellip;user<sub>3</sub>). */
 	public int[] getUser() {
 		return user;
+	}
+
+	public String getStatusDescription() {
+		if (state != RUN_TIME_EXCEPTION) {
+			return format("    %d:%d:%d in state %s", core.getX(), core.getY(),
+					core.getP(), state);
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
+				core.getY(), core.getP(), state, run_time_error));
+		sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",
+				registers[0], registers[1], registers[2], registers[3]));
+		sb.append(format("        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n",
+				registers[4], registers[5], registers[6], registers[7]));
+		sb.append(format("        PSR=%08x, SP=%08x, LR=%08x",
+				processor_state_register, stack_pointer, link_register));
+		return sb.toString();
 	}
 }

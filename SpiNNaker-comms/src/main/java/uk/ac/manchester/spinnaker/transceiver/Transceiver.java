@@ -1,13 +1,22 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByName;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.CPUState.RUN_TIME_EXCEPTION;
+import static uk.ac.manchester.spinnaker.machine.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
@@ -16,20 +25,27 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.router_table_copy_address;
 import static uk.ac.manchester.spinnaker.processes.FillProcess.DataType.WORD;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 
@@ -45,9 +61,12 @@ import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
+import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
@@ -56,16 +75,27 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.Constants;
+import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
+import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
+import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.messages.scp.ApplicationStop;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagClear;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReverseIPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.RouterClear;
+import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
+import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 import uk.ac.manchester.spinnaker.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.processes.FillProcess;
@@ -78,8 +108,12 @@ import uk.ac.manchester.spinnaker.processes.LoadMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.processes.MallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.processes.ReadFixedRouteEntryProcess;
+import uk.ac.manchester.spinnaker.processes.ReadMemoryProcess;
 import uk.ac.manchester.spinnaker.processes.ReadRouterDiagnosticsProcess;
+import uk.ac.manchester.spinnaker.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.processes.SendSingleSCPCommandProcess;
+import uk.ac.manchester.spinnaker.processes.WriteMemoryFloodProcess;
+import uk.ac.manchester.spinnaker.processes.WriteMemoryProcess;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.selectors.RoundRobinConnectionSelector;
@@ -359,13 +393,906 @@ public class Transceiver {
 		return singletonList(connection);
 	}
 
-	private int get_sv_data(HasChipLocation chip,
+	private Object get_sv_data(HasChipLocation chip,
 			SystemVariableDefinition data_item) throws IOException, Exception {
-		// FIXME
-		return struct.unpack_from(data_item.type.struct_code,
-				readMemory(chip,
-						SYSTEM_VARIABLE_BASE_ADDRESS + data_item.offset,
-						data_item.type.value))[0];
+		ByteBuffer buffer = readMemory(chip,
+				SYSTEM_VARIABLE_BASE_ADDRESS + data_item.offset,
+				data_item.type.value);
+		switch (data_item.type) {
+		case BYTE:
+			return buffer.get();
+		case SHORT:
+			return buffer.getShort();
+		case INT:
+			return buffer.getInt();
+		case LONG:
+			return buffer.getLong();
+		case BYTE_ARRAY:
+			byte[] dst = (byte[]) data_item.getDefault();
+			buffer.get(dst);
+			return dst;
+		default:
+			// Unreachable
+			return null;
+		}
+	}
+
+	private ConnectionSelector<BMPConnection> bmpConnection(int cabinet,
+			int frame) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private byte get_next_nearest_neighbour_id() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private static final Integer TIMEOUT_DISABLED = null;
+	private static final int DEFAULT_POLL_INTERVAL = 100;
+	private static final Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
+			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	private static final int DEFAULT_CHECK_INTERVAL = 100;
+
+	/**
+	 * Read a register on a FPGA of a board. The meaning of the register's
+	 * contents will depend on the FPGA's configuration.
+	 *
+	 * @param fpga_num
+	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param register
+	 *            Register address to read to (will be rounded down to the
+	 *            nearest 32-bit word boundary).
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to request the FPGA register from
+	 * @return the register data
+	 */
+	public int readFPGARegister(int fpga_num, int register, int cabinet,
+			int frame, int board) throws IOException, Exception {
+		SendSingleBMPCommandProcess process = new SendSingleBMPCommandProcess(
+				bmpConnection(cabinet, frame));
+		return process.execute(
+				new ReadFPGARegister(fpga_num, register, board)).fpgaRegister;
+	}
+
+	/**
+	 * Write a register on a FPGA of a board. The meaning of setting the
+	 * register's contents will depend on the FPGA's configuration.
+	 *
+	 * @param fpga_num
+	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param register
+	 *            Register address to read to (will be rounded down to the
+	 *            nearest 32-bit word boundary).
+	 * @param value
+	 *            the value to write into the FPGA register
+	 * @param cabinet
+	 *            cabinet: the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to write the FPGA register to
+	 */
+	public void writeFPGARegister(int fpga_num, int register, int value,
+			int cabinet, int frame, int board) throws IOException, Exception {
+		SendSingleBMPCommandProcess process = new SendSingleBMPCommandProcess(
+				bmpConnection(cabinet, frame));
+		process.execute(
+				new WriteFPGARegister(fpga_num, register, value, board));
+	}
+
+	/**
+	 * Read the ADC data.
+	 *
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to request the ADC data from
+	 * @return the FPGA's ADC data object
+	 */
+	public ADCInfo readADCData(int board, int cabinet, int frame)
+			throws IOException, Exception {
+		return new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame))
+				.execute(new ReadADC(board)).adcInfo;
+	}
+
+	/**
+	 * Read the BMP version.
+	 *
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to request the data from
+	 * @return the sver from the BMP
+	 */
+	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
+			throws IOException, Exception {
+		return new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame))
+				.execute(new GetBMPVersion(board)).versionInfo;
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 */
+	public void writeMemory(HasChipLocation chip, int baseAddress,
+			InputStream dataStream, int numBytes)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(chip.getScampCore(), baseAddress, dataStream,
+				numBytes);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 */
+	public void writeMemory(HasCoreLocation core, int baseAddress,
+			InputStream dataStream, int numBytes)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(core, baseAddress, dataStream, numBytes);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 */
+	public void writeMemory(HasChipLocation chip, int baseAddress,
+			File dataFile) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(chip.getScampCore(), baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 */
+	public void writeMemory(HasCoreLocation core, int baseAddress,
+			File dataFile) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(core, baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 */
+	public void writeMemory(HasChipLocation chip, int baseAddress, int dataWord)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		b.putInt(dataWord);
+		process.writeMemory(chip.getScampCore(), baseAddress, b);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 */
+	public void writeMemory(HasCoreLocation core, int baseAddress, int dataWord)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		b.putInt(dataWord);
+		process.writeMemory(core, baseAddress, b);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. Should be a
+	 *            {@link ByteBuffer}, positioned at the point where the data is
+	 */
+	public void writeMemory(HasChipLocation chip, int baseAddress,
+			ByteBuffer data) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(chip.getScampCore(), baseAddress, data);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. Should be a
+	 *            {@link ByteBuffer}, positioned at the point where the data is
+	 */
+	public void writeMemory(HasCoreLocation core, int baseAddress,
+			ByteBuffer data) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeMemory(core, baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 */
+	public void writeNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, InputStream dataStream, int numBytes)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(chip.getScampCore(), link, baseAddress, dataStream,
+				numBytes);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 */
+	public void writeNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, InputStream dataStream, int numBytes)
+			throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(core, link, baseAddress, dataStream, numBytes);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 */
+	public void writeNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, File dataFile) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(chip.getScampCore(), link, baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 */
+	public void writeNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, File dataFile) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(core, link, baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 */
+	public void writeNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, int dataWord) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		b.putInt(dataWord);
+		process.writeLink(chip.getScampCore(), link, baseAddress, b);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 */
+	public void writeNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, int dataWord) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		b.putInt(dataWord);
+		process.writeLink(core, link, baseAddress, b);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. Should be a
+	 *            {@link ByteBuffer}, positioned at the point where the data is
+	 */
+	public void writeNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, ByteBuffer data) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(chip.getScampCore(), link, baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. Should be a
+	 *            {@link ByteBuffer}, positioned at the point where the data is
+	 */
+	public void writeNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, ByteBuffer data) throws IOException, Exception {
+		WriteMemoryProcess process = new WriteMemoryProcess(
+				scamp_connection_selector);
+		process.writeLink(core, link, baseAddress, data);
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 */
+	public void writeMemoryFlood(int baseAddress, InputStream dataStream,
+			int numBytes) throws IOException, Exception {
+		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
+				scamp_connection_selector);
+		// Ensure only one flood fill occurs at any one time
+		synchronized (flood_write_lock) {
+			// Start the flood fill
+			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
+			process.writeMemory(nearest_neighbour_id, baseAddress, dataStream,
+					numBytes);
+		}
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 */
+	public void writeMemoryFlood(int baseAddress, File dataFile)
+			throws IOException, Exception {
+		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
+				scamp_connection_selector);
+		// Ensure only one flood fill occurs at any one time
+		synchronized (flood_write_lock) {
+			// Start the flood fill
+			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
+			process.writeMemory(nearest_neighbour_id, baseAddress, dataFile);
+		}
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 */
+	public void writeMemoryFlood(int baseAddress, int dataWord)
+			throws IOException, Exception {
+		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
+				scamp_connection_selector);
+		// Ensure only one flood fill occurs at any one time
+		synchronized (flood_write_lock) {
+			// Start the flood fill
+			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
+			ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+			b.putInt(dataWord);
+			process.writeMemory(nearest_neighbour_id, baseAddress, b);
+		}
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. Should be a
+	 *            {@link ByteBuffer}, positioned at the point where the data is
+	 */
+	public void writeMemoryFlood(int baseAddress, ByteBuffer data)
+			throws IOException, Exception {
+		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
+				scamp_connection_selector);
+		// Ensure only one flood fill occurs at any one time
+		synchronized (flood_write_lock) {
+			// Start the flood fill
+			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
+			process.writeMemory(nearest_neighbour_id, baseAddress, data);
+		}
+	}
+
+	/**
+	 * Read some areas of SDRAM from the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is to be read
+	 *            from
+	 * @param base_address
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read
+	 */
+	public ByteBuffer readMemory(HasChipLocation core, int base_address,
+			int length) throws IOException, Exception {
+		return readMemory(core.getScampCore(), base_address, length);
+	}
+
+	/**
+	 * Read some areas of SDRAM from the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is to be read
+	 *            from
+	 * @param base_address
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read
+	 */
+	public ByteBuffer readMemory(HasCoreLocation core, int base_address,
+			int length) throws IOException, Exception {
+		ReadMemoryProcess process = new ReadMemoryProcess(
+				scamp_connection_selector);
+		return process.readMemory(core, base_address, length);
+	}
+
+	/**
+	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
+	 * command.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be read from
+	 * @param link
+	 *            The link index to send the request to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return The data that has been read
+	 */
+	public ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, int length) throws IOException, Exception {
+		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
+				length);
+	}
+
+	/**
+	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the chip whose neighbour is to be read
+	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return The data that has been read
+	 */
+	public ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, int length) throws IOException, Exception {
+		ReadMemoryProcess process = new ReadMemoryProcess(
+				scamp_connection_selector);
+		return process.readLink(core, link, baseAddress, length);
+	}
+
+	/**
+	 * Sends a stop request for an app_id.
+	 *
+	 * @param app_id
+	 *            The ID of the application to send to
+	 */
+	public void stopApplication(int app_id) throws IOException, Exception {
+		if (!machine_off) {
+			SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
+					scamp_connection_selector);
+			process.execute(new ApplicationStop(app_id));
+		} else {
+			log.warn("You are calling a app stop on a turned off machine. "
+					+ "Please fix and try again");
+		}
+	}
+
+	/**
+	 * Waits for the specified cores running the given application to be in some
+	 * target state or states. Handles failures.
+	 *
+	 * @param all_core_subsets
+	 *            the cores to check are in a given sync state
+	 * @param app_id
+	 *            the application ID that being used by the simulation
+	 * @param cpu_states
+	 *            The expected states once the applications are ready; success
+	 *            is when each application is in one of these states
+	 */
+	public void waitForCoresToBeInState(CoreSubsets all_core_subsets,
+			int app_id, Set<CPUState> cpu_states) {
+		waitForCoresToBeInState(all_core_subsets, app_id, cpu_states,
+				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
+				DEFAULT_CHECK_INTERVAL);
+	}
+
+	/**
+	 * Waits for the specified cores running the given application to be in some
+	 * target state or states. Handles failures.
+	 *
+	 * @param all_core_subsets
+	 *            the cores to check are in a given sync state
+	 * @param app_id
+	 *            the application ID that being used by the simulation
+	 * @param cpu_states
+	 *            The expected states once the applications are ready; success
+	 *            is when each application is in one of these states
+	 * @param timeout
+	 *            The amount of time to wait in milliseconds for the cores to
+	 *            reach one of the states, or <tt>null</tt> to wait for an
+	 *            unbounded amount of time.
+	 * @param time_between_polls
+	 *            Time between checking the state, in milliseconds
+	 * @param error_states
+	 *            Set of states that the application can be in that indicate an
+	 *            error, and so should raise an exception
+	 * @param counts_between_full_check
+	 *            The number of times to use the count signal before instead
+	 *            using the full CPU state check
+	 */
+	public void waitForCoresToBeInState(CoreSubsets all_core_subsets,
+			int app_id, Set<CPUState> cpu_states, Integer timeout,
+			int time_between_polls, Set<CPUState> error_states,
+			int counts_between_full_check) {
+		// check that the right number of processors are in the states
+		int processors_ready = 0;
+		Long timeout_time = (timeout == null ? null
+				: currentTimeMillis() + timeout);
+		int tries = 0;
+		while (processors_ready < all_core_subsets.size()
+				&& (timeout_time == null
+						|| currentTimeMillis() < timeout_time)) {
+			// Get the number of processors in the ready states
+			processors_ready = 0;
+			for (CPUState cpu_state : cpu_states) {
+				processors_ready += get_core_state_count(app_id, cpu_state);
+			}
+
+			// If the count is too small, check for error states
+			if (processors_ready < all_core_subsets.size()) {
+				for (CPUState cpu_state : error_states) {
+					int error_cores = get_core_state_count(app_id, cpu_state);
+					if (error_cores > 0) {
+						throw new SpinnmanException(String.format(
+								"%d cores have reached an error state %s",
+								error_cores, cpu_state));
+					}
+				}
+
+				/*
+				 * If we haven't seen an error, increase the tries, and do a
+				 * full check if required
+				 */
+				tries++;
+				if (tries >= counts_between_full_check) {
+					CoreSubsets cores_in_state = getCoresInState(
+							all_core_subsets, cpu_states);
+					processors_ready = cores_in_state.size();
+					tries = 0;
+				}
+
+				// If we're still not in the correct state, wait a bit
+				if (processors_ready < all_core_subsets.size()) {
+					sleep(time_between_polls);
+				}
+			}
+		}
+
+		// If we haven't reached the final state, do a final full check
+		if (processors_ready < all_core_subsets.size()) {
+			CoreSubsets cores_in_state = getCoresInState(all_core_subsets,
+					cpu_states);
+
+			/*
+			 * If we are sure we haven't reached the final state, report a
+			 * timeout error
+			 */
+			if (cores_in_state.size() != all_core_subsets.size()) {
+				throw new SpinnmanTimeoutException(
+						format("waiting for cores {} to reach one of {}",
+								all_core_subsets, cpu_states),
+						timeout);
+			}
+		}
+	}
+
+	/**
+	 * Get all cores that are in a given state.
+	 *
+	 * @param all_core_subsets
+	 *            The cores to filter
+	 * @param state
+	 *            The states to filter on
+	 * @return Core subsets object containing cores in the given state
+	 */
+	public CoreSubsets getCoresInState(CoreSubsets all_core_subsets,
+			CPUState state) {
+		return getCoresInState(all_core_subsets, singleton(state));
+	}
+
+	/**
+	 * Get all cores that are in a given set of states.
+	 *
+	 * @param all_core_subsets
+	 *            The cores to filter
+	 * @param states
+	 *            The states to filter on
+	 * @return Core subsets object containing cores in the given states
+	 */
+	public CoreSubsets getCoresInState(CoreSubsets all_core_subsets,
+			Set<CPUState> states) {
+		Collection<CPUInfo> core_infos = getCPUInformation(all_core_subsets);
+		CoreSubsets cores_in_state = new CoreSubsets();
+		for (CPUInfo core_info : core_infos) {
+			if (states.contains(core_info.getState())) {
+				cores_in_state.addCore(core_info.asCoreLocation());
+			}
+		}
+		return cores_in_state;
+	}
+
+	/**
+	 * Get all cores that are not in a given state.
+	 *
+	 * @param all_core_subsets
+	 *            The cores to filter
+	 * @param state
+	 *            The state to filter on
+	 * @return Core subsets object containing cores not in the given state
+	 */
+	public Map<CoreLocation, CPUInfo> getCoresNotInState(
+			CoreSubsets all_core_subsets, CPUState state) {
+		return getCoresNotInState(all_core_subsets, singleton(state));
+	}
+
+	/**
+	 * Get all cores that are not in a given set of states.
+	 *
+	 * @param all_core_subsets
+	 *            The cores to filter
+	 * @param states
+	 *            The states to filter on
+	 * @return Core subsets object containing cores not in the given states
+	 */
+	public Map<CoreLocation, CPUInfo> getCoresNotInState(
+			CoreSubsets all_core_subsets, Set<CPUState> states) {
+		Collection<CPUInfo> core_infos = getCPUInformation(all_core_subsets);
+		Map<CoreLocation, CPUInfo> cores_not_in_state = new TreeMap<>();
+		for (CPUInfo core_info : core_infos) {
+			if (!states.contains(core_info.getState())) {
+				cores_not_in_state.put(core_info.asCoreLocation(), core_info);
+			}
+		}
+		return cores_not_in_state;
+	}
+
+	/**
+	 * Send a signal to an application.
+	 *
+	 * @param appID
+	 *            The ID of the application to send to
+	 * @param signal
+	 *            The signal to send
+	 */
+	public void sendSignal(int appID, Signal signal)
+			throws IOException, Exception {
+		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
+				scamp_connection_selector);
+		process.execute(new SendSignal(appID, signal));
+	}
+
+	/**
+	 * Set LED states.
+	 *
+	 * @param core
+	 *            The coordinates of the core on which to set the LEDs
+	 * @param led_states
+	 *            A map from LED index to state with 0 being off, 1 on and 2
+	 *            inverted.
+	 */
+	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> led_states)
+			throws IOException, Exception {
+		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
+				scamp_connection_selector);
+		process.execute(new SetLED(core, led_states));
 	}
 
 	/**
@@ -762,8 +1689,7 @@ public class Transceiver {
 	 */
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception {
-		int base_address = get_sv_data(chip,
-				SystemVariableDefinition.router_table_copy_address);
+		int base_address = (int) get_sv_data(chip, router_table_copy_address);
 		GetMulticastRoutesProcess process = new GetMulticastRoutesProcess(
 				scamp_connection_selector);
 		return process.getRoutes(chip, base_address);
@@ -780,8 +1706,7 @@ public class Transceiver {
 	 */
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			int appID) throws IOException, Exception {
-		int base_address = get_sv_data(chip,
-				SystemVariableDefinition.router_table_copy_address);
+		int base_address = (int) get_sv_data(chip, router_table_copy_address);
 		GetMulticastRoutesProcess process = new GetMulticastRoutesProcess(
 				scamp_connection_selector, appID);
 		return process.getRoutes(chip, base_address);

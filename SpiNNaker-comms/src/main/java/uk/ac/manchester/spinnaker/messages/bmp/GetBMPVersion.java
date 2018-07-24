@@ -10,12 +10,12 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 /**
  * An SCP request to read the version of software running on a board's BMP.
  */
-public class GetVersion extends BMPRequest<GetVersion.Response> {
+public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	/**
 	 * @param board
 	 *            The board to get the version from
 	 */
-	public GetVersion(int board) {
+	public GetBMPVersion(int board) {
 		super(board, CMD_VER);
 	}
 
