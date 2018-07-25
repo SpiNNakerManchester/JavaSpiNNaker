@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.processes;
 
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -11,12 +13,21 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process that uses a single connection in communication. */
-public abstract class SingleConnectionProcess<T extends SCPConnection> extends Process {
+public abstract class SingleConnectionProcess<T extends SCPConnection>
+		extends Process {
 	private final ConnectionSelector<T> connectionSelector;
 	private SCPRequestPipeline requestPipeline;
+	private final int timeout;
 
-	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector) {
+	protected SingleConnectionProcess(
+			ConnectionSelector<T> connectionSelector) {
+		this(connectionSelector, SCP_TIMEOUT);
+	}
+
+	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
+			int timeout) {
 		this.requestPipeline = null;
+		this.timeout = timeout;
 		this.connectionSelector = connectionSelector;
 	}
 
@@ -33,7 +44,7 @@ public abstract class SingleConnectionProcess<T extends SCPConnection> extends P
 		 */
 		if (requestPipeline == null) {
 			requestPipeline = new SCPRequestPipeline(
-					connectionSelector.getNextConnection(request));
+					connectionSelector.getNextConnection(request), timeout);
 		}
 		requestPipeline.sendRequest(request, callback, errorCallback);
 	}

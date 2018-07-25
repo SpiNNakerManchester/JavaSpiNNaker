@@ -1256,8 +1256,8 @@ public class Transceiver implements TransceiverInterface {
 		int timeout = (int) (1000
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame), 0,
-				timeout).execute(new SetPower(powerCommand, boards, 0.0));
+		new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame), timeout)
+				.execute(new SetPower(powerCommand, boards, 0.0));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on

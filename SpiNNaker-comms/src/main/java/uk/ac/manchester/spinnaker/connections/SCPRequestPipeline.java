@@ -194,6 +194,21 @@ public class SCPRequestPipeline {
 	}
 
 	/**
+	 * Create a request handling pipeline using default settings.
+	 *
+	 * @param connection
+	 *            The connection over which the communication is to take place.
+	 * @param packetTimeout
+	 *            The number of elapsed milliseconds after sending a packet
+	 *            before it is considered a timeout.
+	 */
+	public SCPRequestPipeline(SCPConnection connection, int packetTimeout) {
+		this(connection, DEFAULT_NUM_CHANNELS,
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, DEFAULT_RETRIES,
+				packetTimeout);
+	}
+
+	/**
 	 * Create a request handling pipeline.
 	 *
 	 * @param connection
