@@ -80,11 +80,13 @@ public class UDPConnection implements Connection {
 	}
 
 	/** @return The local IP address to which the connection is bound. */
+	@Override
 	public InetAddress getLocalIPAddress() {
 		return socket.getLocalAddress();
 	}
 
 	/** @return The local port to which the connection is bound. */
+	@Override
 	public int getLocalPort() {
 		return socket.getLocalPort();
 	}
@@ -93,6 +95,7 @@ public class UDPConnection implements Connection {
 	 * @return The remote IP address to which the connection is connected, or
 	 *         <tt>null</tt> if it is not connected.
 	 */
+	@Override
 	public InetAddress getRemoteIPAddress() {
 		return remoteIPAddress;
 	}
@@ -101,6 +104,7 @@ public class UDPConnection implements Connection {
 	 * @return The remte port to which the connection is connected, or zero if
 	 *         it is not connected.
 	 */
+	@Override
 	public int getRemotePort() {
 		return remotePort;
 	}

@@ -76,9 +76,9 @@ public class Machine {
     }
 
 
-    public Machine(int width, int height, Iterable<ChipSummaryInfo> chips,
-            Iterable<Processor> ignoreCores, Iterable<Link> ignoreLinks,
-            HasChipLocation bootChip) {
+    public Machine(int width, int height, Collection<Chip> chips,
+            Collection<CoreLocation> ignoreCores,
+            Collection<LinkDescriptor> ignoreLinks, HasChipLocation bootChip) {
         // FIXME Christian!!!
         throw new UnsupportedOperationException("FIXME");
     }

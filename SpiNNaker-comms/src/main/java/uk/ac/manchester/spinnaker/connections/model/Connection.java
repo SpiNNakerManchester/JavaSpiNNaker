@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * An abstract connection to the SpiNNaker board over some medium.
  */
-public interface Connection extends AutoCloseable {
+public interface Connection extends SocketHolder {
 	/**
 	 * Determines if the medium is connected at this point in time
 	 *

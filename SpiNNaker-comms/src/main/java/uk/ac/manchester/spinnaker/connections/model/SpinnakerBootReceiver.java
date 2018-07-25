@@ -5,7 +5,7 @@ import java.io.IOException;
 import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
 
 /** A receiver of SpiNNaker boot messages */
-public interface SpinnakerBootReceiver {
+public interface SpinnakerBootReceiver extends SocketHolder {
 	/**
 	 * Receives a boot message from this connection. Blocks until a message has
 	 * been received.

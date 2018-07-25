@@ -57,6 +57,6 @@ public class SDPConnection extends UDPConnection
 	}
 
 	public void setChip(HasChipLocation chip) {
-		this.chip = new ChipLocation(chip.getX(), chip.getY());
+		this.chip = chip.asChipLocation();
 	}
 }

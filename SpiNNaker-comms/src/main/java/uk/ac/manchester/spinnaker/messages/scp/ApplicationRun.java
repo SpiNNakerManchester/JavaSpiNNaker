@@ -4,7 +4,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -19,7 +18,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 *            The processors of the chip to run on, between 1 and 17
 	 */
 	public ApplicationRun(int appId, HasChipLocation chip,
-			Collection<Integer> processors) {
+			Iterable<Integer> processors) {
 		this(appId, chip, processors, false);
 	}
 

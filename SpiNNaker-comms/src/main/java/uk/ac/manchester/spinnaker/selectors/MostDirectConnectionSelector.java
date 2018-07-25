@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  *            The type of connections selected between.
  */
 public final class MostDirectConnectionSelector<Connection extends SCPSenderReceiver>
-		implements ConnectionSelector<Connection> {
+		implements ConnectionSelector<Connection>, MachineAware {
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
 	private final Map<ChipLocation, Connection> connections;
 	private final Connection defaultConnection;
@@ -50,10 +50,12 @@ public final class MostDirectConnectionSelector<Connection extends SCPSenderRece
 		return (conn == null) ? defaultConnection : conn;
 	}
 
+	@Override
 	public Machine getMachine() {
 		return machine;
 	}
 
+	@Override
 	public void setMachine(Machine machine) {
 		this.machine = machine;
 	}

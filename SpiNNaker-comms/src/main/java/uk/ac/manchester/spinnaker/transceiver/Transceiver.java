@@ -1,22 +1,20 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
-import static java.net.InetAddress.getByName;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.net.InetAddress.getByAddress;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.machine.CPUState.RUN_TIME_EXCEPTION;
-import static uk.ac.manchester.spinnaker.machine.CPUState.WATCHDOG;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
+import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
+import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
@@ -25,33 +23,40 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
+import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
+import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.ethernet_ip_address;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.router_table_copy_address;
-import static uk.ac.manchester.spinnaker.processes.FillProcess.DataType.WORD;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.workOutBMPFromMachineDetails;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.function.Supplier;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionListener;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
@@ -62,52 +67,73 @@ import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
 import uk.ac.manchester.spinnaker.machine.CPUState;
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.LinkDescriptor;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
+import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
-import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
+import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
+import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
+import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
+import uk.ac.manchester.spinnaker.messages.model.LEDAction;
+import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
+import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationStop;
+import uk.ac.manchester.spinnaker.messages.scp.CountState;
+import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagClear;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagSetTTO;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReverseIPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.RouterClear;
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
-import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.processes.ApplicationRunProcess;
 import uk.ac.manchester.spinnaker.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.processes.FillProcess;
 import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.processes.GetCPUInfoProcess;
 import uk.ac.manchester.spinnaker.processes.GetHeapProcess;
+import uk.ac.manchester.spinnaker.processes.GetMachineProcess;
 import uk.ac.manchester.spinnaker.processes.GetMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.processes.GetTagsProcess;
+import uk.ac.manchester.spinnaker.processes.GetVersionProcess;
 import uk.ac.manchester.spinnaker.processes.LoadFixedRouteEntryProcess;
 import uk.ac.manchester.spinnaker.processes.LoadMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.processes.MallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.processes.ReadFixedRouteEntryProcess;
+import uk.ac.manchester.spinnaker.processes.ReadIOBufProcess;
 import uk.ac.manchester.spinnaker.processes.ReadMemoryProcess;
 import uk.ac.manchester.spinnaker.processes.ReadRouterDiagnosticsProcess;
 import uk.ac.manchester.spinnaker.processes.SendSingleBMPCommandProcess;
@@ -115,6 +141,7 @@ import uk.ac.manchester.spinnaker.processes.SendSingleSCPCommandProcess;
 import uk.ac.manchester.spinnaker.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.processes.WriteMemoryProcess;
 import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.selectors.RoundRobinConnectionSelector;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -130,7 +157,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * the overall speed of operation, since the multiple calls may be made
  * separately over the set of given connections.
  */
-public class Transceiver {
+public class Transceiver implements TransceiverInterface {
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
@@ -141,46 +168,46 @@ public class Transceiver {
 	 * have these chips excluded, as if they never existed. The processor IDs of
 	 * the specified chips are ignored.
 	 */
-	private final Set<ChipLocation> ignore_chips = new HashSet<>();
+	private final Set<ChipLocation> ignoreChips = new HashSet<>();
 	/**
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final Set<CoreLocation> ignore_cores = new HashSet<>();
+	private final Set<CoreLocation> ignoreCores = new HashSet<>();
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final Set<Object> ignore_links = new HashSet<>();// FIXME
+	private final Set<LinkDescriptor> ignoreLinks = new HashSet<>();
 	/**
 	 * The maximum core ID in any discovered machine. Requests for a "machine"
 	 * will only have core IDs up to and including this value.
 	 */
-	private Integer max_core_id;
+	private final Integer maxCoreID;
 	/**
 	 * The max size each chip can say it has for SDRAM. (This is mainly used for
 	 * debugging purposes.)
 	 */
-	private Integer max_sdram_size;
+	private final Integer maxSDRAMSize;
 
-	private Integer iobuf_size;
-	private AppIdTracker app_id_tracker;
+	private Integer iobufSize;
+	private AppIdTracker appIDTracker;
 	/**
 	 * A set of the original connections. Used to determine what can be closed.
 	 */
-	private final Set<Connection> original_connections = new HashSet<>();
+	private final Set<Connection> originalConnections = new HashSet<>();
 	/** A set of all connections. Used for closing. */
-	private final Set<Connection> all_connections = new HashSet<>();
+	private final Set<Connection> allConnections = new HashSet<>();
 	/**
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
-	private SpinnakerBootSender boot_send_connection;
+	private SpinnakerBootSender bootSendConnection;
 	/**
 	 * A list of boot receive connections. These are used to listen for the
 	 * pre-boot board identifiers.
 	 */
-	private final List<SpinnakerBootReceiver> boot_receive_connections = new ArrayList<>();
+	private final List<SpinnakerBootReceiver> bootReceiveConnections = new ArrayList<>();
 	/**
 	 * A map of port -> map of IP address -> (connection, listener) for UDP
 	 * connections. Note listener might be <tt>null</tt> if the connection has
@@ -189,14 +216,14 @@ public class Transceiver {
 	 * Used to keep track of what connection is listening on what port to ensure
 	 * only one type of traffic is received on any port for any interface
 	 */
-	private final Map<Integer, Map<InetAddress, Pair<UDPConnection, ConnectionListener<?>>>> udp_receive_connections_by_port = new DefaultMap<>(
+	private final Map<Integer, Map<InetAddress, Pair<UDPConnection, ConnectionListener<?>>>> udpReceiveConnectionsByPort = new DefaultMap<>(
 			HashMap::new);
 	/**
 	 * A map of class -> list of (connection, listener) for UDP connections that
 	 * are listenable. Note that listener might be <tt>null</tt> if the
 	 * connection has not be listened to before.
 	 */
-	private final Map<Class<?>, List<Pair<UDPConnection, ConnectionListener<?>>>> udp_listenable_connections_by_class = new DefaultMap<>(
+	private final Map<Class<?>, List<Pair<UDPConnection, ConnectionListener<?>>>> udpListenableConnectionsByClass = new DefaultMap<>(
 			ArrayList::new);
 	/**
 	 * A list of all connections that can be used to send SCP messages.
@@ -205,38 +232,38 @@ public class Transceiver {
 	 * useful if they are just using SCP to send a command that doesn't expect a
 	 * response.
 	 */
-	private final List<SCPSender> scp_sender_connections = new ArrayList<>();
+	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
 	/** A list of all connections that can be used to send SDP messages */
-	private final List<SDPSender> sdp_sender_connections = new ArrayList<>();
+	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
 	/**
 	 * A list of all connections that can be used to send Multicast messages.
 	 */
-	private final List<MulticastSender> multicast_sender_connections = new ArrayList<>();
+	private final List<MulticastSender> multicastSenderConnections = new ArrayList<>();
 	/**
 	 * A map of IP address -> SCAMP connection. These are those that can be used
 	 * for setting up IP Tags.
 	 */
-	private final Map<InetAddress, UDPConnection> udp_scamp_connections = new HashMap<>();
+	private final Map<InetAddress, UDPConnection> udpScampConnections = new HashMap<>();
 	/**
 	 * A list of all connections that can be used to send and receive SCP
 	 * messages for SCAMP interaction.
 	 */
-	private final List<SCPConnection> scamp_connections = new ArrayList<>();
+	private final List<SCPConnection> scampConnections = new ArrayList<>();
 	/** The BMP connections */
-	private final List<BMPConnection> bmp_connections = new ArrayList<>();
+	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** connection selectors for the BMP processes. */
-	private final Map<BMPCoords, ConnectionSelector<?>> bmp_connection_selectors = new HashMap<>();
+	private final Map<BMPCoords, ConnectionSelector<BMPConnection>> bmpConnectionSelectors = new HashMap<>();
 	/** connection selectors for the SCP processes. */
-	private final ConnectionSelector<SCPConnection> scamp_connection_selector;
+	private final ConnectionSelector<SCPConnection> scpConnectionSelector;
 	/** The nearest neighbour start ID */
-	private int nearest_neighbour_id = 1;
+	private int nearestNeighbourID = 1;
 	/** The nearest neighbour lock */
-	private final Object nearest_neighbour_lock = new Object();
+	private final Object nearestNeighbourLock = new Object();
 	/**
 	 * A lock against multiple flood fill writes. This is needed as SCAMP cannot
 	 * cope with this
 	 */
-	private final Object flood_write_lock = new Object();
+	private final Object floodWriteLock = new Object();
 	/**
 	 * Lock against single chip executions. The condition should be acquired
 	 * before the locks are checked or updated.
@@ -244,48 +271,146 @@ public class Transceiver {
 	 * The write lock condition should also be acquired to avoid a flood fill
 	 * during an individual chip execute.
 	 */
-	private final Map<ChipLocation, Object> chip_execute_locks = new DefaultMap<>(
-			Object::new);
-	private final Object chip_execute_lock_condition = new Object();
-	private int n_chip_execute_locks = 0;
-	private boolean machine_off = false;
+	private final Map<ChipLocation, Semaphore> chipExecuteLocks = new DefaultMap<>(
+			() -> new Semaphore(1));
+	private final Object chipExecuteLockCondition = new Object();
+	private int numChipExecuteLocks = 0;
+	private boolean machineOff = false;
 
-	public Transceiver(int version) throws IOException {
+	/**
+	 * Create a Transceiver by creating a UDPConnection to the given hostname on
+	 * port 17893 (the default SCAMP port), and a BootConnection on port 54321
+	 * (the default boot port), optionally discovering any additional links
+	 * using the UDPConnection, and then returning the transceiver created with
+	 * the conjunction of the created UDPConnection and the discovered
+	 * connections.
+	 *
+	 * @param hostname
+	 *            The hostname or IP address of the board
+	 * @param numberOfBoards
+	 *            a number of boards expected to be supported, or None, which
+	 *            defaults to a single board
+	 * @param ignoreChips
+	 *            An optional set of chips to ignore in the machine. Requests
+	 *            for a "machine" will have these chips excluded, as if they
+	 *            never existed. The processors of the specified chips are
+	 *            ignored.
+	 * @param ignoreCores
+	 *            An optional set of cores to ignore in the machine. Requests
+	 *            for a "machine" will have these cores excluded, as if they
+	 *            never existed.
+	 * @param ignoredLinks
+	 *            An optional set of links to ignore in the machine. Requests
+	 *            for a "machine" will have these links excluded, as if they
+	 *            never existed.
+	 * @param maxCoreID
+	 *            The maximum core ID in any discovered machine. Requests for a
+	 *            "machine" will only have core IDs up to this value.
+	 * @param version
+	 *            the type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. If a spinn-5 board, then the version will be 5,
+	 *            spinn-3 would equal 3 and so on.
+	 * @param bmpConnectionData
+	 *            the details of the BMP connections used to boot multi-board
+	 *            systems
+	 * @param autodetectBMP
+	 *            True if the BMP of version 4 or 5 boards should be
+	 *            automatically determined from the board IP address
+	 * @param bootPortNumber
+	 *            the port number used to boot the machine
+	 * @param scampConnections
+	 *            the list of connections used for SCAMP communications
+	 * @param maxSDRAMSize
+	 *            the max size each chip can say it has for SDRAM (mainly used
+	 *            in debugging purposes)
+	 * @return The created transceiver
+	 */
+	public static TransceiverInterface createTransceiver(String hostname,
+			int version, Collection<BMPConnectionData> bmpConnectionData,
+			Integer numberOfBoards, List<ChipLocation> ignoreChips,
+			List<CoreLocation> ignoreCores, List<LinkDescriptor> ignoredLinks,
+			Integer maxCoreID, boolean autodetectBMP,
+			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
+			Integer maxSDRAMSize)
+			throws IOException, SpinnmanException, Exception {
+		if (hostname != null) {
+			log.info("Creating transceiver for %s", hostname);
+		}
+		List<Connection> connections = new ArrayList<>();
+
+		/*
+		 * if no BMP has been supplied, but the board is a spinn4 or a spinn5
+		 * machine, then an assumption can be made that the BMP is at -1 on the
+		 * final value of the IP address
+		 */
+		if (version >= 4 && autodetectBMP
+				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
+			bmpConnectionData = singletonList(
+					workOutBMPFromMachineDetails(hostname, numberOfBoards));
+		}
+
+		// handle BMP connections
+		if (bmpConnectionData != null) {
+			List<InetAddress> bmpIPs = new ArrayList<>();
+			for (BMPConnectionData connData : bmpConnectionData) {
+				BMPConnection connection = new BMPConnection(connData);
+				connections.add(connection);
+				bmpIPs.add(connection.getRemoteIPAddress());
+			}
+			log.info("Transceiver using BMPs: %s", bmpIPs);
+		}
+
+		// handle the SpiNNaker connection
+		if (scampConnections == null) {
+			connections.add(new SCPConnection(hostname));
+		}
+
+		// handle the boot connection
+		connections
+				.add(new BootConnection(null, null, hostname, bootPortNumber));
+
+		return new Transceiver(version, connections, ignoreChips, ignoreCores,
+				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
+	}
+
+	public Transceiver(int version)
+			throws IOException, SpinnmanException, Exception {
 		this(version, null, null, null, null, null, null, null);
 	}
 
 	public Transceiver(int version, Collection<Connection> connections,
-			Collection<ChipLocation> ignore_chips,
-			Collection<CoreLocation> ignore_cores,
-			Collection<Object> ignore_links, Integer max_core_id,
-			Collection<ConnectionDescriptor> scamp_connections,
-			Integer max_sdram_size) throws IOException {
+			Collection<ChipLocation> ignoreChips,
+			Collection<CoreLocation> ignoreCores,
+			Collection<LinkDescriptor> ignoreLinks, Integer maxCoreID,
+			Collection<ConnectionDescriptor> scampConnections,
+			Integer maxSDRAMSize)
+			throws IOException, SpinnmanException, Exception {
 		this.version = version;
-		if (ignore_chips != null) {
-			this.ignore_chips.addAll(ignore_chips);
+		if (ignoreChips != null) {
+			this.ignoreChips.addAll(ignoreChips);
 		}
-		if (ignore_cores != null) {
-			this.ignore_cores.addAll(ignore_cores);
+		if (ignoreCores != null) {
+			this.ignoreCores.addAll(ignoreCores);
 		}
-		if (ignore_links != null) {
-			this.ignore_links.addAll(ignore_links);
+		if (ignoreLinks != null) {
+			this.ignoreLinks.addAll(ignoreLinks);
 		}
-		this.max_core_id = max_core_id;
-		this.max_sdram_size = max_sdram_size;
+		this.maxCoreID = maxCoreID;
+		this.maxSDRAMSize = maxSDRAMSize;
 
 		if (connections == null) {
 			connections = emptyList();
 		}
-		original_connections.addAll(connections);
-		all_connections.addAll(connections);
+		originalConnections.addAll(connections);
+		allConnections.addAll(connections);
 		// if there has been SCAMP connections given, build them
-		if (scamp_connections != null) {
-			for (ConnectionDescriptor desc : scamp_connections) {
+		if (scampConnections != null) {
+			for (ConnectionDescriptor desc : scampConnections) {
 				connections.add(new SCPConnection(desc.chip, desc.hostname,
 						desc.portNumber));
 			}
 		}
-		scamp_connection_selector = identifyConnections(connections);
+		scpConnectionSelector = identifyConnections(connections);
 		checkBMPConnections();
 	}
 
@@ -294,25 +419,25 @@ public class Transceiver {
 		for (Connection conn : connections) {
 			// locate the only boot send conn
 			if (conn instanceof SpinnakerBootSender) {
-				if (boot_send_connection != null) {
+				if (bootSendConnection != null) {
 					throw new IllegalArgumentException(
 							"Only a single SpinnakerBootSender can be specified");
 				}
-				boot_send_connection = (SpinnakerBootSender) conn;
+				bootSendConnection = (SpinnakerBootSender) conn;
 			}
 
 			// locate any boot receiver connections
 			if (conn instanceof SpinnakerBootReceiver) {
-				boot_receive_connections.add((SpinnakerBootReceiver) conn);
+				bootReceiveConnections.add((SpinnakerBootReceiver) conn);
 			}
 
 			// Locate any connections listening on a UDP port
 			if (conn instanceof UDPConnection) {
 				UDPConnection udpc = (UDPConnection) conn;
-				udp_receive_connections_by_port.get(udpc.getLocalPort())
+				udpReceiveConnectionsByPort.get(udpc.getLocalPort())
 						.put(udpc.getLocalIPAddress(), new Pair<>(udpc, null));
 				if (conn instanceof Listenable) {
-					udp_listenable_connections_by_class.get(conn.getClass())
+					udpListenableConnectionsByClass.get(conn.getClass())
 							.add(new Pair<>(udpc, null));
 				}
 			}
@@ -322,17 +447,17 @@ public class Transceiver {
 			 * connections)
 			 */
 			if (conn instanceof SCPSender && !(conn instanceof BMPConnection)) {
-				scp_sender_connections.add((SCPSender) conn);
+				scpSenderConnections.add((SCPSender) conn);
 			}
 
 			// Locate any connections that can send SDP
 			if (conn instanceof SDPSender) {
-				sdp_sender_connections.add((SDPSender) conn);
+				sdpSenderConnections.add((SDPSender) conn);
 			}
 
 			// Locate any connections that can send Multicast
 			if (conn instanceof MulticastSender) {
-				multicast_sender_connections.add((MulticastSender) conn);
+				multicastSenderConnections.add((MulticastSender) conn);
 			}
 
 			// Locate any connections that can send and receive SCP
@@ -340,19 +465,19 @@ public class Transceiver {
 				// If it is a BMP connection, add it here
 				if (conn instanceof BMPConnection) {
 					BMPConnection bmpc = (BMPConnection) conn;
-					bmp_connections.add(bmpc);
-					bmp_connection_selectors.put(
+					bmpConnections.add(bmpc);
+					bmpConnectionSelectors.put(
 							new BMPCoords(bmpc.cabinet, bmpc.frame),
 							new RoundRobinConnectionSelector<>(
 									singletonList(bmpc)));
 				} else {
 					if (conn instanceof SCPConnection) {
-						scamp_connections.add((SCPConnection) conn);
+						scampConnections.add((SCPConnection) conn);
 					}
 					// If also a UDP connection, add it here (for IP tags)
 					if (conn instanceof UDPConnection) {
 						UDPConnection udpc = (UDPConnection) conn;
-						udp_scamp_connections.put(udpc.getRemoteIPAddress(),
+						udpScampConnections.put(udpc.getRemoteIPAddress(),
 								udpc);
 					}
 				}
@@ -361,30 +486,25 @@ public class Transceiver {
 
 		// update the transceiver with the connection selectors.
 		return new MostDirectConnectionSelector<SCPConnection>(machine,
-				scamp_connections);
-	}
-
-	private void checkBMPConnections() {
-		// TODO Auto-generated method stub
-
+				scampConnections);
 	}
 
 	/**
 	 * Get the connections for talking to a board.
 	 *
-	 * @param connection:
+	 * @param connection
 	 *            directly gives the connection to use. May be <tt>null</tt>
-	 * @param board_address
+	 * @param boardAddress
 	 *            the address of the board to talk to. May be <tt>null</tt>
 	 * @return List of length 1 or 0 (the latter only if the search for the
 	 *         given board address fails).
 	 */
-	private Collection<SCPConnection> get_connection_list(
+	private Collection<SCPConnection> getConnectionList(
 			SCPConnection connection, InetAddress boardAddress) {
 		if (connection != null) {
 			return singletonList(connection);
 		} else if (boardAddress == null) {
-			return scamp_connections;
+			return scampConnections;
 		}
 		connection = locateSpinnakerConnection(boardAddress);
 		if (connection == null) {
@@ -393,12 +513,12 @@ public class Transceiver {
 		return singletonList(connection);
 	}
 
-	private Object get_sv_data(HasChipLocation chip,
-			SystemVariableDefinition data_item) throws IOException, Exception {
+	private Object getSystemVariable(HasChipLocation chip,
+			SystemVariableDefinition dataItem) throws IOException, Exception {
 		ByteBuffer buffer = readMemory(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + data_item.offset,
-				data_item.type.value);
-		switch (data_item.type) {
+				SYSTEM_VARIABLE_BASE_ADDRESS + dataItem.offset,
+				dataItem.type.value);
+		switch (dataItem.type) {
 		case BYTE:
 			return buffer.get();
 		case SHORT:
@@ -408,7 +528,7 @@ public class Transceiver {
 		case LONG:
 			return buffer.getLong();
 		case BYTE_ARRAY:
-			byte[] dst = (byte[]) data_item.getDefault();
+			byte[] dst = (byte[]) dataItem.getDefault();
 			buffer.get(dst);
 			return dst;
 		default:
@@ -419,741 +539,905 @@ public class Transceiver {
 
 	private ConnectionSelector<BMPConnection> bmpConnection(int cabinet,
 			int frame) {
-		// TODO Auto-generated method stub
+		BMPCoords key = new BMPCoords(cabinet, frame);
+		if (!bmpConnectionSelectors.containsKey(key)) {
+			throw new IllegalArgumentException(
+					"Unknown combination of cabinet (" + cabinet
+							+ ") and frame (" + frame + ")");
+		}
+		return bmpConnectionSelectors.get(key);
+	}
+
+	private byte getNextNearestNeighbourID() {
+		synchronized (nearestNeighbourLock) {
+			int next = (nearestNeighbourID + 1) & 0x7F;
+			nearestNeighbourID = next;
+			return (byte) next;
+		}
+	}
+
+	private class ExecuteLock implements AutoCloseable {
+		private final Semaphore lock;
+
+		ExecuteLock(HasChipLocation chip) throws InterruptedException {
+			ChipLocation key = chip.asChipLocation();
+			synchronized (chipExecuteLockCondition) {
+				lock = chipExecuteLocks.get(key);
+			}
+			lock.acquire();
+			synchronized (chipExecuteLockCondition) {
+				numChipExecuteLocks++;
+			}
+		}
+
+		@Override
+		public void close() {
+			synchronized (chipExecuteLockCondition) {
+				lock.release();
+				numChipExecuteLocks--;
+				chipExecuteLockCondition.notifyAll();
+			}
+		}
+	}
+
+	@Override
+	public ConnectionSelector<SCPConnection> getScampConnectionSelector() {
+		return scpConnectionSelector;
+	}
+
+	/**
+	 * Returns the given connection, or else picks one at random.
+	 *
+	 * @param <C>
+	 *            the connection type
+	 * @param connections
+	 *            the list of connections to locate a random one from
+	 * @return a connection object
+	 */
+	private static <C> C getRandomConnection(List<C> connections) {
+		if (connections == null || connections.isEmpty()) {
+			return null;
+		}
+		int idx = ThreadLocalRandom.current().nextInt(0, connections.size());
+		return connections.get(idx);
+	}
+
+	private static final int EXECUTABLE_ADDRESS = 0x67800000;
+	private static final int DEFAULT_DESTINATION_COORDINATE = 255;
+	private static final ChipLocation DEFAULT_DESTINATION = new ChipLocation(
+			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
+	private static final String SCAMP_NAME = "SC&MP";
+	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
+	private static final String BMP_NAME = "BC&MP";
+	private static final Set<Integer> BMP_MAJOR_VERSIONS = unmodifiableSet(
+			new HashSet<>(asList(1, 2)));
+	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
+	private static final int STANDARD_RETRIES_NO = 3;
+
+	/** Check that the BMP connections are actually connected to valid BMPs */
+	private void checkBMPConnections()
+			throws IOException, SpinnmanException, Exception {
+		/*
+		 * Check that the UDP BMP conn is actually connected to a BMP via the
+		 * SVER command
+		 */
+		for (BMPConnection conn : bmpConnections) {
+			// try to send a BMP SVER to check if it responds as expected
+			try {
+				VersionInfo versionInfo = readBMPVersion(conn.boards,
+						conn.cabinet, conn.frame);
+				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
+						.contains(versionInfo.versionNumber.majorVersion)) {
+					throw new IOException(format(
+							"The BMP at %s is running %s %s which is "
+									+ "incompatible with this transceiver, required "
+									+ "version is %s %s",
+							conn.getRemoteIPAddress(), versionInfo.name,
+							versionInfo.versionString, BMP_NAME,
+							BMP_MAJOR_VERSIONS));
+				}
+
+				log.info("Using BMP at %s with version %s %s",
+						conn.getRemoteIPAddress(), versionInfo.name,
+						versionInfo.versionString);
+			}
+			/*
+			 * If it fails to respond due to timeout, maybe that the connection
+			 * isn't valid.
+			 */
+			catch (SocketTimeoutException e) {
+				throw new SpinnmanException(
+						format("BMP connection to %s is not responding",
+								conn.getRemoteIPAddress()),
+						e);
+			} catch (Exception e) {
+				log.error(format("Failed to speak to BMP at %s",
+						conn.getRemoteIPAddress()), e);
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * Check that the given connection to the given chip works
+	 *
+	 * @param connectionSelector
+	 *            the connection selector to use
+	 * @param chip
+	 *            the chip coordinates to try to talk to
+	 * @param retries
+	 *            how many attempts to do before giving up
+	 * @return True if a valid response is received, False otherwise
+	 */
+	protected boolean checkConnection(
+			ConnectionSelector<SCPConnection> connectionSelector, int retries,
+			HasChipLocation chip) {
+		for (int r = 0; r < retries; r++) {
+			try {
+				ChipSummaryInfo chipInfo = new SendSingleSCPCommandProcess(
+						connectionSelector)
+								.execute(new GetChipInfo(chip)).chipInfo;
+				if (chipInfo.isEthernetAvailable) {
+					return true;
+				}
+				sleep(100);
+			} catch (InterruptedException | SocketTimeoutException
+					| Exception e) {
+				// do nothing
+			} catch (IOException e) {
+				break;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
+			throws IOException {
+		if (connection == null) {
+			connection = (SCPConnection) getRandomConnection(
+					scpSenderConnections);
+		}
+		connection.sendSCPRequest(message);
+	}
+
+	@Override
+	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
+			throws IOException {
+		if (connection == null) {
+			connection = (SDPConnection) getRandomConnection(
+					sdpSenderConnections);
+		}
+		connection.sendSDPMessage(message);
+	}
+
+	/** Get the current machine status and store it */
+	private void updateMachine() throws IOException, Exception {
+		// Get the width and height of the machine
+		getMachineDimensions();
+
+		// Get the coordinates of the boot chip
+		VersionInfo versionInfo = getScampVersion();
+
+		// Get the details of all the chips
+		machine = new GetMachineProcess(scpConnectionSelector, ignoreChips,
+				ignoreCores, ignoreLinks, maxCoreID, maxSDRAMSize)
+						.getMachineDetails(versionInfo.core, dimensions);
+
+		// update the SCAMP selector with the machine
+		if (scpConnectionSelector instanceof MachineAware) {
+			((MachineAware) scpConnectionSelector).setMachine(machine);
+		}
+
+		/*
+		 * update the SCAMP connections replacing any x and y with the default
+		 * SCP request params with the boot chip coordinates
+		 */
+		for (SCPConnection sc : scampConnections) {
+			if (sc.getChip().equals(DEFAULT_DESTINATION)) {
+				sc.setChip(machine.boot);
+			}
+		}
+
+		// Work out and add the SpiNNaker links and FPGA links
+		machine.addSpinnakerLinks();
+		machine.addFpgaLinks();
+
+		// TODO: Actually get the existing APP_IDs in use
+		appIDTracker = new AppIdTracker();
+
+		log.info("Detected a machine on IP address {} which has {}",
+				bootSendConnection.getRemoteIPAddress(),
+				machine.coresAndLinkOutputString());
+	}
+
+	/**
+	 * Find connections to the board and store these for future use. Note that
+	 * connections can be empty, in which case another local discovery mechanism
+	 * will be used. Note that an exception will be thrown if no initial
+	 * connections can be found to the board.
+	 *
+	 * @return An iterable of discovered connections, not including the
+	 *         initially given connections in the constructor
+	 */
+	public List<SCPConnection> discoverScampConnections()
+			throws IOException, Exception {
+		/*
+		 * Currently, this only finds other UDP connections given a connection
+		 * that supports SCP - this is done via the machine
+		 */
+		if (scampConnections == null || scampConnections.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// Get the machine dimensions
+		MachineDimensions dims = getMachineDimensions();
+
+		// Find all the new connections via the machine Ethernet-connected chips
+		List<SCPConnection> newConnections = new ArrayList<>();
+		for (ChipLocation chip : getSpinn5Geometry()
+				.getPotentialRootChips(dims.width, dims.height)) {
+			InetAddress ipAddress = getByAddress(
+					(byte[]) getSystemVariable(chip, ethernet_ip_address));
+			if (udpScampConnections.containsKey(ipAddress)) {
+				continue;
+			}
+			SCPConnection conn = searchForProxies(chip);
+
+			// if no data, no proxy
+			if (conn == null) {
+				conn = new SCPConnection(chip, ipAddress.getHostAddress());
+			} else {
+				// proxy, needs an adjustment
+				if (udpScampConnections
+						.containsKey(conn.getRemoteIPAddress())) {
+					udpScampConnections.remove(conn.getRemoteIPAddress());
+				}
+			}
+
+			// check if it works
+			if (checkConnection(new MostDirectConnectionSelector<>(null,
+					singletonList(conn)), STANDARD_RETRIES_NO, chip)) {
+				scpSenderConnections.add(conn);
+				allConnections.add(conn);
+				udpScampConnections.put(ipAddress, conn);
+				scampConnections.add(conn);
+				newConnections.add(conn);
+			} else {
+				log.warn(
+						"Additional Ethernet connection on %s at chip %d,%d "
+								+ "cannot be contacted",
+						ipAddress, chip.getX(), chip.getY());
+			}
+		}
+
+		// Update the connection queues after finding new connections
+		return newConnections;
+	}
+
+	/**
+	 * Looks for an entry within the UDP SCAMP connections which is linked to a
+	 * given chip.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip
+	 * @return connection or <tt>null</tt> if there is no such connection
+	 */
+	private SCPConnection searchForProxies(HasChipLocation chip) {
+		for (SCPConnection connection : scampConnections) {
+			if (connection.getChip().equals(chip)) {
+				return connection;
+			}
+		}
 		return null;
 	}
 
-	private byte get_next_nearest_neighbour_id() {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * Get the currently known connections to the board, made up of those passed
+	 * in to the transceiver and those that are discovered during calls to
+	 * {@link #discoverScampConnections()}. No further discovery is done here.
+	 *
+	 * @return The connections known to the transceiver
+	 */
+	public Set<Connection> getConnections() {
+		return unmodifiableSet(allConnections);
 	}
 
-	private static final Integer TIMEOUT_DISABLED = null;
-	private static final int DEFAULT_POLL_INTERVAL = 100;
-	private static final Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
-			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
-	private static final int DEFAULT_CHECK_INTERVAL = 100;
+	@Override
+	public MachineDimensions getMachineDimensions()
+			throws IOException, Exception {
+		if (dimensions == null) {
+			ByteBuffer data = readMemory(DEFAULT_DESTINATION,
+					SYSTEM_VARIABLE_BASE_ADDRESS + y_size.offset, 2);
+			int height = toUnsignedInt(data.get());
+			int width = toUnsignedInt(data.get());
+			dimensions = new MachineDimensions(width, height);
+		}
+		return dimensions;
+	}
+
+	@Override
+	public Machine getMachineDetails() throws IOException, Exception {
+		if (machine == null) {
+			updateMachine();
+		}
+		return machine;
+	}
+
+	/** Get the application ID tracker for this transceiver. */
+	public AppIdTracker getAppIdTracker() throws IOException, Exception {
+		if (appIDTracker == null) {
+			updateMachine();
+		}
+		return appIDTracker;
+	}
+
+	@Override
+	public boolean isConnected(Connection connection) {
+		if (connection != null) {
+			return connectedTest(connection);
+		}
+		return scampConnections.stream().anyMatch(this::connectedTest);
+	}
+
+	private boolean connectedTest(Connection c) {
+		try {
+			return c.isConnected();
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	@Override
+	public VersionInfo getScampVersion(HasChipLocation chip,
+			ConnectionSelector<SCPConnection> connectionSelector)
+			throws IOException, Exception {
+		if (connectionSelector == null) {
+			connectionSelector = scpConnectionSelector;
+		}
+		return new GetVersionProcess(connectionSelector)
+				.getVersion(chip.getScampCore());
+	}
+
+	@Override
+	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
+			throws InterruptedException, IOException {
+		SpinnakerBootMessages bootMessages = new SpinnakerBootMessages(version,
+				extraBootValues);
+		Iterator<SpinnakerBootMessage> msgs = bootMessages.getMessages()
+				.iterator();
+		while (msgs.hasNext()) {
+			bootSendConnection.sendBootMessage(msgs.next());
+		}
+		sleep(2000);
+	}
 
 	/**
-	 * Read a register on a FPGA of a board. The meaning of the register's
-	 * contents will depend on the FPGA's configuration.
+	 * Determine if the version of SCAMP is compatible with this transceiver.
 	 *
-	 * @param fpga_num
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the FPGA register from
-	 * @return the register data
+	 * @param version
+	 *            The version to test
+	 * @return true exactly when they are compatible
 	 */
-	public int readFPGARegister(int fpga_num, int register, int cabinet,
+	public static boolean isScampVersionCompabible(Version version) {
+		// The major version must match exactly
+		if (version.majorVersion != SCAMP_VERSION.majorVersion) {
+			return false;
+		}
+
+		/*
+		 * If the minor version matches, the patch version must be >= the
+		 * required version
+		 */
+		if (version.minorVersion == SCAMP_VERSION.minorVersion) {
+			return version.revision >= SCAMP_VERSION.revision;
+		}
+
+		/*
+		 * If the minor version is > than the required version, the patch
+		 * version is irrelevant
+		 */
+		return version.minorVersion > SCAMP_VERSION.minorVersion;
+	}
+
+	@Override
+	public VersionInfo ensureBoardIsReady(int numRetries,
+			Map<SystemVariableDefinition, Object> extraBootValues)
+			throws IOException, Exception, InterruptedException {
+		// try to get a SCAMP version once
+		log.info("Working out if machine is booted");
+		VersionInfo versionInfo;
+		if (machineOff) {
+			versionInfo = null;
+		} else {
+			versionInfo = findScampAndBoot(INITIAL_FIND_SCAMP_RETRIES_COUNT,
+					extraBootValues);
+		}
+
+		// If we fail to get a SCAMP version this time, try other things
+		if (versionInfo == null && !bmpConnections.isEmpty()) {
+			// start by powering up each BMP connection
+			log.info("Attempting to power on machine");
+			powerOnMachine();
+
+			// Sleep a bit to let things get going
+			sleep(2000);
+			log.info("Attempting to boot machine");
+
+			// retry to get a SCAMP version, this time trying multiple times
+			versionInfo = findScampAndBoot(numRetries, extraBootValues);
+		}
+
+		// verify that the version is the expected one for this transceiver
+		if (versionInfo == null) {
+			throw new IOException("Failed to communicate with the machine");
+		}
+		if (!versionInfo.name.equals(SCAMP_NAME)
+				|| !isScampVersionCompabible(versionInfo.versionNumber)) {
+			throw new IOException(format(
+					"The machine is currently booted with %s"
+							+ " %s which is incompatible with this transceiver, "
+							+ "required version is %s %s",
+					versionInfo.name, versionInfo.versionNumber, SCAMP_NAME,
+					SCAMP_VERSION));
+		}
+
+		log.info("Machine communication successful");
+
+		/*
+		 * Change the default SCP timeout on the machine, keeping the old one to
+		 * revert at close
+		 */
+		for (SCPConnection connection : scampConnections) {
+			new SendSingleSCPCommandProcess(scpConnectionSelector).execute(
+					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
+		}
+
+		return versionInfo;
+	}
+
+	/**
+	 * Try to detect if SCAMP is running, and if not, boot the machine
+	 *
+	 * @param numAttempts
+	 *            how many attempts should be supported
+	 * @param extraBootValues
+	 *            Any additional values to set during boot
+	 * @return version info for SCAMP on the booted system
+	 */
+	private VersionInfo findScampAndBoot(int numAttempts,
+			Map<SystemVariableDefinition, Object> extraBootValues)
+			throws InterruptedException, IOException, Exception {
+		VersionInfo versionInfo = null;
+		int triesLeft = numAttempts;
+		while (versionInfo == null && triesLeft > 0) {
+			try {
+				versionInfo = getScampVersion();
+				if (versionInfo.core.asChipLocation()
+						.equals(DEFAULT_DESTINATION)) {
+					versionInfo = null;
+					sleep(100);
+				}
+			} catch (Exception e) {
+				if (e.getCause() instanceof SocketTimeoutException) {
+					log.info("Attempting to boot machine");
+					bootBoard(extraBootValues);
+					triesLeft--;
+				} else if (e.getCause() instanceof IOException) {
+					throw new IOException(
+							"Failed to communicate with the machine", e);
+				} else {
+					throw e;
+				}
+			} catch (SocketTimeoutException e) {
+				log.info("Attempting to boot machine");
+				bootBoard(extraBootValues);
+				triesLeft--;
+			} catch (IOException e) {
+				throw new IOException("Failed to communicate with the machine",
+						e);
+			}
+		}
+
+		// The last thing we tried was booting, so try again to get the version
+		if (versionInfo == null) {
+			versionInfo = getScampVersion();
+			if (versionInfo.core.asChipLocation().equals(DEFAULT_DESTINATION)) {
+				versionInfo = null;
+			}
+		}
+		if (versionInfo != null) {
+			log.info("Found board with version %s", versionInfo);
+		}
+		return versionInfo;
+	}
+
+	@Override
+	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
+			throws IOException, Exception {
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			if (machine == null) {
+				updateMachine();
+			}
+			coreSubsets = new CoreSubsets();
+			for (Chip chip : machine.chips()) {
+				for (Processor processor : chip.processors()) {
+					coreSubsets.addCore(new CoreLocation(chip.getX(),
+							chip.getY(), processor.processorId));
+				}
+			}
+		}
+
+		return new GetCPUInfoProcess(scpConnectionSelector)
+				.getCPUInfo(coreSubsets);
+	}
+
+	@Override
+	public Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+			throws IOException, Exception {
+		// making the assumption that all chips have the same iobuf size.
+		if (iobufSize == null) {
+			iobufSize = (Integer) getSystemVariable(new ChipLocation(0, 0),
+					SystemVariableDefinition.iobuf_size);
+		}
+
+		// read iobuf from machine
+		return new ReadIOBufProcess(scpConnectionSelector).readIOBuf(iobufSize,
+				coreSubsets);
+	}
+
+	@Override
+	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
+			throws IOException, Exception {
+		// build data holder
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.put((byte) watchdog).flip();
+
+		// write data
+		writeMemory(chip,
+				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
+				data);
+	}
+
+	@Override
+	public void enableWatchDogTimerOnChip(HasChipLocation chip,
+			boolean watchdog) throws IOException, Exception {
+		// build data holder
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.put((byte) (watchdog
+				? (Integer) software_watchdog_count.getDefault()
+				: 0)).flip();
+
+		// write data
+		writeMemory(chip,
+				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
+				data);
+	}
+
+	@Override
+	public int getCoreStateCount(int appID, CPUState state)
+			throws IOException, Exception {
+		return new SendSingleSCPCommandProcess(scpConnectionSelector)
+				.execute(new CountState(appID, state)).count;
+	}
+
+	@Override
+	public void execute(HasChipLocation chip, Collection<Integer> processors,
+			InputStream executable, int numBytes, int appID, boolean wait)
+			throws IOException, Exception, InterruptedException {
+		// Lock against updates
+		try (ExecuteLock lock = new ExecuteLock(chip)) {
+			// Write the executable
+			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
+
+			// Request the start of the executable
+			new SendSingleSCPCommandProcess(scpConnectionSelector)
+					.execute(new ApplicationRun(appID, chip, processors, wait));
+		}
+	}
+
+	@Override
+	public final void execute(HasChipLocation chip,
+			Collection<Integer> processors, File executable, int appID,
+			boolean wait) throws IOException, Exception, InterruptedException {
+		// Lock against updates
+		try (ExecuteLock lock = new ExecuteLock(chip)) {
+			// Write the executable
+			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
+
+			// Request the start of the executable
+			new SendSingleSCPCommandProcess(scpConnectionSelector)
+					.execute(new ApplicationRun(appID, chip, processors, wait));
+		}
+	}
+
+	@Override
+	public void execute(HasChipLocation chip, Collection<Integer> processors,
+			ByteBuffer executable, int appID, boolean wait)
+			throws IOException, Exception, InterruptedException {
+		// Lock against updates
+		try (ExecuteLock lock = new ExecuteLock(chip)) {
+			// Write the executable
+			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
+
+			// Request the start of the executable
+			new SendSingleSCPCommandProcess(scpConnectionSelector)
+					.execute(new ApplicationRun(appID, chip, processors, wait));
+		}
+	}
+
+	@Override
+	public void executeFlood(CoreSubsets coreSubsets, InputStream executable,
+			int numBytes, int appID, boolean wait)
+			throws IOException, Exception, InterruptedException {
+		// Lock against other executables
+		synchronized (chipExecuteLockCondition) {
+			while (numChipExecuteLocks > 0) {
+				wait();
+			}
+
+			// Flood fill the system with the binary
+			writeMemoryFlood(EXECUTABLE_ADDRESS, executable, numBytes);
+
+			// Execute the binary on the cores on the chips where required
+			new ApplicationRunProcess(scpConnectionSelector).run(appID,
+					coreSubsets, wait);
+		}
+	}
+
+	@Override
+	public void executeFlood(CoreSubsets coreSubsets, File executable,
+			int appID, boolean wait)
+			throws IOException, Exception, InterruptedException {
+		// Lock against other executables
+		synchronized (chipExecuteLockCondition) {
+			while (numChipExecuteLocks > 0) {
+				wait();
+			}
+
+			// Flood fill the system with the binary
+			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
+
+			// Execute the binary on the cores on the chips where required
+			new ApplicationRunProcess(scpConnectionSelector).run(appID,
+					coreSubsets, wait);
+		}
+	}
+
+	@Override
+	public void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
+			int appID, boolean wait)
+			throws IOException, Exception, InterruptedException {
+		// Lock against other executables
+		synchronized (chipExecuteLockCondition) {
+			while (numChipExecuteLocks > 0) {
+				wait();
+			}
+
+			// Flood fill the system with the binary
+			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
+
+			// Execute the binary on the cores on the chips where required
+			ApplicationRunProcess process = new ApplicationRunProcess(
+					scpConnectionSelector);
+			process.run(appID, coreSubsets, wait);
+		}
+	}
+
+	@Override
+	public void powerOnMachine()
+			throws InterruptedException, IOException, Exception {
+		if (bmpConnections.isEmpty()) {
+			log.warn("No BMP connections, so can't power on");
+		}
+		for (BMPConnection connection : bmpConnections) {
+			power(POWER_ON, connection.boards, connection.cabinet,
+					connection.frame);
+		}
+	}
+
+	@Override
+	public void powerOffMachine()
+			throws InterruptedException, IOException, Exception {
+		if (bmpConnections.isEmpty()) {
+			log.warn("No BMP connections, so can't power off");
+		}
+		for (BMPConnection connection : bmpConnections) {
+			power(POWER_OFF, connection.boards, connection.cabinet,
+					connection.frame);
+		}
+	}
+
+	@Override
+	public void power(PowerCommand powerCommand, Collection<Integer> boards,
+			int cabinet, int frame)
+			throws InterruptedException, IOException, Exception {
+		int timeout = (int) (1000
+				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
+						: BMP_TIMEOUT));
+		new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame), 0,
+				timeout).execute(new SetPower(powerCommand, boards, 0.0));
+		machineOff = powerCommand == POWER_OFF;
+
+		// Sleep for 5 seconds if the machine has just been powered on
+		if (!machineOff) {
+			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * 1000));
+		}
+	}
+
+	@Override
+	public void setLED(Collection<Integer> leds, LEDAction action,
+			Collection<Integer> board, int cabinet, int frame)
+			throws IOException, Exception {
+		new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame)).execute(
+				new uk.ac.manchester.spinnaker.messages.bmp.SetLED(leds, action,
+						board));
+	}
+
+	@Override
+	public int readFPGARegister(int fpgaNumber, int register, int cabinet,
 			int frame, int board) throws IOException, Exception {
-		SendSingleBMPCommandProcess process = new SendSingleBMPCommandProcess(
-				bmpConnection(cabinet, frame));
-		return process.execute(
-				new ReadFPGARegister(fpga_num, register, board)).fpgaRegister;
+		return new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame))
+				.execute(new ReadFPGARegister(fpgaNumber, register,
+						board)).fpgaRegister;
 	}
 
-	/**
-	 * Write a register on a FPGA of a board. The meaning of setting the
-	 * register's contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpga_num
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param value
-	 *            the value to write into the FPGA register
-	 * @param cabinet
-	 *            cabinet: the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to write the FPGA register to
-	 */
-	public void writeFPGARegister(int fpga_num, int register, int value,
+	@Override
+	public void writeFPGARegister(int fpgaNumber, int register, int value,
 			int cabinet, int frame, int board) throws IOException, Exception {
-		SendSingleBMPCommandProcess process = new SendSingleBMPCommandProcess(
-				bmpConnection(cabinet, frame));
-		process.execute(
-				new WriteFPGARegister(fpga_num, register, value, board));
+		new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame)).execute(
+				new WriteFPGARegister(fpgaNumber, register, value, board));
 	}
 
-	/**
-	 * Read the ADC data.
-	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the ADC data from
-	 * @return the FPGA's ADC data object
-	 */
+	@Override
 	public ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, Exception {
 		return new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame))
 				.execute(new ReadADC(board)).adcInfo;
 	}
 
-	/**
-	 * Read the BMP version.
-	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the data from
-	 * @return the sver from the BMP
-	 */
+	@Override
 	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, Exception {
 		return new SendSingleBMPCommandProcess(bmpConnection(cabinet, frame))
 				.execute(new GetBMPVersion(board)).versionInfo;
 	}
 
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 */
-	public void writeMemory(HasChipLocation chip, int baseAddress,
-			InputStream dataStream, int numBytes)
-			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(chip.getScampCore(), baseAddress, dataStream,
-				numBytes);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 */
+	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(core, baseAddress, dataStream, numBytes);
+		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
+				baseAddress, dataStream, numBytes);
 	}
 
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 */
-	public void writeMemory(HasChipLocation chip, int baseAddress,
-			File dataFile) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(chip.getScampCore(), baseAddress, dataFile);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 */
+	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(core, baseAddress, dataFile);
+		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
+				baseAddress, dataFile);
 	}
 
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 */
-	public void writeMemory(HasChipLocation chip, int baseAddress, int dataWord)
-			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
-		b.putInt(dataWord);
-		process.writeMemory(chip.getScampCore(), baseAddress, b);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 */
-	public void writeMemory(HasCoreLocation core, int baseAddress, int dataWord)
-			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
-		b.putInt(dataWord);
-		process.writeMemory(core, baseAddress, b);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. Should be a
-	 *            {@link ByteBuffer}, positioned at the point where the data is
-	 */
-	public void writeMemory(HasChipLocation chip, int baseAddress,
-			ByteBuffer data) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(chip.getScampCore(), baseAddress, data);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. Should be a
-	 *            {@link ByteBuffer}, positioned at the point where the data is
-	 */
+	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeMemory(core, baseAddress, data);
+		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
+				baseAddress, data);
 	}
 
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 */
-	public void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(chip.getScampCore(), link, baseAddress, dataStream,
-				numBytes);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 */
+	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(core, link, baseAddress, dataStream, numBytes);
+		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
+				baseAddress, dataStream, numBytes);
 	}
 
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 */
-	public void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, File dataFile) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(chip.getScampCore(), link, baseAddress, dataFile);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 */
+	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, File dataFile) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(core, link, baseAddress, dataFile);
+		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
+				baseAddress, dataFile);
 	}
 
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 */
-	public void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, int dataWord) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
-		b.putInt(dataWord);
-		process.writeLink(chip.getScampCore(), link, baseAddress, b);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 */
-	public void writeNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, int dataWord) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
-		b.putInt(dataWord);
-		process.writeLink(core, link, baseAddress, b);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. Should be a
-	 *            {@link ByteBuffer}, positioned at the point where the data is
-	 */
-	public void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, ByteBuffer data) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(chip.getScampCore(), link, baseAddress, data);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. Should be a
-	 *            {@link ByteBuffer}, positioned at the point where the data is
-	 */
+	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, ByteBuffer data) throws IOException, Exception {
-		WriteMemoryProcess process = new WriteMemoryProcess(
-				scamp_connection_selector);
-		process.writeLink(core, link, baseAddress, data);
+		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
+				baseAddress, data);
 	}
 
-	/**
-	 * Write to the SDRAM of all chips.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 */
+	@Override
 	public void writeMemoryFlood(int baseAddress, InputStream dataStream,
 			int numBytes) throws IOException, Exception {
 		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scamp_connection_selector);
+				scpConnectionSelector);
 		// Ensure only one flood fill occurs at any one time
-		synchronized (flood_write_lock) {
+		synchronized (floodWriteLock) {
 			// Start the flood fill
-			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
-			process.writeMemory(nearest_neighbour_id, baseAddress, dataStream,
-					numBytes);
+			process.writeMemory(getNextNearestNeighbourID(), baseAddress,
+					dataStream, numBytes);
 		}
 	}
 
-	/**
-	 * Write to the SDRAM of all chips.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 */
+	@Override
 	public void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, Exception {
 		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scamp_connection_selector);
+				scpConnectionSelector);
 		// Ensure only one flood fill occurs at any one time
-		synchronized (flood_write_lock) {
+		synchronized (floodWriteLock) {
 			// Start the flood fill
-			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
-			process.writeMemory(nearest_neighbour_id, baseAddress, dataFile);
+			process.writeMemory(getNextNearestNeighbourID(), baseAddress,
+					dataFile);
 		}
 	}
 
-	/**
-	 * Write to the SDRAM of all chips.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 */
-	public void writeMemoryFlood(int baseAddress, int dataWord)
-			throws IOException, Exception {
-		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scamp_connection_selector);
-		// Ensure only one flood fill occurs at any one time
-		synchronized (flood_write_lock) {
-			// Start the flood fill
-			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
-			ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
-			b.putInt(dataWord);
-			process.writeMemory(nearest_neighbour_id, baseAddress, b);
-		}
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. Should be a
-	 *            {@link ByteBuffer}, positioned at the point where the data is
-	 */
+	@Override
 	public void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, Exception {
 		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scamp_connection_selector);
+				scpConnectionSelector);
 		// Ensure only one flood fill occurs at any one time
-		synchronized (flood_write_lock) {
+		synchronized (floodWriteLock) {
 			// Start the flood fill
-			byte nearest_neighbour_id = get_next_nearest_neighbour_id();
-			process.writeMemory(nearest_neighbour_id, baseAddress, data);
+			process.writeMemory(getNextNearestNeighbourID(), baseAddress, data);
 		}
 	}
 
-	/**
-	 * Read some areas of SDRAM from the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is to be read
-	 *            from
-	 * @param base_address
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data read
-	 */
-	public ByteBuffer readMemory(HasChipLocation core, int base_address,
+	@Override
+	public ByteBuffer readMemory(HasCoreLocation core, int baseAddress,
 			int length) throws IOException, Exception {
-		return readMemory(core.getScampCore(), base_address, length);
+		return new ReadMemoryProcess(scpConnectionSelector).readMemory(core,
+				baseAddress, length);
 	}
 
-	/**
-	 * Read some areas of SDRAM from the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
-	 *            from
-	 * @param base_address
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data read
-	 */
-	public ByteBuffer readMemory(HasCoreLocation core, int base_address,
-			int length) throws IOException, Exception {
-		ReadMemoryProcess process = new ReadMemoryProcess(
-				scamp_connection_selector);
-		return process.readMemory(core, base_address, length);
-	}
-
-	/**
-	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
-	 * command.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be read from
-	 * @param link
-	 *            The link index to send the request to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return The data that has been read
-	 */
-	public ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, int length) throws IOException, Exception {
-		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
-				length);
-	}
-
-	/**
-	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
-	 *
-	 * @param core
-	 *            The coordinates of the chip whose neighbour is to be read
-	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return The data that has been read
-	 */
+	@Override
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, Exception {
-		ReadMemoryProcess process = new ReadMemoryProcess(
-				scamp_connection_selector);
-		return process.readLink(core, link, baseAddress, length);
+		return new ReadMemoryProcess(scpConnectionSelector).readLink(core, link,
+				baseAddress, length);
 	}
 
-	/**
-	 * Sends a stop request for an app_id.
-	 *
-	 * @param app_id
-	 *            The ID of the application to send to
-	 */
-	public void stopApplication(int app_id) throws IOException, Exception {
-		if (!machine_off) {
-			SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-					scamp_connection_selector);
-			process.execute(new ApplicationStop(app_id));
-		} else {
+	@Override
+	public void stopApplication(int appID) throws IOException, Exception {
+		if (machineOff) {
 			log.warn("You are calling a app stop on a turned off machine. "
 					+ "Please fix and try again");
+			return;
 		}
+		new SendSingleSCPCommandProcess(scpConnectionSelector)
+				.execute(new ApplicationStop(appID));
 	}
 
-	/**
-	 * Waits for the specified cores running the given application to be in some
-	 * target state or states. Handles failures.
-	 *
-	 * @param all_core_subsets
-	 *            the cores to check are in a given sync state
-	 * @param app_id
-	 *            the application ID that being used by the simulation
-	 * @param cpu_states
-	 *            The expected states once the applications are ready; success
-	 *            is when each application is in one of these states
-	 */
-	public void waitForCoresToBeInState(CoreSubsets all_core_subsets,
-			int app_id, Set<CPUState> cpu_states) {
-		waitForCoresToBeInState(all_core_subsets, app_id, cpu_states,
-				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
-				DEFAULT_CHECK_INTERVAL);
-	}
-
-	/**
-	 * Waits for the specified cores running the given application to be in some
-	 * target state or states. Handles failures.
-	 *
-	 * @param all_core_subsets
-	 *            the cores to check are in a given sync state
-	 * @param app_id
-	 *            the application ID that being used by the simulation
-	 * @param cpu_states
-	 *            The expected states once the applications are ready; success
-	 *            is when each application is in one of these states
-	 * @param timeout
-	 *            The amount of time to wait in milliseconds for the cores to
-	 *            reach one of the states, or <tt>null</tt> to wait for an
-	 *            unbounded amount of time.
-	 * @param time_between_polls
-	 *            Time between checking the state, in milliseconds
-	 * @param error_states
-	 *            Set of states that the application can be in that indicate an
-	 *            error, and so should raise an exception
-	 * @param counts_between_full_check
-	 *            The number of times to use the count signal before instead
-	 *            using the full CPU state check
-	 */
-	public void waitForCoresToBeInState(CoreSubsets all_core_subsets,
-			int app_id, Set<CPUState> cpu_states, Integer timeout,
-			int time_between_polls, Set<CPUState> error_states,
-			int counts_between_full_check) {
+	@Override
+	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
+			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
+			Set<CPUState> errorStates, int countBetweenFullChecks)
+			throws IOException, Exception, InterruptedException,
+			SpinnmanException {
 		// check that the right number of processors are in the states
-		int processors_ready = 0;
-		Long timeout_time = (timeout == null ? null
-				: currentTimeMillis() + timeout);
+		int processorsReady = 0;
+		long timeoutTime = currentTimeMillis()
+				+ (timeout == null ? 0 : timeout);
 		int tries = 0;
-		while (processors_ready < all_core_subsets.size()
-				&& (timeout_time == null
-						|| currentTimeMillis() < timeout_time)) {
+		while (processorsReady < allCoreSubsets.size()
+				&& (timeout == null || currentTimeMillis() < timeoutTime)) {
 			// Get the number of processors in the ready states
-			processors_ready = 0;
-			for (CPUState cpu_state : cpu_states) {
-				processors_ready += get_core_state_count(app_id, cpu_state);
+			processorsReady = 0;
+			for (CPUState state : cpuStates) {
+				processorsReady += getCoreStateCount(appID, state);
 			}
 
 			// If the count is too small, check for error states
-			if (processors_ready < all_core_subsets.size()) {
-				for (CPUState cpu_state : error_states) {
-					int error_cores = get_core_state_count(app_id, cpu_state);
-					if (error_cores > 0) {
-						throw new SpinnmanException(String.format(
+			if (processorsReady < allCoreSubsets.size()) {
+				for (CPUState state : errorStates) {
+					int errorCores = getCoreStateCount(appID, state);
+					if (errorCores > 0) {
+						throw new SpinnmanException(format(
 								"%d cores have reached an error state %s",
-								error_cores, cpu_state));
+								errorCores, state));
 					}
 				}
 
@@ -1162,177 +1446,60 @@ public class Transceiver {
 				 * full check if required
 				 */
 				tries++;
-				if (tries >= counts_between_full_check) {
-					CoreSubsets cores_in_state = getCoresInState(
-							all_core_subsets, cpu_states);
-					processors_ready = cores_in_state.size();
+				if (tries >= countBetweenFullChecks) {
+					CoreSubsets coresInState = getCoresInState(allCoreSubsets,
+							cpuStates);
+					processorsReady = coresInState.size();
 					tries = 0;
 				}
 
 				// If we're still not in the correct state, wait a bit
-				if (processors_ready < all_core_subsets.size()) {
-					sleep(time_between_polls);
+				if (processorsReady < allCoreSubsets.size()) {
+					sleep(timeBetweenPolls);
 				}
 			}
 		}
 
 		// If we haven't reached the final state, do a final full check
-		if (processors_ready < all_core_subsets.size()) {
-			CoreSubsets cores_in_state = getCoresInState(all_core_subsets,
-					cpu_states);
+		if (processorsReady < allCoreSubsets.size()) {
+			CoreSubsets coresInState = getCoresInState(allCoreSubsets,
+					cpuStates);
 
 			/*
 			 * If we are sure we haven't reached the final state, report a
 			 * timeout error
 			 */
-			if (cores_in_state.size() != all_core_subsets.size()) {
-				throw new SpinnmanTimeoutException(
-						format("waiting for cores {} to reach one of {}",
-								all_core_subsets, cpu_states),
-						timeout);
+			if (coresInState.size() != allCoreSubsets.size()) {
+				throw new SocketTimeoutException(
+						format("waiting for cores %s to reach one of %s",
+								allCoreSubsets, cpuStates));
 			}
 		}
 	}
 
-	/**
-	 * Get all cores that are in a given state.
-	 *
-	 * @param all_core_subsets
-	 *            The cores to filter
-	 * @param state
-	 *            The states to filter on
-	 * @return Core subsets object containing cores in the given state
-	 */
-	public CoreSubsets getCoresInState(CoreSubsets all_core_subsets,
-			CPUState state) {
-		return getCoresInState(all_core_subsets, singleton(state));
-	}
-
-	/**
-	 * Get all cores that are in a given set of states.
-	 *
-	 * @param all_core_subsets
-	 *            The cores to filter
-	 * @param states
-	 *            The states to filter on
-	 * @return Core subsets object containing cores in the given states
-	 */
-	public CoreSubsets getCoresInState(CoreSubsets all_core_subsets,
-			Set<CPUState> states) {
-		Collection<CPUInfo> core_infos = getCPUInformation(all_core_subsets);
-		CoreSubsets cores_in_state = new CoreSubsets();
-		for (CPUInfo core_info : core_infos) {
-			if (states.contains(core_info.getState())) {
-				cores_in_state.addCore(core_info.asCoreLocation());
-			}
-		}
-		return cores_in_state;
-	}
-
-	/**
-	 * Get all cores that are not in a given state.
-	 *
-	 * @param all_core_subsets
-	 *            The cores to filter
-	 * @param state
-	 *            The state to filter on
-	 * @return Core subsets object containing cores not in the given state
-	 */
-	public Map<CoreLocation, CPUInfo> getCoresNotInState(
-			CoreSubsets all_core_subsets, CPUState state) {
-		return getCoresNotInState(all_core_subsets, singleton(state));
-	}
-
-	/**
-	 * Get all cores that are not in a given set of states.
-	 *
-	 * @param all_core_subsets
-	 *            The cores to filter
-	 * @param states
-	 *            The states to filter on
-	 * @return Core subsets object containing cores not in the given states
-	 */
-	public Map<CoreLocation, CPUInfo> getCoresNotInState(
-			CoreSubsets all_core_subsets, Set<CPUState> states) {
-		Collection<CPUInfo> core_infos = getCPUInformation(all_core_subsets);
-		Map<CoreLocation, CPUInfo> cores_not_in_state = new TreeMap<>();
-		for (CPUInfo core_info : core_infos) {
-			if (!states.contains(core_info.getState())) {
-				cores_not_in_state.put(core_info.asCoreLocation(), core_info);
-			}
-		}
-		return cores_not_in_state;
-	}
-
-	/**
-	 * Send a signal to an application.
-	 *
-	 * @param appID
-	 *            The ID of the application to send to
-	 * @param signal
-	 *            The signal to send
-	 */
+	@Override
 	public void sendSignal(int appID, Signal signal)
 			throws IOException, Exception {
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		process.execute(new SendSignal(appID, signal));
+		new SendSingleSCPCommandProcess(scpConnectionSelector)
+				.execute(new SendSignal(appID, signal));
 	}
 
-	/**
-	 * Set LED states.
-	 *
-	 * @param core
-	 *            The coordinates of the core on which to set the LEDs
-	 * @param led_states
-	 *            A map from LED index to state with 0 being off, 1 on and 2
-	 *            inverted.
-	 */
-	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> led_states)
+	@Override
+	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
 			throws IOException, Exception {
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		process.execute(new SetLED(core, led_states));
+		new SendSingleSCPCommandProcess(scpConnectionSelector)
+				.execute(new SetLED(core, ledStates));
 	}
 
-	/**
-	 * Find a connection that matches the given board host name.
-	 *
-	 * @param hostname
-	 *            The host name of the Ethernet connection on the board
-	 * @return A connection for the given IP address, or <tt>null</tt> if no
-	 *         such connection exists
-	 */
-	public SCPConnection locateSpinnakerConnection(String hostname) {
-		try {
-			return locateSpinnakerConnection(getByName(hostname));
-		} catch (UnknownHostException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Find a connection that matches the given board IP address
-	 *
-	 * @param boardAddress
-	 *            The IP address of the Ethernet connection on the board
-	 * @return A connection for the given IP address, or <tt>null</tt> if no
-	 *         such connection exists
-	 */
+	@Override
 	public SCPConnection locateSpinnakerConnection(InetAddress boardAddress) {
-		return (SCPConnection) udp_scamp_connections.get(boardAddress);
+		return (SCPConnection) udpScampConnections.get(boardAddress);
 	}
 
-	/**
-	 * Set up an IP tag.
-	 *
-	 * @param ipTag
-	 *            The tag to set up; note board address can be None, in which
-	 *            case, the tag will be assigned to all boards
-	 */
-	public void setIPTag(IPTag ipTag) throws IOException, Exception {
+	@Override
+	public void setIPTag(IPTag tag) throws IOException, Exception {
 		// Check that the tag has a port assigned
-		if (ipTag.getPort() == null) {
+		if (tag.getPort() == null) {
 			throw new IllegalArgumentException(
 					"The tag port must have been set");
 		}
@@ -1341,8 +1508,8 @@ public class Transceiver {
 		 * Get the connections. If the tag specifies a connection, use that,
 		 * otherwise apply the tag to all connections
 		 */
-		Collection<SCPConnection> connections = get_connection_list(null,
-				ipTag.getBoardAddress());
+		Collection<SCPConnection> connections = getConnectionList(null,
+				tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1350,35 +1517,26 @@ public class Transceiver {
 
 		for (SCPConnection connection : connections) {
 			// Convert the host string
-			InetAddress host = ipTag.getBoardAddress();
+			InetAddress host = tag.getBoardAddress();
 			if (host == null || host.isAnyLocalAddress()
 					|| host.isLoopbackAddress()) {
 				host = connection.getLocalIPAddress();
 			}
 
-			SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-					scamp_connection_selector);
-			process.execute(new IPTagSet(connection.getChip(),
-					host.getAddress(), ipTag.getPort(), ipTag.getTag(),
-					ipTag.isStripSDP()));
+			new SendSingleSCPCommandProcess(scpConnectionSelector).execute(
+					new IPTagSet(connection.getChip(), host.getAddress(),
+							tag.getPort(), tag.getTag(), tag.isStripSDP()));
 		}
 	}
 
-	/**
-	 * Set up a reverse IP tag.
-	 *
-	 * @param reverse_ip_tag
-	 *            The reverse tag to set up; note board_address can be None, in
-	 *            which case, the tag will be assigned to all boards
-	 */
-	public void setReverseIPTag(ReverseIPTag reverse_ip_tag)
+	@Override
+	public void setReverseIPTag(ReverseIPTag tag)
 			throws IOException, Exception {
-		if (requireNonNull(reverse_ip_tag).getPort() == SCP_SCAMP_PORT
-				|| reverse_ip_tag
-						.getPort() == UDP_BOOT_CONNECTION_DEFAULT_PORT) {
-			throw new IllegalArgumentException(String.format(
+		if (requireNonNull(tag).getPort() == SCP_SCAMP_PORT
+				|| tag.getPort() == UDP_BOOT_CONNECTION_DEFAULT_PORT) {
+			throw new IllegalArgumentException(format(
 					"The port number for the reverse IP tag conflicts with"
-							+ " the SpiNNaker system ports ({} and {})",
+							+ " the SpiNNaker system ports (%d and %d)",
 					SCP_SCAMP_PORT, UDP_BOOT_CONNECTION_DEFAULT_PORT));
 		}
 
@@ -1386,372 +1544,107 @@ public class Transceiver {
 		 * Get the connections. If the tag specifies a connection, use that,
 		 * otherwise apply the tag to all connections
 		 */
-		Collection<SCPConnection> connections = get_connection_list(null,
-				reverse_ip_tag.getBoardAddress());
+		Collection<SCPConnection> connections = getConnectionList(null,
+				tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}
 
 		for (SCPConnection connection : connections) {
-			SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-					scamp_connection_selector);
-			process.execute(new ReverseIPTagSet(connection.getChip(),
-					reverse_ip_tag.getDestination(), reverse_ip_tag.getPort(),
-					reverse_ip_tag.getTag(), reverse_ip_tag.getPort()));
+			new SendSingleSCPCommandProcess(scpConnectionSelector)
+					.execute(new ReverseIPTagSet(connection.getChip(),
+							tag.getDestination(), tag.getPort(), tag.getTag(),
+							tag.getPort()));
 		}
 	}
 
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 */
-	public void clearIPTag(int tag) throws IOException, Exception {
-		clearIPTag(tag, null, null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 */
-	public void clearIPTag(int tag, SCPConnection connection)
-			throws IOException, Exception {
-		clearIPTag(tag, requireNonNull(connection), null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param board_address
-	 *            Board address where the tag should be cleared.
-	 */
-	public void clearIPTag(int tag, InetAddress board_address)
-			throws IOException, Exception {
-		clearIPTag(tag, null, requireNonNull(board_address));
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @param board_address
-	 *            Board address where the tag should be cleared. If not
-	 *            specified, all SCPSender connections will send the message to
-	 *            clear the tag
-	 */
+	@Override
 	public void clearIPTag(int tag, SCPConnection connection,
-			InetAddress board_address) throws IOException, Exception {
-		for (SCPConnection conn : get_connection_list(connection,
-				board_address)) {
-			SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-					scamp_connection_selector);
-			process.execute(new IPTagClear(conn.getChip(), tag));
+			InetAddress boardAddress) throws IOException, Exception {
+		for (SCPConnection conn : getConnectionList(connection, boardAddress)) {
+			new SendSingleSCPCommandProcess(scpConnectionSelector)
+					.execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
 
-	/**
-	 * Get the current set of tags that have been set on the board using all
-	 * SCPSender connections.
-	 *
-	 * @return An iterable of tags
-	 */
-	public List<Tag> getTags() throws IOException, Exception {
-		List<Tag> all_tags = new ArrayList<>();
-		for (SCPConnection conn : get_connection_list(null, null)) {
-			GetTagsProcess process = new GetTagsProcess(
-					scamp_connection_selector);
-			all_tags.addAll(process.getTags(conn));
-		}
-		return all_tags;
-	}
-
-	/**
-	 * Get the current set of tags that have been set on the board.
-	 *
-	 * @param connection
-	 *            Connection from which the tags should be received.
-	 * @return An iterable of tags
-	 */
+	@Override
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {
-		List<Tag> all_tags = new ArrayList<>();
-		for (SCPConnection conn : get_connection_list(connection, null)) {
-			GetTagsProcess process = new GetTagsProcess(
-					scamp_connection_selector);
-			all_tags.addAll(process.getTags(conn));
+		List<Tag> allTags = new ArrayList<>();
+		for (SCPConnection conn : getConnectionList(connection, null)) {
+			allTags.addAll(
+					new GetTagsProcess(scpConnectionSelector).getTags(conn));
 		}
-		return all_tags;
+		return allTags;
 	}
 
-	/**
-	 * Allocates a chunk of SDRAM on a chip on the machine.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to allocate memory
-	 * @param size
-	 *            the amount of memory to allocate in bytes
-	 * @return the base address of the allocated memory
-	 */
-	public int mallocSDRAM(HasChipLocation chip, int size)
+	@Override
+	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception {
-		return mallocSDRAM(chip, size, 0, 0);
+		return new MallocSDRAMProcess(scpConnectionSelector).mallocSDRAM(chip,
+				size, appID, tag);
 	}
 
-	/**
-	 * Allocates a chunk of SDRAM on a chip on the machine.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to allocate memory
-	 * @param size
-	 *            the amount of memory to allocate in bytes
-	 * @param app_id
-	 *            The ID of the application with which to associate the routes.
-	 * @return the base address of the allocated memory
-	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, int app_id)
+	@Override
+	public void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
 			throws IOException, Exception {
-		return mallocSDRAM(chip, size, app_id, 0);
+		new DeallocSDRAMProcess(scpConnectionSelector).deallocSDRAM(chip, appID,
+				baseAddress);
 	}
 
-	/**
-	 * Allocates a chunk of SDRAM on a chip on the machine
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to allocate memory
-	 * @param size
-	 *            the amount of memory to allocate in bytes
-	 * @param app_id
-	 *            The ID of the application with which to associate the routes.
-	 * @param tag
-	 *            the tag for the SDRAM, a 8-bit (chip-wide) tag that can be
-	 *            looked up by a SpiNNaker application to discover the address
-	 *            of the allocated block.
-	 * @return the base address of the allocated memory
-	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, int app_id, int tag)
+	@Override
+	public int freeSDRAMByAppID(HasChipLocation chip, int appID)
 			throws IOException, Exception {
-		MallocSDRAMProcess process = new MallocSDRAMProcess(
-				scamp_connection_selector);
-		return process.mallocSDRAM(chip, size, app_id, tag);
+		return new DeallocSDRAMProcess(scpConnectionSelector).deallocSDRAM(chip,
+				appID);
 	}
 
-	/**
-	 * Free allocated SDRAM.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to free memory
-	 * @param base_address
-	 *            The base address of the allocated memory
-	 * @param app_id
-	 *            The app ID of the allocated memory
-	 */
-	public void freeSDRAM(HasChipLocation chip, int base_address, int app_id)
-			throws IOException, Exception {
-		DeallocSDRAMProcess process = new DeallocSDRAMProcess(
-				scamp_connection_selector);
-		process.deallocSDRAM(chip, app_id, base_address);
-	}
-
-	/**
-	 * Free all SDRAM allocated to a given application ID.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to free memory
-	 * @param app_id
-	 *            The app ID of the allocated memory
-	 * @return The number of blocks freed
-	 */
-	public int freeSDRAMByAppID(HasChipLocation chip, int app_id)
-			throws IOException, Exception {
-		DeallocSDRAMProcess process = new DeallocSDRAMProcess(
-				scamp_connection_selector);
-		return process.deallocSDRAM(chip, app_id);
-	}
-
-	/**
-	 * Load a set of multicast routes on to a chip associated with the default
-	 * application ID.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to load the routes
-	 * @param routes
-	 *            An iterable of multicast routes to load
-	 */
+	@Override
 	public void loadMulticastRoutes(HasChipLocation chip,
-			Collection<MulticastRoutingEntry> routes)
+			Collection<MulticastRoutingEntry> routes, int appID)
 			throws IOException, Exception {
-		LoadMulticastRoutesProcess process = new LoadMulticastRoutesProcess(
-				scamp_connection_selector);
-		process.loadRoutes(chip, routes, 0);
+		new LoadMulticastRoutesProcess(scpConnectionSelector).loadRoutes(chip,
+				routes, appID);
 	}
 
-	/**
-	 * Load a set of multicast routes on to a chip
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to load the routes
-	 * @param routes
-	 *            An iterable of multicast routes to load
-	 * @param app_id
-	 *            The ID of the application with which to associate the routes.
-	 */
-	public void loadMulticastRoutes(HasChipLocation chip,
-			Collection<MulticastRoutingEntry> routes, int app_id)
-			throws IOException, Exception {
-		LoadMulticastRoutesProcess process = new LoadMulticastRoutesProcess(
-				scamp_connection_selector);
-		process.loadRoutes(chip, routes, app_id);
-	}
-
-	/**
-	 * Loads a fixed route routing table entry onto a chip's router.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to load the route
-	 * @param fixed_route
-	 *            the route for the fixed route entry on this chip
-	 */
-	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixed_route)
-			throws IOException, Exception {
-		LoadFixedRouteEntryProcess process = new LoadFixedRouteEntryProcess(
-				scamp_connection_selector);
-		process.loadFixedRoute(chip, fixed_route);
-	}
-
-	/**
-	 * Loads a fixed route routing table entry onto a chip's router.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to load the route
-	 * @param fixed_route
-	 *            the route for the fixed route entry on this chip
-	 * @param app_id
-	 *            The ID of the application with which to associate the route.
-	 */
-	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixed_route,
-			int app_id) throws IOException, Exception {
-		LoadFixedRouteEntryProcess process = new LoadFixedRouteEntryProcess(
-				scamp_connection_selector);
-		process.loadFixedRoute(chip, fixed_route, app_id);
-	}
-
-	/**
-	 * Reads a fixed route routing table entry from a chip's router.
-	 *
-	 * @param chip
-	 *            The coordinate of the chip from which to read the route.
-	 * @return the route as a fixed route entry
-	 */
-	public RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, Exception {
-		ReadFixedRouteEntryProcess process = new ReadFixedRouteEntryProcess(
-				scamp_connection_selector);
-		return process.readFixedRoute(chip);
-	}
-
-	/**
-	 * Reads a fixed route routing table entry from a chip's router.
-	 *
-	 * @param chip
-	 *            The coordinate of the chip from which to read the route.
-	 * @param app_id
-	 *            The ID of the application associated the route.
-	 * @return the route as a fixed route entry
-	 */
-	public RoutingEntry readFixedRoute(HasChipLocation chip, int app_id)
-			throws IOException, Exception {
-		ReadFixedRouteEntryProcess process = new ReadFixedRouteEntryProcess(
-				scamp_connection_selector);
-		return process.readFixedRoute(chip, app_id);
-	}
-
-	/**
-	 * Get the current multicast routes set up on a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip from which to get the routes
-	 * @return An iterable of multicast routes
-	 */
-	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
-			throws IOException, Exception {
-		int base_address = (int) get_sv_data(chip, router_table_copy_address);
-		GetMulticastRoutesProcess process = new GetMulticastRoutesProcess(
-				scamp_connection_selector);
-		return process.getRoutes(chip, base_address);
-	}
-
-	/**
-	 * Get the current multicast routes set up on a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip from which to get the routes
-	 * @param appID
-	 *            The ID of the application to filter the routes for.
-	 * @return An iterable of multicast routes
-	 */
-	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
+	@Override
+	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception {
-		int base_address = (int) get_sv_data(chip, router_table_copy_address);
-		GetMulticastRoutesProcess process = new GetMulticastRoutesProcess(
-				scamp_connection_selector, appID);
-		return process.getRoutes(chip, base_address);
+		new LoadFixedRouteEntryProcess(scpConnectionSelector)
+				.loadFixedRoute(chip, fixedRoute, appID);
 	}
 
-	/**
-	 * Remove all the multicast routes on a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip on which to clear the routes
-	 */
+	@Override
+	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
+			throws IOException, Exception {
+		return new ReadFixedRouteEntryProcess(scpConnectionSelector)
+				.readFixedRoute(chip, appID);
+	}
+
+	@Override
+	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
+			Integer appID) throws IOException, Exception {
+		int address = (int) getSystemVariable(chip, router_table_copy_address);
+		return new GetMulticastRoutesProcess(scpConnectionSelector)
+				.getRoutes(chip, address, appID);
+	}
+
+	@Override
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception {
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		process.execute(new RouterClear(chip));
+		new SendSingleSCPCommandProcess(scpConnectionSelector)
+				.execute(new RouterClear(chip));
 	}
 
-	/**
-	 * Get router diagnostic information from a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip from which to get the information
-	 * @return The router diagnostic information
-	 */
+	@Override
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {
-		ReadRouterDiagnosticsProcess process = new ReadRouterDiagnosticsProcess(
-				scamp_connection_selector);
-		return process.getRouterDiagnostics(chip);
+		return new ReadRouterDiagnosticsProcess(scpConnectionSelector)
+				.getRouterDiagnostics(chip);
 	}
 
-	/**
-	 * Sets a router diagnostic filter in a router.
-	 *
-	 * @param chip
-	 *            the address of the router in which this filter is being set
-	 * @param position
-	 *            the position in the list of filters where this filter is to be
-	 *            added, between 0 and 15 (note that positions 0 to 11 are used
-	 *            by the default filters, and setting these positions will
-	 *            result in a warning).
-	 * @param diagnosticFilter
-	 *            the diagnostic filter being set in the position.
-	 */
+	@Override
 	public void setRouterDiagnosticFilter(HasChipLocation chip, int position,
 			DiagnosticFilter diagnosticFilter) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
@@ -1768,192 +1661,63 @@ public class Transceiver {
 					+ "the end user knows what they are doing.");
 		}
 
-		int memory_position = (ROUTER_REGISTER_BASE_ADDRESS
+		int address = (ROUTER_REGISTER_BASE_ADDRESS
 				+ ROUTER_FILTER_CONTROLS_OFFSET
 				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		ByteBuffer b = ByteBuffer.allocate(4).order(LITTLE_ENDIAN)
-				.putInt(diagnosticFilter.getFilterWord());
-		process.execute(new WriteMemory(chip, memory_position, b));
+		writeMemory(chip, address, diagnosticFilter.getFilterWord());
 	}
 
-	/**
-	 * Gets a router diagnostic filter from a router.
-	 *
-	 * @param chip
-	 *            the address of the router from which this filter is being
-	 *            retrieved
-	 * @param position
-	 *            the position in the list of filters where this filter is to be
-	 *            read from
-	 * @return The diagnostic filter read
-	 */
+	@Override
 	public DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
 					"the range of the position of a router filter is 0 and 16.");
 		}
-		int memory_position = ROUTER_REGISTER_BASE_ADDRESS
+		int address = ROUTER_REGISTER_BASE_ADDRESS
 				+ ROUTER_FILTER_CONTROLS_OFFSET
 				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		Response response = process
-				.execute(new ReadMemory(chip, memory_position, 4));
+		Response response = new SendSingleSCPCommandProcess(
+				scpConnectionSelector)
+						.execute(new ReadMemory(chip, address, 4));
 		return new DiagnosticFilter(response.data.getInt());
 	}
 
-	/**
-	 * Clear router diagnostic information on a chip. Resets and enables all
-	 * diagnostic counters.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 */
-	public void clearRouterDiagnosticCounters(HasChipLocation chip)
-			throws IOException, Exception {
-		clearRouterDiagnosticCounters(chip, false,
-				range(0, 16).boxed().collect(toList()));
-	}
-
-	/**
-	 * Clear router diagnostic information on a chip. Resets all diagnostic
-	 * counters.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param enable
-	 *            True (default) if the counters should be enabled
-	 */
-	public void clearRouterDiagnosticCounters(HasChipLocation chip,
-			boolean enable) throws IOException, Exception {
-		clearRouterDiagnosticCounters(chip, enable,
-				range(0, 16).boxed().collect(toList()));
-	}
-
-	/**
-	 * Clear router diagnostic information on a chip. Resets and enables all the
-	 * numbered counters.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param counterIDs
-	 *            The IDs of the counters to reset and enable; each must be
-	 *            between 0 and 15
-	 */
-	public void clearRouterDiagnosticCounters(HasChipLocation chip,
-			Iterable<Integer> counterIDs) throws IOException, Exception {
-		clearRouterDiagnosticCounters(chip, false, counterIDs);
-	}
-
-	/**
-	 * Clear router diagnostic information on a chip
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param enable
-	 *            True (default) if the counters should be enabled
-	 * @param counterIDs
-	 *            The IDs of the counters to reset and enable if enable is True;
-	 *            each must be between 0 and 15
-	 */
+	@Override
 	public void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable, Iterable<Integer> counterIDs)
 			throws IOException, Exception {
-		int clear_data = 0;
-		for (int counter_id : requireNonNull(counterIDs)) {
-			if (counter_id < 0 || counter_id > 15) {
+		int clearData = 0;
+		for (int counterID : requireNonNull(counterIDs)) {
+			if (counterID < 0 || counterID > 15) {
 				throw new IllegalArgumentException(
 						"Diagnostic counter IDs must be between 0 and 15");
 			}
-			clear_data |= 1 << counter_id;
+			clearData |= 1 << counterID;
 		}
 		if (enable) {
-			for (int counter_id : counterIDs) {
-				clear_data |= 1 << counter_id + 16;
+			for (int counterID : counterIDs) {
+				clearData |= 1 << counterID + 16;
 			}
 		}
-		SendSingleSCPCommandProcess process = new SendSingleSCPCommandProcess(
-				scamp_connection_selector);
-		ByteBuffer b = ByteBuffer.allocate(4).order(LITTLE_ENDIAN)
-				.putInt(clear_data);
-		process.execute(new WriteMemory(chip, 0xf100002c, b));
+		writeMemory(chip, 0xf100002c, clearData);
 	}
 
-	/**
-	 * Get the contents of the SDRAM heap on a given chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 */
-	public List<HeapElement> getHeap(HasChipLocation chip)
-			throws IOException, Exception {
-		return getHeap(chip, SystemVariableDefinition.sdram_heap_address);
-	}
-
-	/**
-	 * Get the contents of the given heap on a given chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param heap
-	 *            The SystemVariableDefinition which is the heap to read
-	 */
+	@Override
 	public List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {
-		GetHeapProcess process = new GetHeapProcess(scamp_connection_selector);
-		return process.getBlocks(chip, heap);
+		return new GetHeapProcess(scpConnectionSelector).getBlocks(chip, heap);
 	}
 
-	/**
-	 * Fill some memory with repeated data.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param baseAddress
-	 *            The address at which to start the fill
-	 * @param repeatValue
-	 *            The data to repeat
-	 * @param size
-	 *            The number of bytes to fill. Must be compatible with the data
-	 *            type i.e. if the data type is WORD, the number of bytes must
-	 *            be divisible by 4
-	 * @throws IOException
-	 * @throws Exception
-	 */
-	public void fillMemory(HasChipLocation chip, int baseAddress,
-			int repeatValue, int size) throws Exception, IOException {
-		fillMemory(chip, baseAddress, repeatValue, size, WORD);
-	}
-
-	/**
-	 * Fill some memory with repeated data.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @param baseAddress
-	 *            The address at which to start the fill
-	 * @param repeatValue
-	 *            The data to repeat
-	 * @param size
-	 *            The number of bytes to fill. Must be compatible with the data
-	 *            type i.e. if the data type is WORD, the number of bytes must
-	 *            be divisible by 4
-	 * @param dataType
-	 *            The type of data to fill.
-	 * @throws IOException
-	 * @throws Exception
-	 */
+	@Override
 	public void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size, DataType dataType)
 			throws Exception, IOException {
-		FillProcess process = new FillProcess(scamp_connection_selector);
-		process.fillMemory(chip, baseAddress, repeatValue, size, dataType);
+		new FillProcess(scpConnectionSelector).fillMemory(chip, baseAddress,
+				repeatValue, size, dataType);
 	}
 
-	public static class ConnectionDescriptor {
+	public static final class ConnectionDescriptor {
 		String hostname;
 		Integer portNumber;
 		ChipLocation chip;
@@ -1983,7 +1747,7 @@ public class Transceiver {
 		}
 	}
 
-	static class Pair<A, B> {
+	static final class Pair<A, B> {
 		final A a;
 		final B b;
 

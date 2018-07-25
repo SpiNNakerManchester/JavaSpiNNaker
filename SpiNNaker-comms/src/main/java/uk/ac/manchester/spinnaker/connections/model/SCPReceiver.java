@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
-public interface SCPReceiver {
+public interface SCPReceiver extends SocketHolder {
 	/**
 	 * Receives an SCP response from this connection. Blocks until a message has
 	 * been received, or a timeout occurs.
