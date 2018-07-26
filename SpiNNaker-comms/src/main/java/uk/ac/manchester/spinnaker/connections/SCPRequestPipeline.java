@@ -447,7 +447,7 @@ public class SCPRequestPipeline {
 	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(Request<?> req, int timeout) {
-			super(format("Operation {} timed out after {} seconds",
+			super(format("Operation %s timed out after %f seconds",
 					req.request.scpRequestHeader.command, timeout / 1000.0));
 		}
 	}
@@ -456,7 +456,7 @@ public class SCPRequestPipeline {
 	static class SendFailedException extends IOException {
 		SendFailedException(Request<?> req, int numRetries) {
 			super(format(
-					"Errors sending request {} to {}, {}, {} over {} retries: {}",
+					"Errors sending request %s to %d,%d,%d over %d retries: %s",
 					req.request.scpRequestHeader.command,
 					req.getDestination().getX(), req.getDestination().getY(),
 					req.getDestination().getP(), numRetries, req.retryReason));

@@ -747,7 +747,7 @@ public class Transceiver implements TransceiverInterface {
 		// TODO: Actually get the existing APP_IDs in use
 		appIDTracker = new AppIdTracker();
 
-		log.info("Detected a machine on IP address {} which has {}",
+		log.info("Detected a machine on IP address %s which has %s",
 				bootSendConnection.getRemoteIPAddress(),
 				machine.coresAndLinkOutputString());
 	}
