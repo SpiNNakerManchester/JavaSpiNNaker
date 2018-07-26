@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
@@ -1277,6 +1278,40 @@ public interface TransceiverInterface {
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
 	 * @param data
+	 *            The data that is to be written.
+	 */
+	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
+			throws IOException, Exception {
+		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 */
+	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
+			throws IOException, Exception {
+		writeMemory(core, baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
 	 */
@@ -1455,6 +1490,51 @@ public interface TransceiverInterface {
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
 	 * @param data
+	 *            The data that is to be written.
+	 */
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			int baseAddress, byte[] data) throws IOException, Exception {
+		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 */
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			int baseAddress, byte[] data) throws IOException, Exception {
+		writeNeighbourMemory(core, link, baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
+	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
+	 * debug registers.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
 	 */
@@ -1525,6 +1605,20 @@ public interface TransceiverInterface {
 		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 */
+	default void writeMemoryFlood(int baseAddress, byte[] data)
+			throws IOException, Exception {
+		writeMemoryFlood(baseAddress, wrap(data));
 	}
 
 	/**

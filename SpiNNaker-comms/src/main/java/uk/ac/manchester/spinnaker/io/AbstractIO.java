@@ -2,28 +2,46 @@ package uk.ac.manchester.spinnaker.io;
 
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.processes.FillProcess;
+import uk.ac.manchester.spinnaker.processes.Process.Exception;
+
 public interface AbstractIO extends AutoCloseable {
 	/** The size of the entire region of memory */
 	int size();
 
-	// FIXME What does this become in Java?
-	// /** Get a sub-region of this memory object. The index or slice must be in range of the current region to be valid.
-	//
-	// @param new_slice A single index for a single byte of memory, or a contiguous slice
-	// @throws Exception If the index or slice is outside of the current region
-	// */
-	// MemoryIO __getitem__(Object new_slice) throws Exception;
+	/**
+	 * Get a sub-region of this memory object. The index must be in range of the
+	 * current region to be valid.
+	 *
+	 * @param new_slice
+	 *            A single index for a single byte of memory.
+	 */
+	AbstractIO get(int slice) throws IOException, Exception;
+
+	/**
+	 * Get a sub-region of this memory object. The slice must be in range of the
+	 * current region to be valid.
+	 *
+	 * @param new_slice
+	 *            A contiguous slice of memory.
+	 */
+	AbstractIO get(Slice slice) throws IOException, Exception;
 
 	/** Indicates if the object has been closed */
 	boolean isClosed();
 
 	/** Flush any outstanding written data */
-	void flush() throws IOException;
+	void flush() throws IOException, Exception;
 
-	/** Seek to a position within the region.
-	 * @param numBytes Where to seek to relative to whence.
-	 * @param whence Where the numBytes should be measured relative to. */
-	default void seek(int numBytes, Seek whence) throws IOException {
+	/**
+	 * Seek to a position within the region.
+	 *
+	 * @param numBytes
+	 *            Where to seek to relative to whence.
+	 * @param whence
+	 *            Where the numBytes should be measured relative to.
+	 */
+	default void seek(int numBytes, Seek whence) throws IOException, Exception {
 		switch (whence) {
 		case SET:
 			seek(numBytes);
@@ -38,10 +56,10 @@ public interface AbstractIO extends AutoCloseable {
 	}
 
 	/** Seek to a position within the region */
-	void seek(int numBytes) throws IOException;
+	void seek(int numBytes) throws IOException, Exception;
 
 	/** Return the current position within the region relative to the start */
-	int tell() throws IOException;
+	int tell() throws IOException, Exception;
 
 	/** Return the current absolute address within the region */
 	int getAddress();
@@ -54,7 +72,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
 	 */
-	default byte[] read() throws IOException {
+	default byte[] read() throws IOException, Exception {
 		return read(null);
 	}
 
@@ -67,7 +85,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
 	 */
-	byte[] read(Integer numBytes) throws IOException;
+	byte[] read(Integer numBytes) throws IOException, Exception;
 
 	/**
 	 * Write some data to the region.
@@ -78,7 +96,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the write will go over the end of the region
 	 */
-	int write(byte[] data) throws IOException;
+	int write(byte[] data) throws IOException, Exception;
 
 	/**
 	 * Fill the rest of the region with repeated data.
@@ -88,8 +106,8 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value) throws IOException {
-		fill(repeat_value, null, FillDataType.WORD);
+	default void fill(int repeat_value) throws IOException, Exception {
+		fill(repeat_value, null, FillProcess.DataType.WORD);
 	}
 
 	/**
@@ -102,8 +120,8 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value, int bytes_to_fill) throws IOException {
-		fill(repeat_value, bytes_to_fill, FillDataType.WORD);
+	default void fill(int repeat_value, int bytes_to_fill) throws IOException, Exception {
+		fill(repeat_value, bytes_to_fill, FillProcess.DataType.WORD);
 	}
 
 	/**
@@ -116,8 +134,8 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value, FillDataType data_type)
-			throws IOException {
+	default void fill(int repeat_value, FillProcess.DataType data_type)
+			throws IOException, Exception {
 		fill(repeat_value, null, data_type);
 	}
 
@@ -134,8 +152,8 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	void fill(int repeat_value, Integer bytes_to_fill, FillDataType data_type)
-			throws IOException;
+	void fill(int repeat_value, Integer bytes_to_fill,
+			FillProcess.DataType data_type) throws IOException, Exception;
 
 	enum Seek {
 		/** Seek relative to the start of the region. */
@@ -145,8 +163,31 @@ public interface AbstractIO extends AutoCloseable {
 		/** Seek relative to the end of the region. */
 		END
 	}
-	enum FillDataType {
-		WORD
-		// FIXME define contents and move to right location
+
+	static final class Slice {
+		public Integer start;
+		public Integer stop;
+
+		private Slice() {
+		}
+
+		public static Slice from(int start) {
+			Slice s = new Slice();
+			s.start = start;
+			return s;
+		}
+
+		public static Slice to(int end) {
+			Slice s = new Slice();
+			s.stop = end;
+			return s;
+		}
+
+		public static Slice over(int start, int end) {
+			Slice s = new Slice();
+			s.start = start;
+			s.stop = end;
+			return s;
+		}
 	}
 }
