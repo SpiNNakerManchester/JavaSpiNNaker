@@ -50,9 +50,10 @@ public class UDPConnection implements Connection {
 	 *            specified, the socket will be available for listening only,
 	 *            and will throw and exception if used for sending.
 	 * @param remotePort
-	 *            The remote port to send packets to. If remoteHost is None,
-	 *            this is ignored. If remoteHost is specified, this must also be
-	 *            specified as non-zero for the connection to allow sending.
+	 *            The remote port to send packets to. If remoteHost is
+	 *            <tt>null</tt>, this is ignored. If remoteHost is specified,
+	 *            this must also be specified as non-zero for the connection to
+	 *            allow sending.
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */

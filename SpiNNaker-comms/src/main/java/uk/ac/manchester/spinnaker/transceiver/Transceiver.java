@@ -289,8 +289,8 @@ public class Transceiver implements TransceiverInterface {
 	 * @param hostname
 	 *            The hostname or IP address of the board
 	 * @param numberOfBoards
-	 *            a number of boards expected to be supported, or None, which
-	 *            defaults to a single board
+	 *            a number of boards expected to be supported, or <tt>null</tt>,
+	 *            which defaults to a single board
 	 * @param ignoreChips
 	 *            An optional set of chips to ignore in the machine. Requests
 	 *            for a "machine" will have these chips excluded, as if they

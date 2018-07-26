@@ -1911,8 +1911,9 @@ public interface TransceiverInterface {
 	 * Set up an IP tag.
 	 *
 	 * @param tag
-	 *            The tag to set up; note its board address can be None, in
-	 *            which case, the tag will be assigned to all boards
+	 *            The tag to set up; note its board address can be
+	 *            <tt>null</tt>, in which case, the tag will be assigned to all
+	 *            boards
 	 */
 	void setIPTag(IPTag tag) throws IOException, Exception;
 
@@ -1920,8 +1921,9 @@ public interface TransceiverInterface {
 	 * Set up a reverse IP tag.
 	 *
 	 * @param tag
-	 *            The reverse tag to set up; note its board address can be None,
-	 *            in which case, the tag will be assigned to all boards
+	 *            The reverse tag to set up; note its board address can be
+	 *            <tt>null</tt>, in which case, the tag will be assigned to all
+	 *            boards
 	 */
 	void setReverseIPTag(ReverseIPTag tag) throws IOException, Exception;
 
