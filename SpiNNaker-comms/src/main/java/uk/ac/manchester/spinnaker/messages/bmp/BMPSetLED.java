@@ -8,21 +8,21 @@ import java.util.Collection;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-public class SetLED extends BMPRequest<SetLED.Response> {
+public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 
-	public SetLED(int led, LEDAction action, int board) {
+	public BMPSetLED(int led, LEDAction action, int board) {
 		super(board, CMD_LED, argument1(action, led), argument2(board), null);
 	}
 
-	public SetLED(Collection<Integer> leds, LEDAction action, int board) {
+	public BMPSetLED(Collection<Integer> leds, LEDAction action, int board) {
 		super(board, CMD_LED, argument1(action, leds), argument2(board), null);
 	}
 
-	public SetLED(int led, LEDAction action, Collection<Integer> boards) {
+	public BMPSetLED(int led, LEDAction action, Collection<Integer> boards) {
 		super(boards, CMD_LED, argument1(action, led), argument2(boards), null);
 	}
 
-	public SetLED(Collection<Integer> leds, LEDAction action,
+	public BMPSetLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> boards) {
 		super(boards, CMD_LED, argument1(action, leds), argument2(boards),
 				null);

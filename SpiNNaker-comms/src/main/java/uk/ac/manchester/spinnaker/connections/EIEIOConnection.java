@@ -1,8 +1,8 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.read_eieio_command_message;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.read_eieio_data_message;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,18 +23,14 @@ public class EIEIOConnection extends UDPConnection
 
 	@Override
 	public void sendEIEIOMessage(EIEIOMessage eieioMessage) throws IOException {
-		ByteBuffer b = ByteBuffer.allocate(300);
-		b.order(LITTLE_ENDIAN);
-		b.position(0);
+		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
 		send(b);
 	}
 
 	public void sendEIEIOMessageTo(EIEIOMessage eieioMessage,
 			InetAddress ipAddress, int port) throws IOException {
-		ByteBuffer b = ByteBuffer.allocate(300);
-		b.order(LITTLE_ENDIAN);
-		b.position(0);
+		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
 		sendTo(b, ipAddress, port);
 	}

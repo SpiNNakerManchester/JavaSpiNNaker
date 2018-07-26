@@ -3,8 +3,6 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
@@ -13,6 +11,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -133,7 +132,7 @@ public class SCPRequestPipeline {
 
 		private ByteBuffer getSCPData(SCPRequest<?> scpRequest,
 				ChipLocation chip) {
-			ByteBuffer buffer = allocate(300).order(LITTLE_ENDIAN);
+			ByteBuffer buffer = newMessageBuffer();
 			if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
 				scpRequest.updateSDPHeaderForUDPSend(chip);
 			}

@@ -1,8 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -18,7 +17,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public class SDPConnection extends UDPConnection
 		implements SDPReceiver, SDPSender, Listenable<SDPMessage> {
 	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
-	private static final int BUFFER_SIZE = 300;
 	private ChipLocation chip;
 
 	public SDPConnection(HasChipLocation remoteChip, String localHost,
@@ -40,7 +38,7 @@ public class SDPConnection extends UDPConnection
 		} else {
 			sdpMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		}
-		ByteBuffer buffer = allocate(BUFFER_SIZE).order(LITTLE_ENDIAN);
+		ByteBuffer buffer = newMessageBuffer();
 		buffer.putShort((short) 0);
 		sdpMessage.addToBuffer(buffer);
 		send(buffer);

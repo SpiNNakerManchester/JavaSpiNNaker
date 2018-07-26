@@ -10,13 +10,13 @@ import java.util.Map.Entry;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to change the state of an SetLED */
+/** A request to change the state of an BMPSetLED */
 public class SetLED extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core
-	 *            The SpiNNaker core that will set the SetLED
+	 *            The SpiNNaker core that will set the BMPSetLED
 	 * @param ledStates
-	 *            A mapping of SetLED index to state with 0 being off, 1 on and
+	 *            A mapping of BMPSetLED index to state with 0 being off, 1 on and
 	 *            2 inverted.
 	 */
 	public SetLED(HasCoreLocation core, Map<Integer, Integer> ledStates) {
@@ -44,6 +44,6 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new CheckOKResponse("Set SetLED", CMD_LED, buffer);
+		return new CheckOKResponse("Set BMPSetLED", CMD_LED, buffer);
 	}
 }

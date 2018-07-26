@@ -58,6 +58,7 @@ public class LoadMulticastRoutesProcess
 
 		// Add an entry to mark the end
 		writeEnd(buffer);
+		buffer.flip();
 
 		// Upload the data (delegate to another process)
 		new WriteMemoryProcess(selector).writeMemory(chip.getScampCore(),

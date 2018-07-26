@@ -1,9 +1,9 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -170,7 +170,7 @@ public class SCPConnection extends SDPConnection
 
 	@Override
 	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
-		ByteBuffer buffer = ByteBuffer.allocate(300).order(LITTLE_ENDIAN);
+		ByteBuffer buffer = newMessageBuffer();
 		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
 			scpRequest.updateSDPHeaderForUDPSend(getChip());
 		}

@@ -1,13 +1,14 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
@@ -15,9 +16,10 @@ import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 public class BMPConnection extends UDPConnection
-		implements SCPSenderReceiver {
+		implements SCPSenderReceiver, Listenable<SDPMessage> {
 	/** Defined to satisfy the SCPSender; always 0,0 for a BMP */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
 	public final int cabinet;
@@ -35,7 +37,7 @@ public class BMPConnection extends UDPConnection
 
 	@Override
 	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
-		ByteBuffer buffer = ByteBuffer.allocate(300).order(LITTLE_ENDIAN);
+		ByteBuffer buffer = newMessageBuffer();
 		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
 			scpRequest.updateSDPHeaderForUDPSend(BMP_LOCATION);
 		}
@@ -66,5 +68,10 @@ public class BMPConnection extends UDPConnection
 		short result = buffer.getShort();
 		short sequence = buffer.getShort();
 		return new SCPResultMessage(SCPResult.get(result), sequence, buffer);
+	}
+
+	@Override
+	public MessageReceiver<SDPMessage> getReceiver() {
+		return () -> new SDPMessage(receive());
 	}
 }

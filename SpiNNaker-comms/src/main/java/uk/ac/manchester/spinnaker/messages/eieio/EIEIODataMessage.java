@@ -2,9 +2,9 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -37,9 +37,7 @@ public class EIEIODataMessage
 		}
 		header = new EIEIODataHeader(eieioType, (byte) 0, key_prefix,
 				prefix_type, payload_base, timestamp != null, count);
-		elements = ByteBuffer.allocate(UDP_MESSAGE_MAX_SIZE);
-		elements.order(ByteOrder.LITTLE_ENDIAN);
-		elements.position(0);
+		elements = newMessageBuffer();
 		this.data = data;
 		this.offset = offset;
 	}

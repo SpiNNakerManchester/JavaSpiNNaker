@@ -1,11 +1,11 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByName;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -364,7 +364,7 @@ public class UDPConnection implements Connection {
 		SDPMessage trigger_message = new SDPMessage(new SDPHeader(
 				SDPFlag.REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0), 3));
 		trigger_message.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
-		ByteBuffer b = allocate(300).order(LITTLE_ENDIAN);
+		ByteBuffer b = newMessageBuffer();
 		trigger_message.addToBuffer(b);
 		InetAddress addr = getByName(hostname);
 		sendTo(b, addr, SCP_SCAMP_PORT);

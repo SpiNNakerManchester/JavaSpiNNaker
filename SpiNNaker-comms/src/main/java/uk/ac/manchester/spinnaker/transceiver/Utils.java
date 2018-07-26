@@ -1,16 +1,21 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 
 public abstract class Utils {
+	public static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
+
 	private Utils() {
 	}
 
@@ -70,5 +75,14 @@ public abstract class Utils {
 	public static void sendPortTriggerMessage(UDPConnection connection,
 			String hostname) throws IOException {
 		connection.sendPortTriggerMessage(hostname);
+	}
+
+	/**
+	 * @return Get a new little-endian buffer sized suitably for SpiNNaker
+	 *         messages.
+	 */
+	public static ByteBuffer newMessageBuffer() {
+		// TODO How big should this buffer be? 256 or (256 + header size)?
+		return allocate(SPINNAKER_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
 	}
 }
