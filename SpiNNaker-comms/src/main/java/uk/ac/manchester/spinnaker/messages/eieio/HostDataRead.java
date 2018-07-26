@@ -12,37 +12,39 @@ public class HostDataRead extends EIEIOCommandMessage {
 	private final Header header;
 	private final Ack acks;
 
-	public HostDataRead(byte n_requests, byte sequence_no, byte[] channel,
-			byte[] region_id, int[] space_read) {
+	public HostDataRead(byte numRequests, byte sequenceNum, byte[] channel,
+			byte[] regionID, int[] spaceRead) {
 		super(EIEIOCommandID.HOST_DATA_READ);
-		header = new Header(n_requests, sequence_no);
-		this.acks = new Ack(n_requests, channel, region_id, space_read);
+		header = new Header(numRequests, sequenceNum);
+		this.acks = new Ack(numRequests, channel, regionID, spaceRead);
 	}
 
-	public HostDataRead(byte n_requests, byte sequence_no, byte channel,
-			byte region_id, int space_read) {
+	public HostDataRead(byte numRequests, byte sequenceNum, byte channel,
+			byte regionID, int spaceRead) {
 		super(EIEIOCommandID.HOST_DATA_READ);
-		header = new Header(n_requests, sequence_no);
-		this.acks = new Ack(n_requests, new byte[] { channel },
-				new byte[] { region_id }, new int[] { space_read });
+		header = new Header(numRequests, sequenceNum);
+		this.acks = new Ack(numRequests, new byte[] { channel },
+				new byte[] { regionID }, new int[] { spaceRead });
 	}
 
-	public HostDataRead(EIEIOCommandHeader header, ByteBuffer data, int offset) {
+	public HostDataRead(EIEIOCommandHeader header, ByteBuffer data,
+			int offset) {
 		super(header, data, offset);
-		this.header = new Header((byte) (data.get(offset) & 0x7), data.get(offset + 1));
+		this.header = new Header((byte) (data.get(offset) & 0x7),
+				data.get(offset + 1));
 		offset += 2;
 		byte[] channel = new byte[getNumRequests()];
-		byte[] region_id = new byte[getNumRequests()];
-		int[] space_read = new int[getNumRequests()];
+		byte[] regionID = new byte[getNumRequests()];
+		int[] spaceRead = new int[getNumRequests()];
 		for (int i = 0; i < getNumRequests(); i++) {
 			data.get(offset++);
 			data.get(offset++);
 			channel[i] = data.get(offset++);
-			region_id[i] = data.get(offset++);
-			space_read[i] = data.getInt(offset);
+			regionID[i] = data.get(offset++);
+			spaceRead[i] = data.getInt(offset);
 			offset += 4;
 		}
-		this.acks = new Ack(getNumRequests(), channel, region_id, space_read);
+		this.acks = new Ack(getNumRequests(), channel, regionID, spaceRead);
 	}
 
 	public byte getNumRequests() {
@@ -58,11 +60,11 @@ public class HostDataRead extends EIEIOCommandMessage {
 	}
 
 	public byte getRegionID(int ackID) {
-		return acks.region_id[ackID];
+		return acks.regionID[ackID];
 	}
 
 	public int getSpaceRead(int ackID) {
-		return acks.space_read[ackID];
+		return acks.spaceRead[ackID];
 	}
 
 	@Override
@@ -95,21 +97,21 @@ public class HostDataRead extends EIEIOCommandMessage {
 	/** Contains a set of acks which refer to each of the channels read. */
 	private static class Ack {
 		final byte[] channel;
-		final byte[] region_id;
-		final int[] space_read;
+		final byte[] regionID;
+		final int[] spaceRead;
 
-		public Ack(int n_requests, byte[] channel, byte[] region_id,
-				int[] space_read) {
-			if (channel.length != n_requests || region_id.length != n_requests
-					|| space_read.length != n_requests) {
+		public Ack(int numRequests, byte[] channel, byte[] regionID,
+				int[] spaceRead) {
+			if (channel.length != numRequests || regionID.length != numRequests
+					|| spaceRead.length != numRequests) {
 				throw new IllegalArgumentException(
 						"lengths of channel list, region ID list, and "
 								+ "space read list must all match the "
 								+ "number of requests");
 			}
 			this.channel = channel;
-			this.region_id = region_id;
-			this.space_read = space_read;
+			this.regionID = regionID;
+			this.spaceRead = spaceRead;
 		}
 	}
 }

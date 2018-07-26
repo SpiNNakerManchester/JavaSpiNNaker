@@ -62,19 +62,19 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 
 	private static int argument2(int appID, Iterable<Integer> processors,
 			boolean wait) {
-		int processor_mask = 0;
+		int processorMask = 0;
 		if (processors != null) {
 			for (int p : processors) {
 				if (p >= 1 && p <= 17) {
-					processor_mask |= 1 << p;
+					processorMask |= 1 << p;
 				}
 			}
 		}
-		processor_mask |= appID << 24;
+		processorMask |= appID << 24;
 		if (wait) {
-			processor_mask |= 1 << 18;
+			processorMask |= 1 << 18;
 		}
-		return processor_mask;
+		return processorMask;
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public abstract class Reports {
 	 * Generate report on the physical structure of the target SpiNNaker
 	 * machine.
 	 *
-	 * @param report_directory
+	 * @param reportDirectory
 	 *            the directory to which reports are stored
 	 * @param machine
 	 *            the machine object
@@ -41,10 +41,10 @@ public abstract class Reports {
 	 * @throws IOExcepion
 	 *             when a file cannot be opened for some reason
 	 */
-	public static void generateMachineReport(File report_directory,
+	public static void generateMachineReport(File reportDirectory,
 			Machine machine, Collection<Connection> connections)
 			throws IOException {
-		File file = new File(report_directory, FILENAME);
+		File file = new File(reportDirectory, FILENAME);
 		String timestamp = Calendar.getInstance().toString();
 		try (Writer f = new BufferedWriter(new FileWriter(file))) {
 			writeHeader(f, timestamp, machine, connections);

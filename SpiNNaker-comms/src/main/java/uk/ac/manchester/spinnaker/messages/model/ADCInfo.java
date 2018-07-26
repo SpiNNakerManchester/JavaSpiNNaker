@@ -12,23 +12,23 @@ import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
 public final class ADCInfo {
-	/** fan 0 rotation rate */
+	/** fan<sub>0</sub> rotation rate */
 	public final Double fan_0;
-	/** fan 1 rotation rate */
+	/** fan<sub>1</sub> rotation rate */
 	public final Double fan_1;
 	/** temperature bottom */
 	public final double temp_btm;
-	/** temperature external 0 */
+	/** temperature external<sub>0</sub> */
 	public final Double temp_ext_0;
-	/** temperature external 1 */
+	/** temperature external<sub>1</sub> */
 	public final Double temp_ext_1;
 	/** temperature top */
 	public final double temp_top;
-	/** Actual voltage of the 1.2V a supply rail */
+	/** Actual voltage of the 1.2V<sub>a</sub> supply rail */
 	public final double voltage_1_2a;
-	/** Actual voltage of the 1.2V b supply rail */
+	/** Actual voltage of the 1.2V<sub>b</sub> supply rail */
 	public final double voltage_1_2b;
-	/** Actual voltage of the 1.2V c supply rail */
+	/** Actual voltage of the 1.2V<sub>c</sub> supply rail */
 	public final double voltage_1_2c;
 	/** Actual voltage of the 1.8V supply rail */
 	public final double voltage_1_8;
@@ -58,22 +58,22 @@ public final class ADCInfo {
 		voltage_1_8 = adc[4] * BMP_V_SCALE_2_5;
 		voltage_3_3 = adc[6] * BMP_V_SCALE_3_3;
 		voltage_supply = adc[7] * BMP_V_SCALE_12;
-		temp_top = t_scale(t_int[0]);
-		temp_btm = t_scale(t_int[1]);
-		temp_ext_0 = t_scale(t_ext[0]);
-		temp_ext_1 = t_scale(t_ext[1]);
-		fan_0 = f_scale(fan[0]);
-		fan_1 = f_scale(fan[1]);
+		temp_top = tempScale(t_int[0]);
+		temp_btm = tempScale(t_int[1]);
+		temp_ext_0 = tempScale(t_ext[0]);
+		temp_ext_1 = tempScale(t_ext[1]);
+		fan_0 = fanScale(fan[0]);
+		fan_1 = fanScale(fan[1]);
 	}
 
-	private static Double t_scale(int rawValue) {
+	private static Double tempScale(int rawValue) {
 		if (rawValue == BMP_MISSING_TEMP) {
 			return null;
 		}
 		return rawValue * BMP_TEMP_SCALE;
 	}
 
-	private static Double f_scale(int rawValue) {
+	private static Double fanScale(int rawValue) {
 		if (rawValue == BMP_MISSING_FAN) {
 			return null;
 		}

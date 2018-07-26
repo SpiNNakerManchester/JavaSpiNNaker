@@ -16,24 +16,24 @@ public class CPUInfo implements HasCoreLocation {
 	private final CoreLocation core;
 
 	private final int[] registers;
-	private final int processor_state_register;
-	private final int stack_pointer;
-	private final int link_register;
-	private final RunTimeError run_time_error;
-	private final byte physical_cpu_id;
+	private final int processorStateRegister;
+	private final int stackPointer;
+	private final int linkRegister;
+	private final RunTimeError runTimeError;
+	private final byte physicalCPUID;
 	private final CPUState state;
-	private final byte application_id;
-	private final int application_mailbox_data_address;
-	private final int monitor_mailbox_data_address;
-	private final MailboxCommand application_mailbox_command;
-	private final MailboxCommand monitor_mailbox_command;
-	private final short software_error_count;
-	private final int software_source_filename_address;
-	private final int software_source_line_number;
+	private final byte applicationID;
+	private final int applicationMailboxDataAddress;
+	private final int monitorMailboxDataAddress;
+	private final MailboxCommand applicationMailboxCommand;
+	private final MailboxCommand monitorMailboxCommand;
+	private final short softwareErrorCount;
+	private final int softwareSourceFilenameAddress;
+	private final int softwareSourceLineNumber;
 	private final int time;
-	private final String application_name;
-	private final int iobuf_address;
-	private final int software_version;
+	private final String applicationName;
+	private final int iobufAddress;
+	private final int softwareVersion;
 	private final int[] user;
 
 	private static final Charset ASCII = Charset.forName("ascii");
@@ -73,24 +73,24 @@ public class CPUInfo implements HasCoreLocation {
 	public CPUInfo(HasCoreLocation location, ByteBuffer buffer) {
 		core = location.asCoreLocation();
 		registers = getInts(buffer, NUM_REGISTERS);
-		processor_state_register = buffer.getInt();
-		stack_pointer = buffer.getInt();
-		link_register = buffer.getInt();
-		run_time_error = RunTimeError.get(buffer.get());
-		physical_cpu_id = buffer.get();
+		processorStateRegister = buffer.getInt();
+		stackPointer = buffer.getInt();
+		linkRegister = buffer.getInt();
+		runTimeError = RunTimeError.get(buffer.get());
+		physicalCPUID = buffer.get();
 		state = CPUState.get(buffer.get());
-		application_id = buffer.get();
-		application_mailbox_data_address = buffer.getInt();
-		monitor_mailbox_data_address = buffer.getInt();
-		application_mailbox_command = MailboxCommand.get(buffer.get());
-		monitor_mailbox_command = MailboxCommand.get(buffer.get());
-		software_error_count = buffer.getShort();
-		software_source_filename_address = buffer.getInt();
-		software_source_line_number = buffer.getInt();
+		applicationID = buffer.get();
+		applicationMailboxDataAddress = buffer.getInt();
+		monitorMailboxDataAddress = buffer.getInt();
+		applicationMailboxCommand = MailboxCommand.get(buffer.get());
+		monitorMailboxCommand = MailboxCommand.get(buffer.get());
+		softwareErrorCount = buffer.getShort();
+		softwareSourceFilenameAddress = buffer.getInt();
+		softwareSourceLineNumber = buffer.getInt();
 		time = buffer.getInt();
-		application_name = getStr(buffer, APP_NAME_WIDTH);
-		iobuf_address = buffer.getInt();
-		software_version = buffer.getInt();
+		applicationName = getStr(buffer, APP_NAME_WIDTH);
+		iobufAddress = buffer.getInt();
+		softwareVersion = buffer.getInt();
 		buffer.position(buffer.position() + SKIP_BYTES);
 		user = getInts(buffer, NUM_USER_VALUES);
 	}
@@ -117,27 +117,27 @@ public class CPUInfo implements HasCoreLocation {
 
 	/** The value in the processor state register (PSR). */
 	public int getProcessorStateRegister() {
-		return processor_state_register;
+		return processorStateRegister;
 	}
 
 	/** The current stack pointer value (SP). */
 	public int getStackPointer() {
-		return stack_pointer;
+		return stackPointer;
 	}
 
 	/** The current link register value (LR). */
 	public int getLinkRegister() {
-		return link_register;
+		return linkRegister;
 	}
 
 	/** The reason for a run time error. */
 	public RunTimeError getRunTimeError() {
-		return run_time_error;
+		return runTimeError;
 	}
 
 	/** The physical ID of this processor. */
 	public byte getPhysicalCPUID() {
-		return physical_cpu_id;
+		return physicalCPUID;
 	}
 
 	/** The current state of the core. */
@@ -147,17 +147,17 @@ public class CPUInfo implements HasCoreLocation {
 
 	/** The ID of the application running on the core. */
 	public int getApplicationID() {
-		return toUnsignedInt(application_id);
+		return toUnsignedInt(applicationID);
 	}
 
 	/** The address of the data in SDRAM for the application mailbox. */
 	public int getApplicationMailboxDataAddress() {
-		return application_mailbox_data_address;
+		return applicationMailboxDataAddress;
 	}
 
 	/** The address of the data in SDRAM of the monitor mailbox. */
 	public int getMonitorMailboxDataAddress() {
-		return monitor_mailbox_data_address;
+		return monitorMailboxDataAddress;
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class CPUInfo implements HasCoreLocation {
 	 * processor to the application.
 	 */
 	public MailboxCommand getApplicationMailboxCommand() {
-		return application_mailbox_command;
+		return applicationMailboxCommand;
 	}
 
 	/**
@@ -173,22 +173,22 @@ public class CPUInfo implements HasCoreLocation {
 	 * the monitor processor.
 	 */
 	public MailboxCommand getMonitorMailboxCommand() {
-		return monitor_mailbox_command;
+		return monitorMailboxCommand;
 	}
 
 	/** The number of software errors counted. */
 	public short getSoftwareErrorCount() {
-		return software_error_count;
+		return softwareErrorCount;
 	}
 
 	/** The address of the filename of the software source. */
 	public int getSoftwareSourceFilenameAddress() {
-		return software_source_filename_address;
+		return softwareSourceFilenameAddress;
 	}
 
 	/** The line number of the software source. */
 	public int getSoftwareSourceLineNumber() {
-		return software_source_line_number;
+		return softwareSourceLineNumber;
 	}
 
 	/**
@@ -201,17 +201,17 @@ public class CPUInfo implements HasCoreLocation {
 
 	/** The name of the application running on the core. */
 	public String getApplicationName() {
-		return application_name;
+		return applicationName;
 	}
 
 	/** The address of the IOBUF buffer in SDRAM. */
 	public int getIobufAddress() {
-		return iobuf_address;
+		return iobufAddress;
 	}
 
 	/** The software version. */
 	public int getSoftwareVersion() {
-		return software_version;
+		return softwareVersion;
 	}
 
 	/** The current user values (user<sub>0</sub>&hellip;user<sub>3</sub>). */
@@ -226,13 +226,13 @@ public class CPUInfo implements HasCoreLocation {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
-				core.getY(), core.getP(), state, run_time_error));
+				core.getY(), core.getP(), state, runTimeError));
 		sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",
 				registers[0], registers[1], registers[2], registers[3]));
 		sb.append(format("        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n",
 				registers[4], registers[5], registers[6], registers[7]));
 		sb.append(format("        PSR=%08x, SP=%08x, LR=%08x",
-				processor_state_register, stack_pointer, link_register));
+				processorStateRegister, stackPointer, linkRegister));
 		return sb.toString();
 	}
 }

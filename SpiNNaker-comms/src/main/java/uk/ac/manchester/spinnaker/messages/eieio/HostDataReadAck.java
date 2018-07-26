@@ -8,26 +8,26 @@ import java.nio.ByteBuffer;
  * to read data.
  */
 public class HostDataReadAck extends EIEIOCommandMessage {
-	public final byte sequence_number;
+	public final byte sequenceNumber;
 
-	public HostDataReadAck(byte sequence_number) {
+	public HostDataReadAck(byte sequenceNumber) {
 		super(EIEIOCommandID.HOST_DATA_READ_ACK);
-		this.sequence_number = sequence_number;
+		this.sequenceNumber = sequenceNumber;
 	}
 
-	public HostDataReadAck(int sequence_number) {
-		this((byte) (sequence_number & 0xFF));
+	public HostDataReadAck(int sequenceNumber) {
+		this((byte) (sequenceNumber & 0xFF));
 	}
 
 	public HostDataReadAck(EIEIOCommandHeader header, ByteBuffer data,
 			int offset) {
 		super(header, data, offset);
-		this.sequence_number = data.get(offset);
+		this.sequenceNumber = data.get(offset);
 	}
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(sequence_number);
+		buffer.put(sequenceNumber);
 	}
 }

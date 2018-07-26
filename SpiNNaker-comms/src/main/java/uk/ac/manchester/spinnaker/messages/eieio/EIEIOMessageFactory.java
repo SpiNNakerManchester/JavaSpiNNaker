@@ -18,13 +18,12 @@ public abstract class EIEIOMessageFactory {
 	 * @return an object which inherits from EIEIOCommandMessage which contains
 	 *         parsed data received from the network
 	 */
-	public static EIEIOCommandMessage read_eieio_command_message(
-			ByteBuffer data, int offset) {
-		EIEIOCommandHeader command_header = new EIEIOCommandHeader(data,
-				offset);
-		switch (command_header.command) {
+	public static EIEIOCommandMessage readCommandMessage(ByteBuffer data,
+			int offset) {
+		EIEIOCommandHeader commandHeader = new EIEIOCommandHeader(data, offset);
+		switch (commandHeader.command) {
 		case DATABASE_CONFIRMATION:
-			return new DatabaseConfirmation(command_header, data, offset + 2);
+			return new DatabaseConfirmation(commandHeader, data, offset + 2);
 		case EVENT_PADDING:
 			// Fill in buffer area with padding
 			return new PaddingRequest();
@@ -39,20 +38,19 @@ public abstract class EIEIOMessageFactory {
 			return new StartRequests();
 		case SPINNAKER_REQUEST_BUFFERS:
 			// SpiNNaker requesting new buffers for spike source population
-			return new SpinnakerRequestBuffers(command_header, data,
-					offset + 2);
+			return new SpinnakerRequestBuffers(commandHeader, data, offset + 2);
 		case HOST_SEND_SEQUENCED_DATA:
 			// Buffers being sent from host to SpiNNaker
-			return new HostSendSequencedData(command_header, data, offset + 2);
+			return new HostSendSequencedData(commandHeader, data, offset + 2);
 		case SPINNAKER_REQUEST_READ_DATA:
 			// Buffers available to be read from a buffered out vertex
-			return new SpinnakerRequestReadData(command_header, data,
+			return new SpinnakerRequestReadData(commandHeader, data,
 					offset + 2);
 		case HOST_DATA_READ:
 			// Host confirming data being read form SpiNNaker memory
-			return new HostDataRead(command_header, data, offset + 2);
+			return new HostDataRead(commandHeader, data, offset + 2);
 		default:
-			return new EIEIOCommandMessage(command_header, data, offset + 2);
+			return new EIEIOCommandMessage(commandHeader, data, offset + 2);
 		}
 	}
 
@@ -67,10 +65,10 @@ public abstract class EIEIOMessageFactory {
 	 * @return an object which inherits from EIEIODataMessage which contains
 	 *         parsed data received from the network
 	 */
-	public static EIEIODataMessage read_eieio_data_message(ByteBuffer data,
+	public static EIEIODataMessage readDataMessage(ByteBuffer data,
 			int offset) {
-		EIEIODataHeader eieio_header = new EIEIODataHeader(data, offset);
-		offset += eieio_header.getSize();
-		return new EIEIODataMessage(eieio_header, data, offset);
+		EIEIODataHeader eieioHeader = new EIEIODataHeader(data, offset);
+		offset += eieioHeader.getSize();
+		return new EIEIODataMessage(eieioHeader, data, offset);
 	}
 }

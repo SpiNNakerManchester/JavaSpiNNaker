@@ -67,7 +67,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
-	private BMPRequest<?> error_request;
+	private BMPRequest<?> errorRequest;
 	private Throwable exception;
 
 	public SendSingleBMPCommandProcess(
@@ -105,7 +105,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				response -> holder.value = response);
 		requestPipeline.finish();
 		if (exception != null) {
-			throw new Exception(error_request.sdpHeader.getDestination(),
+			throw new Exception(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return holder.value;
@@ -224,8 +224,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		/**
 		 * Add a BMP request to the set to be sent.
 		 *
-		 * @param <T>
-		 *
 		 * @param request
 		 *            The BMP request to be sent
 		 * @param callback
@@ -233,11 +231,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 *            received; takes an SCPResponse as a parameter, or a
 		 *            <tt>null</tt> if the response doesn't need to be
 		 *            processed.
-		 * @param error_callback
-		 *            A callback function to call when an error is found when
-		 *            processing the message; takes the original SCPRequest, and
-		 *            the exception caught while sending it. If <tt>null</tt>, a
-		 *            simple default logging function is used.
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */
@@ -299,7 +292,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					requests.remove(msg.sequenceNumber);
 				}
 			} catch (java.lang.Exception e) {
-				error_request = req.request;
+				errorRequest = req.request;
 				exception = e;
 				requests.remove(msg.sequenceNumber);
 			}
@@ -307,12 +300,12 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
-			BitSet to_remove = new BitSet(nextSequence);
+			BitSet toRemove = new BitSet(nextSequence);
 			for (int seq : new ArrayList<>(requests.keySet())) {
 				Request req = requests.get(seq);
 				if (req == null) {
 					// Shouldn't happen, but if it does we should nuke it.
-					to_remove.set(seq);
+					toRemove.set(seq);
 					continue;
 				}
 
@@ -320,13 +313,13 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				try {
 					resend(req, "timeout");
 				} catch (java.lang.Exception e) {
-					error_request = req.request;
+					errorRequest = req.request;
 					exception = e;
-					to_remove.set(seq);
+					toRemove.set(seq);
 				}
 			}
 
-			to_remove.stream().forEach(seq -> requests.remove(seq));
+			toRemove.stream().forEach(seq -> requests.remove(seq));
 		}
 
 		private void resend(Request req, Object reason) throws IOException {

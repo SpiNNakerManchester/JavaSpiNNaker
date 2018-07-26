@@ -107,12 +107,12 @@ public class RouterDiagnostics {
 	}
 
 	/** The number of fixed-route packets received from external links. */
-	public int getNum_external_fixed_route_packets() {
+	public int getNumExternalFixedRoutePackets() {
 		return register(EXT_FR);
 	}
 
 	/** The number of fixed-route packets received that were dropped. */
-	public int getNum_dropped_fixed_route_packets() {
+	public int getNumDroppedFixedRoutePackets() {
 		return register(DUMP_FR);
 	}
 

@@ -269,7 +269,7 @@ public class SCPRequestPipeline {
 	 *
 	 * @param request
 	 *            The SCP request to be sent
-	 * @param error_callback
+	 * @param errorCallback
 	 *            A callback function to call when an error is found when
 	 *            processing the message; takes the original SCPRequest, and the
 	 *            exception caught while sending it. If <tt>null</tt>, a simple
@@ -278,8 +278,8 @@ public class SCPRequestPipeline {
 	 *             If things go really wrong.
 	 */
 	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
-			SCPErrorHandler error_callback) throws IOException {
-		sendRequest(request, null, error_callback);
+			SCPErrorHandler errorCallback) throws IOException {
+		sendRequest(request, null, errorCallback);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class SCPRequestPipeline {
 	 *            A callback function to call when the response has been
 	 *            received; takes an SCPResponse as a parameter, or a
 	 *            <tt>null</tt> if the response doesn't need to be processed.
-	 * @param error_callback
+	 * @param errorCallback
 	 *            A callback function to call when an error is found when
 	 *            processing the message; takes the original SCPRequest, and the
 	 *            exception caught while sending it. If <tt>null</tt>, a simple
@@ -319,11 +319,11 @@ public class SCPRequestPipeline {
 	 *             If things go really wrong.
 	 */
 	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback, SCPErrorHandler error_callback)
+			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		// Set the default error callback if needed
-		if (error_callback == null) {
-			error_callback = ((r, e) -> log
+		if (errorCallback == null) {
+			errorCallback = ((r, e) -> log
 					.error("problem sending " + r.getClass(), e));
 		}
 
@@ -343,7 +343,7 @@ public class SCPRequestPipeline {
 
 		// Update the packet and store required details
 		request.scpRequestHeader.sequence = (short) sequence;
-		Request<T> req = new Request<>(request, callback, error_callback);
+		Request<T> req = new Request<>(request, callback, errorCallback);
 		requests.put(sequence, req);
 
 		// Send the request, keeping track of how many are sent
@@ -406,12 +406,12 @@ public class SCPRequestPipeline {
 		numTimeouts++;
 
 		// If there is a timeout, all packets remaining are resent
-		BitSet to_remove = new BitSet(nextSequence);
+		BitSet toRemove = new BitSet(nextSequence);
 		for (int seq : new ArrayList<>(requests.keySet())) {
 			Request<?> req = requests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
-				to_remove.set(seq);
+				toRemove.set(seq);
 				continue;
 			}
 
@@ -420,11 +420,11 @@ public class SCPRequestPipeline {
 				resend(req, "timeout");
 			} catch (Exception e) {
 				req.errorCallback.handleError(req.request, e);
-				to_remove.set(seq);
+				toRemove.set(seq);
 			}
 		}
 
-		to_remove.stream().forEach(seq -> requests.remove(seq));
+		toRemove.stream().forEach(seq -> requests.remove(seq));
 	}
 
 	private void resend(Request<?> req, Object reason) throws IOException {

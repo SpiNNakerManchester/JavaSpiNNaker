@@ -55,9 +55,9 @@ public class BMPConnectionData {
 	public BMPConnectionData(String hostname, int numBoards)
 			throws UnknownHostException {
 		// take the IP address, split by dots, and subtract 1 off last bit
-		byte[] ip_bits = getByName(hostname).getAddress();
-		ip_bits[3]--;
-		ipAddress = getByAddress(ip_bits).toString();
+		byte[] ipBits = getByName(hostname).getAddress();
+		ipBits[3]--;
+		ipAddress = getByAddress(ipBits).toString();
 		portNumber = SCP_SCAMP_PORT;
 
 		// Assume a single board with no cabinet or frame specified

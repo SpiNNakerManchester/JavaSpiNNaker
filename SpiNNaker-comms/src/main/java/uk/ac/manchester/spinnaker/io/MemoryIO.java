@@ -135,50 +135,49 @@ public class MemoryIO implements AbstractIO {
 
 	@Override
 	public byte[] read(Integer numBytes) throws IOException, Exception {
-		int bytes_to_read = (numBytes != null && numBytes >= 0) ? numBytes
+		int size = (numBytes != null && numBytes >= 0) ? numBytes
 				: (endAddress - currentAddress);
-		if (currentAddress + bytes_to_read > endAddress) {
+		if (currentAddress + size > endAddress) {
 			throw new EOFException();
 		}
 		byte[] data;
 		synchronized (io) {
 			io.setCurrentAddress(currentAddress);
-			data = io.read(bytes_to_read);
+			data = io.read(size);
 		}
-		currentAddress += bytes_to_read;
+		currentAddress += size;
 		return data;
 	}
 
 	@Override
 	public int write(byte[] data) throws IOException, Exception {
-		int n_bytes = data.length;
-		if (currentAddress + n_bytes > endAddress) {
+		int size = data.length;
+		if (currentAddress + size > endAddress) {
 			throw new EOFException();
 		}
 		synchronized (io) {
 			io.setCurrentAddress(currentAddress);
 			io.write(data);
 		}
-		currentAddress += n_bytes;
-		return n_bytes;
+		currentAddress += size;
+		return size;
 	}
 
 	@Override
-	public void fill(int repeat_value, Integer bytes_to_fill,
-			DataType data_type) throws IOException, Exception {
-		int len = (bytes_to_fill == null) ? endAddress - currentAddress
-				: bytes_to_fill;
+	public void fill(int value, Integer size, DataType type)
+			throws IOException, Exception {
+		int len = (size == null) ? endAddress - currentAddress : size;
 		if (currentAddress + len > endAddress) {
 			throw new EOFException();
 		}
-		if (len % data_type.value != 0) {
+		if (len % type.value != 0) {
 			throw new IllegalArgumentException("The size of " + len
 					+ " bytes to fill is not divisible by the size of"
-					+ " the data of " + data_type.value + " bytes");
+					+ " the data of " + type.value + " bytes");
 		}
 		synchronized (io) {
 			io.setCurrentAddress(currentAddress);
-			io.fill(repeat_value, len, data_type);
+			io.fill(value, len, type);
 		}
 		currentAddress += len;
 	}

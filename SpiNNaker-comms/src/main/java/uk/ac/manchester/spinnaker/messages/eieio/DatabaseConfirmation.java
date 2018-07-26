@@ -9,34 +9,34 @@ import java.nio.ByteBuffer;
  * is to be used by any software which interfaces with SpiNNaker.
  */
 public class DatabaseConfirmation extends EIEIOCommandMessage {
-	public final String database_path;
+	public final String databasePath;
 
 	public DatabaseConfirmation() {
 		super(EIEIOCommandID.DATABASE_CONFIRMATION);
-		database_path = null;
+		databasePath = null;
 	}
 
-	public DatabaseConfirmation(String database_path) {
+	public DatabaseConfirmation(String databasePath) {
 		super(EIEIOCommandID.DATABASE_CONFIRMATION);
-		this.database_path = database_path;
+		this.databasePath = databasePath;
 	}
 
 	public DatabaseConfirmation(EIEIOCommandHeader header, ByteBuffer data,
 			int offset) {
 		super(header, data, offset);
 		if (data.limit() - offset > 0) {
-			database_path = new String(data.array(), offset,
+			databasePath = new String(data.array(), offset,
 					data.limit() - offset, defaultCharset());
 		} else {
-			database_path = null;
+			databasePath = null;
 		}
 	}
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		if (database_path != null) {
-			buffer.put(database_path.getBytes(defaultCharset()));
+		if (databasePath != null) {
+			buffer.put(databasePath.getBytes(defaultCharset()));
 		}
 	}
 }

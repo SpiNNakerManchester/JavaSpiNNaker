@@ -98,7 +98,7 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
  */
 public class ChipInfo implements HasChipLocation {
 	private static final byte[] NO_IP = { 0, 0, 0, 0 };
-	private final ByteBuffer system_data;
+	private final ByteBuffer systemData;
 
 	private String ipAddress;
 	private int ledFlashPeriod;
@@ -116,7 +116,7 @@ public class ChipInfo implements HasChipLocation {
 	 *            The data retrieved from SDRAM on the board.
 	 */
 	public ChipInfo(ByteBuffer systemData) {
-		this.system_data = systemData.asReadOnlyBuffer();
+		this.systemData = systemData.asReadOnlyBuffer();
 
 		int links = read(links_available);
 		linksAvailable = BitSet.valueOf(new byte[] { (byte) links });
@@ -145,11 +145,11 @@ public class ChipInfo implements HasChipLocation {
 	private int read(SystemVariableDefinition var) {
 		switch (var.type) {
 		case BYTE:
-			return system_data.get(system_data.position() + var.offset);
+			return systemData.get(systemData.position() + var.offset);
 		case INT:
-			return system_data.getInt(system_data.position() + var.offset);
+			return systemData.getInt(systemData.position() + var.offset);
 		case SHORT:
-			return system_data.getShort(system_data.position() + var.offset);
+			return systemData.getShort(systemData.position() + var.offset);
 		case BYTE_ARRAY:
 		case LONG:
 		default:
@@ -161,14 +161,14 @@ public class ChipInfo implements HasChipLocation {
 		if (var.type != LONG) {
 			throw new IllegalArgumentException();
 		}
-		return system_data.getLong(system_data.position() + var.offset);
+		return systemData.getLong(systemData.position() + var.offset);
 	}
 
 	private byte[] readBytes(SystemVariableDefinition var) {
 		if (var.type != BYTE_ARRAY) {
 			throw new IllegalArgumentException();
 		}
-		ByteBuffer b = system_data.duplicate();
+		ByteBuffer b = systemData.duplicate();
 		b.position(b.position() + var.offset);
 		byte[] bytes = (byte[]) var.getDefault();
 		b.get(bytes);

@@ -67,9 +67,9 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 				throws UnexpectedResponseCodeException, UnknownHostException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 
-			byte[] ip_address = new byte[4];
-			buffer.get(ip_address);
-			ipAddress = InetAddress.getByAddress(ip_address);
+			byte[] ipBytes = new byte[4];
+			buffer.get(ipBytes);
+			ipAddress = InetAddress.getByAddress(ipBytes);
 
 			macAddress = new byte[6];
 			buffer.get(macAddress);

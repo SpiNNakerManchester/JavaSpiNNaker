@@ -13,7 +13,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * Get a sub-region of this memory object. The index must be in range of the
 	 * current region to be valid.
 	 *
-	 * @param new_slice
+	 * @param slice
 	 *            A single index for a single byte of memory.
 	 */
 	AbstractIO get(int slice) throws IOException, Exception;
@@ -22,7 +22,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * Get a sub-region of this memory object. The slice must be in range of the
 	 * current region to be valid.
 	 *
-	 * @param new_slice
+	 * @param slice
 	 *            A contiguous slice of memory.
 	 */
 	AbstractIO get(Slice slice) throws IOException, Exception;

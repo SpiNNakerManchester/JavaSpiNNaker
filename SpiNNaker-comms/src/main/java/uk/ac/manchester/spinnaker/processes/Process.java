@@ -15,7 +15,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
 public abstract class Process {
-	private SCPRequest<?> error_request;
+	private SCPRequest<?> errorRequest;
 	private Throwable exception;
 
 	protected Process() {
@@ -23,7 +23,7 @@ public abstract class Process {
 
 	protected final void receiveError(SCPRequest<?> request,
 			Throwable exception) {
-		this.error_request = request;
+		this.errorRequest = request;
 		this.exception = exception;
 	}
 
@@ -35,7 +35,7 @@ public abstract class Process {
 		if (!isError()) {
 			return;
 		}
-		SDPHeader hdr = error_request.sdpHeader;
+		SDPHeader hdr = errorRequest.sdpHeader;
 		Exception ex = new Exception(hdr.getDestination(), exception);
 		exception = ex;
 		throw ex;

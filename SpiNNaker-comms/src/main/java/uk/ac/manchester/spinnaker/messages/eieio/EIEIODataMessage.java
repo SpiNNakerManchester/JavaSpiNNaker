@@ -29,14 +29,14 @@ public class EIEIODataMessage
 	}
 
 	public EIEIODataMessage(EIEIOType eieioType, byte count, ByteBuffer data,
-			int offset, Short key_prefix, Integer payload_prefix,
-			Integer timestamp, EIEIOPrefix prefix_type) {
-		Integer payload_base = payload_prefix;
+			int offset, Short keyPrefix, Integer payloadPrefix,
+			Integer timestamp, EIEIOPrefix prefixType) {
+		Integer payloadBase = payloadPrefix;
 		if (timestamp != null) {
-			payload_base = timestamp;
+			payloadBase = timestamp;
 		}
-		header = new EIEIODataHeader(eieioType, (byte) 0, key_prefix,
-				prefix_type, payload_base, timestamp != null, count);
+		header = new EIEIODataHeader(eieioType, (byte) 0, keyPrefix, prefixType,
+				payloadBase, timestamp != null, count);
 		elements = newMessageBuffer();
 		this.data = data;
 		this.offset = offset;
@@ -139,12 +139,12 @@ public class EIEIODataMessage
 	public Iterator<AbstractDataElement> iterator() {
 		final int initialOffset = offset;
 		return new Iterator<AbstractDataElement>() {
-			private int elements_read = 0;
+			private int elementsRead = 0;
 			private int offset = initialOffset;
 
 			@Override
 			public boolean hasNext() {
-				return data != null && elements_read < header.getCount();
+				return data != null && elementsRead < header.getCount();
 			}
 
 			@Override
@@ -152,7 +152,7 @@ public class EIEIODataMessage
 				if (!hasNext()) {
 					throw new NoSuchElementException("read all elements");
 				}
-				elements_read++;
+				elementsRead++;
 				int key = 0;
 				Integer payload = null;
 				switch (header.eieioType) {

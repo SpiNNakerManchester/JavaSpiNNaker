@@ -26,17 +26,17 @@ public final class MostDirectConnectionSelector<Connection extends SCPSenderRece
 			Collection<Connection> connections) {
 		this.machine = machine;
 		this.connections = new HashMap<>();
-		Connection first_connection = null;
+		Connection firstConnection = null;
 		for (Connection connection : connections) {
 			if (connection.getChip().equals(ROOT)) {
-				first_connection = connection;
+				firstConnection = connection;
 			}
 			this.connections.put(connection.getChip(), connection);
 		}
-		if (first_connection == null) {
-			first_connection = connections.iterator().next();
+		if (firstConnection == null) {
+			firstConnection = connections.iterator().next();
 		}
-		this.defaultConnection = first_connection;
+		this.defaultConnection = firstConnection;
 	}
 
 	@Override

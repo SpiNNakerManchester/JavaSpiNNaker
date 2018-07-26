@@ -8,25 +8,25 @@ import java.nio.ByteBuffer;
  * future use.
  */
 public class HostSendSequencedData extends EIEIOCommandMessage {
-	public final byte region_id;
-	public final byte sequence_no;
-	public final EIEIODataMessage eieio_data_message;
+	public final byte regionID;
+	public final byte sequenceNum;
+	public final EIEIODataMessage eieioDataMessage;
 
-	public HostSendSequencedData(byte region_id, byte sequence_no,
-			EIEIODataMessage eieio_data_message) {
+	public HostSendSequencedData(byte regionID, byte sequenceNum,
+			EIEIODataMessage eieioDataMessage) {
 		super(EIEIOCommandID.HOST_SEND_SEQUENCED_DATA);
-		this.region_id = region_id;
-		this.sequence_no = sequence_no;
-		this.eieio_data_message = eieio_data_message;
+		this.regionID = regionID;
+		this.sequenceNum = sequenceNum;
+		this.eieioDataMessage = eieioDataMessage;
 	}
 
 	public HostSendSequencedData(EIEIOCommandHeader header, ByteBuffer data,
 			int offset) {
 		super(header, data, offset);
 		offset += 2;
-		region_id = data.get(offset++);
-		sequence_no = data.get(offset++);
-		eieio_data_message = EIEIOMessageFactory.read_eieio_data_message(data,
+		regionID = data.get(offset++);
+		sequenceNum = data.get(offset++);
+		eieioDataMessage = EIEIOMessageFactory.readDataMessage(data,
 				offset);
 	}
 
@@ -38,8 +38,8 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(region_id);
-		buffer.put(sequence_no);
-		eieio_data_message.addToBuffer(buffer);
+		buffer.put(regionID);
+		buffer.put(sequenceNum);
+		eieioDataMessage.addToBuffer(buffer);
 	}
 }

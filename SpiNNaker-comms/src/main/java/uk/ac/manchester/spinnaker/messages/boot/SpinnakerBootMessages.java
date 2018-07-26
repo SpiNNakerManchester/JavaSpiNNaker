@@ -162,8 +162,8 @@ public class SpinnakerBootMessages {
 		Stream<SpinnakerBootMessage> first = singleton(new SpinnakerBootMessage(
 				FLOOD_FILL_START, 0, 0, numDataPackets - 1)).stream();
 		Stream<SpinnakerBootMessage> mid = range(0, numDataPackets)
-				.mapToObj(block_id -> new SpinnakerBootMessage(FLOOD_FILL_BLOCK,
-						1, 0, 0, getPacketData(block_id)));
+				.mapToObj(blockID -> new SpinnakerBootMessage(FLOOD_FILL_BLOCK,
+						1, 0, 0, getPacketData(blockID)));
 		Stream<SpinnakerBootMessage> last = singleton(
 				new SpinnakerBootMessage(FLOOD_FILL_CONTROL, 1, 0, 0)).stream();
 		return concat(first, concat(mid, last));

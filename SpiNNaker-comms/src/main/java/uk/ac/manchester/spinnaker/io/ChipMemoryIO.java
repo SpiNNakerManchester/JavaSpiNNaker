@@ -145,27 +145,27 @@ class ChipMemoryIO {
 	 *            The data to write
 	 */
 	void write(byte[] data) throws IOException, Exception {
-		int n_bytes = data.length;
+		int numBytes = data.length;
 
 		Transceiver t = txrx();
-		if (n_bytes >= writeBuffer.limit()) {
+		if (numBytes >= writeBuffer.limit()) {
 			flushWriteBuffer();
 			t.writeMemory(core, currentAddress, data);
-			currentAddress += n_bytes;
+			currentAddress += numBytes;
 			writeAddress = currentAddress;
 		} else {
 			hold = t;
-			int n_bytes_to_copy = min(n_bytes, writeBuffer.remaining());
-			writeBuffer.put(data, 0, n_bytes_to_copy);
-			currentAddress += n_bytes_to_copy;
-			n_bytes -= n_bytes_to_copy;
+			int chunkSize = min(numBytes, writeBuffer.remaining());
+			writeBuffer.put(data, 0, chunkSize);
+			currentAddress += chunkSize;
+			numBytes -= chunkSize;
 			if (!writeBuffer.hasRemaining()) {
 				flushWriteBuffer();
 			}
-			if (n_bytes > 0) {
+			if (numBytes > 0) {
 				writeBuffer.clear();
-				writeBuffer.put(data, n_bytes_to_copy, n_bytes);
-				currentAddress += n_bytes;
+				writeBuffer.put(data, chunkSize, numBytes);
+				currentAddress += numBytes;
 			}
 		}
 	}

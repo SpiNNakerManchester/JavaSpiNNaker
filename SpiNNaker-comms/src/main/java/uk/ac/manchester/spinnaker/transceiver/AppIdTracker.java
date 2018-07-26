@@ -10,9 +10,9 @@ import java.util.Set;
 public class AppIdTracker {
 	private static final int MIN_APP_ID = 17;
 	private static final int MAX_APP_ID = 254;
-	private final Set<Integer> free_ids;
-	private final int max_app_id;
-	private final int min_app_id;
+	private final Set<Integer> freeIDs;
+	private final int maxID;
+	private final int minID;
 
 	/**
 	 * Allocate an application ID tracker.
@@ -24,43 +24,43 @@ public class AppIdTracker {
 	/**
 	 * Allocate an application ID tracker.
 	 *
-	 * @param min_app_id
+	 * @param minID
 	 *            The smallest application ID to use
-	 * @param max_app_id
+	 * @param maxID
 	 *            The largest application ID to use
 	 */
-	public AppIdTracker(int min_app_id, int max_app_id) {
-		this(null, min_app_id, max_app_id);
+	public AppIdTracker(int minAppID, int maxAppID) {
+		this(null, minAppID, maxAppID);
 	}
 
 	/**
 	 * Allocate an application ID tracker.
 	 *
-	 * @param app_ids_in_use
+	 * @param appIDsInUse
 	 *            The IDs that are already in use
 	 */
-	public AppIdTracker(Set<Integer> app_ids_in_use) {
-		this(app_ids_in_use, MIN_APP_ID, MAX_APP_ID);
+	public AppIdTracker(Set<Integer> appIDsInUse) {
+		this(appIDsInUse, MIN_APP_ID, MAX_APP_ID);
 	}
 
 	/**
 	 * Allocate an application ID tracker.
 	 *
-	 * @param app_ids_in_use
+	 * @param appIDsInUse
 	 *            The IDs that are already in use
-	 * @param min_app_id
+	 * @param minID
 	 *            The smallest application ID to use
-	 * @param max_app_id
+	 * @param maxID
 	 *            The largest application ID to use
 	 */
-	public AppIdTracker(Set<Integer> app_ids_in_use, int min_app_id,
-			int max_app_id) {
-		free_ids = rangeClosed(min_app_id, max_app_id).boxed().collect(toSet());
-		if (app_ids_in_use != null) {
-			free_ids.removeAll(app_ids_in_use);
+	public AppIdTracker(Set<Integer> appIDsInUse, int minAppID,
+			int maxAppID) {
+		freeIDs = rangeClosed(minAppID, maxAppID).boxed().collect(toSet());
+		if (appIDsInUse != null) {
+			freeIDs.removeAll(appIDsInUse);
 		}
-		this.min_app_id = min_app_id;
-		this.max_app_id = max_app_id;
+		this.minID = minAppID;
+		this.maxID = maxAppID;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class AppIdTracker {
 	 *             if there are no IDs available
 	 */
 	public int allocateNewID() {
-		Iterator<Integer> it = free_ids.iterator();
+		Iterator<Integer> it = freeIDs.iterator();
 		if (!it.hasNext()) {
 			throw new RuntimeException("no remaining free IDs");
 		}
@@ -88,7 +88,7 @@ public class AppIdTracker {
 	 *             if the ID is not present
 	 */
 	public void allocateID(int id) {
-		if (!free_ids.remove(id)) {
+		if (!freeIDs.remove(id)) {
 			throw new IllegalArgumentException(
 					"id " + id + " was not available for allocation");
 		}
@@ -103,11 +103,11 @@ public class AppIdTracker {
 	 *             if the ID is out of range
 	 */
 	public void freeID(int id) {
-		if (id < min_app_id || id > max_app_id) {
+		if (id < minID || id > maxID) {
 			throw new IllegalArgumentException(
-					"ID " + id + " out of allowed range of " + min_app_id
-							+ " to " + max_app_id);
+					"ID " + id + " out of allowed range of " + minID
+							+ " to " + maxID);
 		}
-		free_ids.add(id);
+		freeIDs.add(id);
 	}
 }

@@ -11,17 +11,17 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 public final class RoundRobinConnectionSelector<T extends Connection>
 		implements ConnectionSelector<T> {
 	private final List<T> connections;
-	private int next_connection_index;
+	private int next;
 
 	public RoundRobinConnectionSelector(List<T> connections) {
 		this.connections = unmodifiableList(connections);
-		next_connection_index = 0;
+		next = 0;
 	}
 
 	@Override
 	public T getNextConnection(SCPRequest<?> request) {
-		int idx = next_connection_index;
-		next_connection_index = (idx + 1) % connections.size();
+		int idx = next;
+		next = (idx + 1) % connections.size();
 		return connections.get(idx);
 	}
 }

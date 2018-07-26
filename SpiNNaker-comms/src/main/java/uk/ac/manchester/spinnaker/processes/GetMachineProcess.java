@@ -44,13 +44,13 @@ import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	/** A dictionary of (x, y) -> ChipInfo */
-	private final Map<ChipLocation, ChipSummaryInfo> chip_info;
+	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
 
-	private final Collection<ChipLocation> ignore_chips;
-	private final Collection<CoreLocation> ignore_cores;
-	private final Collection<LinkDescriptor> ignore_links;
-	private final Integer max_core_id;
-	private final Integer max_sdram_size;
+	private final Collection<ChipLocation> ignoreChips;
+	private final Collection<CoreLocation> ignoreCores;
+	private final Collection<LinkDescriptor> ignoreLinks;
+	private final Integer maxCoreID;
+	private final Integer maxSDRAMSize;
 
 	private final <T> Collection<T> def(Collection<T> c) {
 		return c == null ? emptyList() : c;
@@ -63,34 +63,34 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 			Collection<LinkDescriptor> ignoreLinks, Integer maxCoreID,
 			Integer maxSDRAMSize) {
 		super(connectionSelector);
-		this.ignore_chips = def(ignoreChips);
-		this.ignore_cores = def(ignoreCores);
-		this.ignore_links = def(ignoreLinks);
-		this.max_core_id = maxCoreID;
-		this.max_sdram_size = maxSDRAMSize;
-		this.chip_info = new HashMap<>();
+		this.ignoreChips = def(ignoreChips);
+		this.ignoreCores = def(ignoreCores);
+		this.ignoreLinks = def(ignoreLinks);
+		this.maxCoreID = maxCoreID;
+		this.maxSDRAMSize = maxSDRAMSize;
+		this.chipInfo = new HashMap<>();
 	}
 
 	public Machine getMachineDetails(HasChipLocation bootChip,
 			MachineDimensions size) throws IOException, Exception {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		List<ByteBuffer> p2p_column_data = new ArrayList<>();
+		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
 			sendRequest(
 					new ReadMemory(bootChip,
 							ROUTER_REGISTER_P2P_ADDRESS
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
-					response -> p2p_column_data.add(response.data));
+					response -> p2pColumnData.add(response.data));
 		}
 		finish();
 		checkForError();
-		P2PTable p2p_table = new P2PTable(size, p2p_column_data);
+		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
 		// Get the chip information for each chip
-		for (ChipLocation chip : p2p_table.getChips()) {
+		for (ChipLocation chip : p2pTable.getChips()) {
 			sendRequest(new GetChipInfo(chip),
-					response -> chip_info.put(chip, response.chipInfo));
+					response -> chipInfo.put(chip, response.chipInfo));
 		}
 		finish();
 		try {
@@ -103,21 +103,21 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Warn about unexpected missing chips
-		for (ChipLocation chip : p2p_table.getChips()) {
-			if (!chip_info.containsKey(chip)) {
+		for (ChipLocation chip : p2pTable.getChips()) {
+			if (!chipInfo.containsKey(chip)) {
 				log.warn("Chip %d,%d was expected but didn't reply",
 						chip.getX(), chip.getY());
 			}
 		}
 
 		// Build a Machine
-		List<ChipSummaryInfo> chips = new ArrayList<>(chip_info.values());
-		chips.removeIf(ci -> ignore_chips.contains(ci.chip.asChipLocation()));
+		List<ChipSummaryInfo> chips = new ArrayList<>(chipInfo.values());
+		chips.removeIf(ci -> ignoreChips.contains(ci.chip.asChipLocation()));
 		sort(chips, (c1, c2) -> c1.chip.asChipLocation()
 				.compareTo(c2.chip.asChipLocation()));
 		return new Machine(size.width, size.height,
-				chips.stream().map(ci -> make_chip(size, ci)).collect(toList()),
-				ignore_cores, ignore_links, bootChip);
+				chips.stream().map(ci -> makeChip(size, ci)).collect(toList()),
+				ignoreCores, ignoreLinks, bootChip);
 	}
 
 	private static int clamp(int value, Integer limit) {
@@ -132,53 +132,53 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param size
 	 *            The size of the machine containing the chip.
-	 * @param chip_info
+	 * @param chipInfo
 	 *            The ChipSummaryInfo structure to create the chip from.
 	 * @return The created chip.
 	 */
-	private Chip make_chip(MachineDimensions size, ChipSummaryInfo chip_info) {
+	private Chip makeChip(MachineDimensions size, ChipSummaryInfo chipInfo) {
 		// Create the processor list
 		List<Processor> processors = new ArrayList<>();
-		int max_core = clamp(chip_info.numCores - 1, max_core_id);
-		HasChipLocation chip = chip_info.chip;
-		for (int virtual_core_id = 0; virtual_core_id <= max_core; virtual_core_id++) {
+		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
+		HasChipLocation chip = chipInfo.chip;
+		for (int id = 0; id <= maxCore; id++) {
 			// Add the core provided it is not to be ignored
-			if (!ignore_cores.contains(new CoreLocation(chip.getX(),
-					chip.getY(), virtual_core_id))) {
-				if (virtual_core_id == 0) {
-					processors.add(Processor.factory(virtual_core_id, true));
-				} else if (chip_info.coreStates.get(virtual_core_id) == IDLE) {
-					processors.add(Processor.factory(virtual_core_id));
+			if (!ignoreCores
+					.contains(new CoreLocation(chip.getX(), chip.getY(), id))) {
+				if (id == 0) {
+					processors.add(Processor.factory(id, true));
+				} else if (chipInfo.coreStates.get(id) == IDLE) {
+					processors.add(Processor.factory(id));
 				} else {
 					log.warn("Not using core %d,%d,%d in state %s", chip.getX(),
-							chip.getY(), virtual_core_id,
-							chip_info.coreStates.get(virtual_core_id));
+							chip.getY(), id, chipInfo.coreStates.get(id));
 				}
 			}
 		}
 
 		// Create the chip
 		return new Chip(chip.getX(), chip.getY(), processors,
-				makeRouter(chip_info, size),
-				clamp(chip_info.largestFreeSDRAMBlock, max_sdram_size),
-				chip_info.ethernetIPAddress, false, N_IPTAGS_PER_CHIP,
-				chip_info.nearestEthernetChip);
+				makeRouter(chipInfo, size),
+				clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
+				chipInfo.ethernetIPAddress, false, N_IPTAGS_PER_CHIP,
+				chipInfo.nearestEthernetChip);
 	}
 
-	private Router makeRouter(ChipSummaryInfo chip_info,
+	private Router makeRouter(ChipSummaryInfo chipInfo,
 			MachineDimensions size) {
-		HasChipLocation chip = chip_info.chip;
+		HasChipLocation chip = chipInfo.chip;
 		List<Link> links = new ArrayList<>();
-		for (int link : chip_info.workingLinks) {
+		for (int link : chipInfo.workingLinks) {
 			ChipLocation dest = getChipOverLink(chip, size, link);
-			if (!this.ignore_links.contains(new LinkDescriptor(chip.getX(), chip.getY(), link))
-					&& !this.ignore_chips.contains(dest)
-					&& this.chip_info.containsKey(dest)) {
+			if (!this.ignoreLinks.contains(
+					new LinkDescriptor(chip.getX(), chip.getY(), link))
+					&& !this.ignoreChips.contains(dest)
+					&& this.chipInfo.containsKey(dest)) {
 				links.add(new Link(chip, link, dest));
 			}
 		}
 		return new Router(links, ROUTER_CLOCK_SPEED,
-				chip_info.numFreeMulticastRoutingEntries);
+				chipInfo.numFreeMulticastRoutingEntries);
 	}
 
 	private static final int[][] LINK_ADD_TABLE = { { 1, 0 }, { 1, 1 },
@@ -200,6 +200,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * been called first.
 	 */
 	public Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
-		return unmodifiableMap(chip_info);
+		return unmodifiableMap(chipInfo);
 	}
 }

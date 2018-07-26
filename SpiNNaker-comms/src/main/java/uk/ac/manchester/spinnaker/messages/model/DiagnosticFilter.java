@@ -25,20 +25,20 @@ public class DiagnosticFilter {
 	private static final int DESTINATION_OFFSET = 16;
 	private static final int ENABLE_INTERRUPT_OFFSET = 30;
 
-	private final boolean enable_interrupt;
-	private final boolean emergency_mode;
+	private final boolean enableInterrupt;
+	private final boolean emergencyMode;
 	private final Collection<Destination> destinations;
 	private final Collection<Source> sources;
 	private final Collection<PayloadStatus> payloads;
-	private final Collection<DefaultRoutingStatus> default_statuses;
-	private final Collection<EmergencyRoutingStatus> emergency_statuses;
-	private final Collection<PacketType> packet_types;
+	private final Collection<DefaultRoutingStatus> defaultStatuses;
+	private final Collection<EmergencyRoutingStatus> emergencyStatuses;
+	private final Collection<PacketType> packetTypes;
 
 	/**
-	 * @param enable_interrupt_on_counter_event
+	 * @param enableInterruptOnCounterEvent
 	 *            Indicates whether an interrupt should be raised when this rule
 	 *            matches
-	 * @param match_emergency_routing_status_to_incoming_packet
+	 * @param matchmergencyRoutingStatusToIncomingPacket
 	 *            Indicates whether the emergency routing statuses should be
 	 *            matched against packets arriving at this router (if True), or
 	 *            if they should be matched against packets leaving this router
@@ -49,36 +49,36 @@ public class DiagnosticFilter {
 	 * @param sources
 	 *            Increment the counter if one or more of the given sources
 	 *            match (or empty list to match all)
-	 * @param payloads
+	 * @param payloadStatuses
 	 *            Increment the counter if one or more of the given payload
 	 *            statuses match (or empty list to match all)
-	 * @param default_statuses
+	 * @param defaultRoutingStatuses
 	 *            Increment the counter if one or more of the given default
 	 *            routing statuses match (or empty list to match all)
-	 * @param emergency_statuses
+	 * @param emergencyRoutingStatuses
 	 *            Increment the counter if one or more of the given emergency
 	 *            routing statuses match (or empty list to match all)
-	 * @param packet_types
+	 * @param packetTypes
 	 *            Increment the counter if one or more of the given packet types
 	 *            match (or empty list to match all)
 	 */
-	public DiagnosticFilter(boolean enable_interrupt_on_counter_event,
-			boolean match_emergency_routing_status_to_incoming_packet,
+	public DiagnosticFilter(boolean enableInterruptOnCounterEvent,
+			boolean matchmergencyRoutingStatusToIncomingPacket,
 			Collection<Destination> destinations, Collection<Source> sources,
-			Collection<PayloadStatus> payload_statuses,
-			Collection<DefaultRoutingStatus> default_routing_statuses,
-			Collection<EmergencyRoutingStatus> emergency_routing_statuses,
-			Collection<PacketType> packet_types) {
-		this.enable_interrupt = enable_interrupt_on_counter_event;
-		this.emergency_mode = match_emergency_routing_status_to_incoming_packet;
+			Collection<PayloadStatus> payloadStatuses,
+			Collection<DefaultRoutingStatus> defaultRoutingStatuses,
+			Collection<EmergencyRoutingStatus> emergencyRoutingStatuses,
+			Collection<PacketType> packetTypes) {
+		this.enableInterrupt = enableInterruptOnCounterEvent;
+		this.emergencyMode = matchmergencyRoutingStatusToIncomingPacket;
 		this.destinations = convert(destinations, Destination.values());
 		this.sources = convert(sources, Source.values());
-		this.payloads = convert(payload_statuses, PayloadStatus.values());
-		this.default_statuses = convert(default_routing_statuses,
+		this.payloads = convert(payloadStatuses, PayloadStatus.values());
+		this.defaultStatuses = convert(defaultRoutingStatuses,
 				DefaultRoutingStatus.values());
-		this.emergency_statuses = convert(emergency_routing_statuses,
+		this.emergencyStatuses = convert(emergencyRoutingStatuses,
 				EmergencyRoutingStatus.values());
-		this.packet_types = convert(packet_types, PacketType.values());
+		this.packetTypes = convert(packetTypes, PacketType.values());
 	}
 
 	private static <T> Collection<T> convert(Collection<T> collection,
@@ -95,8 +95,8 @@ public class DiagnosticFilter {
 	 *            the filter.
 	 */
 	public DiagnosticFilter(int encodedValue) {
-		enable_interrupt = bitSet(encodedValue, ENABLE_INTERRUPT_OFFSET);
-		emergency_mode = bitSet(encodedValue, EMERGENCY_ROUTE_MODE_OFFSET);
+		enableInterrupt = bitSet(encodedValue, ENABLE_INTERRUPT_OFFSET);
+		emergencyMode = bitSet(encodedValue, EMERGENCY_ROUTE_MODE_OFFSET);
 		destinations = unmodifiableCollection(Stream.of(Destination.values())
 				.filter(d -> bitSet(encodedValue, DESTINATION_OFFSET + d.value))
 				.collect(Collectors.toList()));
@@ -106,17 +106,17 @@ public class DiagnosticFilter {
 		payloads = unmodifiableCollection(Stream.of(PayloadStatus.values())
 				.filter(p -> bitSet(encodedValue, PAYLOAD_OFFSET + p.value))
 				.collect(Collectors.toList()));
-		default_statuses = unmodifiableCollection(
+		defaultStatuses = unmodifiableCollection(
 				Stream.of(DefaultRoutingStatus.values())
 						.filter(dr -> bitSet(encodedValue,
 								DEFAULT_ROUTE_OFFSET + dr.value))
 						.collect(Collectors.toList()));
-		emergency_statuses = unmodifiableCollection(
+		emergencyStatuses = unmodifiableCollection(
 				Stream.of(EmergencyRoutingStatus.values())
 						.filter(er -> bitSet(encodedValue,
 								EMERGENCY_ROUTE_OFFSET + er.value))
 						.collect(Collectors.toList()));
-		packet_types = unmodifiableCollection(Stream.of(PacketType.values())
+		packetTypes = unmodifiableCollection(Stream.of(PacketType.values())
 				.filter(pt -> bitSet(encodedValue,
 						PACKET_TYPE_OFFSET + pt.value))
 				.collect(Collectors.toList()));
@@ -130,7 +130,7 @@ public class DiagnosticFilter {
 	 * Whether an interrupt should be raised when this rule matches.
 	 */
 	public boolean getEnableInterruptOnCounterEvent() {
-		return enable_interrupt;
+		return enableInterrupt;
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class DiagnosticFilter {
 	 * packets leaving this router (if False).
 	 */
 	public boolean getMatchEmergencyRoutingStatusToIncomingPacket() {
-		return emergency_mode;
+		return emergencyMode;
 	}
 
 	/**
@@ -167,29 +167,29 @@ public class DiagnosticFilter {
 	 * The set of default routing statuses to match
 	 */
 	public Collection<DefaultRoutingStatus> getDefaultRoutingStatuses() {
-		return default_statuses;
+		return defaultStatuses;
 	}
 
 	/**
 	 * The set of emergency routing statuses to match
 	 */
 	public Collection<EmergencyRoutingStatus> getEmergencyRoutingStatuses() {
-		return emergency_statuses;
+		return emergencyStatuses;
 	}
 
 	/**
 	 * The set of packet types to match
 	 */
 	public Collection<PacketType> getPacketTypes() {
-		return packet_types;
+		return packetTypes;
 	}
 
 	/**
 	 * A word of data that can be written to the router to set up the filter
 	 */
 	public int getFilterWord() {
-		int data = (enable_interrupt ? 1 << ENABLE_INTERRUPT_OFFSET : 0);
-		if (!emergency_mode) {
+		int data = (enableInterrupt ? 1 << ENABLE_INTERRUPT_OFFSET : 0);
+		if (!emergencyMode) {
 			data |= 1 << EMERGENCY_ROUTE_MODE_OFFSET;
 		}
 		for (Destination val : destinations) {
@@ -201,13 +201,13 @@ public class DiagnosticFilter {
 		for (PayloadStatus val : payloads) {
 			data |= val.value + PAYLOAD_OFFSET;
 		}
-		for (DefaultRoutingStatus val : default_statuses) {
+		for (DefaultRoutingStatus val : defaultStatuses) {
 			data |= val.value + DEFAULT_ROUTE_OFFSET;
 		}
-		for (EmergencyRoutingStatus val : emergency_statuses) {
+		for (EmergencyRoutingStatus val : emergencyStatuses) {
 			data |= val.value + EMERGENCY_ROUTE_OFFSET;
 		}
-		for (PacketType val : packet_types) {
+		for (PacketType val : packetTypes) {
 			data |= val.value + PACKET_TYPE_OFFSET;
 		}
 		return data;

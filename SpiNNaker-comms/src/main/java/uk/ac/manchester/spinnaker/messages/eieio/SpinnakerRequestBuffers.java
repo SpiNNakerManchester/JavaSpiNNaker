@@ -9,18 +9,18 @@ import java.nio.ByteBuffer;
  */
 public class SpinnakerRequestBuffers extends EIEIOCommandMessage {
 	public final byte x, y, p;
-	public final byte region_id, sequence_no;
-	public final int space_available;
+	public final byte regionID, sequenceNum;
+	public final int spaceAvailable;
 
-	public SpinnakerRequestBuffers(byte x, byte y, byte p, byte region_id,
-			byte sequence_no, int space_available) {
+	public SpinnakerRequestBuffers(byte x, byte y, byte p, byte regionID,
+			byte sequenceNum, int spaceAvailable) {
 		super(EIEIOCommandID.SPINNAKER_REQUEST_BUFFERS);
 		this.x = x;
 		this.y = y;
 		this.p = p;
-		this.region_id = region_id;
-		this.sequence_no = sequence_no;
-		this.space_available = space_available;
+		this.regionID = regionID;
+		this.sequenceNum = sequenceNum;
+		this.spaceAvailable = spaceAvailable;
 	}
 
 	public SpinnakerRequestBuffers(EIEIOCommandHeader header, ByteBuffer data,
@@ -31,9 +31,9 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage {
 		x = data.get(offset++);
 		p = (byte) ((data.get(offset++) >> 3) & 0x1F);
 		offset++;
-		region_id = (byte) (data.get(offset++) & 0xF);
-		sequence_no = data.get(offset++);
-		space_available = data.getInt(offset);
+		regionID = (byte) (data.get(offset++) & 0xF);
+		sequenceNum = data.get(offset++);
+		spaceAvailable = data.getInt(offset);
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage {
 		buffer.put(x);
 		buffer.put((byte) (p << 3));
 		buffer.put((byte) 0);
-		buffer.put(region_id);
-		buffer.put(sequence_no);
-		buffer.putInt(space_available);
+		buffer.put(regionID);
+		buffer.put(sequenceNum);
+		buffer.putInt(spaceAvailable);
 	}
 }

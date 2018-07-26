@@ -11,23 +11,23 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	private final Header header;
 	private final Reqs reqs;
 
-	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequence_no,
-			byte n_requests, byte[] channel, byte[] region_id,
-			int[] start_address, int[] space_read) {
+	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
+			byte numRequests, byte[] channel, byte[] regionID,
+			int[] startAddress, int[] spaceRead) {
 		super(EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA);
-		header = new Header(x, y, p, n_requests, sequence_no);
-		this.reqs = new Reqs(n_requests, channel, region_id, start_address,
-				space_read);
+		header = new Header(x, y, p, numRequests, sequenceNum);
+		this.reqs = new Reqs(numRequests, channel, regionID, startAddress,
+				spaceRead);
 	}
 
-	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequence_no,
-			byte n_requests, byte channel, byte region_id, int start_address,
-			int space_read) {
+	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
+			byte numRequests, byte channel, byte regionID, int startAddress,
+			int spaceRead) {
 		super(EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA);
-		header = new Header(x, y, p, n_requests, sequence_no);
-		this.reqs = new Reqs(n_requests, new byte[] { channel },
-				new byte[] { region_id }, new int[] { start_address },
-				new int[] { space_read });
+		header = new Header(x, y, p, numRequests, sequenceNum);
+		this.reqs = new Reqs(numRequests, new byte[] { channel },
+				new byte[] { regionID }, new int[] { startAddress },
+				new int[] { spaceRead });
 	}
 
 	public SpinnakerRequestReadData(EIEIOCommandHeader header, ByteBuffer data,
@@ -44,20 +44,20 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 		this.header = new Header(x, y, p, n, sn);
 
 		byte[] channel = new byte[n];
-		byte[] region_id = new byte[n];
-		int[] start_address = new int[n];
-		int[] space_read = new int[n];
+		byte[] regionID = new byte[n];
+		int[] startAddress = new int[n];
+		int[] spaceRead = new int[n];
 		for (int i = 0; i < n; i++) {
 			if (i != 0) {
 				// Skip two bytes
 				data.getShort();
 			}
 			channel[i] = data.get();
-			region_id[i] = data.get();
-			start_address[i] = (int) data.get();
-			space_read[i] = (int) data.get();
+			regionID[i] = data.get();
+			startAddress[i] = (int) data.get();
+			spaceRead[i] = (int) data.get();
 		}
-		this.reqs = new Reqs(n, channel, region_id, start_address, space_read);
+		this.reqs = new Reqs(n, channel, regionID, startAddress, spaceRead);
 	}
 
 	public byte getX() {
@@ -85,15 +85,15 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	}
 
 	public byte getRegionID(int ackID) {
-		return reqs.region_id[ackID];
+		return reqs.regionID[ackID];
 	}
 
 	public int getStartAddress(int ackID) {
-		return reqs.start_address[ackID];
+		return reqs.startAddress[ackID];
 	}
 
 	public int getSpaceRead(int ackID) {
-		return reqs.space_read[ackID];
+		return reqs.spaceRead[ackID];
 	}
 
 	@Override
@@ -138,24 +138,24 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	/** Contains a set of requests which refer to the channels used. */
 	private static class Reqs {
 		final byte[] channel;
-		final byte[] region_id;
-		final int[] start_address;
-		final int[] space_read;
+		final byte[] regionID;
+		final int[] startAddress;
+		final int[] spaceRead;
 
-		public Reqs(int n_requests, byte[] channel, byte[] region_id,
-				int[] start_address, int[] space_read) {
-			if (channel.length != n_requests || region_id.length != n_requests
-					|| start_address.length != n_requests
-					|| space_read.length != n_requests) {
+		public Reqs(int numRequests, byte[] channel, byte[] regionID,
+				int[] startAddress, int[] spaceRead) {
+			if (channel.length != numRequests || regionID.length != numRequests
+					|| startAddress.length != numRequests
+					|| spaceRead.length != numRequests) {
 				throw new IllegalArgumentException(
 						"lengths of channel array, region ID array, "
 								+ "start address array, and space read array "
 								+ "must all match the number of requests");
 			}
 			this.channel = channel;
-			this.region_id = region_id;
-			this.start_address = start_address;
-			this.space_read = space_read;
+			this.regionID = regionID;
+			this.startAddress = startAddress;
+			this.spaceRead = spaceRead;
 		}
 	}
 }

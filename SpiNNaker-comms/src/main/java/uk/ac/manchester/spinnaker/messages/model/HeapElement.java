@@ -3,37 +3,37 @@ package uk.ac.manchester.spinnaker.messages.model;
 /** An element of one of the heaps on SpiNNaker. */
 public class HeapElement {
 	/** The address of the block */
-	public final int block_address;
+	public final int blockAddress;
 	/** A pointer to the next block, or 0 if none. */
-	public final int next_address;
+	public final int nextAddress;
 	/** The usable size of this block (not including the header). */
 	public final int size;
 	/** True if the block is free */
-	public final boolean is_free;
+	public final boolean isFree;
 	/** The tag of the block if allocated, or <tt>null</tt> if not. */
 	public final Integer tag;
 	/** The app ID of the block if allocated, or <tt>null</tt> if not. */
-	public final Integer app_id;
+	public final Integer appID;
 
 	/**
-	 * @param block_address
+	 * @param blockAddress
 	 *            The address of this element on the heap
-	 * @param next_address
+	 * @param nextAddress
 	 *            The address of the next element on the heap
 	 * @param free
 	 *            The "free" element of the block as read from the heap
 	 */
 	public HeapElement(int blockAddress, int nextAddress, int free) {
-		this.block_address = blockAddress;
-		this.next_address = nextAddress;
-		this.is_free = (free & 0xFFFF0000) != 0xFFFF0000;
-		if (is_free) {
+		this.blockAddress = blockAddress;
+		this.nextAddress = nextAddress;
+		this.isFree = (free & 0xFFFF0000) != 0xFFFF0000;
+		if (isFree) {
 			tag = null;
-			app_id = null;
+			appID = null;
 		} else {
 			tag = free & 0xFF;
-			app_id = (free >> 8) & 0xFF;
+			appID = (free >> 8) & 0xFF;
 		}
-		size = next_address - block_address - 8;
+		size = nextAddress - blockAddress - 8;
 	}
 }

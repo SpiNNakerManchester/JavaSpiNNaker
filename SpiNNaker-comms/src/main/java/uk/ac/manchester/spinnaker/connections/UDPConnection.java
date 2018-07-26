@@ -361,11 +361,11 @@ public class UDPConnection implements Connection {
 		 * message, but then fail to send a response since the
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
-		SDPMessage trigger_message = new SDPMessage(new SDPHeader(
+		SDPMessage triggerMessage = new SDPMessage(new SDPHeader(
 				SDPFlag.REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0), 3));
-		trigger_message.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
+		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
-		trigger_message.addToBuffer(b);
+		triggerMessage.addToBuffer(b);
 		InetAddress addr = getByName(hostname);
 		sendTo(b, addr, SCP_SCAMP_PORT);
 	}

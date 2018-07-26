@@ -25,11 +25,11 @@ public class ApplicationRunProcess
 				intermediateChannelWaits);
 	}
 
-	public void run(int app_id, CoreSubsets core_subsets, Object wait)
+	public void run(int appID, CoreSubsets coreSubsets, Object wait)
 			throws Exception, IOException {
-		for (ChipLocation chip : core_subsets.getChips()) {
-			sendRequest(new ApplicationRun(app_id, chip,
-					core_subsets.pByChip(chip)));
+		for (ChipLocation chip : coreSubsets.getChips()) {
+			sendRequest(new ApplicationRun(appID, chip,
+					coreSubsets.pByChip(chip)));
 		}
 		finish();
 		checkForError();

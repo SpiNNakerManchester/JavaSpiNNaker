@@ -26,10 +26,10 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {
-		Response tag_info = synchronousCall(
+		Response tagInfo = synchronousCall(
 				new IPTagGetInfo(connection.getChip()));
 
-		int numTags = tag_info.poolSize + tag_info.fixedSize;
+		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
 		Map<Integer, Tag> tags = new TreeMap<>();
 		for (final int tag : range(0, numTags).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {

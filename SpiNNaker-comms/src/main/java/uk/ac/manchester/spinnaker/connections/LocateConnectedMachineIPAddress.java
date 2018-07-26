@@ -31,13 +31,13 @@ public abstract class LocateConnectedMachineIPAddress {
 	public static void locateConnectedMachine(Handler handler)
 			throws Exception {
 		try (IPAddressConnection connection = new IPAddressConnection()) {
-			Set<InetAddress> seen_boards = new HashSet<>();
+			Set<InetAddress> seenBoards = new HashSet<>();
 			while (true) {
-				InetAddress ip_address = connection.receiveIPAddress();
+				InetAddress ipAddress = connection.receiveIPAddress();
 				Calendar now = Calendar.getInstance();
-				if (ip_address != null && !seen_boards.contains(ip_address)) {
-					seen_boards.add(ip_address);
-					if (handler.handle(ip_address, now)) {
+				if (ipAddress != null && !seenBoards.contains(ipAddress)) {
+					seenBoards.add(ipAddress);
+					if (handler.handle(ipAddress, now)) {
 						break;
 					}
 				}

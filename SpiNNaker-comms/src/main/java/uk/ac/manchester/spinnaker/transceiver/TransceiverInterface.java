@@ -167,15 +167,15 @@ public interface TransceiverInterface {
 	/**
 	 * Get the version of SCAMP which is running on the board.
 	 *
-	 * @param connection_selector:
+	 * @param connectionSelector
 	 *            the connection to send the SCAMP version or none (if none then
 	 *            a random SCAMP connection is used).
 	 * @return The version identifier
 	 */
 	default VersionInfo getScampVersion(
-			ConnectionSelector<SCPConnection> connection_selector)
+			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, Exception {
-		return getScampVersion(DEFAULT_DESTINATION, connection_selector);
+		return getScampVersion(DEFAULT_DESTINATION, connectionSelector);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public interface TransceiverInterface {
 	/**
 	 * Get the version of SCAMP which is running on the board.
 	 *
-	 * @param connection_selector:
+	 * @param connectionSelector
 	 *            the connection to send the SCAMP version or none (if none then
 	 *            a random SCAMP connection is used).
 	 * @param chip
@@ -201,7 +201,7 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 */
 	VersionInfo getScampVersion(HasChipLocation chip,
-			ConnectionSelector<SCPConnection> connection_selector)
+			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, Exception;
 
 	/**
@@ -216,10 +216,10 @@ public interface TransceiverInterface {
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
 	 *
-	 * @param extra_boot_values
+	 * @param extraBootValues
 	 *            extra values to set during boot
 	 */
-	void bootBoard(Map<SystemVariableDefinition, Object> extra_boot_values)
+	void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException;
 
 	/**
@@ -297,22 +297,22 @@ public interface TransceiverInterface {
 	 */
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, Exception {
-		CoreSubsets core_subsets = new CoreSubsets();
-		core_subsets.addCore(core.asCoreLocation());
-		return getCPUInformation(core_subsets).iterator().next();
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		return getCPUInformation(coreSubsets).iterator().next();
 	}
 
 	/**
 	 * Get information about some processors on the board.
 	 *
-	 * @param core_subsets
+	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the information. If
 	 *            <tt>null</tt>, the information from all of the cores on all of
 	 *            the chips on the board are obtained.
 	 * @return An iterable of the CPU information for the selected cores, or all
-	 *         cores if core_subsets is <tt>null</tt>.
+	 *         cores if <tt>coreSubsets</tt> is <tt>null</tt>.
 	 */
-	Iterable<CPUInfo> getCPUInformation(CoreSubsets core_subsets)
+	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, Exception;
 
 	/**
@@ -369,20 +369,20 @@ public interface TransceiverInterface {
 	 */
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, Exception {
-		CoreSubsets core_subsets = new CoreSubsets();
-		core_subsets.addCore(core.asCoreLocation());
-		return getIobuf(core_subsets).iterator().next();
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		return getIobuf(coreSubsets).iterator().next();
 	}
 
 	/**
 	 * Get the contents of the IOBUF buffer for a collection of processors.
 	 *
-	 * @param core_subsets
+	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the buffers.
 	 * @return An iterable of the buffers, which may not be in the order of
-	 *         core_subsets
+	 *         <tt>coreSubsets</tt>
 	 */
-	Iterable<IOBuffer> getIobuf(CoreSubsets core_subsets)
+	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, Exception;
 
 	/**
@@ -390,10 +390,10 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            coordinates of the chip to write new watchdog parameter to
-	 * @param watch_dog
+	 * @param watchdog
 	 *            value to set the timer count to
 	 */
-	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watch_dog)
+	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, Exception;
 
 	/**
@@ -401,36 +401,36 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            coordinates of the chip to write new watchdog parameter to
-	 * @param watch_dog
+	 * @param watchdog
 	 *            whether to enable (True) or disable (False) the watchdog timer
 	 */
-	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watch_dog)
+	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watchdog)
 			throws IOException, Exception;
 
 	/**
 	 * Set the value of the watch dog timer.
 	 *
-	 * @param watch_dog
+	 * @param watchdog
 	 *            value to set the timer count to.
 	 */
-	default void setWatchDogTimeout(int watch_dog)
+	default void setWatchDogTimeout(int watchdog)
 			throws IOException, Exception {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
-			setWatchDogTimeoutOnChip(chip, watch_dog);
+			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
 	}
 
 	/**
 	 * Enable or disable the watch dog timer.
 	 *
-	 * @param watch_dog
+	 * @param watchdog
 	 *            whether to enable (True) or disable (False) the watch dog
 	 *            timer
 	 */
-	default void enableWatchDogTimer(boolean watch_dog)
+	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, Exception {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
-			enableWatchDogTimerOnChip(chip, watch_dog);
+			enableWatchDogTimerOnChip(chip, watchdog);
 		}
 	}
 
@@ -793,25 +793,25 @@ public interface TransceiverInterface {
 	 * binaries. Note this will get the binaries into <tt>c_main()</tt> but will
 	 * not signal the barrier.
 	 *
-	 * @param executable_targets:
+	 * @param executableTargets
 	 *            The binaries to be executed and the cores to execute them on
-	 * @param app_id
-	 *            The app_id to give this application
+	 * @param appID
+	 *            The application ID to give this application
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
-			int app_id) throws IOException, Exception, InterruptedException,
+			int appID) throws IOException, Exception, InterruptedException,
 			SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
 		for (String binary : executableTargets.getBinaries()) {
 			executeFlood(executableTargets.getCoresForBinary(binary),
-					new File(binary), app_id, true);
+					new File(binary), appID, true);
 		}
 
 		// Sleep to allow cores to get going
 		sleep(500);
 
 		// Check that the binaries have reached a wait state
-		int count = getCoreStateCount(app_id, READY);
+		int count = getCoreStateCount(appID, READY);
 		if (count < executableTargets.getTotalProcessors()) {
 			Map<CoreLocation, CPUInfo> coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
@@ -827,7 +827,7 @@ public interface TransceiverInterface {
 		}
 
 		// Send a signal telling the application to start
-		sendSignal(app_id, START);
+		sendSignal(appID, START);
 	}
 
 	/** Power on the whole machine. */
@@ -985,7 +985,7 @@ public interface TransceiverInterface {
 	/**
 	 * Send a power request to the machine.
 	 *
-	 * @param power_command
+	 * @param powerCommand
 	 *            The power command to send
 	 * @param boards
 	 *            The boards to send the command to
@@ -996,7 +996,7 @@ public interface TransceiverInterface {
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
 	 */
-	void power(PowerCommand power_command, Collection<Integer> boards,
+	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, Exception;
 
@@ -1081,7 +1081,7 @@ public interface TransceiverInterface {
 	 * Read a register on a FPGA of a board. The meaning of the register's
 	 * contents will depend on the FPGA's configuration.
 	 *
-	 * @param fpga_num
+	 * @param fpgaNumber
 	 *            FPGA number (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
@@ -1094,14 +1094,14 @@ public interface TransceiverInterface {
 	 *            which board to request the FPGA register from
 	 * @return the register data
 	 */
-	int readFPGARegister(int fpga_num, int register, int cabinet, int frame,
+	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
 			int board) throws IOException, Exception;
 
 	/**
 	 * Write a register on a FPGA of a board. The meaning of setting the
 	 * register's contents will depend on the FPGA's configuration.
 	 *
-	 * @param fpga_num
+	 * @param fpgaNumber
 	 *            FPGA number (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
@@ -1115,7 +1115,7 @@ public interface TransceiverInterface {
 	 * @param board
 	 *            which board to write the FPGA register to
 	 */
-	void writeFPGARegister(int fpga_num, int register, int value, int cabinet,
+	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
 			int frame, int board) throws IOException, Exception;
 
 	/**
@@ -1716,29 +1716,29 @@ public interface TransceiverInterface {
 			int baseAddress, int length) throws IOException, Exception;
 
 	/**
-	 * Sends a stop request for an app_id.
+	 * Sends a stop request for an application ID.
 	 *
-	 * @param app_id
+	 * @param appID
 	 *            The ID of the application to send to
 	 */
-	void stopApplication(int app_id) throws IOException, Exception;
+	void stopApplication(int appID) throws IOException, Exception;
 
 	/**
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
 	 *
-	 * @param all_core_subsets
+	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
-	 * @param app_id
+	 * @param appID
 	 *            the application ID that being used by the simulation
-	 * @param cpu_states
+	 * @param cpuStates
 	 *            The expected states once the applications are ready; success
 	 *            is when each application is in one of these states
 	 */
-	default void waitForCoresToBeInState(CoreSubsets all_core_subsets,
-			int app_id, Set<CPUState> cpu_states) throws IOException, Exception,
+	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
+			Set<CPUState> cpuStates) throws IOException, Exception,
 			InterruptedException, SpinnmanException {
-		waitForCoresToBeInState(all_core_subsets, app_id, cpu_states,
+		waitForCoresToBeInState(allCoreSubsets, appID, cpuStates,
 				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
 				DEFAULT_CHECK_INTERVAL);
 	}
@@ -1747,29 +1747,29 @@ public interface TransceiverInterface {
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
 	 *
-	 * @param all_core_subsets
+	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
-	 * @param app_id
+	 * @param appID
 	 *            the application ID that being used by the simulation
-	 * @param cpu_states
+	 * @param cpuStates
 	 *            The expected states once the applications are ready; success
 	 *            is when each application is in one of these states
 	 * @param timeout
 	 *            The amount of time to wait in milliseconds for the cores to
 	 *            reach one of the states, or <tt>null</tt> to wait for an
 	 *            unbounded amount of time.
-	 * @param time_between_polls
+	 * @param timeBetweenPolls
 	 *            Time between checking the state, in milliseconds
-	 * @param error_states
+	 * @param errorStates
 	 *            Set of states that the application can be in that indicate an
 	 *            error, and so should raise an exception
-	 * @param counts_between_full_check
+	 * @param countsBetweenFullCheck
 	 *            The number of times to use the count signal before instead
 	 *            using the full CPU state check
 	 */
-	void waitForCoresToBeInState(CoreSubsets all_core_subsets, int app_id,
-			Set<CPUState> cpu_states, Integer timeout, int time_between_polls,
-			Set<CPUState> error_states, int counts_between_full_check)
+	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
+			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
+			Set<CPUState> errorStates, int countsBetweenFullCheck)
 			throws IOException, Exception, InterruptedException,
 			SpinnmanException;
 
@@ -1798,11 +1798,11 @@ public interface TransceiverInterface {
 	 */
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, Exception {
-		Iterable<CPUInfo> core_infos = getCPUInformation(allCoreSubsets);
+		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
 		CoreSubsets coresInState = new CoreSubsets();
-		for (CPUInfo core_info : core_infos) {
-			if (states.contains(core_info.getState())) {
-				coresInState.addCore(core_info.asCoreLocation());
+		for (CPUInfo coreInfo : coreInfos) {
+			if (states.contains(coreInfo.getState())) {
+				coresInState.addCore(coreInfo.asCoreLocation());
 			}
 		}
 		return coresInState;
@@ -1911,8 +1911,8 @@ public interface TransceiverInterface {
 	 * Set up an IP tag.
 	 *
 	 * @param tag
-	 *            The tag to set up; note board address can be None, in which
-	 *            case, the tag will be assigned to all boards
+	 *            The tag to set up; note its board address can be None, in
+	 *            which case, the tag will be assigned to all boards
 	 */
 	void setIPTag(IPTag tag) throws IOException, Exception;
 
@@ -1920,8 +1920,8 @@ public interface TransceiverInterface {
 	 * Set up a reverse IP tag.
 	 *
 	 * @param tag
-	 *            The reverse tag to set up; note board_address can be None, in
-	 *            which case, the tag will be assigned to all boards
+	 *            The reverse tag to set up; note its board address can be None,
+	 *            in which case, the tag will be assigned to all boards
 	 */
 	void setReverseIPTag(ReverseIPTag tag) throws IOException, Exception;
 
@@ -1981,12 +1981,12 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag ID
-	 * @param board_address
+	 * @param boardAddress
 	 *            Board address where the tag should be cleared.
 	 */
-	default void clearIPTag(int tag, InetAddress board_address)
+	default void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, Exception {
-		clearIPTag(tag, null, requireNonNull(board_address));
+		clearIPTag(tag, null, requireNonNull(boardAddress));
 	}
 
 	/**
@@ -1998,13 +1998,13 @@ public interface TransceiverInterface {
 	 *            Connection where the tag should be cleared. If not specified,
 	 *            all SCPSender connections will send the message to clear the
 	 *            tag
-	 * @param board_address
+	 * @param boardAddress
 	 *            Board address where the tag should be cleared. If not
 	 *            specified, all SCPSender connections will send the message to
 	 *            clear the tag
 	 */
-	void clearIPTag(int tag, SCPConnection connection,
-			InetAddress board_address) throws IOException, Exception;
+	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
+			throws IOException, Exception;
 
 	/**
 	 * Get the current set of tags that have been set on the board using all
@@ -2078,12 +2078,12 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip onto which to free memory
-	 * @param base_address
+	 * @param baseAddress
 	 *            The base address of the allocated memory
-	 * @param app_id
+	 * @param appID
 	 *            The app ID of the allocated memory
 	 */
-	void freeSDRAM(HasChipLocation chip, int base_address, int app_id)
+	void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
 			throws IOException, Exception;
 
 	/**
@@ -2091,11 +2091,11 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip onto which to free memory
-	 * @param app_id
+	 * @param appID
 	 *            The app ID of the allocated memory
 	 * @return The number of blocks freed
 	 */
-	int freeSDRAMByAppID(HasChipLocation chip, int app_id)
+	int freeSDRAMByAppID(HasChipLocation chip, int appID)
 			throws IOException, Exception;
 
 	/**
@@ -2170,11 +2170,11 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinate of the chip from which to read the route.
-	 * @param app_id
+	 * @param appID
 	 *            The ID of the application associated the route.
 	 * @return the route as a fixed route entry
 	 */
-	RoutingEntry readFixedRoute(HasChipLocation chip, int app_id)
+	RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
 			throws IOException, Exception;
 
 	/**

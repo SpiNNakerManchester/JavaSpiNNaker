@@ -1,7 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.read_eieio_command_message;
-import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.read_eieio_data_message;
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readCommandMessage;
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readDataMessage;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
@@ -41,9 +41,9 @@ public class EIEIOConnection extends UDPConnection
 		ByteBuffer b = receive();
 		short header = b.getShort();
 		if ((header & 0xC000) == 0x4000) {
-			return read_eieio_command_message(b, 0);
+			return readCommandMessage(b, 0);
 		} else {
-			return read_eieio_data_message(b, 0);
+			return readDataMessage(b, 0);
 		}
 	}
 
