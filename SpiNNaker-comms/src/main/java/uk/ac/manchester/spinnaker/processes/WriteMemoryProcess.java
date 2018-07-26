@@ -12,12 +12,12 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	public WriteMemoryProcess(

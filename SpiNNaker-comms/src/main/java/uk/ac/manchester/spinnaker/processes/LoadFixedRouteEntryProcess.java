@@ -3,10 +3,10 @@ package uk.ac.manchester.spinnaker.processes;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** Load a fixed route routing entry onto a chip. */
 public class LoadFixedRouteEntryProcess

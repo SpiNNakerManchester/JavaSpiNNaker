@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.selectors;
+package uk.ac.manchester.spinnaker.connections.selectors;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
 

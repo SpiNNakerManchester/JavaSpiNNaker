@@ -8,9 +8,9 @@ import java.util.function.Consumer;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process that uses a single connection in communication. */
 public abstract class SingleConnectionProcess<T extends SCPConnection>

@@ -40,6 +40,7 @@ import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -69,7 +70,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public interface TransceiverInterface {
 	int DEFAULT_DESTINATION_COORDINATE = 255;

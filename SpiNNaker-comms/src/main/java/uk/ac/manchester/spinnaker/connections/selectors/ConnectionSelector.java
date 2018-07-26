@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.selectors;
+package uk.ac.manchester.spinnaker.connections.selectors;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;

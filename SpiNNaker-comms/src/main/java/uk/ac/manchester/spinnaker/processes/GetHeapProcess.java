@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int HEAP_HEADER_SIZE = 8;

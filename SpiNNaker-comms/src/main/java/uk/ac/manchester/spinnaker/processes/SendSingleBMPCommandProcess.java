@@ -29,6 +29,7 @@ import javax.xml.ws.Holder;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
@@ -37,7 +38,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /**
  * A process for handling communicating with the BMP.

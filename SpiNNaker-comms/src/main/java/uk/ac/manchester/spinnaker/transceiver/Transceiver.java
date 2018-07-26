@@ -66,6 +66,10 @@ import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
+import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -141,10 +145,6 @@ import uk.ac.manchester.spinnaker.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.processes.SendSingleSCPCommandProcess;
 import uk.ac.manchester.spinnaker.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.processes.WriteMemoryProcess;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.selectors.MachineAware;
-import uk.ac.manchester.spinnaker.selectors.MostDirectConnectionSelector;
-import uk.ac.manchester.spinnaker.selectors.RoundRobinConnectionSelector;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**

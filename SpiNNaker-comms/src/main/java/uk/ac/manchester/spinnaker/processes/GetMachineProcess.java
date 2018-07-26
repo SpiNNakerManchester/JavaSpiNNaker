@@ -24,6 +24,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
@@ -38,7 +39,6 @@ import uk.ac.manchester.spinnaker.machine.Router;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {

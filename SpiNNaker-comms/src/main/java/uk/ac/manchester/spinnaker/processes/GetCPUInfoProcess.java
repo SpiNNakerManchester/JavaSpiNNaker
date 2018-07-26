@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.selectors.ConnectionSelector;
 
 public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	public GetCPUInfoProcess(

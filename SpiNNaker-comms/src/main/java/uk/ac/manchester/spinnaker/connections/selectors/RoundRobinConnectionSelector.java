@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.selectors;
+package uk.ac.manchester.spinnaker.connections.selectors;
 
 import static java.util.Collections.unmodifiableList;
 
