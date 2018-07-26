@@ -99,61 +99,62 @@ public interface AbstractIO extends AutoCloseable {
 	int write(byte[] data) throws IOException, Exception;
 
 	/**
-	 * Fill the rest of the region with repeated data.
+	 * Fill the rest of the region with repeated data words.
 	 *
-	 * @param repeat_value
+	 * @param value
 	 *            The value to repeat
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value) throws IOException, Exception {
-		fill(repeat_value, null, FillProcess.DataType.WORD);
+	default void fill(int value) throws IOException, Exception {
+		fill(value, null, FillProcess.DataType.WORD);
 	}
 
 	/**
 	 * Fill the next part of the region with repeated data words.
 	 *
-	 * @param repeat_value
+	 * @param value
 	 *            The value to repeat
-	 * @param bytes_to_fill
+	 * @param size
 	 *            Number of bytes to fill from current position
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value, int bytes_to_fill) throws IOException, Exception {
-		fill(repeat_value, bytes_to_fill, FillProcess.DataType.WORD);
+	default void fill(int value, int size)
+			throws IOException, Exception {
+		fill(value, size, FillProcess.DataType.WORD);
 	}
 
 	/**
 	 * Fill the rest of the region with repeated data.
 	 *
-	 * @param repeat_value
+	 * @param value
 	 *            The value to repeat
-	 * @param data_type
+	 * @param type
 	 *            The type of the repeat value
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int repeat_value, FillProcess.DataType data_type)
+	default void fill(int value, FillProcess.DataType type)
 			throws IOException, Exception {
-		fill(repeat_value, null, data_type);
+		fill(value, null, type);
 	}
 
 	/**
 	 * Fill the next part of the region with repeated data.
 	 *
-	 * @param repeat_value
+	 * @param value
 	 *            The value to repeat
-	 * @param bytes_to_fill
+	 * @param size
 	 *            Number of bytes to fill from current position, or
 	 *            <tt>null</tt> to fill to the end
-	 * @param data_type
+	 * @param type
 	 *            The type of the repeat value
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	void fill(int repeat_value, Integer bytes_to_fill,
-			FillProcess.DataType data_type) throws IOException, Exception;
+	void fill(int value, Integer size, FillProcess.DataType type)
+			throws IOException, Exception;
 
 	enum Seek {
 		/** Seek relative to the start of the region. */

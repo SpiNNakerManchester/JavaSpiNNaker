@@ -17,13 +17,13 @@ public class FileIO implements AbstractIO {
 	private final RandomAccessFile file;
 
 	/** The current offset in the file */
-	private int current_offset;
+	private int currentOffset;
 
 	/** The start offset in the file */
-	private int start_offset;
+	private int startOffset;
 
 	/** The end offset in the file */
-	private int end_offset;
+	private int endOffset;
 
 	/**
 	 * @param file
@@ -50,9 +50,9 @@ public class FileIO implements AbstractIO {
 	 */
 	public FileIO(RandomAccessFile file, int startOffset, int endOffset) {
 		this.file = file;
-		this.current_offset = startOffset;
-		this.start_offset = startOffset;
-		this.end_offset = endOffset;
+		this.currentOffset = startOffset;
+		this.startOffset = startOffset;
+		this.endOffset = endOffset;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class FileIO implements AbstractIO {
 
 	@Override
 	public int size() {
-		return end_offset - start_offset;
+		return endOffset - startOffset;
 	}
 
 	@Override
@@ -70,31 +70,31 @@ public class FileIO implements AbstractIO {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new FileIO(file, start_offset + slice, start_offset + slice + 1);
+		return new FileIO(file, startOffset + slice, startOffset + slice + 1);
 	}
 
 	@Override
 	public FileIO get(Slice slice) throws IOException {
-		int from = start_offset;
-		int to = end_offset;
+		int from = startOffset;
+		int to = endOffset;
 		if (slice.start != null) {
 			if (slice.start < 0) {
-				from = end_offset + slice.start;
+				from = endOffset + slice.start;
 			} else {
 				from += slice.start;
 			}
 		}
 		if (slice.stop != null) {
 			if (slice.stop < 0) {
-				to = end_offset + slice.stop;
+				to = endOffset + slice.stop;
 			} else {
 				to += slice.stop;
 			}
 		}
-		if (from < start_offset || from > end_offset) {
+		if (from < startOffset || from > endOffset) {
 			throw new ArrayIndexOutOfBoundsException(slice.start);
 		}
-		if (to < start_offset || to > end_offset) {
+		if (to < startOffset || to > endOffset) {
 			throw new ArrayIndexOutOfBoundsException(slice.stop);
 		}
 		if (from == to) {
@@ -116,21 +116,21 @@ public class FileIO implements AbstractIO {
 
 	@Override
 	public void seek(int position) throws IOException {
-		position += start_offset;
-		if (position < start_offset || position > end_offset) {
+		position += startOffset;
+		if (position < startOffset || position > endOffset) {
 			throw new IOException("illegal seek position");
 		}
-		current_offset = position;
+		currentOffset = position;
 	}
 
 	@Override
 	public int tell() throws IOException {
-		return current_offset - start_offset;
+		return currentOffset - startOffset;
 	}
 
 	@Override
 	public int getAddress() {
-		return current_offset;
+		return currentOffset;
 	}
 
 	@Override
@@ -138,17 +138,16 @@ public class FileIO implements AbstractIO {
 		if (numBytes != null && numBytes == 0) {
 			return new byte[0];
 		}
-		int n = (numBytes == null || numBytes < 0)
-				? (end_offset - current_offset)
+		int n = (numBytes == null || numBytes < 0) ? (endOffset - currentOffset)
 				: numBytes;
-		if (current_offset + n > end_offset) {
+		if (currentOffset + n > endOffset) {
 			throw new EOFException();
 		}
 		synchronized (file) {
-			file.seek(current_offset);
+			file.seek(currentOffset);
 			byte[] data = new byte[n];
 			file.readFully(data, 0, n);
-			current_offset += n;
+			currentOffset += n;
 			return data;
 		}
 	}
@@ -156,48 +155,46 @@ public class FileIO implements AbstractIO {
 	@Override
 	public int write(byte[] data) throws IOException {
 		int n = data.length;
-		if (current_offset + n > end_offset) {
+		if (currentOffset + n > endOffset) {
 			throw new EOFException();
 		}
 		synchronized (file) {
-			file.seek(current_offset);
+			file.seek(currentOffset);
 			file.write(data, 0, n);
 		}
-		current_offset += n;
+		currentOffset += n;
 		return n;
 	}
 
 	@Override
-	public void fill(int repeat_value, Integer bytes_to_fill,
-			DataType data_type) throws IOException {
-		int len = (bytes_to_fill == null) ? (end_offset - current_offset)
-				: bytes_to_fill;
-		if (current_offset + len > end_offset) {
+	public void fill(int value, Integer size, DataType type)
+			throws IOException {
+		int len = (size == null) ? (endOffset - currentOffset) : size;
+		if (currentOffset + len > endOffset) {
 			throw new EOFException();
 		}
-		if (len < 0 || len % data_type.value != 0) {
+		if (len < 0 || len % type.value != 0) {
 			throw new IllegalArgumentException(
 					"length to fill must be multiple of fill unit size");
 		}
 		ByteBuffer b = allocate(len).order(LITTLE_ENDIAN);
 		while (b.hasRemaining()) {
-			switch (data_type) {
+			switch (type) {
 			case WORD:
-				b.putInt(repeat_value);
+				b.putInt(value);
 				break;
 			case HALF_WORD:
-				b.putShort((short) (repeat_value & 0xFFFF));
+				b.putShort((short) (value & 0xFFFF));
 				break;
 			case BYTE:
-				b.put((byte) (repeat_value & 0xFF));
+				b.put((byte) (value & 0xFF));
 				break;
 			}
 		}
 		synchronized (file) {
-			file.seek(current_offset);
+			file.seek(currentOffset);
 			file.write(b.array(), b.arrayOffset(), len);
 		}
-		current_offset += len;
+		currentOffset += len;
 	}
-
 }

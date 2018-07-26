@@ -2,12 +2,13 @@ package uk.ac.manchester.spinnaker.io;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -21,6 +22,8 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /** A file-like object for the memory of a chip */
 class ChipMemoryIO {
+	/** TODO What is this value _really?_ */
+	private static final int SDRAM_START = 0x60000000;
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
 	 * transceiver, x and y (thus two transceivers might not see the same
@@ -28,7 +31,7 @@ class ChipMemoryIO {
 	 */
 	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing = new WeakHashMap<>();
 
-	static ChipMemoryIO get_chip_memory_io(Transceiver transceiver,
+	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
 		Map<ChipLocation, ChipMemoryIO> map = existing.get(transceiver);
 		if (map == null) {
@@ -37,7 +40,8 @@ class ChipMemoryIO {
 		}
 		ChipLocation key = chip.asChipLocation();
 		if (!map.containsKey(key)) {
-			map.put(key, new ChipMemoryIO(transceiver, chip, 0x60000000, 256));
+			map.put(key, new ChipMemoryIO(transceiver, chip, SDRAM_START,
+					UDP_MESSAGE_MAX_SIZE));
 		}
 		return map.get(key);
 	}
@@ -53,41 +57,31 @@ class ChipMemoryIO {
 	private final CoreLocation core;
 
 	/** The current pointer where read and writes are taking place */
-	private int current_address;
+	private int currentAddress;
 
 	/** The current pointer where the next buffered write will occur */
-	private int write_address;
+	private int writeAddress;
 
-	/** The write buffer size */
-	private final int buffer_size;
-
-	/** The write buffer bytearray */
-	private final ByteBuffer write_buffer;
-
-	ChipMemoryIO(Transceiver transceiver, ChipLocation chip) {
-		this(transceiver, chip, 0x60000000, 256);
-	}
+	/** The write buffer */
+	private final ByteBuffer writeBuffer;
 
 	/**
 	 * @param transceiver
 	 *            The transceiver to read and write with
-	 * @param x
-	 *            The x-coordinate of the chip to write to
-	 * @param y
-	 *            The y-coordinate of the chip to write to
-	 * @param base_address
+	 * @param chip
+	 *            The coordinates of the chip to write to
+	 * @param baseAddress
 	 *            The lowest address that can be written
-	 * @param buffer_size
+	 * @param bufferSize
 	 *            The size of the write buffer to improve efficiency
 	 */
-	ChipMemoryIO(Transceiver transceiver, HasChipLocation chip,
-			int base_address, int buffer_size) {
+	ChipMemoryIO(Transceiver transceiver, HasChipLocation chip, int baseAddress,
+			int bufferSize) {
 		this.transceiver = new WeakReference<>(transceiver);
 		core = chip.getScampCore().asCoreLocation();
-		current_address = base_address;
-		this.buffer_size = buffer_size;
-		write_address = base_address;
-		write_buffer = allocate(buffer_size).order(ByteOrder.LITTLE_ENDIAN);
+		currentAddress = baseAddress;
+		writeAddress = baseAddress;
+		writeBuffer = allocate(bufferSize).order(LITTLE_ENDIAN);
 	}
 
 	private Transceiver txrx() throws IOException {
@@ -99,48 +93,43 @@ class ChipMemoryIO {
 	}
 
 	/** Force the writing of the current write buffer */
-	void flush_write_buffer() throws IOException, Exception {
-		if (write_buffer.position() > 0) {
+	void flushWriteBuffer() throws IOException, Exception {
+		if (writeBuffer.position() > 0) {
 			Transceiver t = hold;
 			if (t == null) {
 				t = txrx();
 			}
-			ByteBuffer b = write_buffer.duplicate();
+			ByteBuffer b = writeBuffer.duplicate();
 			b.flip();
-			t.writeMemory(core, write_address, b);
-			write_address += write_buffer.position();
-			write_buffer.position(0);
+			t.writeMemory(core, writeAddress, b);
+			writeAddress += writeBuffer.position();
+			writeBuffer.position(0);
 		}
 		hold = null;
 	}
 
-	/** Return the current absolute address within the region */
-	int getCurrentAddress() {
-		return current_address;
-	}
-
 	/** Seek to a position within the region */
 	void setCurrentAddress(int address) throws IOException, Exception {
-		flush_write_buffer();
-		current_address = address;
-		write_address = address;
+		flushWriteBuffer();
+		currentAddress = address;
+		writeAddress = address;
 	}
 
 	/**
 	 * Read a number of bytes
 	 *
-	 * @param n_bytes
+	 * @param numBytes
 	 *            The number of bytes to read
 	 */
-	byte[] read(int n_bytes) throws IOException, Exception {
-		if (n_bytes == 0) {
+	byte[] read(int numBytes) throws IOException, Exception {
+		if (numBytes == 0) {
 			return new byte[0];
 		}
 
-		flush_write_buffer();
-		ByteBuffer data = txrx().readMemory(core, current_address, n_bytes);
-		current_address += n_bytes;
-		write_address = current_address;
+		flushWriteBuffer();
+		ByteBuffer data = txrx().readMemory(core, currentAddress, numBytes);
+		currentAddress += numBytes;
+		writeAddress = currentAddress;
 		if (data.position() == 0 && data.hasArray()) {
 			return data.array();
 		}
@@ -159,45 +148,43 @@ class ChipMemoryIO {
 		int n_bytes = data.length;
 
 		Transceiver t = txrx();
-		if (n_bytes >= buffer_size) {
-			flush_write_buffer();
-			t.writeMemory(core, current_address, data);
-			current_address += n_bytes;
-			write_address = current_address;
+		if (n_bytes >= writeBuffer.limit()) {
+			flushWriteBuffer();
+			t.writeMemory(core, currentAddress, data);
+			currentAddress += n_bytes;
+			writeAddress = currentAddress;
 		} else {
 			hold = t;
-			int n_bytes_to_copy = min(n_bytes,
-					buffer_size - write_buffer.position());
-			write_buffer.put(data, 0, n_bytes_to_copy);
-			current_address += n_bytes_to_copy;
+			int n_bytes_to_copy = min(n_bytes, writeBuffer.remaining());
+			writeBuffer.put(data, 0, n_bytes_to_copy);
+			currentAddress += n_bytes_to_copy;
 			n_bytes -= n_bytes_to_copy;
-			if (!write_buffer.hasRemaining()) {
-				flush_write_buffer();
+			if (!writeBuffer.hasRemaining()) {
+				flushWriteBuffer();
 			}
 			if (n_bytes > 0) {
-				write_buffer.clear();
-				write_buffer.put(data, n_bytes_to_copy, n_bytes);
-				current_address += n_bytes;
+				writeBuffer.clear();
+				writeBuffer.put(data, n_bytes_to_copy, n_bytes);
+				currentAddress += n_bytes;
 			}
 		}
 	}
 
 	/**
-	 * Fill the memory with repeated data
+	 * Fill the memory with repeated data.
 	 *
-	 * @param repeat_value
+	 * @param value
 	 *            The value to repeat
-	 * @param bytes_to_fill
+	 * @param size
 	 *            Number of bytes to fill from current position
-	 * @param data_type
+	 * @param type
 	 *            The type of the repeat value
 	 */
-	void fill(int repeat_value, int bytes_to_fill,
-			FillProcess.DataType data_type) throws IOException, Exception {
+	void fill(int value, int size, FillProcess.DataType type)
+			throws IOException, Exception {
 		Transceiver t = txrx();
-		flush_write_buffer();
-		t.fillMemory(core, current_address, repeat_value, bytes_to_fill,
-				data_type);
-		current_address += bytes_to_fill;
+		flushWriteBuffer();
+		t.fillMemory(core, currentAddress, value, size, type);
+		currentAddress += size;
 	}
 }
