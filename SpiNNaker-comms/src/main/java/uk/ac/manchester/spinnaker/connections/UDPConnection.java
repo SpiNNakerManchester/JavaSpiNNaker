@@ -198,13 +198,25 @@ public class UDPConnection implements Connection {
 	 *             If there is an error sending the data
 	 */
 	public void send(DatagramPacket data) throws IOException {
+		// Clear the destination; use socket's default
+		doSend(new DatagramPacket(data.getData(), data.getOffset(),
+				data.getLength()));
+	}
+
+	/**
+	 * Send data down this connection. Caller must ensure that the datagram
+	 * packet does <i>not</i> have a destination set.
+	 *
+	 * @param data
+	 *            The data to be sent
+	 * @throws IOException
+	 *             If there is an error sending the data
+	 */
+	private void doSend(DatagramPacket data) throws IOException {
 		if (!canSend) {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
 		}
-		// Clear the destination; use socket's default
-		data.setAddress(null);
-		data.setPort(-1);
 		socket.send(data);
 	}
 
@@ -217,7 +229,7 @@ public class UDPConnection implements Connection {
 	 *             If there is an error sending the data
 	 */
 	public void send(byte[] data) throws IOException {
-		send(new DatagramPacket(data, 0, data.length));
+		doSend(new DatagramPacket(data, 0, data.length));
 	}
 
 	/**
@@ -229,7 +241,7 @@ public class UDPConnection implements Connection {
 	 *             If there is an error sending the data
 	 */
 	public void send(ByteBuffer data) throws IOException {
-		send(new DatagramPacket(data.array(), 0, data.position()));
+		doSend(new DatagramPacket(data.array(), 0, data.position()));
 	}
 
 	/**
