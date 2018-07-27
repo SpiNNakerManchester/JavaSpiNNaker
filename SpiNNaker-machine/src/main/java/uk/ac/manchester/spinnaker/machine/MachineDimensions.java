@@ -7,6 +7,14 @@ public final class MachineDimensions {
     /** The height of the machine in chips */
     public final int height;
 
+    /**
+     * Create a new instance.
+     *
+     * @param width
+     *            The width of the machine, in chips.
+     * @param height
+     *            The height of the machine, in chips.
+     */
     public MachineDimensions(int width, int height) {
         this.width = width;
         this.height = height;

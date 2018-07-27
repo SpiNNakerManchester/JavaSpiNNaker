@@ -58,6 +58,11 @@ public abstract class Tag {
         this.port = port;
     }
 
+    // Subclasses *must* create an equality test; this class cannot
+    /** {@inheritDoc} */
+    @Override
+    public abstract boolean equals(Object other);
+
     /**
      * Partial equality test between two tags. Only compares on fields defined
      * in the {@link Tag} class. Used to make implementing a full equality test

@@ -15,86 +15,97 @@ import java.util.Set;
 
 /** Represents the chip summary information read via an SCP command. */
 public final class ChipSummaryInfo {
-	/** The state of the cores on the chip (list of one per core) */
-	public final List<CPUState> coreStates;
-	/** The IP address of the Ethernet if up, or <tt>null</tt> if not */
-	public final InetAddress ethernetIPAddress;
-	/** Determines if the Ethernet connection is available on this chip */
-	public final boolean isEthernetAvailable;
-	/** The size of the largest block of free SDRAM in bytes */
-	public final int largestFreeSDRAMBlock;
-	/** The size of the largest block of free SRAM in bytes */
-	public final int largestFreeSRAMBlock;
-	/** The number of cores working on the chip (including monitors) */
-	public final int numCores;
-	/** The number of multicast routing entries free on this chip */
-	public final int numFreeMulticastRoutingEntries;
-	/** The location of the nearest Ethernet chip */
-	public final ChipLocation nearestEthernetChip;
-	/** The IDs of the working links outgoing from this chip */
-	public final Set<Integer> workingLinks;
-	/** The chip that this data is from */
-	public final HasChipLocation chip;
+    /** The state of the cores on the chip (list of one per core). */
+    public final List<CPUState> coreStates;
+    /** The IP address of the Ethernet if up, or <tt>null</tt> if not. */
+    public final InetAddress ethernetIPAddress;
+    /** Determines if the Ethernet connection is available on this chip. */
+    public final boolean isEthernetAvailable;
+    /** The size of the largest block of free SDRAM in bytes. */
+    public final int largestFreeSDRAMBlock;
+    /** The size of the largest block of free SRAM in bytes. */
+    public final int largestFreeSRAMBlock;
+    /** The number of cores working on the chip (including monitors). */
+    public final int numCores;
+    /** The number of multicast routing entries free on this chip. */
+    public final int numFreeMulticastRoutingEntries;
+    /** The location of the nearest Ethernet chip. */
+    public final ChipLocation nearestEthernetChip;
+    /** The IDs of the working links outgoing from this chip. */
+    public final Set<Integer> workingLinks;
+    /** The chip that this data is from. */
+    public final HasChipLocation chip;
 
-	private static final int ADDRESS_SIZE = 4;
-	private static final byte[] NO_ADDRESS = new byte[ADDRESS_SIZE];
-	private static final int NUM_CORES = 18;
+    private static final int ADDRESS_SIZE = 4;
+    private static final byte[] NO_ADDRESS = new byte[ADDRESS_SIZE];
+    private static final int NUM_CORES = 18;
+    private static final int NUM_LINKS = 6;
+    private static final int LINKS_FIELD_SHIFT = 8;
+    private static final int NUM_CORES_FIELD_MASK = 0b00011111;
+    private static final int FREE_ENTRIES_FIELD_SHIFT = 14;
+    private static final int FREE_ENTRIES_FIELD_MASK = 0x7FF;
+    private static final int ETH_AVAIL_FIELD_BIT = 25;
 
-	private static Set<Integer> parseWorkingLinks(int summaryFlags) {
-		Set<Integer> wl = new LinkedHashSet<>();
-		for (int link = 0; link < 6; link++) {
-			if (((summaryFlags >> (8 + link)) & 1) != 0) {
-				wl.add(link);
-			}
-		}
-		return unmodifiableSet(wl);
-	}
+    private static boolean bitset(int value, int bitnum) {
+        return ((value >>> bitnum) & 1) != 0;
+    }
 
-	private static List<CPUState> parseStates(byte[] stateBytes) {
-		List<CPUState> states = new ArrayList<>();
-		for (byte b : stateBytes) {
-			states.add(CPUState.get(b));
-		}
-		return unmodifiableList(states);
-	}
+    private static Set<Integer> parseWorkingLinks(int flags) {
+        Set<Integer> wl = new LinkedHashSet<>();
+        for (int link = 0; link < NUM_LINKS; link++) {
+            if (bitset(flags, LINKS_FIELD_SHIFT + link)) {
+                wl.add(link);
+            }
+        }
+        return unmodifiableSet(wl);
+    }
 
-	private static InetAddress parseEthernetAddress(byte[] addr) {
-		try {
-			if (!Arrays.equals(addr, NO_ADDRESS)) {
-				return getByAddress(addr);
-			}
-		} catch (UnknownHostException e) {
-			// should be unreachable
-		}
-		return null;
-	}
+    private static List<CPUState> parseStates(byte[] stateBytes) {
+        List<CPUState> states = new ArrayList<>();
+        for (byte b : stateBytes) {
+            states.add(CPUState.get(b));
+        }
+        return unmodifiableList(states);
+    }
 
-	/**
-	 * @param buffer
-	 *            The data from the SCP response
-	 * @param source
-	 *            The coordinates of the chip that this data is from
-	 */
-	public ChipSummaryInfo(ByteBuffer buffer, HasChipLocation source) {
-		int summaryFlags = buffer.getInt();
-		numCores = summaryFlags & 0x1F;
-		workingLinks = parseWorkingLinks(summaryFlags);
-		numFreeMulticastRoutingEntries = (summaryFlags >> 14) & 0x7FF;
-		isEthernetAvailable = (summaryFlags & (1 << 25)) != 0;
+    private static InetAddress parseEthernetAddress(byte[] addr) {
+        try {
+            if (!Arrays.equals(addr, NO_ADDRESS)) {
+                return getByAddress(addr);
+            }
+        } catch (UnknownHostException e) {
+            // should be unreachable
+        }
+        return null;
+    }
 
-		largestFreeSDRAMBlock = buffer.getInt();
-		largestFreeSRAMBlock = buffer.getInt();
+    /**
+     * @param buffer
+     *            The data from the SCP response
+     * @param source
+     *            The coordinates of the chip that this data is from
+     */
+    public ChipSummaryInfo(ByteBuffer buffer, HasChipLocation source) {
+        int flags = buffer.getInt();
+        numCores = flags & NUM_CORES_FIELD_MASK;
+        workingLinks = parseWorkingLinks(flags);
+        numFreeMulticastRoutingEntries = (flags >>> FREE_ENTRIES_FIELD_SHIFT)
+                & FREE_ENTRIES_FIELD_MASK;
+        isEthernetAvailable = bitset(flags, ETH_AVAIL_FIELD_BIT);
 
-		byte[] states = new byte[NUM_CORES];
-		buffer.get(states);
-		coreStates = parseStates(states);
+        largestFreeSDRAMBlock = buffer.getInt();
+        largestFreeSRAMBlock = buffer.getInt();
 
-		chip = source;
-		int neY = buffer.get();
-		nearestEthernetChip = new ChipLocation(buffer.get(), neY);
+        byte[] states = new byte[NUM_CORES];
+        buffer.get(states);
+        coreStates = parseStates(states);
 
-		byte[] ia = new byte[ADDRESS_SIZE];
-		buffer.get(ia);
-		ethernetIPAddress = parseEthernetAddress(ia);
-	}
+        chip = source;
+        int neY = buffer.get();
+        nearestEthernetChip = new ChipLocation(buffer.get(), neY);
+
+        byte[] ia = new byte[ADDRESS_SIZE];
+        buffer.get(ia);
+        ethernetIPAddress = parseEthernetAddress(ia);
+    }
 }

@@ -3,77 +3,94 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
 
+/** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
     private static final int NUM_PROCESSORS = 26;
     private static final int NUM_LINKS = 6;
 
-    private int[] processor_ids;
-    private int[] link_ids;
+    private int[] processorIDs;
+    private int[] linkIDs;
 
     private static boolean bitset(int word, int bit) {
         return (word & (1 << bit)) != 0;
     }
 
+    /**
+     * Create a routing entry from its encoded form.
+     *
+     * @param route
+     *            the encoded route
+     */
     public RoutingEntry(int route) {
-        processor_ids = range(0, NUM_PROCESSORS)
+        processorIDs = range(0, NUM_PROCESSORS)
                 .filter(pi -> bitset(route, NUM_LINKS + pi)).toArray();
-        link_ids = range(0, NUM_LINKS).filter(li -> bitset(route, li))
-                .toArray();
+        linkIDs = range(0, NUM_LINKS).filter(li -> bitset(route, li)).toArray();
     }
 
-    public RoutingEntry(int[] processor_ids, int[] link_ids) {
-        this.processor_ids = processor_ids.clone();
-        this.link_ids = link_ids.clone();
+    /**
+     * Create a routing entry from its expanded description.
+     *
+     * @param processorIDs
+     *            The IDs of the processors that this entry routes to.
+     * @param linkIDs
+     *            The IDs of the links that this entry routes to.
+     */
+    public RoutingEntry(int[] processorIDs, int[] linkIDs) {
+        this.processorIDs = processorIDs.clone();
+        this.linkIDs = linkIDs.clone();
     }
 
+    /**
+     * @return The word-encoded form of the routing entry.
+     */
     public int encode() {
-        int route_entry = 0;
-        for (int processor_id : processor_ids) {
-            if (processor_id >= NUM_PROCESSORS || processor_id < 0) {
+        int route = 0;
+        for (int processorID : processorIDs) {
+            if (processorID >= NUM_PROCESSORS || processorID < 0) {
                 throw new IllegalArgumentException(
                         "Processor IDs must be between 0 and 25");
             }
-            route_entry |= (1 << (6 + processor_id));
+            route |= 1 << (6 + processorID);
         }
-        for (int link_id : link_ids) {
-            if (link_id >= NUM_LINKS || link_id < 0) {
+        for (int linkID : linkIDs) {
+            if (linkID >= NUM_LINKS || linkID < 0) {
                 throw new IllegalArgumentException(
                         "Link IDs must be between 0 and 5");
             }
-            route_entry |= (1 << link_id);
+            route |= 1 << linkID;
         }
-        return route_entry;
+        return route;
     }
 
     public int[] getProcessorIDs() {
-        return processor_ids;
+        return processorIDs;
     }
 
     public int getProcessorIDs(int index) {
-        return processor_ids[index];
+        return processorIDs[index];
     }
 
     public void setProcessorIDs(int[] newValue) {
-        processor_ids = requireNonNull(newValue);
+        processorIDs = requireNonNull(newValue);
     }
 
     public void setProcessorIDs(int index, int newValue) {
-        processor_ids[index] = newValue;
+        processorIDs[index] = newValue;
     }
 
     public int[] getLinkIDs() {
-        return link_ids;
+        return linkIDs;
     }
 
     public int getLinkIDs(int index) {
-        return link_ids[index];
+        return linkIDs[index];
     }
 
     public void setLinkIDs(int[] newValue) {
-        link_ids = requireNonNull(newValue);
+        linkIDs = requireNonNull(newValue);
     }
 
     public void setLinkIDs(int index, int newValue) {
-        link_ids[index] = newValue;
+        linkIDs[index] = newValue;
     }
 }
