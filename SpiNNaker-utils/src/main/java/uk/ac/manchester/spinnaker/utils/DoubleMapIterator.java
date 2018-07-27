@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  */
 public final class DoubleMapIterator<V> implements Iterator<V> {
 
-    private final Iterator<Map<?, V>> outer;
+    private final Iterator<? extends Map<?, V>> outer;
     private Iterator<V> inner;
 
     /**
@@ -26,7 +26,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outermap A double map with any type(s) as the keys.
      */
-    public DoubleMapIterator(Map<?, Map<?, V>> outermap) {
+    public DoubleMapIterator(Map<?, ? extends Map<?, V>> outermap) {
         this(outermap.values().iterator());
     }
 
@@ -35,7 +35,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outerIterable A double map with any type(s) as the keys.
      */
-    public DoubleMapIterator(Iterable<Map<?, V>> outerIterable) {
+    public DoubleMapIterator(Iterable<? extends Map<?, V>> outerIterable) {
         this(outerIterable.iterator());
     }
 
@@ -44,7 +44,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
      *
      * @param outer An iterator of Maps.
      */
-    public DoubleMapIterator(Iterator<Map<?, V>> outer) {
+    public DoubleMapIterator(Iterator<? extends Map<?, V>> outer) {
         this.outer = outer;
         if (outer.hasNext()) {
             inner = outer.next().values().iterator();

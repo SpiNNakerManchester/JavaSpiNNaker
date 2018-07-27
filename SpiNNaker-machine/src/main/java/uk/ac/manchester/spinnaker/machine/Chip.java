@@ -229,7 +229,7 @@ public class Chip implements HasChipLocation {
      * @return ID of the processor converted to a monitor
      *      or -1 to report a failure
      */
-    public int reserveASystemProcessor() throws IllegalStateException {
+    int reserveASystemProcessor() throws IllegalStateException {
         for (Map.Entry<Integer, Processor> entry : processors.entrySet()) {
             if (!entry.getValue().isMonitor) {
                 Processor monitor = entry.getValue().cloneAsSystemProcessor();

@@ -36,6 +36,8 @@ public final class ChipLocation implements
      *
      * @param x The X coordinate
      * @param y The Y coordinate
+     * @throws IllegalArgumentException
+     *      Thrown is either x or y is negative or too big.
      */
     public ChipLocation(int x, int y) {
         MachineDefaults.validateChipLocation(x, y);

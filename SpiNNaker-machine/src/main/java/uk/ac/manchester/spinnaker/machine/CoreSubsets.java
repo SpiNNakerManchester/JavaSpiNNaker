@@ -315,7 +315,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     @SuppressWarnings({ "rawtypes", "unchecked" })//FIXME
     @Override
     public Iterator<CoreLocation> iterator() {
-        return new DoubleMapIterator(locations);
+        return new DoubleMapIterator<CoreLocation>(locations);
     }
 
     /**

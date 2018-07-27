@@ -18,7 +18,8 @@ import java.util.NoSuchElementException;
  */
 public class TripleMapIterator<V> implements Iterator<V> {
 
-    private final Iterator<Map<Object, Map<Object, V>>> outer;
+    private final Iterator<? extends Map<Object, ? extends Map<Object, V>>>
+            outer;
     private Iterator<V> inner;
 
     /**
@@ -26,7 +27,9 @@ public class TripleMapIterator<V> implements Iterator<V> {
      *
      * @param outermap A triple map with any type(s) as the keys.
      */
-    public TripleMapIterator(Map<Object, Map<Object, Map<Object, V>>> outermap) {
+    public TripleMapIterator(
+            Map<Object, ? extends Map<Object, ? extends Map<Object, V>>>
+                    outermap) {
         this(outermap.values().iterator());
     }
 
@@ -35,7 +38,9 @@ public class TripleMapIterator<V> implements Iterator<V> {
      *
      * @param outerIterable A triple map with any type(s) as the keys.
      */
-    public TripleMapIterator(Iterable<Map<Object, Map<Object, V>>> outerIterable) {
+    public TripleMapIterator(
+            Iterable<? extends Map<Object, ? extends Map<Object, V>>>
+                    outerIterable) {
         this(outerIterable.iterator());
     }
 
@@ -44,7 +49,8 @@ public class TripleMapIterator<V> implements Iterator<V> {
      *
      * @param outer A Iterator of double maps with any type(s) as the keys.
      */
-    public TripleMapIterator(Iterator<Map<Object, Map<Object, V>>> outer) {
+    public TripleMapIterator(
+            Iterator<? extends Map<Object, ? extends Map<Object, V>>> outer) {
         this.outer = outer;
         if (outer.hasNext()) {
             inner = new DoubleMapIterator(outer.next());
