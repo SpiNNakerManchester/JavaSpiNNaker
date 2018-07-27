@@ -13,31 +13,18 @@ public class CoreLocation implements HasCoreLocation {
     private final int y;
     private final int p;
 
-    /** The maximum number of cores present on a chip. */
-    static final int MAX_NUM_CORES = 18;
-    /** Width of field of hashcode for holding processor ID. */
-    static final int CORE_SHIFT = 5;
-
     /**
      * Create the location of a core on a SpiNNaker machine.
      *
-     * @param x The X cooordinate, in range 0..255
-     * @param y The Y cooordinate, in range 0..255
-     * @param p The P cooordinate, in range 0..17
+     * @param x The X coordinate, in range 0..255
+     * @param y The Y coordinate, in range 0..255
+     * @param p The P coordinate, in range 0..17
      */
     public CoreLocation(int x, int y, int p) {
+        MachineDefaults.validateCoreLocation(x, y, p);
         this.x = x;
         this.y = y;
         this.p = p;
-        if (x < 0 || x > ChipLocation.MAX_COORD) {
-        	throw new IllegalArgumentException("bad X cooordinate");
-        }
-        if (y < 0 || y > ChipLocation.MAX_COORD) {
-        	throw new IllegalArgumentException("bad Y cooordinate");
-        }
-        if (p < 0 || p >= MAX_NUM_CORES) {
-            throw new IllegalArgumentException("bad processor ID");
-        }
     }
 
     @Override
@@ -54,7 +41,8 @@ public class CoreLocation implements HasCoreLocation {
 
     @Override
     public int hashCode() {
-        return (((x << ChipLocation.COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
+        return (((x << MachineDefaults.COORD_SHIFT) ^ y)
+                << MachineDefaults.CORE_SHIFT) ^ p;
     }
 
     @Override
@@ -71,4 +59,10 @@ public class CoreLocation implements HasCoreLocation {
     public final int getP() {
         return p;
     }
+
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY() + " P:" + getP();
+    }
+
 }

@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  *
  * @author Christian-B
  */
-public final class Processor {
+public final class Processor implements Comparable {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
     private static final Processor[] MONITOR =
@@ -70,7 +70,7 @@ public final class Processor {
      *      isMonitor which will always be true.
      */
     public Processor cloneAsSystemProcessor() {
-        if (this.clockSpeed == MachineDefaults.CLOCK_SPEED
+        if (this.clockSpeed == MachineDefaults.PROCESSOR_CLOCK_SPEED
                 && this.dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(this.processorId, true);
         } else {
@@ -124,6 +124,40 @@ public final class Processor {
         return true;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        Processor other = (Processor) o;
+        if (this.processorId < other.processorId) {
+            return -1;
+        }
+        if (this.processorId > other.processorId) {
+            return 1;
+        }
+        // Check the other parameters for consistentcy with equals.
+        if (this.isMonitor) {
+            if (!other.isMonitor) {
+                return 1;
+            }
+        } else {
+            if (other.isMonitor) {
+                return -1;
+            }
+        }
+        if (this.dtcmAvailable < other.dtcmAvailable) {
+           return -1;
+        }
+        if (this.dtcmAvailable > other.dtcmAvailable) {
+           return 1;
+        }
+        if (this.clockSpeed < other.clockSpeed) {
+           return -1;
+        }
+        if (this.clockSpeed > other.clockSpeed) {
+           return 1;
+        }
+        return 0;
+    }
+
     /**
      * Obtain a Processor Object for this ID and with these properties.
      *
@@ -138,18 +172,18 @@ public final class Processor {
     public static Processor factory(
                 int processorId, int clockSpeed, int dtcmAvailable,
                 boolean isMonitor)
-            throws SpinnMachineInvalidParameterException {
-        if (clockSpeed == MachineDefaults.CLOCK_SPEED
+            throws IllegalArgumentException {
+        if (clockSpeed == MachineDefaults.PROCESSOR_CLOCK_SPEED
                 && dtcmAvailable == MachineDefaults.DTCM_AVAILABLE) {
             return factory(processorId, isMonitor);
         }
         if (clockSpeed <= 0) {
-            throw new SpinnMachineInvalidParameterException(
+            throw new IllegalArgumentException(
                     "clockSpeed parameter " + clockSpeed
                     + " cannot be less than or equal to zero");
         }
         if (dtcmAvailable <= 0) {
-            throw new SpinnMachineInvalidParameterException(
+            throw new IllegalArgumentException(
                     "dtcmAvailable parameter " + dtcmAvailable
                     + " cannot be less than or equal to zero");
         }
@@ -168,14 +202,15 @@ public final class Processor {
         if (isMonitor) {
             if (MONITOR[processorId] == null) {
                 MONITOR[processorId] =
-                    new Processor(processorId, MachineDefaults.CLOCK_SPEED,
+                    new Processor(processorId,
+                        MachineDefaults.PROCESSOR_CLOCK_SPEED,
                         MachineDefaults.DTCM_AVAILABLE, isMonitor);
             }
             return MONITOR[processorId];
         }
         if (NON_MONITOR[processorId] == null) {
             NON_MONITOR[processorId] = new Processor(
-                processorId, MachineDefaults.CLOCK_SPEED,
+                processorId, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, isMonitor);
         }
         return NON_MONITOR[processorId];
