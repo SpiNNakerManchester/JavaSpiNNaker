@@ -8,7 +8,7 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public class CoreLocation implements HasCoreLocation {
+public final class CoreLocation implements HasCoreLocation {
     private final int x;
     private final int y;
     private final int p;
@@ -25,6 +25,16 @@ public class CoreLocation implements HasCoreLocation {
         this.x = x;
         this.y = y;
         this.p = p;
+    }
+
+    /**
+     * Create the location of a core on a SpiNNaker machine.
+     *
+     * @param chip The X and Y coordinate, in range 0..255
+     * @param p The P coordinate, in range 0..17
+     */
+    public CoreLocation(HasChipLocation chip, int p) {
+        this(chip.getX(), chip.getY(), p);
     }
 
     @Override
@@ -46,17 +56,22 @@ public class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
     @Override
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
     @Override
-    public final int getP() {
+    public ChipLocation asChipLocation() {
+        return new ChipLocation(getX(), getY());
+    }
+
+    @Override
+    public int getP() {
         return p;
     }
 

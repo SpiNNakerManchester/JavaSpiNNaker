@@ -20,12 +20,12 @@ public class TestChip {
 
     ChipLocation location00 = new ChipLocation(0,0);
     ChipLocation location01 = new ChipLocation(0,1);
-    ChipLocation location0 = new ChipLocation(1,0);
+    ChipLocation location10 = new ChipLocation(1,0);
     ChipLocation location11 = new ChipLocation(1,1);
 
     Link link00_01 = new Link(location00, Direction.NORTH, location01);
     //Link link00_01a = new Link(location00, Direction.NORTH, location01);
-    Link link00_10 = new Link(location00, Direction.WEST, location0);
+    Link link00_10 = new Link(location00, Direction.WEST, location10);
     //Link link01_01 = new Link(location01, Direction.SOUTH, location01);
 
 
@@ -84,9 +84,7 @@ public class TestChip {
         assertThrows(IllegalStateException.class, () -> {
             Processor bad = chip.getFirstNoneMonitorProcessor();
         });
-        assertThrows(IllegalStateException.class, () -> {
-            int bad = chip.reserveASystemProcessor();
-        });
+        assertEquals(-1, chip.reserveASystemProcessor());
     }
 
     /**
@@ -111,5 +109,23 @@ public class TestChip {
         });
     }
 
+    @Test
+    public void testAsLocation() throws UnknownHostException {
+        Chip chip1 = new Chip(0, 0, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
+        assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
+    }
 
-}
+    @Test
+    public void testDefault() throws UnknownHostException {
+        Chip chip = new Chip(
+                0, 0, createRouter(), createInetAddress(), location11);
+        assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
+        assertTrue(chip.virtual);
+        assertEquals(17, chip.nUserProcessors());
+        assertEquals(18, chip.nProcessors());
+        assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
+        assertEquals(MachineDefaults.N_IPTAGS_PER_CHIP, chip.nTagIds);
+   }
+
+ }
