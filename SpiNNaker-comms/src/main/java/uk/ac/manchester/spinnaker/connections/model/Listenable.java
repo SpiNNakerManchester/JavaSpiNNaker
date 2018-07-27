@@ -10,7 +10,7 @@ import java.io.IOException;
  *            particular connection).
  */
 public interface Listenable<MessageType> {
-	/** Get the method that receives for this connection. */
+	/** @return the method that receives for this connection. */
 	MessageReceiver<MessageType> getReceiver();
 
 	/**
@@ -18,7 +18,6 @@ public interface Listenable<MessageType> {
 	 * without blocking.
 	 *
 	 * @return true when there is a packet waiting to be received
-	 * @throws IOException
 	 */
 	default boolean isReadyToReceive() throws IOException {
 		return isReadyToReceive(null);
@@ -31,7 +30,6 @@ public interface Listenable<MessageType> {
 	 * @param timeout
 	 *            How many seconds to wait for a message to be receivable.
 	 * @return true when there is a packet waiting to be received
-	 * @throws IOException
 	 */
 	default boolean isReadyToReceive(double timeout) throws IOException {
 		return isReadyToReceive((int) (timeout * 1000));
@@ -45,10 +43,17 @@ public interface Listenable<MessageType> {
 	 *            How long to wait, in milliseconds; if zero or null, a
 	 *            non-blocking poll is performed.
 	 * @return true when there is a message waiting to be received
-	 * @throws IOException
 	 */
 	boolean isReadyToReceive(Integer timeout) throws IOException;
 
+	/**
+	 * How to actually receive a message of a given type.
+	 *
+	 * @author Donal Fellows
+	 * @param <MessageType>
+	 *            The type of message received
+	 */
+	@FunctionalInterface
 	interface MessageReceiver<MessageType> {
 		/**
 		 * Receive a message from its connection.

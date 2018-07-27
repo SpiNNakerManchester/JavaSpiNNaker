@@ -11,28 +11,45 @@ public abstract class Tag {
     /** The port number associated with this tagID. */
     private Integer port;
 
+    /**
+     * Create a tag.
+     *
+     * @param boardAddress
+     *            The address of the board where the tag is.
+     * @param tagID
+     *            The ID of the tag (0-7?)
+     * @param port
+     *            The port of the tag.
+     */
     protected Tag(InetAddress boardAddress, int tagID, Integer port) {
         this.boardAddress = boardAddress;
         this.tagID = tagID;
         this.port = port;
     }
 
-    /** The board address of the tagID. */
+    /** @return The board address of the tagID. */
     public InetAddress getBoardAddress() {
         return boardAddress;
     }
 
-    /** The tagID ID of the tagID. */
+    /** @return The tagID ID of the tagID. */
     public int getTag() {
         return tagID;
     }
 
-    /** The port of the tagID, or <tt>null</tt> if there isn't one yet. */
+    /**
+     * @return The port of the tagID, or <tt>null</tt> if there isn't one yet.
+     */
     public Integer getPort() {
         return port;
     }
 
-    /** Set the port; will fail if the port is already set. */
+    /**
+     * Set the port; will fail if the port is already set.
+     *
+     * @param port
+     *            the port to set
+     */
     public void setPort(int port) {
         if (this.port != null) {
             throw new IllegalStateException(

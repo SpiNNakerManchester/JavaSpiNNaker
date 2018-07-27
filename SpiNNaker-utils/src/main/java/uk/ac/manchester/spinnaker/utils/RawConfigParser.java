@@ -25,7 +25,7 @@ public class RawConfigParser {
 	private static final String COMMENT_TMPL = "^(.*?)\\s*[#;].*$";
 
 	private final Pattern sectRE, optRE, commentRE;
-	Map<String, Map<String, String>> map = new HashMap<>();
+	private Map<String, Map<String, String>> map = new HashMap<>();
 
 	/**
 	 * Create a basic configuration parser.
@@ -131,7 +131,7 @@ public class RawConfigParser {
 	}
 
 	/**
-	 * How to decide if a value is to be treated as <tt>null</tt>
+	 * How to decide if a value is to be treated as <tt>null</tt>.
 	 *
 	 * @param value
 	 *            The value to examine

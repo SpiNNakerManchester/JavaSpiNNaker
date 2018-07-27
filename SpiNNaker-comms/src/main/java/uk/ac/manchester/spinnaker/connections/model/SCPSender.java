@@ -6,11 +6,16 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
-/** A sender of SCP messages */
+/** A sender of SCP messages. */
 public interface SCPSender extends Connection {
 	/**
 	 * Returns the data of an SCP request as it would be sent down this
-	 * connection
+	 * connection.
+	 *
+	 * @param scpRequest
+	 *            message packet to serialise
+	 * @return The buffer holding the data. The data should be written into the
+	 *         start of the buffer and should end at the <i>position</i>.
 	 */
 	ByteBuffer getSCPData(SCPRequest<?> scpRequest);
 
