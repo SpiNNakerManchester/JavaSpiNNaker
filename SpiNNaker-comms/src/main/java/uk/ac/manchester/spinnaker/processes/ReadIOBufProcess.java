@@ -92,23 +92,26 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 			checkForError();
 		}
 
-		class IOBufIterator implements Iterator<IOBuffer> {
-			private final Iterator<CoreLocation> cores = iobuf.keySet()
-					.iterator();
-
+		return new Iterable<IOBuffer>() {
 			@Override
-			public boolean hasNext() {
-				return cores.hasNext();
-			}
+			public Iterator<IOBuffer> iterator() {
+				return new Iterator<IOBuffer>() {
+					private final Iterator<CoreLocation> cores = iobuf.keySet()
+							.iterator();
 
-			@Override
-			public IOBuffer next() {
-				CoreLocation core = cores.next();
-				return new IOBuffer(core, iobuf.get(core).values());
-			}
-		}
+					@Override
+					public boolean hasNext() {
+						return cores.hasNext();
+					}
 
-		return IOBufIterator::new;
+					@Override
+					public IOBuffer next() {
+						CoreLocation core = cores.next();
+						return new IOBuffer(core, iobuf.get(core).values());
+					}
+				};
+			}
+		};
 	}
 
 	private void issueReadForIOBufHead(CoreLocation core, int blockID, int next,
