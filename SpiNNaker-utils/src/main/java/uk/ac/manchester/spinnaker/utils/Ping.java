@@ -5,6 +5,11 @@ import java.io.InputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
+/**
+ * How to ping a host to test for (ICMP) network connectivity.
+ *
+ * @author Donal Fellows
+ */
 public abstract class Ping {
 	private Ping() {
 	}
@@ -66,6 +71,7 @@ public abstract class Ping {
 	}
 
 	private static class InputStreamDrain implements Runnable {
+		private static final int BUFFER_SIZE = 256;
 		private InputStream is;
 
 		InputStreamDrain(InputStream is) {
@@ -79,7 +85,7 @@ public abstract class Ping {
 		public void run() {
 			try {
 				try {
-					byte[] b = new byte[256];
+					byte[] b = new byte[BUFFER_SIZE];
 					int read;
 					do {
 						read = is.read(b);

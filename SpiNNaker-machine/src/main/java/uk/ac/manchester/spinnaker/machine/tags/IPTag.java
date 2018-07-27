@@ -125,22 +125,26 @@ public final class IPTag extends Tag {
         this.trafficIdentifier = trafficIdentifier;
     }
 
-    /** The IP address to which SDP packets with this tag will be sent. */
+    /**
+     * @return The IP address to which SDP packets with this tag will be sent.
+     */
     public InetAddress getIPAddress() {
         return ipAddress;
     }
 
-    /** Return if the SDP header is to be stripped. */
+    /** @return Return if the SDP header is to be stripped. */
     public boolean isStripSDP() {
         return stripSDP;
     }
 
-    /** The identifier of traffic using this tag. */
+    /** @return The identifier of traffic using this tag. */
     public String getTrafficIdentifier() {
         return trafficIdentifier;
     }
 
-    /** The coordinates where users of this tag should send packets to. */
+    /**
+     * @return The coordinates where users of this tag should send packets to.
+     */
     public ChipLocation getDestination() {
         return destination;
     }
@@ -153,6 +157,13 @@ public final class IPTag extends Tag {
         return false;
     }
 
+    /**
+     * An optimised test for whether two {@link IPTag}s are equal.
+     *
+     * @param otherTag
+     *            The other tag
+     * @return whether they are equal
+     */
     public boolean equals(IPTag otherTag) {
         return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
                 && stripSDP == otherTag.stripSDP

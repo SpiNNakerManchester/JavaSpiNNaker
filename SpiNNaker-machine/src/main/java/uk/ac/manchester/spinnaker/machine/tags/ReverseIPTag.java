@@ -52,16 +52,16 @@ public final class ReverseIPTag extends Tag {
     }
 
     /**
-     * The destination coordinates of a core in the SpiNNaker machine that
-     * packets should be sent to for this reverse IP tag.
+     * @return The destination coordinates of a core in the SpiNNaker machine
+     *         that packets should be sent to for this reverse IP tag.
      */
     public CoreLocation getDestination() {
         return destination;
     }
 
     /**
-     * The SDP port number of the tag that these packets are to be received on
-     * for the processor.
+     * @return The SDP port number of the tag that these packets are to be
+     *         received on for the processor.
      */
     public int getSdpPort() {
         return sdpPort;
@@ -75,6 +75,13 @@ public final class ReverseIPTag extends Tag {
         return false;
     }
 
+    /**
+     * An optimised test for whether two {@link ReverseIPTag}s are equal.
+     *
+     * @param otherTag
+     *            The other tag
+     * @return whether they are equal
+     */
     public boolean equals(ReverseIPTag otherTag) {
         return partialEquals(otherTag) && sdpPort == otherTag.sdpPort
                 && destination.equals(otherTag.destination);

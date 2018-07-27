@@ -27,30 +27,68 @@ public class RawConfigParser {
 	private final Pattern sectRE, optRE, commentRE;
 	Map<String, Map<String, String>> map = new HashMap<>();
 
-	public RawConfigParser(String delimiters) {
+	/**
+	 * Create a basic configuration parser.
+	 *
+	 * @param delimiters
+	 *            the option/value delimiter characters.
+	 */
+	protected RawConfigParser(String delimiters) {
 		this.sectRE = compile(SECT_TMPL);
 		this.optRE = compile(format(OPT_TMPL, delimiters));
 		this.commentRE = compile(COMMENT_TMPL);
 	}
 
+	/**
+	 * Create a configuration from the given configuration file. This is
+	 * designed to be used with {@link Class#getResource(String)}.
+	 *
+	 * @param resource
+	 *            The handle to the configuration file.
+	 */
 	public RawConfigParser(URL resource) {
 		this("=:");
 		try {
-			read(resource);
+			if (resource != null) {
+				read(resource);
+			}
 		} catch (IOException e) {
-			throw new RuntimeException(
-					"failed to read config from " + resource, e);
+			throw new RuntimeException("failed to read config from " + resource,
+					e);
 		}
 	}
 
+	/**
+	 * How to convert a section name into canonical form.
+	 *
+	 * @param name
+	 *            The raw section name.
+	 * @return The canonicalised section name.
+	 */
 	protected String normaliseSectionName(String name) {
 		return name;
 	}
 
+	/**
+	 * How to convert an option name into canonical form.
+	 *
+	 * @param name
+	 *            The raw option name.
+	 * @return The canonicalised option name.
+	 */
 	protected String normaliseOptionName(String name) {
 		return name;
 	}
 
+	/**
+	 * Read a configuration file.
+	 *
+	 * @param resource
+	 *            Where the file is.
+	 * @throws IOException
+	 *             if the reading fails.
+	 */
+	@SuppressWarnings("checkstyle:InnerAssignment")
 	public void read(URL resource) throws IOException {
 		try (InputStream s = resource.openStream();
 				BufferedReader r = new BufferedReader(
@@ -92,10 +130,26 @@ public class RawConfigParser {
 		}
 	}
 
+	/**
+	 * How to decide if a value is to be treated as <tt>null</tt>
+	 *
+	 * @param value
+	 *            The value to examine
+	 * @return True iff the value is a <tt>null</tt>-equivalent.
+	 */
 	protected boolean isNone(String value) {
 		return value == null || "None".equalsIgnoreCase(value);
 	}
 
+	/**
+	 * Get a value from the config.
+	 *
+	 * @param section
+	 *            The section to look in.
+	 * @param option
+	 *            The option to look at.
+	 * @return The option value, or <tt>null</tt> if it is absent.
+	 */
 	public Integer getint(String section, String option) {
 		String value = get(section, option);
 		if (isNone(value)) {
@@ -104,6 +158,15 @@ public class RawConfigParser {
 		return Integer.parseInt(value);
 	}
 
+	/**
+	 * Get a value from the config.
+	 *
+	 * @param section
+	 *            The section to look in.
+	 * @param option
+	 *            The option to look at.
+	 * @return The option value, or <tt>null</tt> if it is absent.
+	 */
 	public Boolean getboolean(String section, String option) {
 		String value = get(section, option);
 		if (isNone(value)) {
@@ -112,6 +175,15 @@ public class RawConfigParser {
 		return Boolean.parseBoolean(value);
 	}
 
+	/**
+	 * Get a value from the config.
+	 *
+	 * @param section
+	 *            The section to look in.
+	 * @param option
+	 *            The option to look at.
+	 * @return The option value, or <tt>null</tt> if it is absent.
+	 */
 	public String get(String section, String option) {
 		Map<String, String> sect = map.get(normaliseSectionName(section));
 		if (sect != null) {

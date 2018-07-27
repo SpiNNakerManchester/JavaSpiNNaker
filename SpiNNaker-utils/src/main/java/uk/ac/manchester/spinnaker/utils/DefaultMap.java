@@ -23,6 +23,8 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	/**
 	 * Create a new map.
 	 *
+	 * @param <DV>
+	 *            The type of the default value.
 	 * @param defaultValue
 	 *            The default value to use in the map. This should be an
 	 *            immutable value as it can be potentially inserted for many
@@ -37,6 +39,8 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	/**
 	 * Create a new map.
 	 *
+	 * @param <DV>
+	 *            The type of the default value.
 	 * @param defaultFactory
 	 *            A method to create a new value to insert in the map.
 	 */
@@ -46,7 +50,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 		defFactory = defaultFactory;
 	}
 
-	V defaultFactory() {
+	private V defaultFactory() {
 		if (direct) {
 			return defValue;
 		}

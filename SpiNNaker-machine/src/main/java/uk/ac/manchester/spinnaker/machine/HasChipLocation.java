@@ -4,8 +4,9 @@
 package uk.ac.manchester.spinnaker.machine;
 
 /**
+ * The interface supported by any object that is associated with a chip.
  *
- * @author dkf
+ * @author Donal Fellows
  */
 public interface HasChipLocation {
     /**
@@ -31,11 +32,11 @@ public interface HasChipLocation {
     }
 
     /**
-     * Get the core of the chip that will be running SC&MP. This is always core
-     * 0 of the chip, as the core that runs SC&MP always maps itself to be
-     * virtual core ID 0.
+     * Get the core of the chip that will be running SC&amp;MP. This is always
+     * core 0 of the chip, as the core that runs SC&amp;MP always maps itself to
+     * be virtual core ID 0.
      *
-     * @return The location of the SC&MP core.
+     * @return The location of the SC&amp;MP core.
      */
     default HasCoreLocation getScampCore() {
         // SCAMP always runs on core 0 or we can't talk to the chip at all
