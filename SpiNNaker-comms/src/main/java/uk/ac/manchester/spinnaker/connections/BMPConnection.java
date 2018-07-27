@@ -20,7 +20,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 public class BMPConnection extends UDPConnection
 		implements SCPSenderReceiver, Listenable<SDPMessage> {
-	/** Defined to satisfy the SCPSender; always 0,0 for a BMP */
+	/** Defined to satisfy the SCPSender; always 0,0 for a BMP. */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
 	public final int cabinet;
 	public final int frame;

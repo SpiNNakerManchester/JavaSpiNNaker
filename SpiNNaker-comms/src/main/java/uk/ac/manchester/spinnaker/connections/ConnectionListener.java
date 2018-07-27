@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,9 @@ import uk.ac.manchester.spinnaker.connections.model.Listenable.MessageReceiver;
  * Thread that listens to a connection and calls callbacks with new messages
  * when they arrive.
  */
-public class ConnectionListener<MessageType> extends Thread {
+public class ConnectionListener<MessageType> extends Thread
+		implements Closeable {
+	private static final long POOL_TIMEOUT = 1000L;
 	private Logger log = getLogger(ConnectionListener.class);
 	private ThreadPoolExecutor callbackPool;
 	private Set<MessageHandler<MessageType>> callbacks;
@@ -27,13 +30,24 @@ public class ConnectionListener<MessageType> extends Thread {
 	private volatile boolean done;
 	private Integer timeout;
 
+	/**
+	 * Create a connection listener.
+	 *
+	 * @param connection
+	 *            The connection to listen to.
+	 * @param numProcesses
+	 *            The maximum number of threads to use to do the listening.
+	 * @param timeout
+	 *            How long to wait in the OS for a message to arrive; if
+	 *            <tt>null</tt>, wait indefinitely.
+	 */
 	public ConnectionListener(Listenable<MessageType> connection,
 			int numProcesses, Integer timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
 		this.connection = connection;
 		this.timeout = timeout;
-		callbackPool = new ThreadPoolExecutor(1, numProcesses, 1000L,
+		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
 		callbacks = new HashSet<MessageHandler<MessageType>>();
@@ -68,7 +82,12 @@ public class ConnectionListener<MessageType> extends Thread {
 		}
 	}
 
-	/** Add a callback to be called when a message is received. */
+	/**
+	 * Add a callback to be called when a message is received.
+	 *
+	 * @param callback
+	 *            The callback to add.
+	 */
 	public void addCallback(MessageHandler<MessageType> callback) {
 		callbacks.add(callback);
 	}
@@ -76,11 +95,10 @@ public class ConnectionListener<MessageType> extends Thread {
 	/**
 	 * Closes the listener. Note that this does not close the provider of the
 	 * messages; this instead marks the listener as closed. The listener will
-	 * not truly stop until the get message call returns.
-	 *
-	 * @throws InterruptedException
-	 *             If interrupted while waiting for the thread to terminate
+	 * not truly stop until the get message call returns, and this call will
+	 * block until the callback thread pool has terminated.
 	 */
+	@Override
 	public void close() {
 		done = true;
 		try {

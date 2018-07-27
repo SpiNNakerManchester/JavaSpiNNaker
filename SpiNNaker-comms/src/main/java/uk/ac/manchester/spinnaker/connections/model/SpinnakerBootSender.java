@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
 
-/** A sender of SpiNNaker Boot messages */
+/** A sender of SpiNNaker Boot messages. */
 public interface SpinnakerBootSender extends SocketHolder {
 	/**
 	 * Sends a SpiNNaker boot message using this connection.

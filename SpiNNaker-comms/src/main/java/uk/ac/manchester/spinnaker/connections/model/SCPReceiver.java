@@ -5,6 +5,11 @@ import java.net.SocketTimeoutException;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
+/**
+ * Receives an SCP response from a socket.
+ *
+ * @author Donal Fellows
+ */
 public interface SCPReceiver extends SocketHolder {
 	/**
 	 * Receives an SCP response from this connection. Blocks until a message has

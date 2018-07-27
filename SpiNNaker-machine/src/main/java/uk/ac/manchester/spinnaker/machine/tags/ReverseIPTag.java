@@ -17,6 +17,8 @@ public final class ReverseIPTag extends Tag {
     private final int sdpPort;
 
     /**
+     * Create a reverse IP tag.
+     *
      * @param boardAddress
      *            The IP address of the board on which the tag is allocated.
      * @param tagID
@@ -32,6 +34,8 @@ public final class ReverseIPTag extends Tag {
     }
 
     /**
+     * Create a reverse IP tag.
+     *
      * @param boardAddress
      *            The IP address of the board on which the tag is allocated.
      * @param tagID
@@ -89,7 +93,7 @@ public final class ReverseIPTag extends Tag {
 
     @Override
     public int hashCode() {
-        int h = super.hashCode();
+        int h = partialHashCode();
         h ^= rotateLeft(sdpPort, 11);
         h ^= rotateLeft(destination.hashCode(), 19);
         return h;

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-/** SARK CPU States */
+/** SARK CPU States. */
 public enum CPUState {
     /** */
     DEAD,
@@ -46,7 +46,7 @@ public enum CPUState {
     public final int value;
     private static final Map<Integer, CPUState> MAP = new HashMap<>();
 
-    private CPUState() {
+    CPUState() {
         value = ordinal();
     }
 

@@ -10,10 +10,24 @@ import java.io.IOException;
 public class InvalidPacketException extends IOException {
 	private static final long serialVersionUID = -2509633246846245166L;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param message
+	 *            The exception message.
+	 */
 	public InvalidPacketException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param message
+	 *            The exception message.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
 	public InvalidPacketException(String message, Throwable cause) {
 		super(message, cause);
 	}

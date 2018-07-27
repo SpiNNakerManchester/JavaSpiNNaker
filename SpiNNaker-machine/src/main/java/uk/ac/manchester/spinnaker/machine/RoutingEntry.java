@@ -50,7 +50,7 @@ public class RoutingEntry {
                 throw new IllegalArgumentException(
                         "Processor IDs must be between 0 and 25");
             }
-            route |= 1 << (6 + processorID);
+            route |= 1 << (NUM_LINKS + processorID);
         }
         for (int linkID : linkIDs) {
             if (linkID >= NUM_LINKS || linkID < 0) {

@@ -7,7 +7,7 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 /** A sender of EIEIO messages. */
 public interface EIEIOSender extends Connection {
 	/**
-	 * Sends an EIEIO message down this connection
+	 * Sends an EIEIO message down this connection.
 	 *
 	 * @param eieioMessage
 	 *            The EIEIO message to be sent

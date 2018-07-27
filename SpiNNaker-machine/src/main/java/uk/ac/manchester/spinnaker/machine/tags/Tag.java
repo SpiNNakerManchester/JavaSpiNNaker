@@ -21,7 +21,7 @@ public abstract class Tag {
      * @param port
      *            The port of the tag.
      */
-    protected Tag(InetAddress boardAddress, int tagID, Integer port) {
+    Tag(InetAddress boardAddress, int tagID, Integer port) {
         this.boardAddress = boardAddress;
         this.tagID = tagID;
         this.port = port;
@@ -58,10 +58,14 @@ public abstract class Tag {
         this.port = port;
     }
 
-    // Subclasses *must* create an equality test; this class cannot
+    // Subclasses *must* create an equality test and hash code
     /** {@inheritDoc} */
     @Override
     public abstract boolean equals(Object other);
+
+    /** {@inheritDoc} */
+    @Override
+    public abstract int hashCode();
 
     /**
      * Partial equality test between two tags. Only compares on fields defined
@@ -80,11 +84,19 @@ public abstract class Tag {
                                 && port.equals(otherTag.port)));
     }
 
-    @Override
-    public int hashCode() {
-        int h = (tagID * 43) ^ boardAddress.hashCode();
+    private static final int MAGIC1 = 43;
+    private static final int MAGIC2 = 17;
+
+    /**
+     * Partial hash code of a tag. Used to make implementing a full hash
+     * simpler.
+     *
+     * @return The hash of this class's fields.
+     */
+    protected final int partialHashCode() {
+        int h = (tagID * MAGIC1) ^ boardAddress.hashCode();
         if (port != null) {
-            h ^= port * 17;
+            h ^= port * MAGIC2;
         }
         return h;
     }

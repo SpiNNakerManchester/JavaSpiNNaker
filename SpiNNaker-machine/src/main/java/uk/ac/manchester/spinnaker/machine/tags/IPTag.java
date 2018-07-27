@@ -11,6 +11,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * flow at runtime from SpiNNaker to the outside world.
  */
 public final class IPTag extends Tag {
+    /** Default traffic identifier. */
     public static final String DEFAULT_TRAFFIC_IDENTIFIER = "DEFAULT";
     private static final boolean DEFAULT_STRIP_SDP = false;
     private static final Integer DEFAULT_PORT = null;
@@ -19,12 +20,14 @@ public final class IPTag extends Tag {
     private final InetAddress ipAddress;
     /** Indicates whether the SDP header should be removed. */
     private final boolean stripSDP;
-    /** The identifier for traffic transmitted using this tag */
+    /** The identifier for traffic transmitted using this tag. */
     private final String trafficIdentifier;
     /** The coordinates where users of this tag should send packets to. */
     private final ChipLocation destination;
 
     /**
+     * Create an IP tag.
+     *
      * @param boardAddress
      *            The IP address of the board on which the tag is allocated
      * @param destination
@@ -41,6 +44,8 @@ public final class IPTag extends Tag {
     }
 
     /**
+     * Create an IP tag.
+     *
      * @param boardAddress
      *            The IP address of the board on which the tag is allocated
      * @param destination
@@ -173,7 +178,7 @@ public final class IPTag extends Tag {
 
     @Override
     public int hashCode() {
-        int h = super.hashCode();
+        int h = partialHashCode();
         h ^= rotateLeft(ipAddress.hashCode(), 9);
         if (stripSDP) {
             h ^= 1;

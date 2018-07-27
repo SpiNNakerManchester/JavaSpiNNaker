@@ -7,7 +7,7 @@ import java.io.IOException;
  */
 public interface Connection extends SocketHolder {
 	/**
-	 * Determines if the medium is connected at this point in time
+	 * Determines if the medium is connected at this point in time.
 	 *
 	 * @return true if the medium is connected, false otherwise
 	 * @throws IOException

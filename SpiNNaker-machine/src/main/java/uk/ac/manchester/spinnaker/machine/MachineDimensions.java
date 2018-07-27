@@ -2,9 +2,9 @@ package uk.ac.manchester.spinnaker.machine;
 
 /** Represents the size of a machine in chips. */
 public final class MachineDimensions {
-    /** The width of the machine in chips */
+    /** The width of the machine in chips. */
     public final int width;
-    /** The height of the machine in chips */
+    /** The height of the machine in chips. */
     public final int height;
 
     /**

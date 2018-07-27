@@ -1,5 +1,12 @@
 package uk.ac.manchester.spinnaker.machine;
 
+/**
+ * A minimal description of a link so that a link can be talked about without
+ * the full information that a link often has. Useful particularly for talking
+ * about links that have been blacklisted.
+ *
+ * @author Donal Fellows
+ */
 public final class LinkDescriptor implements HasChipLocation {
     private final int x, y, linkID;
 

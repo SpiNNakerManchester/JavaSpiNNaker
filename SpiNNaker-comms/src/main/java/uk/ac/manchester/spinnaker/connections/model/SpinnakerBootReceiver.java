@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
 
-/** A receiver of SpiNNaker boot messages */
+/** A receiver of SpiNNaker boot messages. */
 public interface SpinnakerBootReceiver extends SocketHolder {
 	/**
 	 * Receives a boot message from this connection. Blocks until a message has
@@ -13,8 +13,6 @@ public interface SpinnakerBootReceiver extends SocketHolder {
 	 * @return the received packet
 	 * @throws IOException
 	 *             If there is an error receiving the message
-	 * @throws SpinnmanInvalidPacketException
-	 *             If the received packet is not a valid SpiNNaker boot message
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker boot message is invalid
 	 */
@@ -33,10 +31,6 @@ public interface SpinnakerBootReceiver extends SocketHolder {
 	 * @return the received packet
 	 * @throws IOException
 	 *             If there is an error receiving the message
-	 * @throws SpinnmanTimeoutException
-	 *             If there is a timeout before a message is received
-	 * @throws SpinnmanInvalidPacketException
-	 *             If the received packet is not a valid SpiNNaker boot message
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker boot message is invalid
 	 */

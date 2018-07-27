@@ -5,7 +5,7 @@ import java.io.InterruptedIOException;
 
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
-/** A receiver of SDP messages */
+/** A receiver of SDP messages. */
 public interface SDPReceiver extends Connection {
 	/**
 	 * Receives an SDP message from this connection. Blocks until the message
