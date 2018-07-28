@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.TTO;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -21,7 +22,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	 */
 	public IPTagSetTTO(HasChipLocation chip, IPTagTimeOutWaitTime tagTimeout) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
-				TTO.value << 16, tagTimeout.value, null);
+				TTO.value << COMMAND_FIELD, tagTimeout.value, null);
 	}
 
 	@Override

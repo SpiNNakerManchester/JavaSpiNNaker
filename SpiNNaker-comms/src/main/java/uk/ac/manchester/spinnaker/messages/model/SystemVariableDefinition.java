@@ -36,7 +36,7 @@ public enum SystemVariableDefinition {
 	p2p_b_repeats(BYTE, 0x0c, 4),
 	/** Log (base 2) of the peer-to-peer sequence length */
 	log_peer_to_peer_sequence_length(BYTE, 0x0d, 4),
-	/** The clock divisors for system & router clocks */
+	/** The clock divisors for system &amp; router clocks */
 	clock_divisor(BYTE, 0x0e, 0x33),
 	/** The time-phase scaling factor */
 	time_phase_scale(BYTE, 0x0f),

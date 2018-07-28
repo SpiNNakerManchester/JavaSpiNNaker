@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to start a flood fill of data */
+/** A request to start a flood fill of data. */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	private static final int NNP_FORWARD_RETRY = (0x3f << 24) | (0x18 << 16);
 
@@ -21,11 +21,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 *            The base address where the data is to be loaded
 	 * @param data
 	 *            The data to load, between 4 and 256 bytes and the size must be
-	 *            divisible by 4
-	 * @param offset
-	 *            Where in the array the data starts at.
-	 * @param length
-	 *            The length of the data; must be divisible by 4.
+	 *            divisible by 4.
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, byte[] data) {

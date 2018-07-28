@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** Decodes SC&MP/SARK version information as returned by the SVER command. */
+/**
+ * Decodes SC&amp;MP/SARK version information as returned by the SVER command.
+ */
 public final class VersionInfo {
 	/** The build date of the software, in seconds since 1st January 1970. */
 	public final int buildDate;

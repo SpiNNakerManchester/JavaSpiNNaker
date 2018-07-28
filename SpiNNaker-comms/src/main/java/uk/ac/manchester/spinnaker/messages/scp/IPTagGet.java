@@ -1,6 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.GET;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_SHIFT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -18,7 +22,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 /** An SCP Request to get an IP tag */
 public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	private static int argument1(int tagID) {
-		return (GET.value << 16) | (tagID & 0x7);
+		return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
 	}
 
 	/**
@@ -38,7 +42,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	}
 
 	/** An SCP response to a request for an IP tags */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/**
 		 * The count of the number of packets that have been sent with the tag.
 		 */
@@ -67,11 +71,11 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 				throws UnexpectedResponseCodeException, UnknownHostException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 
-			byte[] ipBytes = new byte[4];
+			byte[] ipBytes = new byte[IPV4_BYTES];
 			buffer.get(ipBytes);
 			ipAddress = InetAddress.getByAddress(ipBytes);
 
-			macAddress = new byte[6];
+			macAddress = new byte[MAC_BYTES];
 			buffer.get(macAddress);
 
 			port = buffer.getShort();
@@ -82,18 +86,30 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 			byte y = buffer.get();
 			byte x = buffer.get();
 			byte pp = buffer.get();
-			spinCore = new CoreLocation(x, y, pp & 0x1F);
-			spinPort = (pp >>> 5) & 0x7;
+			spinCore = new CoreLocation(x, y, pp & CORE_MASK);
+			spinPort = (pp >>> PORT_SHIFT) & THREE_BITS_MASK;
+		}
+
+		private static final int IPV4_BYTES = 4;
+		private static final int MAC_BYTES = 6;
+		private static final int USE_BIT = 15;
+		private static final int TEMP_BIT = 14;
+		private static final int ARP_BIT = 13;
+		private static final int REV_BIT = 9;
+		private static final int STRIP_BIT= 8;
+
+		private boolean bitset(int bit) {
+			return (flags & (1 << bit)) != 0;
 		}
 
 		/** True if the tag is marked as being in use */
 		public boolean isInUse() {
-			return (flags & 0x8000) > 0;
+			return bitset(USE_BIT);
 		}
 
 		/** True if the tag is temporary */
 		public boolean isTemporary() {
-			return (flags & 0x4000) > 0;
+			return bitset(TEMP_BIT);
 		}
 
 		/**
@@ -101,17 +117,17 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		 * looked up; this is a transient state so unlikely).
 		 */
 		public boolean isARP() {
-			return (flags & 0x2000) > 0;
+			return bitset(ARP_BIT);
 		}
 
 		/** True if the tag is a reverse tag */
 		public boolean isReverse() {
-			return (flags & 0x0200) > 0;
+			return bitset(REV_BIT);
 		}
 
 		/** True if the tag is to strip the SDP header */
 		public boolean isStrippingSDP() {
-			return (flags & 0x0100) > 0;
+			return bitset(STRIP_BIT);
 		}
 	}
 }

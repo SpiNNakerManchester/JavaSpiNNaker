@@ -1,6 +1,12 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.BYTE_SHIFT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -36,15 +42,17 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument1(int tag, boolean strip) {
-		return (strip ? 1 << 28 : 0) | (SET.value << 16) | (tag & 0x7);
+		return (strip ? 1 << STRIP_FIELD_BIT : 0) | (SET.value << COMMAND_FIELD)
+				| (tag & THREE_BITS_MASK);
 	}
 
 	private static int argument2(int port) {
-		return port & 0xFFFF;
+		return port & PORT_MASK;
 	}
 
 	private static int argument3(byte[] host) {
-		return (host[3] << 24) | (host[2] << 16) | (host[1] << 8) | host[0];
+		return range(0, host.length).map(i -> host[host.length - 1 - i])
+				.reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
 	}
 
 	@Override

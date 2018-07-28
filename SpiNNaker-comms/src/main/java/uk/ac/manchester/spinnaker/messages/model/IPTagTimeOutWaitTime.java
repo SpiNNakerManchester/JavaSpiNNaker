@@ -8,7 +8,7 @@ import java.util.Map;
  * for any message request which requires a response, before raising an error.
  * The value is calculated via the following formula:
  * <dl>
- * <dd>10ms * 2<sup>tagTimeout.value - 1</timeout></dd>
+ * <dd>10ms * 2<sup>tagTimeout.value - 1</sup></dd>
  * </dl>
  */
 public enum IPTagTimeOutWaitTime {

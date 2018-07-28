@@ -1,6 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.CLR;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -24,7 +26,7 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static Integer argument1(int tag) {
-		return (CLR.value << 16) | (tag & 0x7);
+		return (CLR.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
 	}
 
 	@Override

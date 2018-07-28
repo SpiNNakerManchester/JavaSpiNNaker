@@ -1,6 +1,15 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_P_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_X_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.DEST_Y_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.REVERSE_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.SDP_PORT_FIELD;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
 
@@ -21,8 +30,8 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
-	 * @param host
-	 *            The host address, as an array of 4 bytes.
+	 * @param destination
+	 *            The coordinates of the destination processor.
 	 * @param port
 	 *            The port, between 0 and 65535
 	 * @param tag
@@ -41,14 +50,16 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 			int tag) {
 		final int strip = 1;
 		final int reverse = 1;
-		return (reverse << 29) | (strip << 28) | (SET.value << 16)
-				| ((sdpPort & 0x7) << 13) | (destination.getP() << 8)
-				| (tag & 0x7);
+		return (reverse << REVERSE_FIELD_BIT) | (strip << STRIP_FIELD_BIT)
+				| (SET.value << COMMAND_FIELD)
+				| ((sdpPort & THREE_BITS_MASK) << SDP_PORT_FIELD)
+				| (destination.getP() << DEST_P_FIELD)
+				| (tag & THREE_BITS_MASK);
 	}
 
 	private static int argument2(HasCoreLocation destination, int port) {
-		return (destination.getX() << 24) | (destination.getY() << 16)
-				| (port & 0xFFFF);
+		return (destination.getX() << DEST_X_FIELD)
+				| (destination.getY() << DEST_Y_FIELD) | (port & PORT_MASK);
 	}
 
 	@Override
