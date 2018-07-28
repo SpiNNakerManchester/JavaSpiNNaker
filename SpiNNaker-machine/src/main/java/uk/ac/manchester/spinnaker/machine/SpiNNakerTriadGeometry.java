@@ -20,8 +20,8 @@ import java.util.function.Consumer;
  * a triad and where the root chips occur in the triad.
  *
  * @see <a href=
- *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
- *      Python Version</a>
+ * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
+ * Python Version</a>
  *
  * @author Christian-B
  */

@@ -33,11 +33,11 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	 * @param destination
 	 *            The coordinates of the destination processor.
 	 * @param port
-	 *            The port, between 0 and 65535
+	 *            The port, between 0 and 65535.
 	 * @param tag
-	 *            The tag, between 0 and 7
-	 * @param strip
-	 *            if the SDP header should be stripped from the packet.
+	 *            The tag, between 0 and 7.
+	 * @param sdpPort
+	 *            The SDP port associated with this tag.
 	 */
 	public ReverseIPTagSet(HasChipLocation chip, HasCoreLocation destination,
 			int port, int tag, int sdpPort) {

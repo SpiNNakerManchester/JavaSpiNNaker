@@ -52,7 +52,7 @@
 			<property name="processJavadoc" value="false" />
 		</module>
 		<module name="LineLength">
-			<property name="ignorePattern" value="^(import |package |^\s*\*[ ]?\S*$)" />
+			<property name="ignorePattern" value="^(import |package |^\s*\*[ ]*\S*$)" />
 		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber">

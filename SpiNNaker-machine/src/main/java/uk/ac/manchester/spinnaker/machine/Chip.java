@@ -11,11 +11,10 @@ import java.util.TreeMap;
 
 /**
  * A Description of a Spinnaker Chip.
- * <p>
  *
  * @see <a href=
- *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
- *      Python Version</a>
+ * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
+ * Python Version</a>
  *
  * @author Christian-B
  */
@@ -49,7 +48,8 @@ public class Chip implements HasChipLocation {
     /** The nearest Ethernet coordinates or null if none known. */
     public final HasChipLocation nearestEthernet;
 
-    private static final TreeMap<Integer, Processor> DEFAULT_PROCESSORS = defaultProcessors();
+    private static final TreeMap<Integer, Processor> DEFAULT_PROCESSORS =
+            defaultProcessors();
 
     /**
      * Main Constructor which sets all parameters.
