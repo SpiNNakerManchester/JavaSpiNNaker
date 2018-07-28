@@ -53,6 +53,7 @@ public final class Link {
      * @param source The coordinates of the source chip of the link.
      * @param sourceLinkDirection The Direction of the link in the source chip.
      */
+    @SuppressWarnings("deprecation")
     public Link(HasChipLocation source, Direction sourceLinkDirection) {
         this (source, sourceLinkDirection,
                 sourceLinkDirection.typicalMove(source));

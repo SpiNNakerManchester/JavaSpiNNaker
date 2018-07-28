@@ -90,16 +90,16 @@ public class Machine implements Iterable<Chip> {
         maxUserProssorsOnAChip = 0;
 
         ethernetConnectedChips = new ArrayList<>();
-        spinnakerLinks = new HashMap();
-        fpgaLinks = new HashMap();
+        spinnakerLinks = new HashMap<>();
+        fpgaLinks = new HashMap<>();
 
         this.boot = boot.asChipLocation();
         bootEthernetAddress = null;
 
-        this.chips = new TreeMap();
+        this.chips = new TreeMap<>();
     }
 
-   /**
+    /**
      * Creates a machine starting with the supplied chips.
      *
      * @param width The number of columns (in Chips) in this machine.
@@ -115,13 +115,30 @@ public class Machine implements Iterable<Chip> {
         addChips(chips);
     }
 
+    /**
+     * Creates a machine starting with the supplied chips.
+     *
+     * @param width
+     *            The number of columns (in Chips) in this machine.
+     * @param height
+     *            The number of rows (in Chips) in this machine.
+     * @param chips
+     *            An iterable of chips in the machine.
+     * @param ignoreCores
+     *            The cores that should be blacklisted.
+     * @param ignoreLinks
+     *            The links that should be blacklisted.
+     * @param bootChip
+     *            The coordinates of the chip used to boot the machine.
+     */
     public Machine(int width, int height, Collection<Chip> chips,
             Collection<CoreLocation> ignoreCores,
             Collection<LinkDescriptor> ignoreLinks, HasChipLocation bootChip) {
+        this(width, height, bootChip);
+        addChips(chips);
         // FIXME Christian!!!
         throw new UnsupportedOperationException("FIXME");
     }
-
 
     /**
      * Add a chip to the machine.
@@ -545,7 +562,7 @@ public class Machine implements Iterable<Chip> {
      * @return All added FPGA link data items.
      */
     public Iterable<FPGALinkData> getFpgaLinks() {
-        return new TripleMapIterable(fpgaLinks);
+        return new TripleMapIterable<>(fpgaLinks);
     }
 
     /**
@@ -564,7 +581,7 @@ public class Machine implements Iterable<Chip> {
         if (byAddress == null) {
             return Collections.<FPGALinkData>emptyList();
         } else {
-            return new DoubleMapIterable(byAddress);
+            return new DoubleMapIterable<>(byAddress);
         }
     }
 
@@ -580,13 +597,13 @@ public class Machine implements Iterable<Chip> {
                 Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
                 byAddress = fpgaLinks.get(address);
                 if (byAddress == null) {
-                    byAddress = new HashMap();
+                    byAddress = new HashMap<>();
                     fpgaLinks.put(address, byAddress);
                 }
                 Map<Integer, FPGALinkData> byId;
                 byId = byAddress.get(fpgaEnum.fpgaId);
                 if (byId == null) {
-                    byId = new HashMap();
+                    byId = new HashMap<>();
                     byAddress.put(fpgaEnum.fpgaId, byId);
                 }
                 byId.put(fpgaEnum.id, fpgaLinkData);

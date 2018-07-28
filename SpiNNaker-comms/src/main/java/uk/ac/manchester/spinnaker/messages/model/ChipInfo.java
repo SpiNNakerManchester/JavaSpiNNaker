@@ -231,7 +231,7 @@ public class ChipInfo implements HasChipLocation {
 		return read(log_peer_to_peer_sequence_length);
 	}
 
-	/** The clock divisors for system & router clocks */
+	/** The clock divisors for system &amp; router clocks */
 	public int getClockDivisor() {
 		return read(clock_divisor);
 	}

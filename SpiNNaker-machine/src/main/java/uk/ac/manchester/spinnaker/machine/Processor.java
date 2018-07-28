@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  *
  * @author Christian-B
  */
-public final class Processor implements Comparable {
+public final class Processor implements Comparable<Processor> {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
     private static final Processor[] MONITOR =
@@ -125,8 +125,7 @@ public final class Processor implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        Processor other = (Processor) o;
+    public int compareTo(Processor other) {
         if (this.processorId < other.processorId) {
             return -1;
         }

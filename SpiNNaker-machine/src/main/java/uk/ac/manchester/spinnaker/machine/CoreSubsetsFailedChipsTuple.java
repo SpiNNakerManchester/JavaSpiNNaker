@@ -27,7 +27,7 @@ public class CoreSubsetsFailedChipsTuple extends CoreSubsets {
      */
     CoreSubsetsFailedChipsTuple() {
         super();
-        failedChips = new ArrayList();
+        failedChips = new ArrayList<>();
     }
 
     /**

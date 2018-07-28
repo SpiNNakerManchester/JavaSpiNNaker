@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 import java.nio.ByteBuffer;
 
 /**
- * A marker interface for possible data elements in the EIEIO data packet
+ * A marker interface for possible data elements in the EIEIO data packet.
  */
 public abstract class AbstractDataElement {
 
@@ -18,5 +18,5 @@ public abstract class AbstractDataElement {
 	 * @throws IllegalArgumentException
 	 *             If this message is incompatible with the given message type.
 	 */
-	public abstract void addToBuffer(ByteBuffer elements, EIEIOType eieioType);
+	public abstract void addToBuffer(ByteBuffer buffer, EIEIOType eieioType);
 }

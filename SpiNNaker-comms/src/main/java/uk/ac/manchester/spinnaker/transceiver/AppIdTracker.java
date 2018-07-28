@@ -24,9 +24,9 @@ public class AppIdTracker {
 	/**
 	 * Allocate an application ID tracker.
 	 *
-	 * @param minID
+	 * @param minAppID
 	 *            The smallest application ID to use
-	 * @param maxID
+	 * @param maxAppID
 	 *            The largest application ID to use
 	 */
 	public AppIdTracker(int minAppID, int maxAppID) {
@@ -48,9 +48,9 @@ public class AppIdTracker {
 	 *
 	 * @param appIDsInUse
 	 *            The IDs that are already in use
-	 * @param minID
+	 * @param minAppID
 	 *            The smallest application ID to use
-	 * @param maxID
+	 * @param maxAppID
 	 *            The largest application ID to use
 	 */
 	public AppIdTracker(Set<Integer> appIDsInUse, int minAppID,

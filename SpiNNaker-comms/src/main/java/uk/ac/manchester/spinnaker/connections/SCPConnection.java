@@ -15,7 +15,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
-/** A UDP connection to SC&MP on the board. */
+/** A UDP connection to SC&amp;MP on the board. */
 public class SCPConnection extends SDPConnection
 		implements SCPSenderReceiver {
 	private static final HasChipLocation DEFAULT_CHIP = new ChipLocation(255,

@@ -48,7 +48,6 @@ public class BMPConnectionData {
 	 *            the SpiNNaker machine main hostname or IP address
 	 * @param numBoards
 	 *            the number of boards in the machine
-	 * @return The BMP connection data
 	 * @throws UnknownHostException
 	 *             If the IP address computations fail
 	 */

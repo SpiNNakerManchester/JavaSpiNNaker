@@ -38,7 +38,7 @@ public abstract class Reports {
 	 *            the machine object
 	 * @param connections
 	 *            the list of connections to the machine
-	 * @throws IOExcepion
+	 * @throws IOException
 	 *             when a file cannot be opened for some reason
 	 */
 	public static void generateMachineReport(File reportDirectory,

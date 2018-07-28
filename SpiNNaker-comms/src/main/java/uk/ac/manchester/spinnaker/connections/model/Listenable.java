@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * How to listen for a message on a connection.
@@ -64,6 +65,6 @@ public interface Listenable<MessageType> {
 		 * @throws IOException
 		 *             If an error occurs receiving the data
 		 */
-		MessageType receive() throws IOException;
+		MessageType receive() throws SocketTimeoutException, IOException;
 	}
 }

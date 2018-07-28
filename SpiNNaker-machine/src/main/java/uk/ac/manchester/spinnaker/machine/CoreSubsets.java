@@ -312,10 +312,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
         return Collections.unmodifiableSet(locations.keySet());
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })//FIXME
     @Override
     public Iterator<CoreLocation> iterator() {
-        return new DoubleMapIterator<CoreLocation>(locations);
+        return new DoubleMapIterator<>(locations);
     }
 
     /**
@@ -331,7 +330,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return Collections.unmodifiableCollection(
                     locations.get(chip).values());
         } else {
-            return new ArrayList<CoreLocation>();
+            return new ArrayList<>();
         }
     }
 
@@ -348,7 +347,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return Collections.unmodifiableSet(
                     locations.get(chip).keySet());
         } else {
-            return new HashSet<Integer>();
+            return new HashSet<>();
         }
     }
 

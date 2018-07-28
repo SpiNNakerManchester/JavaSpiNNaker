@@ -67,8 +67,6 @@ public interface AbstractIO extends AutoCloseable {
 	/**
 	 * Read the rest of the data.
 	 *
-	 * @param numBytes
-	 *            The number of bytes to read
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
 	 */

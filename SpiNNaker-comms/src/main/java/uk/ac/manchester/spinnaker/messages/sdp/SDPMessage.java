@@ -70,8 +70,9 @@ public class SDPMessage extends SpinnakerRequest {
 	 *
 	 * @param header
 	 *            the message header.
-	 * @param buffer
-	 *            the message payload.
+	 * @param data
+	 *            the message payload, in the region from the <i>position</i> to
+	 *            the <i>limit</i>.
 	 */
 	public SDPMessage(SDPHeader header, ByteBuffer data) {
 		this(header, data.array(), data.position(), data.remaining());

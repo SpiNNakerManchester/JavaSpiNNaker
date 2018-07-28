@@ -24,8 +24,6 @@ public class LoadFixedRouteEntryProcess
 	 *            The coordinates of the chip.
 	 * @param fixedRoute
 	 *            the fixed route entry
-	 * @param appID
-	 *            The ID of the application with which to associate the routes.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, Exception {
