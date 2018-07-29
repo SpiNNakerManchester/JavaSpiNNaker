@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SequenceNumberSource.getNextSequenceNumber;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
@@ -63,7 +64,8 @@ public class SCPRequestPipeline {
 	 * error is triggered.
 	 */
 	public static final int DEFAULT_RETRIES = 3;
-	private static final int MAX_SEQUENCE = 65536;
+	private static final int HEADROOM = 8;
+	private static final int DEFAULT_MAX_CHANNELS = 12;
 	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
 	static {
 		RETRY_CODES.add(RC_TIMEOUT);
@@ -72,7 +74,7 @@ public class SCPRequestPipeline {
 		RETRY_CODES.add(RC_P2P_NOREPLY);
 	}
 
-	/** The connection over which the communication is to take place */
+	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
 	/** The number of requests to send before checking for responses. */
 	private Integer numChannels;
@@ -92,34 +94,43 @@ public class SCPRequestPipeline {
 	 */
 	private int packetTimeout;
 
-	/** The number of responses outstanding */
+	/** The number of responses outstanding. */
 	private int inProgress;
-	/** The number of packets that have been resent */
+	/** The number of packets that have been resent. */
 	private int numResent;
 	private int numRetryCodeResent;
 	/** The number of timeouts that occurred */
 	private int numTimeouts;
 
-	/** A dictionary of sequence number -> requests in progress */
+	/** A dictionary of sequence number -> requests in progress. */
 	private final Map<Integer, Request<?>> requests;
 
 	/**
-	 * Per message record
+	 * Per message record.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request in the message.
 	 */
 	private class Request<T extends SCPResponse> {
-		/** request in progress */
+		/** Request in progress. */
 		final SCPRequest<T> request;
-		/** payload of request in progress */
+		/** Payload of request in progress. */
 		private final ByteBuffer requestData;
-		/** callback function for response */
+		/** Callback function for response. */
 		private final Consumer<T> callback;
-		/** callback function for errors */
+		/** Callback function for errors. */
 		final SCPErrorHandler errorCallback;
-		/** retry reason */
+		/** Retry reasons. */
 		final List<String> retryReason;
-		/** number of retries for the packet */
+		/** Number of retries for the packet. */
 		int retries;
 
+		/**
+		 * Make a record.
+		 * @param request The request.
+		 * @param callback The success callback.
+		 * @param errorCallback The failure callback.
+		 */
 		Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
@@ -130,7 +141,7 @@ public class SCPRequestPipeline {
 			retries = numRetries;
 		}
 
-		private ByteBuffer getSCPData(SCPRequest<?> scpRequest,
+		private ByteBuffer getSCPData(SCPRequest<T> scpRequest,
 				ChipLocation chip) {
 			ByteBuffer buffer = newMessageBuffer();
 			if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
@@ -155,6 +166,12 @@ public class SCPRequestPipeline {
 			return retryReason.stream().allMatch(r -> reason.equals(r));
 		}
 
+		/**
+		 * Handle the reception of a message.
+		 *
+		 * @param responseData
+		 *            the content of the message, in a little-endian buffer.
+		 */
 		public void received(ByteBuffer responseData) throws Exception {
 			T response = request.getSCPResponse(responseData);
 			if (callback != null) {
@@ -162,22 +179,9 @@ public class SCPRequestPipeline {
 			}
 		}
 
-		HasCoreLocation getDestination() {
+		private HasCoreLocation getDestination() {
 			return request.sdpHeader.getDestination();
 		}
-	}
-
-	/** Keep a global track of the sequence numbers used. */
-	private static int nextSequence = 0;
-
-	/**
-	 * Get the next number from the global sequence, applying appropriate
-	 * wrapping rules as the sequence numbers have a fixed number of bits.
-	 */
-	private static synchronized int getNextSequenceNumber() {
-		int seq = nextSequence;
-		nextSequence = (nextSequence + 1) % MAX_SEQUENCE;
-		return seq;
 	}
 
 	/**
@@ -230,7 +234,7 @@ public class SCPRequestPipeline {
 			Integer intermediateChannelWaits, int numRetries,
 			int packetTimeout) {
 		if (numChannels != null && intermediateChannelWaits == null) {
-			intermediateChannelWaits = numChannels - 8;
+			intermediateChannelWaits = numChannels - HEADROOM;
 			if (intermediateChannelWaits < 0) {
 				intermediateChannelWaits = 0;
 			}
@@ -253,12 +257,14 @@ public class SCPRequestPipeline {
 	 * Add an SCP request to the set to be sent where we don't care about the
 	 * response when it is successful.
 	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
 	 * @param request
 	 *            The SCP request to be sent
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
-	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request)
+	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request)
 			throws IOException {
 		sendRequest(request, null, null);
 	}
@@ -267,6 +273,8 @@ public class SCPRequestPipeline {
 	 * Add an SCP request to the set to be sent where we don't care about the
 	 * response when it is successful.
 	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
 	 * @param request
 	 *            The SCP request to be sent
 	 * @param errorCallback
@@ -277,7 +285,7 @@ public class SCPRequestPipeline {
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
-	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
+	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
 			SCPErrorHandler errorCallback) throws IOException {
 		sendRequest(request, null, errorCallback);
 	}
@@ -285,6 +293,8 @@ public class SCPRequestPipeline {
 	/**
 	 * Add an SCP request to the set to be sent.
 	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
 	 * @param request
 	 *            The SCP request to be sent
 	 * @param callback
@@ -294,7 +304,7 @@ public class SCPRequestPipeline {
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
-	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
+	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback) throws IOException {
 		sendRequest(request, callback, null);
 	}
@@ -303,7 +313,7 @@ public class SCPRequestPipeline {
 	 * Add an SCP request to the set to be sent.
 	 *
 	 * @param <T>
-	 *
+	 *            The type of response expected to the request.
 	 * @param request
 	 *            The SCP request to be sent
 	 * @param callback
@@ -329,8 +339,8 @@ public class SCPRequestPipeline {
 
 		// If the connection has not been measured
 		if (numChannels == null && connection.isReadyToReceive()) {
-			numChannels = max(inProgress + 8, 12);
-			intermediateChannelWaits = numChannels - 8;
+			numChannels = max(inProgress + HEADROOM, DEFAULT_MAX_CHANNELS);
+			intermediateChannelWaits = numChannels - HEADROOM;
 		}
 
 		// If all the channels are used, start to receive packets
@@ -364,6 +374,8 @@ public class SCPRequestPipeline {
 		}
 	}
 
+	private static final int RETRY_DELAY_MS = 100;
+
 	private void singleRetrieve(int timeout) throws IOException {
 		// Receive the next response
 		SCPResultMessage msg = connection.receiveSCPResponse(timeout);
@@ -381,7 +393,7 @@ public class SCPRequestPipeline {
 		// If the response can be retried, retry it
 		if (RETRY_CODES.contains(msg.result)) {
 			try {
-				sleep(100);
+				sleep(RETRY_DELAY_MS);
 				resend(req, msg.result);
 				numRetryCodeResent++;
 			} catch (Exception e) {
@@ -406,7 +418,7 @@ public class SCPRequestPipeline {
 		numTimeouts++;
 
 		// If there is a timeout, all packets remaining are resent
-		BitSet toRemove = new BitSet(nextSequence);
+		BitSet toRemove = new BitSet(65536);
 		for (int seq : new ArrayList<>(requests.keySet())) {
 			Request<?> req = requests.get(seq);
 			if (req == null) {
@@ -444,16 +456,40 @@ public class SCPRequestPipeline {
 		numResent++;
 	}
 
+	/**
+	 * Indicates that a request timed out.
+	 */
 	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
+		private static final double MS_PER_S = 1000.0;
+
+		/**
+		 * Instantiate.
+		 *
+		 * @param req
+		 *            The request that timed out.
+		 * @param timeout
+		 *            The length of timeout, in milliseconds.
+		 */
 		SendTimedOutException(Request<?> req, int timeout) {
 			super(format("Operation %s timed out after %f seconds",
-					req.request.scpRequestHeader.command, timeout / 1000.0));
+					req.request.scpRequestHeader.command, timeout / MS_PER_S));
 		}
 	}
 
+	/**
+	 * Indicates that a request could not be sent.
+	 */
 	@SuppressWarnings("serial")
 	static class SendFailedException extends IOException {
+		/**
+		 * Instantiate.
+		 *
+		 * @param req
+		 *            The request that timed out.
+		 * @param numRetries
+		 *            How many attempts to send it were made.
+		 */
 		SendFailedException(Request<?> req, int numRetries) {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
@@ -484,23 +520,23 @@ public class SCPRequestPipeline {
 	}
 
 	/**
-	 * The number of requests to send before checking for responses.
+	 * @return The number of requests to send before checking for responses.
 	 */
 	public Integer getNumChannels() {
 		return numChannels;
 	}
 
-	/** The number of packets that have been resent. */
+	/** @return The number of packets that have been resent. */
 	public int getNumResent() {
 		return numResent;
 	}
 
-	/** The number of retries due to restartable errors. */
+	/** @return The number of retries due to restartable errors. */
 	public int getNumRetryCodeResent() {
 		return numRetryCodeResent;
 	}
 
-	/** The number of timeouts that occurred. */
+	/** @return The number of timeouts that occurred. */
 	public int getNumTimeouts() {
 		return numTimeouts;
 	}
