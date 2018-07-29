@@ -20,16 +20,17 @@ import uk.ac.manchester.spinnaker.processes.FillProcess;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
-/** A file-like object for the memory of a chip */
+/** A file-like object for the memory of a chip. */
 class ChipMemoryIO {
-	/** TODO What is this value _really?_ */
+	// TODO What is this value _really?_
 	private static final int SDRAM_START = 0x60000000;
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
 	 * transceiver, x and y (thus two transceivers might not see the same
-	 * buffered memory)
+	 * buffered memory).
 	 */
-	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing = new WeakHashMap<>();
+	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing =
+			new WeakHashMap<>();
 
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
@@ -46,20 +47,20 @@ class ChipMemoryIO {
 		return map.get(key);
 	}
 
-	/** The transceiver for speaking to the machine */
+	/** The transceiver for speaking to the machine. */
 	private final WeakReference<Transceiver> transceiver;
 	/**
 	 * A strong reference to the transceiver, held while there is data to flush.
 	 */
 	private Transceiver hold;
 
-	/** The coordinates of the chip to communicate with */
+	/** The coordinates of the chip to communicate with. */
 	private final CoreLocation core;
 
-	/** The current pointer where read and writes are taking place */
+	/** The current pointer where read and writes are taking place. */
 	private int currentAddress;
 
-	/** The current pointer where the next buffered write will occur */
+	/** The current pointer where the next buffered write will occur. */
 	private int writeAddress;
 
 	/** The write buffer */
@@ -92,7 +93,7 @@ class ChipMemoryIO {
 		return t;
 	}
 
-	/** Force the writing of the current write buffer */
+	/** Force the writing of the current write buffer. */
 	void flushWriteBuffer() throws IOException, Exception {
 		if (writeBuffer.position() > 0) {
 			Transceiver t = hold;
@@ -108,7 +109,7 @@ class ChipMemoryIO {
 		hold = null;
 	}
 
-	/** Seek to a position within the region */
+	/** Seek to a position within the region. */
 	void setCurrentAddress(int address) throws IOException, Exception {
 		flushWriteBuffer();
 		currentAddress = address;
@@ -116,7 +117,7 @@ class ChipMemoryIO {
 	}
 
 	/**
-	 * Read a number of bytes
+	 * Read a number of bytes.
 	 *
 	 * @param numBytes
 	 *            The number of bytes to read
@@ -139,7 +140,7 @@ class ChipMemoryIO {
 	}
 
 	/**
-	 * Write some data
+	 * Write some data.
 	 *
 	 * @param data
 	 *            The data to write

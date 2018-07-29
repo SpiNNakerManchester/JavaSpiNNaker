@@ -10,11 +10,11 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /** A file-like object for reading and writing memory. */
 public class MemoryIO implements AbstractIO {
-	/** The transceiver for speaking to the machine */
+	/** The transceiver for speaking to the machine. */
 	private final ChipMemoryIO io;
-	/** The start address of the region to write to */
+	/** The start address of the region to write to. */
 	private final int startAddress;
-	/** The current pointer where read and writes are taking place */
+	/** The current pointer where read and writes are taking place. */
 	private int currentAddress;
 	/** The end of the region to write to. */
 	private final int endAddress;

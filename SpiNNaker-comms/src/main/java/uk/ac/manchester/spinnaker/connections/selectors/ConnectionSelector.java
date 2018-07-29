@@ -4,7 +4,7 @@ import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
 /**
- * A connection selector for multi-connection processes.
+ * A connection selector for (especially multi-connection) processes.
  *
  * @param <T>
  *            The type of connections handled by this selector.
@@ -16,6 +16,7 @@ public interface ConnectionSelector<T extends Connection> {
 	 *
 	 * @param request
 	 *            The SCP message to be sent
+	 * @return The connection on which the message should be sent.
 	 */
 	T getNextConnection(SCPRequest<?> request);
 }

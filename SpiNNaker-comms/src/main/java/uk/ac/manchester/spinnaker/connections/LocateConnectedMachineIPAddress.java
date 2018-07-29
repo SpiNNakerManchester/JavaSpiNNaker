@@ -24,7 +24,7 @@ public abstract class LocateConnectedMachineIPAddress {
 	 * @param handler
 	 *            A callback that decides whether to stop searching. The
 	 *            callback is given two arguments: the IP address found and the
-	 *            current time.
+	 *            current time. Note that each board is only reported once.
 	 * @throws Exception
 	 *             If anything goes wrong
 	 */
@@ -45,8 +45,24 @@ public abstract class LocateConnectedMachineIPAddress {
 		}
 	}
 
+	/**
+	 * The type of callbacks used to report where a board has been seen.
+	 *
+	 * @see LocateConnectedMachineIPAddress#locateConnectedMachine(Handler)
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
 	public interface Handler {
+		/**
+		 * Called to notify the handler about a SpiNNaker board.
+		 *
+		 * @param address
+		 *            Where the board is
+		 * @param timestamp
+		 *            When it sent the notification
+		 * @throws Exception
+		 *             If anything goes wrong
+		 */
 		boolean handle(InetAddress address, Calendar timestamp)
 				throws Exception;
 	}
@@ -55,6 +71,15 @@ public abstract class LocateConnectedMachineIPAddress {
 		out.println(format(formatString, args));
 	}
 
+	/**
+	 * A little program that listens for, and prints, the pre-boot messages
+	 * published by SpiNNaker boards.
+	 *
+	 * @param args
+	 *            ignored
+	 * @throws Exception
+	 *             if anything goes wrong.
+	 */
 	public static void main(String... args) throws Exception {
 		print("The following addresses might be SpiNNaker boards"
 				+ " (press Ctrl-C to quit):");

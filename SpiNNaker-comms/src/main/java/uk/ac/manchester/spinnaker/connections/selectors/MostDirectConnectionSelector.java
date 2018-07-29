@@ -12,22 +12,22 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 /**
  * A selector that goes for the most direct connection for the message.
  *
- * @param <Connection>
+ * @param <C>
  *            The type of connections selected between.
  */
-public final class MostDirectConnectionSelector<Connection extends SCPSenderReceiver>
-		implements ConnectionSelector<Connection>, MachineAware {
+public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
+		implements ConnectionSelector<C>, MachineAware {
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
-	private final Map<ChipLocation, Connection> connections;
-	private final Connection defaultConnection;
+	private final Map<ChipLocation, C> connections;
+	private final C defaultConnection;
 	private Machine machine;
 
 	public MostDirectConnectionSelector(Machine machine,
-			Collection<Connection> connections) {
+			Collection<C> connections) {
 		this.machine = machine;
 		this.connections = new HashMap<>();
-		Connection firstConnection = null;
-		for (Connection connection : connections) {
+		C firstConnection = null;
+		for (C connection : connections) {
 			if (connection.getChip().equals(ROOT)) {
 				firstConnection = connection;
 			}
@@ -40,13 +40,14 @@ public final class MostDirectConnectionSelector<Connection extends SCPSenderRece
 	}
 
 	@Override
-	public Connection getNextConnection(SCPRequest<?> request) {
+	public C getNextConnection(SCPRequest<?> request) {
 		if (machine == null || connections.size() == 1) {
 			return defaultConnection;
 		}
-		Connection conn = connections
-				.get(machine.getChipAt(request.sdpHeader.getDestination()
-						.asChipLocation()).nearestEthernet.asChipLocation());
+		ChipLocation destination = request.sdpHeader.getDestination()
+				.asChipLocation();
+		C conn = connections.get(machine.getChipAt(destination).nearestEthernet
+				.asChipLocation());
 		return (conn == null) ? defaultConnection : conn;
 	}
 

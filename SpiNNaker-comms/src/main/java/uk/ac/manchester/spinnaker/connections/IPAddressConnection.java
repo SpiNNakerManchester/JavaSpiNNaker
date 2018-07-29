@@ -11,7 +11,7 @@ import java.net.InetAddress;
  * boards prior to boot.
  */
 public class IPAddressConnection extends UDPConnection<InetAddress> {
-	/** Matches SPINN_PORT in spinnaker_bootROM */
+	/** Matches SPINN_PORT in spinnaker_bootROM. */
 	private static final int BOOTROM_SPINN_PORT = 54321;
 
 	public IPAddressConnection() throws IOException {

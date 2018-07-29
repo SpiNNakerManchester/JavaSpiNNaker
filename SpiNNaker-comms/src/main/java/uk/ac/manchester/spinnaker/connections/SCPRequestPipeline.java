@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.connections.SequenceNumberSource.getNextSequenceNumber;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
@@ -99,7 +100,7 @@ public class SCPRequestPipeline {
 	/** The number of packets that have been resent. */
 	private int numResent;
 	private int numRetryCodeResent;
-	/** The number of timeouts that occurred */
+	/** The number of timeouts that occurred. */
 	private int numTimeouts;
 
 	/** A dictionary of sequence number -> requests in progress. */
@@ -418,7 +419,7 @@ public class SCPRequestPipeline {
 		numTimeouts++;
 
 		// If there is a timeout, all packets remaining are resent
-		BitSet toRemove = new BitSet(65536);
+		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 		for (int seq : new ArrayList<>(requests.keySet())) {
 			Request<?> req = requests.get(seq);
 			if (req == null) {

@@ -8,8 +8,8 @@ import uk.ac.manchester.spinnaker.messages.MulticastMessage;
 /** A sender of Multicast messages. */
 public interface MulticastSender extends Connection {
 	/**
-	 * Get a list of chips which identify the chips to which this sender can
-	 * send multicast packets directly.
+	 * @return a list of chips which identify the chips to which this sender can
+	 *         send multicast packets directly.
 	 */
 	Iterable<? extends HasChipLocation> getInputChips();
 

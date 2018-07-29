@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
+import static uk.ac.manchester.spinnaker.connections.model.Constants.MS_PER_S;
+
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
@@ -36,7 +38,7 @@ public interface Listenable<MessageType> {
 	 *             our feet.
 	 */
 	default boolean isReadyToReceive(double timeout) throws IOException {
-		return isReadyToReceive((int) (timeout * 1000));
+		return isReadyToReceive((int) (timeout * MS_PER_S));
 	}
 
 	/**

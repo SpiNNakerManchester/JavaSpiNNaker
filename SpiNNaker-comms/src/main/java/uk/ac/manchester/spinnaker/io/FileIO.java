@@ -11,18 +11,18 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 
-/** A file input/output interface to match the MemoryIO interface */
+/** A file input/output interface to match the MemoryIO interface. */
 public class FileIO implements AbstractIO {
-	/** The file to write to */
+	/** The file to write to. */
 	private final RandomAccessFile file;
 
-	/** The current offset in the file */
+	/** The current offset in the file. */
 	private int currentOffset;
 
-	/** The start offset in the file */
+	/** The start offset in the file. */
 	private int startOffset;
 
-	/** The end offset in the file */
+	/** The end offset in the file. */
 	private int endOffset;
 
 	/**

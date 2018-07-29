@@ -5,6 +5,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -23,11 +24,15 @@ import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPFlag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
-/** A connection to SpiNNaker over UDP/IPv4. */
+/**
+ * A connection to SpiNNaker over UDP/IPv4.
+ *
+ * @param <T>
+ *            The Java type of message received on this connection.
+ */
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean canSend;
 	private Inet4Address remoteIPAddress;
@@ -352,6 +357,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
+	private static final int TRIGGER_SDP_PORT = 3;
 
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
@@ -370,8 +376,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		 * message, but then fail to send a response since the
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
-		SDPMessage triggerMessage = new SDPMessage(new SDPHeader(
-				SDPFlag.REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0), 3));
+		SDPMessage triggerMessage = new SDPMessage(
+				new SDPHeader(REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0),
+						TRIGGER_SDP_PORT));
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);

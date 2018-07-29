@@ -1,8 +1,9 @@
 package uk.ac.manchester.spinnaker.connections;
 
-/* Where to get sequence numbers from. */
+/** Where to get sequence numbers from. */
 abstract class SequenceNumberSource {
-	private static final int MAX_SEQUENCE = 65536;
+	/** The number of items in the sequence. */
+	static final int SEQUENCE_LENGTH = 65536;
 
 	private SequenceNumberSource() {
 	}
@@ -18,7 +19,7 @@ abstract class SequenceNumberSource {
 	 */
 	static synchronized int getNextSequenceNumber() {
 		int seq = nextSequence;
-		nextSequence = (nextSequence + 1) % MAX_SEQUENCE;
+		nextSequence = (nextSequence + 1) % SEQUENCE_LENGTH;
 		return seq;
 	}
 }

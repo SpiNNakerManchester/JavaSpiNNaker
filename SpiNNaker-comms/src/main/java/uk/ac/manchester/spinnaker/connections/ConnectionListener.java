@@ -19,10 +19,18 @@ import uk.ac.manchester.spinnaker.connections.model.Listenable.MessageReceiver;
 /**
  * Thread that listens to a connection and calls callbacks with new messages
  * when they arrive.
+ *
+ * @param <MessageType>
+ *            The type of message being listened for by the connection.
  */
 public class ConnectionListener<MessageType> extends Thread
 		implements Closeable {
+	/** What size of thread pool to use by default. */
 	public static final int POOL_SIZE = 4;
+	/**
+	 * The default time (in ms) to wait in a system call for a message to
+	 * arrive.
+	 */
 	public static final int TIMEOUT = 1000;
 	private static final long POOL_TIMEOUT = 1000L;
 	private Logger log = getLogger(ConnectionListener.class);

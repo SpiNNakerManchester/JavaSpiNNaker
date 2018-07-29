@@ -19,7 +19,8 @@ public interface SDPReceiver extends Connection {
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SDP message is invalid
 	 */
-	default SDPMessage receiveSDPMessage() throws IOException {
+	default SDPMessage receiveSDPMessage()
+			throws IOException, InvalidPacketException {
 		return receiveSDPMessage(null);
 	}
 
@@ -42,6 +43,6 @@ public interface SDPReceiver extends Connection {
 	 *             If one of the fields of the SDP message is invalid
 	 */
 	SDPMessage receiveSDPMessage(Integer timeout)
-			throws IOException, InterruptedIOException;
+			throws IOException, InvalidPacketException, InterruptedIOException;
 
 }

@@ -28,6 +28,18 @@ public class EIEIOConnection extends UDPConnection<EIEIOMessage>
 		send(b);
 	}
 
+	/**
+	 * Send an EIEIO message to a specific destination.
+	 *
+	 * @param eieioMessage
+	 *            The message to send.
+	 * @param ipAddress
+	 *            The host to send to.
+	 * @param port
+	 *            The port to send to.
+	 * @throws IOException
+	 *             If anything goes wrong in sending.
+	 */
 	public void sendEIEIOMessageTo(EIEIOMessage eieioMessage,
 			InetAddress ipAddress, int port) throws IOException {
 		ByteBuffer b = newMessageBuffer();
@@ -36,12 +48,15 @@ public class EIEIOConnection extends UDPConnection<EIEIOMessage>
 		sendTo(b, ipAddress, port);
 	}
 
+	private static final int MASK = 0xC000;
+	private static final int FLAG = 0x4000;
+
 	@Override
 	public EIEIOMessage receiveEIEIOMessage(Integer timeout)
 			throws IOException {
 		ByteBuffer b = receive();
 		short header = b.getShort();
-		if ((header & 0xC000) == 0x4000) {
+		if ((header & MASK) == FLAG) {
 			return readCommandMessage(b, 0);
 		} else {
 			return readDataMessage(b, 0);

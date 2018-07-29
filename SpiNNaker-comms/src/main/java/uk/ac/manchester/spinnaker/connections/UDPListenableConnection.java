@@ -5,6 +5,11 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
 
+/**
+ * A simple connection that makes incoming messages available as buffers.
+ *
+ * @author Donal Fellows
+ */
 public class UDPListenableConnection extends UDPConnection<ByteBuffer>
 		implements Listenable.MessageReceiver<ByteBuffer> {
 	public UDPListenableConnection(String localHost, Integer localPort,

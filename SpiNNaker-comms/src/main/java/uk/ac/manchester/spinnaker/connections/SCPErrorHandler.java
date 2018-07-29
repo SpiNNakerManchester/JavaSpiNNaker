@@ -2,6 +2,11 @@ package uk.ac.manchester.spinnaker.connections;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
+/**
+ * A callback handler for reporting errors in receiving an SCP (or BMP) message.
+ *
+ * @author Donal Fellows
+ */
 @FunctionalInterface
 public interface SCPErrorHandler {
 	/**
