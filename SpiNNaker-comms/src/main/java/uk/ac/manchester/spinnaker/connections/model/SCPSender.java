@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -17,7 +20,15 @@ public interface SCPSender extends Connection {
 	 * @return The buffer holding the data. The data should be written into the
 	 *         start of the buffer and should end at the <i>position</i>.
 	 */
-	ByteBuffer getSCPData(SCPRequest<?> scpRequest);
+	default ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
+		ByteBuffer buffer = newMessageBuffer();
+		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
+			scpRequest.updateSDPHeaderForUDPSend(getChip());
+		}
+		scpRequest.addToBuffer(buffer);
+		buffer.flip();
+		return buffer;
+	}
 
 	/**
 	 * Sends an SCP request down this connection.

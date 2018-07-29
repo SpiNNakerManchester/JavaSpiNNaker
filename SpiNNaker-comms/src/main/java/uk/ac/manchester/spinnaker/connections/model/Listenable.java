@@ -31,6 +31,9 @@ public interface Listenable<MessageType> {
 	 * @param timeout
 	 *            How many seconds to wait for a message to be receivable.
 	 * @return true when there is a packet waiting to be received
+	 * @throws IOException
+	 *             If anything goes wrong, e.g., if the socket is closed under
+	 *             our feet.
 	 */
 	default boolean isReadyToReceive(double timeout) throws IOException {
 		return isReadyToReceive((int) (timeout * 1000));
@@ -44,6 +47,9 @@ public interface Listenable<MessageType> {
 	 *            How long to wait, in milliseconds; if zero or null, a
 	 *            non-blocking poll is performed.
 	 * @return true when there is a message waiting to be received
+	 * @throws IOException
+	 *             If anything goes wrong, e.g., if the socket is closed under
+	 *             our feet.
 	 */
 	boolean isReadyToReceive(Integer timeout) throws IOException;
 

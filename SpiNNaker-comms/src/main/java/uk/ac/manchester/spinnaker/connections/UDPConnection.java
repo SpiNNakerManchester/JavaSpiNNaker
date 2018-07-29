@@ -20,13 +20,15 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPFlag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
-public class UDPConnection implements Connection {
+/** A connection to SpiNNaker over UDP/IPv4. */
+public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean canSend;
 	private Inet4Address remoteIPAddress;
 	private int remotePort;
@@ -113,7 +115,7 @@ public class UDPConnection implements Connection {
 	/**
 	 * Receive data from the connection.
 	 *
-	 * @return The data received, in a little-endan buffer
+	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
 	 * @throws IOException
@@ -128,7 +130,7 @@ public class UDPConnection implements Connection {
 	 *
 	 * @param timeout
 	 *            The timeout in milliseconds, or null to wait forever
-	 * @return The data received, in a little-endan buffer
+	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
 	 * @throws IOException
@@ -327,13 +329,7 @@ public class UDPConnection implements Connection {
 		channel = null;
 	}
 
-	/**
-	 * @param timeout
-	 *            How long to wait, in milliseconds; if zero or null, a
-	 *            non-blocking poll is performed.
-	 * @return true when there is a packet waiting to be received
-	 * @throws IOException
-	 */
+	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
 		Selector selector = Selector.open();
 		channel.configureBlocking(false);

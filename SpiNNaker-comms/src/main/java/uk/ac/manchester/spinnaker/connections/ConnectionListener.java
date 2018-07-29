@@ -22,6 +22,8 @@ import uk.ac.manchester.spinnaker.connections.model.Listenable.MessageReceiver;
  */
 public class ConnectionListener<MessageType> extends Thread
 		implements Closeable {
+	public static final int POOL_SIZE = 4;
+	public static final int TIMEOUT = 1000;
 	private static final long POOL_TIMEOUT = 1000L;
 	private Logger log = getLogger(ConnectionListener.class);
 	private ThreadPoolExecutor callbackPool;
@@ -30,6 +32,16 @@ public class ConnectionListener<MessageType> extends Thread
 	private volatile boolean done;
 	private Integer timeout;
 
+	/**
+	 * Create a connection listener with the default number of listening threads
+	 * and the default OS-level timeout.
+	 *
+	 * @param connection
+	 *            The connection to listen to.
+	 */
+	public ConnectionListener(Listenable<MessageType> connection) {
+		this(connection, POOL_SIZE, TIMEOUT);
+	}
 	/**
 	 * Create a connection listener.
 	 *

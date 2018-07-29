@@ -10,12 +10,11 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.EIEIOReceiver;
 import uk.ac.manchester.spinnaker.connections.model.EIEIOSender;
-import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 
 /** A UDP connection for sending and receiving raw EIEIO messages. */
-public class EIEIOConnection extends UDPConnection
-		implements EIEIOReceiver, EIEIOSender, Listenable<EIEIOMessage> {
+public class EIEIOConnection extends UDPConnection<EIEIOMessage>
+		implements EIEIOReceiver, EIEIOSender {
 	public EIEIOConnection(String localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
@@ -25,6 +24,7 @@ public class EIEIOConnection extends UDPConnection
 	public void sendEIEIOMessage(EIEIOMessage eieioMessage) throws IOException {
 		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
+		b.flip();
 		send(b);
 	}
 
@@ -32,6 +32,7 @@ public class EIEIOConnection extends UDPConnection
 			InetAddress ipAddress, int port) throws IOException {
 		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
+		b.flip();
 		sendTo(b, ipAddress, port);
 	}
 

@@ -7,47 +7,47 @@ import java.util.Map;
  * SARK Run time errors.
  */
 public enum RunTimeError {
-	/** No error */
+	/** No error. */
 	NONE(0),
-	/** Branch through zero */
+	/** Branch through zero. */
 	RESET(1),
-	/** Undefined instruction */
+	/** Undefined instruction. */
 	UNDEF(2),
-	/** Undefined SVC or no handler */
+	/** Undefined SVC or no handler. */
 	SVC(3),
-	/** Prefetch abort */
+	/** Prefetch abort. */
 	PABT(4),
-	/** Data abort */
+	/** Data abort. */
 	DABT(5),
-	/** Unhandled IRQ */
+	/** Unhandled IRQ. */
 	IRQ(6),
-	/** Unhandled FIQ */
+	/** Unhandled FIQ. */
 	FIQ(7),
-	/** Unconfigured VIC vector */
+	/** Unconfigured VIC vector. */
 	VIC(8),
-	/** Generic user abort */
+	/** Generic user abort. */
 	ABORT(9),
-	/** "malloc" failure */
+	/** "malloc" failure. */
 	MALLOC(10),
-	/** Divide by zero */
+	/** Divide by zero. */
 	DIVBY0(11),
-	/** Event startup failure */
+	/** Event startup failure. */
 	EVENT(12),
-	/** Fatal SW error */
+	/** Fatal SW error. */
 	SWERR(13),
-	/** Failed to allocate IO buffer */
+	/** Failed to allocate IO buffer. */
 	IOBUF(14),
-	/** Bad event enable */
+	/** Bad event enable. */
 	ENABLE(15),
-	/** Generic null pointer error */
+	/** Generic null pointer error. */
 	NULL(16),
-	/** Pkt startup failure */
+	/** Pkt startup failure. */
 	PKT(17),
-	/** Timer startup failure */
+	/** Timer startup failure. */
 	TIMER(18),
-	/** API startup failure */
+	/** API startup failure. */
 	API(19),
-	/** SW version conflict */
+	/** SW version conflict. */
 	SARK_VERSION_INCORRECT(20);
 	public final int value;
 	private static final Map<Integer, RunTimeError> map = new HashMap<>();

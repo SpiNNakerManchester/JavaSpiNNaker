@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,12 +56,10 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
-import uk.ac.manchester.spinnaker.connections.ConnectionListener;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
@@ -158,7 +158,8 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * the overall speed of operation, since the multiple calls may be made
  * separately over the set of given connections.
  */
-public class Transceiver implements TransceiverInterface {
+public class Transceiver extends UDPTransceiver
+		implements TransceiverInterface {
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
@@ -210,23 +211,6 @@ public class Transceiver implements TransceiverInterface {
 	 */
 	private final List<SpinnakerBootReceiver> bootReceiveConnections = new ArrayList<>();
 	/**
-	 * A map of port -> map of IP address -> (connection, listener) for UDP
-	 * connections. Note listener might be <tt>null</tt> if the connection has
-	 * not been listened to before.
-	 * <p>
-	 * Used to keep track of what connection is listening on what port to ensure
-	 * only one type of traffic is received on any port for any interface
-	 */
-	private final Map<Integer, Map<InetAddress, Pair<UDPConnection, ConnectionListener<?>>>> udpReceiveConnectionsByPort = new DefaultMap<>(
-			HashMap::new);
-	/**
-	 * A map of class -> list of (connection, listener) for UDP connections that
-	 * are listenable. Note that listener might be <tt>null</tt> if the
-	 * connection has not be listened to before.
-	 */
-	private final Map<Class<?>, List<Pair<UDPConnection, ConnectionListener<?>>>> udpListenableConnectionsByClass = new DefaultMap<>(
-			ArrayList::new);
-	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
 	 * Note that some of these might not be able to receive SCP; this could be
@@ -244,7 +228,7 @@ public class Transceiver implements TransceiverInterface {
 	 * A map of IP address -> SCAMP connection. These are those that can be used
 	 * for setting up IP Tags.
 	 */
-	private final Map<InetAddress, UDPConnection> udpScampConnections = new HashMap<>();
+	private final Map<InetAddress, SCPConnection> udpScampConnections = new HashMap<>();
 	/**
 	 * A list of all connections that can be used to send and receive SCP
 	 * messages for SCAMP interaction.
@@ -434,13 +418,7 @@ public class Transceiver implements TransceiverInterface {
 
 			// Locate any connections listening on a UDP port
 			if (conn instanceof UDPConnection) {
-				UDPConnection udpc = (UDPConnection) conn;
-				udpReceiveConnectionsByPort.get(udpc.getLocalPort())
-						.put(udpc.getLocalIPAddress(), new Pair<>(udpc, null));
-				if (conn instanceof Listenable) {
-					udpListenableConnectionsByClass.get(conn.getClass())
-							.add(new Pair<>(udpc, null));
-				}
+				registerConnection((UDPConnection<?>) conn);
 			}
 
 			/*
@@ -471,16 +449,10 @@ public class Transceiver implements TransceiverInterface {
 							new BMPCoords(bmpc.cabinet, bmpc.frame),
 							new RoundRobinConnectionSelector<>(
 									singletonList(bmpc)));
-				} else {
-					if (conn instanceof SCPConnection) {
-						scampConnections.add((SCPConnection) conn);
-					}
-					// If also a UDP connection, add it here (for IP tags)
-					if (conn instanceof UDPConnection) {
-						UDPConnection udpc = (UDPConnection) conn;
-						udpScampConnections.put(udpc.getRemoteIPAddress(),
-								udpc);
-					}
+				} else if (conn instanceof SCPConnection) {
+					SCPConnection scamp = (SCPConnection) conn;
+					scampConnections.add(scamp);
+					udpScampConnections.put(scamp.getRemoteIPAddress(), scamp);
 				}
 			}
 		}
@@ -1724,6 +1696,74 @@ public class Transceiver implements TransceiverInterface {
 				repeatValue, size, dataType);
 	}
 
+	/** @return the number of boards currently configured. */
+	public int getNumberOfBoardsLocated() {
+		// NB if no BMPs are available, then there's still at least one board
+		return max(1, bmpConnections.stream()
+				.mapToInt(bmpConn -> bmpConn.boards.size()).sum());
+	}
+
+	/**
+	 * Close the transceiver and any threads that are running.
+	 *
+	 * @throws java.lang.Exception
+	 */
+	@Override
+	public void close() throws java.lang.Exception {
+		close(true, false);
+	}
+
+	/**
+	 * Close the transceiver and any threads that are running.
+	 *
+	 * @param close_original_connections
+	 *            If True, the original connections passed to the transceiver in
+	 *            the constructor are also closed. If False, only newly
+	 *            discovered connections are closed.
+	 * @param power_off_machine
+	 *            if true, the machine is sent a power down command via its BMP
+	 *            (if it has one)
+	 * @throws java.lang.Exception
+	 *             If anything goes wrong
+	 */
+	public void close(boolean close_original_connections,
+			boolean power_off_machine) throws java.lang.Exception {
+		if (power_off_machine && bmpConnections != null
+				&& !bmpConnections.isEmpty()) {
+			powerOffMachine();
+		}
+
+		super.close();
+
+		for (Connection connection : allConnections) {
+			if (close_original_connections
+					|| !originalConnections.contains(connection)) {
+				connection.close();
+			}
+		}
+	}
+
+	private static final InetAddress WILDCARD_ADDRESS;
+	static {
+		try {
+			WILDCARD_ADDRESS = InetAddress
+					.getByAddress(new byte[] { 0, 0, 0, 0 });
+			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
+				throw new RuntimeException(
+						"wildcard address is not wildcard address?");
+			}
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("unexpected failure to initialise", e);
+		}
+	}
+
+	/**
+	 * @return The connection selectors used for BMP connections.
+	 */
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
+		return bmpConnectionSelectors;
+	}
+
 	public static final class ConnectionDescriptor {
 		String hostname;
 		Integer portNumber;
@@ -1754,13 +1794,8 @@ public class Transceiver implements TransceiverInterface {
 		}
 	}
 
-	static final class Pair<A, B> {
-		final A a;
-		final B b;
-
-		public Pair(A a, B b) {
-			this.a = a;
-			this.b = b;
-		}
+	@Override
+	protected void addConnection(Connection connection) {
+		this.allConnections.add(connection);
 	}
 }

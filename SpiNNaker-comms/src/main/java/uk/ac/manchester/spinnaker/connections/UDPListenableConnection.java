@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
 
-public class UDPListenableConnection extends UDPConnection implements
-		Listenable<ByteBuffer>, Listenable.MessageReceiver<ByteBuffer> {
+public class UDPListenableConnection extends UDPConnection<ByteBuffer>
+		implements Listenable.MessageReceiver<ByteBuffer> {
 	public UDPListenableConnection(String localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);

@@ -2,17 +2,13 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 /** A UDP connection to SC&amp;MP on the board. */
@@ -162,21 +158,7 @@ public class SCPConnection extends SDPConnection
 	@Override
 	public SCPResultMessage receiveSCPResponse(Integer timeout)
 			throws IOException {
-		ByteBuffer buffer = receive(timeout);
-		short result = buffer.getShort();
-		short sequence = buffer.getShort();
-		return new SCPResultMessage(SCPResult.get(result), sequence, buffer);
-	}
-
-	@Override
-	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
-		ByteBuffer buffer = newMessageBuffer();
-		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-			scpRequest.updateSDPHeaderForUDPSend(getChip());
-		}
-		scpRequest.addToBuffer(buffer);
-		buffer.flip();
-		return buffer;
+		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override

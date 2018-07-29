@@ -1,31 +1,42 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
-public class BMPConnection extends UDPConnection
-		implements SCPSenderReceiver, Listenable<SDPMessage> {
+/**
+ * A connection for talking to one or more Board Management Processors (BMPs). A
+ * particular connection can only talk to the BMPs of a single frame of a single
+ * cabinet.
+ */
+public class BMPConnection extends UDPConnection<SDPMessage>
+		implements SCPSenderReceiver {
 	/** Defined to satisfy the SCPSender; always 0,0 for a BMP. */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
+	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	public final int cabinet;
+	/** The ID of the frame that contains the BMPs. */
 	public final int frame;
+	/**
+	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
+	 */
 	public final Collection<Integer> boards;
 
+	/**
+	 * @param connectionData
+	 *            Description of which BMP(s) to talk to.
+	 * @throws IOException
+	 *             If socket creation fails.
+	 */
 	public BMPConnection(BMPConnectionData connectionData) throws IOException {
 		super(null, null, connectionData.ipAddress,
 				(connectionData.portNumber == null ? SCP_SCAMP_PORT
@@ -36,22 +47,19 @@ public class BMPConnection extends UDPConnection
 	}
 
 	@Override
-	public ByteBuffer getSCPData(SCPRequest<?> scpRequest) {
-		ByteBuffer buffer = newMessageBuffer();
-		if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-			scpRequest.updateSDPHeaderForUDPSend(BMP_LOCATION);
-		}
-		scpRequest.addToBuffer(buffer);
-		buffer.flip();
-		return buffer;
-	}
-
-	@Override
 	public final void sendSCPRequest(SCPRequest<?> scpRequest)
 			throws IOException {
 		sendBMPRequest((BMPRequest<?>) scpRequest);
 	}
 
+	/**
+	 * Send a request on this connection.
+	 *
+	 * @param scpRequest
+	 *            The request to send.
+	 * @throws IOException
+	 *             If the request can't be sent.
+	 */
 	public void sendBMPRequest(BMPRequest<?> scpRequest) throws IOException {
 		send(getSCPData(scpRequest));
 	}
@@ -64,10 +72,7 @@ public class BMPConnection extends UDPConnection
 	@Override
 	public SCPResultMessage receiveSCPResponse(Integer timeout)
 			throws IOException {
-		ByteBuffer buffer = receive(timeout);
-		short result = buffer.getShort();
-		short sequence = buffer.getShort();
-		return new SCPResultMessage(SCPResult.get(result), sequence, buffer);
+		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override

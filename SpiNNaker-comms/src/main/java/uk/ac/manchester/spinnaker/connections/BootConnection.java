@@ -11,13 +11,14 @@ import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
 import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
 
-/** A connection to the SpiNNaker board that uses UDP to for booting */
-public class BootConnection extends UDPConnection
+/** A connection to the SpiNNaker board that uses UDP to for booting. */
+public class BootConnection extends UDPConnection<SpinnakerBootMessage>
 		implements SpinnakerBootSender, SpinnakerBootReceiver {
+	// Determined by Ethernet MTU, not by SDP buffer size
+	private static final int BOOT_MESSAGE_SIZE = 1500;
 	private static final int ANTI_FLOOD_DELAY = 100;
 
 	/**
-	 *
 	 * @param localHost
 	 *            The local host name or IP address to bind to. If <tt>null</tt>
 	 *            defaults to bind to all interfaces, unless remoteHost is
@@ -52,8 +53,9 @@ public class BootConnection extends UDPConnection
 	@Override
 	public void sendBootMessage(SpinnakerBootMessage bootMessage)
 			throws IOException {
-		ByteBuffer b = allocate(1500);
+		ByteBuffer b = allocate(BOOT_MESSAGE_SIZE);
 		bootMessage.addToBuffer(b);
+		b.flip();
 		send(b);
 		// Sleep between messages to avoid flooding the machine
 		try {
@@ -61,5 +63,10 @@ public class BootConnection extends UDPConnection
 		} catch (InterruptedException e) {
 			throw new IOException("interrupted during anti-flood delay", e);
 		}
+	}
+
+	@Override
+	public MessageReceiver<SpinnakerBootMessage> getReceiver() {
+		return this::receiveBootMessage;
 	}
 }
