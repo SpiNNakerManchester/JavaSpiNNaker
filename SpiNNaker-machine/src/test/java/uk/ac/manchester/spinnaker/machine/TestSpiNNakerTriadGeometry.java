@@ -105,20 +105,21 @@ public class TestSpiNNakerTriadGeometry {
     public void testGetPotentialEthernetChips() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
 
-        Collection<ChipLocation> ethers = instance.getPotentialRootChips(2, 2);
+        Collection<ChipLocation> ethers = instance.getPotentialRootChips(
+                new MachineDimensions(2, 2));
         assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
 
-        ethers = instance.getPotentialRootChips(8, 8);
+        ethers = instance.getPotentialRootChips(new MachineDimensions(8, 8));
         assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
 
         ChipLocation chip48 = new ChipLocation(4, 8);
         ChipLocation chip84 = new ChipLocation(8, 4);
 
-        ethers = instance.getPotentialRootChips(12, 12);
+        ethers = instance.getPotentialRootChips(new MachineDimensions(12, 12));
         assertThat(ethers, containsInAnyOrder(
                 ChipLocation.ZERO_ZERO, chip48, chip84));
 
-        ethers = instance.getPotentialRootChips(16, 16);
+        ethers = instance.getPotentialRootChips(new MachineDimensions(16, 16));
         assertThat(ethers, containsInAnyOrder(
                 ChipLocation.ZERO_ZERO, chip48, chip84));
 
@@ -126,12 +127,12 @@ public class TestSpiNNakerTriadGeometry {
         ChipLocation chip0_12 = new ChipLocation(0, 12);
         ChipLocation chip12_0 = new ChipLocation(12, 0);
 
-        ethers = instance.getPotentialRootChips(20, 20);
+        ethers = instance.getPotentialRootChips(new MachineDimensions(20, 20));
         assertThat(ethers, containsInAnyOrder(
                 ChipLocation.ZERO_ZERO, chip48, chip84, chip12_0, chip12_12,
                 chip0_12));
 
-        ethers = instance.getPotentialRootChips(24, 24);
+        ethers = instance.getPotentialRootChips(new MachineDimensions(24, 24));
         assertThat(ethers, hasSize(12));
 
     }

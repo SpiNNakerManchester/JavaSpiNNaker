@@ -222,17 +222,20 @@ public final class SpiNNakerTriadGeometry {
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
-    public ArrayList<ChipLocation> getPotentialRootChips(int width,
-            int height) {
+    public ArrayList<ChipLocation> getPotentialRootChips(
+            MachineDimensions dimensions) {
         ArrayList<ChipLocation> results = new ArrayList<>();
         int maxWidth;
         int maxHeight;
-        if (width % triadWidth == 0 && height % triadHeight == 0) {
-            maxWidth = width;
-            maxHeight = height;
+        if (dimensions.width % triadWidth == 0
+                && dimensions.height % triadHeight == 0) {
+            maxWidth = dimensions.width;
+            maxHeight = dimensions.height;
         } else {
-            maxWidth = width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
-            maxHeight = height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+            maxWidth = dimensions.width
+                    - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
+            maxHeight = dimensions.height
+                    - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
             if (maxWidth < 0 || maxHeight < 0) {
                 results.add(ChipLocation.ZERO_ZERO);
                 return results;
