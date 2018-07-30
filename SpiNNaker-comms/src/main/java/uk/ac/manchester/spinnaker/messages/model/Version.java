@@ -3,6 +3,11 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+/**
+ * A three-part semantic version description.
+ *
+ * @author Donal Fellows
+ */
 public final class Version implements Comparable<Version> {
 	// There is no standard Version class. WRYYYYYYYYYYYYYYYY!!!!
 	public final int majorVersion;
@@ -22,12 +27,27 @@ public final class Version implements Comparable<Version> {
 	}
 
 	@Override
-	public int compareTo(Version o) {
-		int cmp = compare(majorVersion, o.majorVersion);
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof Version)) {
+			return false;
+		}
+		Version v = (Version) other;
+		return majorVersion == v.majorVersion && minorVersion == v.minorVersion
+				&& revision == v.revision;
+	}
+
+	@Override
+	public int hashCode() {
+		return (majorVersion << 10) ^ (minorVersion << 5) ^ revision;
+	}
+
+	@Override
+	public int compareTo(Version other) {
+		int cmp = compare(majorVersion, other.majorVersion);
 		if (cmp == 0) {
-			cmp = compare(minorVersion, o.minorVersion);
+			cmp = compare(minorVersion, other.minorVersion);
 			if (cmp == 0) {
-				cmp = compare(revision, o.revision);
+				cmp = compare(revision, other.revision);
 			}
 		}
 		return cmp;

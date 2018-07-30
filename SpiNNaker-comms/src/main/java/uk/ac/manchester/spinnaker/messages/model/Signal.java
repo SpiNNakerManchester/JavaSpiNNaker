@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import java.util.HashMap;
 import java.util.Map;
 
-/** SCP Signals */
+/** SCP Signals. */
 public enum Signal {
 	// TODO Document these values
 	/** */
@@ -34,9 +34,9 @@ public enum Signal {
 	USER_2(12, Type.MULTICAST),
 	/** */
 	USER_3(13, Type.MULTICAST);
-	/** The value used for the signal */
+	/** The value used for the signal. */
 	public final byte value;
-	/** The "type" of the signal */
+	/** The "type" of the signal. */
 	public final Type type;
 	private static final Map<Byte, Signal> map = new HashMap<>();
 
@@ -55,7 +55,7 @@ public enum Signal {
 		return map.get(value);
 	}
 
-	/** The type of signal, determined by how it is transmitted */
+	/** The type of signal, determined by how it is transmitted. */
 	public static enum Type {
 		MULTICAST, POINT_TO_POINT, NEAREST_NEIGHBOUR
 	}

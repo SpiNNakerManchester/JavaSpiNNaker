@@ -143,49 +143,50 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * The set of destinations to match
+	 * @return The set of destinations to match.
 	 */
 	public Collection<Destination> getDestinations() {
 		return destinations;
 	}
 
 	/**
-	 * The set of sources to match
+	 * @return The set of sources to match.
 	 */
 	public Collection<Source> getSources() {
 		return sources;
 	}
 
 	/**
-	 * The set of payload statuses to match
+	 * @return The set of payload statuses to match.
 	 */
 	public Collection<PayloadStatus> getPayloadStatuses() {
 		return payloads;
 	}
 
 	/**
-	 * The set of default routing statuses to match
+	 * @return The set of default routing statuses to match.
 	 */
 	public Collection<DefaultRoutingStatus> getDefaultRoutingStatuses() {
 		return defaultStatuses;
 	}
 
 	/**
-	 * The set of emergency routing statuses to match
+	 * @return The set of emergency routing statuses to match.
 	 */
 	public Collection<EmergencyRoutingStatus> getEmergencyRoutingStatuses() {
 		return emergencyStatuses;
 	}
 
 	/**
-	 * The set of packet types to match
+	 * @return The set of packet types to match.
 	 */
 	public Collection<PacketType> getPacketTypes() {
 		return packetTypes;
 	}
 
 	/**
-	 * A word of data that can be written to the router to set up the filter
+	 * @return A word of data that can be written to the router to set up the
+	 *         filter.
 	 */
 	public int getFilterWord() {
 		int data = (enableInterrupt ? 1 << ENABLE_INTERRUPT_OFFSET : 0);
@@ -215,19 +216,25 @@ public class DiagnosticFilter {
 
 	/**
 	 * Default routing flags for the diagnostic filters. Note that only one has
-	 * to match for the counter to be incremented
+	 * to match for the counter to be incremented.
 	 */
 	public enum DefaultRoutingStatus {
-		/** Packet is to be default routed */
+		/** Packet is to be default routed. */
 		DEFAULT_ROUTED(0),
-		/** Packet is not to be default routed */
+		/** Packet is not to be default routed. */
 		NON_DEFAULT_ROUTED(1);
+		/** The encoded value. */
 		public final int value;
 
 		private DefaultRoutingStatus(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static DefaultRoutingStatus get(int value) {
 			switch (value) {
 			case 0:
@@ -242,33 +249,39 @@ public class DiagnosticFilter {
 
 	/**
 	 * Destination flags for the diagnostic filters. Note that only one has to
-	 * match for the counter to be incremented
+	 * match for the counter to be incremented.
 	 */
 	public enum Destination {
-		/** Destination is to dump the packet */
+		/** Destination is to dump the packet. */
 		DUMP(0),
-		/** Destination is a local core (but not the monitor core) */
+		/** Destination is a local core (but not the monitor core). */
 		LOCAL(1),
-		/** Destination is the local monitor core */
+		/** Destination is the local monitor core. */
 		LOCAL_MONITOR(2),
-		/** Destination is link 0 */
+		/** Destination is link 0. */
 		LINK_0(3),
-		/** Destination is link 1 */
+		/** Destination is link 1. */
 		LINK_1(4),
-		/** Destination is link 2 */
+		/** Destination is link 2. */
 		LINK_2(5),
-		/** Destination is link 3 */
+		/** Destination is link 3. */
 		LINK_3(6),
-		/** Destination is link 4 */
+		/** Destination is link 4. */
 		LINK_4(7),
-		/** Destination is link 5 */
+		/** Destination is link 5. */
 		LINK_5(8);
+		/** The encoded value. */
 		public final int value;
 
 		private Destination(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static Destination get(int value) {
 			switch (value) {
 			case 0:
@@ -317,12 +330,18 @@ public class DiagnosticFilter {
 		 * normal routing.
 		 */
 		SECOND_STAGE(3);
+		/** The encoded value. */
 		public final int value;
 
 		private EmergencyRoutingStatus(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static EmergencyRoutingStatus get(int value) {
 			switch (value) {
 			case 0:
@@ -344,20 +363,26 @@ public class DiagnosticFilter {
 	 * match for the counter to be incremented.
 	 */
 	public enum PacketType {
-		/** Packet is multicast */
+		/** Packet is multicast. */
 		MULTICAST(0),
-		/** Packet is point-to-point */
+		/** Packet is point-to-point. */
 		POINT_TO_POINT(1),
-		/** Packet is nearest-neighbour */
+		/** Packet is nearest-neighbour. */
 		NEAREST_NEIGHBOUR(2),
-		/** Packet is fixed-route */
+		/** Packet is fixed-route. */
 		FIXED_ROUTE(3);
+		/** The encoded value. */
 		public final int value;
 
 		private PacketType(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static PacketType get(int value) {
 			switch (value) {
 			case 0:
@@ -379,16 +404,22 @@ public class DiagnosticFilter {
 	 * for the counter to be incremented.
 	 */
 	public enum PayloadStatus {
-		/** Packet has a payload */
+		/** Packet has a payload. */
 		WITH_PAYLOAD(0),
-		/** Packet doesn't have a payload */
+		/** Packet doesn't have a payload. */
 		WITHOUT_PAYLOAD(1);
+		/** The encoded value. */
 		public final int value;
 
 		private PayloadStatus(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static PayloadStatus get(int value) {
 			switch (value) {
 			case 0:
@@ -406,16 +437,22 @@ public class DiagnosticFilter {
 	 * for the counter to be incremented.
 	 */
 	public enum Source {
-		/** Source is a local core */
+		/** Source is a local core. */
 		LOCAL(0),
-		/** Source is not a local core */
+		/** Source is not a local core. */
 		NON_LOCAL(1);
+		/** The encoded value. */
 		public final int value;
 
 		private Source(int value) {
 			this.value = value;
 		}
 
+		/**
+		 * @param value
+		 *            The encoded value.
+		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 */
 		static Source get(int value) {
 			switch (value) {
 			case 0:

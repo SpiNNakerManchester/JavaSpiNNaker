@@ -12,27 +12,27 @@ import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
 public final class ADCInfo {
-	/** fan<sub>0</sub> rotation rate */
+	/** fan<sub>0</sub> rotation rate. */
 	public final Double fan_0;
-	/** fan<sub>1</sub> rotation rate */
+	/** fan<sub>1</sub> rotation rate. */
 	public final Double fan_1;
-	/** temperature bottom */
+	/** temperature bottom. */
 	public final double temp_btm;
-	/** temperature external<sub>0</sub> */
+	/** temperature external<sub>0</sub>. */
 	public final Double temp_ext_0;
-	/** temperature external<sub>1</sub> */
+	/** temperature external<sub>1</sub>. */
 	public final Double temp_ext_1;
-	/** temperature top */
+	/** temperature top. */
 	public final double temp_top;
-	/** Actual voltage of the 1.2V<sub>a</sub> supply rail */
+	/** Actual voltage of the 1.2V<sub>a</sub> supply rail. */
 	public final double voltage_1_2a;
-	/** Actual voltage of the 1.2V<sub>b</sub> supply rail */
+	/** Actual voltage of the 1.2V<sub>b</sub> supply rail. */
 	public final double voltage_1_2b;
-	/** Actual voltage of the 1.2V<sub>c</sub> supply rail */
+	/** Actual voltage of the 1.2V<sub>c</sub> supply rail. */
 	public final double voltage_1_2c;
-	/** Actual voltage of the 1.8V supply rail */
+	/** Actual voltage of the 1.8V supply rail. */
 	public final double voltage_1_8;
-	/** Actual voltage of the 3.3V supply rail */
+	/** Actual voltage of the 3.3V supply rail. */
 	public final double voltage_3_3;
 	/** Actual voltage of the main power supply (nominally 12V?). */
 	public final double voltage_supply;

@@ -2,17 +2,19 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 /** An element of one of the heaps on SpiNNaker. */
 public class HeapElement {
-	/** The address of the block */
+	/** The address of the block. */
 	public final int blockAddress;
 	/** A pointer to the next block, or 0 if none. */
 	public final int nextAddress;
 	/** The usable size of this block (not including the header). */
 	public final int size;
-	/** True if the block is free */
+	/** True if the block is free. */
 	public final boolean isFree;
 	/** The tag of the block if allocated, or <tt>null</tt> if not. */
 	public final Integer tag;
-	/** The app ID of the block if allocated, or <tt>null</tt> if not. */
+	/**
+	 * The application ID of the block if allocated, or <tt>null</tt> if not.
+	 */
 	public final Integer appID;
 
 	/**

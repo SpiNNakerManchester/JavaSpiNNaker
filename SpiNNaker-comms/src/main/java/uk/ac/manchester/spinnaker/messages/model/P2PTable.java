@@ -79,7 +79,7 @@ public class P2PTable {
 		return ((256 * column) / 8) * 4;
 	}
 
-	/** Get an iterable of (x, y) coordinates in the table */
+	/** @return The coordinates of chips in the table. */
 	public Set<ChipLocation> getChips() {
 		return unmodifiableSet(routes.keySet());
 	}

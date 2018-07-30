@@ -56,7 +56,7 @@ public class ExecutableTargets {
 	}
 
 	/**
-	 * Get the cores that a binary is to run on
+	 * Get the cores that a binary is to run on.
 	 *
 	 * @param binary
 	 *            The binary to find the cores for
@@ -65,22 +65,22 @@ public class ExecutableTargets {
 		return targets.get(binary);
 	}
 
-	/** The binaries of the executables */
+	/** @return The binaries of the executables. */
 	public Set<String> getBinaries() {
 		return targets.keySet();
 	}
 
-	/** The total number of cores to be loaded */
+	/** @return The total number of cores to be loaded. */
 	public int getTotalProcessors() {
 		return totalProcessors;
 	}
 
-	/** All the core subsets for all the binaries */
+	/** @return All the core subsets for all the binaries. */
 	public CoreSubsets getAllCoreSubsets() {
 		return allCoreSubsets;
 	}
 
-	public boolean known(String binary, CoreLocation core) {
+	private boolean known(String binary, CoreLocation core) {
 		if (!allCoreSubsets.isCore(core)) {
 			return false;
 		}

@@ -28,40 +28,53 @@ public final class VersionInfo {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 	private static final Pattern VERSION_RE = Pattern
-			.compile("^(\\d+)\\.(\\d+)\\.(\\d+)$");
+			.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)$");
 
 	/**
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
 	 */
 	public VersionInfo(ByteBuffer buffer) {
-		byte p = buffer.get();
-		physicalCPUID = buffer.get() & 0xFF;
-		byte y = buffer.get();
-		byte x = buffer.get();
-		core = new CoreLocation(x & 0xFF, y & 0xFF, p & 0xFF);
+		int p = Byte.toUnsignedInt(buffer.get());
+		physicalCPUID = Byte.toUnsignedInt(buffer.get());
+		int y = Byte.toUnsignedInt(buffer.get());
+		int x = Byte.toUnsignedInt(buffer.get());
+		core = new CoreLocation(x, y, p);
 		buffer.getShort(); // Ignore 2 byes
-		int vn = buffer.getShort() & 0xFFFF;
+		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 		String vd = new String(buffer.array(), buffer.position(),
 				buffer.remaining(), UTF_8);
-		String[] bits;
-		if (vn < 0xFFFF) {
+		decodeVersion(vn, vd);
+	}
+
+	private static final int H = 100;
+	private static final int NBITS = 2;
+	private static final int MAGIC_VERSION = 0xFFFF;
+
+	private void decodeVersion(int vn, String vd) {
+		String nh = vd;
+		if (vn < MAGIC_VERSION) {
 			versionString = vd;
-			versionNumber = new Version(vn / 100, vn % 100, 0);
-			bits = vd.split("/", 2);
+			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
-			bits = vd.split("\\|0", 2);
-			versionString = bits[1];
-			Matcher m = VERSION_RE.matcher(bits[1]);
-			if (!m.matches()) {
-				throw new IllegalArgumentException(
-						"incorrect version format: " + bits[1]);
-			}
-			versionNumber = new Version(m.group(1), m.group(2), m.group(3));
-			bits = bits[0].replaceFirst("[|0]+$", "").split("/", 2);
+			nh = uglyDecode(vd.split("\\|0", NBITS));
 		}
+
+		String[] bits = nh.split("/", NBITS);
 		name = bits[0];
 		hardware = bits[1];
+	}
+
+	private String uglyDecode(String[] bits) {
+		versionString = bits[1];
+		Matcher m = VERSION_RE.matcher(versionString);
+		if (!m.matches()) {
+			throw new IllegalArgumentException(
+					"incorrect version format: " + versionString);
+		}
+		versionNumber = new Version(m.group("major"), m.group("minor"),
+				m.group("revision"));
+		return bits[0].replaceFirst("[|0]+$", "");
 	}
 }

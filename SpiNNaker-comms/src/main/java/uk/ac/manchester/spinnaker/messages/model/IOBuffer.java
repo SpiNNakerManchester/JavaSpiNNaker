@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** The contents of IOBUF for a core */
+/** The contents of IOBUF for a core. */
 public class IOBuffer implements HasCoreLocation {
 	private static final Charset ASCII = Charset.forName("ascii");
 	private final HasCoreLocation core;
@@ -68,22 +68,24 @@ public class IOBuffer implements HasCoreLocation {
 		return core.getP();
 	}
 
-	/** The contents of the buffer */
+	/** @return The contents of the buffer. */
 	public byte[] getContents() {
 		return iobuf;
 	}
 
-	/** The contents of the buffer as a little-endian byte buffer */
+	/** @return The contents of the buffer as a little-endian byte buffer. */
 	public ByteBuffer getContentsBuffer() {
 		return wrap(iobuf).order(LITTLE_ENDIAN);
 	}
 
-	/** The contents of the buffer as a little-endian byte buffer */
+	/** @return The contents of the buffer as an ASCII string. */
 	public String getContentsString() {
 		return getContentsString(ASCII);
 	}
 
-	/** The contents of the buffer as a string in the specified encoding */
+	/**
+	 * @return The contents of the buffer as a string in the specified encoding.
+	 */
 	public String getContentsString(Charset charset) {
 		return new String(iobuf, charset);
 	}

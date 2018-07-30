@@ -3,10 +3,7 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +17,9 @@ import java.util.regex.Pattern;
  */
 public class RawConfigParser {
 	// Regular expressions for parsing section headers and options
-	private static final String SECT_TMPL = "\\[([^]]+)\\]";
-	private static final String OPT_TMPL = "(.*?)\\s*[%s]\\s*(.*)$";
-	private static final String COMMENT_TMPL = "^(.*?)\\s*[#;].*$";
+	private static final String SECT_TMPL = "\\[(?<name>[^]]+)\\]";
+	private static final String OPT_TMPL = "(?<key>.*?)\\s*[%s]\\s*(?<value>.*)$";
+	private static final String COMMENT_TMPL = "^(?<keep>.*?)[%s].*$";
 
 	private final Pattern sectRE, optRE, commentRE;
 	private Map<String, Map<String, String>> map = new HashMap<>();
@@ -32,11 +29,13 @@ public class RawConfigParser {
 	 *
 	 * @param delimiters
 	 *            the option/value delimiter characters.
+	 * @param comments
+	 *            the comment delimiter characters.
 	 */
-	protected RawConfigParser(String delimiters) {
+	protected RawConfigParser(String delimiters, String comments) {
 		this.sectRE = compile(SECT_TMPL);
 		this.optRE = compile(format(OPT_TMPL, delimiters));
-		this.commentRE = compile(COMMENT_TMPL);
+		this.commentRE = compile(format(COMMENT_TMPL, comments));
 	}
 
 	/**
@@ -47,7 +46,7 @@ public class RawConfigParser {
 	 *            The handle to the configuration file.
 	 */
 	public RawConfigParser(URL resource) {
-		this("=:");
+		this("=:", "#;");
 		try {
 			if (resource != null) {
 				read(resource);
@@ -88,26 +87,20 @@ public class RawConfigParser {
 	 * @throws IOException
 	 *             if the reading fails.
 	 */
-	@SuppressWarnings("checkstyle:InnerAssignment")
 	public void read(URL resource) throws IOException {
-		try (InputStream s = resource.openStream();
-				BufferedReader r = new BufferedReader(
-						new InputStreamReader(s))) {
+		try (ReaderLineIterable lines = new ReaderLineIterable(
+				resource.openStream())) {
 			int ln = 0;
 			String sect = null;
-			for (String line; (line = r.readLine()) != null;) {
+			for (String line : lines) {
 				ln++;
-				Matcher m = commentRE.matcher(line);
-				if (m.matches()) {
-					line = m.group(1);
-				}
-				line = line.trim();
+				line = clean(line);
 				if (line.isEmpty()) {
 					continue;
 				}
-				m = sectRE.matcher(line);
+				Matcher m = sectRE.matcher(line);
 				if (m.matches()) {
-					sect = normaliseSectionName(m.group(1));
+					sect = normaliseSectionName(m.group("name"));
 					if (!map.containsKey(sect)) {
 						map.put(sect, new HashMap<>());
 					}
@@ -119,8 +112,8 @@ public class RawConfigParser {
 				}
 				m = optRE.matcher(line);
 				if (m.matches()) {
-					String key = normaliseOptionName(m.group(1));
-					String value = m.group(2);
+					String key = normaliseOptionName(m.group("key"));
+					String value = m.group("value");
 					map.get(sect).put(key, value);
 					continue;
 				}
@@ -128,6 +121,21 @@ public class RawConfigParser {
 						"unknown line format, at line " + ln);
 			}
 		}
+	}
+
+	/**
+	 * Remove any comment and dead space from a line.
+	 *
+	 * @param line
+	 *            The line to clean up.
+	 * @return The cleaned line.
+	 */
+	private String clean(String line) {
+		Matcher m = commentRE.matcher(line);
+		if (m.matches()) {
+			line = m.group("keep");
+		}
+		return line.trim();
 	}
 
 	/**

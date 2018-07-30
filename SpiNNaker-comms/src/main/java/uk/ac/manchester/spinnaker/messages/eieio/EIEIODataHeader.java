@@ -2,8 +2,10 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.SerializableMessage;
+
 /** EIEIO header for data packets. */
-public class EIEIODataHeader {
+public class EIEIODataHeader implements SerializableMessage {
 	public final EIEIOType eieioType;
 	public final byte tag;
 	public final Short prefix;
@@ -41,8 +43,46 @@ public class EIEIODataHeader {
 		this.count = count;
 	}
 
+	private static int bit(byte b, int bit) {
+		return (b >>> bit) & 1;
+	}
+
 	public EIEIODataHeader(ByteBuffer buffer, int offset) {
-		throw new IllegalArgumentException("FIXME");// FIXME
+		ByteBuffer b = buffer.asReadOnlyBuffer();
+		b.position(offset);
+		count = b.get();
+		byte data = b.get();
+		boolean havePrefix = bit(data, PREFIX_BIT) != 0;
+		if (havePrefix) {
+			prefixType = EIEIOPrefix.getByValue(bit(data, PREFIX_TYPE_BIT));
+		} else {
+			prefixType = null;
+		}
+		boolean havePayload = bit(data, PAYLOAD_BIT) != 0;
+		isTime = bit(data, TIME_BIT) != 0;
+		eieioType = EIEIOType.getByValue((data >>> TYPE_BITS) & TWO_BITS_MASK);
+		tag = (byte) ((data >>> TAG_BITS) & TWO_BITS_MASK);
+		if (havePrefix) {
+			prefix = b.getShort();
+		} else {
+			prefix = null;
+		}
+		if (havePayload) {
+			switch (eieioType) {
+			case KEY_PAYLOAD_16_BIT:
+			case KEY_16_BIT:
+				payloadBase = (int) b.getShort();
+				break;
+			case KEY_PAYLOAD_32_BIT:
+			case KEY_32_BIT:
+				payloadBase = b.getInt();
+				break;
+			default:
+				payloadBase = null;
+			}
+		} else {
+			payloadBase = null;
+		}
 	}
 
 	public byte getCount() {
@@ -61,10 +101,12 @@ public class EIEIODataHeader {
 		count = 0;
 	}
 
+	private static final int SHORT_WIDTH = 2;
+
 	public int getSize() {
-		int size = 2;
+		int size = SHORT_WIDTH;
 		if (prefix != null) {
-			size += 2;
+			size += SHORT_WIDTH;
 		}
 		if (payloadBase != null) {
 			size += eieioType.keyBytes;
@@ -72,53 +114,45 @@ public class EIEIODataHeader {
 		return size;
 	}
 
-	/**
-	 * Writes this header into the given buffer. This is so that a message can
-	 * be sent.
-	 *
-	 * @param buffer
-	 *            The buffer to write into.
-	 */
+	private static final int PREFIX_BIT = 7;
+	private static final int PREFIX_TYPE_BIT = 6;
+	private static final int PAYLOAD_BIT = 5;
+	private static final int TIME_BIT = 4;
+	private static final int TYPE_BITS = 2;
+	private static final int TAG_BITS = 0;
+	private static final int TWO_BITS_MASK = 0b00000011;
+
+	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		byte data = 0;
 		if (prefix != null) {
-			data |= 1 << 7;
-			data |= prefixType.getValue() << 6;
+			data |= 1 << PREFIX_BIT;
+			data |= prefixType.getValue() << PREFIX_TYPE_BIT;
 		}
 		if (payloadBase != null) {
-			data |= 1 << 5;
+			data |= 1 << PAYLOAD_BIT;
 		}
 		if (isTime) {
-			data |= 1 << 4;
+			data |= 1 << TIME_BIT;
 		}
-		data |= eieioType.getValue() << 2;
-		data |= tag;
+		data |= eieioType.getValue() << TYPE_BITS;
+		data |= tag << TAG_BITS;
 
-		if (payloadBase != null) {
-			buffer.put(count);
-			buffer.put(data);
-			if (prefix != null) {
-				buffer.putShort(prefix);
-			}
+		buffer.put(count);
+		buffer.put(data);
+		if (prefix != null) {
+			buffer.putShort(prefix);
+		}
+		if (payloadBase == null) {
 			return;
 		}
 		switch (eieioType) {
 		case KEY_PAYLOAD_16_BIT:
 		case KEY_16_BIT:
-			buffer.put(count);
-			buffer.put(data);
-			if (prefix != null) {
-				buffer.putShort(prefix);
-			}
 			buffer.putShort((short) (int) payloadBase);
 			return;
 		case KEY_PAYLOAD_32_BIT:
 		case KEY_32_BIT:
-			buffer.put(count);
-			buffer.put(data);
-			if (prefix != null) {
-				buffer.putShort(prefix);
-			}
 			buffer.putInt(payloadBase);
 			return;
 		}
