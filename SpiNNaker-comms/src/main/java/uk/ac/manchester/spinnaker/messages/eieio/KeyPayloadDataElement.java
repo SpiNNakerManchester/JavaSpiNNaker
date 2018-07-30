@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
-/** A data element that contains a key and a payload */
+/** A data element that contains a key and a payload. */
 public class KeyPayloadDataElement extends AbstractDataElement {
 	private final int key;
 	private final int payload;

@@ -44,7 +44,7 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
-	/** A dictionary of (x, y) -> ChipInfo */
+	/** A dictionary of (x, y) -> ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
 
 	private final Collection<ChipLocation> ignoreChips;

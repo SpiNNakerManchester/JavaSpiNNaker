@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to initialise the router on a chip */
+/** A request to initialise the router on a chip. */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip

@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** Sets a fixed route entry */
+/** Sets a fixed route entry. */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	private static int argument1(int appID) {
 		return appID << 8;

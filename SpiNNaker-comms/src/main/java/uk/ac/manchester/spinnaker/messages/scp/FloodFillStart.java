@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to start a flood fill of data */
+/** A request to start a flood fill of data. */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	private static final int NNP_FLOOD_FILL_START = 6;
 	private static final int NNP_FORWARD_RETRY = (1 << 31) | (0x3f << 8) | 0x18;

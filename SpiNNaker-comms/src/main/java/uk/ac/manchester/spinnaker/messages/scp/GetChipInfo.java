@@ -10,7 +10,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to read the chip information from a core */
+/** An SCP request to read the chip information from a core. */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	/**
 	 * @param chip
@@ -42,9 +42,9 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the version of software running */
+	/** An SCP response to a request for the version of software running. */
 	public static class Response extends CheckOKResponse {
-		/** The chip information received */
+		/** The chip information received. */
 		public final ChipSummaryInfo chipInfo;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

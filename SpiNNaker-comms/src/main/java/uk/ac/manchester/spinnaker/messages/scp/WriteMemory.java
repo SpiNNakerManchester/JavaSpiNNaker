@@ -10,7 +10,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to write memory on a chip */
+/** A request to write memory on a chip. */
 public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core

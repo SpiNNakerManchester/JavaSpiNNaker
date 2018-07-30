@@ -10,9 +10,9 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to read the version of software running on a core */
+/** An SCP request to read the version of software running on a core. */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
-	/** The location of the core to read from */
+	/** The location of the core to read from. */
 	public GetVersion(HasCoreLocation core) {
 		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_VER);
 	}
@@ -22,9 +22,9 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the version of software running */
+	/** An SCP response to a request for the version of software running. */
 	public static class Response extends CheckOKResponse {
-		/** The version information received */
+		/** The version information received. */
 		public final VersionInfo versionInfo;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

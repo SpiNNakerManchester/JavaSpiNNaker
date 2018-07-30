@@ -10,7 +10,7 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** Gets a fixed route entry */
+/** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static int argument1(int appID) {
 		return (appID << 8) | 3;
@@ -37,7 +37,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 		return new Response(buffer);
 	}
 
-	/** response for the fixed route read */
+	/** Response for the fixed route read. */
 	public static class Response extends CheckOKResponse {
 		private final int route;
 
@@ -46,7 +46,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 			route = buffer.getInt();
 		}
 
-		/** @return the fixed route router route */
+		/** @return the fixed route router route. */
 		public RoutingEntry getRoute() {
 			return new RoutingEntry(route);
 		}

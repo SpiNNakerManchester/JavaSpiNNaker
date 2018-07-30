@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to clear the router on a chip */
+/** A request to clear the router on a chip. */
 public class RouterClear extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip

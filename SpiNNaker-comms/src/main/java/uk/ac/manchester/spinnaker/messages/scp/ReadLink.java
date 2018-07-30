@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to read a region of memory via a link on a chip */
+/** An SCP request to read a region of memory via a link on a chip. */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
 	/**
 	 * @param core
@@ -53,7 +53,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * chip
 	 */
 	public static class Response extends CheckOKResponse {
-		/** The data read */
+		/** The data read. */
 		public final ByteBuffer data;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

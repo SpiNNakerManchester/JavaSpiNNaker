@@ -12,7 +12,7 @@ import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to set the transient timeout for future SCP requests */
+/** An SCP request to set the transient timeout for future SCP requests. */
 public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	/**
 	 * @param chip

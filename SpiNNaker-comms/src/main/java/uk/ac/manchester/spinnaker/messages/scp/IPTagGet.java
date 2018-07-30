@@ -19,7 +19,7 @@ import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to get an IP tag */
+/** An SCP Request to get an IP tag. */
 public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	private static int argument1(int tagID) {
 		return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
@@ -41,30 +41,30 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for an IP tags */
+	/** An SCP response to a request for an IP tags. */
 	public static final class Response extends CheckOKResponse {
 		/**
 		 * The count of the number of packets that have been sent with the tag.
 		 */
 		public final int count;
-		/** The flags of the tag */
+		/** The flags of the tag. */
 		public final short flags;
-		/** The IP address of the tag */
+		/** The IP address of the tag. */
 		public final InetAddress ipAddress;
-		/** The MAC address of the tag, as an array of 6 bytes */
+		/** The MAC address of the tag, as an array of 6 bytes. */
 		public final byte[] macAddress;
-		/** The port of the tag */
+		/** The port of the tag. */
 		public final int port;
-		/** The receive port of the tag */
+		/** The receive port of the tag. */
 		public final short rxPort;
 		/**
 		 * The location of the core on the chip which the tag is defined on and
 		 * where the core that handles the tag's messages resides.
 		 */
 		public final HasCoreLocation spinCore;
-		/** The spin-port of the IP tag */
+		/** The spin-port of the IP tag. */
 		public final int spinPort;
-		/** The timeout of the tag */
+		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
 		public Response(ByteBuffer buffer)
@@ -96,36 +96,36 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		private static final int TEMP_BIT = 14;
 		private static final int ARP_BIT = 13;
 		private static final int REV_BIT = 9;
-		private static final int STRIP_BIT= 8;
+		private static final int STRIP_BIT = 8;
 
 		private boolean bitset(int bit) {
 			return (flags & (1 << bit)) != 0;
 		}
 
-		/** True if the tag is marked as being in use */
+		/** @return True if the tag is marked as being in use. */
 		public boolean isInUse() {
 			return bitset(USE_BIT);
 		}
 
-		/** True if the tag is temporary */
+		/** @return True if the tag is temporary. */
 		public boolean isTemporary() {
 			return bitset(TEMP_BIT);
 		}
 
 		/**
-		 * True if the tag is in the ARP state (where the MAC address is being
-		 * looked up; this is a transient state so unlikely).
+		 * @return True if the tag is in the ARP state (where the MAC address is
+		 *         being looked up; this is a transient state so unlikely).
 		 */
 		public boolean isARP() {
 			return bitset(ARP_BIT);
 		}
 
-		/** True if the tag is a reverse tag */
+		/** @return True if the tag is a reverse tag. */
 		public boolean isReverse() {
 			return bitset(REV_BIT);
 		}
 
-		/** True if the tag is to strip the SDP header */
+		/** @return True if the tag is to strip the SDP header. */
 		public boolean isStrippingSDP() {
 			return bitset(STRIP_BIT);
 		}

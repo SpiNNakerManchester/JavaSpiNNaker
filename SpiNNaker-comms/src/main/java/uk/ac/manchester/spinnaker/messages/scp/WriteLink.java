@@ -9,7 +9,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to write memory on a neighbouring chip */
+/** A request to write memory on a neighbouring chip. */
 public class WriteLink extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core
