@@ -10,221 +10,222 @@ import java.util.Collection;
  */
 public interface ChipInformation extends HasChipLocation {
 
-    /** The number of chips in the x- and y-dimensions. */
+    /** @return The number of chips in the x- and y-dimensions. */
     MachineDimensions getSize();
 
-    /** The location of the chip to send debug messages to. */
+    /** @return The location of the chip to send debug messages to. */
     HasChipLocation getDebugChip();
 
-    /** Indicates if peer-to-peer is working on the chip. */
+    /** @return Indicates if peer-to-peer is working on the chip. */
     boolean isPeerToPeerAvailable();
 
-    /** The last ID used in nearest neighbour transaction. */
+    /** @return The last ID used in nearest neighbour transaction. */
     int getNearestNeighbourLastID();
 
-    /** The location of the nearest chip with Ethernet. */
+    /** @return The location of the nearest chip with Ethernet. */
     HasChipLocation getEthernetChip();
 
-    /** The version of the hardware in use. */
+    /** @return The version of the hardware in use. */
     int getHardwareVersion();
 
-    /** Indicates if Ethernet is available on this chip. */
+    /** @return Indicates if Ethernet is available on this chip. */
     boolean isEthernetAvailable();
 
-    /** Number of times to send out P2PB packets. */
+    /** @return Number of times to send out P2PB packets. */
     int getP2PBRepeats();
 
-    /** Log (base 2) of the peer-to-peer sequence length. */
+    /** @return Log (base 2) of the peer-to-peer sequence length. */
     int getLogP2PSequenceLength();
 
-    /** The clock divisors for system &amp; router clocks. */
+    /** @return The clock divisors for system &amp; router clocks. */
     int getClockDivisor();
 
-    /** The time-phase scaling factor. */
+    /** @return The time-phase scaling factor. */
     int getTimePhaseScale();
 
-    /** The time since startup in milliseconds. */
+    /** @return The time since startup in milliseconds. */
     long getClockMilliseconds();
 
-    /** The number of milliseconds in the current second. */
+    /** @return The number of milliseconds in the current second. */
     int getTimeMilliseconds();
 
-    /** The time in seconds since midnight, 1st January 1970. */
+    /** @return The time in seconds since midnight, 1st January 1970. */
     int getUnixTimestamp();
 
-    /** The router time-phase timer. */
+    /** @return The router time-phase timer. */
     int getRouterTimePhaseTimer();
 
-    /** The CPU clock frequency in MHz. */
+    /** @return The CPU clock frequency in MHz. */
     int getCPUClock();
 
-    /** The SDRAM clock frequency in MHz. */
+    /** @return The SDRAM clock frequency in MHz. */
     int getSDRAMClock();
 
-    /** Nearest-Neighbour forward parameter. */
+    /** @return Nearest-Neighbour forward parameter. */
     int getNearestNeighbourForward();
 
-    /** Nearest-Neighbour retry parameter. */
+    /** @return Nearest-Neighbour retry parameter. */
     int getNearestNeighbourRetry();
 
-    /** The link peek/poke timeout in microseconds. */
+    /** @return The link peek/poke timeout in microseconds. */
     int getLinkPeekTimeout();
 
-    /** The LED period in millisecond units, or 10 to show load. */
+    /** @return The LED period in millisecond units, or 10 to show load. */
     int getLEDFlashPeriod();
 
     /**
-     * The time to wait after last BC during network initialisation in 10 ms
-     * units.
+     * @return The time to wait after last BC during network initialisation in
+     *         10 ms units.
      */
     int getNetInitBCWaitTime();
 
-    /** The phase of boot process (see enum netinit_phase_e). */
+    /** @return The phase of boot process (see enum netinit_phase_e). */
     int getNetInitPhase();
 
-    /** The location of the chip from which the system was booted. */
+    /** @return The location of the chip from which the system was booted. */
     HasChipLocation getBootChip();
 
-    /** The LED definitions. */
+    /** @return The LED definitions. */
     int[] getLEDs();
 
-    /** The random seed. */
+    /** @return The random seed. */
     int getRandomSeeed();
 
-    /** Indicates if this is the root chip. */
+    /** @return Indicates if this is the root chip. */
     boolean isRootChip();
 
-    /** The number of shared message buffers. */
+    /** @return The number of shared message buffers. */
     int getNumSharedMessageBuffers();
 
-    /** The delay between nearest-neighbour packets in microseconds. */
+    /** @return The delay between nearest-neighbour packets in microseconds. */
     int getNearestNeighbourDelay();
 
-    /** The number of watch dog timeouts before an error is raised. */
+    /** @return The number of watch dog timeouts before an error is raised. */
     int getSoftwareWatchdogCount();
 
-    /** The base address of the system SDRAM heap. */
+    /** @return The base address of the system SDRAM heap. */
     int getSystemRAMHeapAddress();
 
-    /** The base address of the user SDRAM heap. */
+    /** @return The base address of the user SDRAM heap. */
     int getSDRAMHeapAddress();
 
-    /** The size of the iobuf buffer in bytes. */
+    /** @return The size of the iobuf buffer in bytes. */
     int getIOBUFSize();
 
-    /** The size of the system SDRAM in bytes. */
+    /** @return The size of the system SDRAM in bytes. */
     int getSystemSDRAMSize();
 
-    /** The size of the system buffer <b>in words</b>. */
+    /** @return The size of the system buffer <b>in words</b>. */
     int getSystemBufferSize();
 
-    /** The boot signature. */
+    /** @return The boot signature. */
     int getBootSignature();
 
-    /** The memory pointer for nearest neighbour global operations. */
+    /** @return The memory pointer for nearest neighbour global operations. */
     int getNearestNeighbourMemoryAddress();
 
-    /** The lock. (??) */
+    /** @return The lock. (??) */
     int getLock();
 
-    /** Bit mask (6 bits) of links enabled. */
+    /** @return Bit mask (6 bits) of links enabled. */
     BitSet getLinksAvailable();
 
-    /** Last ID used in BIFF packet. */
+    /** @return Last ID used in BIFF packet. */
     int getLastBiffID();
 
-    /** Board testing flags. */
+    /** @return Board testing flags. */
     int getBoardTestFlags();
 
-    /** Pointer to the first free shared message buffer. */
+    /** @return Pointer to the first free shared message buffer. */
     int getSharedMessageFirstFreeAddress();
 
-    /** The number of shared message buffers in use. */
+    /** @return The number of shared message buffers in use. */
     int getSharedMessageCountInUse();
 
-    /** The maximum number of shared message buffers used. */
+    /** @return The maximum number of shared message buffers used. */
     int getSharedMessageMaximumUsed();
 
-    /** The first user variable. */
+    /** @return The first user variable. */
     int getUser0();
 
-    /** The second user variable. */
+    /** @return The second user variable. */
     int getUser1();
 
-    /** The third user variable. */
+    /** @return The third user variable. */
     int getUser2();
 
-    /** The fourth user variable. */
+    /** @return The fourth user variable. */
     int getUser4();
 
-    /** The status map set during SCAMP boot. */
+    /** @return The status map set during SCAMP boot. */
     byte[] getStatusMap();
 
     /**
-     * The physical core ID to virtual core ID map; entries with a value of 0xFF
-     * are non-operational cores.
+     * @return The physical core ID to virtual core ID map; entries with a value
+     *         of 0xFF are non-operational cores.
      */
     byte[] getPhysicalToVirtualCoreMap();
 
-    /** The virtual core ID to physical core ID map. */
+    /** @return The virtual core ID to physical core ID map. */
     byte[] getVirtualToPhysicalCoreMap();
 
     /**
-     * A list of available cores by virtual core ID (including the monitor).
+     * @return A list of available cores by virtual core ID (including the
+     *         monitor).
      */
     Collection<Integer> getVirtualCoreIDs();
 
-    /** The number of working cores. */
+    /** @return The number of working cores. */
     int getNumWorkingCores();
 
-    /** The number of SCAMP working cores. */
+    /** @return The number of SCAMP working cores. */
     int getNumSCAMPWorkingCores();
 
-    /** The base address of SDRAM. */
+    /** @return The base address of SDRAM. */
     int getSDRAMBaseAddress();
 
-    /** The base address of System RAM. */
+    /** @return The base address of System RAM. */
     int getSystemRAMBaseAddress();
 
-    /** The base address of System SDRAM. */
+    /** @return The base address of System SDRAM. */
     int getSystemSDRAMBaseAddress();
 
-    /** The base address of the CPU information blocks. */
+    /** @return The base address of the CPU information blocks. */
     int getCPUInformationBaseAddress();
 
-    /** The base address of the system SDRAM heap. */
+    /** @return The base address of the system SDRAM heap. */
     int getSystemSDRAMHeapAddress();
 
-    /** The address of the copy of the routing tables. */
+    /** @return The address of the copy of the routing tables. */
     int getRouterTableCopyAddress();
 
-    /** The address of the peer-to-peer hop tables. */
+    /** @return The address of the peer-to-peer hop tables. */
     int getP2PHopTableAddress();
 
-    /** The address of the allocated tag table. */
+    /** @return The address of the allocated tag table. */
     int getAllocatedTagTableAddress();
 
-    /** The ID of the first free router entry. */
+    /** @return The ID of the first free router entry. */
     int getFirstFreeRouterEntry();
 
-    /** The number of active peer-to-peer addresses. */
+    /** @return The number of active peer-to-peer addresses. */
     int getNumActiveP2PAddresses();
 
-    /** The address of the application data table. */
+    /** @return The address of the application data table. */
     int getAppDataTableAddress();
 
-    /** The address of the shared message buffers. */
+    /** @return The address of the shared message buffers. */
     int getSharedMessageBufferAddress();
 
-    /** The monitor incoming mailbox flags. */
+    /** @return The monitor incoming mailbox flags. */
     int getMonitorMailboxFlags();
 
-    /** The IP address of the chip. */
+    /** @return The IP address of the chip. */
     String getIPAddress();
 
-    /** A (virtual) copy of the router FR register. */
+    /** @return A (virtual) copy of the router FR register. */
     int getFixedRoute();
 
-    /** A pointer to the board information structure. */
+    /** @return A pointer to the board information structure. */
     int getBoardInfoAddress();
 }
