@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to send a signal to cores */
+/** An SCP Request to send a signal to cores. */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
 	private static final int ALL_CORE_MASK = 0xFFFF;
 	private static final int APP_MASK = 0xFF;

@@ -9,7 +9,7 @@ import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to get a count of the cores in a particular state */
+/** An SCP Request to get a count of the cores in a particular state. */
 public class CountState extends SCPRequest<CountState.Response> {
 	private static final int COUNT_SIGNAL_TYPE = 1;
 	private static final int ALL_CORE_MASK = 0xFFFF;
@@ -41,9 +41,9 @@ public class CountState extends SCPRequest<CountState.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the number of cores in a given state */
+	/** An SCP response to a request for the number of cores in a given state. */
 	public static class Response extends CheckOKResponse {
-		/** The count of the number of cores with the requested state */
+		/** The count of the number of cores with the requested state. */
 		public final int count;
 
 		public Response(ByteBuffer buffer)

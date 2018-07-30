@@ -3,39 +3,39 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import java.util.HashMap;
 import java.util.Map;
 
-/** The SCP Result codes */
+/** The SCP Result codes. */
 public enum SCPResult {
-	/** SCPCommand completed OK */
+	/** SCPCommand completed OK. */
 	RC_OK(0x80),
-	/** Bad packet length */
+	/** Bad packet length. */
 	RC_LEN(0x81),
-	/** Bad checksum */
+	/** Bad checksum. */
 	RC_SUM(0x82),
-	/** Bad/invalid command */
+	/** Bad/invalid command. */
 	RC_CMD(0x83),
-	/** Invalid arguments */
+	/** Invalid arguments. */
 	RC_ARG(0x84),
-	/** Bad port number */
+	/** Bad port number. */
 	RC_PORT(0x85),
-	/** Timeout */
+	/** Timeout. */
 	RC_TIMEOUT(0x86),
-	/** No P2P route */
+	/** No P2P route. */
 	RC_ROUTE(0x87),
-	/** Bad CPU number */
+	/** Bad CPU number. */
 	RC_CPU(0x88),
-	/** SHM destination dead */
+	/** SHM destination dead. */
 	RC_DEAD(0x89),
-	/** No free Shared Memory buffers */
+	/** No free Shared Memory buffers. */
 	RC_BUF(0x8a),
-	/** No reply to open */
+	/** No reply to open. */
 	RC_P2P_NOREPLY(0x8b),
-	/** Open rejected */
+	/** Open rejected. */
 	RC_P2P_REJECT(0x8c),
-	/** Destination busy */
+	/** Destination busy. */
 	RC_P2P_BUSY(0x8d),
-	/** Dest did not respond */
+	/** Dest did not respond. */
 	RC_P2P_TIMEOUT(0x8e),
-	/** Pkt Transmission failed */
+	/** Pkt Transmission failed. */
 	RC_PKT_TX(0x8f);
 	public final short value;
 	private static final Map<Short, SCPResult> map = new HashMap<>();

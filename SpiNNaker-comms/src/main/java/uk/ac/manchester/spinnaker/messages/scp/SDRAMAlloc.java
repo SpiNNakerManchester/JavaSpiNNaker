@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to allocate space in the SDRAM space */
+/** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private final int size;
 
@@ -58,11 +58,9 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		return new Response(size, buffer);
 	}
 
-	/**
-	 * An SCP response to a request to allocate space in SDRAM
-	 */
+	/** An SCP response to a request to allocate space in SDRAM. */
 	public static class Response extends CheckOKResponse {
-		/** The base address allocated */
+		/** The base address allocated. */
 		public final int baseAddress;
 
 		Response(int size, ByteBuffer buffer) throws Exception {

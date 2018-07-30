@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to change the state of an BMPSetLED */
+/** A request to change the state of an BMPSetLED. */
 public class SetLED extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core

@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
-/** A data element that contains just a key */
+/** A data element that contains just a key. */
 public class KeyDataElement extends AbstractDataElement {
 	private final int key;
 

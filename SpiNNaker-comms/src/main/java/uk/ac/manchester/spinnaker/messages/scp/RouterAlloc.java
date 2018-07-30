@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to allocate space for routing entries */
+/** An SCP Request to allocate space for routing entries. */
 public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	private final int numEntries;
 
@@ -43,7 +43,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	 * An SCP response to a request to allocate router entries
 	 */
 	public static class Response extends CheckOKResponse {
-		/** The base address allocated, or 0 if none */
+		/** The base address allocated, or 0 if none. */
 		public final int baseAddress;
 
 		Response(int size, ByteBuffer buffer) throws Exception {

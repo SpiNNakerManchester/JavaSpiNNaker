@@ -20,14 +20,14 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 public class GetMulticastRoutesProcess
 		extends MultiConnectionProcess<SCPConnection> {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
-	/** There are 1024 entries in a routing table */
+	/** There are 1024 entries in a routing table. */
 	private static final int NUM_ENTRIES = 1024;
-	/** Each routing table entry is 16 bytes long */
+	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
-	/** 16 entries fit in a 256-byte read */
+	/** 16 entries fit in a 256-byte read. */
 	private static final int ENTRIES_PER_READ = UDP_MESSAGE_MAX_SIZE
 			/ BYTES_PER_ENTRY;
-	/** 64 reads of 16 entries are required for 1024 entries */
+	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
 
 	public GetMulticastRoutesProcess(

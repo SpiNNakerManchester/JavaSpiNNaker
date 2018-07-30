@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** A request to start a flood fill of data */
+/** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	private static final int NNP_FORWARD_RETRY = (0x3f << 8) | 0x18;
 	private static final int NNP_FLOOD_FILL_END = 15;

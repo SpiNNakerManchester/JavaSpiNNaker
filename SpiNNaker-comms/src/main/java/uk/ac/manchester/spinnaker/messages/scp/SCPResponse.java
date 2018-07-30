@@ -6,11 +6,11 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** Represents an abstract SCP BMPResponse */
+/** Represents an abstract SCP response. */
 public abstract class SCPResponse {
-	/** The SDP header from the response */
+	/** The SDP header from the response. */
 	public final SDPHeader sdpHeader;
-	/** The SCP header from the response */
+	/** The SCP header from the response. */
 	public final SCPResponseHeader scpResponseHeader;
 
 	/**

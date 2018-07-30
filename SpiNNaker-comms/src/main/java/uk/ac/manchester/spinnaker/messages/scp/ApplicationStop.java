@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to stop an application */
+/** An SCP Request to stop an application. */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	private static final int APP_MASK = 0xFF;
 

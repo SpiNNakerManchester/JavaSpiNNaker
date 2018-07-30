@@ -12,7 +12,7 @@ import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request information about IP tags */
+/** An SCP Request information about IP tags. */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
@@ -31,15 +31,15 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		return new IPTagGetInfo.Response(buffer);
 	}
 
-	/** An SCP response to a request for information about IP tags */
+	/** An SCP response to a request for information about IP tags. */
 	public static class Response extends CheckOKResponse {
 		/**
-		 * The timeout for transient IP tags (i.e. responses to SCP commands)
+		 * The timeout for transient IP tags (i.e., responses to SCP commands).
 		 */
 		public final IPTagTimeOutWaitTime transientTimeout;
-		/** The count of the IP tag pool size */
+		/** The count of the IP tag pool size. */
 		public final byte poolSize;
-		/** The count of the number of fixed IP tag entries */
+		/** The count of the number of fixed IP tag entries. */
 		public final byte fixedSize;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

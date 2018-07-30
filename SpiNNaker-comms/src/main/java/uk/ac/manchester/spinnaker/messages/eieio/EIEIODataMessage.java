@@ -42,12 +42,12 @@ public class EIEIODataMessage
 		this.offset = offset;
 	}
 
-	/** Get the minimum length of a message instance in bytes */
+	/** Get the minimum length of a message instance in bytes. */
 	public int minPacketLength() {
 		return header.getSize() + header.eieioType.payloadBytes;
 	}
 
-	/** The maximum number of elements that can fit in the packet */
+	/** The maximum number of elements that can fit in the packet. */
 	public int getMaxNumElements() {
 		return Math.floorDiv(UDP_MESSAGE_MAX_SIZE - header.getSize(),
 				header.eieioType.keyBytes + header.eieioType.payloadBytes);
@@ -60,7 +60,7 @@ public class EIEIODataMessage
 		return header.getCount();
 	}
 
-	/** The size of the packet with the current contents */
+	/** The size of the packet with the current contents. */
 	public int getSize() {
 		return header.getSize()
 				+ (header.eieioType.keyBytes + header.eieioType.payloadBytes)

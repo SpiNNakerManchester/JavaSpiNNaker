@@ -140,27 +140,25 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @author Donal Fellows
 	 */
 	final class RequestPipeline {
-		/** The connection over which the communication is to take place */
+		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
-		/** The number of responses outstanding */
+		/** The number of responses outstanding. */
 		private int inProgress;
-		/** A dictionary of sequence number -> requests in progress */
+		/** A dictionary of sequence number -> requests in progress. */
 		private final Map<Integer, Request> requests =
 				synchronizedMap(new HashMap<>());
 
-		/**
-		 * Per message record
-		 */
+		/** Per message record. */
 		final private class Request {
-			/** request in progress */
+			/** request in progress. */
 			private final BMPRequest<R> request;
-			/** payload of request in progress */
+			/** payload of request in progress. */
 			private final ByteBuffer requestData;
-			/** callback function for response */
+			/** callback function for response. */
 			private final Consumer<R> callback;
-			/** retry reason */
+			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
-			/** number of retries for the packet */
+			/** number of retries for the packet. */
 			private int retries = DEFAULT_RETRIES;
 
 			private Request(BMPRequest<R> request, Consumer<R> callback) {

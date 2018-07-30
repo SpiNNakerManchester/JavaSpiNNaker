@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to free space in the SDRAM */
+/** An SCP Request to free space in the SDRAM. */
 public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	private final boolean readNumFreedBlocks;
 
@@ -55,9 +55,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 		return new Response(readNumFreedBlocks, buffer);
 	}
 
-	/**
-	 * An SCP response to a request to deallocate SDRAM
-	 */
+	/** An SCP response to a request to deallocate SDRAM. */
 	public static class Response extends CheckOKResponse {
 		/**
 		 * The number of allocated blocks that have been freed from the appID

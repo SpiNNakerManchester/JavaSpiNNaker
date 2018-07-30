@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP request to fill a region of memory on a chip with repeated data */
+/** An SCP request to fill a region of memory on a chip with repeated data. */
 public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip

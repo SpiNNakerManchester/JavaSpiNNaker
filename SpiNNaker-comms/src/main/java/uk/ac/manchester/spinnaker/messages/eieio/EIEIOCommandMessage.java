@@ -2,9 +2,9 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
-/** An EIEIO command message */
+/** An EIEIO command message. */
 public class EIEIOCommandMessage implements EIEIOMessage {
-	/** The header of the message */
+	/** The header of the message. */
 	public final EIEIOCommandHeader header;
 
 	public EIEIOCommandMessage(EIEIOCommandHeader header, ByteBuffer data,

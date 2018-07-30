@@ -3,9 +3,9 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import java.util.HashMap;
 import java.util.Map;
 
-/** The SCP Command codes */
+/** The SCP Command codes. */
 public enum SCPCommand {
-	/** Get SCAMP Version */
+	/** Get SCAMP Version. */
 	CMD_VER(0),
 	/**
 	 * Run at PC
@@ -14,9 +14,9 @@ public enum SCPCommand {
 	 */
 	@Deprecated
 	CMD_RUN(1),
-	/** Read SDRAM */
+	/** Read SDRAM. */
 	CMD_READ(2),
-	/** Write SDRAM */
+	/** Write SDRAM. */
 	CMD_WRITE(3),
 	/**
 	 * Run via APLX
@@ -25,15 +25,15 @@ public enum SCPCommand {
 	 */
 	@Deprecated
 	CMD_APLX(4),
-	/** Fill memory */
+	/** Fill memory. */
 	CMD_FILL(5),
-	/** Remap application core */
+	/** Remap application core. */
 	CMD_REMAP(16),
 	/** Read neighbouring chip's memory. */
 	CMD_LINK_READ(17),
 	/** Write neighbouring chip's memory. */
 	CMD_LINK_WRITE(18),
-	/** Application core reset */
+	/** Application core reset. */
 	CMD_AR(19),
 	/** Send a broadcast Nearest-Neighbour packet. */
 	CMD_NNP(20),
@@ -44,13 +44,13 @@ public enum SCPCommand {
 	CMD_SIG(22),
 	/** Send Flood-Fill Data. */
 	CMD_FFD(23),
-	/** Application core APLX start */
+	/** Application core APLX start. */
 	CMD_AS(24),
 	/** Control the LEDs. */
 	CMD_LED(25),
 	/** Set an IP tag. */
 	CMD_IPTAG(26),
-	/** Read/write/erase serial ROM */
+	/** Read/write/erase serial ROM. */
 	CMD_SROM(27),
 	/** Allocate or Free SDRAM or Routing entries. */
 	CMD_ALLOC(28),
@@ -90,7 +90,7 @@ public enum SCPCommand {
 	/** */
 	@Deprecated
 	CMD_BMP_TEST(63),
-	/** Tube output */
+	/** Tube output. */
 	CMD_TUBE(64);
 	public final byte value;
 	private static final Map<Byte, SCPCommand> map = new HashMap<>();

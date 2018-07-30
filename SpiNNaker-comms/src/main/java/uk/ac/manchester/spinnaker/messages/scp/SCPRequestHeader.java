@@ -5,15 +5,15 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
 /**
- * Represents the header of an SCP Request
+ * Represents the header of an SCP Request.
  * <p>
  * The sequence number, if zero, will be set by the message sending code to the
  * actual sequence number when the message is sent on a connection.
  */
 public class SCPRequestHeader implements SerializableMessage {
-	/** The command of the SCP packet */
+	/** The command of the SCP packet. */
 	public final SCPCommand command;
-	/** The sequence number of the packet, between 0 and 65535 */
+	/** The sequence number of the packet, between 0 and 65535. */
 	public short sequence;
 
 	public SCPRequestHeader(SCPCommand command) {

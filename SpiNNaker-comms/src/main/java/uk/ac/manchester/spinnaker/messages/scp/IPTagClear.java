@@ -12,7 +12,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
-/** An SCP Request to clear an IP Tag */
+/** An SCP Request to clear an IP Tag. */
 public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param chip
