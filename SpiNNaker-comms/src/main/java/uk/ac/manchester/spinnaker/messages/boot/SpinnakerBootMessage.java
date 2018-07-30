@@ -7,35 +7,35 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
-/** A message used for booting the board */
+/** A message used for booting the board. */
 public class SpinnakerBootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
-	/** The payload data (or <tt>null</tt> if there is none) */
+	/** The payload data (or <tt>null</tt> if there is none). */
 	public final ByteBuffer data;
-	/** The operation of this packet */
+	/** The operation of this packet. */
 	public final SpinnakerBootOpCode opcode;
-	/** The first operand */
+	/** The first operand. */
 	public final int operand1;
-	/** The second operand */
+	/** The second operand. */
 	public final int operand2;
-	/** The third operand */
+	/** The third operand. */
 	public final int operand3;
 
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand_1,
-			int operand_2, int operand_3) {
+	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+			int operand2, int operand3) {
 		this.opcode = opcode;
-		this.operand1 = operand_1;
-		this.operand2 = operand_2;
-		this.operand3 = operand_3;
+		this.operand1 = operand1;
+		this.operand2 = operand2;
+		this.operand3 = operand3;
 		this.data = null;
 	}
 
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand_1,
-			int operand_2, int operand_3, ByteBuffer buffer) {
+	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+			int operand2, int operand3, ByteBuffer buffer) {
 		this.opcode = opcode;
-		this.operand1 = operand_1;
-		this.operand2 = operand_2;
-		this.operand3 = operand_3;
+		this.operand1 = operand1;
+		this.operand2 = operand2;
+		this.operand3 = operand3;
 		this.data = buffer.asReadOnlyBuffer();
 		if (data.remaining() > 256 * 4) {
 			throw new IllegalArgumentException(
@@ -43,12 +43,12 @@ public class SpinnakerBootMessage implements SerializableMessage {
 		}
 	}
 
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand_1,
-			int operand_2, int operand_3, byte[] bytes) {
+	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+			int operand2, int operand3, byte[] bytes) {
 		this.opcode = opcode;
-		this.operand1 = operand_1;
-		this.operand2 = operand_2;
-		this.operand3 = operand_3;
+		this.operand1 = operand1;
+		this.operand2 = operand2;
+		this.operand3 = operand3;
 		this.data = wrap(bytes).asReadOnlyBuffer();
 		if (data.remaining() > 256 * 4) {
 			throw new IllegalArgumentException(

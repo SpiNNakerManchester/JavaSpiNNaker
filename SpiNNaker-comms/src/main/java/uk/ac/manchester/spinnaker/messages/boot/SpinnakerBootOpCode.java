@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.boot;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Boot message Operation Codes */
+/** Boot message Operation Codes. */
 public enum SpinnakerBootOpCode {
 	/** */
 	HELLO(0x41),

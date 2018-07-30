@@ -29,7 +29,8 @@ final class ChipMemoryIO {
 	 * transceiver, x and y (thus two transceivers might not see the same
 	 * buffered memory).
 	 */
-	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing = new WeakHashMap<>();
+	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing =
+			new WeakHashMap<>();
 
 	/**
 	 * Get the instance for a particular transceiver and chip.

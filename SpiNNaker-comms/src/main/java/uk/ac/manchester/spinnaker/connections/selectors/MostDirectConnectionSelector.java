@@ -22,6 +22,14 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 	private final C defaultConnection;
 	private Machine machine;
 
+	/**
+	 * Create a selector.
+	 *
+	 * @param machine
+	 *            The machine, used to work out efficient routing strategies.
+	 * @param connections
+	 *            The connections that can be chosen between.
+	 */
 	public MostDirectConnectionSelector(Machine machine,
 			Collection<C> connections) {
 		this.machine = machine;

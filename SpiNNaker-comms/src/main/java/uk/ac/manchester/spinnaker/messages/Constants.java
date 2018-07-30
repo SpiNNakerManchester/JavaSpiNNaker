@@ -13,8 +13,8 @@ public abstract class Constants {
 	/** The base address of a routers diagnostic filter controls. */
 	public static final int ROUTER_REGISTER_BASE_ADDRESS = 0xe1000000;
 	/** The base address of a routers p2p routing table. */
-	public static final int ROUTER_REGISTER_P2P_ADDRESS = ROUTER_REGISTER_BASE_ADDRESS
-			+ 0x10000;
+	public static final int ROUTER_REGISTER_P2P_ADDRESS =
+			ROUTER_REGISTER_BASE_ADDRESS + 0x10000;
 	/** Offset for the router filter controls first register (one word each). */
 	public static final int ROUTER_FILTER_CONTROLS_OFFSET = 0x200;
 	/**
