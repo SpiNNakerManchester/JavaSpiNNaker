@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
@@ -111,13 +112,14 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Build a Machine
-		List<ChipSummaryInfo> chips = new ArrayList<>(chipInfo.values());
-		chips.removeIf(ci -> ignoreChips.contains(ci.chip.asChipLocation()));
-		sort(chips, (c1, c2) -> c1.chip.asChipLocation()
-				.compareTo(c2.chip.asChipLocation()));
-		return new Machine(size.width, size.height,
-				chips.stream().map(ci -> makeChip(size, ci)).collect(toList()),
-				ignoreCores, ignoreLinks, bootChip);
+                Machine machine = new Machine(size.width, size.height, bootChip);
+                for (Map.Entry<ChipLocation, ChipSummaryInfo> entry:
+                        chipInfo.entrySet()) {
+                    if (!ignoreChips.contains(entry.getKey())) {
+                        machine.addChip(makeChip(size, entry.getValue()));
+                    }
+                }
+		return machine;
 	}
 
 	private static int clamp(int value, Integer limit) {
