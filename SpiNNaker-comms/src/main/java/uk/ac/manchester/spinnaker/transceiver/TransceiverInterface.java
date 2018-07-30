@@ -1898,7 +1898,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Find a connection that matches the given board IP address
+	 * Find a connection that matches the given board IP address.
 	 *
 	 * @param boardAddress
 	 *            The IP address of the Ethernet connection on the board
@@ -2058,7 +2058,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Allocates a chunk of SDRAM on a chip on the machine
+	 * Allocates a chunk of SDRAM on a chip on the machine.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip onto which to allocate memory
@@ -2116,7 +2116,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Load a set of multicast routes on to a chip
+	 * Load a set of multicast routes on to a chip.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip onto which to load the routes

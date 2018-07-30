@@ -209,7 +209,8 @@ public class Transceiver extends UDPTransceiver
 	 * A list of boot receive connections. These are used to listen for the
 	 * pre-boot board identifiers.
 	 */
-	private final List<SpinnakerBootReceiver> bootReceiveConnections = new ArrayList<>();
+	private final List<SpinnakerBootReceiver> bootReceiveConnections =
+			new ArrayList<>();
 	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
@@ -218,35 +219,38 @@ public class Transceiver extends UDPTransceiver
 	 * response.
 	 */
 	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
-	/** A list of all connections that can be used to send SDP messages */
+	/** A list of all connections that can be used to send SDP messages. */
 	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
 	/**
 	 * A list of all connections that can be used to send Multicast messages.
 	 */
-	private final List<MulticastSender> multicastSenderConnections = new ArrayList<>();
+	private final List<MulticastSender> multicastSenderConnections =
+			new ArrayList<>();
 	/**
 	 * A map of IP address -> SCAMP connection. These are those that can be used
 	 * for setting up IP Tags.
 	 */
-	private final Map<InetAddress, SCPConnection> udpScampConnections = new HashMap<>();
+	private final Map<InetAddress, SCPConnection> udpScampConnections =
+			new HashMap<>();
 	/**
 	 * A list of all connections that can be used to send and receive SCP
 	 * messages for SCAMP interaction.
 	 */
 	private final List<SCPConnection> scampConnections = new ArrayList<>();
-	/** The BMP connections */
+	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
-	/** connection selectors for the BMP processes. */
-	private final Map<BMPCoords, ConnectionSelector<BMPConnection>> bmpConnectionSelectors = new HashMap<>();
-	/** connection selectors for the SCP processes. */
-	private final ConnectionSelector<SCPConnection> scpConnectionSelector;
-	/** The nearest neighbour start ID */
+	/** Connection selectors for the BMP processes. */
+	private final Map<BMPCoords, ConnectionSelector<BMPConnection>> bmpSelectors =
+			new HashMap<>();
+	/** Connection selectors for the SCP processes. */
+	private final ConnectionSelector<SCPConnection> scpSelector;
+	/** The nearest neighbour start ID. */
 	private int nearestNeighbourID = 1;
-	/** The nearest neighbour lock */
+	/** The nearest neighbour lock. */
 	private final Object nearestNeighbourLock = new Object();
 	/**
 	 * A lock against multiple flood fill writes. This is needed as SCAMP cannot
-	 * cope with this
+	 * cope with this.
 	 */
 	private final Object floodWriteLock = new Object();
 	/**
@@ -256,8 +260,8 @@ public class Transceiver extends UDPTransceiver
 	 * The write lock condition should also be acquired to avoid a flood fill
 	 * during an individual chip execute.
 	 */
-	private final Map<ChipLocation, Semaphore> chipExecuteLocks = new DefaultMap<>(
-			() -> new Semaphore(1));
+	private final Map<ChipLocation, Semaphore> chipExecuteLocks =
+			new DefaultMap<>(() -> new Semaphore(1));
 	private final Object chipExecuteLockCondition = new Object();
 	private int numChipExecuteLocks = 0;
 	private boolean machineOff = false;
@@ -395,7 +399,7 @@ public class Transceiver extends UDPTransceiver
 						desc.portNumber));
 			}
 		}
-		scpConnectionSelector = identifyConnections(connections);
+		scpSelector = identifyConnections(connections);
 		checkBMPConnections();
 	}
 
@@ -445,8 +449,7 @@ public class Transceiver extends UDPTransceiver
 				if (conn instanceof BMPConnection) {
 					BMPConnection bmpc = (BMPConnection) conn;
 					bmpConnections.add(bmpc);
-					bmpConnectionSelectors.put(
-							new BMPCoords(bmpc.cabinet, bmpc.frame),
+					bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
 							new RoundRobinConnectionSelector<>(
 									singletonList(bmpc)));
 				} else if (conn instanceof SCPConnection) {
@@ -488,9 +491,9 @@ public class Transceiver extends UDPTransceiver
 
 	private Object getSystemVariable(HasChipLocation chip,
 			SystemVariableDefinition dataItem) throws IOException, Exception {
-		ByteBuffer buffer = readMemory(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + dataItem.offset,
-				dataItem.type.value);
+		ByteBuffer buffer =
+				readMemory(chip, SYSTEM_VARIABLE_BASE_ADDRESS + dataItem.offset,
+						dataItem.type.value);
 		switch (dataItem.type) {
 		case BYTE:
 			return buffer.get();
@@ -513,12 +516,12 @@ public class Transceiver extends UDPTransceiver
 	private ConnectionSelector<BMPConnection> bmpConnection(int cabinet,
 			int frame) {
 		BMPCoords key = new BMPCoords(cabinet, frame);
-		if (!bmpConnectionSelectors.containsKey(key)) {
+		if (!bmpSelectors.containsKey(key)) {
 			throw new IllegalArgumentException(
 					"Unknown combination of cabinet (" + cabinet
 							+ ") and frame (" + frame + ")");
 		}
-		return bmpConnectionSelectors.get(key);
+		return bmpSelectors.get(key);
 	}
 
 	private byte getNextNearestNeighbourID() {
@@ -555,7 +558,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public ConnectionSelector<SCPConnection> getScampConnectionSelector() {
-		return scpConnectionSelector;
+		return scpSelector;
 	}
 
 	/**
@@ -582,12 +585,12 @@ public class Transceiver extends UDPTransceiver
 	private static final String SCAMP_NAME = "SC&MP";
 	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
 	private static final String BMP_NAME = "BC&MP";
-	private static final Set<Integer> BMP_MAJOR_VERSIONS = unmodifiableSet(
-			new HashSet<>(asList(1, 2)));
+	private static final Set<Integer> BMP_MAJOR_VERSIONS =
+			unmodifiableSet(new HashSet<>(asList(1, 2)));
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 	private static final int STANDARD_RETRIES_NO = 3;
 
-	/** Check that the BMP connections are actually connected to valid BMPs */
+	/** Check that the BMP connections are actually connected to valid BMPs. */
 	private void checkBMPConnections()
 			throws IOException, SpinnmanException, Exception {
 		/*
@@ -597,8 +600,8 @@ public class Transceiver extends UDPTransceiver
 		for (BMPConnection conn : bmpConnections) {
 			// try to send a BMP SVER to check if it responds as expected
 			try {
-				VersionInfo versionInfo = readBMPVersion(conn.boards,
-						conn.cabinet, conn.frame);
+				VersionInfo versionInfo =
+						readBMPVersion(conn.boards, conn.cabinet, conn.frame);
 				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
 						.contains(versionInfo.versionNumber.majorVersion)) {
 					throw new IOException(format(
@@ -613,12 +616,11 @@ public class Transceiver extends UDPTransceiver
 				log.info("Using BMP at %s with version %s %s",
 						conn.getRemoteIPAddress(), versionInfo.name,
 						versionInfo.versionString);
-			}
-			/*
-			 * If it fails to respond due to timeout, maybe that the connection
-			 * isn't valid.
-			 */
-			catch (SocketTimeoutException e) {
+			} catch (SocketTimeoutException e) {
+				/*
+				 * If it fails to respond due to timeout, maybe that the
+				 * connection isn't valid.
+				 */
 				throw new SpinnmanException(
 						format("BMP connection to %s is not responding",
 								conn.getRemoteIPAddress()),
@@ -632,7 +634,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * Check that the given connection to the given chip works
+	 * Check that the given connection to the given chip works.
 	 *
 	 * @param connectionSelector
 	 *            the connection selector to use
@@ -647,8 +649,8 @@ public class Transceiver extends UDPTransceiver
 			HasChipLocation chip) {
 		for (int r = 0; r < retries; r++) {
 			try {
-				ChipSummaryInfo chipInfo = new SendSingleSCPCommandProcess(
-						connectionSelector)
+				ChipSummaryInfo chipInfo =
+						new SendSingleSCPCommandProcess(connectionSelector)
 								.execute(new GetChipInfo(chip)).chipInfo;
 				if (chipInfo.isEthernetAvailable) {
 					return true;
@@ -668,8 +670,8 @@ public class Transceiver extends UDPTransceiver
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
 		if (connection == null) {
-			connection = (SCPConnection) getRandomConnection(
-					scpSenderConnections);
+			connection =
+					(SCPConnection) getRandomConnection(scpSenderConnections);
 		}
 		connection.sendSCPRequest(message);
 	}
@@ -678,13 +680,13 @@ public class Transceiver extends UDPTransceiver
 	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException {
 		if (connection == null) {
-			connection = (SDPConnection) getRandomConnection(
-					sdpSenderConnections);
+			connection =
+					(SDPConnection) getRandomConnection(sdpSenderConnections);
 		}
 		connection.sendSDPMessage(message);
 	}
 
-	/** Get the current machine status and store it */
+	/** Get the current machine status and store it. */
 	private void updateMachine() throws IOException, Exception {
 		// Get the width and height of the machine
 		getMachineDimensions();
@@ -693,13 +695,13 @@ public class Transceiver extends UDPTransceiver
 		VersionInfo versionInfo = getScampVersion();
 
 		// Get the details of all the chips
-		machine = new GetMachineProcess(scpConnectionSelector, ignoreChips,
-				ignoreCores, ignoreLinks, maxCoreID, maxSDRAMSize)
+		machine = new GetMachineProcess(scpSelector, ignoreChips, ignoreCores,
+				ignoreLinks, maxCoreID, maxSDRAMSize)
 						.getMachineDetails(versionInfo.core, dimensions);
 
 		// update the SCAMP selector with the machine
-		if (scpConnectionSelector instanceof MachineAware) {
-			((MachineAware) scpConnectionSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware) {
+			((MachineAware) scpSelector).setMachine(machine);
 		}
 
 		/*
@@ -866,7 +868,7 @@ public class Transceiver extends UDPTransceiver
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, Exception {
 		if (connectionSelector == null) {
-			connectionSelector = scpConnectionSelector;
+			connectionSelector = scpSelector;
 		}
 		return new GetVersionProcess(connectionSelector)
 				.getVersion(chip.getScampCore());
@@ -875,10 +877,10 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
-		SpinnakerBootMessages bootMessages = new SpinnakerBootMessages(version,
-				extraBootValues);
-		Iterator<SpinnakerBootMessage> msgs = bootMessages.getMessages()
-				.iterator();
+		SpinnakerBootMessages bootMessages =
+				new SpinnakerBootMessages(version, extraBootValues);
+		Iterator<SpinnakerBootMessage> msgs =
+				bootMessages.getMessages().iterator();
 		while (msgs.hasNext()) {
 			bootSendConnection.sendBootMessage(msgs.next());
 		}
@@ -962,7 +964,7 @@ public class Transceiver extends UDPTransceiver
 		 * revert at close
 		 */
 		for (SCPConnection connection : scampConnections) {
-			new SendSingleSCPCommandProcess(scpConnectionSelector).execute(
+			new SendSingleSCPCommandProcess(scpSelector).execute(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
 
@@ -1042,8 +1044,7 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 
-		return new GetCPUInfoProcess(scpConnectionSelector)
-				.getCPUInfo(coreSubsets);
+		return new GetCPUInfoProcess(scpSelector).getCPUInfo(coreSubsets);
 	}
 
 	@Override
@@ -1056,7 +1057,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// read iobuf from machine
-		return new ReadIOBufProcess(scpConnectionSelector).readIOBuf(iobufSize,
+		return new ReadIOBufProcess(scpSelector).readIOBuf(iobufSize,
 				coreSubsets);
 	}
 
@@ -1091,7 +1092,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public int getCoreStateCount(int appID, CPUState state)
 			throws IOException, Exception {
-		return new SendSingleSCPCommandProcess(scpConnectionSelector)
+		return new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new CountState(appID, state)).count;
 	}
 
@@ -1105,7 +1106,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpConnectionSelector)
+			new SendSingleSCPCommandProcess(scpSelector)
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1120,7 +1121,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpConnectionSelector)
+			new SendSingleSCPCommandProcess(scpSelector)
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1135,7 +1136,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpConnectionSelector)
+			new SendSingleSCPCommandProcess(scpSelector)
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1154,8 +1155,8 @@ public class Transceiver extends UDPTransceiver
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Execute the binary on the cores on the chips where required
-			new ApplicationRunProcess(scpConnectionSelector).run(appID,
-					coreSubsets, wait);
+			new ApplicationRunProcess(scpSelector).run(appID, coreSubsets,
+					wait);
 		}
 	}
 
@@ -1173,8 +1174,8 @@ public class Transceiver extends UDPTransceiver
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
 
 			// Execute the binary on the cores on the chips where required
-			new ApplicationRunProcess(scpConnectionSelector).run(appID,
-					coreSubsets, wait);
+			new ApplicationRunProcess(scpSelector).run(appID, coreSubsets,
+					wait);
 		}
 	}
 
@@ -1192,8 +1193,8 @@ public class Transceiver extends UDPTransceiver
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
 
 			// Execute the binary on the cores on the chips where required
-			ApplicationRunProcess process = new ApplicationRunProcess(
-					scpConnectionSelector);
+			ApplicationRunProcess process =
+					new ApplicationRunProcess(scpSelector);
 			process.run(appID, coreSubsets, wait);
 		}
 	}
@@ -1226,8 +1227,8 @@ public class Transceiver extends UDPTransceiver
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
-		int timeout = (int) (1000
-				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
+		int timeout =
+				(int) (1000 * (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
 		new SendSingleBMPCommandProcess<SetPower.Response>(
 				bmpConnection(cabinet, frame), timeout)
@@ -1287,51 +1288,51 @@ public class Transceiver extends UDPTransceiver
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
-				baseAddress, dataStream, numBytes);
+		new WriteMemoryProcess(scpSelector).writeMemory(core, baseAddress,
+				dataStream, numBytes);
 	}
 
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
-				baseAddress, dataFile);
+		new WriteMemoryProcess(scpSelector).writeMemory(core, baseAddress,
+				dataFile);
 	}
 
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeMemory(core,
-				baseAddress, data);
+		new WriteMemoryProcess(scpSelector).writeMemory(core, baseAddress,
+				data);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
-				baseAddress, dataStream, numBytes);
+		new WriteMemoryProcess(scpSelector).writeLink(core, link, baseAddress,
+				dataStream, numBytes);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, File dataFile) throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
-				baseAddress, dataFile);
+		new WriteMemoryProcess(scpSelector).writeLink(core, link, baseAddress,
+				dataFile);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, ByteBuffer data) throws IOException, Exception {
-		new WriteMemoryProcess(scpConnectionSelector).writeLink(core, link,
-				baseAddress, data);
+		new WriteMemoryProcess(scpSelector).writeLink(core, link, baseAddress,
+				data);
 	}
 
 	@Override
 	public void writeMemoryFlood(int baseAddress, InputStream dataStream,
 			int numBytes) throws IOException, Exception {
-		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scpConnectionSelector);
+		WriteMemoryFloodProcess process =
+				new WriteMemoryFloodProcess(scpSelector);
 		// Ensure only one flood fill occurs at any one time
 		synchronized (floodWriteLock) {
 			// Start the flood fill
@@ -1343,8 +1344,8 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, Exception {
-		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scpConnectionSelector);
+		WriteMemoryFloodProcess process =
+				new WriteMemoryFloodProcess(scpSelector);
 		// Ensure only one flood fill occurs at any one time
 		synchronized (floodWriteLock) {
 			// Start the flood fill
@@ -1356,8 +1357,8 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, Exception {
-		WriteMemoryFloodProcess process = new WriteMemoryFloodProcess(
-				scpConnectionSelector);
+		WriteMemoryFloodProcess process =
+				new WriteMemoryFloodProcess(scpSelector);
 		// Ensure only one flood fill occurs at any one time
 		synchronized (floodWriteLock) {
 			// Start the flood fill
@@ -1368,14 +1369,14 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public ByteBuffer readMemory(HasCoreLocation core, int baseAddress,
 			int length) throws IOException, Exception {
-		return new ReadMemoryProcess(scpConnectionSelector).readMemory(core,
-				baseAddress, length);
+		return new ReadMemoryProcess(scpSelector).readMemory(core, baseAddress,
+				length);
 	}
 
 	@Override
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, Exception {
-		return new ReadMemoryProcess(scpConnectionSelector).readLink(core, link,
+		return new ReadMemoryProcess(scpSelector).readLink(core, link,
 				baseAddress, length);
 	}
 
@@ -1386,7 +1387,7 @@ public class Transceiver extends UDPTransceiver
 					+ "Please fix and try again");
 			return;
 		}
-		new SendSingleSCPCommandProcess(scpConnectionSelector)
+		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new ApplicationStop(appID));
 	}
 
@@ -1398,8 +1399,8 @@ public class Transceiver extends UDPTransceiver
 			SpinnmanException {
 		// check that the right number of processors are in the states
 		int processorsReady = 0;
-		long timeoutTime = currentTimeMillis()
-				+ (timeout == null ? 0 : timeout);
+		long timeoutTime =
+				currentTimeMillis() + (timeout == null ? 0 : timeout);
 		int tries = 0;
 		while (processorsReady < allCoreSubsets.size()
 				&& (timeout == null || currentTimeMillis() < timeoutTime)) {
@@ -1426,8 +1427,8 @@ public class Transceiver extends UDPTransceiver
 				 */
 				tries++;
 				if (tries >= countBetweenFullChecks) {
-					CoreSubsets coresInState = getCoresInState(allCoreSubsets,
-							cpuStates);
+					CoreSubsets coresInState =
+							getCoresInState(allCoreSubsets, cpuStates);
 					processorsReady = coresInState.size();
 					tries = 0;
 				}
@@ -1441,8 +1442,8 @@ public class Transceiver extends UDPTransceiver
 
 		// If we haven't reached the final state, do a final full check
 		if (processorsReady < allCoreSubsets.size()) {
-			CoreSubsets coresInState = getCoresInState(allCoreSubsets,
-					cpuStates);
+			CoreSubsets coresInState =
+					getCoresInState(allCoreSubsets, cpuStates);
 
 			/*
 			 * If we are sure we haven't reached the final state, report a
@@ -1459,14 +1460,14 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSignal(int appID, Signal signal)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpConnectionSelector)
+		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new SendSignal(appID, signal));
 	}
 
 	@Override
 	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpConnectionSelector)
+		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new SetLED(core, ledStates));
 	}
 
@@ -1487,8 +1488,8 @@ public class Transceiver extends UDPTransceiver
 		 * Get the connections. If the tag specifies a connection, use that,
 		 * otherwise apply the tag to all connections
 		 */
-		Collection<SCPConnection> connections = getConnectionList(null,
-				tag.getBoardAddress());
+		Collection<SCPConnection> connections =
+				getConnectionList(null, tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1502,7 +1503,7 @@ public class Transceiver extends UDPTransceiver
 				host = connection.getLocalIPAddress();
 			}
 
-			new SendSingleSCPCommandProcess(scpConnectionSelector).execute(
+			new SendSingleSCPCommandProcess(scpSelector).execute(
 					new IPTagSet(connection.getChip(), host.getAddress(),
 							tag.getPort(), tag.getTag(), tag.isStripSDP()));
 		}
@@ -1523,15 +1524,15 @@ public class Transceiver extends UDPTransceiver
 		 * Get the connections. If the tag specifies a connection, use that,
 		 * otherwise apply the tag to all connections
 		 */
-		Collection<SCPConnection> connections = getConnectionList(null,
-				tag.getBoardAddress());
+		Collection<SCPConnection> connections =
+				getConnectionList(null, tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}
 
 		for (SCPConnection connection : connections) {
-			new SendSingleSCPCommandProcess(scpConnectionSelector)
+			new SendSingleSCPCommandProcess(scpSelector)
 					.execute(new ReverseIPTagSet(connection.getChip(),
 							tag.getDestination(), tag.getPort(), tag.getTag(),
 							tag.getPort()));
@@ -1542,7 +1543,7 @@ public class Transceiver extends UDPTransceiver
 	public void clearIPTag(int tag, SCPConnection connection,
 			InetAddress boardAddress) throws IOException, Exception {
 		for (SCPConnection conn : getConnectionList(connection, boardAddress)) {
-			new SendSingleSCPCommandProcess(scpConnectionSelector)
+			new SendSingleSCPCommandProcess(scpSelector)
 					.execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
@@ -1552,8 +1553,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, Exception {
 		List<Tag> allTags = new ArrayList<>();
 		for (SCPConnection conn : getConnectionList(connection, null)) {
-			allTags.addAll(
-					new GetTagsProcess(scpConnectionSelector).getTags(conn));
+			allTags.addAll(new GetTagsProcess(scpSelector).getTags(conn));
 		}
 		return allTags;
 	}
@@ -1561,65 +1561,64 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception {
-		return new MallocSDRAMProcess(scpConnectionSelector).mallocSDRAM(chip,
-				size, appID, tag);
+		return new MallocSDRAMProcess(scpSelector).mallocSDRAM(chip, size,
+				appID, tag);
 	}
 
 	@Override
 	public void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
 			throws IOException, Exception {
-		new DeallocSDRAMProcess(scpConnectionSelector).deallocSDRAM(chip, appID,
+		new DeallocSDRAMProcess(scpSelector).deallocSDRAM(chip, appID,
 				baseAddress);
 	}
 
 	@Override
 	public int freeSDRAMByAppID(HasChipLocation chip, int appID)
 			throws IOException, Exception {
-		return new DeallocSDRAMProcess(scpConnectionSelector).deallocSDRAM(chip,
-				appID);
+		return new DeallocSDRAMProcess(scpSelector).deallocSDRAM(chip, appID);
 	}
 
 	@Override
 	public void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
 			throws IOException, Exception {
-		new LoadMulticastRoutesProcess(scpConnectionSelector).loadRoutes(chip,
-				routes, appID);
+		new LoadMulticastRoutesProcess(scpSelector).loadRoutes(chip, routes,
+				appID);
 	}
 
 	@Override
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception {
-		new LoadFixedRouteEntryProcess(scpConnectionSelector)
-				.loadFixedRoute(chip, fixedRoute, appID);
+		new LoadFixedRouteEntryProcess(scpSelector).loadFixedRoute(chip,
+				fixedRoute, appID);
 	}
 
 	@Override
 	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
 			throws IOException, Exception {
-		return new ReadFixedRouteEntryProcess(scpConnectionSelector)
-				.readFixedRoute(chip, appID);
+		return new ReadFixedRouteEntryProcess(scpSelector).readFixedRoute(chip,
+				appID);
 	}
 
 	@Override
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			Integer appID) throws IOException, Exception {
 		int address = (int) getSystemVariable(chip, router_table_copy_address);
-		return new GetMulticastRoutesProcess(scpConnectionSelector)
-				.getRoutes(chip, address, appID);
+		return new GetMulticastRoutesProcess(scpSelector).getRoutes(chip,
+				address, appID);
 	}
 
 	@Override
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpConnectionSelector)
+		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new RouterClear(chip));
 	}
 
 	@Override
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {
-		return new ReadRouterDiagnosticsProcess(scpConnectionSelector)
+		return new ReadRouterDiagnosticsProcess(scpSelector)
 				.getRouterDiagnostics(chip);
 	}
 
@@ -1640,9 +1639,9 @@ public class Transceiver extends UDPTransceiver
 					+ "the end user knows what they are doing.");
 		}
 
-		int address = (ROUTER_REGISTER_BASE_ADDRESS
-				+ ROUTER_FILTER_CONTROLS_OFFSET
-				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
+		int address =
+				(ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
+						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
 		writeMemory(chip, address, diagnosticFilter.getFilterWord());
 	}
 
@@ -1653,12 +1652,11 @@ public class Transceiver extends UDPTransceiver
 			throw new IllegalArgumentException(
 					"the range of the position of a router filter is 0 and 16.");
 		}
-		int address = ROUTER_REGISTER_BASE_ADDRESS
-				+ ROUTER_FILTER_CONTROLS_OFFSET
-				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
-		Response response = new SendSingleSCPCommandProcess(
-				scpConnectionSelector)
-						.execute(new ReadMemory(chip, address, 4));
+		int address =
+				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
+						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
+		Response response = new SendSingleSCPCommandProcess(scpSelector)
+				.execute(new ReadMemory(chip, address, 4));
 		return new DiagnosticFilter(response.data.getInt());
 	}
 
@@ -1685,15 +1683,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {
-		return new GetHeapProcess(scpConnectionSelector).getBlocks(chip, heap);
+		return new GetHeapProcess(scpSelector).getBlocks(chip, heap);
 	}
 
 	@Override
 	public void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size, DataType dataType)
 			throws Exception, IOException {
-		new FillProcess(scpConnectionSelector).fillMemory(chip, baseAddress,
-				repeatValue, size, dataType);
+		new FillProcess(scpSelector).fillMemory(chip, baseAddress, repeatValue,
+				size, dataType);
 	}
 
 	/** @return the number of boards currently configured. */
@@ -1746,8 +1744,9 @@ public class Transceiver extends UDPTransceiver
 	private static final InetAddress WILDCARD_ADDRESS;
 	static {
 		try {
-			WILDCARD_ADDRESS = InetAddress
-					.getByAddress(new byte[] { 0, 0, 0, 0 });
+			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[] {
+					0, 0, 0, 0
+			});
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
 				throw new RuntimeException(
 						"wildcard address is not wildcard address?");
@@ -1761,7 +1760,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return The connection selectors used for BMP connections.
 	 */
 	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
-		return bmpConnectionSelectors;
+		return bmpSelectors;
 	}
 
 	public static final class ConnectionDescriptor {

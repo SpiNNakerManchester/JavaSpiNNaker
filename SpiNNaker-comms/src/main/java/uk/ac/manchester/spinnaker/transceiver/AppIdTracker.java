@@ -64,8 +64,9 @@ public class AppIdTracker {
 	}
 
 	/**
-	 * Get a new unallocated ID
+	 * Get a new unallocated ID.
 	 *
+	 * @return The new ID, now allocated.
 	 * @throws RuntimeException
 	 *             if there are no IDs available
 	 */
@@ -83,7 +84,7 @@ public class AppIdTracker {
 	 * Allocate a given ID.
 	 *
 	 * @param id
-	 *            The ID to allocate
+	 *            The ID to allocate.
 	 * @throws IllegalArgumentException
 	 *             if the ID is not present
 	 */

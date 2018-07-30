@@ -139,19 +139,19 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @author Andrew Rowley
 	 * @author Donal Fellows
 	 */
-	class RequestPipeline {
+	final class RequestPipeline {
 		/** The connection over which the communication is to take place */
 		private BMPConnection connection;
 		/** The number of responses outstanding */
 		private int inProgress;
 		/** A dictionary of sequence number -> requests in progress */
-		private final Map<Integer, Request> requests = synchronizedMap(
-				new HashMap<>());
+		private final Map<Integer, Request> requests =
+				synchronizedMap(new HashMap<>());
 
 		/**
 		 * Per message record
 		 */
-		private class Request {
+		final private class Request {
 			/** request in progress */
 			private final BMPRequest<R> request;
 			/** payload of request in progress */
@@ -342,7 +342,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	}
 
 	@SuppressWarnings("serial")
-	static class SendTimedOutException extends SocketTimeoutException {
+	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
 					timeout / 1000.0));
@@ -350,7 +350,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	}
 
 	@SuppressWarnings("serial")
-	static class SendFailedException extends IOException {
+	static final class SendFailedException extends IOException {
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
 				List<String> retryReason) {
 			super(format(

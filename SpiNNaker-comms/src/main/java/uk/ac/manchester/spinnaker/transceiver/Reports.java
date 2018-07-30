@@ -21,6 +21,9 @@ import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
 
 // TODO should this move towards the front end?
+/**
+ * Utility for reporting on the machine.
+ */
 public abstract class Reports {
 	private Reports() {
 	}

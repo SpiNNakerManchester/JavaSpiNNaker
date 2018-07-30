@@ -124,8 +124,9 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private static final InetAddress WILDCARD_ADDRESS;
 	static {
 		try {
-			WILDCARD_ADDRESS = InetAddress
-					.getByAddress(new byte[] { 0, 0, 0, 0 });
+			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[] {
+					0, 0, 0, 0
+			});
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
 				throw new RuntimeException(
 						"wildcard address is not wildcard address?");
@@ -227,8 +228,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 			// Create a connection if there isn't already one
 			if (pair.connection == null) {
-				pair.connection = connectionFactory
-						.getInstance(addr.getHostAddress());
+				pair.connection =
+						connectionFactory.getInstance(addr.getHostAddress());
 				addConnection(pair.connection);
 			}
 		}
@@ -237,8 +238,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		if (pair.listener == null) {
 			// Caller has guaranteed the type constraint
 			@SuppressWarnings("resource")
-			ConnectionListener<T> listener = new ConnectionListener<>(
-					pair.connection);
+			ConnectionListener<T> listener =
+					new ConnectionListener<>(pair.connection);
 			listener.start();
 			pair.listener = listener;
 			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
@@ -249,7 +250,9 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		return pair.connection;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({
+			"unchecked", "rawtypes"
+	})
 	private <T> List<Pair<T>> getConnections(
 			Class<? extends UDPConnection<T>> clazz) {
 		return (List) connectionsByClass.get(clazz);
@@ -257,8 +260,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
 			InetAddress addr) {
-		List<Pair<T>> connections_of_class = getConnections(clazz);
-		for (Pair<T> a : connections_of_class) {
+		for (Pair<T> a : getConnections(clazz)) {
 			if (a.connection.getLocalIPAddress().equals(addr)) {
 				if (a.listener == null) {
 					a = a.clone();
