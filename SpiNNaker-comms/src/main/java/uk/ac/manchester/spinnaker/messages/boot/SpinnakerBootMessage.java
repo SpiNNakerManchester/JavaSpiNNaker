@@ -10,6 +10,7 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 /** A message used for booting the board. */
 public class SpinnakerBootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
+	private static final int BOOT_PACKET_SIZE = 256 * 4;
 	/** The payload data (or <tt>null</tt> if there is none). */
 	public final ByteBuffer data;
 	/** The operation of this packet. */
@@ -21,6 +22,18 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	/** The third operand. */
 	public final int operand3;
 
+	/**
+	 * Create a boot message.
+	 *
+	 * @param opcode
+	 *            The boot opcode
+	 * @param operand1
+	 *            The first arg
+	 * @param operand2
+	 *            The second arg
+	 * @param operand3
+	 *            The third arg
+	 */
 	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
 			int operand2, int operand3) {
 		this.opcode = opcode;
@@ -30,6 +43,20 @@ public class SpinnakerBootMessage implements SerializableMessage {
 		this.data = null;
 	}
 
+	/**
+	 * Create a boot message.
+	 *
+	 * @param opcode
+	 *            The boot opcode
+	 * @param operand1
+	 *            The first arg
+	 * @param operand2
+	 *            The second arg
+	 * @param operand3
+	 *            The third arg
+	 * @param buffer
+	 *            The payload
+	 */
 	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
 			int operand2, int operand3, ByteBuffer buffer) {
 		this.opcode = opcode;
@@ -37,12 +64,26 @@ public class SpinnakerBootMessage implements SerializableMessage {
 		this.operand2 = operand2;
 		this.operand3 = operand3;
 		this.data = buffer.asReadOnlyBuffer();
-		if (data.remaining() > 256 * 4) {
+		if (data.remaining() > BOOT_PACKET_SIZE) {
 			throw new IllegalArgumentException(
 					"A boot packet can contain at most 256 words of data");
 		}
 	}
 
+	/**
+	 * Create a boot message.
+	 *
+	 * @param opcode
+	 *            The boot opcode
+	 * @param operand1
+	 *            The first arg
+	 * @param operand2
+	 *            The second arg
+	 * @param operand3
+	 *            The third arg
+	 * @param bytes
+	 *            The payload
+	 */
 	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
 			int operand2, int operand3, byte[] bytes) {
 		this.opcode = opcode;
@@ -50,13 +91,18 @@ public class SpinnakerBootMessage implements SerializableMessage {
 		this.operand2 = operand2;
 		this.operand3 = operand3;
 		this.data = wrap(bytes).asReadOnlyBuffer();
-		if (data.remaining() > 256 * 4) {
+		if (data.remaining() > BOOT_PACKET_SIZE) {
 			throw new IllegalArgumentException(
 					"A boot packet can contain at most 256 words of data");
 		}
 	}
 
-	/** Deserialise a boot message from a received message. */
+	/**
+	 * Deserialise a boot message from a received message.
+	 *
+	 * @param buffer
+	 *            the buffer to read out of.
+	 */
 	public SpinnakerBootMessage(ByteBuffer buffer) {
 		buffer.getShort(); // TODO check message version?
 		opcode = SpinnakerBootOpCode.get(buffer.getInt());

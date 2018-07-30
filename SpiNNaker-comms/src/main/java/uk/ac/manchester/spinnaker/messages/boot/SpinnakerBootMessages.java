@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
-/** Represents a set of boot messages to be sent to boot the board */
+/** Represents a set of boot messages to be sent to boot the board. */
 public class SpinnakerBootMessages {
 	private static final int BOOT_MESSAGE_DATA_WORDS = 256;
 	private static final int BOOT_MESSAGE_DATA_BYTES = BOOT_MESSAGE_DATA_WORDS
@@ -38,12 +38,13 @@ public class SpinnakerBootMessages {
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
 	private static final String BOOT_IMAGE = "scamp.boot";
+	private static final int MS_PER_S = 1000;
 
 	private final ByteBuffer bootData;
 	private final int numDataPackets;
 
 	private static void initFlags(SystemVariableBootValues bootVars) {
-		int currentTime = (int) (System.currentTimeMillis() / 1000);
+		int currentTime = (int) (System.currentTimeMillis() / MS_PER_S);
 		bootVars.setValue(unix_timestamp, currentTime);
 		bootVars.setValue(boot_signature, currentTime);
 		bootVars.setValue(is_root_chip, 1);
@@ -68,9 +69,10 @@ public class SpinnakerBootMessages {
 				bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
 	}
 
+	private static final int WORD_SIZE = 4;
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
-		ByteBuffer buffer = allocate(BOOT_IMAGE_MAX_BYTES + 4)
+		ByteBuffer buffer = allocate(BOOT_IMAGE_MAX_BYTES + WORD_SIZE)
 				.order(BIG_ENDIAN);
 		buffer.position(0);
 
@@ -92,7 +94,7 @@ public class SpinnakerBootMessages {
 							+ " (only files up to 32KiB are acceptable)",
 					buffer.position()));
 		}
-		if (buffer.position() % 4 != 0) {
+		if (buffer.position() % WORD_SIZE != 0) {
 			// This ought to be unreachable...
 			throw new Error(format(
 					"The boot file size of %d bytes must be divisible by 4",
