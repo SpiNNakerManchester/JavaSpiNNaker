@@ -25,9 +25,9 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for ADC information */
+	/** An SCP response to a request for ADC information. */
 	public class Response extends BMPRequest.BMPResponse {
-		/** The ADC information */
+		/** The ADC information. */
 		public final ADCInfo adcInfo;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

@@ -15,6 +15,13 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
+/**
+ * The base class of a request following the BMP protocol.
+ *
+ * @author Donal Fellows
+ * @param <T>
+ *            The type of the response to the request.
+ */
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
 	private static SDPHeader bmpHeader(int board) {
@@ -26,52 +33,184 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board), 0);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 */
 	protected BMPRequest(int board, SCPCommand command) {
 		this(board, command, null, null, null, (byte[]) null);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 */
 	protected BMPRequest(int board, SCPCommand command, Integer argument1,
 			Integer argument2, Integer argument3) {
 		this(board, command, argument1, argument2, argument3, (byte[]) null);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(int board, SCPCommand command, byte[] data) {
 		this(board, command, null, null, null, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(int board, SCPCommand command, ByteBuffer data) {
 		this(board, command, null, null, null, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(int board, SCPCommand command, Integer argument1,
 			Integer argument2, Integer argument3, byte[] data) {
 		super(bmpHeader(board), command, argument1, argument2, argument3, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param board
+	 *            The board to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(int board, SCPCommand command, Integer argument1,
 			Integer argument2, Integer argument3, ByteBuffer data) {
 		super(bmpHeader(board), command, argument1, argument2, argument3, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command) {
 		this(boards, command, null, null, null, (byte[]) null);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3) {
 		this(boards, command, argument1, argument2, argument3, (byte[]) null);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			byte[] data) {
 		this(boards, command, null, null, null, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			ByteBuffer data) {
 		this(boards, command, null, null, null, data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			byte[] data) {
@@ -79,6 +218,22 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 				data);
 	}
 
+	/**
+	 * Make a request.
+	 *
+	 * @param boards
+	 *            The boards to talk to
+	 * @param command
+	 *            The command to send
+	 * @param argument1
+	 *            The first argument
+	 * @param argument2
+	 *            The second argument
+	 * @param argument3
+	 *            The third argument
+	 * @param data
+	 *            The payload
+	 */
 	protected BMPRequest(Collection<Integer> boards, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			ByteBuffer data) {
@@ -87,7 +242,19 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	}
 
 	/** Represents an SCP request thats tailored for the BMP connection. */
-	public static abstract class BMPResponse extends SCPResponse {
+	public abstract static class BMPResponse extends SCPResponse {
+		/**
+		 * Make a response object.
+		 *
+		 * @param operation
+		 *            The operation that this part of.
+		 * @param command
+		 *            The command that this is a response to.
+		 * @param buffer
+		 *            The buffer to read the response from.
+		 * @throws UnexpectedResponseCodeException
+		 *             If the response is not a success.
+		 */
 		protected BMPResponse(String operation, SCPCommand command,
 				ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super(buffer);

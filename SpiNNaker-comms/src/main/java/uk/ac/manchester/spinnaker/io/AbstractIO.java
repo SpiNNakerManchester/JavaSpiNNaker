@@ -19,7 +19,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  * @author Donal Fellows
  */
 public interface AbstractIO extends AutoCloseable {
-	/** The size of the entire region of memory. */
+	/** @return The size of the entire region of memory. */
 	int size();
 
 	/**
@@ -28,6 +28,7 @@ public interface AbstractIO extends AutoCloseable {
 	 *
 	 * @param slice
 	 *            A single index for a single byte of memory.
+	 * @return The slice view of the byte.
 	 * @throws Exception
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
@@ -40,7 +41,8 @@ public interface AbstractIO extends AutoCloseable {
 	 * current region to be valid.
 	 *
 	 * @param slice
-	 *            A contiguous slice of memory.
+	 *            A description of a contiguous slice of memory.
+	 * @return The slice view of the chunk.
 	 * @throws Exception
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
@@ -86,6 +88,8 @@ public interface AbstractIO extends AutoCloseable {
 		case END:
 			seek(numBytes + size());
 			break;
+		default:
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -114,12 +118,13 @@ public interface AbstractIO extends AutoCloseable {
 	 */
 	int tell() throws IOException, Exception;
 
-	/** Return the current absolute address within the region */
+	/** @return the current absolute address within the region. */
 	int getAddress();
 
 	/**
 	 * Read the rest of the data.
 	 *
+	 * @return The bytes that have been read.
 	 * @throws Exception
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
@@ -135,6 +140,7 @@ public interface AbstractIO extends AutoCloseable {
 	 *
 	 * @param numBytes
 	 *            The number of bytes to read
+	 * @return The bytes that have been read.
 	 * @throws Exception
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
@@ -233,16 +239,18 @@ public interface AbstractIO extends AutoCloseable {
 	}
 
 	/** A description of a slice (range) of an IO object. */
-	static final class Slice {
+	final class Slice {
 		/** The index where the slice starts. */
-		public Integer start;
+		public final Integer start;
 		/**
 		 * The index where the slice stops. (One after the last accessible
 		 * byte.)
 		 */
-		public Integer stop;
+		public final Integer stop;
 
-		private Slice() {
+		private Slice(Integer start, Integer stop) {
+			this.start = start;
+			this.stop = stop;
 		}
 
 		/**
@@ -254,9 +262,7 @@ public interface AbstractIO extends AutoCloseable {
 		 * @return The slice
 		 */
 		public static Slice from(int start) {
-			Slice s = new Slice();
-			s.start = start;
-			return s;
+			return new Slice(start, null);
 		}
 
 		/**
@@ -268,9 +274,7 @@ public interface AbstractIO extends AutoCloseable {
 		 * @return The slice
 		 */
 		public static Slice to(int end) {
-			Slice s = new Slice();
-			s.stop = end;
-			return s;
+			return new Slice(null, end);
 		}
 
 		/**
@@ -284,10 +288,7 @@ public interface AbstractIO extends AutoCloseable {
 		 * @return The slice
 		 */
 		public static Slice over(int start, int end) {
-			Slice s = new Slice();
-			s.start = start;
-			s.stop = end;
-			return s;
+			return new Slice(start, end);
 		}
 	}
 
@@ -360,7 +361,8 @@ public interface AbstractIO extends AutoCloseable {
 		return new OutputStream() {
 			@Override
 			public void write(int b) throws IOException {
-				byte[] buffer = { (byte) (b & BYTE_MASK) };
+				byte[] buffer = new byte[1];
+				buffer[0] = (byte) (b & BYTE_MASK);
 				try {
 					AbstractIO.this.write(buffer);
 				} catch (Exception e) {

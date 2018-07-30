@@ -60,6 +60,7 @@ public abstract class LocateConnectedMachineIPAddress {
 		 *            Where the board is
 		 * @param timestamp
 		 *            When it sent the notification
+		 * @return True if we should stop receiving.
 		 * @throws Exception
 		 *             If anything goes wrong
 		 */

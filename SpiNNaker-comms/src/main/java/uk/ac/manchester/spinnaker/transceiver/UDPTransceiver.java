@@ -85,7 +85,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 * @param <Conn>
 	 *            The type of connection being created.
 	 */
-	public interface UDPConnectionFactory<Conn extends UDPConnection<?>> {
+	public interface ConnectionFactory<Conn extends UDPConnection<?>> {
 		/**
 		 * @return The type of connection this factory actually makes.
 		 */
@@ -140,19 +140,19 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 *
 	 * @param callback
 	 *            Function to be called when a packet is received
-	 * @param connection_class
+	 * @param connectionFactory
 	 *            The class of connection to receive using
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
-	 * @throws IOException
+	 * @throws UnknownHostException
 	 *             If the networking goes wrong.
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
-			UDPConnectionFactory<? extends UDPConnection<T>> connection_factory)
+			ConnectionFactory<? extends UDPConnection<T>> connectionFactory)
 			throws UnknownHostException {
-		return registerUDPListener(callback, connection_factory, null, null);
+		return registerUDPListener(callback, connectionFactory, null, null);
 	}
 
 	/**
@@ -160,21 +160,21 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 *
 	 * @param callback
 	 *            Function to be called when a packet is received
-	 * @param connection_class
+	 * @param connectionFactory
 	 *            The class of connection to receive using
-	 * @param local_port
+	 * @param localPort
 	 *            The local UDP port to bind.
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
-	 * @throws IOException
+	 * @throws UnknownHostException
 	 *             If the networking goes wrong.
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
-			UDPConnectionFactory<? extends UDPConnection<T>> connection_factory,
-			int local_port) throws UnknownHostException {
-		return registerUDPListener(callback, connection_factory, local_port,
+			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
+			int localPort) throws UnknownHostException {
+		return registerUDPListener(callback, connectionFactory, localPort,
 				null);
 	}
 
@@ -183,9 +183,9 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 *
 	 * @param callback
 	 *            Function to be called when a packet is received
-	 * @param connection_class
+	 * @param connectionFactory
 	 *            The class of connection to receive using
-	 * @param local_port
+	 * @param localPort
 	 *            The optional port number to listen on; if not specified, an
 	 *            existing connection will be used if possible, otherwise a
 	 *            random free port number will be used
@@ -200,10 +200,10 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
-			UDPConnectionFactory<? extends UDPConnection<T>> connection_factory,
-			Integer local_port, String localHost) throws UnknownHostException {
+			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
+			Integer localPort, String localHost) throws UnknownHostException {
 		if (!UDPConnection.class
-				.isAssignableFrom(connection_factory.getClassKey())) {
+				.isAssignableFrom(connectionFactory.getClassKey())) {
 			throw new IllegalArgumentException(
 					"the connection class must be a UDPConnection");
 		}
@@ -213,21 +213,21 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 		// If the local port was specified
 		Pair<T> pair;
-		if (local_port != null) {
-			pair = lookup(connection_factory.getClassKey(), addr, local_port);
+		if (localPort != null) {
+			pair = lookup(connectionFactory.getClassKey(), addr, localPort);
 
 			// Create a connection if there isn't already one
 			if (pair.connection == null) {
-				pair.connection = connection_factory
-						.getInstance(addr.getHostAddress(), local_port);
+				pair.connection = connectionFactory
+						.getInstance(addr.getHostAddress(), localPort);
 				addConnection(pair.connection);
 			}
 		} else {
-			pair = lookup(connection_factory.getClassKey(), addr);
+			pair = lookup(connectionFactory.getClassKey(), addr);
 
 			// Create a connection if there isn't already one
 			if (pair.connection == null) {
-				pair.connection = connection_factory
+				pair.connection = connectionFactory
 						.getInstance(addr.getHostAddress());
 				addConnection(pair.connection);
 			}
@@ -244,7 +244,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
 					pair);
 		}
-		connectionsByClass.get(connection_factory.getClassKey()).add(pair);
+		connectionsByClass.get(connectionFactory.getClassKey()).add(pair);
 		pair.listener.addCallback(callback);
 		return pair.connection;
 	}

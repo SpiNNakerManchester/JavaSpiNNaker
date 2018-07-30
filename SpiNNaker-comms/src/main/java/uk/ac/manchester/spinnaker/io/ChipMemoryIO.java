@@ -21,7 +21,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /** A file-like object for the memory of a chip. */
-class ChipMemoryIO {
+final class ChipMemoryIO {
 	// TODO What is this value _really?_
 	private static final int SDRAM_START = 0x60000000;
 	/**
@@ -29,9 +29,17 @@ class ChipMemoryIO {
 	 * transceiver, x and y (thus two transceivers might not see the same
 	 * buffered memory).
 	 */
-	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing =
-			new WeakHashMap<>();
+	private static Map<Transceiver, Map<ChipLocation, ChipMemoryIO>> existing = new WeakHashMap<>();
 
+	/**
+	 * Get the instance for a particular transceiver and chip.
+	 *
+	 * @param transceiver
+	 *            The transciever.
+	 * @param chip
+	 *            The chip.
+	 * @return The access interface to the chip's memory.
+	 */
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
 		Map<ChipLocation, ChipMemoryIO> map = existing.get(transceiver);
@@ -63,7 +71,7 @@ class ChipMemoryIO {
 	/** The current pointer where the next buffered write will occur. */
 	private int writeAddress;
 
-	/** The write buffer */
+	/** The write buffer. */
 	private final ByteBuffer writeBuffer;
 
 	/**
@@ -109,7 +117,12 @@ class ChipMemoryIO {
 		hold = null;
 	}
 
-	/** Seek to a position within the region. */
+	/**
+	 * Seek to a position within the region.
+	 *
+	 * @param address
+	 *            The address to set.
+	 */
 	void setCurrentAddress(int address) throws IOException, Exception {
 		flushWriteBuffer();
 		currentAddress = address;
@@ -119,6 +132,7 @@ class ChipMemoryIO {
 	/**
 	 * Read a number of bytes.
 	 *
+	 * @return The bytes that have been read.
 	 * @param numBytes
 	 *            The number of bytes to read
 	 */

@@ -179,17 +179,7 @@ public class FileIO implements AbstractIO {
 		}
 		ByteBuffer b = allocate(len).order(LITTLE_ENDIAN);
 		while (b.hasRemaining()) {
-			switch (type) {
-			case WORD:
-				b.putInt(value);
-				break;
-			case HALF_WORD:
-				b.putShort((short) (value & 0xFFFF));
-				break;
-			case BYTE:
-				b.put((byte) (value & 0xFF));
-				break;
-			}
+			type.writeTo(value, b);
 		}
 		synchronized (file) {
 			file.seek(currentOffset);

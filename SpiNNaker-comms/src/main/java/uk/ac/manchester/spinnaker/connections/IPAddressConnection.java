@@ -27,10 +27,18 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 		super(localHost, localPort, null, null);
 	}
 
+	/**
+	 * @return The IP address, or <tt>null</tt> if none was forthcoming.
+	 */
 	public final InetAddress receiveIPAddress() {
 		return receiveIPAddress(null);
 	}
 
+	/**
+	 * @param timeout
+	 *            How long to wait for an IP address; <tt>null</tt> for forever.
+	 * @return The IP address, or <tt>null</tt> if none was forthcoming.
+	 */
 	public InetAddress receiveIPAddress(Integer timeout) {
 		try {
 			DatagramPacket packet = receiveWithAddress(timeout);

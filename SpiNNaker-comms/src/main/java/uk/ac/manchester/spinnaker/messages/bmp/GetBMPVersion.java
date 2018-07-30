@@ -24,9 +24,9 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the version of software running */
+	/** An SCP response to a request for the version of software running. */
 	public class Response extends BMPRequest.BMPResponse {
-		/** The version information received */
+		/** The version information received. */
 		public final VersionInfo versionInfo;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

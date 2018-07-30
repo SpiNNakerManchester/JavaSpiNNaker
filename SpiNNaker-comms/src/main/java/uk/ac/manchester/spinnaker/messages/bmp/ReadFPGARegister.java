@@ -28,9 +28,9 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the contents of an FPGA register */
+	/** An SCP response to a request for the contents of an FPGA register. */
 	public class Response extends BMPRequest.BMPResponse {
-		/** The ADC information */
+		/** The ADC information. */
 		public final int fpgaRegister;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

@@ -1,7 +1,10 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 /** Misc constants. */
-interface Constants {
+abstract class Constants {
+	private Constants() {
+	}
+
 	/** ms per second. */
-	double MS_PER_S = 1000.0;
+	static final double MS_PER_S = 1000.0;
 }

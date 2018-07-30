@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.messages;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * Represents a serializable message or a piece of a serializable message.
@@ -15,10 +14,11 @@ public interface SerializableMessage {
 	/**
 	 * Writes this message into the given buffer as a contiguous range of bytes.
 	 * This is so that a message can be sent. Implementors may assume that the
-	 * buffer has been configured to be {@linkplain ByteOrder#LITTLE_ENDIAN
-	 * little-endian} and that its <i>position</i> is at the point where they
-	 * should begin writing. Once it has finished, the <i>position</i> should be
-	 * immediately after the last byte written by this method.
+	 * buffer has been configured to be
+	 * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
+	 * <i>position</i> is at the point where they should begin writing. Once it
+	 * has finished, the <i>position</i> should be immediately after the last
+	 * byte written by this method.
 	 *
 	 * @param buffer
 	 *            The buffer to write into.
