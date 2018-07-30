@@ -251,36 +251,34 @@ public final class SpiNNakerTriadGeometry {
     /**
      * Calculate the machine version based on the size.
      *
-     * @param width
-     *            The width of the machine to find the version for.
-     * @param height
-     *            The height of the machine to find the version for.
+     * @param dimensions
+     *            The width anmd height of the machine to find the version for.
      * @return A Board version, which may be the INVALID one.
      */
-    public MachineVersion versionBySize(int width, int height) {
-        if ((width == 2) && (height == 2)) {
+    MachineVersion versionBySize(MachineDimensions dimensions) {
+        if ((dimensions.width == 2) && (dimensions.height == 2)) {
             return MachineVersion.THREE;
         }
-        if ((width == MachineDefaults.SIZE_X_OF_ONE_BOARD)
-                && (height == MachineDefaults.SIZE_Y_OF_ONE_BOARD)) {
+        if ((dimensions.width == MachineDefaults.SIZE_X_OF_ONE_BOARD)
+                && (dimensions.height == MachineDefaults.SIZE_Y_OF_ONE_BOARD)) {
             return MachineVersion.FIVE;
         }
-        if ((width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (height % MachineDefaults.TRIAD_WIDTH == 0)) {
+        if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
+                && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {
             return MachineVersion.TRIAD_WITH_WRAPAROUND;
         }
-        if (((width - MachineDefaults.HALF_SIZE)
+        if (((dimensions.width - MachineDefaults.HALF_SIZE)
                 % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((height - MachineDefaults.HALF_SIZE)
+                && ((dimensions.height - MachineDefaults.HALF_SIZE)
                         % MachineDefaults.TRIAD_WIDTH == 0)) {
             return MachineVersion.TRIAD_NO_WRAPAROUND;
         }
-        if (width < MachineDefaults.SIZE_X_OF_ONE_BOARD
-                || height < MachineDefaults.SIZE_Y_OF_ONE_BOARD) {
+        if (dimensions.width < MachineDefaults.SIZE_X_OF_ONE_BOARD
+                || dimensions.height < MachineDefaults.SIZE_Y_OF_ONE_BOARD) {
             return MachineVersion.INVALID;
         }
-        if (width % MachineDefaults.HALF_SIZE == 0
-                && height % MachineDefaults.HALF_SIZE == 0) {
+        if (dimensions.width % MachineDefaults.HALF_SIZE == 0
+                && dimensions.height % MachineDefaults.HALF_SIZE == 0) {
             return MachineVersion.NONE_TRIAD_LARGE;
         }
         return MachineVersion.INVALID;

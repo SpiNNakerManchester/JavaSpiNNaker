@@ -41,11 +41,8 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  */
 public class Machine implements Iterable<Chip> {
 
-    /** Size of the machine along the x axis in Chips. */
-    public final int width;
-
-    /** Size of the machine along the y axis in Chips. */
-    public final int height;
+    /** Size of the machine along the x and y axes in Chips. */
+    public final MachineDimensions machineDimensions;
 
     // This is not final as will change as processors become monitors.
     private int maxUserProssorsOnAChip;
@@ -77,15 +74,14 @@ public class Machine implements Iterable<Chip> {
      /**
      * Creates an empty machine.
      *
-     * @param width The number of columns (in Chips) in this machine.
-     * @param height The number of rows (in Chips) in this machine.
+     * @param machineDimensions
+     *      Size of the machine along the x and y axes in Chips.
      * @param boot The x and y coordinates of the chip used to boot the machine.
      */
-    public Machine(int width, int height, HasChipLocation boot) {
-        this.width = width;
-        this.height = height;
+    public Machine(MachineDimensions machineDimensions, HasChipLocation boot) {
+        this.machineDimensions = machineDimensions;
         version = SpiNNakerTriadGeometry.getSpinn5Geometry().
-                versionBySize(width, height);
+                versionBySize(machineDimensions);
 
         maxUserProssorsOnAChip = 0;
 
@@ -102,16 +98,16 @@ public class Machine implements Iterable<Chip> {
     /**
      * Creates a machine starting with the supplied chips.
      *
-     * @param width The number of columns (in Chips) in this machine.
-     * @param height The number of rows (in Chips) in this machine.
+     * @param machineDimensions
+     *      Size of the machine along the x and y axes in Chips.
      * @param chips An iterable of chips in the machine.
      * @param boot The x and y coordinates of the chip used to boot the machine.
      * @throws IllegalArgumentException
      *      On an attempt to add a second Chip with the same location.
      */
-    public Machine(int width, int height, Iterable<Chip> chips,
+    public Machine(MachineDimensions machineDimensions, Iterable<Chip> chips,
             HasChipLocation boot) {
-        this(width, height, boot);
+        this(machineDimensions, boot);
         addChips(chips);
     }
 
@@ -129,13 +125,15 @@ public class Machine implements Iterable<Chip> {
                     "There is already a Chip at location: " + location);
         }
 
-        if (chip.getX() >= width) {
+        if (chip.getX() >= machineDimensions.width) {
             throw new IllegalArgumentException("Chip x: " + chip.getX()
-                    + " is too high for a machine with width " + width);
+                    + " is too high for a machine with width "
+                    + machineDimensions.width);
         }
-        if (chip.getY() >= height) {
+        if (chip.getY() >= machineDimensions.height) {
            throw new IllegalArgumentException("Chip y: " + chip.getY()
-                    + " is too high for a machine with height " + width);
+                   + " is too high for a machine with height "
+                   + machineDimensions.width);
         }
 
         chips.put(location, chip);
@@ -335,7 +333,7 @@ public class Machine implements Iterable<Chip> {
      * @return The maximum possible x-coordinate.
      */
     public int maxChipX() {
-        return width - 1;
+        return machineDimensions.width - 1;
     }
 
    /**
@@ -347,7 +345,7 @@ public class Machine implements Iterable<Chip> {
      * @return The maximum possible y-coordinate.
      */
     public int maxChipY() {
-        return height - 1;
+        return machineDimensions.height - 1;
     }
 
     /**
@@ -452,8 +450,9 @@ public class Machine implements Iterable<Chip> {
                 break;
             case INVALID:
                 throw new IllegalStateException(
-                        "Based on current maxX:" + width + " and maxY:"
-                        + height + " no valid board version available.");
+                        "Based on current maxX:" + machineDimensions.width
+                        + " and maxY:" + machineDimensions.height
+                        + " no valid board version available.");
             default:
                 throw new Error("Unexpected BoardVersion Enum: " + version
                         + " Please reraise an issue.");
@@ -474,8 +473,8 @@ public class Machine implements Iterable<Chip> {
      */
     private ChipLocation normalizedLocation(int x, int y) {
         if (version.wrapAround) {
-            x = (x + width) % width;
-            y = (y + height) % height;
+            x = (x + machineDimensions.width) % machineDimensions.width;
+            y = (y + machineDimensions.height) % machineDimensions.height;
         } else {
             if (x < 0 || y < 0) {
                 return null;
@@ -498,7 +497,8 @@ public class Machine implements Iterable<Chip> {
     private ChipLocation normalizedLocation(HasChipLocation location) {
         if (version.wrapAround) {
              return new ChipLocation(
-                     location.getX() % width, location.getY() % height);
+                     location.getX() % machineDimensions.width,
+                     location.getY() % machineDimensions.height);
         } else {
             return location.asChipLocation();
         }
@@ -612,8 +612,9 @@ public class Machine implements Iterable<Chip> {
                 break;
             case INVALID:
                 throw new IllegalStateException(
-                        "Based on current maxX:" + width + " and maxY:"
-                        + height + " no valid board version available.");
+                        "Based on current maxX:" + machineDimensions.width
+                        + " and maxY:" + machineDimensions.height
+                        + " no valid board version available.");
             default:
                 throw new Error("Unexpected BoardVersion Enum: " + version
                         + " Please reraise an issue.");

@@ -162,16 +162,27 @@ public class TestSpiNNakerTriadGeometry {
     @Test
     public void testMachineVersion() {
         SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
-        assertEquals(MachineVersion.THREE, instance.versionBySize(2, 2));
-        assertEquals(MachineVersion.FIVE, instance.versionBySize(8, 8));
-        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(12, 12));
-        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(16, 16));
-        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(20, 20));
-        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(12+24, 12+36));
-        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(16+24, 16+36));
-        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(20+24, 20+36));
-        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(12, 16));
-        assertEquals(MachineVersion.INVALID, instance.versionBySize(13, 16));
-        assertEquals(MachineVersion.INVALID, instance.versionBySize(12, 4));
+        assertEquals(MachineVersion.THREE, instance.versionBySize(
+                new MachineDimensions(2, 2)));
+        assertEquals(MachineVersion.FIVE, instance.versionBySize(
+                new MachineDimensions(8, 8)));
+        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(
+                new MachineDimensions(12, 12)));
+        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(
+                new MachineDimensions(16, 16)));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(
+                new MachineDimensions(20, 20)));
+        assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.versionBySize(
+                new MachineDimensions(12+24, 12+36)));
+        assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.versionBySize(
+                new MachineDimensions(16+24, 16+36)));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(
+                new MachineDimensions(20+24, 20+36)));
+        assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.versionBySize(
+                new MachineDimensions(12, 16)));
+        assertEquals(MachineVersion.INVALID, instance.versionBySize(
+                new MachineDimensions(13, 16)));
+        assertEquals(MachineVersion.INVALID, instance.versionBySize(
+                new MachineDimensions(12, 4)));
     }
 }

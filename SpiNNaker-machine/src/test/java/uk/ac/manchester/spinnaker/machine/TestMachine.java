@@ -73,7 +73,8 @@ public class TestMachine {
         ArrayList<Chip> chips = createdChips(processors);
         InetAddress address = InetAddress.getByAddress(bytes);
 
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
 
         assertEquals(4, instance.maxChipX());
         assertEquals(4, instance.maxChipY());
@@ -111,7 +112,8 @@ public class TestMachine {
         chips.add(new Chip(
                 0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
         assertThrows(IllegalArgumentException.class, () -> {
-            Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+            Machine instance = new Machine(
+                    new MachineDimensions(5, 5), chips, BOOT_CHIP);
         });
     }
 
@@ -119,7 +121,8 @@ public class TestMachine {
     public void testAddChip() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = new ArrayList();
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
         Chip chip00 = new Chip(
                 0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
         instance.addChip(chip00);
@@ -141,7 +144,8 @@ public class TestMachine {
     public void testRepeatAdd() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(new Chip(
                 0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
@@ -152,7 +156,8 @@ public class TestMachine {
     public void testChipAt() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
         assertEquals(chips.get(0), instance.getChipAt(ChipLocation.ZERO_ZERO));
         assertNull(instance.getChipAt(10, 10));
         assertTrue(instance.hasChipAt(ChipLocation.ZERO_ZERO));
@@ -163,7 +168,8 @@ public class TestMachine {
     public void testReserveSystemProcessor() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
         assertEquals(processors.size() -1, instance.maximumUserCoresOnChip());
         instance.reserveSystemProcessors();
         assertEquals(processors.size() - 2, instance.maximumUserCoresOnChip());
@@ -173,7 +179,8 @@ public class TestMachine {
     public void testMachineGetChipsOnBoard() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        Machine instance = new Machine(5, 5, chips, BOOT_CHIP);
+        Machine instance = new Machine(
+                new MachineDimensions(5, 5), chips, BOOT_CHIP);
         int count = 0;
         for (Chip chip:instance.iterChipsOnBoard(chips.get(3))) {
             count++;
@@ -184,7 +191,8 @@ public class TestMachine {
 
     @Test
     public void testGetChipOverLink() {
-        Machine instance = new Machine(24, 24, new ArrayList<Chip>(), BOOT_CHIP);
+        Machine instance = new Machine(new MachineDimensions(24, 24),
+                new ArrayList<Chip>(), BOOT_CHIP);
         ArrayList<Processor> processors = createProcessors();
         Chip chip = new Chip(
                 23, 23, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
