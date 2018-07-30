@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 public class RawConfigParser {
 	// Regular expressions for parsing section headers and options
 	private static final String SECT_TMPL = "\\[(?<name>[^]]+)\\]";
-	private static final String OPT_TMPL = "(?<key>.*?)\\s*[%s]\\s*(?<value>.*)$";
+	private static final String OPT_TMPL =
+			"(?<key>.*?)\\s*[%s]\\s*(?<value>.*)$";
 	private static final String COMMENT_TMPL = "^(?<keep>.*?)[%s].*$";
 
 	private final Pattern sectRE, optRE, commentRE;
