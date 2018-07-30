@@ -8,15 +8,28 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
 /** EIEIO header for command packets. */
 public class EIEIOCommandHeader implements SerializableMessage {
+	/** The command ID in this header. */
 	public final EIEIOCommandID command;
 
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
 
+	/**
+	 * Create a new command header.
+	 *
+	 * @param command
+	 *            The command.
+	 */
 	public EIEIOCommandHeader(EIEIOCommandID command) {
 		this.command = requireNonNull(command, "must supply a command");
 	}
 
+	/**
+	 * Create a new command header.
+	 *
+	 * @param command
+	 *            The encoded command.
+	 */
 	public EIEIOCommandHeader(int command) {
 		if (command < 0 || command > MAX_COMMAND) {
 			throw new IllegalArgumentException(

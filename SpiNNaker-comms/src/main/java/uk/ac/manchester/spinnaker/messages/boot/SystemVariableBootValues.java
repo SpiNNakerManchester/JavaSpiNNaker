@@ -4,6 +4,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,14 +18,19 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 public class SystemVariableBootValues implements SerializableMessage {
 	/** The size of the boot variable block, in bytes. */
 	static final int BOOT_VARIABLE_SIZE = 256;
-	private static final SystemVariableBootValues[] BOOT_VALUES = { null,
-			new SystemVariableBootValues(1, 0x00076104),
-			new SystemVariableBootValues(2, 0x00006103),
-			new SystemVariableBootValues(3, 0x00000502),
-			new SystemVariableBootValues(4, 0x00000001),
-			new SystemVariableBootValues(5, 0x00000001) };
+	private static final Map<Integer, SystemVariableBootValues> BOOT_VALUES;
+	static {
+		HashMap<Integer, SystemVariableBootValues> bootValues = new HashMap<>();
+		bootValues.put(1, new SystemVariableBootValues(1, 0x00076104));
+		bootValues.put(2, new SystemVariableBootValues(2, 0x00006103));
+		bootValues.put(3, new SystemVariableBootValues(3, 0x00000502));
+		bootValues.put(4, new SystemVariableBootValues(4, 0x00000001));
+		bootValues.put(5, new SystemVariableBootValues(5, 0x00000001));
+		BOOT_VALUES = Collections.unmodifiableMap(bootValues);
+	};
 	private final Map<SystemVariableDefinition, Object> values;
 
+	/** Create a set of boot values using all the defaults. */
 	public SystemVariableBootValues() {
 		values = new HashMap<>();
 		for (SystemVariableDefinition svd : SystemVariableDefinition.values()) {
@@ -38,6 +44,15 @@ public class SystemVariableBootValues implements SerializableMessage {
 		values.put(led_0, led0);
 	}
 
+	/**
+	 * Set a particular boot value.
+	 *
+	 * @param systemVariable
+	 *            The variable to set.
+	 * @param value
+	 *            The value to set it to. The type depends on the type of the
+	 *            variable being set.
+	 */
 	public void setValue(SystemVariableDefinition systemVariable,
 			Object value) {
 		switch (systemVariable.type) {
@@ -64,19 +79,17 @@ public class SystemVariableBootValues implements SerializableMessage {
 	/**
 	 * Get the default values of the system variables that get passed to
 	 * SpiNNaker during boot for a particular version of SpiNNaker board.
+	 *
+	 * @param boardVersion
+	 *            Which sort of SpiNN board is being booted.
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
-		switch (boardVersion) {
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-			return BOOT_VALUES[boardVersion];
-		default:
-			throw new IllegalArgumentException(
-					"unknown SpiNNaker board version: " + boardVersion);
+		SystemVariableBootValues bv = BOOT_VALUES.get(boardVersion);
+		if (bv != null) {
+			return bv;
 		}
+		throw new IllegalArgumentException(
+				"unknown SpiNNaker board version: " + boardVersion);
 	}
 
 	@Override
