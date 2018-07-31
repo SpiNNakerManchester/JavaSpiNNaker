@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,82 @@ public class Machine implements Iterable<Chip> {
             HasChipLocation boot) {
         this(machineDimensions, boot);
         addChips(chips);
+    }
+
+    /**
+     * Creates a virtual machine to fill the machine dimensions.
+     *
+     * @param machineDimensions
+     *      Size of the machine along the x and y axes in Chips.
+     * @param ignoreChips A set of chips to ignore in the machine.
+     *      Requests for a "machine" will have these chips excluded,
+     *      as if they never existed.
+     *      The processor IDs of the specified chips are ignored.
+     * @param ignoreCores A set of cores to ignore in the machine.
+     *      Requests for a "machine" will have these cores excluded,
+     *      as if they never existed.
+     * @param ignoreLinks A set of links to ignore in the machine.
+     *      Requests for a "machine" will have these links excluded,
+     *      as if they never existed.
+     */
+    public Machine(MachineDimensions machineDimensions,
+            Set<ChipLocation> ignoreChips, Set<CoreLocation> ignoreCores,
+            Set<LinkDescriptor> ignoreLinks) {
+        this(machineDimensions, ChipLocation.ZERO_ZERO);
+
+        switch (version) {
+            case TWO:
+            case THREE:
+                ignoreLinks.addAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
+                break;
+            case FOUR:
+            case FIVE:
+            case TRIAD_WITH_WRAPAROUND:
+            case TRIAD_NO_WRAPAROUND:
+                break;
+            case NONE_TRIAD_LARGE:
+                break;
+            case INVALID:
+                throw new IllegalStateException(
+                        "Based on current maxX:" + machineDimensions.width
+                        + " and maxY:" + machineDimensions.height
+                        + " no valid board version available.");
+            default:
+                throw new Error("Unexpected BoardVersion Enum: " + version
+                        + " Please reraise an issue.");
+        }
+
+        SpiNNakerTriadGeometry geometry =
+                SpiNNakerTriadGeometry.getSpinn5Geometry();
+
+        // Get all the root and therefor ethernet locations
+        ArrayList<ChipLocation> roots =
+                geometry.getPotentialRootChips(machineDimensions);
+
+        // Get all the valid locations
+        HashSet<ChipLocation> allChipLocations = new HashSet();
+        for (ChipLocation root: roots) {
+            for (ChipLocation local: geometry.singleBoard()) {
+                ChipLocation normalized = normalizedLocation(
+                        root.getX() + local.getX(), root.getY() + local.getY());
+                if (!ignoreChips.contains(normalized)) {
+                    allChipLocations.add(normalized);
+                }
+            }
+        }
+
+        for (ChipLocation location: allChipLocations) {
+            Router router = new Router();
+            for (Direction direction: Direction.values()) {
+                ChipLocation destination = normalizedLocation(
+                        location.getX() + direction.xChange,
+                        location.getY() + direction.yChange);
+                if (allChipLocations.contains(destination)) {
+                    router.addLink(new Link(location, direction, destination));
+                }
+            }
+            //Chip chip = new Chip()
+        }
     }
 
     /**
