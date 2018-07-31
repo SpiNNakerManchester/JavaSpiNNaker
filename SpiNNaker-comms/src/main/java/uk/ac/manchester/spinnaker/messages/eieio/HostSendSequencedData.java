@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.HOST_SEND_SEQUENCED_DATA;
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readDataMessage;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -14,20 +17,17 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 
 	public HostSendSequencedData(byte regionID, byte sequenceNum,
 			EIEIODataMessage eieioDataMessage) {
-		super(EIEIOCommandID.HOST_SEND_SEQUENCED_DATA);
+		super(HOST_SEND_SEQUENCED_DATA);
 		this.regionID = regionID;
 		this.sequenceNum = sequenceNum;
 		this.eieioDataMessage = eieioDataMessage;
 	}
 
-	public HostSendSequencedData(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
-		super(header, data, offset);
-		offset += 2;
-		regionID = data.get(offset++);
-		sequenceNum = data.get(offset++);
-		eieioDataMessage = EIEIOMessageFactory.readDataMessage(data,
-				offset);
+	public HostSendSequencedData(EIEIOCommandHeader header, ByteBuffer data) {
+		super(header);
+		regionID = data.get();
+		sequenceNum = data.get();
+		eieioDataMessage = readDataMessage(data);
 	}
 
 	@Override

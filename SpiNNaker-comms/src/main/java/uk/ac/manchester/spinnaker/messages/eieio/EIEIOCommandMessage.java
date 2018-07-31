@@ -7,17 +7,12 @@ public class EIEIOCommandMessage implements EIEIOMessage {
 	/** The header of the message. */
 	public final EIEIOCommandHeader header;
 
-	public EIEIOCommandMessage(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
+	public EIEIOCommandMessage(EIEIOCommandHeader header) {
 		this.header = header;
 	}
 
-	public EIEIOCommandMessage(EIEIOCommandHeader header) {
-		this(header, null, 0);
-	}
-
-	public EIEIOCommandMessage(EIEIOCommandID command) {
-		this(new EIEIOCommandHeader(command), null, 0);
+	public EIEIOCommandMessage(EIEIOCommand command) {
+		this.header = new EIEIOCommandHeader(command);
 	}
 
 	@Override
@@ -25,6 +20,7 @@ public class EIEIOCommandMessage implements EIEIOMessage {
 		header.addToBuffer(buffer);
 	}
 
+	@Override
 	public int minPacketLength() {
 		return 2;
 	}

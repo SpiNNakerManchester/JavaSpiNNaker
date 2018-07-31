@@ -5,8 +5,7 @@ import java.nio.ByteBuffer;
 /**
  * A marker interface for possible data elements in the EIEIO data packet.
  */
-public abstract class AbstractDataElement {
-
+public interface AbstractDataElement {
 	/**
 	 * Writes this message chunk into the given buffer. This is so that a
 	 * message can be sent.
@@ -18,5 +17,5 @@ public abstract class AbstractDataElement {
 	 * @throws IllegalArgumentException
 	 *             If this message is incompatible with the given message type.
 	 */
-	public abstract void addToBuffer(ByteBuffer buffer, EIEIOType eieioType);
+	void addToBuffer(ByteBuffer buffer, EIEIOType eieioType);
 }

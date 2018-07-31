@@ -25,8 +25,8 @@ public class GetMulticastRoutesProcess
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
 	/** 16 entries fit in a 256-byte read. */
-	private static final int ENTRIES_PER_READ = UDP_MESSAGE_MAX_SIZE
-			/ BYTES_PER_ENTRY;
+	private static final int ENTRIES_PER_READ =
+			UDP_MESSAGE_MAX_SIZE / BYTES_PER_ENTRY;
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
 

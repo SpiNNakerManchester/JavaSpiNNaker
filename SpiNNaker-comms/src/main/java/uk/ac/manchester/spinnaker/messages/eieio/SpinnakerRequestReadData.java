@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -14,7 +16,7 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
 			byte numRequests, byte[] channel, byte[] regionID,
 			int[] startAddress, int[] spaceRead) {
-		super(EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA);
+		super(SPINNAKER_REQUEST_READ_DATA);
 		header = new Header(x, y, p, numRequests, sequenceNum);
 		this.reqs = new Reqs(numRequests, channel, regionID, startAddress,
 				spaceRead);
@@ -23,17 +25,21 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
 			byte numRequests, byte channel, byte regionID, int startAddress,
 			int spaceRead) {
-		super(EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA);
+		super(SPINNAKER_REQUEST_READ_DATA);
 		header = new Header(x, y, p, numRequests, sequenceNum);
-		this.reqs = new Reqs(numRequests, new byte[] { channel },
-				new byte[] { regionID }, new int[] { startAddress },
-				new int[] { spaceRead });
+		this.reqs = new Reqs(numRequests, new byte[] {
+				channel
+		}, new byte[] {
+				regionID
+		}, new int[] {
+				startAddress
+		}, new int[] {
+				spaceRead
+		});
 	}
 
-	public SpinnakerRequestReadData(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
-		super(header, data, offset);
-		data.position(offset);
+	public SpinnakerRequestReadData(EIEIOCommandHeader header, ByteBuffer data) {
+		super(header);
 
 		byte x = data.get();
 		byte y = data.get();

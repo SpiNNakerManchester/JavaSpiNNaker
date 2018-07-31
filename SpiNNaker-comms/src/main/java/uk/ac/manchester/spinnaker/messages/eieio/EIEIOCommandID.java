@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * What SpiNNaker-specific EIEIO commands there are.
  */
-public enum EIEIOCommandID {
+public enum EIEIOCommandID implements EIEIOCommand {
 	/** Database handshake with external program. */
 	DATABASE_CONFIRMATION(1),
 	/** Fill in buffer area with padding. */
@@ -43,7 +43,7 @@ public enum EIEIOCommandID {
 		this.value = value;
 	}
 
-	/** @return The encoded form. */
+	@Override
 	public int getValue() {
 		return value;
 	}
@@ -55,7 +55,11 @@ public enum EIEIOCommandID {
 	 *            the encoded command
 	 * @return the ID, or <tt>null</tt> if the encoded form was unrecognised.
 	 */
-	public static EIEIOCommandID get(int command) {
-		return MAP.get(command);
+	public static EIEIOCommand get(int command) {
+		EIEIOCommandID id = MAP.get(command);
+		if (id != null) {
+			return id;
+		}
+		return new CustomEIEIOCommand(command);
 	}
 }

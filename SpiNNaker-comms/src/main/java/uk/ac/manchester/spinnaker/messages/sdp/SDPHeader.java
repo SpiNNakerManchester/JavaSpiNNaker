@@ -92,6 +92,10 @@ public class SDPHeader implements SerializableMessage {
 		return destinationPort;
 	}
 
+	public void setDestinationPort(SDPPort port) {
+		this.destinationPort = port.value;
+	}
+
 	public void setDestinationPort(int port) {
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("port out of range");
@@ -109,6 +113,10 @@ public class SDPHeader implements SerializableMessage {
 
 	public int getSourcePort() {
 		return sourcePort;
+	}
+
+	public void setSourcePort(SDPPort port) {
+		this.sourcePort = port.value;
 	}
 
 	public void setSourcePort(int port) {
@@ -133,5 +141,4 @@ public class SDPHeader implements SerializableMessage {
 	public void setTag(byte tag) {
 		this.tag = tag;
 	}
-
 }

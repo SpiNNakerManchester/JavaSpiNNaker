@@ -77,6 +77,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 		ByteBuffer buffer = newMessageBuffer();
 		buffer.putShort((short) 0);
 		sdpMessage.addToBuffer(buffer);
+		buffer.flip();
 		send(buffer);
 	}
 

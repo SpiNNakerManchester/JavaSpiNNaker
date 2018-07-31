@@ -47,11 +47,9 @@ public class EIEIODataHeader implements SerializableMessage {
 		return (b >>> bit) & 1;
 	}
 
-	public EIEIODataHeader(ByteBuffer buffer, int offset) {
-		ByteBuffer b = buffer.asReadOnlyBuffer();
-		b.position(offset);
-		count = b.get();
-		byte data = b.get();
+	public EIEIODataHeader(ByteBuffer buffer) {
+		count = buffer.get();
+		byte data = buffer.get();
 		boolean havePrefix = bit(data, PREFIX_BIT) != 0;
 		if (havePrefix) {
 			prefixType = EIEIOPrefix.getByValue(bit(data, PREFIX_TYPE_BIT));
@@ -63,7 +61,7 @@ public class EIEIODataHeader implements SerializableMessage {
 		eieioType = EIEIOType.getByValue((data >>> TYPE_BITS) & TWO_BITS_MASK);
 		tag = (byte) ((data >>> TAG_BITS) & TWO_BITS_MASK);
 		if (havePrefix) {
-			prefix = b.getShort();
+			prefix = buffer.getShort();
 		} else {
 			prefix = null;
 		}
@@ -71,11 +69,11 @@ public class EIEIODataHeader implements SerializableMessage {
 			switch (eieioType) {
 			case KEY_PAYLOAD_16_BIT:
 			case KEY_16_BIT:
-				payloadBase = (int) b.getShort();
+				payloadBase = (int) buffer.getShort();
 				break;
 			case KEY_PAYLOAD_32_BIT:
 			case KEY_32_BIT:
-				payloadBase = b.getInt();
+				payloadBase = buffer.getInt();
 				break;
 			default:
 				payloadBase = null;

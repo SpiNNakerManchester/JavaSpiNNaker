@@ -3,14 +3,17 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 /** Possible prefixing of keys in EIEIO packets. */
 public enum EIEIOPrefix {
 	/** Apply prefix on lower half of the word. */
-	LOWER_HALF_WORD(0),
+	LOWER_HALF_WORD(0, 0),
 	/** Apply prefix on top half of the word. */
-	UPPER_HALF_WORD(1);
+	UPPER_HALF_WORD(1, 16);
 
 	private final int value;
+	/** How much to shift things by. */
+	final int shift;
 
-	private EIEIOPrefix(int value) {
+	EIEIOPrefix(int value, int shift) {
 		this.value = value;
+		this.shift = shift;
 	}
 
 	/** @return the encoded form. */

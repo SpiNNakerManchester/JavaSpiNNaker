@@ -3,7 +3,9 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -71,6 +73,11 @@ public class IOBuffer implements HasCoreLocation {
 	/** @return The contents of the buffer. */
 	public byte[] getContents() {
 		return iobuf;
+	}
+
+	/** @return The contents of the buffer as an input stream. */
+	public InputStream getContentsStream() {
+		return new ByteArrayInputStream(iobuf);
 	}
 
 	/** @return The contents of the buffer as a little-endian byte buffer. */

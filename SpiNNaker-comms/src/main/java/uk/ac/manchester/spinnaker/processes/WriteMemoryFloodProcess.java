@@ -33,8 +33,9 @@ public class WriteMemoryFloodProcess
 				intermediateChannelWaits);
 	}
 
+	private static final float BPW = 4.0F;
 	private static int numBlocks(int numBytes) {
-		return (int) ceil(ceil(numBytes / 4.0) / UDP_MESSAGE_MAX_SIZE);
+		return (int) ceil(ceil(numBytes / BPW) / UDP_MESSAGE_MAX_SIZE);
 	}
 
 	/**
@@ -127,8 +128,8 @@ public class WriteMemoryFloodProcess
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			File dataFile) throws IOException, Exception {
-		try (InputStream s = new BufferedInputStream(
-				new FileInputStream(dataFile))) {
+		try (InputStream s =
+				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,
 					(int) dataFile.length());
 		}

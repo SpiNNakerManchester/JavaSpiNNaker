@@ -2,9 +2,7 @@ package uk.ac.manchester.spinnaker.processes;
 
 import static java.lang.Math.min;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableMap;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.N_IPTAGS_PER_CHIP;
@@ -20,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 
@@ -112,13 +109,13 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Build a Machine
-                Machine machine = new Machine(size, bootChip);
-                for (Map.Entry<ChipLocation, ChipSummaryInfo> entry:
-                        chipInfo.entrySet()) {
-                    if (!ignoreChips.contains(entry.getKey())) {
-                        machine.addChip(makeChip(size, entry.getValue()));
-                    }
-                }
+		Machine machine = new Machine(size, bootChip);
+		for (Map.Entry<ChipLocation, ChipSummaryInfo> entry : chipInfo
+				.entrySet()) {
+			if (!ignoreChips.contains(entry.getKey())) {
+				machine.addChip(makeChip(size, entry.getValue()));
+			}
+		}
 		return machine;
 	}
 
@@ -183,8 +180,21 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 				chipInfo.numFreeMulticastRoutingEntries);
 	}
 
-	private static final int[][] LINK_ADD_TABLE = { { 1, 0 }, { 1, 1 },
-			{ 0, 1 }, { -1, 0 }, { -1, -1 }, { 0, -1 } };
+	private static final int[][] LINK_ADD_TABLE = {
+			{
+					1, 0
+			}, {
+					1, 1
+			}, {
+					0, 1
+			}, {
+					-1, 0
+			}, {
+					-1, -1
+			}, {
+					0, -1
+			}
+	};
 
 	private static ChipLocation getChipOverLink(HasChipLocation chip,
 			MachineDimensions size, int link) {

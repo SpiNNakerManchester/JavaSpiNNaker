@@ -1,7 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.lang.Integer.toUnsignedLong;
+import static java.lang.Math.floorDiv;
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.nio.ByteBuffer;
@@ -13,24 +16,20 @@ public class EIEIODataMessage
 	public final EIEIODataHeader header;
 	private ByteBuffer elements;
 	private ByteBuffer data;
-	private int offset;
 
 	public EIEIODataMessage(EIEIOType eieioType) {
-		this(eieioType, (byte) 0, null, 0, null, null, null,
-				EIEIOPrefix.LOWER_HALF_WORD);
+		this(eieioType, (byte) 0, null, null, null, null, LOWER_HALF_WORD);
 	}
 
-	public EIEIODataMessage(EIEIODataHeader header, ByteBuffer data,
-			int offset) {
+	public EIEIODataMessage(EIEIODataHeader header, ByteBuffer data) {
 		this.header = header;
 		this.elements = null;
-		this.data = data;
-		this.offset = offset;
+		this.data = data.asReadOnlyBuffer();
 	}
 
 	public EIEIODataMessage(EIEIOType eieioType, byte count, ByteBuffer data,
-			int offset, Short keyPrefix, Integer payloadPrefix,
-			Integer timestamp, EIEIOPrefix prefixType) {
+			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
+			EIEIOPrefix prefixType) {
 		Integer payloadBase = payloadPrefix;
 		if (timestamp != null) {
 			payloadBase = timestamp;
@@ -39,17 +38,16 @@ public class EIEIODataMessage
 				payloadBase, timestamp != null, count);
 		elements = newMessageBuffer();
 		this.data = data;
-		this.offset = offset;
 	}
 
-	/** Get the minimum length of a message instance in bytes. */
+	@Override
 	public int minPacketLength() {
 		return header.getSize() + header.eieioType.payloadBytes;
 	}
 
 	/** The maximum number of elements that can fit in the packet. */
 	public int getMaxNumElements() {
-		return Math.floorDiv(UDP_MESSAGE_MAX_SIZE - header.getSize(),
+		return floorDiv(UDP_MESSAGE_MAX_SIZE - header.getSize(),
 				header.eieioType.keyBytes + header.eieioType.payloadBytes);
 	}
 
@@ -79,15 +77,15 @@ public class EIEIODataMessage
 	 *             format doesn't expect a payload
 	 */
 	public void addKeyAndPayload(int key, int payload) {
-		if (key > header.eieioType.maxValue) {
+		if (toUnsignedLong(key) > header.eieioType.maxValue) {
 			throw new IllegalArgumentException(
-					format("key %d larger than the maximum allowed of %d", key,
-							header.eieioType.maxValue));
+					format("key %d larger than the maximum allowed of %d",
+							toUnsignedLong(key), header.eieioType.maxValue));
 		}
-		if (payload > header.eieioType.maxValue) {
-			throw new IllegalArgumentException(
-					format("payload %d larger than the maximum allowed of %d",
-							payload, header.eieioType.maxValue));
+		if (toUnsignedLong(payload) > header.eieioType.maxValue) {
+			throw new IllegalArgumentException(format(
+					"payload %d larger than the maximum allowed of %d",
+					toUnsignedLong(payload), header.eieioType.maxValue));
 		}
 		addElement(new KeyPayloadDataElement(key, payload, header.isTime));
 	}
@@ -102,10 +100,10 @@ public class EIEIODataMessage
 	 *             payload
 	 */
 	public void addKey(int key) {
-		if (key > header.eieioType.maxValue) {
+		if (toUnsignedLong(key) > header.eieioType.maxValue) {
 			throw new IllegalArgumentException(
-					format("key %d larger than the maximum allowed of %d", key,
-							header.eieioType.maxValue));
+					format("key %d larger than the maximum allowed of %d",
+							toUnsignedLong(key), header.eieioType.maxValue));
 		}
 		addElement(new KeyDataElement(key));
 	}
@@ -137,52 +135,45 @@ public class EIEIODataMessage
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final int initialOffset = offset;
+		final ByteBuffer d = data == null ? null : data.duplicate();
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
-			private int offset = initialOffset;
 
 			@Override
-			public boolean hasNext() {
-				return data != null && elementsRead < header.getCount();
+			public final boolean hasNext() {
+				return d != null && elementsRead < header.getCount();
 			}
 
 			@Override
 			public AbstractDataElement next() {
-				if (!hasNext()) {
+				if (d == null || !hasNext()) {
 					throw new NoSuchElementException("read all elements");
 				}
 				elementsRead++;
-				int key = 0;
-				Integer payload = null;
+				int key;
+				Integer payload;
 				switch (header.eieioType) {
 				case KEY_16_BIT:
-					key = (int) data.getShort(offset);
-					offset += 2;
+					key = d.getShort();
+					payload = null;
 					break;
 				case KEY_PAYLOAD_16_BIT:
-					key = (int) data.getShort(offset);
-					offset += 2;
-					payload = (int) data.getShort(offset);
-					offset += 2;
+					key = d.getShort();
+					payload = (int) d.getShort();
 					break;
 				case KEY_32_BIT:
-					key = data.getInt(offset);
-					offset += 4;
+					key = d.getInt();
+					payload = null;
 					break;
 				case KEY_PAYLOAD_32_BIT:
-					key = data.getInt(offset);
-					offset += 4;
-					payload = data.getInt(offset);
-					offset += 4;
+					key = d.getInt();
+					payload = d.getInt();
 					break;
+				default:
+					throw new IllegalStateException();
 				}
 				if (header.prefix != null) {
-					if (header.prefixType == EIEIOPrefix.UPPER_HALF_WORD) {
-						key |= header.prefix << 16;
-					} else {
-						key |= header.prefix;
-					}
+					key |= header.prefix << header.prefixType.shift;
 				}
 				if (header.payloadBase != null) {
 					if (payload != null) {
@@ -193,10 +184,8 @@ public class EIEIODataMessage
 				}
 				if (payload == null) {
 					return new KeyDataElement(key);
-				} else {
-					return new KeyPayloadDataElement(key, payload,
-							header.isTime);
 				}
+				return new KeyPayloadDataElement(key, payload, header.isTime);
 			}
 		};
 	}
