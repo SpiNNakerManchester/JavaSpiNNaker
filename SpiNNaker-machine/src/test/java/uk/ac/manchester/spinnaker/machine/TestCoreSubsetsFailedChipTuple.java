@@ -57,7 +57,7 @@ public class TestCoreSubsetsFailedChipTuple {
         assertEquals(1, instance.size());
         assertFalse(instance.isChip(ChipLocation.ONE_ZERO));
 
-        Chip chip = new Chip(0, 0, getProcessors(), createRouter(), 100,
+        Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
                 null, false, 6, location11);
         instance.addFailedChip(chip);
 

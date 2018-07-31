@@ -60,8 +60,8 @@ public class TestMachine {
         ArrayList<Chip> chips = new ArrayList();
         for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
-                chips.add(new Chip(x, y, processors, ROUTER, SDRAM, address,
-                        false, 0, BOOT_CHIP));
+                chips.add(new Chip(new ChipLocation(x, y), processors, ROUTER,
+                        SDRAM, address, false, 0, BOOT_CHIP));
             }
         }
         return chips;
@@ -109,8 +109,8 @@ public class TestMachine {
     public void testRepeatChipInvalid() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        chips.add(new Chip(
-                0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
+        chips.add(new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER, SDRAM,
+                null, false, 0, BOOT_CHIP));
         assertThrows(IllegalArgumentException.class, () -> {
             Machine instance = new Machine(
                     new MachineDimensions(5, 5), chips, BOOT_CHIP);
@@ -123,17 +123,17 @@ public class TestMachine {
         ArrayList<Chip> chips = new ArrayList();
         Machine instance = new Machine(
                 new MachineDimensions(5, 5), chips, BOOT_CHIP);
-        Chip chip00 = new Chip(
-                0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
+        Chip chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
+                SDRAM, null, false, 0, BOOT_CHIP);
         instance.addChip(chip00);
         assertEquals(1, instance.nChips());
-        Chip repeat = new Chip(
-                0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
+        Chip repeat = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
+                SDRAM, null, false, 0, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(repeat);
         });
-        Chip outOfRange = new Chip(
-                5, 5, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
+        Chip outOfRange = new Chip(new ChipLocation(5, 5), processors, ROUTER,
+                SDRAM, null, false, 0, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(repeat);
         });
@@ -147,8 +147,8 @@ public class TestMachine {
         Machine instance = new Machine(
                 new MachineDimensions(5, 5), chips, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
-            instance.addChip(new Chip(
-                0, 0, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
+            instance.addChip(new Chip(ChipLocation.ZERO_ZERO, processors,
+                    ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
         });
     }
 
@@ -194,8 +194,8 @@ public class TestMachine {
         Machine instance = new Machine(new MachineDimensions(24, 24),
                 new ArrayList<Chip>(), BOOT_CHIP);
         ArrayList<Processor> processors = createProcessors();
-        Chip chip = new Chip(
-                23, 23, processors, ROUTER, SDRAM, null, false, 0, BOOT_CHIP);
+        Chip chip = new Chip(new ChipLocation(23, 23), processors, ROUTER,
+                SDRAM, null, false, 0, BOOT_CHIP);
         instance.addChip(chip);
         assertEquals(chip,
                 instance.getChipOverLink(chip00, Direction.SOUTHWEST));

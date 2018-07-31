@@ -173,7 +173,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
         } else {
             router = makeRouter(chipInfo, size);
         }
-		return new Chip(chip.getX(), chip.getY(), processors, router,
+		return new Chip(chip, processors, router,
                 clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
                 chipInfo.ethernetIPAddress, false, N_IPTAGS_PER_CHIP,
                 chipInfo.nearestEthernetChip);

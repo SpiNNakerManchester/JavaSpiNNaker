@@ -54,12 +54,9 @@ public class Chip implements HasChipLocation {
     /**
      * Main Constructor which sets all parameters.
      *
-     * @param x
-     *            The x-coordinate of the chip's position in the two-dimensional
-     *            grid of chips.
-     * @param y
-     *            The y-coordinate of the chip's position in the two-dimensional
-     *            grid of chips
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
      * @param processors
      *            An iterable of processor objects.
      * @param router
@@ -76,11 +73,10 @@ public class Chip implements HasChipLocation {
      *            The nearest Ethernet coordinates or null if none known.
      */
     @SuppressWarnings("checkstyle:parameternumber")
-    public Chip(int x, int y, Iterable<Processor> processors, Router router,
-            int sdram, InetAddress ipAddress, boolean virtual, int nTagIds,
-            HasChipLocation nearestEthernet) {
-        MachineDefaults.validateChipLocation(x, y);
-        this.location = new ChipLocation(x, y);
+    public Chip(ChipLocation location, Iterable<Processor> processors,
+            Router router, int sdram, InetAddress ipAddress, boolean virtual,
+            int nTagIds, HasChipLocation nearestEthernet) {
+        this.location = location;
         this.processors = new TreeMap<>();
         nUserProssors = 0;
         processors.forEach((processor) -> {
@@ -105,15 +101,14 @@ public class Chip implements HasChipLocation {
         this.nearestEthernet = nearestEthernet;
     }
 
-    /**
-     * Main Constructor which sets all parameters.
+   /**
+     * Constructor for a virtual Chip with the none default processors.
      *
-     * @param x
-     *            The x-coordinate of the chip's position in the two-dimensional
-     *            grid of chips.
-     * @param y
-     *            The y-coordinate of the chip's position in the two-dimensional
-     *            grid of chips
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
+     * @param processors
+     *            An iterable of processor objects.
      * @param router
      *            a router for the chip.
      * @param ipAddress
@@ -121,10 +116,30 @@ public class Chip implements HasChipLocation {
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
      */
-    public Chip(int x, int y, Router router, InetAddress ipAddress,
+    public Chip(ChipLocation location, Iterable<Processor> processors,
+            Router router, InetAddress ipAddress,
             HasChipLocation nearestEthernet) {
-        MachineDefaults.validateChipLocation(x, y);
-        this.location = new ChipLocation(x, y);
+        this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
+                ipAddress, true, MachineDefaults.N_IPTAGS_PER_CHIP,
+                nearestEthernet);
+    }
+
+    /**
+     * Constructor for a virtual Chip with the default processors.
+     *
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
+     * @param router
+     *            a router for the chip.
+     * @param ipAddress
+     *            The IP address of the chip or None if no Ethernet attached.
+     * @param nearestEthernet
+     *            The nearest Ethernet coordinates or null if none known.
+     */
+    public Chip(ChipLocation location, Router router, InetAddress ipAddress,
+            HasChipLocation nearestEthernet) {
+        this.location = location;
         processors = new TreeMap<>(DEFAULT_PROCESSORS);
         nUserProssors = MachineDefaults.PROCESSORS_PER_CHIP - 1;
         this.router = router;
