@@ -7,6 +7,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
@@ -200,4 +205,12 @@ public class TestMachine {
         assertEquals(chip,
                 instance.getChipOverLink(chip00, Direction.SOUTHWEST));
     }
+
+    @Test
+    public void testNormalizeWithwrapAround() {
+        Machine instance = new Machine(new MachineDimensions(48, 24),
+                new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
+        assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 24));
+    }
+
 }

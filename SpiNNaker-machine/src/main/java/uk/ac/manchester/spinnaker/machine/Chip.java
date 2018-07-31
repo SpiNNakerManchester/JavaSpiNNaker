@@ -169,7 +169,7 @@ public class Chip implements HasChipLocation {
 
     @Override
     public int getY() {
-        return location.getX();
+        return location.getY();
     }
 
     @Override
