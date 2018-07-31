@@ -76,9 +76,9 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.machine.LinkDescriptor;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
@@ -175,12 +175,16 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final Set<CoreLocation> ignoreCores = new HashSet<>();
+	private final DefaultMap<ChipLocation, Collection<Integer>> ignoreCores
+                =  new DefaultMap<>(new HashSet<>());
+
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final Set<LinkDescriptor> ignoreLinks = new HashSet<>();
+	private final DefaultMap<ChipLocation, Collection<Direction>>
+                ignoreLinks = new DefaultMap<>(new HashSet<>());
+
 	/**
 	 * The maximum core ID in any discovered machine. Requests for a "machine"
 	 * will only have core IDs up to and including this value.
@@ -285,9 +289,9 @@ public class Transceiver extends UDPTransceiver
 	 *            never existed. The processors of the specified chips are
 	 *            ignored.
 	 * @param ignoreCores
-	 *            An optional set of cores to ignore in the machine. Requests
-	 *            for a "machine" will have these cores excluded, as if they
-	 *            never existed.
+	 *            An optional map of cores to ignore in the machine.
+         *            Requests for a "machine" will have these cores excluded,
+         *            as if they never existed.
 	 * @param ignoredLinks
 	 *            An optional set of links to ignore in the machine. Requests
 	 *            for a "machine" will have these links excluded, as if they
@@ -317,7 +321,8 @@ public class Transceiver extends UDPTransceiver
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
-			List<CoreLocation> ignoreCores, List<LinkDescriptor> ignoredLinks,
+			Map<ChipLocation, Collection<Integer>> ignoreCores,
+            Map<ChipLocation, Collection<Direction>> ignoredLinks,
 			Integer maxCoreID, boolean autodetectBMP,
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
 			Integer maxSDRAMSize)
@@ -369,8 +374,9 @@ public class Transceiver extends UDPTransceiver
 
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
-			Collection<CoreLocation> ignoreCores,
-			Collection<LinkDescriptor> ignoreLinks, Integer maxCoreID,
+			Map<ChipLocation, Collection<Integer>> ignoreCores,
+			Map<ChipLocation, Collection<Direction>> ignoreLinks,
+            Integer maxCoreID,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, Exception {
@@ -379,10 +385,10 @@ public class Transceiver extends UDPTransceiver
 			this.ignoreChips.addAll(ignoreChips);
 		}
 		if (ignoreCores != null) {
-			this.ignoreCores.addAll(ignoreCores);
+			this.ignoreCores.putAll(ignoreCores);
 		}
 		if (ignoreLinks != null) {
-			this.ignoreLinks.addAll(ignoreLinks);
+			this.ignoreLinks.putAll(ignoreLinks);
 		}
 		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
@@ -697,7 +703,7 @@ public class Transceiver extends UDPTransceiver
 		// Get the details of all the chips
 		machine = new GetMachineProcess(scpSelector, ignoreChips, ignoreCores,
 				ignoreLinks, maxCoreID, maxSDRAMSize)
-						.getMachineDetails(versionInfo.core, dimensions);
+            .getMachineDetails(versionInfo.core, dimensions);
 
 		// update the SCAMP selector with the machine
 		if (scpSelector instanceof MachineAware) {
@@ -751,7 +757,7 @@ public class Transceiver extends UDPTransceiver
 		// Find all the new connections via the machine Ethernet-connected chips
 		List<SCPConnection> newConnections = new ArrayList<>();
 		for (ChipLocation chip : getSpinn5Geometry()
-				.getPotentialRootChips(dims.width, dims.height)) {
+				.getPotentialRootChips(dims)) {
 			InetAddress ipAddress = getByAddress(
 					(byte[]) getSystemVariable(chip, ethernet_ip_address));
 			if (udpScampConnections.containsKey(ipAddress)) {
