@@ -35,7 +35,8 @@ public final class Router {
      * @param nAvailableMulticastEntries
      *      The number of entries available in the routing table.
      */
-    public Router(int clockSpeed, int nAvailableMulticastEntries) throws IllegalArgumentException {
+    public Router(int clockSpeed, int nAvailableMulticastEntries)
+            throws IllegalArgumentException {
         this.clockSpeed = clockSpeed;
         this.nAvailableMulticastEntries = nAvailableMulticastEntries;
     }

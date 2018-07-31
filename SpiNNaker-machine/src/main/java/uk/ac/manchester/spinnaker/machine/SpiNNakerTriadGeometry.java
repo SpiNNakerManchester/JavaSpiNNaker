@@ -215,10 +215,8 @@ public final class SpiNNakerTriadGeometry {
      * No check is done to see if all the boards are present, nor if the root
      * chip is present and active.
      *
-     * @param width
-     *            The width of the machine to find the chips in.
-     * @param height
-     *            The height of the machine to find the chips in.
+     * @param dimensions
+     *      Size of the machine along the x and y axes in Chips.
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
@@ -255,7 +253,7 @@ public final class SpiNNakerTriadGeometry {
      * Calculate the machine version based on the size.
      *
      * @param dimensions
-     *            The width anmd height of the machine to find the version for.
+     *            The width and height of the machine to find the version for.
      * @return A Board version, which may be the INVALID one.
      */
     MachineVersion versionBySize(MachineDimensions dimensions) {

@@ -4,7 +4,6 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -321,7 +320,8 @@ public class Machine implements Iterable<Chip> {
      * @return The Destination Chip connected by this link. or
      *      null if it does not exist.
      */
-    public final Chip getChipOverLink(HasChipLocation source, Direction direction) {
+    public final Chip getChipOverLink(
+            HasChipLocation source, Direction direction) {
         return getChipAt(getLocationOverLink(source, direction));
     }
 
@@ -391,7 +391,8 @@ public class Machine implements Iterable<Chip> {
      *      is associated with. If null the boot inetaddress will be used.
      * @return The associated SpinnakeLink or null if not found.
      */
-    public final SpinnakerLinkData getSpinnakerLink(int id, InetAddress address) {
+    public final SpinnakerLinkData getSpinnakerLink(
+            int id, InetAddress address) {
         InetIdTuple key;
         if (address == null) {
             key = new InetIdTuple(bootEthernetAddress, id);

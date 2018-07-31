@@ -75,6 +75,7 @@ public final class MachineDefaults {
     /** Width of field of hashcode for holding processor ID. */
     public static final int CORE_SHIFT = 5;
 
+    /** Ignore Links info for a four chip board. */
     public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS
             = fourChipDownLinks();
 

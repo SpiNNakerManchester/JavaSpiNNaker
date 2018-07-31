@@ -73,8 +73,9 @@ public class VirtualMachine extends Machine {
         //System.out.println(allChips.keySet());
         for (ChipLocation location: allChips.keySet()) {
             Router router = getRouter(location, allChips, ignoreLinks);
-            InetAddress ipAddress = getIpaddress (location, roots);
-            addChip(getChip(location, router, ipAddress, allChips.get(location), ignoreCores));
+            InetAddress ipAddress = getIpaddress(location, roots);
+            addChip(getChip(location, router, ipAddress,
+                    allChips.get(location), ignoreCores));
         }
     }
 
@@ -165,14 +166,22 @@ public class VirtualMachine extends Machine {
         }
     }
 
-    private InetAddress getIpaddress (
+    // Hide magic numbers
+    private static final int BYTES_PER_IP_ADDRESS = 4;
+    private static final int LOCAL_HOST_ONE = 127;
+    private static final int FIRST_BYTE = 0;
+    private static final int SECOND_BYTE = 1;
+    private static final int THIRD_BYTE = 2;
+    private static final int FOURTH_BYTE = 3;
+
+    private InetAddress getIpaddress(
             ChipLocation location, Collection<ChipLocation> roots) {
-        if (roots.contains(location)){
-            byte[] bytes = new byte[4];
-            bytes[0] = 127;
-            bytes[1] = 0;
-            bytes[2] = (byte)location.getX();
-            bytes[3] = (byte)location.getY();
+        if (roots.contains(location)) {
+            byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
+            bytes[FIRST_BYTE] = LOCAL_HOST_ONE;
+            bytes[SECOND_BYTE] = 0;
+            bytes[THIRD_BYTE] = (byte) location.getX();
+            bytes[FOURTH_BYTE] = (byte) location.getY();
             try {
                 return InetAddress.getByAddress(bytes);
             } catch (UnknownHostException ex) {
