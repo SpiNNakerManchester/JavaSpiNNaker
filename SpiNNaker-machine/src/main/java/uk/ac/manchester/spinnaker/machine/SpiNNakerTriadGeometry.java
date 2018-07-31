@@ -296,6 +296,7 @@ public final class SpiNNakerTriadGeometry {
         return Collections.unmodifiableList(singleBoardCoordinates);
     }
 
+
     /**
      * An Iterator all the chips on a Single board with a root of 0, 0.
      *
