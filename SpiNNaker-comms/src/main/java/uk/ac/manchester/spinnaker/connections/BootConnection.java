@@ -7,13 +7,13 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
-import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
+import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.BootSender;
+import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 
 /** A connection to the SpiNNaker board that uses UDP to for booting. */
-public class BootConnection extends UDPConnection<SpinnakerBootMessage>
-		implements SpinnakerBootSender, SpinnakerBootReceiver {
+public class BootConnection extends UDPConnection<BootMessage>
+		implements BootSender, BootReceiver {
 	// Determined by Ethernet MTU, not by SDP buffer size
 	private static final int BOOT_MESSAGE_SIZE = 1500;
 	private static final int ANTI_FLOOD_DELAY = 100;
@@ -45,14 +45,12 @@ public class BootConnection extends UDPConnection<SpinnakerBootMessage>
 	}
 
 	@Override
-	public SpinnakerBootMessage receiveBootMessage(Integer timeout)
-			throws IOException {
-		return new SpinnakerBootMessage(receive(timeout));
+	public BootMessage receiveBootMessage(Integer timeout) throws IOException {
+		return new BootMessage(receive(timeout));
 	}
 
 	@Override
-	public void sendBootMessage(SpinnakerBootMessage bootMessage)
-			throws IOException {
+	public void sendBootMessage(BootMessage bootMessage) throws IOException {
 		ByteBuffer b = allocate(BOOT_MESSAGE_SIZE);
 		bootMessage.addToBuffer(b);
 		b.flip();
@@ -66,7 +64,7 @@ public class BootConnection extends UDPConnection<SpinnakerBootMessage>
 	}
 
 	@Override
-	public MessageReceiver<SpinnakerBootMessage> getReceiver() {
+	public MessageReceiver<BootMessage> getReceiver() {
 		return this::receiveBootMessage;
 	}
 }

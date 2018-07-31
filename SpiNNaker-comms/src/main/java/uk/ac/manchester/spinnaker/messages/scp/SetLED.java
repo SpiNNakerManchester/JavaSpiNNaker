@@ -17,8 +17,7 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 	 * @param core
 	 *            The SpiNNaker core that will set the BMPSetLED
 	 * @param ledStates
-	 *            A mapping of BMPSetLED index to state with 0 being off, 1 on
-	 *            and 2 inverted.
+	 *            A mapping of BMPSetLED index to operation to apply.
 	 */
 	public SetLED(HasCoreLocation core, Map<Integer, LEDAction> ledStates) {
 		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LED,

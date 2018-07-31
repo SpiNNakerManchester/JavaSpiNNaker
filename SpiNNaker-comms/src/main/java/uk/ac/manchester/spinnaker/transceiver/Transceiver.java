@@ -64,8 +64,8 @@ import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
+import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
@@ -93,8 +93,8 @@ import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
-import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
-import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessages;
+import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
+import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
@@ -204,13 +204,12 @@ public class Transceiver extends UDPTransceiver
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
-	private SpinnakerBootSender bootSendConnection;
+	private BootSender bootSendConnection;
 	/**
 	 * A list of boot receive connections. These are used to listen for the
 	 * pre-boot board identifiers.
 	 */
-	private final List<SpinnakerBootReceiver> bootReceiveConnections =
-			new ArrayList<>();
+	private final List<BootReceiver> bootReceiveConnections = new ArrayList<>();
 	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
@@ -408,18 +407,17 @@ public class Transceiver extends UDPTransceiver
 			Collection<Connection> connections) {
 		for (Connection conn : connections) {
 			// locate the only boot send conn
-			if (conn instanceof SpinnakerBootSender) {
+			if (conn instanceof BootSender) {
 				if (bootSendConnection != null) {
 					throw new IllegalArgumentException(
-							"Only a single SpinnakerBootSender "
-									+ "can be specified");
+							"Only a single BootSender can be specified");
 				}
-				bootSendConnection = (SpinnakerBootSender) conn;
+				bootSendConnection = (BootSender) conn;
 			}
 
 			// locate any boot receiver connections
-			if (conn instanceof SpinnakerBootReceiver) {
-				bootReceiveConnections.add((SpinnakerBootReceiver) conn);
+			if (conn instanceof BootReceiver) {
+				bootReceiveConnections.add((BootReceiver) conn);
 			}
 
 			// Locate any connections listening on a UDP port
@@ -876,17 +874,17 @@ public class Transceiver extends UDPTransceiver
 				.getVersion(chip.getScampCore());
 	}
 
+	private static final int POST_BOOT_DELAY = 2000;
+
 	@Override
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
-		SpinnakerBootMessages bootMessages =
-				new SpinnakerBootMessages(version, extraBootValues);
-		Iterator<SpinnakerBootMessage> msgs =
-				bootMessages.getMessages().iterator();
+		BootMessages bootMessages = new BootMessages(version, extraBootValues);
+		Iterator<BootMessage> msgs = bootMessages.getMessages().iterator();
 		while (msgs.hasNext()) {
 			bootSendConnection.sendBootMessage(msgs.next());
 		}
-		sleep(2000);
+		sleep(POST_BOOT_DELAY);
 	}
 
 	/**

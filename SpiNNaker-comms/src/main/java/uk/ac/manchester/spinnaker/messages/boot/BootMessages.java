@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
 /** Represents a set of boot messages to be sent to boot the board. */
-public class SpinnakerBootMessages {
+public class BootMessages {
 	private static final int BOOT_MESSAGE_DATA_WORDS = 256;
 	private static final int BOOT_MESSAGE_DATA_BYTES = BOOT_MESSAGE_DATA_WORDS
 			* 4;
@@ -50,7 +50,7 @@ public class SpinnakerBootMessages {
 		bootVars.setValue(is_root_chip, 1);
 	}
 
-	private SpinnakerBootMessages(SystemVariableBootValues bootVariables,
+	private BootMessages(SystemVariableBootValues bootVariables,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		initFlags(bootVariables);
 		if (extraBootValues != null) {
@@ -113,7 +113,7 @@ public class SpinnakerBootMessages {
 	}
 
 	/** Builds the boot messages needed to boot the SpiNNaker machine. */
-	public SpinnakerBootMessages() {
+	public BootMessages() {
 		this(new SystemVariableBootValues(), null);
 	}
 
@@ -123,7 +123,7 @@ public class SpinnakerBootMessages {
 	 * @param boardVersion
 	 *            The version of the board to be booted
 	 */
-	public SpinnakerBootMessages(int boardVersion) {
+	public BootMessages(int boardVersion) {
 		this(SystemVariableBootValues.get(boardVersion), null);
 	}
 
@@ -133,7 +133,7 @@ public class SpinnakerBootMessages {
 	 * @param extraBootValues
 	 *            Any additional values to be set during boot
 	 */
-	public SpinnakerBootMessages(
+	public BootMessages(
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		this(new SystemVariableBootValues(), extraBootValues);
 	}
@@ -146,7 +146,7 @@ public class SpinnakerBootMessages {
 	 * @param extraBootValues
 	 *            Any additional values to be set during boot
 	 */
-	public SpinnakerBootMessages(int boardVersion,
+	public BootMessages(int boardVersion,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
 	}
@@ -160,14 +160,14 @@ public class SpinnakerBootMessages {
 	}
 
 	/** Get a stream of message to be sent. */
-	public Stream<SpinnakerBootMessage> getMessages() {
-		Stream<SpinnakerBootMessage> first = singleton(new SpinnakerBootMessage(
+	public Stream<BootMessage> getMessages() {
+		Stream<BootMessage> first = singleton(new BootMessage(
 				FLOOD_FILL_START, 0, 0, numDataPackets - 1)).stream();
-		Stream<SpinnakerBootMessage> mid = range(0, numDataPackets)
-				.mapToObj(blockID -> new SpinnakerBootMessage(FLOOD_FILL_BLOCK,
+		Stream<BootMessage> mid = range(0, numDataPackets)
+				.mapToObj(blockID -> new BootMessage(FLOOD_FILL_BLOCK,
 						1, 0, 0, getPacketData(blockID)));
-		Stream<SpinnakerBootMessage> last = singleton(
-				new SpinnakerBootMessage(FLOOD_FILL_CONTROL, 1, 0, 0)).stream();
+		Stream<BootMessage> last = singleton(
+				new BootMessage(FLOOD_FILL_CONTROL, 1, 0, 0)).stream();
 		return concat(first, concat(mid, last));
 	}
 }
