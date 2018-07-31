@@ -96,7 +96,7 @@ public class TestChip {
                 createInetAddress(), false, 6, location11);
         Chip chip2 = new Chip(location00, getProcessors(), createRouter(), 100,
                 createInetAddress(), false, 6, location11);
-        assertNotEquals(chip1.toString(), chip2.toString());
+        assertEquals(chip1.toString(), chip2.toString());
     }
 
     @Test

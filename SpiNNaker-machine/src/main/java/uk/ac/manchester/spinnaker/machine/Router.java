@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 /**
@@ -28,6 +29,27 @@ public final class Router {
     // TODO convert_routing_table_entry_to_spinnaker_route
 
     /**
+     * Default Constructor to add links later.
+     *
+     * @param clockSpeed The router clock speed in cycles per second.
+     * @param nAvailableMulticastEntries
+     *      The number of entries available in the routing table.
+     */
+    public Router(int clockSpeed, int nAvailableMulticastEntries) throws IllegalArgumentException {
+        this.clockSpeed = clockSpeed;
+        this.nAvailableMulticastEntries = nAvailableMulticastEntries;
+    }
+
+    /**
+     * Default Constructor to add links later using default values.
+     *
+      */
+    public Router() throws IllegalArgumentException {
+        this(MachineDefaults.ROUTER_CLOCK_SPEED,
+                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+    }
+
+    /**
      * Main Constructor that allows setting of all values.
      *
      * @param links Known Link(s) to add.
@@ -38,11 +60,11 @@ public final class Router {
      */
     public Router(Iterable<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
+        this(clockSpeed, nAvailableMulticastEntries);
         for (Link link:links) {
             addLink(link);
         }
-        this.clockSpeed = clockSpeed;
-        this.nAvailableMulticastEntries = nAvailableMulticastEntries;
+
     }
 
     /**
@@ -56,9 +78,8 @@ public final class Router {
      */
     public Router(Stream<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
+        this(clockSpeed, nAvailableMulticastEntries);
         links.forEach((link) -> this.addLink(link));
-        this.clockSpeed = clockSpeed;
-        this.nAvailableMulticastEntries = nAvailableMulticastEntries;
     }
 
     /**
@@ -178,6 +199,20 @@ public final class Router {
         };
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("Router[");
+        for (Entry<Direction, Link> entry:links.entrySet()) {
+            result.append(entry.getKey());
+            result.append(":");
+            result.append(entry.getValue().destination);
+            result.append(" ");
+        }
+        result.setLength(result.length() - 1);
+        result.append("]");
+        return result.toString();
+    }
+
     private class NeighbourIterator implements Iterator<HasChipLocation> {
 
         private Iterator<Link> linksIter;
@@ -195,7 +230,6 @@ public final class Router {
         public HasChipLocation next() {
             return linksIter.next().destination;
         }
-
     }
 
 }
