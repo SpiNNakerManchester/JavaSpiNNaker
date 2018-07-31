@@ -411,7 +411,8 @@ public class Transceiver extends UDPTransceiver
 			if (conn instanceof SpinnakerBootSender) {
 				if (bootSendConnection != null) {
 					throw new IllegalArgumentException(
-							"Only a single SpinnakerBootSender can be specified");
+							"Only a single SpinnakerBootSender "
+									+ "can be specified");
 				}
 				bootSendConnection = (SpinnakerBootSender) conn;
 			}
@@ -607,8 +608,8 @@ public class Transceiver extends UDPTransceiver
 						.contains(versionInfo.versionNumber.majorVersion)) {
 					throw new IOException(format(
 							"The BMP at %s is running %s %s which is "
-									+ "incompatible with this transceiver, required "
-									+ "version is %s %s",
+									+ "incompatible with this transceiver, "
+									+ "required version is %s %s",
 							conn.getRemoteIPAddress(), versionInfo.name,
 							versionInfo.versionString, BMP_NAME,
 							BMP_MAJOR_VERSIONS));
@@ -1762,7 +1763,8 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>>
+			getBMPConnection() {
 		return bmpSelectors;
 	}
 

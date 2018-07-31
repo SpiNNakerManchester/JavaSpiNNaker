@@ -21,16 +21,34 @@ public abstract class Process {
 	protected Process() {
 	}
 
+	/**
+	 * A default handler for exceptions that arranges for them to be rethrown
+	 * later.
+	 *
+	 * @param request
+	 *            The request that caused the exception
+	 * @param exception
+	 *            The exception that was causing the problem
+	 */
 	protected final void receiveError(SCPRequest<?> request,
 			Throwable exception) {
 		this.errorRequest = request;
 		this.exception = exception;
 	}
 
+	/**
+	 * @return Whether an exception is waiting to be thrown.
+	 */
 	public final boolean isError() {
 		return exception != null;
 	}
 
+	/**
+	 * Test if an error occurred, and throw it if it did.
+	 *
+	 * @throws Exception
+	 *             an exception that wraps the original exception that occurred.
+	 */
 	public final void checkForError() throws Exception {
 		if (!isError()) {
 			return;
@@ -41,26 +59,81 @@ public abstract class Process {
 		throw ex;
 	}
 
+	/**
+	 * Send a request.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The request to send.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request) throws IOException {
 		sendRequest(request, null, this::receiveError);
 	}
 
+	/**
+	 * Send a request.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The request to send.
+	 * @param errorCallback
+	 *            The callback that handles errors.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request, SCPErrorHandler errorCallback)
 			throws IOException {
 		sendRequest(request, null, errorCallback);
 	}
 
+	/**
+	 * Send a request.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The request to send.
+	 * @param callback
+	 *            The callback that handles the request's response.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request, Consumer<T> callback) throws IOException {
 		sendRequest(request, callback, this::receiveError);
 	}
 
+	/**
+	 * Send a request.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The request to send.
+	 * @param callback
+	 *            The callback that handles the request's response.
+	 * @param errorCallback
+	 *            The callback that handles errors.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
 	protected abstract <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request, Consumer<T> callback,
 			SCPErrorHandler errorCallback) throws IOException;
 
+	/**
+	 * Wait for all outstanding requests sent by this process to receive replies
+	 * or time out.
+	 *
+	 * @throws IOException
+	 *             If communications fail.
+	 */
 	protected abstract void finish() throws IOException;
 
 	/**

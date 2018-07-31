@@ -17,6 +17,7 @@ import static uk.ac.manchester.spinnaker.machine.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
@@ -73,6 +74,11 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
 public interface TransceiverInterface {
 	/**
+	 * Delay between starting a program on a core and checking to see if the
+	 * core is ready for operational use. In milliseconds.
+	 */
+	int LAUNCH_DELAY = 500;
+	/**
 	 * Coordinate of a <i>default</i> destination.
 	 */
 	int DEFAULT_DESTINATION_COORDINATE = 255;
@@ -98,6 +104,8 @@ public interface TransceiverInterface {
 	 * What proportion of checks are to be expensive full checks.
 	 */
 	int DEFAULT_CHECK_INTERVAL = 100;
+	/** How many times to try booting a board. */
+	int BOARD_BOOT_RETRIES = 5;
 
 	/**
 	 * @return The connection selector to use for SCP messages.
@@ -249,7 +257,7 @@ public interface TransceiverInterface {
 	 */
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, Exception, InterruptedException {
-		return ensureBoardIsReady(5, null);
+		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
 	}
 
 	/**
@@ -264,7 +272,7 @@ public interface TransceiverInterface {
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, Exception, InterruptedException {
-		return ensureBoardIsReady(5, extraBootValues);
+		return ensureBoardIsReady(BOARD_BOOT_RETRIES, extraBootValues);
 	}
 
 	/**
@@ -826,7 +834,7 @@ public interface TransceiverInterface {
 		}
 
 		// Sleep to allow cores to get going
-		sleep(500);
+		sleep(LAUNCH_DELAY);
 
 		// Check that the binaries have reached a wait state
 		int count = getCoreStateCount(appID, READY);
@@ -1882,8 +1890,8 @@ public interface TransceiverInterface {
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
 	 */
-	default void setLEDs(HasChipLocation chip, Map<Integer, LEDAction> ledStates)
-			throws IOException, Exception {
+	default void setLEDs(HasChipLocation chip,
+			Map<Integer, LEDAction> ledStates) throws IOException, Exception {
 		setLEDs(chip.getScampCore(), ledStates);
 	}
 
@@ -2294,7 +2302,8 @@ public interface TransceiverInterface {
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
 			throws IOException, Exception {
 		clearRouterDiagnosticCounters(chip, false,
-				range(0, 16).boxed().collect(toList()));
+				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
+						.collect(toList()));
 	}
 
 	/**
@@ -2309,7 +2318,8 @@ public interface TransceiverInterface {
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable) throws IOException, Exception {
 		clearRouterDiagnosticCounters(chip, enable,
-				range(0, 16).boxed().collect(toList()));
+				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
+						.collect(toList()));
 	}
 
 	/**

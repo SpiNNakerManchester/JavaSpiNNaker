@@ -12,7 +12,12 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 
-/** A process that uses a single connection in communication. */
+/**
+ * A process that uses a single connection in communication.
+ *
+ * @param <T>
+ *            The type of connection used by this process.
+ */
 public abstract class SingleConnectionProcess<T extends SCPConnection>
 		extends Process {
 	private final ConnectionSelector<T> connectionSelector;

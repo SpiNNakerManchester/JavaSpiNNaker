@@ -47,7 +47,8 @@ public class EIEIOCommandHeader implements EIEIOHeader {
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
-		short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT | command.getValue());
+		short value =
+				(short) (0 << FLAG1_BIT | 1 << FLAG2_BIT | command.getValue());
 		buffer.putShort(value);
 	}
 }
