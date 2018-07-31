@@ -25,9 +25,9 @@ public class RouterDiagnostics {
 	/** The "mon" part of the control register. */
 	public final int mon;
 	/** The "wait_1" part of the control register. */
-	public final int wait_1;
+	public final int wait1;
 	/** The "wait_2" part of the control register. */
-	public final int wait_2;
+	public final int wait2;
 	/** The error status. */
 	public final int errorStatus;
 	/**
@@ -44,10 +44,10 @@ public class RouterDiagnostics {
 			throw new IllegalArgumentException(
 					"must be exactly 16 router register values");
 		}
-		// TODO mon and wait_2 overlap; is this right?!
+		// TODO mon and wait2 overlap; is this right?!
 		this.mon = (controlRegister >> 8) & 0x1F;
-		this.wait_1 = (controlRegister >> 16) & BYTE_MASK;
-		this.wait_2 = (controlRegister >> 8) & BYTE_MASK;
+		this.wait1 = (controlRegister >> 16) & BYTE_MASK;
+		this.wait2 = (controlRegister >> 8) & BYTE_MASK;
 		this.errorStatus = errorStatus;
 		this.registerValues = registerValues;
 	}

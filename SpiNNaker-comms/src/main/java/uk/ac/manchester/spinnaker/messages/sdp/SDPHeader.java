@@ -39,6 +39,15 @@ public class SDPHeader implements SerializableMessage {
 	 * Create a simple header with just the flags and destination set. Note that
 	 * messages containing this header <i>cannot</i> be sent until a source has
 	 * also been set!
+	 *
+	 * @param flags
+	 *            The header flags.
+	 * @param destination
+	 *            Where the message is bound for.
+	 * @param destinationPort
+	 *            the <i>SDP port</i> that the message routes through. Note that
+	 *            this is <b>not</b> a UDP port! Those are associated with a
+	 *            connection, not a message.
 	 */
 	public SDPHeader(Flag flags, HasCoreLocation destination,
 			int destinationPort) {
@@ -49,6 +58,7 @@ public class SDPHeader implements SerializableMessage {
 
 	/**
 	 * Read the header from an input buffer.
+	 * @param buffer The buffer to read from.
 	 */
 	public SDPHeader(ByteBuffer buffer) {
 		flags = Flag.get(buffer.get());

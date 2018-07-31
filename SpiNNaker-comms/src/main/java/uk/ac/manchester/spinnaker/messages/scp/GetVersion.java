@@ -12,7 +12,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read the version of software running on a core. */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
-	/** The location of the core to read from. */
+	/**
+	 * @param core
+	 *            The location of the core to read from.
+	 */
 	public GetVersion(HasCoreLocation core) {
 		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_VER);
 	}
@@ -27,7 +30,8 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Version", CMD_VER, buffer);
 			versionInfo = new VersionInfo(buffer);
 		}

@@ -85,12 +85,18 @@ public class IOBuffer implements HasCoreLocation {
 		return wrap(iobuf).order(LITTLE_ENDIAN);
 	}
 
-	/** @return The contents of the buffer as an ASCII string. */
+	/**
+	 * @return The contents of the buffer as a string, interpreting it as ASCII.
+	 */
 	public String getContentsString() {
 		return getContentsString(ASCII);
 	}
 
 	/**
+	 * Get the contents of the buffer as a string.
+	 *
+	 * @param charset
+	 *            How to decode bytes into characters.
 	 * @return The contents of the buffer as a string in the specified encoding.
 	 */
 	public String getContentsString(Charset charset) {

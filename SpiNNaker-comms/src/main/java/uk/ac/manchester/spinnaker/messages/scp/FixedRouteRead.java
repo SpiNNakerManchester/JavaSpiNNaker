@@ -41,7 +41,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	public static class Response extends CheckOKResponse {
 		private final int route;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
 			route = buffer.getInt();
 		}

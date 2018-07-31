@@ -47,7 +47,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 		/** The chip information received. */
 		public final ChipSummaryInfo chipInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Version", CMD_INFO, buffer);
 			this.chipInfo = new ChipSummaryInfo(buffer, sdpHeader.getSource());
 		}

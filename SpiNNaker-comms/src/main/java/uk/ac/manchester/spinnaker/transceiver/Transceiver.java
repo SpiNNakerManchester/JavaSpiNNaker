@@ -839,7 +839,7 @@ public class Transceiver extends UDPTransceiver
 		return machine;
 	}
 
-	/** Get the application ID tracker for this transceiver. */
+	/** @return the application ID tracker for this transceiver. */
 	public AppIdTracker getAppIdTracker() throws IOException, Exception {
 		if (appIDTracker == null) {
 			updateMachine();

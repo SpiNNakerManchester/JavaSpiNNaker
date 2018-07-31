@@ -82,6 +82,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *
 	 * @param boardVersion
 	 *            Which sort of SpiNN board is being booted.
+	 * @return The defaults for the specific board.
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
 		SystemVariableBootValues bv = BOOT_VALUES.get(boardVersion);

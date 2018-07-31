@@ -60,6 +60,7 @@ public class ExecutableTargets {
 	 *
 	 * @param binary
 	 *            The binary to find the cores for
+	 * @return Which cores are to run the binary.
 	 */
 	public CoreSubsets getCoresForBinary(String binary) {
 		return targets.get(binary);

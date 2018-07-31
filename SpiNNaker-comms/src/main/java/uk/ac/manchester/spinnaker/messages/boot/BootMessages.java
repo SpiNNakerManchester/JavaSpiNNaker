@@ -159,7 +159,7 @@ public class BootMessages {
 		return dst;
 	}
 
-	/** Get a stream of message to be sent. */
+	/** @return a stream of message to be sent. */
 	public Stream<BootMessage> getMessages() {
 		Stream<BootMessage> first = singleton(new BootMessage(
 				FLOOD_FILL_START, 0, 0, numDataPackets - 1)).stream();

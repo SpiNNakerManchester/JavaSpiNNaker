@@ -67,7 +67,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
-		public Response(ByteBuffer buffer)
+		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException, UnknownHostException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 

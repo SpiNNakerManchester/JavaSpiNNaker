@@ -15,7 +15,10 @@ public abstract class SCPResponse {
 
 	/**
 	 * Reads a packet from a bytestring of data. Subclasses must also
-	 * deserialize any payload.
+	 * deserialize any payload <i>after</i> calling this constructor.
+	 *
+	 * @param buffer
+	 *            the buffer to deserialise from
 	 */
 	protected SCPResponse(ByteBuffer buffer) {
 		assert buffer.position() == 0;

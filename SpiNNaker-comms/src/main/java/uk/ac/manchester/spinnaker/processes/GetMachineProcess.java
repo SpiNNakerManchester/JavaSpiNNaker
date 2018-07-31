@@ -210,6 +210,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * Get the chip information for the machine. Note that
 	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)} must have
 	 * been called first.
+	 *
+	 * @return The description of what the state of each chip is.
 	 */
 	public Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
 		return unmodifiableMap(chipInfo);

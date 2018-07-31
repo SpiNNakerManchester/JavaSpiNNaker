@@ -48,7 +48,8 @@ public class CountState extends SCPRequest<CountState.Response> {
 		/** The count of the number of cores with the requested state. */
 		public final int count;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);
 			count = buffer.getInt();
 		}

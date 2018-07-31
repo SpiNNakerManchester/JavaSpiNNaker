@@ -54,16 +54,16 @@ public class GetMulticastRoutesProcess
 	private void addRoutes(ByteBuffer data, int offset,
 			Map<Integer, MulticastRoutingEntry> routes, Integer appID) {
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
-			data.get();// Ignore
-			data.get();// Ignore
-			int app_id = data.get();
-			data.get();// Ignore
+			data.get(); // Ignore
+			data.get(); // Ignore
+			int appid = data.get();
+			data.get(); // Ignore
 			int route = data.getInt();
 			int key = data.getInt();
 			int mask = data.getInt();
 
 			if (toUnsignedLong(route) < INVALID_ROUTE_MARKER
-					&& (appID == null || appID == app_id)) {
+					&& (appID == null || appID == appid)) {
 				routes.put(r + offset,
 						new MulticastRoutingEntry(key, mask, route, false));
 			}
