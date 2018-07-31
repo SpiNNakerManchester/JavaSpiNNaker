@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,19 +51,21 @@ public enum RunTimeError {
 	API(19),
 	/** SW version conflict. */
 	SARK_VERSION_INCORRECT(20);
+
 	public final int value;
-	private static final Map<Integer, RunTimeError> map = new HashMap<>();
+	private static final Map<Integer, RunTimeError> MAP = new HashMap<>();
 	static {
 		for (RunTimeError v : values()) {
-			map.put(v.value, v);
+			MAP.put(v.value, v);
 		}
 	}
 
-	private RunTimeError(int value) {
+	RunTimeError(int value) {
 		this.value = value;
 	}
 
 	public static RunTimeError get(int value) {
-		return map.get(value);
+		return requireNonNull(MAP.get(value),
+				"unknown RTE state: " + value);
 	}
 }

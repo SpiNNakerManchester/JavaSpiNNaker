@@ -196,13 +196,13 @@ public enum SystemVariableDefinition {
 	 */
 	private final Object def;
 
-	private SystemVariableDefinition(DataType type, int offset) {
+	SystemVariableDefinition(DataType type, int offset) {
 		this.type = type;
 		this.offset = offset;
 		this.def = 0;
 	}
 
-	private SystemVariableDefinition(DataType type, int offset, Object def) {
+	SystemVariableDefinition(DataType type, int offset, Object def) {
 		this.type = type;
 		this.offset = offset;
 		this.def = def;
@@ -211,6 +211,9 @@ public enum SystemVariableDefinition {
 	/**
 	 * The default value assigned to the variable if not overridden; this can be
 	 * an integer or a byte array.
+	 *
+	 * @return The default value, or a copy of it if the type of the value is an
+	 *         array.
 	 */
 	public Object getDefault() {
 		if (type == BYTE_ARRAY) {

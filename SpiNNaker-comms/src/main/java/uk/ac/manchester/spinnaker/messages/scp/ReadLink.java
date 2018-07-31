@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
@@ -50,7 +50,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 
 	/**
 	 * An SCP response to a request to read a region of memory via a link on a
-	 * chip
+	 * chip.
 	 */
 	public static class Response extends CheckOKResponse {
 		/** The data read. */

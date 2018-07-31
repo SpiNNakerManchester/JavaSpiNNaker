@@ -1,6 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.sdp;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -22,7 +24,7 @@ public class SDPHeader implements SerializableMessage {
 	private int destinationPort;
 	private HasCoreLocation source;
 	private int sourcePort;
-	private SDPFlag flags;
+	private Flag flags;
 	private byte tag;
 
 	/**
@@ -37,8 +39,17 @@ public class SDPHeader implements SerializableMessage {
 	 * Create a simple header with just the flags and destination set. Note that
 	 * messages containing this header <i>cannot</i> be sent until a source has
 	 * also been set!
+	 *
+	 * @param flags
+	 *            The header flags.
+	 * @param destination
+	 *            Where the message is bound for.
+	 * @param destinationPort
+	 *            the <i>SDP port</i> that the message routes through. Note that
+	 *            this is <b>not</b> a UDP port! Those are associated with a
+	 *            connection, not a message.
 	 */
-	public SDPHeader(SDPFlag flags, HasCoreLocation destination,
+	public SDPHeader(Flag flags, HasCoreLocation destination,
 			int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
@@ -47,9 +58,10 @@ public class SDPHeader implements SerializableMessage {
 
 	/**
 	 * Read the header from an input buffer.
+	 * @param buffer The buffer to read from.
 	 */
 	public SDPHeader(ByteBuffer buffer) {
-		flags = SDPFlag.get(buffer.get());
+		flags = Flag.get(buffer.get());
 		tag = buffer.get();
 		byte dpc = buffer.get();
 		byte spc = buffer.get();
@@ -92,6 +104,10 @@ public class SDPHeader implements SerializableMessage {
 		return destinationPort;
 	}
 
+	public void setDestinationPort(SDPPort port) {
+		this.destinationPort = port.value;
+	}
+
 	public void setDestinationPort(int port) {
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("port out of range");
@@ -111,6 +127,10 @@ public class SDPHeader implements SerializableMessage {
 		return sourcePort;
 	}
 
+	public void setSourcePort(SDPPort port) {
+		this.sourcePort = port.value;
+	}
+
 	public void setSourcePort(int port) {
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("port out of range");
@@ -118,11 +138,11 @@ public class SDPHeader implements SerializableMessage {
 		this.sourcePort = port;
 	}
 
-	public SDPFlag getFlags() {
+	public Flag getFlags() {
 		return flags;
 	}
 
-	public void setFlags(SDPFlag flags) {
+	public void setFlags(Flag flags) {
 		this.flags = flags;
 	}
 
@@ -134,4 +154,26 @@ public class SDPHeader implements SerializableMessage {
 		this.tag = tag;
 	}
 
+	public enum Flag {
+		/** Indicates that a reply is not expected. */
+		REPLY_NOT_EXPECTED(0x07),
+		/** Indicates that a reply is expected. */
+		REPLY_EXPECTED(0x87);
+		public final byte value;
+		private static final Map<Byte, Flag> MAP = new HashMap<>();
+
+		Flag(int value) {
+			this.value = (byte) value;
+		}
+
+		static {
+			for (Flag flag : values()) {
+				MAP.put(flag.value, flag);
+			}
+		}
+
+		public static Flag get(byte value) {
+			return MAP.get(value);
+		}
+	}
 }

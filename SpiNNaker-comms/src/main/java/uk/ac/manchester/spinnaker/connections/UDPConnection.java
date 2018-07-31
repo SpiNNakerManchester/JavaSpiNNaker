@@ -5,7 +5,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -248,7 +248,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error sending the data
 	 */
 	public void send(ByteBuffer data) throws IOException {
-		doSend(new DatagramPacket(data.array(), 0, data.position()));
+		doSend(new DatagramPacket(data.array(), data.position(),
+				data.remaining()));
 	}
 
 	/**
@@ -306,8 +307,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		sendTo(new DatagramPacket(data.array(), 0, data.position()), address,
-				port);
+		sendTo(new DatagramPacket(data.array(), data.position(),
+				data.remaining()), address, port);
 	}
 
 	@Override

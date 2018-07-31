@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_ROUTING;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
@@ -39,9 +39,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 		return new Response(numEntries, buffer);
 	}
 
-	/**
-	 * An SCP response to a request to allocate router entries
-	 */
+	/** An SCP response to a request to allocate router entries. */
 	public static class Response extends CheckOKResponse {
 		/** The base address allocated, or 0 if none. */
 		public final int baseAddress;

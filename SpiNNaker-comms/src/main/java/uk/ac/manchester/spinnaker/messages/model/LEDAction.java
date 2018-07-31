@@ -8,10 +8,10 @@ public enum LEDAction {
 	OFF(2),
 	/** Turn the LED on. */
 	ON(3);
+
 	/** The SCAMP-encoded value. */
 	public final byte value;
-
-	private LEDAction(int value) {
+	LEDAction(int value) {
 		this.value = (byte) value;
 	}
 }

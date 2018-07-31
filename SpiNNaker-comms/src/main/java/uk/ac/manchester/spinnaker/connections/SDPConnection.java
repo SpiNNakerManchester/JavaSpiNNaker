@@ -1,6 +1,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
@@ -77,6 +77,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 		ByteBuffer buffer = newMessageBuffer();
 		buffer.putShort((short) 0);
 		sdpMessage.addToBuffer(buffer);
+		buffer.flip();
 		send(buffer);
 	}
 

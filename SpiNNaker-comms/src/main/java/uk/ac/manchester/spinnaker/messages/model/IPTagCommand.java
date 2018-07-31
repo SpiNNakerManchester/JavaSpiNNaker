@@ -12,10 +12,10 @@ public enum IPTagCommand {
 	CLR(3),
 	/** Update Meta. */
 	TTO(4);
+
 	/** The SCAMP-encoded value. */
 	public final byte value;
-
-	private IPTagCommand(int value) {
+	IPTagCommand(int value) {
 		this.value = (byte) value;
 	}
 }

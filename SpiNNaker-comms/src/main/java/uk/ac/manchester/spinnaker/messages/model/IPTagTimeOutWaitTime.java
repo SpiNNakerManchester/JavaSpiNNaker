@@ -30,21 +30,23 @@ public enum IPTagTimeOutWaitTime {
 	TIMEOUT_1280_ms(8),
 	/** Wait for 2.56s. */
 	TIMEOUT_2560_ms(9);
+
 	/** The SCAMP-encoded value. */
 	public final int value;
-	private static final Map<Integer, IPTagTimeOutWaitTime> map = new HashMap<>();
+	private static final Map<Integer, IPTagTimeOutWaitTime> MAP =
+			new HashMap<>();
 
-	private IPTagTimeOutWaitTime(int value) {
+	IPTagTimeOutWaitTime(int value) {
 		this.value = value;
 	}
 
 	static {
 		for (IPTagTimeOutWaitTime tto : values()) {
-			map.put(tto.value, tto);
+			MAP.put(tto.value, tto);
 		}
 	}
 
 	public static IPTagTimeOutWaitTime get(int value) {
-		return map.get(value);
+		return MAP.get(value);
 	}
 }

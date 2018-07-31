@@ -64,6 +64,7 @@ public class P2PTable {
 	 *
 	 * @param height
 	 *            The height of the machine
+	 * @return The number of bytes for the column
 	 */
 	public static int getNumColumnBytes(int height) {
 		return ((height + 7) / 8) * 4;
@@ -74,6 +75,7 @@ public class P2PTable {
 	 *
 	 * @param column
 	 *            The column to be read
+	 * @return Where the column is located within the table.
 	 */
 	public static int getColumnOffset(int column) {
 		return ((256 * column) / 8) * 4;
@@ -89,6 +91,7 @@ public class P2PTable {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip to look up.
+	 * @return True if anything in the table routes to the chip.
 	 */
 	public boolean isRoute(HasChipLocation chip) {
 		P2PTableRoute r = routes.get(chip.asChipLocation());
@@ -100,6 +103,7 @@ public class P2PTable {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip to find the route to
+	 * @return Get the route descriptor for a chip.
 	 */
 	public P2PTableRoute getRoute(HasChipLocation chip) {
 		P2PTableRoute r = routes.get(chip.asChipLocation());

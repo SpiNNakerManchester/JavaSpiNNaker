@@ -118,6 +118,15 @@ public class TestChip {
     }
 
     @Test
+    public void testGet() throws UnknownHostException {
+        Chip chip1 = new Chip(new ChipLocation(3, 4), getProcessors(),
+                createRouter(), 100, createInetAddress(), false, 6, location11);
+        assertEquals(3, chip1.getX());
+        assertEquals(4, chip1.getY());
+        assertEquals(new ChipLocation(3,4), chip1.asChipLocation());
+    }
+
+    @Test
     public void testDefault() throws UnknownHostException {
         Chip chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
                 createInetAddress(), location11);

@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.HOST_DATA_READ_ACK;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -11,18 +13,12 @@ public class HostDataReadAck extends EIEIOCommandMessage {
 	public final byte sequenceNumber;
 
 	public HostDataReadAck(byte sequenceNumber) {
-		super(EIEIOCommandID.HOST_DATA_READ_ACK);
+		super(HOST_DATA_READ_ACK);
 		this.sequenceNumber = sequenceNumber;
 	}
 
 	public HostDataReadAck(int sequenceNumber) {
 		this((byte) (sequenceNumber & 0xFF));
-	}
-
-	public HostDataReadAck(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
-		super(header, data, offset);
-		this.sequenceNumber = data.get(offset);
 	}
 
 	@Override

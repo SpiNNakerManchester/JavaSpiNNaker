@@ -1,7 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
@@ -41,7 +41,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	public static class Response extends CheckOKResponse {
 		private final int route;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
 			route = buffer.getInt();
 		}

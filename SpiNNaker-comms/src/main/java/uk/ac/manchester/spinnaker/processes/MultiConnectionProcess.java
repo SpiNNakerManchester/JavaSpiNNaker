@@ -14,7 +14,12 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 
-/** A process that uses multiple connections in communication. */
+/**
+ * A process that uses multiple connections in communication.
+ *
+ * @param <T>
+ *            The type of connection used by the process.
+ */
 public abstract class MultiConnectionProcess<T extends SCPConnection>
 		extends Process {
 	public static final int DEFAULT_NUM_RETRIES = 3;

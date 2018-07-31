@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.HOST_DATA_READ;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -14,35 +16,36 @@ public class HostDataRead extends EIEIOCommandMessage {
 
 	public HostDataRead(byte numRequests, byte sequenceNum, byte[] channel,
 			byte[] regionID, int[] spaceRead) {
-		super(EIEIOCommandID.HOST_DATA_READ);
+		super(HOST_DATA_READ);
 		header = new Header(numRequests, sequenceNum);
 		this.acks = new Ack(numRequests, channel, regionID, spaceRead);
 	}
 
 	public HostDataRead(byte numRequests, byte sequenceNum, byte channel,
 			byte regionID, int spaceRead) {
-		super(EIEIOCommandID.HOST_DATA_READ);
+		super(HOST_DATA_READ);
 		header = new Header(numRequests, sequenceNum);
-		this.acks = new Ack(numRequests, new byte[] { channel },
-				new byte[] { regionID }, new int[] { spaceRead });
+		this.acks = new Ack(numRequests, new byte[] {
+				channel
+		}, new byte[] {
+				regionID
+		}, new int[] {
+				spaceRead
+		});
 	}
 
-	public HostDataRead(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
-		super(header, data, offset);
-		this.header = new Header((byte) (data.get(offset) & 0x7),
-				data.get(offset + 1));
-		offset += 2;
+	HostDataRead(EIEIOCommandHeader header, ByteBuffer data) {
+		super(header);
+		this.header = new Header((byte) (data.get() & 0x7), data.get());
 		byte[] channel = new byte[getNumRequests()];
 		byte[] regionID = new byte[getNumRequests()];
 		int[] spaceRead = new int[getNumRequests()];
 		for (int i = 0; i < getNumRequests(); i++) {
-			data.get(offset++);
-			data.get(offset++);
-			channel[i] = data.get(offset++);
-			regionID[i] = data.get(offset++);
-			spaceRead[i] = data.getInt(offset);
-			offset += 4;
+			data.get();
+			data.get();
+			channel[i] = data.get();
+			regionID[i] = data.get();
+			spaceRead[i] = data.getInt();
 		}
 		this.acks = new Ack(getNumRequests(), channel, regionID, spaceRead);
 	}
@@ -100,7 +103,7 @@ public class HostDataRead extends EIEIOCommandMessage {
 		final byte[] regionID;
 		final int[] spaceRead;
 
-		public Ack(int numRequests, byte[] channel, byte[] regionID,
+		Ack(int numRequests, byte[] channel, byte[] regionID,
 				int[] spaceRead) {
 			if (channel.length != numRequests || regionID.length != numRequests
 					|| spaceRead.length != numRequests) {

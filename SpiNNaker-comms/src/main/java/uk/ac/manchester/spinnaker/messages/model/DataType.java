@@ -6,10 +6,11 @@ import java.nio.ByteOrder;
 /** Enum for data types. */
 public enum DataType {
 	BYTE(1), SHORT(2), INT(4), LONG(8), BYTE_ARRAY(16);
+
 	/** The SCAMP data type descriptor code. */
 	public final int value;
 
-	private DataType(int value) {
+	DataType(int value) {
 		this.value = value;
 	}
 

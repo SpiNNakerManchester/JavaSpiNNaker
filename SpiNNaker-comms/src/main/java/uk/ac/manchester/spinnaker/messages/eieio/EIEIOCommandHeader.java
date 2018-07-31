@@ -4,12 +4,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.SerializableMessage;
-
 /** EIEIO header for command packets. */
-public class EIEIOCommandHeader implements SerializableMessage {
+public class EIEIOCommandHeader implements EIEIOHeader {
 	/** The command ID in this header. */
-	public final EIEIOCommandID command;
+	public final EIEIOCommand command;
 
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
@@ -20,7 +18,7 @@ public class EIEIOCommandHeader implements SerializableMessage {
 	 * @param command
 	 *            The command.
 	 */
-	public EIEIOCommandHeader(EIEIOCommandID command) {
+	public EIEIOCommandHeader(EIEIOCommand command) {
 		this.command = requireNonNull(command, "must supply a command");
 	}
 
@@ -31,11 +29,6 @@ public class EIEIOCommandHeader implements SerializableMessage {
 	 *            The encoded command.
 	 */
 	public EIEIOCommandHeader(int command) {
-		if (command < 0 || command > MAX_COMMAND) {
-			throw new IllegalArgumentException(
-					"parameter command is outside the allowed range (0 to "
-							+ MAX_COMMAND + ")");
-		}
 		this.command = EIEIOCommandID.get(command);
 	}
 
@@ -44,16 +37,18 @@ public class EIEIOCommandHeader implements SerializableMessage {
 	 *
 	 * @param buffer
 	 *            The buffer to read the data from
-	 * @param offset
-	 *            The offset where the valid data starts
 	 */
-	public EIEIOCommandHeader(ByteBuffer buffer, int offset) {
-		command = EIEIOCommandID.get(buffer.getShort(offset) & MAX_COMMAND);
+	public EIEIOCommandHeader(ByteBuffer buffer) {
+		command = EIEIOCommandID.get(buffer.getShort() & MAX_COMMAND);
 	}
+
+	private static final int FLAG1_BIT = 15;
+	private static final int FLAG2_BIT = 14;
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
-		short value = (short) (0 << 15 | 1 << 14 | command.getValue());
+		short value =
+				(short) (0 << FLAG1_BIT | 1 << FLAG2_BIT | command.getValue());
 		buffer.putShort(value);
 	}
 }

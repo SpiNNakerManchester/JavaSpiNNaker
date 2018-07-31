@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Boot message Operation Codes. */
-public enum SpinnakerBootOpCode {
+public enum BootOpCode {
+	// TODO Document these properly
 	/** */
 	HELLO(0x41),
 	/** */
@@ -14,19 +15,19 @@ public enum SpinnakerBootOpCode {
 	/** */
 	FLOOD_FILL_CONTROL(0x5);
 	public final int value;
-	private static final Map<Integer, SpinnakerBootOpCode> map = new HashMap<>();
+	private static final Map<Integer, BootOpCode> MAP = new HashMap<>();
 
-	private SpinnakerBootOpCode(int value) {
+	BootOpCode(int value) {
 		this.value = value;
 	}
 
 	static {
-		for (SpinnakerBootOpCode c : values()) {
-			map.put(c.value, c);
+		for (BootOpCode c : values()) {
+			MAP.put(c.value, c);
 		}
 	}
 
-	public static SpinnakerBootOpCode get(int opcode) {
-		return map.get(opcode);
+	public static BootOpCode get(int opcode) {
+		return MAP.get(opcode);
 	}
 }

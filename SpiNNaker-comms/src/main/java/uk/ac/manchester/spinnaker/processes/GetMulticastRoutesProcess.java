@@ -25,8 +25,8 @@ public class GetMulticastRoutesProcess
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
 	/** 16 entries fit in a 256-byte read. */
-	private static final int ENTRIES_PER_READ = UDP_MESSAGE_MAX_SIZE
-			/ BYTES_PER_ENTRY;
+	private static final int ENTRIES_PER_READ =
+			UDP_MESSAGE_MAX_SIZE / BYTES_PER_ENTRY;
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
 
@@ -54,16 +54,16 @@ public class GetMulticastRoutesProcess
 	private void addRoutes(ByteBuffer data, int offset,
 			Map<Integer, MulticastRoutingEntry> routes, Integer appID) {
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
-			data.get();// Ignore
-			data.get();// Ignore
-			int app_id = data.get();
-			data.get();// Ignore
+			data.get(); // Ignore
+			data.get(); // Ignore
+			int appid = data.get();
+			data.get(); // Ignore
 			int route = data.getInt();
 			int key = data.getInt();
 			int mask = data.getInt();
 
 			if (toUnsignedLong(route) < INVALID_ROUTE_MARKER
-					&& (appID == null || appID == app_id)) {
+					&& (appID == null || appID == appid)) {
 				routes.put(r + offset,
 						new MulticastRoutingEntry(key, mask, route, false));
 			}

@@ -8,13 +8,13 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
 /** A message used for booting the board. */
-public class SpinnakerBootMessage implements SerializableMessage {
+public class BootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
 	private static final int BOOT_PACKET_SIZE = 256 * 4;
 	/** The payload data (or <tt>null</tt> if there is none). */
 	public final ByteBuffer data;
 	/** The operation of this packet. */
-	public final SpinnakerBootOpCode opcode;
+	public final BootOpCode opcode;
 	/** The first operand. */
 	public final int operand1;
 	/** The second operand. */
@@ -34,7 +34,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param operand3
 	 *            The third arg
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public BootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -57,7 +57,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param buffer
 	 *            The payload
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public BootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3, ByteBuffer buffer) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -84,7 +84,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param bytes
 	 *            The payload
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public BootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3, byte[] bytes) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -103,9 +103,9 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param buffer
 	 *            the buffer to read out of.
 	 */
-	public SpinnakerBootMessage(ByteBuffer buffer) {
+	public BootMessage(ByteBuffer buffer) {
 		buffer.getShort(); // TODO check message version?
-		opcode = SpinnakerBootOpCode.get(buffer.getInt());
+		opcode = BootOpCode.get(buffer.getInt());
 		operand1 = buffer.getInt();
 		operand2 = buffer.getInt();
 		operand3 = buffer.getInt();

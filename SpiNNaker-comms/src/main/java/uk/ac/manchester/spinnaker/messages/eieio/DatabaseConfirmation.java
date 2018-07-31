@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.DATABASE_CONFIRMATION;
 
 import java.nio.ByteBuffer;
 
@@ -12,21 +13,20 @@ public class DatabaseConfirmation extends EIEIOCommandMessage {
 	public final String databasePath;
 
 	public DatabaseConfirmation() {
-		super(EIEIOCommandID.DATABASE_CONFIRMATION);
+		super(DATABASE_CONFIRMATION);
 		databasePath = null;
 	}
 
 	public DatabaseConfirmation(String databasePath) {
-		super(EIEIOCommandID.DATABASE_CONFIRMATION);
+		super(DATABASE_CONFIRMATION);
 		this.databasePath = databasePath;
 	}
 
-	public DatabaseConfirmation(EIEIOCommandHeader header, ByteBuffer data,
-			int offset) {
-		super(header, data, offset);
-		if (data.limit() - offset > 0) {
-			databasePath = new String(data.array(), offset,
-					data.limit() - offset, defaultCharset());
+	public DatabaseConfirmation(EIEIOCommandHeader header, ByteBuffer data) {
+		super(header);
+		if (data.remaining() > 0) {
+			databasePath = new String(data.array(), data.position(),
+					data.remaining(), defaultCharset());
 		} else {
 			databasePath = null;
 		}

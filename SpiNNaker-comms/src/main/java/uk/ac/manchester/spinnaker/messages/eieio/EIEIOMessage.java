@@ -2,6 +2,12 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
-/** Marker interface for an EIEIO message. */
-public abstract interface EIEIOMessage extends SerializableMessage {
+/** An EIEIO message's basic operations. */
+public interface EIEIOMessage<Header extends EIEIOHeader>
+		extends SerializableMessage {
+	/** @return the header of this message. */
+	Header getHeader();
+
+	/** @return the minimum length of a message instance in bytes. */
+	int minPacketLength();
 }

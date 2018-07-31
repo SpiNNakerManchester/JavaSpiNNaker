@@ -10,22 +10,107 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.EIEIOReceiver;
 import uk.ac.manchester.spinnaker.connections.model.EIEIOSender;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommand;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandMessage;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 
 /** A UDP connection for sending and receiving raw EIEIO messages. */
-public class EIEIOConnection extends UDPConnection<EIEIOMessage>
+public class EIEIOConnection
+		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>>
 		implements EIEIOReceiver, EIEIOSender {
+	/**
+	 * Create an EIEIO connection.
+	 *
+	 * @param localHost
+	 *            The local host name or IP address to bind to. If not
+	 *            specified, it defaults to binding to all interfaces, unless
+	 *            remoteHost is specified, in which case binding is done to the
+	 *            IP address that will be used to send packets.
+	 * @param localPort
+	 *            The local port to bind to, 0 or between 1025 and 65535.
+	 * @param remoteHost
+	 *            The remote host name or IP address to send packets to. If not
+	 *            specified, the socket will be available for listening only,
+	 *            and will throw and exception if used for sending.
+	 * @param remotePort
+	 *            The remote port to send packets to. If remoteHost is
+	 *            <tt>null</tt>, this is ignored. If remoteHost is specified,
+	 *            this must also be specified as non-zero for the connection to
+	 *            allow sending.
+	 * @throws IOException
+	 *             If there is an error setting up the communication channel
+	 */
 	public EIEIOConnection(String localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 	}
 
 	@Override
-	public void sendEIEIOMessage(EIEIOMessage eieioMessage) throws IOException {
+	public void sendEIEIOMessage(
+			@SuppressWarnings("rawtypes") EIEIOMessage eieioMessage)
+			throws IOException {
 		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
 		b.flip();
 		send(b);
+	}
+
+	/**
+	 * Send a raw command.
+	 *
+	 * @param command
+	 *            The command to send.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	protected void sendCommand(int command) throws IOException {
+		sendCommand(EIEIOCommandID.get(command));
+	}
+
+	/**
+	 * Send a raw command.
+	 *
+	 * @param command
+	 *            The command to send.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	protected void sendCommand(EIEIOCommand command) throws IOException {
+		sendEIEIOMessage(new EIEIOCommandMessage(command));
+	}
+
+	/**
+	 * Send a raw command.
+	 *
+	 * @param command
+	 *            The command to send.
+	 * @param ipAddress
+	 *            The host to send to.
+	 * @param port
+	 *            The port to send to.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	protected void sendCommand(EIEIOCommandID command, InetAddress ipAddress,
+			int port) throws IOException {
+		sendEIEIOMessageTo(new EIEIOCommandMessage(command), ipAddress, port);
+	}
+
+	/**
+	 * Receive a raw command.
+	 *
+	 * @return the command ID
+	 * @throws IOException
+	 *             If receiving fails.
+	 */
+	protected EIEIOCommand receiveCommand() throws IOException {
+		EIEIOMessage<?> msg = receiveEIEIOMessage();
+		if (msg instanceof EIEIOCommandMessage) {
+			return ((EIEIOCommandMessage) msg).getHeader().command;
+		}
+		throw new IOException("unexpected data message");
 	}
 
 	/**
@@ -40,7 +125,8 @@ public class EIEIOConnection extends UDPConnection<EIEIOMessage>
 	 * @throws IOException
 	 *             If anything goes wrong in sending.
 	 */
-	public void sendEIEIOMessageTo(EIEIOMessage eieioMessage,
+	public void sendEIEIOMessageTo(
+			EIEIOMessage<? extends EIEIOHeader> eieioMessage,
 			InetAddress ipAddress, int port) throws IOException {
 		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
@@ -52,24 +138,19 @@ public class EIEIOConnection extends UDPConnection<EIEIOMessage>
 	private static final int FLAG = 0x4000;
 
 	@Override
-	public EIEIOMessage receiveEIEIOMessage(Integer timeout)
+	public EIEIOMessage<?> receiveEIEIOMessage(Integer timeout)
 			throws IOException {
 		ByteBuffer b = receive();
 		short header = b.getShort();
 		if ((header & MASK) == FLAG) {
-			return readCommandMessage(b, 0);
+			return readCommandMessage(b);
 		} else {
-			return readDataMessage(b, 0);
+			return readDataMessage(b);
 		}
 	}
 
 	@Override
-	public MessageReceiver<EIEIOMessage> getReceiver() {
-		return new MessageReceiver<EIEIOMessage>() {
-			@Override
-			public EIEIOMessage receive() throws IOException {
-				return receiveEIEIOMessage(null);
-			}
-		};
+	public MessageReceiver<EIEIOMessage<? extends EIEIOHeader>> getReceiver() {
+		return this::receiveEIEIOMessage;
 	}
 }

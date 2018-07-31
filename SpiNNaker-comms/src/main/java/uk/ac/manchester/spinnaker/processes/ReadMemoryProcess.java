@@ -94,7 +94,19 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
-	/** Read memory over a link into a prepared buffer. */
+	/**
+	 * Read memory over a link into a prepared buffer.
+	 *
+	 * @param chip
+	 *            What chip does the link start at.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param receivingBuffer
+	 *            The buffer to receive into; the remaining space of the buffer
+	 *            determines how much memory to read.
+	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, Exception {
 		int size = receivingBuffer.remaining();
@@ -111,7 +123,17 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		a.finish();
 	}
 
-	/** Read memory into a prepared buffer. */
+	/**
+	 * Read memory into a prepared buffer.
+	 *
+	 * @param chip
+	 *            What chip has the memory to read from.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param receivingBuffer
+	 *            The buffer to receive into; the remaining space of the buffer
+	 *            determines how much memory to read.
+	 */
 	public void readMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, Exception {
 		int size = receivingBuffer.remaining();
@@ -128,7 +150,19 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		a.finish();
 	}
 
-	/** Read memory over a link into a new buffer. */
+	/**
+	 * Read memory over a link into a new buffer.
+	 *
+	 * @param chip
+	 *            What chip does the link start at.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @return the filled buffer
+	 */
 	public ByteBuffer readLink(HasChipLocation chip, int linkID,
 			int baseAddress, int size) throws IOException, Exception {
 		Accumulator a = new Accumulator(size);
@@ -144,7 +178,19 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		return a.finish();
 	}
 
-	/** Read memory into a new buffer. */
+	/**
+	 * Read memory into a new buffer.
+	 *
+	 * @param chip
+	 *            What chip has the memory to read from.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @return the filled buffer
+	 */
 	public ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
 			int size) throws IOException, Exception {
 		Accumulator a = new Accumulator(size);
@@ -163,6 +209,17 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * Read memory over a link into a file. Note that we can write the file out
 	 * of order; a {@link RandomAccessFile} is required
+	 *
+	 * @param chip
+	 *            What chip does the link start at.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @param dataFile
+	 *            where to write the bytes
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			int size, RandomAccessFile dataFile) throws IOException, Exception {
@@ -182,6 +239,17 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * Read memory into a file. Note that we can write the file out of order; a
 	 * {@link RandomAccessFile} is required
+	 *
+	 * @param chip
+	 *            What chip has the memory to read from.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @param dataFile
+	 *            where to write the bytes
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, Exception {
@@ -198,7 +266,20 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		a.finish();
 	}
 
-	/** Read memory over a link into a file. */
+	/**
+	 * Read memory over a link into a file.
+	 *
+	 * @param chip
+	 *            What chip does the link start at.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @param dataFile
+	 *            where to write the bytes
+	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			int size, File dataFile) throws IOException, Exception {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
@@ -206,7 +287,20 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
-	/** Read memory into a file. */
+	/**
+	 * Read memory into a file.
+	 *
+	 * @param chip
+	 *            What chip has the memory to read from.
+	 * @param linkID
+	 *            the ID of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            The number of bytes to read.
+	 * @param dataFile
+	 *            where to write the bytes
+	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
 			File dataFile) throws IOException, Exception {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {

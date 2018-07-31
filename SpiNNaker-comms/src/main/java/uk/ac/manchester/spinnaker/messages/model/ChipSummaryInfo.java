@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.machine;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.net.InetAddress.getByAddress;
 import static java.util.Collections.unmodifiableList;
@@ -12,6 +12,10 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import uk.ac.manchester.spinnaker.machine.CPUState;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /** Represents the chip summary information read via an SCP command. */
 public final class ChipSummaryInfo {

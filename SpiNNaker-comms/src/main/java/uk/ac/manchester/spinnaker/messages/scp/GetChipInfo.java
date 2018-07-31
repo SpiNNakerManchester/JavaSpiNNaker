@@ -1,11 +1,11 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_INFO;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -47,7 +47,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 		/** The chip information received. */
 		public final ChipSummaryInfo chipInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Version", CMD_INFO, buffer);
 			this.chipInfo = new ChipSummaryInfo(buffer, sdpHeader.getSource());
 		}

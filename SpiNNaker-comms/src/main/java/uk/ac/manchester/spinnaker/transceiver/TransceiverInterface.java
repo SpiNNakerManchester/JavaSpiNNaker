@@ -17,6 +17,7 @@ import static uk.ac.manchester.spinnaker.machine.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
@@ -72,14 +73,39 @@ import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
 public interface TransceiverInterface {
+	/**
+	 * Delay between starting a program on a core and checking to see if the
+	 * core is ready for operational use. In milliseconds.
+	 */
+	int LAUNCH_DELAY = 500;
+	/**
+	 * Coordinate of a <i>default</i> destination.
+	 */
 	int DEFAULT_DESTINATION_COORDINATE = 255;
+	/**
+	 * The default destination chip.
+	 */
 	ChipLocation DEFAULT_DESTINATION = new ChipLocation(
 			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
+	/**
+	 * A marker to indicate that no timeout applies.
+	 */
 	Integer TIMEOUT_DISABLED = null;
+	/**
+	 * How often to poll by default.
+	 */
 	int DEFAULT_POLL_INTERVAL = 100;
+	/**
+	 * The set of states that indicate a core in a failure state.
+	 */
 	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
 			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	/**
+	 * What proportion of checks are to be expensive full checks.
+	 */
 	int DEFAULT_CHECK_INTERVAL = 100;
+	/** How many times to try booting a board. */
+	int BOARD_BOOT_RETRIES = 5;
 
 	/**
 	 * @return The connection selector to use for SCP messages.
@@ -120,7 +146,7 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get the maximum chip x-coordinate and maximum chip y-coordinate of the
-	 * chips in the machine
+	 * chips in the machine.
 	 *
 	 * @return The dimensions of the machine
 	 */
@@ -231,7 +257,7 @@ public interface TransceiverInterface {
 	 */
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, Exception, InterruptedException {
-		return ensureBoardIsReady(5, null);
+		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
 	}
 
 	/**
@@ -246,7 +272,7 @@ public interface TransceiverInterface {
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, Exception, InterruptedException {
-		return ensureBoardIsReady(5, extraBootValues);
+		return ensureBoardIsReady(BOARD_BOOT_RETRIES, extraBootValues);
 	}
 
 	/**
@@ -435,7 +461,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Get a count of the number of cores which have a given state
+	 * Get a count of the number of cores which have a given state.
 	 *
 	 * @param appID
 	 *            The ID of the application from which to get the count.
@@ -808,7 +834,7 @@ public interface TransceiverInterface {
 		}
 
 		// Sleep to allow cores to get going
-		sleep(500);
+		sleep(LAUNCH_DELAY);
 
 		// Check that the binaries have reached a wait state
 		int count = getCoreStateCount(appID, READY);
@@ -1864,8 +1890,8 @@ public interface TransceiverInterface {
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
 	 */
-	default void setLEDs(HasChipLocation chip, Map<Integer, Integer> ledStates)
-			throws IOException, Exception {
+	default void setLEDs(HasChipLocation chip,
+			Map<Integer, LEDAction> ledStates) throws IOException, Exception {
 		setLEDs(chip.getScampCore(), ledStates);
 	}
 
@@ -1878,7 +1904,7 @@ public interface TransceiverInterface {
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
 	 */
-	void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
+	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception;
 
 	/**
@@ -2276,7 +2302,8 @@ public interface TransceiverInterface {
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
 			throws IOException, Exception {
 		clearRouterDiagnosticCounters(chip, false,
-				range(0, 16).boxed().collect(toList()));
+				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
+						.collect(toList()));
 	}
 
 	/**
@@ -2291,7 +2318,8 @@ public interface TransceiverInterface {
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable) throws IOException, Exception {
 		clearRouterDiagnosticCounters(chip, enable,
-				range(0, 16).boxed().collect(toList()));
+				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
+						.collect(toList()));
 	}
 
 	/**
@@ -2310,7 +2338,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Clear router diagnostic information on a chip
+	 * Clear router diagnostic information on a chip.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip
@@ -2328,6 +2356,7 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip
+	 * @return the list of chunks in the heap
 	 */
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2341,6 +2370,7 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip
 	 * @param heap
 	 *            The SystemVariableDefinition which is the heap to read
+	 * @return the list of chunks in the heap
 	 */
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception;

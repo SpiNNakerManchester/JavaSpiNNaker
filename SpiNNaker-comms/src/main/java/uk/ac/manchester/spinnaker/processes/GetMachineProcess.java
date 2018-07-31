@@ -2,10 +2,7 @@ package uk.ac.manchester.spinnaker.processes;
 
 import static java.lang.Math.min;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableMap;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.N_IPTAGS_PER_CHIP;
@@ -18,6 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import static java.util.Collections.emptyMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
@@ -36,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.Router;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -45,7 +43,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
     private static final Logger log = getLogger(GetMachineProcess.class);
     /** A dictionary of (x, y) -> ChipInfo. */
     private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
-
     private final Collection<ChipLocation> ignoreChips;
     private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
     private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
@@ -59,6 +56,13 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
     private final <K, V> Map<K, V> def(Map<K, V> m) {
         return m == null ? emptyMap() : m;
     }
+
+	private static int clamp(int value, Integer limit) {
+		if (limit == null) {
+			return value;
+		}
+		return min(value, limit);
+	}
 
     public GetMachineProcess(
             ConnectionSelector<SCPConnection> connectionSelector,
@@ -125,13 +129,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return machine;
 	}
 
-	private static int clamp(int value, Integer limit) {
-		if (limit == null) {
-			return value;
-		}
-		return min(value, limit);
-	}
-
 	/**
 	 * Creates a chip from a ChipSummaryInfo structure.
 	 *
@@ -183,7 +180,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
                 MachineDimensions size, Collection<Direction> ignoreLinks) {
 		HasChipLocation chip = chipInfo.chip;
 		List<Link> links = new ArrayList<>();
-		for (Direction link : chipInfo.workingLinks) {
+		for (Direction link: chipInfo.workingLinks) {
 			ChipLocation dest = getChipOverLink(chip, size, link);
 			if (!ignoreLinks.contains(link)
                     && !this.ignoreChips.contains(dest)
@@ -224,6 +221,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * Get the chip information for the machine. Note that
 	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)} must have
 	 * been called first.
+	 *
+	 * @return The description of what the state of each chip is.
 	 */
 	public Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
 		return unmodifiableMap(chipInfo);

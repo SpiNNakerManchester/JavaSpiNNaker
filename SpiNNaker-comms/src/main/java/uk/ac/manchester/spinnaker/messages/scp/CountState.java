@@ -1,7 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
@@ -41,12 +41,14 @@ public class CountState extends SCPRequest<CountState.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the number of cores in a given state. */
+	/**
+	 * An SCP response to a request for the number of cores in a given state.
+	 */
 	public static class Response extends CheckOKResponse {
 		/** The count of the number of cores with the requested state. */
 		public final int count;
 
-		public Response(ByteBuffer buffer)
+		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);
 			count = buffer.getInt();

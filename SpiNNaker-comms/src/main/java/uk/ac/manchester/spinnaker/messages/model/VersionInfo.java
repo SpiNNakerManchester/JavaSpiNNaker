@@ -15,20 +15,30 @@ public final class VersionInfo {
 	/** The build date of the software, in seconds since 1st January 1970. */
 	public final int buildDate;
 	/** The hardware being run on. */
-	public String hardware;
+	public final String hardware;
 	/** The name of the software. */
-	public String name;
+	public final String name;
 	public final int physicalCPUID;
 	/** The version number of the software. */
-	public Version versionNumber;
+	public final Version versionNumber;
 	/** The version information as text. */
-	public String versionString;
+	public final String versionString;
 	/** The location of the core where the information was obtained. */
 	public final HasCoreLocation core;
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 	private static final Pattern VERSION_RE = Pattern
 			.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)$");
+
+	private static final Version parseVersionString(String versionString) {
+		Matcher m = VERSION_RE.matcher(versionString);
+		if (!m.matches()) {
+			throw new IllegalArgumentException(
+					"incorrect version format: " + versionString);
+		}
+		return new Version(m.group("major"), m.group("minor"),
+				m.group("revision"));
+	}
 
 	/**
 	 * @param buffer
@@ -43,38 +53,25 @@ public final class VersionInfo {
 		buffer.getShort(); // Ignore 2 byes
 		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
-		String vd = new String(buffer.array(), buffer.position(),
+
+		String decoded = new String(buffer.array(), buffer.position(),
 				buffer.remaining(), UTF_8);
-		decodeVersion(vn, vd);
+		if (vn < MAGIC_VERSION) {
+			versionString = decoded;
+			versionNumber = new Version(vn / H, vn % H, 0);
+		} else {
+			String[] bits = decoded.split("\\|0", NBITS);
+			decoded = bits[0].replaceFirst("[|0]+$", "");
+			versionString = bits[1];
+			versionNumber = parseVersionString(versionString);
+		}
+
+		String[] bits = decoded.split("/", NBITS);
+		name = bits[0];
+		hardware = bits[1];
 	}
 
 	private static final int H = 100;
 	private static final int NBITS = 2;
 	private static final int MAGIC_VERSION = 0xFFFF;
-
-	private void decodeVersion(int vn, String vd) {
-		String nh = vd;
-		if (vn < MAGIC_VERSION) {
-			versionString = vd;
-			versionNumber = new Version(vn / H, vn % H, 0);
-		} else {
-			nh = uglyDecode(vd.split("\\|0", NBITS));
-		}
-
-		String[] bits = nh.split("/", NBITS);
-		name = bits[0];
-		hardware = bits[1];
-	}
-
-	private String uglyDecode(String[] bits) {
-		versionString = bits[1];
-		Matcher m = VERSION_RE.matcher(versionString);
-		if (!m.matches()) {
-			throw new IllegalArgumentException(
-					"incorrect version format: " + versionString);
-		}
-		versionNumber = new Version(m.group("major"), m.group("minor"),
-				m.group("revision"));
-		return bits[0].replaceFirst("[|0]+$", "");
-	}
 }

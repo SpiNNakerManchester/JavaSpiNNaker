@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +9,6 @@ import java.util.Map;
  * P2P Routing table routes.
  */
 public enum P2PTableRoute {
-	// TODO Document these values
 	/** Toward the East chip. (x+1,y) */
 	EAST(0b000),
 	/** Toward the North East chip. (x+1,y+1) */
@@ -24,19 +25,22 @@ public enum P2PTableRoute {
 	NONE(0b110),
 	/** Route to the monitor on the current chip. */
 	MONITOR(0b111);
+
+	/** The SpiNNaker value. */
 	public final int value;
-	private static final Map<Integer, P2PTableRoute> map = new HashMap<>();
+	private static final Map<Integer, P2PTableRoute> MAP = new HashMap<>();
 	static {
 		for (P2PTableRoute r : values()) {
-			map.put(r.value, r);
+			MAP.put(r.value, r);
 		}
 	}
 
-	private P2PTableRoute(int value) {
+	P2PTableRoute(int value) {
 		this.value = value;
 	}
 
 	public static P2PTableRoute get(int value) {
-		return map.get(value);
+		return requireNonNull(MAP.get(value),
+				"unknown P2P table route: " + value);
 	}
 }

@@ -6,7 +6,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_SHIFT;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -67,7 +67,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
-		public Response(ByteBuffer buffer)
+		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException, UnknownHostException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 

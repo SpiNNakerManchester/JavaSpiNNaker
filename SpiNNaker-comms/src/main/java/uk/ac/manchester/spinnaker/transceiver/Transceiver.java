@@ -64,8 +64,8 @@ import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.SpinnakerBootSender;
+import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
@@ -73,7 +73,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSele
 import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -93,8 +93,8 @@ import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
-import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessage;
-import uk.ac.manchester.spinnaker.messages.boot.SpinnakerBootMessages;
+import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
+import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
@@ -208,13 +208,12 @@ public class Transceiver extends UDPTransceiver
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
-	private SpinnakerBootSender bootSendConnection;
+	private BootSender bootSendConnection;
 	/**
 	 * A list of boot receive connections. These are used to listen for the
 	 * pre-boot board identifiers.
 	 */
-	private final List<SpinnakerBootReceiver> bootReceiveConnections =
-			new ArrayList<>();
+	private final List<BootReceiver> bootReceiveConnections = new ArrayList<>();
 	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
@@ -244,7 +243,8 @@ public class Transceiver extends UDPTransceiver
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
-	private final Map<BMPCoords, ConnectionSelector<BMPConnection>> bmpSelectors =
+	private final Map<BMPCoords,
+				ConnectionSelector<BMPConnection>> bmpSelectors =
 			new HashMap<>();
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
@@ -413,17 +413,17 @@ public class Transceiver extends UDPTransceiver
 			Collection<Connection> connections) {
 		for (Connection conn : connections) {
 			// locate the only boot send conn
-			if (conn instanceof SpinnakerBootSender) {
+			if (conn instanceof BootSender) {
 				if (bootSendConnection != null) {
 					throw new IllegalArgumentException(
-							"Only a single SpinnakerBootSender can be specified");
+							"Only a single BootSender can be specified");
 				}
-				bootSendConnection = (SpinnakerBootSender) conn;
+				bootSendConnection = (BootSender) conn;
 			}
 
 			// locate any boot receiver connections
-			if (conn instanceof SpinnakerBootReceiver) {
-				bootReceiveConnections.add((SpinnakerBootReceiver) conn);
+			if (conn instanceof BootReceiver) {
+				bootReceiveConnections.add((BootReceiver) conn);
 			}
 
 			// Locate any connections listening on a UDP port
@@ -612,8 +612,8 @@ public class Transceiver extends UDPTransceiver
 						.contains(versionInfo.versionNumber.majorVersion)) {
 					throw new IOException(format(
 							"The BMP at %s is running %s %s which is "
-									+ "incompatible with this transceiver, required "
-									+ "version is %s %s",
+									+ "incompatible with this transceiver, "
+									+ "required version is %s %s",
 							conn.getRemoteIPAddress(), versionInfo.name,
 							versionInfo.versionString, BMP_NAME,
 							BMP_MAJOR_VERSIONS));
@@ -845,7 +845,7 @@ public class Transceiver extends UDPTransceiver
 		return machine;
 	}
 
-	/** Get the application ID tracker for this transceiver. */
+	/** @return the application ID tracker for this transceiver. */
 	public AppIdTracker getAppIdTracker() throws IOException, Exception {
 		if (appIDTracker == null) {
 			updateMachine();
@@ -880,17 +880,17 @@ public class Transceiver extends UDPTransceiver
 				.getVersion(chip.getScampCore());
 	}
 
+	private static final int POST_BOOT_DELAY = 2000;
+
 	@Override
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
-		SpinnakerBootMessages bootMessages =
-				new SpinnakerBootMessages(version, extraBootValues);
-		Iterator<SpinnakerBootMessage> msgs =
-				bootMessages.getMessages().iterator();
+		BootMessages bootMessages = new BootMessages(version, extraBootValues);
+		Iterator<BootMessage> msgs = bootMessages.getMessages().iterator();
 		while (msgs.hasNext()) {
 			bootSendConnection.sendBootMessage(msgs.next());
 		}
-		sleep(2000);
+		sleep(POST_BOOT_DELAY);
 	}
 
 	/**
@@ -956,8 +956,8 @@ public class Transceiver extends UDPTransceiver
 		if (!versionInfo.name.equals(SCAMP_NAME)
 				|| !isScampVersionCompabible(versionInfo.versionNumber)) {
 			throw new IOException(format(
-					"The machine is currently booted with %s"
-							+ " %s which is incompatible with this transceiver, "
+					"The machine is currently booted with %s %s "
+							+ "which is incompatible with this transceiver, "
 							+ "required version is %s %s",
 					versionInfo.name, versionInfo.versionNumber, SCAMP_NAME,
 					SCAMP_VERSION));
@@ -978,7 +978,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * Try to detect if SCAMP is running, and if not, boot the machine
+	 * Try to detect if SCAMP is running, and if not, boot the machine.
 	 *
 	 * @param numAttempts
 	 *            how many attempts should be supported
@@ -1471,7 +1471,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
+	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception {
 		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new SetLED(core, ledStates));
@@ -1633,7 +1633,8 @@ public class Transceiver extends UDPTransceiver
 			DiagnosticFilter diagnosticFilter) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"the range of the position of a router filter is 0 and 16.");
+					"router filter positions must be beween 0 and "
+							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		if (position <= ROUTER_DEFAULT_FILTERS_MAX_POSITION) {
 			log.warn("You are planning to change a filter which is set by "
@@ -1656,7 +1657,8 @@ public class Transceiver extends UDPTransceiver
 			int position) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"the range of the position of a router filter is 0 and 16.");
+					"router filter positions must be beween 0 and "
+							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		int address =
 				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
@@ -1720,19 +1722,19 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
-	 * @param close_original_connections
+	 * @param closeOriginalConnections
 	 *            If True, the original connections passed to the transceiver in
 	 *            the constructor are also closed. If False, only newly
 	 *            discovered connections are closed.
-	 * @param power_off_machine
+	 * @param powerOffMachine
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
 	 * @throws java.lang.Exception
 	 *             If anything goes wrong
 	 */
-	public void close(boolean close_original_connections,
-			boolean power_off_machine) throws java.lang.Exception {
-		if (power_off_machine && bmpConnections != null
+	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
+			throws java.lang.Exception {
+		if (powerOffMachine && bmpConnections != null
 				&& !bmpConnections.isEmpty()) {
 			powerOffMachine();
 		}
@@ -1740,7 +1742,7 @@ public class Transceiver extends UDPTransceiver
 		super.close();
 
 		for (Connection connection : allConnections) {
-			if (close_original_connections
+			if (closeOriginalConnections
 					|| !originalConnections.contains(connection)) {
 				connection.close();
 			}
@@ -1765,7 +1767,8 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>>
+			getBMPConnection() {
 		return bmpSelectors;
 	}
 

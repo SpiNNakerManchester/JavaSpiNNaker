@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,7 @@ public enum SCPCommand {
 	/** Get SCAMP Version. */
 	CMD_VER(0),
 	/**
-	 * Run at PC
+	 * Run at PC.
 	 *
 	 * @deprecated see {@link #CMD_AS}
 	 */
@@ -19,7 +21,7 @@ public enum SCPCommand {
 	/** Write SDRAM. */
 	CMD_WRITE(3),
 	/**
-	 * Run via APLX
+	 * Run via APLX.
 	 *
 	 * @deprecated see {@link #CMD_AS}
 	 */
@@ -93,19 +95,20 @@ public enum SCPCommand {
 	/** Tube output. */
 	CMD_TUBE(64);
 	public final byte value;
-	private static final Map<Byte, SCPCommand> map = new HashMap<>();
+	private static final Map<Byte, SCPCommand> MAP = new HashMap<>();
 
-	private SCPCommand(int value) {
+	SCPCommand(int value) {
 		this.value = (byte) value;
 	}
 
 	static {
 		for (SCPCommand r : values()) {
-			map.put(r.value, r);
+			MAP.put(r.value, r);
 		}
 	}
 
 	public static SCPCommand get(byte value) {
-		return map.get(value);
+		return requireNonNull(MAP.get(value),
+				"unrecognised command value: " + value);
 	}
 }

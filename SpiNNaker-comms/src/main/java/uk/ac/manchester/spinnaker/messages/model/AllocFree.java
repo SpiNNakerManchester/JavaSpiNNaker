@@ -14,10 +14,11 @@ public enum AllocFree {
 	FREE_ROUTING_BY_POINTER(4),
 	/** Free Routing Entries by APP ID. */
 	FREE_ROUTING_BY_APP_ID(5);
+
 	/** The SARK operation value. */
 	public final byte value;
 
-	private AllocFree(int value) {
+	AllocFree(int value) {
 		this.value = (byte) value;
 	}
 }

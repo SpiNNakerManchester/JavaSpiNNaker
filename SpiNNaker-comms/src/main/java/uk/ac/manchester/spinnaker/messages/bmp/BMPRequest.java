@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static java.util.Collections.min;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;

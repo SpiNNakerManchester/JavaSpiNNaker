@@ -40,20 +40,22 @@ public abstract class Utils {
 	}
 
 	/**
-	 * Get the address of the <tt>vcpu_t</tt> structure for the given core
+	 * Get the address of the <tt>vcpu_t</tt> structure for the given core.
 	 *
 	 * @param p
 	 *            The core number
+	 * @return the address
 	 */
 	public static int getVcpuAddress(int p) {
 		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * p);
 	}
 
 	/**
-	 * Get the address of the <tt>vcpu_t</tt> structure for the given core
+	 * Get the address of the <tt>vcpu_t</tt> structure for the given core.
 	 *
 	 * @param core
 	 *            The core
+	 * @return the address
 	 */
 	public static int getVcpuAddress(HasCoreLocation core) {
 		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * core.getP());

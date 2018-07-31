@@ -96,8 +96,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, Exception {
-		try (InputStream data = new BufferedInputStream(
-				new FileInputStream(dataFile))) {
+		try (InputStream data =
+				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(baseAddress, data, (int) dataFile.length(),
 					(addr, bytes) -> new WriteLink(core, link, addr, bytes));
 		}
@@ -155,8 +155,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
-		try (InputStream data = new BufferedInputStream(
-				new FileInputStream(dataFile))) {
+		try (InputStream data =
+				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(baseAddress, data, (int) dataFile.length(),
 					(addr, bytes) -> new WriteMemory(core, addr, bytes));
 		}

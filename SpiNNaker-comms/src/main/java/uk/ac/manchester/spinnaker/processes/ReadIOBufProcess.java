@@ -29,11 +29,13 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * core.
  */
 public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
+	private static final int BUF_HEADER_BYTES = 16;
 	private static final int BLOCK_HEADER_BYTES = 16;
+	private static final int WORD = 4;
 	private final Queue<NextRead> nextReads = new LinkedList<>();
 	private final Queue<ExtraRead> extraReads = new LinkedList<>();
-	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf = new DefaultMap<>(
-			TreeMap::new);
+	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf =
+			new DefaultMap<>(TreeMap::new);
 
 	public ReadIOBufProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
@@ -48,11 +50,11 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 			throws Exception, IOException {
 		// Get the IOBuf address for each core
 		for (CoreLocation core : cores) {
-			sendRequest(
-					new ReadMemory(core.getScampCore(),
-							CPU_IOBUF_ADDRESS_OFFSET + getVcpuAddress(core), 4),
+			sendRequest(new ReadMemory(core.getScampCore(),
+					CPU_IOBUF_ADDRESS_OFFSET + getVcpuAddress(core), WORD),
 					response -> issueReadForIOBufHead(core, 0,
-							response.data.getInt(), chunk(size + 16)));
+							response.data.getInt(),
+							chunk(size + BUF_HEADER_BYTES)));
 		}
 		finish();
 		checkForError();
@@ -70,12 +72,12 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 				sendRequest(read.message(), response -> {
 					// Unpack the IOBuf header
 					int nextAddress = response.data.getInt();
-					response.data.getLong();// Ignore 8 bytes
+					response.data.getLong(); // Ignore 8 bytes
 					int bytesToRead = response.data.getInt();
 
 					// Save the rest of the IOBuf
-					int packetBytes = saveIOBufHead(read, response,
-							bytesToRead);
+					int packetBytes =
+							saveIOBufHead(read, response, bytesToRead);
 
 					// Ask for the rest of the IOBuf buffer to be copied over
 					issueReadsForIOBufTail(read, bytesToRead,
@@ -96,8 +98,8 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 			@Override
 			public Iterator<IOBuffer> iterator() {
 				return new Iterator<IOBuffer>() {
-					private final Iterator<CoreLocation> cores = iobuf.keySet()
-							.iterator();
+					private final Iterator<CoreLocation> cores =
+							iobuf.keySet().iterator();
 
 					@Override
 					public boolean hasNext() {

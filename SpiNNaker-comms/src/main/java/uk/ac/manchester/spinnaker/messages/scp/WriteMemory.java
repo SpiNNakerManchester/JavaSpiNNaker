@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_WRITE;
 import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 

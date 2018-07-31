@@ -170,10 +170,10 @@ public class MemoryIO implements AbstractIO {
 		if (currentAddress + len > endAddress) {
 			throw new EOFException();
 		}
-		if (len % type.value != 0) {
+		if (len % type.size != 0) {
 			throw new IllegalArgumentException("The size of " + len
 					+ " bytes to fill is not divisible by the size of"
-					+ " the data of " + type.value + " bytes");
+					+ " the data of " + type.size + " bytes");
 		}
 		synchronized (io) {
 			io.setCurrentAddress(currentAddress);

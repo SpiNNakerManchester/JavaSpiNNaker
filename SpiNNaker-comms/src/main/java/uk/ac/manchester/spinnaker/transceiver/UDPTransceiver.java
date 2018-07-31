@@ -96,6 +96,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 *
 		 * @param localAddress
 		 *            the local address to bind.
+		 * @return the new connection
 		 */
 		Conn getInstance(String localAddress);
 
@@ -106,6 +107,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 *            the local address to bind.
 		 * @param localPort
 		 *            the local port to bind.
+		 * @return the new connection
 		 */
 		Conn getInstance(String localAddress, int localPort);
 	}
@@ -139,6 +141,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	/**
 	 * Register a callback for a certain type of traffic to be received via UDP.
 	 *
+	 * @param <T>
+	 *            The type of message to be received
 	 * @param callback
 	 *            Function to be called when a packet is received
 	 * @param connectionFactory
@@ -159,6 +163,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	/**
 	 * Register a callback for a certain type of traffic to be received via UDP.
 	 *
+	 * @param <T>
+	 *            The type of message to be received
 	 * @param callback
 	 *            Function to be called when a packet is received
 	 * @param connectionFactory
@@ -182,6 +188,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	/**
 	 * Register a callback for a certain type of traffic to be received via UDP.
 	 *
+	 * @param <T>
+	 *            The type of message to be received
 	 * @param callback
 	 *            Function to be called when a packet is received
 	 * @param connectionFactory

@@ -9,7 +9,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
@@ -139,7 +139,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @author Andrew Rowley
 	 * @author Donal Fellows
 	 */
-	final class RequestPipeline {
+	private final class RequestPipeline {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
 		/** The number of responses outstanding. */
@@ -149,7 +149,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				synchronizedMap(new HashMap<>());
 
 		/** Per message record. */
-		final private class Request {
+		private final class Request {
 			/** request in progress. */
 			private final BMPRequest<R> request;
 			/** payload of request in progress. */
