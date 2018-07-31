@@ -173,7 +173,7 @@ public class FileIO implements AbstractIO {
 		if (currentOffset + len > endOffset) {
 			throw new EOFException();
 		}
-		if (len < 0 || len % type.value != 0) {
+		if (len < 0 || len % type.size != 0) {
 			throw new IllegalArgumentException(
 					"length to fill must be multiple of fill unit size");
 		}
