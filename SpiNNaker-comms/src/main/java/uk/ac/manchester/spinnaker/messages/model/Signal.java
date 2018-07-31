@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,29 +36,35 @@ public enum Signal {
 	USER_2(12, Type.MULTICAST),
 	/** */
 	USER_3(13, Type.MULTICAST);
+
 	/** The value used for the signal. */
 	public final byte value;
 	/** The "type" of the signal. */
 	public final Type type;
-	private static final Map<Byte, Signal> map = new HashMap<>();
+	private static final Map<Byte, Signal> MAP = new HashMap<>();
 
-	private Signal(int value, Type type) {
+	Signal(int value, Type type) {
 		this.value = (byte) value;
 		this.type = type;
 	}
 
 	static {
 		for (Signal r : values()) {
-			map.put(r.value, r);
+			MAP.put(r.value, r);
 		}
 	}
 
 	public static Signal get(byte value) {
-		return map.get(value);
+		return requireNonNull(MAP.get(value), "unknown signal: " + value);
 	}
 
 	/** The type of signal, determined by how it is transmitted. */
-	public static enum Type {
-		MULTICAST, POINT_TO_POINT, NEAREST_NEIGHBOUR
+	public enum Type {
+		MULTICAST(0), POINT_TO_POINT(1), NEAREST_NEIGHBOUR(2);
+		/** The SARK encoding. */
+		public final int value;
+		Type(int value) {
+			this.value = value;
+		}
 	}
 }

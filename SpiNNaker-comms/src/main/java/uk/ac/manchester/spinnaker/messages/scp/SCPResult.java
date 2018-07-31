@@ -38,19 +38,19 @@ public enum SCPResult {
 	/** Pkt Transmission failed. */
 	RC_PKT_TX(0x8f);
 	public final short value;
-	private static final Map<Short, SCPResult> map = new HashMap<>();
+	private static final Map<Short, SCPResult> MAP = new HashMap<>();
 
-	private SCPResult(int value) {
+	SCPResult(int value) {
 		this.value = (short) value;
 	}
 
 	static {
 		for (SCPResult r : values()) {
-			map.put(r.value, r);
+			MAP.put(r.value, r);
 		}
 	}
 
 	public static SCPResult get(short value) {
-		return map.get(value);
+		return MAP.get(value);
 	}
 }

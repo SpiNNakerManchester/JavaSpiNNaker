@@ -140,7 +140,7 @@ public class EIEIODataMessage
 			private int elementsRead = 0;
 
 			@Override
-			public final boolean hasNext() {
+			public boolean hasNext() {
 				return d != null && elementsRead < header.getCount();
 			}
 

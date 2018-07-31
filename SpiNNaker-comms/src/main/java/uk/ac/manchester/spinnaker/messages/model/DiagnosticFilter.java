@@ -223,10 +223,10 @@ public class DiagnosticFilter {
 		DEFAULT_ROUTED(0),
 		/** Packet is not to be default routed. */
 		NON_DEFAULT_ROUTED(1);
+
 		/** The encoded value. */
 		public final int value;
-
-		private DefaultRoutingStatus(int value) {
+		DefaultRoutingStatus(int value) {
 			this.value = value;
 		}
 
@@ -270,10 +270,10 @@ public class DiagnosticFilter {
 		LINK_4(7),
 		/** Destination is link 5. */
 		LINK_5(8);
+
 		/** The encoded value. */
 		public final int value;
-
-		private Destination(int value) {
+		Destination(int value) {
 			this.value = value;
 		}
 
@@ -330,10 +330,10 @@ public class DiagnosticFilter {
 		 * normal routing.
 		 */
 		SECOND_STAGE(3);
+
 		/** The encoded value. */
 		public final int value;
-
-		private EmergencyRoutingStatus(int value) {
+		EmergencyRoutingStatus(int value) {
 			this.value = value;
 		}
 
@@ -371,10 +371,10 @@ public class DiagnosticFilter {
 		NEAREST_NEIGHBOUR(2),
 		/** Packet is fixed-route. */
 		FIXED_ROUTE(3);
+
 		/** The encoded value. */
 		public final int value;
-
-		private PacketType(int value) {
+		PacketType(int value) {
 			this.value = value;
 		}
 
@@ -408,10 +408,10 @@ public class DiagnosticFilter {
 		WITH_PAYLOAD(0),
 		/** Packet doesn't have a payload. */
 		WITHOUT_PAYLOAD(1);
+
 		/** The encoded value. */
 		public final int value;
-
-		private PayloadStatus(int value) {
+		PayloadStatus(int value) {
 			this.value = value;
 		}
 
@@ -441,10 +441,10 @@ public class DiagnosticFilter {
 		LOCAL(0),
 		/** Source is not a local core. */
 		NON_LOCAL(1);
+
 		/** The encoded value. */
 		public final int value;
-
-		private Source(int value) {
+		Source(int value) {
 			this.value = value;
 		}
 

@@ -103,7 +103,7 @@ public class HostDataRead extends EIEIOCommandMessage {
 		final byte[] regionID;
 		final int[] spaceRead;
 
-		public Ack(int numRequests, byte[] channel, byte[] regionID,
+		Ack(int numRequests, byte[] channel, byte[] regionID,
 				int[] spaceRead) {
 			if (channel.length != numRequests || regionID.length != numRequests
 					|| spaceRead.length != numRequests) {

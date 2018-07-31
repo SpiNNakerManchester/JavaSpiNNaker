@@ -41,6 +41,22 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
+	private static final int[][] LINK_ADD_TABLE = {
+			{
+					1, 0
+			}, {
+					1, 1
+			}, {
+					0, 1
+			}, {
+					-1, 0
+			}, {
+					-1, -1
+			}, {
+					0, -1
+			}
+	};
+
 	/** A dictionary of (x, y) -> ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
 
@@ -50,8 +66,15 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Integer maxCoreID;
 	private final Integer maxSDRAMSize;
 
-	private final <T> Collection<T> def(Collection<T> c) {
+	private static <T> Collection<T> def(Collection<T> c) {
 		return c == null ? emptyList() : c;
+	}
+
+	private static int clamp(int value, Integer limit) {
+		if (limit == null) {
+			return value;
+		}
+		return min(value, limit);
 	}
 
 	public GetMachineProcess(
@@ -119,13 +142,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return machine;
 	}
 
-	private static int clamp(int value, Integer limit) {
-		if (limit == null) {
-			return value;
-		}
-		return min(value, limit);
-	}
-
 	/**
 	 * Creates a chip from a ChipSummaryInfo structure.
 	 *
@@ -180,25 +196,9 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 				chipInfo.numFreeMulticastRoutingEntries);
 	}
 
-	private static final int[][] LINK_ADD_TABLE = {
-			{
-					1, 0
-			}, {
-					1, 1
-			}, {
-					0, 1
-			}, {
-					-1, 0
-			}, {
-					-1, -1
-			}, {
-					0, -1
-			}
-	};
-
 	private static ChipLocation getChipOverLink(HasChipLocation chip,
 			MachineDimensions size, int link) {
-		/// TODO CHECK negative wraparound!
+		// TODO CHECK negative wraparound!
 		int deltaX = LINK_ADD_TABLE[link][0];
 		int deltaY = LINK_ADD_TABLE[link][1];
 		int x = (chip.getX() + deltaX + size.width) % size.width;

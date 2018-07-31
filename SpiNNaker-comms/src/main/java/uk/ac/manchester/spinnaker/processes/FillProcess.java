@@ -40,11 +40,11 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Check that the data can fill the requested size
-		if (size % dataType.value != 0) {
+		if (size % dataType.size != 0) {
 			throw new IllegalArgumentException(format(
 					"The size of %d bytes to fill is not divisible by the "
 							+ "size of the data of %d bytes",
-					size, dataType.value));
+					size, dataType.size));
 		}
 		if (baseAddress % ALIGNMENT != 0) {
 			log.warn("Unaligned fill starting at %d; please use aligned fills",
@@ -112,10 +112,10 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 
 	public enum DataType {
 		WORD(4), HALF_WORD(2), BYTE(1);
-		public final int value;
+		public final int size;
 
-		private DataType(int value) {
-			this.value = value;
+		DataType(int value) {
+			this.size = value;
 		}
 
 		public void writeTo(int value, ByteBuffer buffer) {

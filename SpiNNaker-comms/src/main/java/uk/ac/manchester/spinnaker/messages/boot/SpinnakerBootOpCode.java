@@ -14,19 +14,19 @@ public enum SpinnakerBootOpCode {
 	/** */
 	FLOOD_FILL_CONTROL(0x5);
 	public final int value;
-	private static final Map<Integer, SpinnakerBootOpCode> map = new HashMap<>();
+	private static final Map<Integer, SpinnakerBootOpCode> MAP = new HashMap<>();
 
-	private SpinnakerBootOpCode(int value) {
+	SpinnakerBootOpCode(int value) {
 		this.value = value;
 	}
 
 	static {
 		for (SpinnakerBootOpCode c : values()) {
-			map.put(c.value, c);
+			MAP.put(c.value, c);
 		}
 	}
 
 	public static SpinnakerBootOpCode get(int opcode) {
-		return map.get(opcode);
+		return MAP.get(opcode);
 	}
 }

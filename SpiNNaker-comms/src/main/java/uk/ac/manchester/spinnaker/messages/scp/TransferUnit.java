@@ -4,7 +4,7 @@ enum TransferUnit {
 	BYTE(0), HALF_WORD(1), WORD(2);
 	public final int value;
 
-	private TransferUnit(int value) {
+	TransferUnit(int value) {
 		this.value = value;
 	}
 

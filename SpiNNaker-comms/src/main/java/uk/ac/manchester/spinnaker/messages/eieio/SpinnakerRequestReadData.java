@@ -148,7 +148,7 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 		final int[] startAddress;
 		final int[] spaceRead;
 
-		public Reqs(int numRequests, byte[] channel, byte[] regionID,
+		Reqs(int numRequests, byte[] channel, byte[] regionID,
 				int[] startAddress, int[] spaceRead) {
 			if (channel.length != numRequests || regionID.length != numRequests
 					|| startAddress.length != numRequests

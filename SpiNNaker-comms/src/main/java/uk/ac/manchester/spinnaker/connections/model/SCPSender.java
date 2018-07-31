@@ -1,6 +1,6 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;

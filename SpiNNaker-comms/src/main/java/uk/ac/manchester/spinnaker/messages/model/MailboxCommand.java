@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,20 +19,22 @@ public enum MailboxCommand {
 	SHM_SIGNAL(3),
 	/** The mailbox contains a command. */
 	SHM_CMD(4);
+
 	/** The SARK value. */
 	public final int value;
-	private static final Map<Integer, MailboxCommand> map = new HashMap<>();
+	private static final Map<Integer, MailboxCommand> MAP = new HashMap<>();
 	static {
 		for (MailboxCommand v : values()) {
-			map.put(v.value, v);
+			MAP.put(v.value, v);
 		}
 	}
 
-	private MailboxCommand(int value) {
+	MailboxCommand(int value) {
 		this.value = value;
 	}
 
 	public static MailboxCommand get(int value) {
-		return map.get(value);
+		return requireNonNull(MAP.get(value),
+				"unknown mailbox command: " + value);
 	}
 }

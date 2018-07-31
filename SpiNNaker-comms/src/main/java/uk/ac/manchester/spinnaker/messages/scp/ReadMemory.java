@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
 import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 

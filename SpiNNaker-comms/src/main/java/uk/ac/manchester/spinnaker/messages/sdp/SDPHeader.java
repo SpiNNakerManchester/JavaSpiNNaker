@@ -1,6 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.sdp;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -22,7 +24,7 @@ public class SDPHeader implements SerializableMessage {
 	private int destinationPort;
 	private HasCoreLocation source;
 	private int sourcePort;
-	private SDPFlag flags;
+	private Flag flags;
 	private byte tag;
 
 	/**
@@ -38,7 +40,7 @@ public class SDPHeader implements SerializableMessage {
 	 * messages containing this header <i>cannot</i> be sent until a source has
 	 * also been set!
 	 */
-	public SDPHeader(SDPFlag flags, HasCoreLocation destination,
+	public SDPHeader(Flag flags, HasCoreLocation destination,
 			int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
@@ -49,7 +51,7 @@ public class SDPHeader implements SerializableMessage {
 	 * Read the header from an input buffer.
 	 */
 	public SDPHeader(ByteBuffer buffer) {
-		flags = SDPFlag.get(buffer.get());
+		flags = Flag.get(buffer.get());
 		tag = buffer.get();
 		byte dpc = buffer.get();
 		byte spc = buffer.get();
@@ -126,11 +128,11 @@ public class SDPHeader implements SerializableMessage {
 		this.sourcePort = port;
 	}
 
-	public SDPFlag getFlags() {
+	public Flag getFlags() {
 		return flags;
 	}
 
-	public void setFlags(SDPFlag flags) {
+	public void setFlags(Flag flags) {
 		this.flags = flags;
 	}
 
@@ -140,5 +142,28 @@ public class SDPHeader implements SerializableMessage {
 
 	public void setTag(byte tag) {
 		this.tag = tag;
+	}
+
+	public enum Flag {
+		/** Indicates that a reply is not expected. */
+		REPLY_NOT_EXPECTED(0x07),
+		/** Indicates that a reply is expected. */
+		REPLY_EXPECTED(0x87);
+		public final byte value;
+		private static final Map<Byte, Flag> MAP = new HashMap<>();
+
+		Flag(int value) {
+			this.value = (byte) value;
+		}
+
+		static {
+			for (Flag flag : values()) {
+				MAP.put(flag.value, flag);
+			}
+		}
+
+		public static Flag get(byte value) {
+			return MAP.get(value);
+		}
 	}
 }

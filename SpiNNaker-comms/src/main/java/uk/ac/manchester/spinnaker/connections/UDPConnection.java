@@ -5,7 +5,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPFlag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
