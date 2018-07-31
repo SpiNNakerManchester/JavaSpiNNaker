@@ -6,10 +6,11 @@ public enum PowerCommand {
 	POWER_OFF,
 	/** Power on the machine. */
 	POWER_ON;
+
 	/** The BMP-encoded value. */
 	public final byte value;
 
-	private PowerCommand() {
+	PowerCommand() {
 		value = (byte) ordinal();
 	}
 }

@@ -9,7 +9,8 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * the SpiNNaker system to the host computer to ask for more data to inject
  * during the simulation.
  */
-public class SpinnakerRequestBuffers extends EIEIOCommandMessage implements HasCoreLocation {
+public class SpinnakerRequestBuffers extends EIEIOCommandMessage
+		implements HasCoreLocation {
 	public final byte x, y, p;
 	public final byte regionID, sequenceNum;
 	public final int spaceAvailable;

@@ -76,27 +76,40 @@ public class RouterDiagnostics {
 		return register(LOC_PP);
 	}
 
-	/** @return The number of peer-to-peer packets received from external links. */
+	/**
+	 * @return The number of peer-to-peer packets received from external links.
+	 */
 	public int getNumExternalPeerToPeerPackets() {
 		return register(EXT_PP);
 	}
 
-	/** @return The number of peer-to-peer packets received that were dropped. */
+	/**
+	 * @return The number of peer-to-peer packets received that were dropped.
+	 */
 	public int getNumDroppedPeerToPeerPackets() {
 		return register(DUMP_PP);
 	}
 
-	/** @return The number of nearest-neighbour packets received from local cores. */
+	/**
+	 * @return The number of nearest-neighbour packets received from local
+	 *         cores.
+	 */
 	public int getNumLocalNearestNeighbourPackets() {
 		return register(LOC_NN);
 	}
 
-	/** @return The number of nearest-neighbour packets received from external links. */
+	/**
+	 * @return The number of nearest-neighbour packets received from external
+	 *         links.
+	 */
 	public int getNumExternalNearestNeighbourPackets() {
 		return register(EXT_NN);
 	}
 
-	/** @return The number of nearest-neighbour packets received that were dropped. */
+	/**
+	 * @return The number of nearest-neighbour packets received that were
+	 *         dropped.
+	 */
 	public int getNumDroppedNearestNeighbourPackets() {
 		return register(DUMP_NN);
 	}
@@ -106,7 +119,9 @@ public class RouterDiagnostics {
 		return register(LOC_FR);
 	}
 
-	/** @return The number of fixed-route packets received from external links. */
+	/**
+	 * @return The number of fixed-route packets received from external links.
+	 */
 	public int getNumExternalFixedRoutePackets() {
 		return register(EXT_FR);
 	}

@@ -14,7 +14,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	/** The payload data (or <tt>null</tt> if there is none). */
 	public final ByteBuffer data;
 	/** The operation of this packet. */
-	public final SpinnakerBootOpCode opcode;
+	public final BootOpCode opcode;
 	/** The first operand. */
 	public final int operand1;
 	/** The second operand. */
@@ -34,7 +34,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param operand3
 	 *            The third arg
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public SpinnakerBootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -57,7 +57,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param buffer
 	 *            The payload
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public SpinnakerBootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3, ByteBuffer buffer) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -84,7 +84,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 * @param bytes
 	 *            The payload
 	 */
-	public SpinnakerBootMessage(SpinnakerBootOpCode opcode, int operand1,
+	public SpinnakerBootMessage(BootOpCode opcode, int operand1,
 			int operand2, int operand3, byte[] bytes) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
@@ -105,7 +105,7 @@ public class SpinnakerBootMessage implements SerializableMessage {
 	 */
 	public SpinnakerBootMessage(ByteBuffer buffer) {
 		buffer.getShort(); // TODO check message version?
-		opcode = SpinnakerBootOpCode.get(buffer.getInt());
+		opcode = BootOpCode.get(buffer.getInt());
 		operand1 = buffer.getInt();
 		operand2 = buffer.getInt();
 		operand3 = buffer.getInt();

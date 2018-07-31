@@ -41,13 +41,14 @@ public class CountState extends SCPRequest<CountState.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for the number of cores in a given state. */
+	/**
+	 * An SCP response to a request for the number of cores in a given state.
+	 */
 	public static class Response extends CheckOKResponse {
 		/** The count of the number of cores with the requested state. */
 		public final int count;
 
-		public Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
+		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("CountState", CMD_SIG, buffer);
 			count = buffer.getInt();
 		}

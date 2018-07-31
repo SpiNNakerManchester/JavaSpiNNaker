@@ -38,7 +38,8 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 		});
 	}
 
-	public SpinnakerRequestReadData(EIEIOCommandHeader header, ByteBuffer data) {
+	public SpinnakerRequestReadData(EIEIOCommandHeader header,
+			ByteBuffer data) {
 		super(header);
 
 		byte x = data.get();

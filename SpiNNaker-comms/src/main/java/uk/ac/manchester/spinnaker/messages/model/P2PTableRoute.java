@@ -40,6 +40,7 @@ public enum P2PTableRoute {
 	}
 
 	public static P2PTableRoute get(int value) {
-		return requireNonNull(MAP.get(value), "unknown P2P table route: " + value);
+		return requireNonNull(MAP.get(value),
+				"unknown P2P table route: " + value);
 	}
 }

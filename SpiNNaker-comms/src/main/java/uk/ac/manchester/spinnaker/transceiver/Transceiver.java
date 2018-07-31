@@ -240,7 +240,8 @@ public class Transceiver extends UDPTransceiver
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
-	private final Map<BMPCoords, ConnectionSelector<BMPConnection>> bmpSelectors =
+	private final Map<BMPCoords,
+				ConnectionSelector<BMPConnection>> bmpSelectors =
 			new HashMap<>();
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
@@ -950,8 +951,8 @@ public class Transceiver extends UDPTransceiver
 		if (!versionInfo.name.equals(SCAMP_NAME)
 				|| !isScampVersionCompabible(versionInfo.versionNumber)) {
 			throw new IOException(format(
-					"The machine is currently booted with %s"
-							+ " %s which is incompatible with this transceiver, "
+					"The machine is currently booted with %s %s "
+							+ "which is incompatible with this transceiver, "
 							+ "required version is %s %s",
 					versionInfo.name, versionInfo.versionNumber, SCAMP_NAME,
 					SCAMP_VERSION));
@@ -1465,7 +1466,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
+	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception {
 		new SendSingleSCPCommandProcess(scpSelector)
 				.execute(new SetLED(core, ledStates));
@@ -1627,7 +1628,8 @@ public class Transceiver extends UDPTransceiver
 			DiagnosticFilter diagnosticFilter) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"the range of the position of a router filter is 0 and 16.");
+					"router filter positions must be beween 0 and "
+							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		if (position <= ROUTER_DEFAULT_FILTERS_MAX_POSITION) {
 			log.warn("You are planning to change a filter which is set by "
@@ -1650,7 +1652,8 @@ public class Transceiver extends UDPTransceiver
 			int position) throws IOException, Exception {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"the range of the position of a router filter is 0 and 16.");
+					"router filter positions must be beween 0 and "
+							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		int address =
 				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
@@ -1714,19 +1717,19 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
-	 * @param close_original_connections
+	 * @param closeOriginalConnections
 	 *            If True, the original connections passed to the transceiver in
 	 *            the constructor are also closed. If False, only newly
 	 *            discovered connections are closed.
-	 * @param power_off_machine
+	 * @param powerOffMachine
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
 	 * @throws java.lang.Exception
 	 *             If anything goes wrong
 	 */
-	public void close(boolean close_original_connections,
-			boolean power_off_machine) throws java.lang.Exception {
-		if (power_off_machine && bmpConnections != null
+	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
+			throws java.lang.Exception {
+		if (powerOffMachine && bmpConnections != null
 				&& !bmpConnections.isEmpty()) {
 			powerOffMachine();
 		}
@@ -1734,7 +1737,7 @@ public class Transceiver extends UDPTransceiver
 		super.close();
 
 		for (Connection connection : allConnections) {
-			if (close_original_connections
+			if (closeOriginalConnections
 					|| !originalConnections.contains(connection)) {
 				connection.close();
 			}

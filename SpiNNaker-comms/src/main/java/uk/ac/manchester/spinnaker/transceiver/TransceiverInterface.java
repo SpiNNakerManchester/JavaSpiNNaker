@@ -72,13 +72,31 @@ import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
 public interface TransceiverInterface {
+	/**
+	 * Coordinate of a <i>default</i> destination.
+	 */
 	int DEFAULT_DESTINATION_COORDINATE = 255;
+	/**
+	 * The default destination chip.
+	 */
 	ChipLocation DEFAULT_DESTINATION = new ChipLocation(
 			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
+	/**
+	 * A marker to indicate that no timeout applies.
+	 */
 	Integer TIMEOUT_DISABLED = null;
+	/**
+	 * How often to poll by default.
+	 */
 	int DEFAULT_POLL_INTERVAL = 100;
+	/**
+	 * The set of states that indicate a core in a failure state.
+	 */
 	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
 			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	/**
+	 * What proportion of checks are to be expensive full checks.
+	 */
 	int DEFAULT_CHECK_INTERVAL = 100;
 
 	/**
@@ -1864,7 +1882,7 @@ public interface TransceiverInterface {
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
 	 */
-	default void setLEDs(HasChipLocation chip, Map<Integer, Integer> ledStates)
+	default void setLEDs(HasChipLocation chip, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception {
 		setLEDs(chip.getScampCore(), ledStates);
 	}
@@ -1878,7 +1896,7 @@ public interface TransceiverInterface {
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
 	 */
-	void setLEDs(HasCoreLocation core, Map<Integer, Integer> ledStates)
+	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception;
 
 	/**
@@ -2328,6 +2346,7 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip
+	 * @return the list of chunks in the heap
 	 */
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2341,6 +2360,7 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip
 	 * @param heap
 	 *            The SystemVariableDefinition which is the heap to read
+	 * @return the list of chunks in the heap
 	 */
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception;
