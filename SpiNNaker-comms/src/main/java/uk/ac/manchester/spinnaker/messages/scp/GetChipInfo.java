@@ -5,7 +5,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPEC
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.ChipSummaryInfo;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
