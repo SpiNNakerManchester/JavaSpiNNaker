@@ -972,7 +972,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * Try to detect if SCAMP is running, and if not, boot the machine
+	 * Try to detect if SCAMP is running, and if not, boot the machine.
 	 *
 	 * @param numAttempts
 	 *            how many attempts should be supported

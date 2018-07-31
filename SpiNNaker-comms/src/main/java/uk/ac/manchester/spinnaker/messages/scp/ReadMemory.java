@@ -47,7 +47,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	/**
-	 * An SCP response to a request to read a region of memory on a chip
+	 * An SCP response to a request to read a region of memory on a chip.
 	 */
 	public static class Response extends CheckOKResponse {
 		/** The data read. */

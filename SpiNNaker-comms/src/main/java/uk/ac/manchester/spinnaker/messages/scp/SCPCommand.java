@@ -10,7 +10,7 @@ public enum SCPCommand {
 	/** Get SCAMP Version. */
 	CMD_VER(0),
 	/**
-	 * Run at PC
+	 * Run at PC.
 	 *
 	 * @deprecated see {@link #CMD_AS}
 	 */
@@ -21,7 +21,7 @@ public enum SCPCommand {
 	/** Write SDRAM. */
 	CMD_WRITE(3),
 	/**
-	 * Run via APLX
+	 * Run via APLX.
 	 *
 	 * @deprecated see {@link #CMD_AS}
 	 */

@@ -120,7 +120,7 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get the maximum chip x-coordinate and maximum chip y-coordinate of the
-	 * chips in the machine
+	 * chips in the machine.
 	 *
 	 * @return The dimensions of the machine
 	 */
@@ -435,7 +435,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Get a count of the number of cores which have a given state
+	 * Get a count of the number of cores which have a given state.
 	 *
 	 * @param appID
 	 *            The ID of the application from which to get the count.
@@ -2310,7 +2310,7 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Clear router diagnostic information on a chip
+	 * Clear router diagnostic information on a chip.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip

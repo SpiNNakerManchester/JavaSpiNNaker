@@ -151,7 +151,8 @@ public class EIEIODataHeader implements EIEIOHeader {
 		case KEY_32_BIT:
 			buffer.putInt(payloadBase);
 			return;
+		default:
+			throw new IllegalStateException("unexpected EIEIO type");
 		}
-		throw new IllegalStateException("unexpected EIEIO type");
 	}
 }

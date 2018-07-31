@@ -1,11 +1,11 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -74,8 +74,8 @@ public class DiagnosticFilter {
 		this.destinations = convert(destinations, Destination.values());
 		this.sources = convert(sources, Source.values());
 		this.payloads = convert(payloadStatuses, PayloadStatus.values());
-		this.defaultStatuses = convert(defaultRoutingStatuses,
-				DefaultRoutingStatus.values());
+		this.defaultStatuses =
+				convert(defaultRoutingStatuses, DefaultRoutingStatus.values());
 		this.emergencyStatuses = convert(emergencyRoutingStatuses,
 				EmergencyRoutingStatus.values());
 		this.packetTypes = convert(packetTypes, PacketType.values());
@@ -84,7 +84,7 @@ public class DiagnosticFilter {
 	private static <T> Collection<T> convert(Collection<T> collection,
 			T[] defaults) {
 		if (collection == null || collection.isEmpty()) {
-			return unmodifiableList(Arrays.asList(defaults));
+			return unmodifiableList(asList(defaults));
 		}
 		return unmodifiableCollection(collection);
 	}
@@ -98,28 +98,19 @@ public class DiagnosticFilter {
 		enableInterrupt = bitSet(encodedValue, ENABLE_INTERRUPT_OFFSET);
 		emergencyMode = bitSet(encodedValue, EMERGENCY_ROUTE_MODE_OFFSET);
 		destinations = unmodifiableCollection(Stream.of(Destination.values())
-				.filter(d -> bitSet(encodedValue, DESTINATION_OFFSET + d.value))
-				.collect(Collectors.toList()));
+				.filter(d -> bitSet(encodedValue, d.bit)).collect(toList()));
 		sources = unmodifiableCollection(Stream.of(Source.values())
-				.filter(s -> bitSet(encodedValue, SOURCE_OFFSET + s.value))
-				.collect(Collectors.toList()));
+				.filter(s -> bitSet(encodedValue, s.bit)).collect(toList()));
 		payloads = unmodifiableCollection(Stream.of(PayloadStatus.values())
-				.filter(p -> bitSet(encodedValue, PAYLOAD_OFFSET + p.value))
-				.collect(Collectors.toList()));
-		defaultStatuses = unmodifiableCollection(
-				Stream.of(DefaultRoutingStatus.values())
-						.filter(dr -> bitSet(encodedValue,
-								DEFAULT_ROUTE_OFFSET + dr.value))
-						.collect(Collectors.toList()));
-		emergencyStatuses = unmodifiableCollection(
-				Stream.of(EmergencyRoutingStatus.values())
-						.filter(er -> bitSet(encodedValue,
-								EMERGENCY_ROUTE_OFFSET + er.value))
-						.collect(Collectors.toList()));
+				.filter(p -> bitSet(encodedValue, p.bit)).collect(toList()));
+		defaultStatuses = unmodifiableCollection(Stream
+				.of(DefaultRoutingStatus.values())
+				.filter(dr -> bitSet(encodedValue, dr.bit)).collect(toList()));
+		emergencyStatuses = unmodifiableCollection(Stream
+				.of(EmergencyRoutingStatus.values())
+				.filter(er -> bitSet(encodedValue, er.bit)).collect(toList()));
 		packetTypes = unmodifiableCollection(Stream.of(PacketType.values())
-				.filter(pt -> bitSet(encodedValue,
-						PACKET_TYPE_OFFSET + pt.value))
-				.collect(Collectors.toList()));
+				.filter(pt -> bitSet(encodedValue, pt.bit)).collect(toList()));
 	}
 
 	private static boolean bitSet(int value, int bitIndex) {
@@ -127,16 +118,16 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * Whether an interrupt should be raised when this rule matches.
+	 * @return Whether an interrupt should be raised when this rule matches.
 	 */
 	public boolean getEnableInterruptOnCounterEvent() {
 		return enableInterrupt;
 	}
 
 	/**
-	 * Whether the emergency routing statuses should be matched against packets
-	 * arriving at this router (if True), or if they should be matched against
-	 * packets leaving this router (if False).
+	 * @return Whether the emergency routing statuses should be matched against
+	 *         packets arriving at this router (if True), or if they should be
+	 *         matched against packets leaving this router (if False).
 	 */
 	public boolean getMatchEmergencyRoutingStatusToIncomingPacket() {
 		return emergencyMode;
@@ -194,22 +185,22 @@ public class DiagnosticFilter {
 			data |= 1 << EMERGENCY_ROUTE_MODE_OFFSET;
 		}
 		for (Destination val : destinations) {
-			data |= val.value + DESTINATION_OFFSET;
+			data |= val.bit;
 		}
 		for (Source val : sources) {
-			data |= val.value + SOURCE_OFFSET;
+			data |= val.bit;
 		}
 		for (PayloadStatus val : payloads) {
-			data |= val.value + PAYLOAD_OFFSET;
+			data |= val.bit;
 		}
 		for (DefaultRoutingStatus val : defaultStatuses) {
-			data |= val.value + DEFAULT_ROUTE_OFFSET;
+			data |= val.bit;
 		}
 		for (EmergencyRoutingStatus val : emergencyStatuses) {
-			data |= val.value + EMERGENCY_ROUTE_OFFSET;
+			data |= val.bit;
 		}
 		for (PacketType val : packetTypes) {
-			data |= val.value + PACKET_TYPE_OFFSET;
+			data |= val.bit;
 		}
 		return data;
 	}
@@ -224,10 +215,11 @@ public class DiagnosticFilter {
 		/** Packet is not to be default routed. */
 		NON_DEFAULT_ROUTED(1);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		DefaultRoutingStatus(int value) {
-			this.value = value;
+			this.bit = value + DEFAULT_ROUTE_OFFSET;
 		}
 
 		/**
@@ -271,15 +263,16 @@ public class DiagnosticFilter {
 		/** Destination is link 5. */
 		LINK_5(8);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		Destination(int value) {
-			this.value = value;
+			this.bit = value + DESTINATION_OFFSET;
 		}
 
 		/**
 		 * @param value
-		 *            The encoded value.
+		 *            The encoded value, without the shift.
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static Destination get(int value) {
@@ -331,15 +324,16 @@ public class DiagnosticFilter {
 		 */
 		SECOND_STAGE(3);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		EmergencyRoutingStatus(int value) {
-			this.value = value;
+			this.bit = value + EMERGENCY_ROUTE_OFFSET;
 		}
 
 		/**
 		 * @param value
-		 *            The encoded value.
+		 *            The encoded value, without the shift.
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static EmergencyRoutingStatus get(int value) {
@@ -372,15 +366,16 @@ public class DiagnosticFilter {
 		/** Packet is fixed-route. */
 		FIXED_ROUTE(3);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		PacketType(int value) {
-			this.value = value;
+			this.bit = value + PACKET_TYPE_OFFSET;
 		}
 
 		/**
 		 * @param value
-		 *            The encoded value.
+		 *            The encoded value, without the shift.
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static PacketType get(int value) {
@@ -409,15 +404,16 @@ public class DiagnosticFilter {
 		/** Packet doesn't have a payload. */
 		WITHOUT_PAYLOAD(1);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		PayloadStatus(int value) {
-			this.value = value;
+			this.bit = value + PAYLOAD_OFFSET;
 		}
 
 		/**
 		 * @param value
-		 *            The encoded value.
+		 *            The encoded value, without the shift.
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static PayloadStatus get(int value) {
@@ -442,15 +438,16 @@ public class DiagnosticFilter {
 		/** Source is not a local core. */
 		NON_LOCAL(1);
 
-		/** The encoded value. */
-		public final int value;
+		/** The encoded value's bit index. */
+		public final int bit;
+
 		Source(int value) {
-			this.value = value;
+			this.bit = value + SOURCE_OFFSET;
 		}
 
 		/**
 		 * @param value
-		 *            The encoded value.
+		 *            The encoded value, without the shift.
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static Source get(int value) {

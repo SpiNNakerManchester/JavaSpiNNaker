@@ -116,7 +116,7 @@ public abstract class Process {
 
 	/**
 	 * Encapsulates exceptions from processes which communicate with some
-	 * core/chip
+	 * core/chip.
 	 */
 	public static class Exception extends java.lang.Exception {
 		private static final long serialVersionUID = -1157220025479591572L;

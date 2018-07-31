@@ -50,7 +50,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 
 	/**
 	 * An SCP response to a request to read a region of memory via a link on a
-	 * chip
+	 * chip.
 	 */
 	public static class Response extends CheckOKResponse {
 		/** The data read. */

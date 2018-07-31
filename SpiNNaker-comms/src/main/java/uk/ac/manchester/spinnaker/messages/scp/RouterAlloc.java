@@ -39,9 +39,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 		return new Response(numEntries, buffer);
 	}
 
-	/**
-	 * An SCP response to a request to allocate router entries
-	 */
+	/** An SCP response to a request to allocate router entries. */
 	public static class Response extends CheckOKResponse {
 		/** The base address allocated, or 0 if none. */
 		public final int baseAddress;
