@@ -11,9 +11,9 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class EIEIODataMessage
-		implements EIEIOMessage, Iterable<AbstractDataElement> {
-	public final EIEIODataHeader header;
+public class EIEIODataMessage implements EIEIOMessage<EIEIODataHeader>,
+		Iterable<AbstractDataElement> {
+	private final EIEIODataHeader header;
 	private ByteBuffer elements;
 	private ByteBuffer data;
 
@@ -45,20 +45,18 @@ public class EIEIODataMessage
 		return header.getSize() + header.eieioType.payloadBytes;
 	}
 
-	/** The maximum number of elements that can fit in the packet. */
+	/** @return The maximum number of elements that can fit in the packet. */
 	public int getMaxNumElements() {
 		return floorDiv(UDP_MESSAGE_MAX_SIZE - header.getSize(),
 				header.eieioType.keyBytes + header.eieioType.payloadBytes);
 	}
 
-	/**
-	 * The number of elements in the packet
-	 */
+	/** @return The number of elements in the packet. */
 	public int getNumElements() {
 		return header.getCount();
 	}
 
-	/** The size of the packet with the current contents. */
+	/** @return The size of the packet with the current contents. */
 	public int getSize() {
 		return header.getSize()
 				+ (header.eieioType.keyBytes + header.eieioType.payloadBytes)
@@ -188,5 +186,10 @@ public class EIEIODataMessage
 				return new KeyPayloadDataElement(key, payload, header.isTime);
 			}
 		};
+	}
+
+	@Override
+	public EIEIODataHeader getHeader() {
+		return header;
 	}
 }

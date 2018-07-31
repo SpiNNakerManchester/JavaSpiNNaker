@@ -2,10 +2,8 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.SerializableMessage;
-
 /** EIEIO header for data packets. */
-public class EIEIODataHeader implements SerializableMessage {
+public class EIEIODataHeader implements EIEIOHeader {
 	public final EIEIOType eieioType;
 	public final byte tag;
 	public final Short prefix;

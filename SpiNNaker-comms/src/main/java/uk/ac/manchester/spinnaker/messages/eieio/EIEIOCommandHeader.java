@@ -4,10 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.SerializableMessage;
-
 /** EIEIO header for command packets. */
-public class EIEIOCommandHeader implements SerializableMessage {
+public class EIEIOCommandHeader implements EIEIOHeader {
 	/** The command ID in this header. */
 	public final EIEIOCommand command;
 

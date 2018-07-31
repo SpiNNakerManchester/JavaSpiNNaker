@@ -3,9 +3,9 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 import java.nio.ByteBuffer;
 
 /** An EIEIO command message. */
-public class EIEIOCommandMessage implements EIEIOMessage {
+public class EIEIOCommandMessage implements EIEIOMessage<EIEIOCommandHeader> {
 	/** The header of the message. */
-	public final EIEIOCommandHeader header;
+	private final EIEIOCommandHeader header;
 
 	public EIEIOCommandMessage(EIEIOCommandHeader header) {
 		this.header = header;
@@ -23,5 +23,10 @@ public class EIEIOCommandMessage implements EIEIOMessage {
 	@Override
 	public int minPacketLength() {
 		return 2;
+	}
+
+	@Override
+	public EIEIOCommandHeader getHeader() {
+		return header;
 	}
 }
