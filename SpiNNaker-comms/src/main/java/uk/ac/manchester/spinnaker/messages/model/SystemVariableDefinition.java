@@ -5,6 +5,8 @@ import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.INT;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.LONG;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.SHORT;
+import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.IP_ADDR_WIDTH;
+import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.PER_CORE_WIDTH;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -138,11 +140,11 @@ public enum SystemVariableDefinition {
 	/** The fourth user variable. */
 	user_temp_4(INT, 0x7c),
 	/** The status map set during SCAMP boot. */
-	status_map(BYTE_ARRAY, 0x80, new byte[20]),
+	status_map(BYTE_ARRAY, 0x80, new byte[PER_CORE_WIDTH]),
 	/** The physical core ID to virtual core ID map. */
-	physical_to_virtual_core_map(BYTE_ARRAY, 0x94, new byte[20]),
+	physical_to_virtual_core_map(BYTE_ARRAY, 0x94, new byte[PER_CORE_WIDTH]),
 	/** The virtual core ID to physical core ID map. */
-	virtual_to_physical_core_map(BYTE_ARRAY, 0xa8, new byte[20]),
+	virtual_to_physical_core_map(BYTE_ARRAY, 0xa8, new byte[PER_CORE_WIDTH]),
 	/** The number of working cores. */
 	n_working_cores(BYTE, 0xbc),
 	/** The number of SCAMP working cores. */
@@ -177,7 +179,7 @@ public enum SystemVariableDefinition {
 	/** The monitor incoming mailbox flags. */
 	monitor_mailbox_flags(INT, 0xec),
 	/** The IP address of the chip. */
-	ethernet_ip_address(BYTE_ARRAY, 0xf0, new byte[4]),
+	ethernet_ip_address(BYTE_ARRAY, 0xf0, new byte[IP_ADDR_WIDTH]),
 	/** A (virtual) copy of the router FR register. */
 	fixed_route_copy(INT, 0xf4),
 	/** A pointer to the board information structure. */
@@ -241,4 +243,10 @@ public enum SystemVariableDefinition {
 	public void addToBuffer(Object value, ByteBuffer buffer) {
 		type.addToBuffer(value, buffer);
 	}
+}
+
+abstract class SVDConstants {
+	private SVDConstants () {}
+	static final int PER_CORE_WIDTH = 20;
+	static final int IP_ADDR_WIDTH = 4;
 }

@@ -11,8 +11,14 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
+	private static final int TOP_BIT = 31;
+	private static final int BYTE3 = 24;
+	private static final int BYTE2 = 16;
+	private static final int BYTE1 = 8;
+	private static final int BYTE0 = 0;
 	private static final int NNP_FLOOD_FILL_START = 6;
-	private static final int NNP_FORWARD_RETRY = (1 << 31) | (0x3f << 8) | 0x18;
+	private static final int NNP_FORWARD_RETRY =
+			(1 << TOP_BIT) | (0x3f << BYTE1) | (0x18 << BYTE0);
 
 	/**
 	 * Flood fill onto all chips.
@@ -51,24 +57,24 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 			throw new IllegalArgumentException(
 					"number of blocks must be representable in 8 bits");
 		}
-		return (NNP_FLOOD_FILL_START << 24)
-				| (toUnsignedInt(nearestNeighbourID) << 16) | (numBlocks << 8);
+		return (NNP_FLOOD_FILL_START << BYTE3)
+				| (toUnsignedInt(nearestNeighbourID) << BYTE2)
+				| (numBlocks << BYTE1);
 	}
 
 	private static final int LOW_BITS_MASK = 0b00000011;
 	private static final int HIGH_BITS_MASK = 0b11111100;
 
 	private static int argument2(HasChipLocation chip) {
-		int data = 0xFFFF;
-		if (chip != null) {
-			// TODO what is this doing?
-			int m = ((chip.getY() & LOW_BITS_MASK) << 2)
-					+ (chip.getX() & LOW_BITS_MASK);
-			data = (((chip.getX() & HIGH_BITS_MASK) << 24)
-					+ ((chip.getY() & HIGH_BITS_MASK) << 16) + (3 << 16)
-					+ (1 << m));
+		if (chip == null) {
+			return 0xFFFF;
 		}
-		return data;
+		// TODO what is this doing?
+		int m = ((chip.getY() & LOW_BITS_MASK) << 2)
+				+ (chip.getX() & LOW_BITS_MASK);
+		return (((chip.getX() & HIGH_BITS_MASK) << BYTE3)
+				+ ((chip.getY() & HIGH_BITS_MASK) << BYTE2) + (3 << BYTE2)
+				+ (1 << m));
 	}
 
 	@Override

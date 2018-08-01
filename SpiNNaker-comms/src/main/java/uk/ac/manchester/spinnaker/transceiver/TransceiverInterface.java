@@ -18,6 +18,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
@@ -1289,7 +1290,7 @@ public interface TransceiverInterface {
 	 */
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, Exception {
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
 	}
@@ -1496,7 +1497,7 @@ public interface TransceiverInterface {
 	 */
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int dataWord) throws IOException, Exception {
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
 	}
@@ -1628,7 +1629,7 @@ public interface TransceiverInterface {
 	 */
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, Exception {
-		ByteBuffer b = allocate(4).order(LITTLE_ENDIAN);
+		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
 	}

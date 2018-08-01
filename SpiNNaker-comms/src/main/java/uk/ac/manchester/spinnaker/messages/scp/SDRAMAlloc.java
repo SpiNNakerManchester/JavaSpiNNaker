@@ -13,6 +13,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
+	private static final int MAX_TAG = 255;
 	private final int size;
 
 	/**
@@ -43,9 +44,9 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
 				argument1(appID), size, tag);
 		this.size = size;
-		if (tag < 0 || tag >= 256) {
+		if (tag < 0 || tag > MAX_TAG) {
 			throw new IllegalArgumentException(
-					"The tag parameter needs to be between 0 and 255");
+					"The tag parameter needs to be between 0 and " + MAX_TAG);
 		}
 	}
 

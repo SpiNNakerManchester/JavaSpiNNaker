@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -60,13 +61,13 @@ import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
+import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
-import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
@@ -74,7 +75,6 @@ import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSele
 import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -99,6 +99,7 @@ import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
@@ -161,6 +162,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface {
+	private static final int BIGGER_BOARD = 4;
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
@@ -334,7 +336,7 @@ public class Transceiver extends UDPTransceiver
 		 * machine, then an assumption can be made that the BMP is at -1 on the
 		 * final value of the IP address
 		 */
-		if (version >= 4 && autodetectBMP
+		if (version >= BIGGER_BOARD && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData = singletonList(
 					workOutBMPFromMachineDetails(hostname, numberOfBoards));
@@ -1682,7 +1684,7 @@ public class Transceiver extends UDPTransceiver
 				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
 						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
 		Response response = new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new ReadMemory(chip, address, 4));
+				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
 

@@ -28,7 +28,7 @@ public class ReadRouterDiagnosticsProcess
 			throws IOException, Exception {
 		Holder<Integer> cr = new Holder<>();
 		Holder<Integer> es = new Holder<>();
-		int reg[] = new int[NUM_REGISTERS];
+		int[] reg = new int[NUM_REGISTERS];
 
 		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),
 				response -> cr.value = response.data.getInt());

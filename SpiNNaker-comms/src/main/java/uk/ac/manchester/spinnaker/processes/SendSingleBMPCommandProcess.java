@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  * <p>
  * Does not inherit from {@link Process} for ugly type reasons.
  *
- * @param <R>
+ * @param <ARMRegisters>
  *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
  */
@@ -65,6 +65,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		RETRY_CODES.add(RC_LEN);
 		RETRY_CODES.add(RC_P2P_NOREPLY);
 	}
+	private static final int RETRY_SLEEP = 100;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -267,7 +268,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			// If the response can be retried, retry it
 			try {
 				if (RETRY_CODES.contains(msg.result)) {
-					sleep(100);
+					sleep(RETRY_SLEEP);
 					resend(req, msg.result);
 				} else {
 					// No retry is possible. Try constructing the result

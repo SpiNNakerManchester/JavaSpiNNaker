@@ -81,6 +81,8 @@ public abstract class Constants {
 
 	/** Number of bytes in a SpiNNaker word. */
 	public static final int WORD_SIZE = 4;
+	/** Number of bytes in a SpiNNaker half-word. */
+	public static final int SHORT_SIZE = 2;
 	/** ms per second. */
 	public static final double MS_PER_S = UnitConstants.MS_PER_S;
 }

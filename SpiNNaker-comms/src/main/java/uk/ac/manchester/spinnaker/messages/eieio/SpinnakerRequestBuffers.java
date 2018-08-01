@@ -23,7 +23,7 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 		super(SPINNAKER_REQUEST_BUFFERS);
 		this.core = core;
 		this.regionID = regionID;
-		this.sequenceNum  =sequenceNum;
+		this.sequenceNum = sequenceNum;
 		this.spaceAvailable = spaceAvailable;
 	}
 

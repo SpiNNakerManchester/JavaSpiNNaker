@@ -10,8 +10,12 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
-	private static final int NNP_FORWARD_RETRY = (0x3f << 8) | 0x18;
+	private static final int BYTE3 = 24;
+	private static final int BYTE1 = 8;
+	private static final int BYTE0 = 0;
+	private static final int NNP_FORWARD_RETRY = (0x3f << BYTE1) | (0x18 << BYTE0);
 	private static final int NNP_FLOOD_FILL_END = 15;
+	private static final int WAIT_BIT = 18;
 
 	/**
 	 * @param nearestNeighbourID
@@ -57,7 +61,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument1(byte nearestNeighbourID) {
-		return (NNP_FLOOD_FILL_END << 24) | toUnsignedInt(nearestNeighbourID);
+		return (NNP_FLOOD_FILL_END << BYTE3) | toUnsignedInt(nearestNeighbourID);
 	}
 
 	private static int argument2(int appID, Iterable<Integer> processors,
@@ -70,9 +74,9 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 				}
 			}
 		}
-		processorMask |= appID << 24;
+		processorMask |= appID << BYTE3;
 		if (wait) {
-			processorMask |= 1 << 18;
+			processorMask |= 1 << WAIT_BIT;
 		}
 		return processorMask;
 	}
