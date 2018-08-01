@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -29,10 +32,10 @@ public class CountState extends SCPRequest<CountState.Response> {
 	}
 
 	private static int argument2(int appId, CPUState state) {
-		int data = (APP_MASK << 8) | appId;
+		int data = (APP_MASK << BYTE1) | (appId << BYTE0);
 		data |= COUNT_OPERATION << 22;
 		data |= COUNT_MODE << 20;
-		data |= state.value << 16;
+		data |= state.value << BYTE2;
 		return data;
 	}
 

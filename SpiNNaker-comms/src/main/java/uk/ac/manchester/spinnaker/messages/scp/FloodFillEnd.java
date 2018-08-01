@@ -1,6 +1,9 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -10,9 +13,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
-	private static final int BYTE3 = 24;
-	private static final int BYTE1 = 8;
-	private static final int BYTE0 = 0;
 	private static final int NNP_FORWARD_RETRY = (0x3f << BYTE1) | (0x18 << BYTE0);
 	private static final int NNP_FLOOD_FILL_END = 15;
 	private static final int WAIT_BIT = 18;

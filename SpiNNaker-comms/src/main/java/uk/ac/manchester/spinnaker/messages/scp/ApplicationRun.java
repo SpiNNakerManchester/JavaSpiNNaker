@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -9,6 +10,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 public class ApplicationRun extends SCPRequest<CheckOKResponse> {
+	private static final int WAIT_BIT = 18;
 	/**
 	 * @param appId
 	 *            The ID of the application to run, between 16 and 255
@@ -48,9 +50,9 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 				}
 			}
 		}
-		processorMask |= appId << 24;
+		processorMask |= appId << BYTE3;
 		if (wait) {
-			processorMask |= 1 << 18;
+			processorMask |= 1 << WAIT_BIT;
 		}
 		return processorMask;
 	}

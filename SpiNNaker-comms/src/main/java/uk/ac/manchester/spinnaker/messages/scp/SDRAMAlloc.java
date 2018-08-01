@@ -2,6 +2,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_SDRAM;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -51,7 +53,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	private static int argument1(int appID) {
-		return (appID << 8) | ALLOC_SDRAM.value;
+		return (appID << BYTE1) | (ALLOC_SDRAM.value << BYTE0);
 	}
 
 	@Override

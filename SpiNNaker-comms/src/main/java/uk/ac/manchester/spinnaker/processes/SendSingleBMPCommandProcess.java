@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  * <p>
  * Does not inherit from {@link Process} for ugly type reasons.
  *
- * @param <ARMRegisters>
+ * @param <R>
  *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
  */

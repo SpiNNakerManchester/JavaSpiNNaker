@@ -1,6 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -14,15 +18,16 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	private static final int APP_MASK = 0xFF;
 
 	private static int argument1() {
-		return 0x3f << 16;
+		return 0x3f << BYTE2;
 	}
 
 	private static int argument2(int appID, Signal signal) {
-		return (5 << 28) | (signal.value << 16) | (APP_MASK << 8) | appID;
+		return (5 << 28) | (signal.value << BYTE2) | (APP_MASK << BYTE1)
+				| (appID << BYTE0);
 	}
 
 	private static int argument3() {
-		return (1 << 31) | (0x3f << 8);
+		return (1 << TOP_BIT) | (0x3f << BYTE1);
 	}
 
 	/**

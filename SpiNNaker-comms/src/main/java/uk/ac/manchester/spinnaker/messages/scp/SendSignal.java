@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -10,9 +13,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to send a signal to cores. */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
-	private static final int BYTE2 = 16;
-	private static final int BYTE1 = 8;
-	private static final int BYTE0 = 0;
 	private static final int ALL_CORE_MASK = 0xFFFF;
 	private static final int APP_MASK = 0xFF;
 	private static final int MAX_APP_ID = 255;

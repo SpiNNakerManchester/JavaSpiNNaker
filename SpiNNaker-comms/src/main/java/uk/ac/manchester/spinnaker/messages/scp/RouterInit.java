@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -41,7 +44,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument1(int numEntries, int appID) {
-		return (numEntries << 16) | (appID << 8) | 2;
+		return (numEntries << BYTE2) | (appID << BYTE1) | (2 << BYTE0);
 	}
 
 	@Override

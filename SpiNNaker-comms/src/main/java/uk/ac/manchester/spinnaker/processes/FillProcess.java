@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -20,6 +21,7 @@ import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(FillProcess.class);
 	private static final int ALIGNMENT = 4;
+	private static final int TWO_WORDS = 2 * WORD_SIZE;
 
 	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -52,7 +54,7 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Get a word of data regardless of the type
-		ByteBuffer buffer = allocate(8).order(LITTLE_ENDIAN);
+		ByteBuffer buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
 		while (buffer.hasRemaining()) {
 			dataType.writeTo(data, buffer);
 		}
@@ -124,10 +126,10 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 				buffer.putInt(value);
 				break;
 			case HALF_WORD:
-				buffer.putShort((short) (value & 0xFFFF));
+				buffer.putShort((short) value);
 				break;
 			case BYTE:
-				buffer.put((byte) (value & 0xFF));
+				buffer.put((byte) value);
 				break;
 			}
 		}

@@ -1,5 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -13,11 +16,11 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 /** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static int argument1(int appID) {
-		return (appID << 8) | 3;
+		return (appID << BYTE1) | (3 << BYTE0);
 	}
 
 	private static int argument2() {
-		return 1 << 31;
+		return 1 << TOP_BIT;
 	}
 
 	/**
