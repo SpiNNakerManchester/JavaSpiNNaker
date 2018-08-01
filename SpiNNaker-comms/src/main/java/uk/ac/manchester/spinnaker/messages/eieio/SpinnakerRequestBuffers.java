@@ -1,7 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.SPINNAKER_REQUEST_BUFFERS;
+
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
@@ -11,18 +14,16 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 		implements HasCoreLocation {
-	public final byte x, y, p;
+	public final HasCoreLocation core;
 	public final byte regionID, sequenceNum;
 	public final int spaceAvailable;
 
-	public SpinnakerRequestBuffers(byte x, byte y, byte p, byte regionID,
+	public SpinnakerRequestBuffers(HasCoreLocation core, byte regionID,
 			byte sequenceNum, int spaceAvailable) {
-		super(EIEIOCommandID.SPINNAKER_REQUEST_BUFFERS);
-		this.x = x;
-		this.y = y;
-		this.p = p;
+		super(SPINNAKER_REQUEST_BUFFERS);
+		this.core = core;
 		this.regionID = regionID;
-		this.sequenceNum = sequenceNum;
+		this.sequenceNum  =sequenceNum;
 		this.spaceAvailable = spaceAvailable;
 	}
 
@@ -32,9 +33,10 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 
 	public SpinnakerRequestBuffers(EIEIOCommandHeader header, ByteBuffer data) {
 		super(header);
-		y = data.get();
-		x = data.get();
-		p = (byte) ((data.get() >>> PROC_SHIFT) & PROC_MASK);
+		int y = data.get();
+		int x = data.get();
+		int p = ((data.get() >>> PROC_SHIFT) & PROC_MASK);
+		core = new CoreLocation(x, y, p);
 		data.get(); // ignore
 		regionID = (byte) (data.get() & REGION_MASK);
 		sequenceNum = data.get();
@@ -44,9 +46,9 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(y);
-		buffer.put(x);
-		buffer.put((byte) ((p & PROC_MASK) << PROC_SHIFT));
+		buffer.put((byte) core.getY());
+		buffer.put((byte) core.getX());
+		buffer.put((byte) ((core.getP() & PROC_MASK) << PROC_SHIFT));
 		buffer.put((byte) 0);
 		buffer.put(regionID);
 		buffer.put(sequenceNum);
@@ -55,16 +57,16 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 
 	@Override
 	public int getX() {
-		return x;
+		return core.getX();
 	}
 
 	@Override
 	public int getY() {
-		return y;
+		return core.getY();
 	}
 
 	@Override
 	public int getP() {
-		return p;
+		return core.getP();
 	}
 }

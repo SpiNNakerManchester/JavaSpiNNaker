@@ -4,29 +4,33 @@ import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.SPINNAKER
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+
 /**
  * Message used in the context of the buffering output mechanism which is sent
  * from the SpiNNaker system to the host computer to signal that some data is
  * available to be read.
  */
-public class SpinnakerRequestReadData extends EIEIOCommandMessage {
+public class SpinnakerRequestReadData extends EIEIOCommandMessage
+		implements HasCoreLocation {
 	private final Header header;
 	private final Reqs reqs;
 
-	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
+	public SpinnakerRequestReadData(HasCoreLocation core, byte sequenceNum,
 			byte numRequests, byte[] channel, byte[] regionID,
 			int[] startAddress, int[] spaceRead) {
 		super(SPINNAKER_REQUEST_READ_DATA);
-		header = new Header(x, y, p, numRequests, sequenceNum);
+		header = new Header(core, numRequests, sequenceNum);
 		this.reqs = new Reqs(numRequests, channel, regionID, startAddress,
 				spaceRead);
 	}
 
-	public SpinnakerRequestReadData(byte x, byte y, byte p, byte sequenceNum,
+	public SpinnakerRequestReadData(HasCoreLocation core, byte sequenceNum,
 			byte numRequests, byte channel, byte regionID, int startAddress,
 			int spaceRead) {
 		super(SPINNAKER_REQUEST_READ_DATA);
-		header = new Header(x, y, p, numRequests, sequenceNum);
+		header = new Header(core, numRequests, sequenceNum);
 		this.reqs = new Reqs(numRequests, new byte[] {
 				channel
 		}, new byte[] {
@@ -48,7 +52,7 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 		byte sn = data.get();
 		byte p = (byte) ((pr >> 3) & 0x1F);
 		byte n = (byte) (pr & 0x7);
-		this.header = new Header(x, y, p, n, sn);
+		this.header = new Header(new CoreLocation(x, y, p), n, sn);
 
 		byte[] channel = new byte[n];
 		byte[] regionID = new byte[n];
@@ -67,16 +71,19 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 		this.reqs = new Reqs(n, channel, regionID, startAddress, spaceRead);
 	}
 
-	public byte getX() {
-		return header.x;
+	@Override
+	public int getX() {
+		return header.core.getX();
 	}
 
-	public byte getY() {
-		return header.y;
+	@Override
+	public int getY() {
+		return header.core.getY();
 	}
 
-	public byte getP() {
-		return header.p;
+	@Override
+	public int getP() {
+		return header.core.getP();
 	}
 
 	public byte getNumRequests() {
@@ -106,8 +113,8 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(getX());
-		buffer.put(getY());
+		buffer.put((byte) getX());
+		buffer.put((byte) getY());
 		byte n = getNumRequests();
 		byte pr = (byte) (getP() << 3 | n);
 		for (int i = 0; i < n; i++) {
@@ -131,12 +138,10 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage {
 	private static class Header {
 		final byte numRequests;
 		final byte sequenceNumber;
-		final byte x, y, p;
+		final HasCoreLocation core;
 
-		Header(byte x, byte y, byte p, byte numRequests, byte sequenceNumber) {
-			this.x = x;
-			this.y = y;
-			this.p = p;
+		Header(HasCoreLocation core, byte numRequests, byte sequenceNumber) {
+			this.core = core;
 			this.numRequests = numRequests;
 			this.sequenceNumber = sequenceNumber;
 		}

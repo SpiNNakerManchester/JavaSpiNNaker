@@ -88,7 +88,6 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
-import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
@@ -316,6 +315,7 @@ public class Transceiver extends UDPTransceiver
 	 *            in debugging purposes)
 	 * @return The created transceiver
 	 */
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
@@ -364,11 +364,33 @@ public class Transceiver extends UDPTransceiver
 				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
 	}
 
+	/**
+	 * Create a Transceiver by creating a UDPConnection to the given hostname on
+	 * port 17893 (the default SCAMP port), and a BootConnection on port 54321
+	 * (the default boot port), discovering any additional links using the
+	 * UDPConnection, and then returning the transceiver created with the
+	 * conjunction of the created UDPConnection and the discovered connections.
+	 *
+	 * @param hostname
+	 *            The hostname or IP address of the board
+	 * @param version
+	 *            the type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. If a spinn-5 board, then the version will be 5,
+	 *            spinn-3 would equal 3 and so on.
+	 * @return The created transceiver
+	 */
+	public static TransceiverInterface createTransceiver(String hostname,
+			int version) throws IOException, SpinnmanException, Exception {
+		return createTransceiver(hostname, version, null, 0, emptyList(),
+				emptyList(), emptyList(), null, false, null, null, null);
+	}
+
 	public Transceiver(int version)
 			throws IOException, SpinnmanException, Exception {
 		this(version, null, null, null, null, null, null, null);
 	}
 
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
 			Collection<CoreLocation> ignoreCores,

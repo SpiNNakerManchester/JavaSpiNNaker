@@ -64,6 +64,7 @@ public class DiagnosticFilter {
 	 *            Increment the counter if one or more of the given packet types
 	 *            match (or empty list to match all)
 	 */
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public DiagnosticFilter(boolean enableInterruptOnCounterEvent,
 			boolean matchmergencyRoutingStatusToIncomingPacket,
 			Collection<Destination> destinations, Collection<Source> sources,
@@ -220,7 +221,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,DefaultRoutingStatus> MAP;
+		private static final Map<Integer, DefaultRoutingStatus> MAP;
 
 		DefaultRoutingStatus(int value) {
 			this.bit = value + DEFAULT_ROUTE_OFFSET;
@@ -228,7 +229,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (DefaultRoutingStatus d : values()) {
 				MAP.put(d.value, d);
 			}
@@ -271,7 +272,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,Destination> MAP;
+		private static final Map<Integer, Destination> MAP;
 
 		Destination(int value) {
 			this.bit = value + DESTINATION_OFFSET;
@@ -279,7 +280,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (Destination d : values()) {
 				MAP.put(d.value, d);
 			}
@@ -321,7 +322,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,EmergencyRoutingStatus> MAP;
+		private static final Map<Integer, EmergencyRoutingStatus> MAP;
 
 		EmergencyRoutingStatus(int value) {
 			this.bit = value + EMERGENCY_ROUTE_OFFSET;
@@ -329,7 +330,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (EmergencyRoutingStatus e : values()) {
 				MAP.put(e.value, e);
 			}
@@ -362,7 +363,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,PacketType> MAP;
+		private static final Map<Integer, PacketType> MAP;
 
 		PacketType(int value) {
 			this.bit = value + PACKET_TYPE_OFFSET;
@@ -370,7 +371,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (PacketType p : values()) {
 				MAP.put(p.value, p);
 			}
@@ -399,7 +400,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,PayloadStatus> MAP;
+		private static final Map<Integer, PayloadStatus> MAP;
 
 		PayloadStatus(int value) {
 			this.bit = value + PAYLOAD_OFFSET;
@@ -407,7 +408,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (PayloadStatus p : values()) {
 				MAP.put(p.value, p);
 			}
@@ -436,7 +437,7 @@ public class DiagnosticFilter {
 		/** The encoded value's bit index. */
 		public final int bit;
 		private final int value;
-		private static final Map<Integer,Source> MAP;
+		private static final Map<Integer, Source> MAP;
 
 		Source(int value) {
 			this.bit = value + SOURCE_OFFSET;
@@ -444,7 +445,7 @@ public class DiagnosticFilter {
 		}
 
 		static {
-			MAP  = new HashMap<>();
+			MAP = new HashMap<>();
 			for (Source s : values()) {
 				MAP.put(s.value, s);
 			}
