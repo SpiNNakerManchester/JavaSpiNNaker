@@ -98,7 +98,9 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
  * Represents the system variables for a chip, received from the chip SDRAM.
  */
 public class ChipInfo implements HasChipLocation, ChipInformation {
-	private static final byte[] NO_IP = { 0, 0, 0, 0 };
+	private static final byte[] NO_IP = {
+			0, 0, 0, 0
+	};
 	private final ByteBuffer systemData;
 
 	private String ipAddress;
@@ -120,18 +122,22 @@ public class ChipInfo implements HasChipLocation, ChipInformation {
 		this.systemData = systemData.asReadOnlyBuffer();
 
 		int links = read(links_available);
-		linksAvailable = BitSet.valueOf(new byte[] { (byte) links });
+		linksAvailable = BitSet.valueOf(new byte[] {
+				(byte) links
+		});
 
 		ledFlashPeriod = read(led_half_period_10_ms) * 10;
-		leds = new int[] { read(led_0), read(led_1) };
+		leds = new int[] {
+				read(led_0), read(led_1)
+		};
 		statusMap = readBytes(status_map);
 		physicalToVirtualCoreMap = readBytes(physical_to_virtual_core_map);
 		virtualToPhysicalCoreMap = readBytes(virtual_to_physical_core_map);
 
 		virtualCoreIDs = new ArrayList<>();
-		for (int vID : physicalToVirtualCoreMap) {
-			if ((vID & 0xFF) != 0xFF) {
-				virtualCoreIDs.add(vID);
+		for (byte vID : physicalToVirtualCoreMap) {
+			if (Byte.toUnsignedInt(vID) != 0xFF) {
+				virtualCoreIDs.add((int) vID);
 			}
 		}
 		sort(virtualCoreIDs);

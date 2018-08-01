@@ -30,7 +30,7 @@ public final class VersionInfo {
 	private static final Pattern VERSION_RE = Pattern
 			.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)$");
 
-	private static final Version parseVersionString(String versionString) {
+	private static Version parseVersionString(String versionString) {
 		Matcher m = VERSION_RE.matcher(versionString);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(

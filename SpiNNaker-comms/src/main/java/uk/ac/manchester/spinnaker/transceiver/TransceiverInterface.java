@@ -72,6 +72,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
+@SuppressWarnings("checkstyle:FileLength")
 public interface TransceiverInterface {
 	/**
 	 * Delay between starting a program on a core and checking to see if the
