@@ -229,6 +229,18 @@ public class Machine implements Iterable<Chip> {
      * <p>
      * Will return null if hasChipAt for the same location returns null.
      *
+     * @param location x and y cooridinates of the requested chip.
+     * @return A Chip or null if no Chip found at that location.
+     */
+    public final Chip getChipAt(HasChipLocation location) {
+        return chips.get(location.asChipLocation());
+    }
+
+    /**
+     * Get the chip at a specific (x, y) location.
+     * <p>
+     * Will return null if hasChipAt for the same location returns null.
+     *
      * @param x The x-coordinate of the requested chip
      * @param y The y-coordinate of the requested chip
      * @return A Chip or null if no Chip found at that location.

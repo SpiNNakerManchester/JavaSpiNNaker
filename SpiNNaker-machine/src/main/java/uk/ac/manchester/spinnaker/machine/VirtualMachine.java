@@ -165,15 +165,17 @@ public class VirtualMachine extends Machine {
 
         if (ignoreCores.containsKey(location)) {
             Collection<Integer> ignoreProcessors = ignoreCores.get(location);
+            assert(ignoreProcessors.size() == 3);
             ArrayList<Processor> processors = new ArrayList<>();
             if (!ignoreProcessors.contains(0)) {
                 processors.add(Processor.factory(0, true));
             }
             for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
                 if (!ignoreProcessors.contains(i)) {
-                    processors.add(Processor.factory(i, true));
+                    processors.add(Processor.factory(i, false));
                 }
             }
+            assert(processors.size() == 15);
             return new Chip(location, processors, router, ipAddress, ethernet);
         } else {
             return new Chip(location, router, ipAddress, ethernet);

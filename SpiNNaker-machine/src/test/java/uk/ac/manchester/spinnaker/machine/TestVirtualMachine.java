@@ -3,9 +3,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +39,65 @@ public class TestVirtualMachine {
     public void test3Boards() {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
         assertEquals(3 * 48, instance.chips().size());
+        assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
+        assertEquals("2592 cores and 432.0 links", instance.coresAndLinkOutputString());
+    }
+
+    @Test
+    public void testNullIgnores() {
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                null, null, null);
+        assertEquals(3 * 48, instance.chips().size());
+        assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
+        assertEquals("2592 cores and 432.0 links", instance.coresAndLinkOutputString());
+    }
+
+    @Test
+    public void testIgnoresLinks() {
+        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap();
+        ignoreLinks.put(new ChipLocation(7, 7), Arrays.asList(Direction.NORTH));
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                null, null, ignoreLinks);
+        assertEquals(3 * 48, instance.chips().size());
+        assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
+        // Only ignored in one direction so .5 less
+        assertEquals("2592 cores and 431.5 links", instance.coresAndLinkOutputString());
+    }
+
+    @Test
+    public void testIgnoreCores() {
+        Map<ChipLocation, Collection<Integer>> ignoreCores = new HashMap();
+        ignoreCores.put(new ChipLocation(7, 7), Arrays.asList(3, 5, 7));
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                null, ignoreCores, null);
+        assertEquals(3 * 48, instance.chips().size());
+        Chip chip = instance.getChipAt(7, 7);
+        assertEquals(14, chip.nUserProcessors());
+        assertEquals(3 * 48 * 17 - 3, instance.totalAvailableUserCores());
+    }
+
+    @Test
+    public void testIgnoreChips() {
+        Set<ChipLocation> ignoreChips = new HashSet();
+        ignoreChips.add(new ChipLocation(4,4));
+        ignoreChips.add(new ChipLocation(9,10));
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                ignoreChips, null, null);
+        assertEquals(3 * 48 - 2 , instance.chips().size());
+    }
+
+    @Test
+    public void testIgnoreRootChips() {
+        Set<ChipLocation> ignoreChips = new HashSet();
+        ignoreChips.add(new ChipLocation(8, 4));
+        // Note future Machine may disallow a null ethernet chip
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                ignoreChips, null, null);
+        // Note future VirtualMachines may ignore the whole board!
+        assertEquals(3 * 48 -1 , instance.chips().size());
+        Chip chip = instance.getChipAt(2, 9);
+        assertEquals(new ChipLocation(8, 4), chip.nearestEthernet.asChipLocation());
+        assertNull(instance.getChipAt(chip.nearestEthernet));
     }
 
     @Test
