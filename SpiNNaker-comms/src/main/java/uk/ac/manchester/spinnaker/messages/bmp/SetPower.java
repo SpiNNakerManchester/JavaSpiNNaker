@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_POWER;
 
 import java.nio.ByteBuffer;
@@ -77,7 +78,7 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
-		return ((int) (delay * 1000) << 16) | powerCommand.value;
+		return ((int) (delay * MS_PER_S) << 16) | powerCommand.value;
 	}
 
 	private static int argument2(int board) {

@@ -60,7 +60,7 @@ public final class Processor implements Comparable<Processor> {
      * @return The number of CPU cycles available from this processor per ms.
      */
     public int cpuCyclesAvailable() {
-        return clockSpeed / UnitConstants.MEGAHERTZ_PRE_KILOHERTZ;
+        return clockSpeed / UnitConstants.MEGAHERTZ_PER_KILOHERTZ;
     }
 
     /**
@@ -83,7 +83,7 @@ public final class Processor implements Comparable<Processor> {
     public String toString() {
         return "[CPU: id=" + this.processorId
             + ", clock_speed="
-            + this.clockSpeed / UnitConstants.MEGAHERTZ_PRE_HERTZ
+            + this.clockSpeed / UnitConstants.MEGAHERTZ_PER_HERTZ
             + " MHz, monitor=" + this.isMonitor + "]";
     }
 

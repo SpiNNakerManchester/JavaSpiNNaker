@@ -10,6 +10,7 @@ import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_BLOCK;
 import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_CONTROL;
 import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_START;
@@ -38,7 +39,6 @@ public class BootMessages {
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
 	private static final String BOOT_IMAGE = "scamp.boot";
-	private static final int MS_PER_S = 1000;
 
 	private final ByteBuffer bootData;
 	private final int numDataPackets;

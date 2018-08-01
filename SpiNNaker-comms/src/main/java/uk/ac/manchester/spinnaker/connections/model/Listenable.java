@@ -1,6 +1,6 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
-import static uk.ac.manchester.spinnaker.connections.model.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;

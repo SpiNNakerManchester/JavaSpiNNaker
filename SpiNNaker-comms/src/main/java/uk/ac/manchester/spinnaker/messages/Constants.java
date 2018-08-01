@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages;
 
+import uk.ac.manchester.spinnaker.utils.UnitConstants;
+
 /** Miscellaneous SpiNNaker constants. */
 public abstract class Constants {
 	/** The max size a UDP packet can be. */
@@ -79,4 +81,6 @@ public abstract class Constants {
 
 	/** Number of bytes in a SpiNNaker word. */
 	public static final int WORD_SIZE = 4;
+	/** ms per second. */
+	public static final double MS_PER_S = UnitConstants.MS_PER_S;
 }

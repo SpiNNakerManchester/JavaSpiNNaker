@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
@@ -458,8 +459,6 @@ public class SCPRequestPipeline {
 	 */
 	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
-		private static final double MS_PER_S = 1000.0;
-
 		/**
 		 * Instantiate.
 		 *
