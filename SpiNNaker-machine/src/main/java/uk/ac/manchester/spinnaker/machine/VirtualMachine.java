@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,17 @@ public class VirtualMachine extends Machine {
             Map<ChipLocation, Collection<Integer>> ignoreCores,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         super(machineDimensions, ChipLocation.ZERO_ZERO);
+
+        if (ignoreChips == null) {
+            ignoreChips = Collections.EMPTY_SET;
+        }
+        if (ignoreCores == null) {
+            ignoreCores = Collections.EMPTY_MAP;
+        }
+        if (ignoreLinks == null) {
+            ignoreLinks = Collections.EMPTY_MAP;
+        }
+
         addVerionIgnores(ignoreLinks);
 
         SpiNNakerTriadGeometry geometry =
@@ -79,28 +91,30 @@ public class VirtualMachine extends Machine {
         }
     }
 
+     /**
+     * Creates a virtual machine to fill the machine dimensions with no ignores.
+     *
+     * @param machineDimensions
+     *      Size of the machine along the x and y axes in Chips.
+     */
+    public VirtualMachine(MachineDimensions machineDimensions) {
+        this(machineDimensions, null, null, null);
+    }
+
+     /**
+     * Creates a virtual machine to fill the machine dimensions with no ignores.
+     *
+     * @param machineDimensions
+     *      Size of the machine along the x and y axes in Chips.
+     */
+    public VirtualMachine(MachineVersion version) {
+        this(version.machineDimensions, null, null, null);
+    }
+
     private void addVerionIgnores(
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
-        switch (version) {
-            case TWO:
-            case THREE:
-                ignoreLinks.putAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
-                break;
-            case FOUR:
-            case FIVE:
-            case TRIAD_WITH_WRAPAROUND:
-            case TRIAD_NO_WRAPAROUND:
-                break;
-            case NONE_TRIAD_LARGE:
-                break;
-            case INVALID:
-                throw new IllegalStateException(
-                        "Based on current maxX:" + machineDimensions.width
-                        + " and maxY:" + machineDimensions.height
-                        + " no valid board version available.");
-            default:
-                throw new Error("Unexpected BoardVersion Enum: " + version
-                        + " Please reraise an issue.");
+        if (version.isFourChip) {
+            ignoreLinks.putAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
         }
     }
 

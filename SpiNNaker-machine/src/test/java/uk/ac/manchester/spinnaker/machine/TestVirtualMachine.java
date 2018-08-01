@@ -16,47 +16,50 @@ import org.junit.jupiter.api.Test;
 public class TestVirtualMachine {
 
     @Test
-    public void test3Boards() {
-        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+    public void testSmallBoards() {
+        Machine instance = new VirtualMachine(new MachineDimensions(2, 2),
             new HashSet<ChipLocation>(),
             new HashMap<ChipLocation, Collection<Integer>>(),
             new HashMap<ChipLocation, Collection<Direction>>());
+        assertEquals(4, instance.chips().size());
+    }
+
+    @Test
+    public void testBad() {
+        assertThrows(Exception.class, () -> {
+            Machine instance = new VirtualMachine(
+                new MachineDimensions(121, 120));
+        });
+     }
+
+    @Test
+    public void test3Boards() {
+        Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
         assertEquals(3 * 48, instance.chips().size());
     }
 
     @Test
     public void test24Boards() {
-        Machine instance = new VirtualMachine(new MachineDimensions(48, 24),
-            new HashSet<ChipLocation>(),
-            new HashMap<ChipLocation, Collection<Integer>>(),
-            new HashMap<ChipLocation, Collection<Direction>>());
+        Machine instance = new VirtualMachine(MachineVersion.TWENTYFOUR_BOARD);
         assertEquals(24 * 48, instance.chips().size());
     }
 
     @Test
     public void test120Boards() {
-        Machine instance = new VirtualMachine(new MachineDimensions(96, 60),
-            new HashSet<ChipLocation>(),
-            new HashMap<ChipLocation, Collection<Integer>>(),
-            new HashMap<ChipLocation, Collection<Direction>>());
+        Machine instance = new VirtualMachine(MachineVersion.ONE_TWENTY_BOARD);
         assertEquals(120 * 48, instance.chips().size());
     }
 
     @Test
     public void test600Boards() {
-        Machine instance = new VirtualMachine(new MachineDimensions(240, 120),
-            new HashSet<ChipLocation>(),
-            new HashMap<ChipLocation, Collection<Integer>>(),
-            new HashMap<ChipLocation, Collection<Direction>>());
+        Machine instance = new VirtualMachine(MachineVersion.SIX_HUNDRED_BOARD);
         assertEquals(600 * 48, instance.chips().size());
     }
 
     @Test
     public void test1200Boards() {
-        Machine instance = new VirtualMachine(new MachineDimensions(240, 240),
-            new HashSet<ChipLocation>(),
-            new HashMap<ChipLocation, Collection<Integer>>(),
-            new HashMap<ChipLocation, Collection<Direction>>());
+        Machine instance = new VirtualMachine(
+                MachineVersion.ONE_THOUSAND_TWO_HUNDRED_BOARD);
         assertEquals(1200 * 48, instance.chips().size());
     }
 

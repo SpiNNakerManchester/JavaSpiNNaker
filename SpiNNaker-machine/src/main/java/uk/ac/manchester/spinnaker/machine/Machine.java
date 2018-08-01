@@ -80,8 +80,7 @@ public class Machine implements Iterable<Chip> {
      */
     public Machine(MachineDimensions machineDimensions, HasChipLocation boot) {
         this.machineDimensions = machineDimensions;
-        version = SpiNNakerTriadGeometry.getSpinn5Geometry().
-                versionBySize(machineDimensions);
+        version = MachineVersion.bySize(machineDimensions);
 
         maxUserProssorsOnAChip = 0;
 
@@ -421,43 +420,27 @@ public class Machine implements Iterable<Chip> {
      *      spinnaker link is not added.
      */
     public final void addSpinnakerLinks() {
-        switch (version) {
-            case TWO:
-            case THREE:
-                Chip chip00 = getChipAt(ChipLocation.ZERO_ZERO);
-                if (!chip00.router.hasLink(Direction.WEST)) {
-                    spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
-                            new SpinnakerLinkData(0, chip00,
-                                    Direction.WEST, chip00.ipAddress));
+        if (version.isFourChip) {
+            Chip chip00 = getChipAt(ChipLocation.ZERO_ZERO);
+            if (!chip00.router.hasLink(Direction.WEST)) {
+                spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
+                        new SpinnakerLinkData(0, chip00,
+                                Direction.WEST, chip00.ipAddress));
+            }
+            Chip chip10 = getChipAt(ChipLocation.ONE_ZERO);
+            if (!chip10.router.hasLink(Direction.EAST)) {
+                spinnakerLinks.put(new InetIdTuple(chip10.ipAddress, 0),
+                        new SpinnakerLinkData(1, chip00,
+                                Direction.WEST, chip10.ipAddress));
+            }
+        } else {
+            for (Chip chip: ethernetConnectedChips) {
+                if (!chip.router.hasLink(Direction.SOUTHWEST)) {
+                    spinnakerLinks.put(new InetIdTuple(chip.ipAddress, 0),
+                        new SpinnakerLinkData(0, chip,
+                                Direction.SOUTHWEST, chip.ipAddress));
                 }
-                Chip chip10 = getChipAt(ChipLocation.ONE_ZERO);
-                if (!chip10.router.hasLink(Direction.EAST)) {
-                    spinnakerLinks.put(new InetIdTuple(chip10.ipAddress, 0),
-                            new SpinnakerLinkData(1, chip00,
-                                    Direction.WEST, chip10.ipAddress));
-                }
-                break;
-            case FOUR:
-            case FIVE:
-            case TRIAD_WITH_WRAPAROUND:
-            case TRIAD_NO_WRAPAROUND:
-            case NONE_TRIAD_LARGE:
-                for (Chip chip: ethernetConnectedChips) {
-                    if (!chip.router.hasLink(Direction.SOUTHWEST)) {
-                        spinnakerLinks.put(new InetIdTuple(chip.ipAddress, 0),
-                            new SpinnakerLinkData(0, chip,
-                                    Direction.SOUTHWEST, chip.ipAddress));
-                    }
-                }
-                break;
-            case INVALID:
-                throw new IllegalStateException(
-                        "Based on current maxX:" + machineDimensions.width
-                        + " and maxY:" + machineDimensions.height
-                        + " no valid board version available.");
-            default:
-                throw new Error("Unexpected BoardVersion Enum: " + version
-                        + " Please reraise an issue.");
+            }
         }
     }
 
@@ -596,30 +579,13 @@ public class Machine implements Iterable<Chip> {
      *      on each board
      */
     public final void addFpgaLinks() {
-        switch (version) {
-            case TWO:
-            case THREE:
-                break;  // NO fpga links
-            case FOUR:
-            case FIVE:
-            case TRIAD_WITH_WRAPAROUND:
-            case TRIAD_NO_WRAPAROUND:
-            case NONE_TRIAD_LARGE:
-                for (Chip ethernetConnectedChip: ethernetConnectedChips) {
-                     addFpgaLinks(
-                            ethernetConnectedChip.getX(),
-                            ethernetConnectedChip.getY(),
-                            ethernetConnectedChip.ipAddress);
-                }
-                break;
-            case INVALID:
-                throw new IllegalStateException(
-                        "Based on current maxX:" + machineDimensions.width
-                        + " and maxY:" + machineDimensions.height
-                        + " no valid board version available.");
-            default:
-                throw new Error("Unexpected BoardVersion Enum: " + version
-                        + " Please reraise an issue.");
+        if (version.isFourChip) {
+            return;  // NO fpga links
+        }
+        for (Chip ethernetConnectedChip: ethernetConnectedChips) {
+            addFpgaLinks(ethernetConnectedChip.getX(),
+                    ethernetConnectedChip.getY(),
+                    ethernetConnectedChip.ipAddress);
         }
     }
 

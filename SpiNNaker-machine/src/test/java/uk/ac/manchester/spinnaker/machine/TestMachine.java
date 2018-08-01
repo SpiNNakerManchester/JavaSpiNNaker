@@ -79,10 +79,10 @@ public class TestMachine {
         InetAddress address = InetAddress.getByAddress(bytes);
 
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
 
-        assertEquals(4, instance.maxChipX());
-        assertEquals(4, instance.maxChipY());
+        assertEquals(7, instance.maxChipX());
+        assertEquals(7, instance.maxChipY());
 
         for (Chip c:instance.chips()) {
             assertEquals(address, c.ipAddress);
@@ -106,7 +106,7 @@ public class TestMachine {
                 instance.chipCoordinates().iterator().next());
         // String is simplified to assumje each link unique and bi directional
         assertEquals("450 cores and 50.0 links", instance.coresAndLinkOutputString());
-        assertEquals("[Machine: max_x=4, max_y=4, n_chips=25]", instance.toString());
+        assertEquals("[Machine: max_x=7, max_y=7, n_chips=25]", instance.toString());
         assertFalse(instance.spinnakerLinks().iterator().hasNext());
     }
 
@@ -118,7 +118,7 @@ public class TestMachine {
                 null, false, 0, BOOT_CHIP));
         assertThrows(IllegalArgumentException.class, () -> {
             Machine instance = new Machine(
-                    new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                    new MachineDimensions(8, 8), chips, BOOT_CHIP);
         });
     }
 
@@ -127,7 +127,7 @@ public class TestMachine {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = new ArrayList();
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
         Chip chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
                 SDRAM, null, false, 0, BOOT_CHIP);
         instance.addChip(chip00);
@@ -150,7 +150,7 @@ public class TestMachine {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(new Chip(ChipLocation.ZERO_ZERO, processors,
                     ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
@@ -162,7 +162,7 @@ public class TestMachine {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
         assertEquals(chips.get(0), instance.getChipAt(ChipLocation.ZERO_ZERO));
         assertNull(instance.getChipAt(10, 10));
         assertTrue(instance.hasChipAt(ChipLocation.ZERO_ZERO));
@@ -174,7 +174,7 @@ public class TestMachine {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
         assertEquals(processors.size() -1, instance.maximumUserCoresOnChip());
         instance.reserveSystemProcessors();
         assertEquals(processors.size() - 2, instance.maximumUserCoresOnChip());
@@ -185,7 +185,7 @@ public class TestMachine {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
         Machine instance = new Machine(
-                new MachineDimensions(5, 5), chips, BOOT_CHIP);
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
         int count = 0;
         for (Chip chip:instance.iterChipsOnBoard(chips.get(3))) {
             count++;

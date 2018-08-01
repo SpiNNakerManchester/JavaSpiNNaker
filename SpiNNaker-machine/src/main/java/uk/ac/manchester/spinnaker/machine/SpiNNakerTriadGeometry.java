@@ -250,42 +250,6 @@ public final class SpiNNakerTriadGeometry {
     }
 
     /**
-     * Calculate the machine version based on the size.
-     *
-     * @param dimensions
-     *            The width and height of the machine to find the version for.
-     * @return A Board version, which may be the INVALID one.
-     */
-    MachineVersion versionBySize(MachineDimensions dimensions) {
-        if ((dimensions.width == 2) && (dimensions.height == 2)) {
-            return MachineVersion.THREE;
-        }
-        if ((dimensions.width == MachineDefaults.SIZE_X_OF_ONE_BOARD)
-                && (dimensions.height == MachineDefaults.SIZE_Y_OF_ONE_BOARD)) {
-            return MachineVersion.FIVE;
-        }
-        if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_WITH_WRAPAROUND;
-        }
-        if (((dimensions.width - MachineDefaults.HALF_SIZE)
-                % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((dimensions.height - MachineDefaults.HALF_SIZE)
-                        % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_NO_WRAPAROUND;
-        }
-        if (dimensions.width < MachineDefaults.SIZE_X_OF_ONE_BOARD
-                || dimensions.height < MachineDefaults.SIZE_Y_OF_ONE_BOARD) {
-            return MachineVersion.INVALID;
-        }
-        if (dimensions.width % MachineDefaults.HALF_SIZE == 0
-                && dimensions.height % MachineDefaults.HALF_SIZE == 0) {
-            return MachineVersion.NONE_TRIAD_LARGE;
-        }
-        return MachineVersion.INVALID;
-    }
-
-    /**
      * An Collection all the chips on a Single board with a root of 0, 0.
      *
      * @return An unmodifiable Collection of the Locations on one board.
