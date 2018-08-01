@@ -32,7 +32,7 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 
 	@Override
 	public int minPacketLength() {
-		return 4;
+		return super.minPacketLength() + 2;
 	}
 
 	@Override

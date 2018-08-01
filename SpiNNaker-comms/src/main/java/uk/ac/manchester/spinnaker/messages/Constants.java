@@ -76,4 +76,7 @@ public abstract class Constants {
 	public static final int NO_MIDDLE_CHIPS_TO_CHECK = 8;
 	/** This is the default timeout when using SCP, in milliseconds. */
 	public static final int SCP_TIMEOUT = 1000;
+
+	/** Number of bytes in a SpiNNaker word. */
+	public static final int WORD_SIZE = 4;
 }

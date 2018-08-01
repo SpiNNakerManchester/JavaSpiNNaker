@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.lang.Math.min;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.IntStream.range;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
 
 import java.nio.ByteBuffer;
@@ -50,9 +51,14 @@ public class P2PTable {
 		}
 	}
 
+	private static final int ROUTE_MASK = 0b111;
+	/** Number of bits per byte */
+	private static final int NBBY = 8;
+
 	private void extractRoutes(int chipX, int chipYBase, int word) {
 		range(0, min(8, height - chipYBase)).forEach(y -> {
-			P2PTableRoute route = P2PTableRoute.get((word >> (3 * y)) & 0b111);
+			P2PTableRoute route =
+					P2PTableRoute.get((word >> (3 * y)) & ROUTE_MASK);
 			if (route != null && route != NONE) {
 				routes.put(new ChipLocation(chipX, chipYBase + y), route);
 			}
@@ -67,7 +73,7 @@ public class P2PTable {
 	 * @return The number of bytes for the column
 	 */
 	public static int getNumColumnBytes(int height) {
-		return ((height + 7) / 8) * 4;
+		return ((height + NBBY - 1) / NBBY) * WORD_SIZE;
 	}
 
 	/**
@@ -78,7 +84,7 @@ public class P2PTable {
 	 * @return Where the column is located within the table.
 	 */
 	public static int getColumnOffset(int column) {
-		return ((256 * column) / 8) * 4;
+		return ((256 * column) / NBBY) * WORD_SIZE;
 	}
 
 	/** @return The coordinates of chips in the table. */

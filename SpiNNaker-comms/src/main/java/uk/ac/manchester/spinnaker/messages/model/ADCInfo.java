@@ -39,15 +39,21 @@ public final class ADCInfo {
 	/** Actual voltage of the main power supply (nominally 12V?). */
 	public final double voltage_supply;
 
+	private static final int ADC_SIZE = 8;
+	private static final int T_INT_SIZE = 4;
+	private static final int T_EXT_SIZE = 4;
+	private static final int FAN_SIZE = 4;
+
 	/**
 	 * @param buffer
 	 *            bytes from an SCP packet containing ADC information
 	 */
+	@SuppressWarnings("checkstyle:LocalVariableName")
 	public ADCInfo(ByteBuffer buffer) {
-		short[] adc = new short[8];
-		short[] t_int = new short[4];
-		short[] t_ext = new short[4];
-		short[] fan = new short[4];
+		short[] adc = new short[ADC_SIZE];
+		short[] t_int = new short[T_INT_SIZE];
+		short[] t_ext = new short[T_EXT_SIZE];
+		short[] fan = new short[FAN_SIZE];
 		ShortBuffer sb = buffer.asShortBuffer().asReadOnlyBuffer();
 		sb.get(adc);
 		sb.get(t_int);

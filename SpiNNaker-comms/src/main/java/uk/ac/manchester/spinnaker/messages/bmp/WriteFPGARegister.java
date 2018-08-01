@@ -1,6 +1,8 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
 
 import java.nio.ByteBuffer;
@@ -17,6 +19,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *      on GitHub</a>
  */
 public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
+	private static final int MASK = ~0b00000011;
+
 	/**
 	 * @param fpgaNum
 	 *            FPGA number (0, 1 or 2 on SpiNN-5 board) to communicate with.
@@ -29,12 +33,12 @@ public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
 	 *            which board to write the ADC register on
 	 */
 	public WriteFPGARegister(int fpgaNum, int register, int value, int board) {
-		super(board, CMD_LINK_WRITE, register & (~0x3), 4, fpgaNum,
+		super(board, CMD_LINK_WRITE, register & MASK, WORD_SIZE, fpgaNum,
 				data(value));
 	}
 
 	private static ByteBuffer data(int value) {
-		return ByteBuffer.allocate(4).order(LITTLE_ENDIAN).putInt(value);
+		return allocate(WORD_SIZE).order(LITTLE_ENDIAN).putInt(value);
 	}
 
 	@Override
