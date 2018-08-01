@@ -9,6 +9,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
@@ -56,7 +57,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * error is triggered.
 	 */
 	private static final int DEFAULT_RETRIES = 3;
-	private static final int MAX_SEQUENCE = 65536;
 	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
 	static {
 		RETRY_CODES.add(RC_TIMEOUT);
@@ -109,19 +109,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					exception);
 		}
 		return holder.value;
-	}
-
-	/** Keep a global track of the sequence numbers used. */
-	private static int nextSequence = 0;
-
-	/**
-	 * Get the next number from the global sequence, applying appropriate
-	 * wrapping rules as the sequence numbers have a fixed number of bits.
-	 */
-	private static synchronized int getNextSequenceNumber() {
-		int seq = nextSequence;
-		nextSequence = (nextSequence + 1) % MAX_SEQUENCE;
-		return seq;
 	}
 
 	/**
@@ -234,10 +221,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 */
 		private void sendRequest(BMPRequest<R> request, Consumer<R> callback)
 				throws IOException {
-			// Get the next sequence to be used
-			int sequence = getNextSequenceNumber();
-			// Update the packet and store required details
-			request.scpRequestHeader.sequence = (short) sequence;
+			// Get the next sequence to be used and store it in the header
+			int sequence = request.scpRequestHeader.issueSequenceNumber();
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
@@ -298,7 +283,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
-			BitSet toRemove = new BitSet(nextSequence);
+			BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 			for (int seq : new ArrayList<>(requests.keySet())) {
 				Request req = requests.get(seq);
 				if (req == null) {

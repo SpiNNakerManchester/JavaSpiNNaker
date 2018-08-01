@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
+@SuppressWarnings("checkstyle:MemberName")
+// Member names match field names in BMP; do not change!
 public final class ADCInfo {
 	/** fan<sub>0</sub> rotation rate. */
 	public final Double fan_0;

@@ -6,6 +6,9 @@ import static uk.ac.manchester.spinnaker.messages.model.DataType.INT;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.LONG;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.SHORT;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /** Defines the system variables available. */
 public enum SystemVariableDefinition {
 	/** The y-coordinate of the chip. */
@@ -220,5 +223,22 @@ public enum SystemVariableDefinition {
 			return ((byte[]) def).clone();
 		}
 		return def;
+	}
+
+	/**
+	 * Writes an object described by this field into the given buffer at the
+	 * <i>position</i> as a contiguous range of bytes. This assumes that the
+	 * buffer has been configured to be {@linkplain ByteOrder#LITTLE_ENDIAN
+	 * little-endian} and that its <i>position</i> is at the point where this
+	 * method should begin writing. Once it has finished, the <i>position</i>
+	 * will be immediately after the last byte written by this method.
+	 *
+	 * @param value
+	 *            The value to write.
+	 * @param buffer
+	 *            The buffer to write into.
+	 */
+	public void addToBuffer(Object value, ByteBuffer buffer) {
+		type.addToBuffer(value, buffer);
 	}
 }

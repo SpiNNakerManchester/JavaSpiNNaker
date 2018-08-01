@@ -38,7 +38,7 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/** Response for the fixed route read. */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		private final int route;
 
 		private Response(ByteBuffer buffer)

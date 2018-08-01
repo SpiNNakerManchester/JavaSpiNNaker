@@ -43,7 +43,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/** The chip information received. */
 		public final ChipSummaryInfo chipInfo;
 

@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/** Enum for data types. */
+/** Enum for data types of system variables. */
 public enum DataType {
 	BYTE(1), SHORT(2), INT(4), LONG(8), BYTE_ARRAY(16);
 
@@ -27,7 +27,7 @@ public enum DataType {
 	 * @param buffer
 	 *            The buffer to write into.
 	 */
-	public void addToBuffer(Object value, ByteBuffer buffer) {
+	void addToBuffer(Object value, ByteBuffer buffer) {
 		switch (this) {
 		case BYTE:
 			buffer.put(((Number) value).byteValue());
@@ -43,6 +43,8 @@ public enum DataType {
 			return;
 		case BYTE_ARRAY:
 			buffer.put((byte[]) value);
+		default:
+			throw new Error("unreachable?");
 		}
 	}
 }

@@ -1,9 +1,9 @@
-package uk.ac.manchester.spinnaker.connections;
+package uk.ac.manchester.spinnaker.messages.scp;
 
 /** Where to get sequence numbers from. */
-abstract class SequenceNumberSource {
+public abstract class SequenceNumberSource {
 	/** The number of items in the sequence. */
-	static final int SEQUENCE_LENGTH = 65536;
+	public static final int SEQUENCE_LENGTH = 65536;
 
 	private SequenceNumberSource() {
 	}
@@ -15,11 +15,12 @@ abstract class SequenceNumberSource {
 	 * Get the next number from the global sequence, applying appropriate
 	 * wrapping rules as the sequence numbers have a fixed number of bits.
 	 *
-	 * @return the next sequence number; these loop between 0 and 65535.
+	 * @return the next sequence number; these loop between 0 and 65535
+	 *         (unsigned).
 	 */
-	static synchronized int getNextSequenceNumber() {
+	static synchronized short getNextSequenceNumber() {
 		int seq = nextSequence;
 		nextSequence = (nextSequence + 1) % SEQUENCE_LENGTH;
-		return seq;
+		return (short) seq;
 	}
 }

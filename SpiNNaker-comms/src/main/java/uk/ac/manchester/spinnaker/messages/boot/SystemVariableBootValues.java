@@ -96,7 +96,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		for (SystemVariableDefinition svd : SystemVariableDefinition.values()) {
-			svd.type.addToBuffer(values.get(svd), buffer);
+			svd.addToBuffer(values.get(svd), buffer);
 		}
 	}
 }

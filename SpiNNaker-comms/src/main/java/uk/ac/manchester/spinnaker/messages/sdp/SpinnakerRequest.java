@@ -28,8 +28,7 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 
 	/**
 	 * A special source location that is the source for an SDP packet. <b>Note
-	 * that this is not a real core location!</b> It will cause failures if
-	 * converted into a {@link CoreLocation}!.
+	 * that this is not a real core location!</b>
 	 *
 	 * @author Donal Fellows
 	 */
@@ -53,6 +52,11 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 		@Override
 		public int getP() {
 			return SDP_SOURCE_CPU;
+		}
+
+		@Override
+		public CoreLocation asCoreLocation() {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

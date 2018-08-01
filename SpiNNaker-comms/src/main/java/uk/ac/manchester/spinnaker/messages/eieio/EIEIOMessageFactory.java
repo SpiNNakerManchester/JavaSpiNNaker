@@ -2,6 +2,11 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Main interface for deserialising a message.
+ *
+ * @author Donal Fellows
+ */
 public abstract class EIEIOMessageFactory {
 	private EIEIOMessageFactory() {
 	}
@@ -13,8 +18,6 @@ public abstract class EIEIOMessageFactory {
 	 *
 	 * @param data
 	 *            data received from the network
-	 * @param offset
-	 *            offset at which the parsing operation should start
 	 * @return an object which inherits from EIEIOCommandMessage which contains
 	 *         parsed data received from the network
 	 */
@@ -61,8 +64,6 @@ public abstract class EIEIOMessageFactory {
 	 *
 	 * @param data
 	 *            data received from the network
-	 * @param offset
-	 *            offset at which the parsing operation should start
 	 * @return an object which inherits from EIEIODataMessage which contains
 	 *         parsed data received from the network
 	 */

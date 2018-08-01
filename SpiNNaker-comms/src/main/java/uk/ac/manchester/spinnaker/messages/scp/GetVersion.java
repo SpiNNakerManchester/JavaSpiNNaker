@@ -26,7 +26,7 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 

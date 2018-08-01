@@ -44,7 +44,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/** The count of the number of cores with the requested state. */
 		public final int count;
 

@@ -5,13 +5,12 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.connections.SequenceNumberSource.getNextSequenceNumber;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
@@ -349,11 +348,8 @@ public class SCPRequestPipeline {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
-		// Get the next sequence to be used
-		int sequence = getNextSequenceNumber();
-
 		// Update the packet and store required details
-		request.scpRequestHeader.sequence = (short) sequence;
+		int sequence = request.scpRequestHeader.issueSequenceNumber();
 		Request<T> req = new Request<>(request, callback, errorCallback);
 		requests.put(sequence, req);
 
