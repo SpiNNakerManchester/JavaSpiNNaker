@@ -614,7 +614,7 @@ public class Machine implements Iterable<Chip> {
         int everyLink = 0;
         for (Chip chip:chips.values()) {
             cores += chip.nProcessors();
-            everyLink += chip.n_links();
+            everyLink += chip.nLinks();
         }
         return cores + " cores and " + (everyLink / 2.0) + " links";
     }

@@ -46,7 +46,7 @@ public final class MachineDimensions {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "Width:" + width + " Height:" + height;
     }
 }

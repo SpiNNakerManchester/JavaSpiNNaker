@@ -102,10 +102,10 @@ public class VirtualMachine extends Machine {
     }
 
      /**
-     * Creates a virtual machine to fill the machine dimensions with no ignores.
+     * Creates a virtual machine based on the MachineVersion.
      *
-     * @param machineDimensions
-     *      Size of the machine along the x and y axes in Chips.
+     * @param version
+     *      A version which specifies fixed size.
      */
     public VirtualMachine(MachineVersion version) {
         this(version.machineDimensions, null, null, null);
@@ -122,7 +122,8 @@ public class VirtualMachine extends Machine {
             HashMap<ChipLocation, ChipLocation> allChips,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         if (ignoreLinks.containsKey(location)) {
-            return VirtualMachine.this.getLinks(location, allChips, ignoreLinks.get(location));
+            return VirtualMachine.this.getLinks(
+                    location, allChips, ignoreLinks.get(location));
         } else {
             return VirtualMachine.this.getLinks(location, allChips);
         }
@@ -165,7 +166,6 @@ public class VirtualMachine extends Machine {
 
         if (ignoreCores.containsKey(location)) {
             Collection<Integer> ignoreProcessors = ignoreCores.get(location);
-            assert(ignoreProcessors.size() == 3);
             ArrayList<Processor> processors = new ArrayList<>();
             if (!ignoreProcessors.contains(0)) {
                 processors.add(Processor.factory(0, true));
@@ -175,7 +175,6 @@ public class VirtualMachine extends Machine {
                     processors.add(Processor.factory(i, false));
                 }
             }
-            assert(processors.size() == 15);
             return new Chip(location, processors, ipAddress, ethernet, links);
         } else {
             return new Chip(location, ipAddress, ethernet, links);
