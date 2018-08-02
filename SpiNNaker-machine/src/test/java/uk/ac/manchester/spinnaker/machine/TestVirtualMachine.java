@@ -40,6 +40,8 @@ public class TestVirtualMachine {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
         assertEquals(3 * 48, instance.chips().size());
         assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
+        instance.reserveSystemProcessors();
+        assertEquals(3 * 48 * 16, instance.totalAvailableUserCores());
         assertEquals("2592 cores and 432.0 links", instance.coresAndLinkOutputString());
     }
 
