@@ -30,7 +30,8 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 		/** The ADC information. */
 		public final ADCInfo adcInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read ADC", CMD_BMP_INFO, buffer);
 			adcInfo = new ADCInfo(buffer);
 		}

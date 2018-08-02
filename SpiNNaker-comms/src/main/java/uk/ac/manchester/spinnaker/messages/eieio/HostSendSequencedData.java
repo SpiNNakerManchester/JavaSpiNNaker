@@ -23,8 +23,9 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 		this.eieioDataMessage = eieioDataMessage;
 	}
 
-	public HostSendSequencedData(EIEIOCommandHeader header, ByteBuffer data) {
-		super(header);
+	HostSendSequencedData(ByteBuffer data) {
+		super(data);
+
 		regionID = data.get();
 		sequenceNum = data.get();
 		eieioDataMessage = readDataMessage(data);

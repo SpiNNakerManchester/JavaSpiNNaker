@@ -34,9 +34,12 @@ public class HostDataRead extends EIEIOCommandMessage {
 		});
 	}
 
-	HostDataRead(EIEIOCommandHeader header, ByteBuffer data) {
-		super(header);
-		this.header = new Header((byte) (data.get() & 0x7), data.get());
+	private static final int NUM_REQUESTS_MASK = 0b00000111;
+
+	HostDataRead(ByteBuffer data) {
+		super(data);
+		this.header =
+				new Header((byte) (data.get() & NUM_REQUESTS_MASK), data.get());
 		byte[] channel = new byte[getNumRequests()];
 		byte[] regionID = new byte[getNumRequests()];
 		int[] spaceRead = new int[getNumRequests()];
@@ -103,8 +106,7 @@ public class HostDataRead extends EIEIOCommandMessage {
 		final byte[] regionID;
 		final int[] spaceRead;
 
-		Ack(int numRequests, byte[] channel, byte[] regionID,
-				int[] spaceRead) {
+		Ack(int numRequests, byte[] channel, byte[] regionID, int[] spaceRead) {
 			if (channel.length != numRequests || regionID.length != numRequests
 					|| spaceRead.length != numRequests) {
 				throw new IllegalArgumentException(

@@ -96,7 +96,8 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 
 	/** The response from the powering message. */
 	public class Response extends BMPRequest.BMPResponse {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("powering request", CMD_BMP_POWER, buffer);
 		}
 	}

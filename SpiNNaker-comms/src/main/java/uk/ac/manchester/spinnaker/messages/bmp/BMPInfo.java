@@ -10,6 +10,7 @@ public enum BMPInfo {
 	ADC(3),
 	/** IP Address. */
 	IP_ADDR(4);
+
 	/** The raw BMP value. */
 	public final byte value;
 

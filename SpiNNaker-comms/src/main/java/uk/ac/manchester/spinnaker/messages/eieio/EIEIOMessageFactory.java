@@ -22,13 +22,13 @@ public abstract class EIEIOMessageFactory {
 	 *         parsed data received from the network
 	 */
 	public static EIEIOCommandMessage readCommandMessage(ByteBuffer data) {
-		EIEIOCommandHeader commandHeader = new EIEIOCommandHeader(data);
-		if (!(commandHeader.command instanceof EIEIOCommandID)) {
-			return new EIEIOCommandMessage(commandHeader);
+		EIEIOCommand command = EIEIOCommandMessage.peekCommand(data);
+		if (!(command instanceof EIEIOCommandID)) {
+			return new EIEIOCommandMessage(data);
 		}
-		switch ((EIEIOCommandID) commandHeader.command) {
+		switch ((EIEIOCommandID) command) {
 		case DATABASE_CONFIRMATION:
-			return new DatabaseConfirmation(commandHeader, data);
+			return new DatabaseConfirmation(data);
 		case EVENT_PADDING:
 			// Fill in buffer area with padding
 			return new PaddingRequest();
@@ -43,18 +43,18 @@ public abstract class EIEIOMessageFactory {
 			return new StartRequests();
 		case SPINNAKER_REQUEST_BUFFERS:
 			// SpiNNaker requesting new buffers for spike source population
-			return new SpinnakerRequestBuffers(commandHeader, data);
+			return new SpinnakerRequestBuffers(data);
 		case HOST_SEND_SEQUENCED_DATA:
 			// Buffers being sent from host to SpiNNaker
-			return new HostSendSequencedData(commandHeader, data);
+			return new HostSendSequencedData(data);
 		case SPINNAKER_REQUEST_READ_DATA:
 			// Buffers available to be read from a buffered out vertex
-			return new SpinnakerRequestReadData(commandHeader, data);
+			return new SpinnakerRequestReadData(data);
 		case HOST_DATA_READ:
 			// Host confirming data being read form SpiNNaker memory
-			return new HostDataRead(commandHeader, data);
+			return new HostDataRead(data);
 		default:
-			return new EIEIOCommandMessage(commandHeader);
+			return new EIEIOCommandMessage(data);
 		}
 	}
 
@@ -68,6 +68,6 @@ public abstract class EIEIOMessageFactory {
 	 *         parsed data received from the network
 	 */
 	public static EIEIODataMessage readDataMessage(ByteBuffer data) {
-		return new EIEIODataMessage(new EIEIODataHeader(data), data);
+		return new EIEIODataMessage(data);
 	}
 }

@@ -29,7 +29,8 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read ADC", CMD_VER, buffer);
 			versionInfo = new VersionInfo(buffer);
 		}

@@ -11,6 +11,10 @@ public class CustomEIEIOCommand implements EIEIOCommand {
 	private static final int MAX_COMMAND = 0x3FFF;
 	private final int command;
 
+	/**
+	 * @param command
+	 *            The ID value of the command.
+	 */
 	CustomEIEIOCommand(int command) {
 		if (command < 0 || command > MAX_COMMAND) {
 			throw new IllegalArgumentException(

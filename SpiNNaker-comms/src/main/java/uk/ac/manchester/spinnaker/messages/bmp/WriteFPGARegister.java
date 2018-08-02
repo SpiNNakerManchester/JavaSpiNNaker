@@ -19,7 +19,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *      on GitHub</a>
  */
 public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
-	private static final int MASK = ~0b00000011;
+	private static final int MASK = 0b00000011;
 
 	/**
 	 * @param fpgaNum
@@ -33,7 +33,7 @@ public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
 	 *            which board to write the ADC register on
 	 */
 	public WriteFPGARegister(int fpgaNum, int register, int value, int board) {
-		super(board, CMD_LINK_WRITE, register & MASK, WORD_SIZE, fpgaNum,
+		super(board, CMD_LINK_WRITE, register & ~MASK, WORD_SIZE, fpgaNum,
 				data(value));
 	}
 
@@ -48,7 +48,8 @@ public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
 
 	/** An SCP response to a request to write an FPGA register. */
 	public class Response extends BMPRequest.BMPResponse {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Send FPGA register write", CMD_LINK_WRITE, buffer);
 		}
 	}

@@ -18,16 +18,22 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 public class SystemVariableBootValues implements SerializableMessage {
 	/** The size of the boot variable block, in bytes. */
 	static final int BOOT_VARIABLE_SIZE = 256;
-	private static final Map<Integer, SystemVariableBootValues> BOOT_VALUES;
-	static {
-		HashMap<Integer, SystemVariableBootValues> bootValues = new HashMap<>();
-		bootValues.put(1, new SystemVariableBootValues(1, 0x00076104));
-		bootValues.put(2, new SystemVariableBootValues(2, 0x00006103));
-		bootValues.put(3, new SystemVariableBootValues(3, 0x00000502));
-		bootValues.put(4, new SystemVariableBootValues(4, 0x00000001));
-		bootValues.put(5, new SystemVariableBootValues(5, 0x00000001));
-		BOOT_VALUES = Collections.unmodifiableMap(bootValues);
-	};
+
+	@SuppressWarnings("checkstyle:MagicNumber")
+	private static class BootValues {
+		private static final Map<Integer, SystemVariableBootValues> MAP;
+		static {
+			HashMap<Integer, SystemVariableBootValues> bootValues =
+					new HashMap<>();
+			bootValues.put(1, new SystemVariableBootValues(1, 0x00076104));
+			bootValues.put(2, new SystemVariableBootValues(2, 0x00006103));
+			bootValues.put(3, new SystemVariableBootValues(3, 0x00000502));
+			bootValues.put(4, new SystemVariableBootValues(4, 0x00000001));
+			bootValues.put(5, new SystemVariableBootValues(5, 0x00000001));
+			MAP = Collections.unmodifiableMap(bootValues);
+		};
+	}
+
 	private final Map<SystemVariableDefinition, Object> values;
 
 	/** Create a set of boot values using all the defaults. */
@@ -85,7 +91,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 * @return The defaults for the specific board.
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
-		SystemVariableBootValues bv = BOOT_VALUES.get(boardVersion);
+		SystemVariableBootValues bv = BootValues.MAP.get(boardVersion);
 		if (bv != null) {
 			return bv;
 		}

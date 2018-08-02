@@ -11,7 +11,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Requests the data from a FPGA's register.
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
-	private static final int MASK = ~0b00000011;
+	private static final int MASK = 0b00000011;
+
 	/**
 	 * @param fpgaNum
 	 *            FPGA number (0, 1 or 2 on SpiNN-5 board) to communicate with.
@@ -22,7 +23,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 *            which board to request the ADC register from
 	 */
 	public ReadFPGARegister(int fpgaNum, int register, int board) {
-		super(board, CMD_LINK_READ, register & MASK, WORD_SIZE, fpgaNum);
+		super(board, CMD_LINK_READ, register & ~MASK, WORD_SIZE, fpgaNum);
 	}
 
 	@Override
@@ -35,7 +36,8 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 		/** The ADC information. */
 		public final int fpgaRegister;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read FPGA register", CMD_LINK_READ, buffer);
 			fpgaRegister = buffer.getInt();
 		}

@@ -31,8 +31,9 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	private static final int PROC_MASK = 0b00011111;
 	private static final int REGION_MASK = 0b00001111;
 
-	public SpinnakerRequestBuffers(EIEIOCommandHeader header, ByteBuffer data) {
-		super(header);
+	SpinnakerRequestBuffers(ByteBuffer data) {
+		super(data);
+
 		int y = data.get();
 		int x = data.get();
 		int p = ((data.get() >>> PROC_SHIFT) & PROC_MASK);
