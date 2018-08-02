@@ -25,11 +25,12 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public class Response extends BMPRequest.BMPResponse {
+	public final class Response extends BMPRequest.BMPResponse {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("Read ADC", CMD_VER, buffer);
 			versionInfo = new VersionInfo(buffer);
 		}

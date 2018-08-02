@@ -2,6 +2,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_POINTER;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -47,7 +49,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	}
 
 	private static int argument1(int appID) {
-		return (appID << 8) | FREE_SDRAM_BY_APP_ID.value;
+		return (appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}
 
 	@Override

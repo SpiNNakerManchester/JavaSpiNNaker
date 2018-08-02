@@ -10,16 +10,43 @@ import static java.lang.Integer.parseInt;
  */
 public final class Version implements Comparable<Version> {
 	// There is no standard Version class. WRYYYYYYYYYYYYYYYY!!!!
+	/**
+	 * The major version number. Two versions are not compatible if they have
+	 * different major version numbers. Major version number differences
+	 * dominate.
+	 */
 	public final int majorVersion;
+	/** The minor version number. */
 	public final int minorVersion;
+	/** The revision number. Less important than the minor version number. */
 	public final int revision;
 
+	/**
+	 * Create a version number.
+	 *
+	 * @param major
+	 *            the major number
+	 * @param minor
+	 *            the minor number
+	 * @param rev
+	 *            the revision number
+	 */
 	public Version(int major, int minor, int rev) {
 		majorVersion = major;
 		minorVersion = minor;
 		revision = rev;
 	}
 
+	/**
+	 * Create a version number.
+	 *
+	 * @param major
+	 *            the major number
+	 * @param minor
+	 *            the minor number
+	 * @param rev
+	 *            the revision number
+	 */
 	public Version(String major, String minor, String rev) {
 		majorVersion = parseInt(major);
 		minorVersion = parseInt(minor);

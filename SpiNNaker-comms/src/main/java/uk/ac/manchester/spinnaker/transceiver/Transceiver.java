@@ -16,6 +16,7 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
@@ -24,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -43,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import static java.util.Collections.emptyMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,21 +62,20 @@ import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
+import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
+import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
-import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
-import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.CPUState;
+import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -98,6 +100,7 @@ import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
@@ -160,6 +163,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface {
+	private static final int BIGGER_BOARD = 4;
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
@@ -318,6 +322,7 @@ public class Transceiver extends UDPTransceiver
 	 *            in debugging purposes)
 	 * @return The created transceiver
 	 */
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
@@ -337,7 +342,7 @@ public class Transceiver extends UDPTransceiver
 		 * machine, then an assumption can be made that the BMP is at -1 on the
 		 * final value of the IP address
 		 */
-		if (version >= 4 && autodetectBMP
+		if (version >= BIGGER_BOARD && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData = singletonList(
 					workOutBMPFromMachineDetails(hostname, numberOfBoards));
@@ -367,11 +372,33 @@ public class Transceiver extends UDPTransceiver
 				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
 	}
 
+	/**
+	 * Create a Transceiver by creating a UDPConnection to the given hostname on
+	 * port 17893 (the default SCAMP port), and a BootConnection on port 54321
+	 * (the default boot port), discovering any additional links using the
+	 * UDPConnection, and then returning the transceiver created with the
+	 * conjunction of the created UDPConnection and the discovered connections.
+	 *
+	 * @param hostname
+	 *            The hostname or IP address of the board
+	 * @param version
+	 *            the type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. If a spinn-5 board, then the version will be 5,
+	 *            spinn-3 would equal 3 and so on.
+	 * @return The created transceiver
+	 */
+	public static TransceiverInterface createTransceiver(String hostname,
+			int version) throws IOException, SpinnmanException, Exception {
+		return createTransceiver(hostname, version, null, 0, emptyList(),
+				emptyMap(), emptyMap(), null, false, null, null, null);
+	}
+
 	public Transceiver(int version)
 			throws IOException, SpinnmanException, Exception {
 		this(version, null, null, null, null, null, null, null);
 	}
 
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -1233,8 +1260,8 @@ public class Transceiver extends UDPTransceiver
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
-		int timeout =
-				(int) (1000 * (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
+		int timeout = (int) (MS_PER_S
+				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
 		new SendSingleBMPCommandProcess<SetPower.Response>(
 				bmpConnection(cabinet, frame), timeout)
@@ -1243,7 +1270,7 @@ public class Transceiver extends UDPTransceiver
 
 		// Sleep for 5 seconds if the machine has just been powered on
 		if (!machineOff) {
-			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * 1000));
+			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * MS_PER_S));
 		}
 	}
 
@@ -1664,7 +1691,7 @@ public class Transceiver extends UDPTransceiver
 				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
 						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
 		Response response = new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new ReadMemory(chip, address, 4));
+				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
 

@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.lang.Math.min;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.IntStream.range;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
 
 import java.nio.ByteBuffer;
@@ -24,6 +25,21 @@ public class P2PTable {
 	/** The height of the machine that this table represents. */
 	public final int height;
 
+	private static final int ROUTE_CHUNK = 8;
+	private static final int COLUMN_SIZE = 256;
+	private static final int ROUTE_BITS = 3;
+	private static final int ROUTE_MASK = (1 << ROUTE_BITS) - 1;
+	/** Number of bits per byte. */
+	private static final int NBBY = 8;
+
+	/**
+	 * Construct a routing table from data.
+	 *
+	 * @param dimensions
+	 *            The size of the machine.
+	 * @param columnData
+	 *            The routing data to parse.
+	 */
 	public P2PTable(MachineDimensions dimensions,
 			Collection<ByteBuffer> columnData) {
 		this.routes = new HashMap<>();
@@ -32,27 +48,21 @@ public class P2PTable {
 		parseColumnData(columnData);
 	}
 
-	public P2PTable(int width, int height, Collection<ByteBuffer> columnData) {
-		this.routes = new HashMap<>();
-		this.width = width;
-		this.height = height;
-		parseColumnData(columnData);
-	}
-
 	private void parseColumnData(Iterable<ByteBuffer> columnData) {
 		int x = 0;
 		for (ByteBuffer buffer : columnData) {
 			IntBuffer data = buffer.asIntBuffer();
 			int chipX = x++;
-			for (int y = 0; y < height; y += 8) {
+			for (int y = 0; y < height; y += ROUTE_CHUNK) {
 				extractRoutes(chipX, y, data.get());
 			}
 		}
 	}
 
 	private void extractRoutes(int chipX, int chipYBase, int word) {
-		range(0, min(8, height - chipYBase)).forEach(y -> {
-			P2PTableRoute route = P2PTableRoute.get((word >> (3 * y)) & 0b111);
+		range(0, min(ROUTE_CHUNK, height - chipYBase)).forEach(y -> {
+			P2PTableRoute route =
+					P2PTableRoute.get((word >> (ROUTE_MASK * y)) & ROUTE_MASK);
 			if (route != null && route != NONE) {
 				routes.put(new ChipLocation(chipX, chipYBase + y), route);
 			}
@@ -67,7 +77,7 @@ public class P2PTable {
 	 * @return The number of bytes for the column
 	 */
 	public static int getNumColumnBytes(int height) {
-		return ((height + 7) / 8) * 4;
+		return ((height + NBBY - 1) / NBBY) * WORD_SIZE;
 	}
 
 	/**
@@ -78,7 +88,7 @@ public class P2PTable {
 	 * @return Where the column is located within the table.
 	 */
 	public static int getColumnOffset(int column) {
-		return ((256 * column) / 8) * 4;
+		return ((COLUMN_SIZE * column) / NBBY) * WORD_SIZE;
 	}
 
 	/** @return The coordinates of chips in the table. */

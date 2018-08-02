@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_POWER;
 
 import java.nio.ByteBuffer;
@@ -16,6 +17,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * should <i>always</i> be sent to BMP 0!
  */
 public class SetPower extends BMPRequest<SetPower.Response> {
+	private static final int DELAY_SHIFT = 16;
+
 	/**
 	 * @param powerCommand
 	 *            The power command being sent
@@ -77,7 +80,7 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
-		return ((int) (delay * 1000) << 16) | powerCommand.value;
+		return ((int) (delay * MS_PER_S) << DELAY_SHIFT) | powerCommand.value;
 	}
 
 	private static int argument2(int board) {
@@ -94,8 +97,9 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	}
 
 	/** The response from the powering message. */
-	public class Response extends BMPRequest.BMPResponse {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+	public final class Response extends BMPRequest.BMPResponse {
+		private Response(ByteBuffer buffer)
+				throws UnexpectedResponseCodeException {
 			super("powering request", CMD_BMP_POWER, buffer);
 		}
 	}

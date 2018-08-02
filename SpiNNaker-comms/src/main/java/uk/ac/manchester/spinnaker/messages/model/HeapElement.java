@@ -17,6 +17,12 @@ public class HeapElement {
 	 */
 	public final Integer appID;
 
+	private static final int FREE_MASK = 0xFFFF0000;
+	private static final int BYTE_MASK = 0x000000FF;
+	// WORD := [ BYTE3 | BYTE2 | BYTE1 | BYTE0 ]
+	private static final int BYTE1_SHIFT = 8;
+	private static final int BLOCK_HEADER_SIZE = 8;
+
 	/**
 	 * @param blockAddress
 	 *            The address of this element on the heap
@@ -28,14 +34,14 @@ public class HeapElement {
 	public HeapElement(int blockAddress, int nextAddress, int free) {
 		this.blockAddress = blockAddress;
 		this.nextAddress = nextAddress;
-		this.isFree = (free & 0xFFFF0000) != 0xFFFF0000;
+		this.isFree = (free & FREE_MASK) != FREE_MASK;
 		if (isFree) {
 			tag = null;
 			appID = null;
 		} else {
-			tag = free & 0xFF;
-			appID = (free >> 8) & 0xFF;
+			tag = free & BYTE_MASK;
+			appID = (free >>> BYTE1_SHIFT) & BYTE_MASK;
 		}
-		size = nextAddress - blockAddress - 8;
+		size = nextAddress - blockAddress - BLOCK_HEADER_SIZE;
 	}
 }

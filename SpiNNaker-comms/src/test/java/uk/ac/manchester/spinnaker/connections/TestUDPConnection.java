@@ -38,7 +38,7 @@ public class TestUDPConnection {
 			connection.sendSCPRequest(scp_req);
 			result = connection.receiveSCPResponse(null);
 		}
-		Response scp_response = scp_req.getSCPResponse(result.responseData);
+		Response scp_response = result.parsePayload(scp_req);
 		System.out.println(scp_response.versionInfo);
 		assertEquals(scp_response.scpResponseHeader.result, RC_OK);
 	}
@@ -53,7 +53,7 @@ public class TestUDPConnection {
 			connection.sendSCPRequest(scp_link);
 			result = connection.receiveSCPResponse(null);
 		}
-		assertEquals(result.result, RC_OK);
+		assertEquals(result.getResult(), RC_OK);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class TestUDPConnection {
 			connection.sendSCPRequest(scp_link);
 			result = connection.receiveSCPResponse(null);
 		}
-		assertEquals(result.result, RC_OK);
+		assertEquals(result.getResult(), RC_OK);
 	}
 
 	@Test

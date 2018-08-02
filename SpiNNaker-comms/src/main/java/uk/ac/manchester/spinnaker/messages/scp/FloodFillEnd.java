@@ -1,6 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -10,8 +14,12 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
-	private static final int NNP_FORWARD_RETRY = (0x3f << 8) | 0x18;
+	private static final int MAGIC1 = 0x3f;
+	private static final int MAGIC2 = 0x18;
+	private static final int NNP_FORWARD_RETRY =
+			(MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
 	private static final int NNP_FLOOD_FILL_END = 15;
+	private static final int WAIT_BIT = 18;
 
 	/**
 	 * @param nearestNeighbourID
@@ -57,7 +65,8 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument1(byte nearestNeighbourID) {
-		return (NNP_FLOOD_FILL_END << 24) | toUnsignedInt(nearestNeighbourID);
+		return (NNP_FLOOD_FILL_END << BYTE3)
+				| toUnsignedInt(nearestNeighbourID);
 	}
 
 	private static int argument2(int appID, Iterable<Integer> processors,
@@ -65,14 +74,14 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 		int processorMask = 0;
 		if (processors != null) {
 			for (int p : processors) {
-				if (p >= 1 && p <= 17) {
+				if (p >= 1 && p < MAX_NUM_CORES) {
 					processorMask |= 1 << p;
 				}
 			}
 		}
-		processorMask |= appID << 24;
+		processorMask |= appID << BYTE3;
 		if (wait) {
-			processorMask |= 1 << 18;
+			processorMask |= 1 << WAIT_BIT;
 		}
 		return processorMask;
 	}

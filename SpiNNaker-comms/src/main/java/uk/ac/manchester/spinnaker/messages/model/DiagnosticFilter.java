@@ -6,6 +6,8 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -62,6 +64,7 @@ public class DiagnosticFilter {
 	 *            Increment the counter if one or more of the given packet types
 	 *            match (or empty list to match all)
 	 */
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	public DiagnosticFilter(boolean enableInterruptOnCounterEvent,
 			boolean matchmergencyRoutingStatusToIncomingPacket,
 			Collection<Destination> destinations, Collection<Source> sources,
@@ -217,9 +220,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, DefaultRoutingStatus> MAP;
 
 		DefaultRoutingStatus(int value) {
 			this.bit = value + DEFAULT_ROUTE_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (DefaultRoutingStatus d : values()) {
+				MAP.put(d.value, d);
+			}
 		}
 
 		/**
@@ -228,14 +241,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static DefaultRoutingStatus get(int value) {
-			switch (value) {
-			case 0:
-				return DEFAULT_ROUTED;
-			case 1:
-				return NON_DEFAULT_ROUTED;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 
@@ -265,9 +271,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, Destination> MAP;
 
 		Destination(int value) {
 			this.bit = value + DESTINATION_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (Destination d : values()) {
+				MAP.put(d.value, d);
+			}
 		}
 
 		/**
@@ -276,28 +292,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static Destination get(int value) {
-			switch (value) {
-			case 0:
-				return DUMP;
-			case 1:
-				return LOCAL;
-			case 2:
-				return LOCAL_MONITOR;
-			case 3:
-				return LINK_0;
-			case 4:
-				return LINK_1;
-			case 5:
-				return LINK_2;
-			case 6:
-				return LINK_3;
-			case 7:
-				return LINK_4;
-			case 8:
-				return LINK_5;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 
@@ -326,9 +321,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, EmergencyRoutingStatus> MAP;
 
 		EmergencyRoutingStatus(int value) {
 			this.bit = value + EMERGENCY_ROUTE_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (EmergencyRoutingStatus e : values()) {
+				MAP.put(e.value, e);
+			}
 		}
 
 		/**
@@ -337,18 +342,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static EmergencyRoutingStatus get(int value) {
-			switch (value) {
-			case 0:
-				return NORMAL;
-			case 1:
-				return FIRST_STAGE_COMBINED;
-			case 2:
-				return FIRST_STAGE;
-			case 3:
-				return SECOND_STAGE;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 
@@ -368,9 +362,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, PacketType> MAP;
 
 		PacketType(int value) {
 			this.bit = value + PACKET_TYPE_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (PacketType p : values()) {
+				MAP.put(p.value, p);
+			}
 		}
 
 		/**
@@ -379,18 +383,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static PacketType get(int value) {
-			switch (value) {
-			case 0:
-				return MULTICAST;
-			case 1:
-				return POINT_TO_POINT;
-			case 2:
-				return NEAREST_NEIGHBOUR;
-			case 3:
-				return FIXED_ROUTE;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 
@@ -406,9 +399,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, PayloadStatus> MAP;
 
 		PayloadStatus(int value) {
 			this.bit = value + PAYLOAD_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (PayloadStatus p : values()) {
+				MAP.put(p.value, p);
+			}
 		}
 
 		/**
@@ -417,14 +420,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static PayloadStatus get(int value) {
-			switch (value) {
-			case 0:
-				return WITH_PAYLOAD;
-			case 1:
-				return WITHOUT_PAYLOAD;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 
@@ -440,9 +436,19 @@ public class DiagnosticFilter {
 
 		/** The encoded value's bit index. */
 		public final int bit;
+		private final int value;
+		private static final Map<Integer, Source> MAP;
 
 		Source(int value) {
 			this.bit = value + SOURCE_OFFSET;
+			this.value = value;
+		}
+
+		static {
+			MAP = new HashMap<>();
+			for (Source s : values()) {
+				MAP.put(s.value, s);
+			}
 		}
 
 		/**
@@ -451,14 +457,7 @@ public class DiagnosticFilter {
 		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
 		 */
 		static Source get(int value) {
-			switch (value) {
-			case 0:
-				return LOCAL;
-			case 1:
-				return NON_LOCAL;
-			default:
-				return null;
-			}
+			return MAP.get(value);
 		}
 	}
 }

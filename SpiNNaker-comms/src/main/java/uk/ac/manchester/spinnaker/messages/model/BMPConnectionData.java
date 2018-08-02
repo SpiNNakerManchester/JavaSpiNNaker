@@ -29,6 +29,13 @@ public class BMPConnectionData {
 	 */
 	public final Integer portNumber;
 
+	/**
+	 * @param cabinet The number of the cabinet containing the frame.
+	 * @param frame The number of the frame containing the boards.
+	 * @param ipAddress The address of the BMP.
+	 * @param boards The boards controlled by the BMP.
+	 * @param portNumber The BMP's port.
+	 */
 	public BMPConnectionData(int cabinet, int frame, String ipAddress,
 			Collection<Integer> boards, Integer portNumber) {
 		this.cabinet = cabinet;
@@ -37,6 +44,8 @@ public class BMPConnectionData {
 		this.boards = boards;
 		this.portNumber = portNumber;
 	}
+
+	private static final int MIN_BYTE_FIELD = 3;
 
 	/**
 	 * Work out the BMP connection IP address given the machine details. This is
@@ -55,7 +64,7 @@ public class BMPConnectionData {
 			throws UnknownHostException {
 		// take the IP address, split by dots, and subtract 1 off last bit
 		byte[] ipBits = getByName(hostname).getAddress();
-		ipBits[3]--;
+		ipBits[MIN_BYTE_FIELD]--;
 		ipAddress = getByAddress(ipBits).toString();
 		portNumber = SCP_SCAMP_PORT;
 

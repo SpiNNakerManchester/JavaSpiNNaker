@@ -36,18 +36,34 @@ public class RouterDiagnostics {
 	 */
 	public final int[] registerValues;
 
+	private static final int NUM_REGISTERS = 16;
+	private static final int NUM_USER_CONTROL_REGISTERS = 4;
+	private static final int MON_MASK = 0x1F;
 	private static final int BYTE_MASK = 0xFF;
+	private static final int MON_SHIFT = 8;
+	private static final int WAIT1_SHIFT = 16;
+	private static final int WAIT2_SHIFT = 24;
 
+	/**
+	 * Parse the router diagnostics.
+	 *
+	 * @param controlRegister
+	 *            The control register value.
+	 * @param errorStatus
+	 *            The error status value.
+	 * @param registerValues
+	 *            The register values. (Should have {@value #NUM_REGISTERS}
+	 *            elements.)
+	 */
 	public RouterDiagnostics(int controlRegister, int errorStatus,
 			int[] registerValues) {
-		if (registerValues.length != 16) {
+		if (registerValues.length != NUM_REGISTERS) {
 			throw new IllegalArgumentException(
 					"must be exactly 16 router register values");
 		}
-		// TODO mon and wait2 overlap; is this right?!
-		this.mon = (controlRegister >> 8) & 0x1F;
-		this.wait1 = (controlRegister >> 16) & BYTE_MASK;
-		this.wait2 = (controlRegister >> 8) & BYTE_MASK;
+		this.mon = (controlRegister >> MON_SHIFT) & MON_MASK;
+		this.wait1 = (controlRegister >> WAIT1_SHIFT) & BYTE_MASK;
+		this.wait2 = (controlRegister >> WAIT2_SHIFT) & BYTE_MASK;
 		this.errorStatus = errorStatus;
 		this.registerValues = registerValues;
 	}
@@ -157,7 +173,7 @@ public class RouterDiagnostics {
 	 * @return An array of 4 values
 	 */
 	public int[] getUserRegisters() {
-		int[] ur = new int[4];
+		int[] ur = new int[NUM_USER_CONTROL_REGISTERS];
 		arraycopy(registerValues, USER_0.ordinal(), ur, 0, ur.length);
 		return ur;
 	}

@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.machine;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
 

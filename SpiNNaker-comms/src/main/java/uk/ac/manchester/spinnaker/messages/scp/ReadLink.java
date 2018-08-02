@@ -13,6 +13,8 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read a region of memory via a link on a chip. */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
+	private static final int SIZE_MASK = 0xFF;
+
 	/**
 	 * @param core
 	 *            the core to read via
@@ -25,7 +27,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasCoreLocation core, int link, int baseAddress, int size) {
 		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_READ,
-				baseAddress, size & 0xFF, link);
+				baseAddress, size & SIZE_MASK, link);
 	}
 
 	/**
@@ -40,7 +42,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasChipLocation chip, int link, int baseAddress, int size) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				CMD_LINK_READ, baseAddress, size & 0xFF, link);
+				CMD_LINK_READ, baseAddress, size & SIZE_MASK, link);
 	}
 
 	@Override

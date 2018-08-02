@@ -81,24 +81,6 @@ public abstract class Process {
 	 *            The type of response expected to the request.
 	 * @param request
 	 *            The request to send.
-	 * @param errorCallback
-	 *            The callback that handles errors.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected final <T extends SCPResponse> void sendRequest(
-			SCPRequest<T> request, SCPErrorHandler errorCallback)
-			throws IOException {
-		sendRequest(request, null, errorCallback);
-	}
-
-	/**
-	 * Send a request.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The request to send.
 	 * @param callback
 	 *            The callback that handles the request's response.
 	 * @throws IOException

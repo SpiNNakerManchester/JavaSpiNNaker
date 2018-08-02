@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
@@ -11,7 +12,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 /** Sets a fixed route entry. */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	private static int argument1(int appID) {
-		return appID << 8;
+		return appID << BYTE1;
 	}
 
 	/**

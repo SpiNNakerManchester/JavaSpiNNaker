@@ -58,7 +58,9 @@ public class SDPHeader implements SerializableMessage {
 
 	/**
 	 * Read the header from an input buffer.
-	 * @param buffer The buffer to read from.
+	 *
+	 * @param buffer
+	 *            The buffer to read from.
 	 */
 	public SDPHeader(ByteBuffer buffer) {
 		flags = Flag.get(buffer.get());
@@ -104,10 +106,22 @@ public class SDPHeader implements SerializableMessage {
 		return destinationPort;
 	}
 
+	/**
+	 * Set the target SDP port. Note that this is not a UDP port.
+	 *
+	 * @param port
+	 *            The port to set it to.
+	 */
 	public void setDestinationPort(SDPPort port) {
 		this.destinationPort = port.value;
 	}
 
+	/**
+	 * Set the target SDP port. Note that this is not a UDP port.
+	 *
+	 * @param port
+	 *            The port to set it to.
+	 */
 	public void setDestinationPort(int port) {
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("port out of range");
@@ -127,10 +141,22 @@ public class SDPHeader implements SerializableMessage {
 		return sourcePort;
 	}
 
+	/**
+	 * Set the originating SDP port. Note that this is not a UDP port.
+	 *
+	 * @param port
+	 *            The port to set it to.
+	 */
 	public void setSourcePort(SDPPort port) {
 		this.sourcePort = port.value;
 	}
 
+	/**
+	 * Set the originating SDP port. Note that this is not a UDP port.
+	 *
+	 * @param port
+	 *            The port to set it to.
+	 */
 	public void setSourcePort(int port) {
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("port out of range");
@@ -154,11 +180,13 @@ public class SDPHeader implements SerializableMessage {
 		this.tag = tag;
 	}
 
+	/** Possible values of the <tt>flags</tt> field. */
 	public enum Flag {
 		/** Indicates that a reply is not expected. */
 		REPLY_NOT_EXPECTED(0x07),
 		/** Indicates that a reply is expected. */
 		REPLY_EXPECTED(0x87);
+		/** The SDP-encoded form of the flag. */
 		public final byte value;
 		private static final Map<Byte, Flag> MAP = new HashMap<>();
 

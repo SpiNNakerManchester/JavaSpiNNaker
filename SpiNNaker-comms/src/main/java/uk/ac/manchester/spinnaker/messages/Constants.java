@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages;
 
+import uk.ac.manchester.spinnaker.utils.UnitConstants;
+
 /** Miscellaneous SpiNNaker constants. */
 public abstract class Constants {
 	/** The max size a UDP packet can be. */
@@ -76,4 +78,11 @@ public abstract class Constants {
 	public static final int NO_MIDDLE_CHIPS_TO_CHECK = 8;
 	/** This is the default timeout when using SCP, in milliseconds. */
 	public static final int SCP_TIMEOUT = 1000;
+
+	/** Number of bytes in a SpiNNaker word. */
+	public static final int WORD_SIZE = 4;
+	/** Number of bytes in a SpiNNaker half-word. */
+	public static final int SHORT_SIZE = 2;
+	/** ms per second. */
+	public static final double MS_PER_S = UnitConstants.MS_PER_S;
 }

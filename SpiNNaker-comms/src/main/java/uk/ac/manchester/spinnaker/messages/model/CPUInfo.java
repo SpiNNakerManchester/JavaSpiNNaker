@@ -2,12 +2,20 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.machine.CPUState.RUN_TIME_EXCEPTION;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r0;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r1;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r2;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r3;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r4;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r5;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r6;
+import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r7;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
@@ -45,7 +53,7 @@ public class CPUInfo implements HasCoreLocation {
 	private static int[] getInts(ByteBuffer buffer, int fieldLength) {
 		int[] data = new int[fieldLength];
 		buffer.asIntBuffer().get(data);
-		buffer.position(buffer.position() + fieldLength * 4);
+		buffer.position(buffer.position() + fieldLength * WORD_SIZE);
 		return data;
 	}
 
@@ -234,9 +242,11 @@ public class CPUInfo implements HasCoreLocation {
 		sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
 				core.getY(), core.getP(), state, runTimeError));
 		sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",
-				registers[0], registers[1], registers[2], registers[3]));
+				r0.get(registers), r1.get(registers), r2.get(registers),
+				r3.get(registers)));
 		sb.append(format("        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n",
-				registers[4], registers[5], registers[6], registers[7]));
+				r4.get(registers), r5.get(registers), r6.get(registers),
+				r7.get(registers)));
 		sb.append(format("        PSR=%08x, SP=%08x, LR=%08x",
 				processorStateRegister, stackPointer, linkRegister));
 		return sb.toString();

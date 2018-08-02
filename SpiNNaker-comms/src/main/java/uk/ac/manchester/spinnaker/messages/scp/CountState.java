@@ -1,11 +1,14 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.CPUState;
+import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
@@ -16,6 +19,8 @@ public class CountState extends SCPRequest<CountState.Response> {
 	private static final int APP_MASK = 0xFF;
 	private static final int COUNT_OPERATION = 1;
 	private static final int COUNT_MODE = 2;
+	private static final int OP_SHIFT = 22;
+	private static final int MODE_SHIFT = 20;
 
 	/**
 	 * @param appId
@@ -29,10 +34,10 @@ public class CountState extends SCPRequest<CountState.Response> {
 	}
 
 	private static int argument2(int appId, CPUState state) {
-		int data = (APP_MASK << 8) | appId;
-		data |= COUNT_OPERATION << 22;
-		data |= COUNT_MODE << 20;
-		data |= state.value << 16;
+		int data = (APP_MASK << BYTE1) | (appId << BYTE0);
+		data |= COUNT_OPERATION << OP_SHIFT;
+		data |= COUNT_MODE << MODE_SHIFT;
+		data |= state.value << BYTE2;
 		return data;
 	}
 
@@ -44,7 +49,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	/**
 	 * An SCP response to a request for the number of cores in a given state.
 	 */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/** The count of the number of cores with the requested state. */
 		public final int count;
 

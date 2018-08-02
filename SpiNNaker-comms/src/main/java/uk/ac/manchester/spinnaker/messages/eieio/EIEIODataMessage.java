@@ -11,22 +11,58 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class EIEIODataMessage implements EIEIOMessage<EIEIODataHeader>,
+/**
+ * An EIEIO message containing data.
+ *
+ * @author Sergio Davies
+ * @author Donal Fellows
+ */
+public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		Iterable<AbstractDataElement> {
-	private final EIEIODataHeader header;
+	private final Header header;
 	private ByteBuffer elements;
 	private ByteBuffer data;
 
+	/**
+	 * Create a data message.
+	 *
+	 * @param eieioType
+	 *            The type of data components in the message.
+	 */
 	public EIEIODataMessage(EIEIOType eieioType) {
 		this(eieioType, (byte) 0, null, null, null, null, LOWER_HALF_WORD);
 	}
 
-	public EIEIODataMessage(EIEIODataHeader header, ByteBuffer data) {
-		this.header = header;
+	/**
+	 * Deserialise a message.
+	 *
+	 * @param data
+	 *            The data to deserialise.
+	 */
+	EIEIODataMessage(ByteBuffer data) {
+		this.header = new Header(data);
 		this.elements = null;
 		this.data = data.asReadOnlyBuffer();
 	}
 
+	/**
+	 * Create a data message.
+	 *
+	 * @param eieioType
+	 *            The type of data components in the message.
+	 * @param count
+	 *            The number of data components in the message.
+	 * @param data
+	 *            The serialized data components.
+	 * @param keyPrefix
+	 *            Any key prefix to apply to the data components.
+	 * @param payloadPrefix
+	 *            The prefix to apply. Overridden by a non-null timestamp.
+	 * @param timestamp
+	 *            The timestamp base to apply.
+	 * @param prefixType
+	 *            The type of prefix to apply.
+	 */
 	public EIEIODataMessage(EIEIOType eieioType, byte count, ByteBuffer data,
 			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
 			EIEIOPrefix prefixType) {
@@ -34,7 +70,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataHeader>,
 		if (timestamp != null) {
 			payloadBase = timestamp;
 		}
-		header = new EIEIODataHeader(eieioType, (byte) 0, keyPrefix, prefixType,
+		header = new Header(eieioType, (byte) 0, keyPrefix, prefixType,
 				payloadBase, timestamp != null, count);
 		elements = newMessageBuffer();
 		this.data = data;
@@ -104,6 +140,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataHeader>,
 							toUnsignedLong(key), header.eieioType.maxValue));
 		}
 		addElement(new KeyDataElement(key));
+	}
+
+	/** @return The raw data of this message. */
+	public ByteBuffer getData() {
+		return data.asReadOnlyBuffer();
 	}
 
 	/**
@@ -189,7 +230,179 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataHeader>,
 	}
 
 	@Override
-	public EIEIODataHeader getHeader() {
+	public Header getHeader() {
 		return header;
+	}
+
+	/** EIEIO header for data packets. */
+	public static class Header implements EIEIOHeader {
+		/** The type of packet (size of various fields). */
+		public final EIEIOType eieioType;
+		/** The tag on the message. */
+		public final byte tag;
+		/** The prefix on the message, or <tt>null</tt> for no prefix. */
+		public final Short prefix;
+		/** How to apply the prefix. */
+		public final EIEIOPrefix prefixType;
+		/** An offset for the payload. */
+		public final Integer payloadBase;
+		/** Whether payloads are times. */
+		public final boolean isTime;
+		/** The number of items in the packet. */
+		private byte count;
+
+		/**
+		 * @param eieioType
+		 *            the type of message
+		 * @param tag
+		 *            the tag of the message
+		 * @param prefix
+		 *            the key prefix of the message
+		 * @param prefixType
+		 *            the position of the prefix (upper or lower)
+		 * @param payloadBase
+		 *            The base payload to be applied
+		 * @param isTime
+		 *            true if the payloads should be taken to be timestamps, or
+		 *            false otherwise
+		 * @param count
+		 *            Count of the number of items in the packet
+		 */
+		public Header(EIEIOType eieioType, byte tag, Short prefix,
+				EIEIOPrefix prefixType, Integer payloadBase, boolean isTime,
+				byte count) {
+			this.eieioType = eieioType;
+			this.tag = tag;
+			this.prefix = prefix;
+			this.prefixType = prefixType;
+			this.payloadBase = payloadBase;
+			this.isTime = isTime;
+			this.count = count;
+		}
+
+		private static int bit(byte b, int bit) {
+			return (b >>> bit) & 1;
+		}
+
+		private static int bits(byte b, int bitbase) {
+			return (b >>> bitbase) & TWO_BITS_MASK;
+		}
+
+		/**
+		 * @param buffer
+		 *            The buffer to deserialise from.
+		 */
+		private Header(ByteBuffer buffer) {
+			count = buffer.get();
+			byte flags = buffer.get();
+			boolean havePrefix = bit(flags, PREFIX_BIT) != 0;
+			if (havePrefix) {
+				prefixType =
+						EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT));
+			} else {
+				prefixType = null;
+			}
+			boolean havePayload = bit(flags, PAYLOAD_BIT) != 0;
+			isTime = bit(flags, TIME_BIT) != 0;
+			eieioType = EIEIOType.getByValue(bits(flags, TYPE_BITS));
+			tag = (byte) bits(flags, TAG_BITS);
+			if (havePrefix) {
+				prefix = buffer.getShort();
+			} else {
+				prefix = null;
+			}
+			if (havePayload) {
+				switch (eieioType) {
+				case KEY_PAYLOAD_16_BIT:
+				case KEY_16_BIT:
+					payloadBase = (int) buffer.getShort();
+					break;
+				case KEY_PAYLOAD_32_BIT:
+				case KEY_32_BIT:
+					payloadBase = buffer.getInt();
+					break;
+				default:
+					payloadBase = null;
+				}
+			} else {
+				payloadBase = null;
+			}
+		}
+
+		public byte getCount() {
+			return count;
+		}
+
+		public void setCount(byte count) {
+			this.count = count;
+		}
+
+		public void incrementCount() {
+			count++;
+		}
+
+		public void resetCount() {
+			count = 0;
+		}
+
+		private static final int SHORT_WIDTH = 2;
+
+		/** @return The unit size per data component. */
+		public int getSize() {
+			int size = SHORT_WIDTH;
+			if (prefix != null) {
+				size += SHORT_WIDTH;
+			}
+			if (payloadBase != null) {
+				size += eieioType.keyBytes;
+			}
+			return size;
+		}
+
+		private static final int PREFIX_BIT = 7;
+		private static final int PREFIX_TYPE_BIT = 6;
+		private static final int PAYLOAD_BIT = 5;
+		private static final int TIME_BIT = 4;
+		private static final int TYPE_BITS = 2;
+		private static final int TAG_BITS = 0;
+		private static final int TWO_BITS_MASK = 0b00000011;
+
+		@Override
+		public void addToBuffer(ByteBuffer buffer) {
+			byte data = 0;
+			if (prefix != null) {
+				data |= 1 << PREFIX_BIT;
+				data |= prefixType.getValue() << PREFIX_TYPE_BIT;
+			}
+			if (payloadBase != null) {
+				data |= 1 << PAYLOAD_BIT;
+			}
+			if (isTime) {
+				data |= 1 << TIME_BIT;
+			}
+			data |= eieioType.getValue() << TYPE_BITS;
+			data |= tag << TAG_BITS;
+
+			buffer.put(count);
+			buffer.put(data);
+			if (prefix != null) {
+				buffer.putShort(prefix);
+			}
+			if (payloadBase == null) {
+				return;
+			}
+			switch (eieioType) {
+			case KEY_PAYLOAD_16_BIT:
+			case KEY_16_BIT:
+				buffer.putShort((short) (int) payloadBase);
+				return;
+			case KEY_PAYLOAD_32_BIT:
+			case KEY_32_BIT:
+				buffer.putInt(payloadBase);
+				return;
+			default:
+				throw new IllegalStateException("unexpected EIEIO type");
+			}
+		}
 	}
 }

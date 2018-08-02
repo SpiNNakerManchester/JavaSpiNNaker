@@ -5,10 +5,8 @@ import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
@@ -18,10 +16,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.ws.Holder;
@@ -35,7 +31,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
@@ -50,20 +45,13 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  */
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private Logger log = getLogger(RequestPipeline.class);
-	public static final int DEFAULT_TIMEOUT = (int) (1000 * BMP_TIMEOUT);
+	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
 	/**
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
 	 */
 	private static final int DEFAULT_RETRIES = 3;
-	private static final int MAX_SEQUENCE = 65536;
-	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
-	static {
-		RETRY_CODES.add(RC_TIMEOUT);
-		RETRY_CODES.add(RC_P2P_TIMEOUT);
-		RETRY_CODES.add(RC_LEN);
-		RETRY_CODES.add(RC_P2P_NOREPLY);
-	}
+	private static final int RETRY_SLEEP = 100;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -109,19 +97,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					exception);
 		}
 		return holder.value;
-	}
-
-	/** Keep a global track of the sequence numbers used. */
-	private static int nextSequence = 0;
-
-	/**
-	 * Get the next number from the global sequence, applying appropriate
-	 * wrapping rules as the sequence numbers have a fixed number of bits.
-	 */
-	private static synchronized int getNextSequenceNumber() {
-		int seq = nextSequence;
-		nextSequence = (nextSequence + 1) % MAX_SEQUENCE;
-		return seq;
 	}
 
 	/**
@@ -195,9 +170,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retryReason.stream().allMatch(r -> reason.equals(r));
 			}
 
-			private void received(ByteBuffer responseData)
+			private void received(SCPResultMessage msg)
 					throws java.lang.Exception {
-				R response = request.getSCPResponse(responseData);
+				R response = msg.parsePayload(request);
 				if (callback != null) {
 					callback.accept(response);
 				}
@@ -234,10 +209,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 */
 		private void sendRequest(BMPRequest<R> request, Consumer<R> callback)
 				throws IOException {
-			// Get the next sequence to be used
-			int sequence = getNextSequenceNumber();
-			// Update the packet and store required details
-			request.scpRequestHeader.sequence = (short) sequence;
+			// Get the next sequence to be used and store it in the header
+			int sequence = request.scpRequestHeader.issueSequenceNumber();
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
@@ -269,36 +242,36 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private void retrieve() throws IOException {
 			// Receive the next response
 			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
-			Request req = requests.get(msg.sequenceNumber);
+			Request req = msg.pickRequest(requests);
 			if (req == null) {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: "
-						+ msg.sequenceNumber);
+						+ msg.getSequenceNumber());
 				return;
 			}
 			inProgress--;
 
 			// If the response can be retried, retry it
 			try {
-				if (RETRY_CODES.contains(msg.result)) {
-					sleep(100);
-					resend(req, msg.result);
+				if (msg.isRetriable()) {
+					sleep(RETRY_SLEEP);
+					resend(req, msg.getResult());
 				} else {
 					// No retry is possible. Try constructing the result
-					req.received(msg.responseData);
+					req.received(msg);
 					// Remove the sequence from the outstanding responses
-					requests.remove(msg.sequenceNumber);
+					msg.removeRequest(requests);
 				}
 			} catch (java.lang.Exception e) {
 				errorRequest = req.request;
 				exception = e;
-				requests.remove(msg.sequenceNumber);
+				msg.removeRequest(requests);
 			}
 		}
 
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
-			BitSet toRemove = new BitSet(nextSequence);
+			BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 			for (int seq : new ArrayList<>(requests.keySet())) {
 				Request req = requests.get(seq);
 				if (req == null) {
@@ -343,7 +316,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / 1000.0));
+					timeout / MS_PER_S));
 		}
 	}
 

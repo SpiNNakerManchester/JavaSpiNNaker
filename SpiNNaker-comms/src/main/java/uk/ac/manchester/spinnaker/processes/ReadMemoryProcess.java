@@ -183,8 +183,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip has the memory to read from.
-	 * @param linkID
-	 *            the ID of the link to traverse.
 	 * @param baseAddress
 	 *            where to read from.
 	 * @param size
@@ -242,8 +240,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip has the memory to read from.
-	 * @param linkID
-	 *            the ID of the link to traverse.
 	 * @param baseAddress
 	 *            where to read from.
 	 * @param size
@@ -292,8 +288,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip has the memory to read from.
-	 * @param linkID
-	 *            the ID of the link to traverse.
 	 * @param baseAddress
 	 *            where to read from.
 	 * @param size

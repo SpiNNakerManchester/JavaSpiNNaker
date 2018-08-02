@@ -14,31 +14,33 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read a region of memory. */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
+	private static final int SIZE_MASK = 0xFF;
+
 	/**
 	 * @param core
 	 *            the core to read via
-	 * @param baseAddress
+	 * @param address
 	 *            The positive base address to start the read from
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadMemory(HasCoreLocation core, int baseAddress, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_READ, baseAddress,
-				size & 0xFF, efficientTransferUnit(baseAddress, size).value);
+	public ReadMemory(HasCoreLocation core, int address, int size) {
+		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_READ, address,
+				size & SIZE_MASK, efficientTransferUnit(address, size).value);
 	}
 
 	/**
 	 * @param chip
 	 *            the chip to read via
-	 * @param baseAddress
+	 * @param address
 	 *            The positive base address to start the read from
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadMemory(HasChipLocation chip, int baseAddress, int size) {
+	public ReadMemory(HasChipLocation chip, int address, int size) {
 		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_READ,
-				baseAddress, size & 0xFF,
-				efficientTransferUnit(baseAddress, size).value);
+				address, size & SIZE_MASK,
+				efficientTransferUnit(address, size).value);
 	}
 
 	@Override

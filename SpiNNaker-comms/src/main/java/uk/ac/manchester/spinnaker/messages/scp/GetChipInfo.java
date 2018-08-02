@@ -12,6 +12,8 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read the chip information from a core. */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
+	private static final int FLAGS = 0x5F;
+	private static final int SIZE_FLAG = 0x20;
 	/**
 	 * @param chip
 	 *            the chip to read from
@@ -34,7 +36,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static int argument1(boolean withSize) {
 		// Bits 0-4 + bit 6 = all information except size
 		// Bits 0-6 = all information including size
-		return withSize ? 0x7F : 0x5F;
+		return FLAGS | (withSize ? SIZE_FLAG : 0);
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public static class Response extends CheckOKResponse {
+	public static final class Response extends CheckOKResponse {
 		/** The chip information received. */
 		public final ChipSummaryInfo chipInfo;
 
