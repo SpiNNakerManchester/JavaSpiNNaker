@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 /**
  *
  * @author Christian-B
+ * @deprecated Merged into Chip left mainly as an Example for Streams
  */
 public class TestRouter {
 
@@ -42,8 +43,8 @@ public class TestRouter {
         final Collection<Link> values = router.links();
         assertEquals(1, values.size());
         assertThrows(UnsupportedOperationException.class, () -> {
-		values.remove(link00_01);
-            });
+            values.remove(link00_01);
+        });
         Collection<Link> values2 = router.links();
         assertEquals(1, values2.size());
     }
@@ -88,6 +89,7 @@ public class TestRouter {
             Router router = new Router(links);
         });
     }
+
 
 
 

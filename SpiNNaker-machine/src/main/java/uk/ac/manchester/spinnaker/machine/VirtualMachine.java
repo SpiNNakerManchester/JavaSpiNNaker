@@ -84,9 +84,9 @@ public class VirtualMachine extends Machine {
         }
         //System.out.println(allChips.keySet());
         for (ChipLocation location: allChips.keySet()) {
-            Router router = getRouter(location, allChips, ignoreLinks);
+            ArrayList<Link> links = getLinks(location, allChips, ignoreLinks);
             InetAddress ipAddress = getIpaddress(location, roots);
-            addChip(getChip(location, router, ipAddress,
+            addChip(getChip(location, links, ipAddress,
                     allChips.get(location), ignoreCores));
         }
     }
@@ -118,48 +118,48 @@ public class VirtualMachine extends Machine {
         }
     }
 
-    private Router getRouter(ChipLocation location,
+    private ArrayList<Link> getLinks(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         if (ignoreLinks.containsKey(location)) {
-            return getRouter(location, allChips, ignoreLinks.get(location));
+            return VirtualMachine.this.getLinks(location, allChips, ignoreLinks.get(location));
         } else {
-            return getRouter(location, allChips);
+            return VirtualMachine.this.getLinks(location, allChips);
         }
     }
 
-    private Router getRouter(ChipLocation location,
+    private ArrayList<Link> getLinks(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips) {
-        Router router = new Router();
+        ArrayList<Link> links = new ArrayList();
         for (Direction direction: Direction.values()) {
             ChipLocation destination = normalizedLocation(
                     location.getX() + direction.xChange,
                     location.getY() + direction.yChange);
             if (allChips.containsKey(destination)) {
-                router.addLink(new Link(location, direction, destination));
+                links.add(new Link(location, direction, destination));
             }
         }
-        return router;
+        return links;
     }
 
-    private Router getRouter(ChipLocation location,
+    private ArrayList<Link> getLinks(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips,
             Collection<Direction> ignoreLinks) {
-        Router router = new Router();
+        ArrayList<Link> links = new ArrayList();
         for (Direction direction: Direction.values()) {
             if (!ignoreLinks.contains(direction)) {
                 ChipLocation destination = normalizedLocation(
                         location.getX() + direction.xChange,
                         location.getY() + direction.yChange);
                 if (allChips.containsKey(destination)) {
-                    router.addLink(new Link(location, direction, destination));
+                    links.add(new Link(location, direction, destination));
                 }
             }
         }
-        return router;
+        return links;
     }
 
-    private Chip getChip(ChipLocation location, Router router,
+    private Chip getChip(ChipLocation location, ArrayList<Link> links,
             InetAddress ipAddress, ChipLocation ethernet,
             Map<ChipLocation, Collection<Integer>> ignoreCores) {
 
@@ -176,9 +176,9 @@ public class VirtualMachine extends Machine {
                 }
             }
             assert(processors.size() == 15);
-            return new Chip(location, processors, router, ipAddress, ethernet);
+            return new Chip(location, processors, ipAddress, ethernet, links);
         } else {
-            return new Chip(location, router, ipAddress, ethernet);
+            return new Chip(location, ipAddress, ethernet, links);
         }
     }
 

@@ -25,11 +25,11 @@ public class TestCoreSubsetsFailedChipTuple {
     //Link link01_01 = new Link(location01, Direction.SOUTH, location01);
 
 
-    private Router createRouter() {
+    private ArrayList<Link> createLinks() {
         ArrayList<Link> links = new ArrayList<>();
         links.add(link00_01);
         links.add(link00_10);
-        return new Router(links);
+        return links;
     }
 
     private ArrayList<Processor> getProcessors() {
@@ -57,8 +57,8 @@ public class TestCoreSubsetsFailedChipTuple {
         assertEquals(1, instance.size());
         assertFalse(instance.isChip(ChipLocation.ONE_ZERO));
 
-        Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
-                null, false, 6, location11);
+        Chip chip = new Chip(location00, getProcessors(), null, location11,
+                createLinks());
         instance.addFailedChip(chip);
 
         assertEquals(1, instance.failedChips.size());

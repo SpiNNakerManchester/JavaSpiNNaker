@@ -5,8 +5,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.CPUState.IDLE;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.N_IPTAGS_PER_CHIP;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_CLOCK_SPEED;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
@@ -142,10 +140,10 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		// Create the processor list
 		List<Processor> processors = new ArrayList<>();
 		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
-		ChipLocation chip = chipInfo.chip.asChipLocation();
+		ChipLocation location = chipInfo.chip.asChipLocation();
         Collection<Integer> ignoreCores;
-        if (this.ignoreCoresMap.containsKey(chip)) {
-            ignoreCores = this.ignoreCoresMap.get(chip);
+        if (this.ignoreCoresMap.containsKey(location)) {
+            ignoreCores = this.ignoreCoresMap.get(location);
         } else {
             ignoreCores = emptyList();
         }
@@ -157,26 +155,26 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
                 } else if (chipInfo.coreStates.get(id) == IDLE) {
                     processors.add(Processor.factory(id));
                 } else {
-                    log.warn("Not using core %d,%d,%d in state %s", chip.getX(),
-                            chip.getY(), id, chipInfo.coreStates.get(id));
+                    log.warn("Not using core %d,%d,%d in state %s", location.getX(),
+                            location.getY(), id, chipInfo.coreStates.get(id));
 				}
 			}
 		}
 
 		// Create the chip
-        Router router;
-        if (this.ignoreLinksMap.containsKey(chip)) {
-            router = makeRouter(chipInfo, size, this.ignoreLinksMap.get(chip));
+        List<Link> links;
+        if (this.ignoreLinksMap.containsKey(location)) {
+            links = makeLinks(chipInfo, size, this.ignoreLinksMap.get(location));
         } else {
-            router = makeRouter(chipInfo, size);
+            links = makeLinks(chipInfo, size);
         }
-		return new Chip(chip, processors, router,
+		return new Chip(location, processors,
                 clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
-                chipInfo.ethernetIPAddress, false, N_IPTAGS_PER_CHIP,
-                chipInfo.nearestEthernetChip);
+                chipInfo.ethernetIPAddress, chipInfo.nearestEthernetChip,
+                links, chipInfo.numFreeMulticastRoutingEntries);
 	}
 
-	private Router makeRouter(ChipSummaryInfo chipInfo,
+	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
                 MachineDimensions size, Collection<Direction> ignoreLinks) {
 		HasChipLocation chip = chipInfo.chip;
 		List<Link> links = new ArrayList<>();
@@ -188,11 +186,10 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
                 links.add(new Link(chip, link, dest));
 			}
 		}
-		return new Router(links, ROUTER_CLOCK_SPEED,
-				chipInfo.numFreeMulticastRoutingEntries);
+		return links;
 	}
 
-	private Router makeRouter(
+	private List<Link> makeLinks(
             ChipSummaryInfo chipInfo, MachineDimensions size) {
         HasChipLocation chip = chipInfo.chip;
         List<Link> links = new ArrayList<>();
@@ -203,8 +200,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
                 links.add(new Link(chip, link, dest));
             }
         }
-        return new Router(links, ROUTER_CLOCK_SPEED,
-                chipInfo.numFreeMulticastRoutingEntries);
+        return links;
 	}
 
     private static ChipLocation getChipOverLink(HasChipLocation chip,

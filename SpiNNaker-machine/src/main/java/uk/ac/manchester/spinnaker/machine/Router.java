@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 /**
  *
  * @author Christian-B
+ * @deprecated Merged into Chip left mainly as an Example for Streams
  */
 public final class Router {
 
@@ -212,25 +213,6 @@ public final class Router {
         result.setLength(result.length() - 1);
         result.append("]");
         return result.toString();
-    }
-
-    private class NeighbourIterator implements Iterator<HasChipLocation> {
-
-        private Iterator<Link> linksIter;
-
-        NeighbourIterator(Iterator<Link> linksIter) {
-            this.linksIter = linksIter;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return linksIter.hasNext();
-        }
-
-        @Override
-        public HasChipLocation next() {
-            return linksIter.next().destination;
-        }
     }
 
 }

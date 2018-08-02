@@ -1043,7 +1043,7 @@ public class Transceiver extends UDPTransceiver
 			}
 			coreSubsets = new CoreSubsets();
 			for (Chip chip : machine.chips()) {
-				for (Processor processor : chip.processors()) {
+				for (Processor processor : chip.allProcessors()) {
 					coreSubsets.addCore(new CoreLocation(chip.getX(),
 							chip.getY(), processor.processorId));
 				}

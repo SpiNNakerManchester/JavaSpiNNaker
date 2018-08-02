@@ -8,8 +8,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,8 +43,8 @@ public class TestMachine {
     Link link11_20 = new Link(chip11, Direction.EAST, chip20);
     Link link10_30 = new Link(chip10, Direction.WEST, chip01);
 
-    Router ROUTER = new Router(Arrays.asList(
-            link00_01, link01_11, link11_20, link10_30));
+    List<Link> LINKS = Arrays.asList(
+            link00_01, link01_11, link11_20, link10_30);
 
     int SDRAM = 100;
     ChipLocation BOOT_CHIP = chip00;
@@ -65,8 +68,10 @@ public class TestMachine {
         ArrayList<Chip> chips = new ArrayList();
         for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
-                chips.add(new Chip(new ChipLocation(x, y), processors, ROUTER,
-                        SDRAM, address, false, 0, BOOT_CHIP));
+                chips.add(new Chip(new ChipLocation(x, y), processors, SDRAM,
+                        address, false, 0, BOOT_CHIP, LINKS,
+                        MachineDefaults.ROUTER_CLOCK_SPEED,
+                        MachineDefaults.ROUTER_AVAILABLE_ENTRIES));
             }
         }
         return chips;
@@ -87,7 +92,7 @@ public class TestMachine {
         for (Chip c:instance.chips()) {
             assertEquals(address, c.ipAddress);
             assertEquals(SDRAM, c.sdram);
-            assertEquals(ROUTER, c.router);
+            assert(c.links().containsAll(LINKS));
             for (Processor p: c.allProcessors()) {
                 assertThat(processors, hasItems(p));
             }
@@ -120,8 +125,8 @@ public class TestMachine {
     public void testRepeatChipInvalid() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        chips.add(new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER, SDRAM,
-                null, false, 0, BOOT_CHIP));
+        chips.add(new Chip(
+                ChipLocation.ZERO_ZERO, processors, null, BOOT_CHIP, LINKS));
         assertThrows(IllegalArgumentException.class, () -> {
             Machine instance = new Machine(
                     new MachineDimensions(8, 8), chips, BOOT_CHIP);
@@ -134,19 +139,19 @@ public class TestMachine {
         ArrayList<Chip> chips = new ArrayList();
         Machine instance = new Machine(
                 new MachineDimensions(8, 8), chips, BOOT_CHIP);
-        Chip chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
-                SDRAM, null, false, 0, BOOT_CHIP);
+        Chip chip00 = new Chip(
+                ChipLocation.ZERO_ZERO, processors, null, BOOT_CHIP, LINKS);
         instance.addChip(chip00);
         assertEquals(1, instance.nChips());
-        Chip repeat = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
-                SDRAM, null, false, 0, BOOT_CHIP);
+        Chip repeat = new Chip(
+                ChipLocation.ZERO_ZERO, processors, null, BOOT_CHIP, LINKS);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(repeat);
         });
-        Chip outOfRange = new Chip(new ChipLocation(5, 5), processors, ROUTER,
-                SDRAM, null, false, 0, BOOT_CHIP);
+        Chip outOfRange = new Chip(
+                new ChipLocation(11, 11), processors, null, BOOT_CHIP, LINKS);
         assertThrows(IllegalArgumentException.class, () -> {
-            instance.addChip(repeat);
+            instance.addChip(outOfRange);
         });
         assertEquals(1, instance.nChips());
     }
@@ -159,7 +164,9 @@ public class TestMachine {
                 new MachineDimensions(8, 8), chips, BOOT_CHIP);
         assertThrows(IllegalArgumentException.class, () -> {
             instance.addChip(new Chip(ChipLocation.ZERO_ZERO, processors,
-                    ROUTER, SDRAM, null, false, 0, BOOT_CHIP));
+                    SDRAM, null, false, 0, BOOT_CHIP, LINKS,
+                    MachineDefaults.ROUTER_CLOCK_SPEED,
+                    MachineDefaults.ROUTER_AVAILABLE_ENTRIES));
         });
     }
 
@@ -205,8 +212,8 @@ public class TestMachine {
         Machine instance = new Machine(new MachineDimensions(24, 24),
                 new ArrayList<Chip>(), BOOT_CHIP);
         ArrayList<Processor> processors = createProcessors();
-        Chip chip = new Chip(new ChipLocation(23, 23), processors, ROUTER,
-                SDRAM, null, false, 0, BOOT_CHIP);
+        Chip chip = new Chip(
+                new ChipLocation(23, 23), processors, null, BOOT_CHIP, LINKS);
         instance.addChip(chip);
         assertEquals(chip,
                 instance.getChipOverLink(chip00, Direction.SOUTHWEST));
