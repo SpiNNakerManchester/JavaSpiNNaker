@@ -23,10 +23,30 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int ALIGNMENT = 4;
 	private static final int TWO_WORDS = 2 * WORD_SIZE;
 
+	/**
+	 * Create.
+	 *
+	 * @param connectionSelector
+	 *            How to choose where to send messages.
+	 */
 	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Create.
+	 *
+	 * @param connectionSelector
+	 *            How to choose where to send messages.
+	 * @param numRetries
+	 *            The number of retries allowed.
+	 * @param timeout
+	 *            How long to wait for a reply.
+	 * @param numChannels
+	 *            The number of parallel channels to use.
+	 * @param intermediateChannelWaits
+	 *            ???
+	 */
 	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits) {
@@ -34,6 +54,20 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 				intermediateChannelWaits);
 	}
 
+	/**
+	 * Fill memory with a value.
+	 *
+	 * @param chip
+	 *            The chip with the memory.
+	 * @param baseAddress
+	 *            The address in memory to start filling at.
+	 * @param data
+	 *            The data to fill.
+	 * @param size
+	 *            The number of bytes to fill.
+	 * @param dataType
+	 *            The type of data to fill with.
+	 */
 	public void fillMemory(HasChipLocation chip, int baseAddress, int data,
 			int size, DataType dataType) throws Exception, IOException {
 		// Don't do anything if there is nothing to do!
@@ -112,14 +146,31 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
+	/**
+	 * The fill unit.
+	 */
 	public enum DataType {
-		WORD(4), HALF_WORD(2), BYTE(1);
+		/** Fill by words (4 bytes). */
+		WORD(4),
+		/** Fill by half words (2 bytes). */
+		HALF_WORD(2),
+		/** Fill by single bytes. */
+		BYTE(1);
+		/** The encoding of the fill unit size. */
 		public final int size;
 
 		DataType(int value) {
 			this.size = value;
 		}
 
+		/**
+		 * Write a value to the buffer in an appropriate way for this fill unit.
+		 *
+		 * @param value
+		 *            The value to write.
+		 * @param buffer
+		 *            The buffer to write to.
+		 */
 		public void writeTo(int value, ByteBuffer buffer) {
 			switch (this) {
 			case WORD:
@@ -131,6 +182,9 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 			case BYTE:
 				buffer.put((byte) value);
 				break;
+			default:
+				// unreachable
+				throw new IllegalStateException();
 			}
 		}
 	}

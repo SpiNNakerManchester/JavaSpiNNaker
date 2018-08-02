@@ -26,4 +26,17 @@ public abstract class SCPResponse {
 		sdpHeader = new SDPHeader(buffer);
 		scpResponseHeader = new SCPResponseHeader(buffer);
 	}
+
+	/** Represents the header of an SCP response. */
+	static final class SCPResponseHeader {
+		/** The result of the SCP response. */
+		public final SCPResult result;
+		/** The sequence number of the SCP response, between 0 and 65535. */
+		public final short sequence;
+
+		SCPResponseHeader(ByteBuffer buffer) {
+			result = SCPResult.get(buffer.getShort());
+			sequence = buffer.getShort();
+		}
+	}
 }

@@ -94,6 +94,8 @@ public enum SCPCommand {
 	CMD_BMP_TEST(63),
 	/** Tube output. */
 	CMD_TUBE(64);
+
+	/** The SCAMP encoding. */
 	public final byte value;
 	private static final Map<Byte, SCPCommand> MAP = new HashMap<>();
 
@@ -107,6 +109,13 @@ public enum SCPCommand {
 		}
 	}
 
+	/**
+	 * Convert an encoded value into an enum element.
+	 *
+	 * @param value
+	 *            The value to convert
+	 * @return The enum element
+	 */
 	public static SCPCommand get(byte value) {
 		return requireNonNull(MAP.get(value),
 				"unrecognised command value: " + value);
