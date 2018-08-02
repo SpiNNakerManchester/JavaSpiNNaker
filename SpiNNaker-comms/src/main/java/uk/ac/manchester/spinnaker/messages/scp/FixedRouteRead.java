@@ -15,8 +15,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
+	private static final int MAGIC = 3;
 	private static int argument1(int appID) {
-		return (appID << BYTE1) | (3 << BYTE0);
+		return (appID << BYTE1) | (MAGIC << BYTE0);
 	}
 
 	private static int argument2() {

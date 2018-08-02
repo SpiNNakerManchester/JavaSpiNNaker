@@ -16,9 +16,15 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
+	private static final int MAGIC1 = 0x3F;
+	private static final int MAGIC2 = 0x18;
+	private static final int MAGIC3 = 3;
 	private static final int NNP_FLOOD_FILL_START = 6;
 	private static final int NNP_FORWARD_RETRY =
-			(1 << TOP_BIT) | (0x3f << BYTE1) | (0x18 << BYTE0);
+			(1 << TOP_BIT) | (MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
+	private static final int NO_CHIP = 0xFFFF;
+	private static final int LOW_BITS_MASK = 0b00000011;
+	private static final int HIGH_BITS_MASK = 0b11111100;
 
 	/**
 	 * Flood fill onto all chips.
@@ -62,18 +68,15 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 				| (numBlocks << BYTE1);
 	}
 
-	private static final int LOW_BITS_MASK = 0b00000011;
-	private static final int HIGH_BITS_MASK = 0b11111100;
-
 	private static int argument2(HasChipLocation chip) {
 		if (chip == null) {
-			return 0xFFFF;
+			return NO_CHIP;
 		}
 		// TODO what is this doing?
 		int m = ((chip.getY() & LOW_BITS_MASK) << 2)
 				+ (chip.getX() & LOW_BITS_MASK);
 		return (((chip.getX() & HIGH_BITS_MASK) << BYTE3)
-				+ ((chip.getY() & HIGH_BITS_MASK) << BYTE2) + (3 << BYTE2)
+				+ ((chip.getY() & HIGH_BITS_MASK) << BYTE2) + (MAGIC3 << BYTE2)
 				+ (1 << m));
 	}
 

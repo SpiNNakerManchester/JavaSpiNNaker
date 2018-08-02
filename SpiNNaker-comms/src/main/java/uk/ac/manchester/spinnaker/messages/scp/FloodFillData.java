@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
@@ -13,7 +14,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
-	private static final int NNP_FORWARD_RETRY = (0x3f << BYTE3) | (0x18 << BYTE2);
+	private static final int MAGIC1 = 0x3f;
+	private static final int MAGIC2 = 0x18;
+	private static final int NNP_FORWARD_RETRY =
+			(MAGIC1 << BYTE3) | (MAGIC2 << BYTE2);
 
 	/**
 	 * @param nearestNeighbourID
@@ -78,7 +82,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument2(int blockNumber, int size) {
-		return (blockNumber << BYTE2) | ((size / 4 - 1) << BYTE1);
+		return (blockNumber << BYTE2) | ((size / WORD_SIZE - 1) << BYTE1);
 	}
 
 	@Override
