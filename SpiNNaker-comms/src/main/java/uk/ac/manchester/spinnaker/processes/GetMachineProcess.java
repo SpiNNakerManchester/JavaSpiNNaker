@@ -169,9 +169,9 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
             links = makeLinks(chipInfo, size);
         }
 		return new Chip(location, processors,
+                new Router(links, chipInfo.numFreeMulticastRoutingEntries),
                 clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
-                chipInfo.ethernetIPAddress, chipInfo.nearestEthernetChip,
-                links, chipInfo.numFreeMulticastRoutingEntries);
+                chipInfo.ethernetIPAddress, chipInfo.nearestEthernetChip);
 	}
 
 	private List<Link> makeLinks(ChipSummaryInfo chipInfo,

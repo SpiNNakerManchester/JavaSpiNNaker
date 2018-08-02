@@ -3,17 +3,18 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 /**
  *
  * @author Christian-B
- * @deprecated Merged into Chip left mainly as an Example for Streams
  */
 public final class Router {
 
@@ -93,6 +94,20 @@ public final class Router {
     public Router(Iterable<Link> links) throws IllegalArgumentException {
         this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
                 MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+    }
+
+    /**
+     * Pass through Constructor that uses some default values.
+     *
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @param nAvailableMulticastEntries
+     *      The number of entries available in the routing table.
+     */
+    public Router(Iterable<Link> links, int nAvailableMulticastEntries)
+            throws IllegalArgumentException {
+        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
+                nAvailableMulticastEntries);
     }
 
     /**
@@ -199,6 +214,22 @@ public final class Router {
                 return new NeighbourIterator(links.values().iterator());
             }
         };
+    }
+
+    /**
+     * List of the destination for all links.
+     * <p>
+     * Note: Changes to the resulting list will not effect the actual links.
+     * This function in the future may return an unmodifiable list.
+     *
+     * @return The destination locations
+     */
+    public List<HasChipLocation> neighbouringChipsCoords() {
+        ArrayList<HasChipLocation> neighbours = new ArrayList();
+        for (Link link: links.values()) {
+            neighbours.add(link.destination);
+        }
+        return neighbours;
     }
 
     @Override

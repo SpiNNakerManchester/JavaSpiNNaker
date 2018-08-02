@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,13 @@ public class TestChip {
     //Link link01_01 = new Link(location01, Direction.SOUTH, location01);
 
 
+    private Router createRouter() {
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_10);
+        links.add(link00_01);
+        return new Router(links);
+    }
+
     private ArrayList<Link> createLinks() {
         ArrayList<Link> links = new ArrayList<>();
         links.add(link00_10);
@@ -54,10 +60,8 @@ public class TestChip {
 
     @Test
     public void testChipBasic() throws UnknownHostException {
-        Chip chip = new Chip(location00, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
         assertEquals(0, chip.getX());
         assertEquals(0, chip.getY());
         assertEquals(3, chip.nProcessors());
@@ -92,11 +96,18 @@ public class TestChip {
     }
 
     @Test
+    public void testDefault() throws UnknownHostException {
+        Chip chip = new Chip(location00, getProcessors(), createRouter(),
+                100, createInetAddress(), location11);
+        assertEquals(MachineDefaults.N_IPTAGS_PER_CHIP, chip.nTagIds);
+        assertFalse(chip.virtual);
+        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, chip.router.clockSpeed);
+    }
+
+    @Test
     public void testChipMonitors() throws UnknownHostException {
-        Chip chip = new Chip(location00, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
         Processor result = chip.getFirstUserProcessor();
         assertEquals(Processor.factory(1), result);
         assertEquals(2, chip.nUserProcessors());
@@ -120,54 +131,55 @@ public class TestChip {
      */
     @Test
     public void testToString() throws UnknownHostException {
-        Chip chip1 = new Chip(location00, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
-        Chip chip2 = new Chip(location00, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        Chip chip1 = new Chip(location00, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
+        Chip chip2 = new Chip(location00, getProcessors(), createRouter(), 100,
+                createInetAddress(), false, 6, location11);
         assertEquals(chip1.toString(), chip2.toString());
     }
 
     @Test
-    public void testRepeat() throws UnknownHostException {
+    public void testRepeatMonitor() throws UnknownHostException {
         ArrayList<Processor> processors = getProcessors();
         processors.add(Processor.factory(2, false));
         assertThrows(IllegalArgumentException.class, () -> {
             Chip chip = new Chip(
-                    ChipLocation.ZERO_ZERO, processors, 100,
-                    createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+                    ChipLocation.ZERO_ZERO, processors, createRouter(), 100,
+                    createInetAddress(), false, 6, location11);
+        });
+    }
+
+    @Test
+    public void testRepeatUser() throws UnknownHostException {
+        ArrayList<Processor> processors = getProcessors();
+        processors.add(Processor.factory(4, true));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Chip chip = new Chip(
+                    ChipLocation.ZERO_ZERO, processors, createRouter(), 100,
+                    createInetAddress(), false, 6, location11);
         });
     }
 
     @Test
     public void testAsLocation() throws UnknownHostException {
-        Chip chip1 = new Chip(ChipLocation.ZERO_ZERO, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        Chip chip1 = new Chip(ChipLocation.ZERO_ZERO, getProcessors(),
+                createRouter(), 100, createInetAddress(), false, 6, location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
     }
 
     @Test
     public void testGet() throws UnknownHostException {
-        Chip chip1 = new Chip(new ChipLocation(3, 4), getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        Chip chip1 = new Chip(new ChipLocation(3, 4), getProcessors(),
+                createRouter(), 100, createInetAddress(), false, 6, location11);
         assertEquals(3, chip1.getX());
         assertEquals(4, chip1.getY());
         assertEquals(new ChipLocation(3,4), chip1.asChipLocation());
     }
 
     @Test
-    public void testDefault() throws UnknownHostException {
-        Chip chip = new Chip(ChipLocation.ZERO_ZERO, createInetAddress(),
-                location11, createLinks());
+    public void testDefault2() throws UnknownHostException {
+        Chip chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
+                createInetAddress(), location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
         assertTrue(chip.virtual);
         assertEquals(17, chip.nUserProcessors());
@@ -177,48 +189,21 @@ public class TestChip {
    }
 
     @Test
-    public void testLinks() throws UnknownHostException {
-        Chip chip = new Chip(ChipLocation.ZERO_ZERO, createInetAddress(),
-                location11, createLinks());
-        final Collection<Link> values = chip.links();
+    public void testLinksVirtualMachine() throws UnknownHostException {
+        Chip chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
+                createInetAddress(), location11);
+        final Collection<Link> values = chip.router.links();
         assertEquals(2, values.size());
         assertThrows(UnsupportedOperationException.class, () -> {
             values.remove(link00_01);
         });
-        Collection<Link> values2 = chip.links();
+        Collection<Link> values2 = chip.router.links();
         assertEquals(2, values2.size());
         Iterator<Link> iterator = values2.iterator();
         assertEquals(link00_01, iterator.next());
         assertEquals(link00_10, iterator.next());
         assertFalse(iterator.hasNext());
+        assert(chip.router.hasLink(Direction.NORTH));
     }
 
-    @Test
-    public void testgetNeighbouringChipsCoords() throws UnknownHostException {
-        Chip chip = new Chip(location00, getProcessors(), 100,
-                createInetAddress(), false, 6, location11, createLinks(),
-                MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
-        Iterator<HasChipLocation> iterator =
-                chip.iterNeighbouringChipsCoords().iterator();
-        // Note Order is now by Direction
-        assertEquals(location01, iterator.next());
-        assertEquals(location10, iterator.next());
-        assertFalse(iterator.hasNext());
-    }
-
-    @Test
-    public void testRouterRepeat() {
-        ArrayList<Link> links = new ArrayList<>();
-        links.add(link00_01);
-        links.add(link00_01a);
-        assertThrows(IllegalArgumentException.class, () -> {
-            Chip chip = new Chip(location00, getProcessors(), 100,
-                    createInetAddress(), false, 6, location11, links,
-                    MachineDefaults.ROUTER_CLOCK_SPEED,
-                    MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
-        });
-    }
-
-
- }
+}

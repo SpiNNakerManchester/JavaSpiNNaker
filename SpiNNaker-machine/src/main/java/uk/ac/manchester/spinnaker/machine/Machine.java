@@ -298,7 +298,7 @@ public class Machine implements Iterable<Chip> {
         if (chip == null) {
             return false;
         } else {
-            return chip.hasLink(link);
+            return chip.router.hasLink(link);
         }
     }
 
@@ -434,20 +434,20 @@ public class Machine implements Iterable<Chip> {
     public final void addSpinnakerLinks() {
         if (version.isFourChip) {
             Chip chip00 = getChipAt(ChipLocation.ZERO_ZERO);
-            if (!chip00.hasLink(Direction.WEST)) {
+            if (!chip00.router.hasLink(Direction.WEST)) {
                 spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
                         new SpinnakerLinkData(0, chip00,
                                 Direction.WEST, chip00.ipAddress));
             }
             Chip chip10 = getChipAt(ChipLocation.ONE_ZERO);
-            if (!chip10.hasLink(Direction.EAST)) {
+            if (!chip10.router.hasLink(Direction.EAST)) {
                 spinnakerLinks.put(new InetIdTuple(chip10.ipAddress, 0),
                         new SpinnakerLinkData(1, chip00,
                                 Direction.WEST, chip10.ipAddress));
             }
         } else {
             for (Chip chip: ethernetConnectedChips) {
-                if (!chip.hasLink(Direction.SOUTHWEST)) {
+                if (!chip.router.hasLink(Direction.SOUTHWEST)) {
                     spinnakerLinks.put(new InetIdTuple(chip.ipAddress, 0),
                         new SpinnakerLinkData(0, chip,
                                 Direction.SOUTHWEST, chip.ipAddress));
@@ -614,7 +614,7 @@ public class Machine implements Iterable<Chip> {
         int everyLink = 0;
         for (Chip chip:chips.values()) {
             cores += chip.nProcessors();
-            everyLink += chip.nLinks();
+            everyLink += chip.router.size();
         }
         return cores + " cores and " + (everyLink / 2.0) + " links";
     }

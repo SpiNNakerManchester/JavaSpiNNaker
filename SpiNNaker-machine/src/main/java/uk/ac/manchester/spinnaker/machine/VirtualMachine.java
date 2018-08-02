@@ -84,9 +84,9 @@ public class VirtualMachine extends Machine {
         }
         //System.out.println(allChips.keySet());
         for (ChipLocation location: allChips.keySet()) {
-            ArrayList<Link> links = getLinks(location, allChips, ignoreLinks);
+            Router router = getRouter(location, allChips, ignoreLinks);
             InetAddress ipAddress = getIpaddress(location, roots);
-            addChip(getChip(location, links, ipAddress,
+            addChip(getChip(location, router, ipAddress,
                     allChips.get(location), ignoreCores));
         }
     }
@@ -118,15 +118,16 @@ public class VirtualMachine extends Machine {
         }
     }
 
-    private ArrayList<Link> getLinks(ChipLocation location,
+    private Router getRouter(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+        ArrayList<Link> links;
         if (ignoreLinks.containsKey(location)) {
-            return VirtualMachine.this.getLinks(
-                    location, allChips, ignoreLinks.get(location));
+            links = getLinks(location, allChips, ignoreLinks.get(location));
         } else {
-            return VirtualMachine.this.getLinks(location, allChips);
+            links = getLinks(location, allChips);
         }
+        return new Router(links);
     }
 
     private ArrayList<Link> getLinks(ChipLocation location,
@@ -160,7 +161,7 @@ public class VirtualMachine extends Machine {
         return links;
     }
 
-    private Chip getChip(ChipLocation location, ArrayList<Link> links,
+    private Chip getChip(ChipLocation location, Router router,
             InetAddress ipAddress, ChipLocation ethernet,
             Map<ChipLocation, Collection<Integer>> ignoreCores) {
 
@@ -175,9 +176,9 @@ public class VirtualMachine extends Machine {
                     processors.add(Processor.factory(i, false));
                 }
             }
-            return new Chip(location, processors, ipAddress, ethernet, links);
+            return new Chip(location, processors, router, ipAddress, ethernet);
         } else {
-            return new Chip(location, ipAddress, ethernet, links);
+            return new Chip(location, router, ipAddress, ethernet);
         }
     }
 

@@ -34,6 +34,9 @@ public class Chip implements HasChipLocation {
 
     private TreeMap<Integer, Processor> userProcessors;
 
+    /** A router for the chip. */
+    public final Router router;
+
     // Changed from an Object to just an int as Object only had a single value
     /** The size of the sdram. */
     public final int sdram;
@@ -57,16 +60,6 @@ public class Chip implements HasChipLocation {
     private static final TreeMap<Integer, Processor>
             DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
-    //Variables previously held by Router.
-
-    private final EnumMap<Direction, Link> links;
-
-    /** The router clock speed in cycles per second. */
-    public final int clockSpeed;
-
-    /** The number of entries available in the routing table. */
-    public final int nAvailableMulticastEntries;
-
     // Note: emergency_routing_enabled not implemented as not used
     // TODO convert_routing_table_entry_to_spinnaker_route
 
@@ -78,6 +71,8 @@ public class Chip implements HasChipLocation {
      *            in the two-dimensional grid of chips.
      * @param processors
      *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
      * @param sdram
      *            The size of the sdram.
      * @param ipAddress
@@ -88,21 +83,13 @@ public class Chip implements HasChipLocation {
      *            Number of SDP identifers available.
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
-     * @param links
-     *            Links to add each of which must have a unique direction.
-     * @param clockSpeed
-     *            The router clock speed in cycles per second.
-     * @param nAvailableMulticastEntries
-     *            The number of entries available in the routing table.
      * @throws IllegalArgumentException
-     *            Thrown if multiple Links share the same sourceLinkDirection.
      *            Thrown if multiple chips share the same id.
      */
     @SuppressWarnings("checkstyle:parameternumber")
     public Chip(ChipLocation location, Iterable<Processor> processors,
-            int sdram, InetAddress ipAddress, boolean virtual, int nTagIds,
-            HasChipLocation nearestEthernet, Iterable<Link> links,
-            int clockSpeed, int nAvailableMulticastEntries) {
+            Router router, int sdram, InetAddress ipAddress, boolean virtual,
+            int nTagIds, HasChipLocation nearestEthernet) {
         this.location = location;
         this.monitorProcessors = new TreeMap<>();
         this.userProcessors =  new TreeMap<>();
@@ -119,6 +106,7 @@ public class Chip implements HasChipLocation {
                 this.userProcessors.put(processor.processorId, processor);
             }
         });
+        this.router = router;
         this.sdram = sdram;
         this.ipAddress = ipAddress;
         this.virtual = virtual;
@@ -126,12 +114,6 @@ public class Chip implements HasChipLocation {
 
         // previous Router stuff
         this.nearestEthernet = nearestEthernet;
-        this.links = new EnumMap<>(Direction.class);
-        for (Link link:links) {
-            addLink(link);
-        }
-        this.clockSpeed = clockSpeed;
-        this.nAvailableMulticastEntries = nAvailableMulticastEntries;
     }
 
     /**
@@ -142,31 +124,29 @@ public class Chip implements HasChipLocation {
      *            in the two-dimensional grid of chips.
      * @param processors
      *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
      * @param sdram
      *            The size of the sdram.
      * @param ipAddress
      *            The IP address of the chip or None if no Ethernet attached.
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
-     * @param links
-     *            Links to add each of which must have a unique direction.
-     * @param nAvailableMulticastEntries
-     *            The number of entries available in the routing table.
      * @throws IllegalArgumentException
      *            Thrown if multiple Links share the same sourceLinkDirection.
      *            Thrown if multiple chips share the same id.
      */
     public Chip(ChipLocation location, Iterable<Processor> processors,
-            int sdram, InetAddress ipAddress, HasChipLocation nearestEthernet,
-            Iterable<Link> links, int nAvailableMulticastEntries) {
-        this(location, processors, sdram, ipAddress, false,
-                MachineDefaults.N_IPTAGS_PER_CHIP, nearestEthernet,
-                links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                nAvailableMulticastEntries);
+            Router router, int sdram, InetAddress ipAddress,
+            HasChipLocation nearestEthernet) {
+        this(location, processors, router, sdram, ipAddress, false,
+                MachineDefaults.N_IPTAGS_PER_CHIP, nearestEthernet);
     }
 
    /**
      * Constructor for a virtual Chip with the none default processors.
+     * <p>
+     * Creates the Router on the fly based on the links.
      *
      * @param location
      *            The x and y coordinates of the chip's position
@@ -182,16 +162,17 @@ public class Chip implements HasChipLocation {
      *     sourceLinkDirection has already been added.
      */
      public Chip(ChipLocation location, Iterable<Processor> processors,
-            InetAddress ipAddress, HasChipLocation nearestEthernet,
-            Iterable<Link> links) {
-        this(location, processors, MachineDefaults.SDRAM_PER_CHIP,
+             Router router, InetAddress ipAddress,
+             HasChipLocation nearestEthernet) {
+        this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
                 ipAddress, true, MachineDefaults.N_IPTAGS_PER_CHIP,
-                nearestEthernet, links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+                nearestEthernet);
     }
 
     /**
      * Constructor for a virtual Chip with the default processors.
+     * <p>
+     * Creates the Router on the fly based on the links.
      *
      * @param location
      *            The x and y coordinates of the chip's position
@@ -204,28 +185,20 @@ public class Chip implements HasChipLocation {
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
      */
-    public Chip(ChipLocation location, InetAddress ipAddress,
-            HasChipLocation nearestEthernet, Iterable<Link> links) {
+    public Chip(ChipLocation location, Router router, InetAddress ipAddress,
+            HasChipLocation nearestEthernet) {
         this.location = location;
         this.monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
         this.userProcessors =  DEFAULT_USER_PROCESSORS;
-        this.sdram = MachineDefaults.SDRAM_PER_CHIP;
+        this.router = router;
 
+        this.sdram = MachineDefaults.SDRAM_PER_CHIP;
         this.ipAddress = ipAddress;
 
         this.virtual = true;
         this.nTagIds = MachineDefaults.N_IPTAGS_PER_CHIP;
 
         this.nearestEthernet = nearestEthernet;
-
-        // Previous Router stuff
-        this.links = new EnumMap<>(Direction.class);
-        for (Link link:links) {
-            addLink(link);
-        }
-        this.clockSpeed = MachineDefaults.PROCESSOR_CLOCK_SPEED;
-        this.nAvailableMulticastEntries =
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
     }
 
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
@@ -465,15 +438,6 @@ public class Chip implements HasChipLocation {
 
     @Override
     public String toString() {
-        StringBuilder router = new StringBuilder("Router[");
-        for (Map.Entry<Direction, Link> entry:links.entrySet()) {
-            router.append(entry.getKey());
-            router.append(":");
-            router.append(entry.getValue().destination);
-            router.append(" ");
-        }
-        router.setLength(router.length() - 1);
-        router.append("]");
         return "[Chip: x=" + getX() + ", y=" + getY() + ", sdram=" + sdram
                 + ", ip_address=" + this.ipAddress + ", router=" + router
                 + ", monitors=" + monitorProcessors.keySet()
@@ -491,7 +455,7 @@ public class Chip implements HasChipLocation {
      *     which must have a sourceLinkDirection not yet used.
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
-     */
+     * /
     public void addLink(Link link) throws IllegalArgumentException {
         if (this.links.containsKey(link.sourceLinkDirection)) {
             throw new IllegalArgumentException(
@@ -505,7 +469,7 @@ public class Chip implements HasChipLocation {
      *
      * @param direction Direction to find link for.
      * @return True if and only if there is a link in this direction,
-     */
+     * /
     public boolean hasLink(Direction direction) {
         return links.containsKey(direction);
     }
@@ -517,7 +481,7 @@ public class Chip implements HasChipLocation {
      *
      * @param direction Direction to find link for.
      * @return The Link or none
-     */
+     * /
     public Link getLink(Direction direction) {
         return links.get(direction);
     }
@@ -528,7 +492,7 @@ public class Chip implements HasChipLocation {
      * Each Link is guaranteed to differ in at least the sourceLinkDirection.
      *
      * @return An unmodifiable Collection of Link(s).
-     */
+     * /
     public Collection<Link> links() {
         return Collections.unmodifiableCollection(links.values());
     }
@@ -540,7 +504,7 @@ public class Chip implements HasChipLocation {
      *     number of links.
      *
      * @return The number of Link(s) and therefor NeighbouringChipsCoords
-     */
+     * /
     public int nLinks() {
         return links.size();
     }
@@ -552,7 +516,7 @@ public class Chip implements HasChipLocation {
      * While normally all destinations will be unique the is no guarantee.
      *
      * @return A Stream over the destination locations.
-     */
+     * /
     public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
         return new Iterable<HasChipLocation>() {
             @Override
@@ -566,12 +530,12 @@ public class Chip implements HasChipLocation {
      * List of the destination for all links.
      *
      * @return The destination locations
-     */
+     * /
     public List<HasChipLocation> neighbouringChipsCoords() {
         ArrayList<HasChipLocation> neighbours = new ArrayList();
         for (Link link: links.values()) {
             neighbours.add(link.destination);
         }
         return neighbours;
-    }
+    }*/
 }
