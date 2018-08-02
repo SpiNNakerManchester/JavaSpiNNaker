@@ -16,6 +16,7 @@ public enum EIEIOType {
 	/** Indicates that data is keys and payloads of 32 bits. */
 	KEY_PAYLOAD_32_BIT(3, 4, 4);
 
+	private static final int NBBY = 8;
 	private static final Map<Integer, EIEIOType> MAP;
 	static {
 		MAP = new HashMap<>();
@@ -23,6 +24,7 @@ public enum EIEIOType {
 			MAP.put(v.value, v);
 		}
 	}
+
 	private final int value;
 	/** The number of bytes used by each key element. */
 	public final int keyBytes;
@@ -32,16 +34,15 @@ public enum EIEIOType {
 	public final long maxValue;
 
 	/**
-	 *
-	 * @param value
-	 * @param keyBytes
-	 * @param payloadBytes
+	 * @param value the value
+	 * @param keyBytes the number of bytes per key
+	 * @param payloadBytes the number of bytes per value
 	 */
 	EIEIOType(int value, int keyBytes, int payloadBytes) {
 		this.value = value;
 		this.keyBytes = keyBytes;
 		this.payloadBytes = payloadBytes;
-		this.maxValue = (1L << (keyBytes * 8)) - 1;
+		this.maxValue = (1L << (keyBytes * NBBY)) - 1;
 	}
 
 	/** @return The encoded type. */

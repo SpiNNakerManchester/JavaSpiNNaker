@@ -33,6 +33,13 @@ public enum MailboxCommand {
 		this.value = value;
 	}
 
+	/**
+	 * Convert SARK value to enum.
+	 *
+	 * @param value
+	 *            The value to convert.
+	 * @return The enum member
+	 */
 	public static MailboxCommand get(int value) {
 		return requireNonNull(MAP.get(value),
 				"unknown mailbox command: " + value);

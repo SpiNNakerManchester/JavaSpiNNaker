@@ -52,6 +52,7 @@ public enum RunTimeError {
 	/** SW version conflict. */
 	SARK_VERSION_INCORRECT(20);
 
+	/** The SCAMP RTE code. */
 	public final int value;
 	private static final Map<Integer, RunTimeError> MAP = new HashMap<>();
 	static {
@@ -64,8 +65,14 @@ public enum RunTimeError {
 		this.value = value;
 	}
 
+	/**
+	 * Parse a SCAMP RTE code.
+	 *
+	 * @param value
+	 *            the code to parse.
+	 * @return The enum element.
+	 */
 	public static RunTimeError get(int value) {
-		return requireNonNull(MAP.get(value),
-				"unknown RTE state: " + value);
+		return requireNonNull(MAP.get(value), "unknown RTE state: " + value);
 	}
 }

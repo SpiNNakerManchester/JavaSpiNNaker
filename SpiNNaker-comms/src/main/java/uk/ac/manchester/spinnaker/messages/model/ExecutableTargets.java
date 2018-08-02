@@ -15,6 +15,7 @@ public class ExecutableTargets {
 	private int totalProcessors;
 	private final CoreSubsets allCoreSubsets;
 
+	/** Create. */
 	public ExecutableTargets() {
 		targets = new HashMap<>();
 		totalProcessors = 0;

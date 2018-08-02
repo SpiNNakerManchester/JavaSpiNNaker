@@ -12,9 +12,8 @@ public enum EIEIOPrefix {
 	final int shift;
 
 	/**
-	 *
-	 * @param value
-	 * @param shift
+	 * @param value the value
+	 * @param shift the shift
 	 */
 	EIEIOPrefix(int value, int shift) {
 		this.value = value;

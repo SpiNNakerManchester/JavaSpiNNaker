@@ -39,6 +39,13 @@ public enum P2PTableRoute {
 		this.value = value;
 	}
 
+	/**
+	 * Get a route descriptor from its encoded form.
+	 *
+	 * @param value
+	 *            The encoded form.
+	 * @return The route descriptor.
+	 */
 	public static P2PTableRoute get(int value) {
 		return requireNonNull(MAP.get(value),
 				"unknown P2P table route: " + value);

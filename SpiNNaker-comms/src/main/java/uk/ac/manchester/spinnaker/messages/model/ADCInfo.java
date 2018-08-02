@@ -11,7 +11,9 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
-@SuppressWarnings("checkstyle:MemberName")
+@SuppressWarnings({
+		"checkstyle:MemberName", "checkstyle:LocalVariableName"
+})
 // Member names match field names in BMP; do not change!
 public final class ADCInfo {
 	/** fan<sub>0</sub> rotation rate. */
@@ -39,16 +41,30 @@ public final class ADCInfo {
 	/** Actual voltage of the main power supply (nominally 12V?). */
 	public final double voltage_supply;
 
+	// Sizes of arrays
 	private static final int ADC_SIZE = 8;
 	private static final int T_INT_SIZE = 4;
 	private static final int T_EXT_SIZE = 4;
 	private static final int FAN_SIZE = 4;
 
+	// Indices into arrays
+	private static final int V_1_2C = 1;
+	private static final int V_1_2B = 2;
+	private static final int V_1_2A = 3;
+	private static final int V_1_8 = 4;
+	private static final int V_3_3 = 6;
+	private static final int VS = 7;
+	private static final int T_TOP = 0;
+	private static final int T_BTM = 1;
+	private static final int T_X0 = 0;
+	private static final int T_X1 = 1;
+	private static final int FAN0 = 0;
+	private static final int FAN1 = 1;
+
 	/**
 	 * @param buffer
 	 *            bytes from an SCP packet containing ADC information
 	 */
-	@SuppressWarnings("checkstyle:LocalVariableName")
 	public ADCInfo(ByteBuffer buffer) {
 		short[] adc = new short[ADC_SIZE];
 		short[] t_int = new short[T_INT_SIZE];
@@ -60,18 +76,18 @@ public final class ADCInfo {
 		sb.get(t_ext);
 		sb.get(fan);
 
-		voltage_1_2c = adc[1] * BMP_V_SCALE_2_5;
-		voltage_1_2b = adc[2] * BMP_V_SCALE_2_5;
-		voltage_1_2a = adc[3] * BMP_V_SCALE_2_5;
-		voltage_1_8 = adc[4] * BMP_V_SCALE_2_5;
-		voltage_3_3 = adc[6] * BMP_V_SCALE_3_3;
-		voltage_supply = adc[7] * BMP_V_SCALE_12;
-		temp_top = tempScale(t_int[0]);
-		temp_btm = tempScale(t_int[1]);
-		temp_ext_0 = tempScale(t_ext[0]);
-		temp_ext_1 = tempScale(t_ext[1]);
-		fan_0 = fanScale(fan[0]);
-		fan_1 = fanScale(fan[1]);
+		voltage_1_2c = adc[V_1_2C] * BMP_V_SCALE_2_5;
+		voltage_1_2b = adc[V_1_2B] * BMP_V_SCALE_2_5;
+		voltage_1_2a = adc[V_1_2A] * BMP_V_SCALE_2_5;
+		voltage_1_8 = adc[V_1_8] * BMP_V_SCALE_2_5;
+		voltage_3_3 = adc[V_3_3] * BMP_V_SCALE_3_3;
+		voltage_supply = adc[VS] * BMP_V_SCALE_12;
+		temp_top = tempScale(t_int[T_TOP]);
+		temp_btm = tempScale(t_int[T_BTM]);
+		temp_ext_0 = tempScale(t_ext[T_X0]);
+		temp_ext_1 = tempScale(t_ext[T_X1]);
+		fan_0 = fanScale(fan[FAN0]);
+		fan_1 = fanScale(fan[FAN1]);
 	}
 
 	private static Double tempScale(int rawValue) {

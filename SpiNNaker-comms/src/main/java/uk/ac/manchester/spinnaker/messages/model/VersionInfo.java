@@ -18,6 +18,11 @@ public final class VersionInfo {
 	public final String hardware;
 	/** The name of the software. */
 	public final String name;
+	/**
+	 * The physical CPU ID. Note that this is only really useful for debugging,
+	 * as core IDs are remapped by SCAMP so that SCAMP is always running on
+	 * virtual core zero.
+	 */
 	public final int physicalCPUID;
 	/** The version number of the software. */
 	public final Version versionNumber;

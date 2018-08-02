@@ -198,361 +198,362 @@ public class ChipInfo implements HasChipLocation {
 		return read(y);
 	}
 
-	/** The number of chips in the x- and y-dimensions. */
+	/** @return The number of chips in the x- and y-dimensions. */
 	public MachineDimensions getSize() {
 		return new MachineDimensions(read(x_size), read(y_size));
 	}
 
-	/** The location of the chip to send debug messages to. */
+	/** @return The location of the chip to send debug messages to. */
 	public HasChipLocation getDebugChip() {
 		return new ChipLocation(read(debug_x), read(debug_y));
 	}
 
-	/** Indicates if peer-to-peer is working on the chip. */
+	/** @return Indicates if peer-to-peer is working on the chip. */
 	public boolean isPeerToPeerAvailable() {
 		return read(is_peer_to_peer_available) != 0;
 	}
 
-	/** The last ID used in nearest neighbour transaction. */
+	/** @return The last ID used in nearest neighbour transaction. */
 	public int getNearestNeighbourLastID() {
 		return read(nearest_neighbour_last_id);
 	}
 
-	/** The location of the nearest chip with Ethernet. */
+	/** @return The location of the nearest chip with Ethernet. */
 	public HasChipLocation getEthernetChip() {
 		return new ChipLocation(read(nearest_ethernet_x),
 				read(nearest_ethernet_y));
 	}
 
-	/** The version of the hardware in use. */
+	/** @return The version of the hardware in use. */
 	public int getHardwareVersion() {
 		return read(hardware_version);
 	}
 
-	/** Indicates if Ethernet is available on this chip. */
+	/** @return Indicates if Ethernet is available on this chip. */
 	public boolean isEthernetAvailable() {
 		return read(is_ethernet_available) != 0;
 	}
 
-	/** Number of times to send out P2PB packets. */
+	/** @return Number of times to send out P2PB packets. */
 	public int getP2PBRepeats() {
 		return read(p2p_b_repeats);
 	}
 
-	/** Log (base 2) of the peer-to-peer sequence length. */
+	/** @return Log (base 2) of the peer-to-peer sequence length. */
 	public int getLogP2PSequenceLength() {
 		return read(log_peer_to_peer_sequence_length);
 	}
 
-	/** The clock divisors for system &amp; router clocks. */
+	/** @return The clock divisors for system &amp; router clocks. */
 	public int getClockDivisor() {
 		return read(clock_divisor);
 	}
 
-	/** The time-phase scaling factor. */
+	/** @return The time-phase scaling factor. */
 	public int getTimePhaseScale() {
 		return read(time_phase_scale);
 	}
 
-	/** The time since startup in milliseconds. */
+	/** @return The time since startup in milliseconds. */
 	public long getClockMilliseconds() {
 		return readLong(clock_milliseconds);
 	}
 
-	/** The number of milliseconds in the current second. */
+	/** @return The number of milliseconds in the current second. */
 	public int getTimeMilliseconds() {
 		return read(time_milliseconds);
 	}
 
-	/** The time in seconds since midnight, 1st January 1970. */
+	/** @return The time in seconds since midnight, 1st January 1970. */
 	public int getUnixTimestamp() {
 		return read(unix_timestamp);
 	}
 
-	/** The router time-phase timer. */
+	/** @return The router time-phase timer. */
 	public int getRouterTimePhaseTimer() {
 		return read(router_time_phase_timer);
 	}
 
-	/** The CPU clock frequency in MHz. */
+	/** @return The CPU clock frequency in MHz. */
 	public int getCPUClock() {
 		return read(cpu_clock_mhz);
 	}
 
-	/** The SDRAM clock frequency in MHz. */
+	/** @return The SDRAM clock frequency in MHz. */
 	public int getSDRAMClock() {
 		return read(sdram_clock_frequency_mhz);
 	}
 
-	/** Nearest-Neighbour forward parameter. */
+	/** @return Nearest-Neighbour forward parameter. */
 	public int getNearestNeighbourForward() {
 		return read(nearest_neighbour_forward);
 	}
 
-	/** Nearest-Neighbour retry parameter. */
+	/** @return Nearest-Neighbour retry parameter. */
 	public int getNearestNeighbourRetry() {
 		return read(nearest_neighbour_retry);
 	}
 
-	/** The link peek/poke timeout in microseconds. */
+	/** @return The link peek/poke timeout in microseconds. */
 	public int getLinkPeekTimeout() {
 		return read(link_peek_timeout_microseconds);
 	}
 
-	/** The LED period in millisecond units, or 10 to show load. */
+	/** @return The LED period in millisecond units, or 10 to show load. */
 	public int getLEDFlashPeriod() {
 		return ledFlashPeriod;
 	}
 
 	/**
-	 * The time to wait after last BC during network initialisation in 10 ms
-	 * units.
+	 * @return The time to wait after last BC during network initialisation in
+	 *         10 ms units.
 	 */
 	public int getNetInitBCWaitTime() {
 		return read(netinit_bc_wait_time);
 	}
 
-	/** The phase of boot process (see enum netinit_phase_e). */
+	/** @return The phase of boot process (see enum netinit_phase_e). */
 	public int getNetInitPhase() {
 		return read(netinit_phase);
 	}
 
-	/** The location of the chip from which the system was booted. */
+	/** @return The location of the chip from which the system was booted. */
 	public HasChipLocation getBootChip() {
 		return new ChipLocation(read(p2p_root_x), read(p2p_root_y));
 	}
 
-	/** The LED definitions. */
+	/** @return The LED definitions. */
 	public int[] getLEDs() {
 		return leds;
 	}
 
-	/** The random seed. */
+	/** @return The random seed. */
 	public int getRandomSeeed() {
 		return read(random_seed);
 	}
 
-	/** Indicates if this is the root chip. */
+	/** @return Indicates if this is the root chip. */
 	public boolean isRootChip() {
 		return read(is_root_chip) != 0;
 	}
 
-	/** The number of shared message buffers. */
+	/** @return The number of shared message buffers. */
 	public int getNumSharedMessageBuffers() {
 		return read(n_shared_message_buffers);
 	}
 
-	/** The delay between nearest-neighbour packets in microseconds. */
+	/** @return The delay between nearest-neighbour packets in microseconds. */
 	public int getNearestNeighbourDelay() {
 		return read(nearest_neighbour_delay_us);
 	}
 
-	/** The number of watch dog timeouts before an error is raised. */
+	/** @return The number of watch dog timeouts before an error is raised. */
 	public int getSoftwareWatchdogCount() {
 		return read(software_watchdog_count);
 	}
 
-	/** The base address of the system SDRAM heap. */
+	/** @return The base address of the system SDRAM heap. */
 	public int getSystemRAMHeapAddress() {
 		return read(system_ram_heap_address);
 	}
 
-	/** The base address of the user SDRAM heap. */
+	/** @return The base address of the user SDRAM heap. */
 	public int getSDRAMHeapAddress() {
 		return read(sdram_heap_address);
 	}
 
-	/** The size of the iobuf buffer in bytes. */
+	/** @return The size of the iobuf buffer in bytes. */
 	public int getIOBUFSize() {
 		return read(iobuf_size);
 	}
 
-	/** The size of the system SDRAM in bytes. */
+	/** @return The size of the system SDRAM in bytes. */
 	public int getSystemSDRAMSize() {
 		return read(system_sdram_bytes);
 	}
 
-	/** The size of the system buffer <b>in words</b>. */
+	/** @return The size of the system buffer <b>in words</b>. */
 	public int getSystemBufferSize() {
 		return read(system_buffer_words);
 	}
 
-	/** The boot signature. */
+	/** @return The boot signature. */
 	public int getBootSignature() {
 		return read(boot_signature);
 	}
 
-	/** The memory pointer for nearest neighbour global operations. */
+	/** @return The memory pointer for nearest neighbour global operations. */
 	public int getNearestNeighbourMemoryAddress() {
 		return read(nearest_neighbour_memory_pointer);
 	}
 
-	/** The lock. (??) */
+	/** @return The lock. (??) */
 	public int getLock() {
 		return read(lock);
 	}
 
-	/** Bit mask (6 bits) of links enabled. */
+	/** @return Bit mask (6 bits) of links enabled. */
 	public BitSet getLinksAvailable() {
 		return this.linksAvailable;
 	}
 
-	/** Last ID used in BIFF packet. */
+	/** @return Last ID used in BIFF packet. */
 	public int getLastBiffID() {
 		return read(last_biff_id);
 	}
 
-	/** Board testing flags. */
+	/** @return Board testing flags. */
 	public int getBoardTestFlags() {
 		return read(board_test_flags);
 	}
 
-	/** Pointer to the first free shared message buffer. */
+	/** @return Pointer to the first free shared message buffer. */
 	public int getSharedMessageFirstFreeAddress() {
 		return read(shared_message_first_free_address);
 	}
 
-	/** The number of shared message buffers in use. */
+	/** @return The number of shared message buffers in use. */
 	public int getSharedMessageCountInUse() {
 		return read(shared_message_count_in_use);
 	}
 
-	/** The maximum number of shared message buffers used. */
+	/** @return The maximum number of shared message buffers used. */
 	public int getSharedMessageMaximumUsed() {
 		return read(shared_message_maximum_used);
 	}
 
-	/** The first user variable. */
+	/** @return The first user variable. */
 	public int getUser0() {
 		return read(user_temp_0);
 	}
 
-	/** The second user variable. */
+	/** @return The second user variable. */
 	public int getUser1() {
 		return read(user_temp_1);
 	}
 
-	/** The third user variable. */
+	/** @return The third user variable. */
 	public int getUser2() {
 		return read(user_temp_2);
 	}
 
-	/** The fourth user variable. */
+	/** @return The fourth user variable. */
 	public int getUser4() {
 		return read(user_temp_4);
 	}
 
-	/** The status map set during SCAMP boot. */
+	/** @return The status map set during SCAMP boot. */
 	public byte[] getStatusMap() {
 		return statusMap;
 	}
 
 	/**
-	 * The physical core ID to virtual core ID map; entries with a value of 0xFF
-	 * are non-operational cores.
+	 * @return The physical core ID to virtual core ID map; entries with a value
+	 *         of 0xFF are non-operational cores.
 	 */
 	public byte[] getPhysicalToVirtualCoreMap() {
 		return physicalToVirtualCoreMap;
 	}
 
-	/** The virtual core ID to physical core ID map. */
+	/** @return The virtual core ID to physical core ID map. */
 	public byte[] getVirtualToPhysicalCoreMap() {
 		return virtualToPhysicalCoreMap;
 	}
 
 	/**
-	 * A list of available cores by virtual core ID (including the monitor).
+	 * @return A list of available cores by virtual core ID (including the
+	 *         monitor).
 	 */
 	public Collection<Integer> getVirtualCoreIDs() {
 		return unmodifiableList(virtualCoreIDs);
 	}
 
-	/** The number of working cores. */
+	/** @return The number of working cores. */
 	public int getNumWorkingCores() {
 		return read(n_working_cores);
 	}
 
-	/** The number of SCAMP working cores. */
+	/** @return The number of SCAMP working cores. */
 	public int getNumSCAMPWorkingCores() {
 		return read(n_scamp_working_cores);
 	}
 
-	/** The base address of SDRAM. */
+	/** @return The base address of SDRAM. */
 	public int getSDRAMBaseAddress() {
 		return read(sdram_base_address);
 	}
 
-	/** The base address of System RAM. */
+	/** @return The base address of System RAM. */
 	public int getSystemRAMBaseAddress() {
 		return read(system_ram_base_address);
 	}
 
-	/** The base address of System SDRAM. */
+	/** @return The base address of System SDRAM. */
 	public int getSystemSDRAMBaseAddress() {
 		return read(system_sdram_base_address);
 	}
 
-	/** The base address of the CPU information blocks. */
+	/** @return The base address of the CPU information blocks. */
 	public int getCPUInformationBaseAddress() {
 		return read(cpu_information_base_address);
 	}
 
-	/** The base address of the system SDRAM heap. */
+	/** @return The base address of the system SDRAM heap. */
 	public int getSystemSDRAMHeapAddress() {
 		return read(system_sdram_heap_address);
 	}
 
-	/** The address of the copy of the routing tables. */
+	/** @return The address of the copy of the routing tables. */
 	public int getRouterTableCopyAddress() {
 		return read(router_table_copy_address);
 	}
 
-	/** The address of the peer-to-peer hop tables. */
+	/** @return The address of the peer-to-peer hop tables. */
 	public int getP2PHopTableAddress() {
 		return read(peer_to_peer_hop_table_address);
 	}
 
-	/** The address of the allocated tag table. */
+	/** @return The address of the allocated tag table. */
 	public int getAllocatedTagTableAddress() {
 		return read(allocated_tag_table_address);
 	}
 
-	/** The ID of the first free router entry. */
+	/** @return The ID of the first free router entry. */
 	public int getFirstFreeRouterEntry() {
 		return read(first_free_router_entry);
 	}
 
-	/** The number of active peer-to-peer addresses. */
+	/** @return The number of active peer-to-peer addresses. */
 	public int getNumActiveP2PAddresses() {
 		return read(n_active_peer_to_peer_addresses);
 	}
 
-	/** The address of the application data table. */
+	/** @return The address of the application data table. */
 	public int getAppDataTableAddress() {
 		return read(app_data_table_address);
 	}
 
-	/** The address of the shared message buffers. */
+	/** @return The address of the shared message buffers. */
 	public int getSharedMessageBufferAddress() {
 		return read(shared_message_buffer_address);
 	}
 
-	/** The monitor incoming mailbox flags. */
+	/** @return The monitor incoming mailbox flags. */
 	public int getMonitorMailboxFlags() {
 		return read(monitor_mailbox_flags);
 	}
 
-	/** The IP address of the chip. */
+	/** @return The IP address of the chip. */
 	public InetAddress getIPAddress() {
 		return ipAddress;
 	}
 
-	/** A (virtual) copy of the router FR register. */
+	/** @return A (virtual) copy of the router FR register. */
 	public int getFixedRoute() {
 		return read(fixed_route_copy);
 	}
 
-	/** A pointer to the board information structure. */
+	/** @return A pointer to the board information structure. */
 	public int getBoardInfoAddress() {
 		return read(board_info);
 	}

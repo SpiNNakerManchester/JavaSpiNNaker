@@ -44,6 +44,17 @@ public class RouterDiagnostics {
 	private static final int WAIT1_SHIFT = 16;
 	private static final int WAIT2_SHIFT = 24;
 
+	/**
+	 * Parse the router diagnostics.
+	 *
+	 * @param controlRegister
+	 *            The control register value.
+	 * @param errorStatus
+	 *            The error status value.
+	 * @param registerValues
+	 *            The register values. (Should have {@value #NUM_REGISTERS}
+	 *            elements.)
+	 */
 	public RouterDiagnostics(int controlRegister, int errorStatus,
 			int[] registerValues) {
 		if (registerValues.length != NUM_REGISTERS) {

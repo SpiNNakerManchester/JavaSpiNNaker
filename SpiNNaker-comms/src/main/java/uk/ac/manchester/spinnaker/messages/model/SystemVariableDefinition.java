@@ -9,7 +9,6 @@ import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.IP_ADDR_WID
 import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.PER_CORE_WIDTH;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /** Defines the system variables available. */
 public enum SystemVariableDefinition {
@@ -230,10 +229,11 @@ public enum SystemVariableDefinition {
 	/**
 	 * Writes an object described by this field into the given buffer at the
 	 * <i>position</i> as a contiguous range of bytes. This assumes that the
-	 * buffer has been configured to be {@linkplain ByteOrder#LITTLE_ENDIAN
-	 * little-endian} and that its <i>position</i> is at the point where this
-	 * method should begin writing. Once it has finished, the <i>position</i>
-	 * will be immediately after the last byte written by this method.
+	 * buffer has been configured to be
+	 * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
+	 * <i>position</i> is at the point where this method should begin writing.
+	 * Once it has finished, the <i>position</i> will be immediately after the
+	 * last byte written by this method.
 	 *
 	 * @param value
 	 *            The value to write.
@@ -245,8 +245,17 @@ public enum SystemVariableDefinition {
 	}
 }
 
+/** Just some constants for {@link SystemVariableDefinition}. */
 abstract class SVDConstants {
-	private SVDConstants () {}
+	private SVDConstants() {
+	}
+
+	/**
+	 * Width of arrays that have an element per core.
+	 */
 	static final int PER_CORE_WIDTH = 20;
+	/**
+	 * Width of arrays that hold an IPv4 address.
+	 */
 	static final int IP_ADDR_WIDTH = 4;
 }

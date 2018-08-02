@@ -1,11 +1,19 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /** Enum for data types of system variables. */
 public enum DataType {
-	BYTE(1), SHORT(2), INT(4), LONG(8), BYTE_ARRAY(16);
+	/** The value is one byte long. */
+	BYTE(1),
+	/** The value is two bytes long. */
+	SHORT(2),
+	/** The value is four bytes long. */
+	INT(4),
+	/** The value is eight bytes long. */
+	LONG(8),
+	/** The value is an array of bytes. */
+	BYTE_ARRAY(16);
 
 	/** The SCAMP data type descriptor code. */
 	public final int value;
@@ -17,10 +25,11 @@ public enum DataType {
 	/**
 	 * Writes an object described by this data type into the given buffer at the
 	 * <i>position</i> as a contiguous range of bytes. This assumes that the
-	 * buffer has been configured to be {@linkplain ByteOrder#LITTLE_ENDIAN
-	 * little-endian} and that its <i>position</i> is at the point where this
-	 * method should begin writing. Once it has finished, the <i>position</i>
-	 * should be immediately after the last byte written by this method.
+	 * buffer has been configured to be
+	 * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
+	 * <i>position</i> is at the point where this method should begin writing.
+	 * Once it has finished, the <i>position</i> should be immediately after the
+	 * last byte written by this method.
 	 *
 	 * @param value
 	 *            The value to write.

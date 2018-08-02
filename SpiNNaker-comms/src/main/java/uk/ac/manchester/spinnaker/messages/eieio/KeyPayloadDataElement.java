@@ -8,6 +8,12 @@ public class KeyPayloadDataElement implements AbstractDataElement {
 	private final int payload;
 	private final boolean timestamp;
 
+	/**
+	 * Create a data element.
+	 * @param key The key in the element.
+	 * @param payload The payload in the element.
+	 * @param isTimestamp Whether this is a timestamp.
+	 */
 	public KeyPayloadDataElement(int key, int payload, boolean isTimestamp) {
 		this.key = key;
 		this.payload = payload;

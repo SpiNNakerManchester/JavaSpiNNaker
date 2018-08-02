@@ -9,11 +9,28 @@ import java.nio.ByteBuffer;
  * the buffering output technique to signal that the host has completed reading
  * data from the output buffer, and that such space can be considered free to
  * use again.
+ *
+ * @see HostDataReadAck
  */
 public class HostDataRead extends EIEIOCommandMessage {
 	private final Header header;
 	private final Ack acks;
 
+	/**
+	 * Create.
+	 *
+	 * @param numRequests
+	 *            The number of requests we are talking about. This is used to
+	 *            check the validity of other arguments.
+	 * @param sequenceNum
+	 *            The message sequence number.
+	 * @param channel
+	 *            What channels are we talking about.
+	 * @param regionID
+	 *            What regions are we talking about.
+	 * @param spaceRead
+	 *            How much space has been read from each region.
+	 */
 	public HostDataRead(byte numRequests, byte sequenceNum, byte[] channel,
 			byte[] regionID, int[] spaceRead) {
 		super(HOST_DATA_READ);
@@ -21,11 +38,21 @@ public class HostDataRead extends EIEIOCommandMessage {
 		this.acks = new Ack(numRequests, channel, regionID, spaceRead);
 	}
 
-	public HostDataRead(byte numRequests, byte sequenceNum, byte channel,
-			byte regionID, int spaceRead) {
-		super(HOST_DATA_READ);
-		header = new Header(numRequests, sequenceNum);
-		this.acks = new Ack(numRequests, new byte[] {
+	/**
+	 * Create.
+	 *
+	 * @param sequenceNum
+	 *            The message sequence number.
+	 * @param channel
+	 *            What channel are we talking about.
+	 * @param regionID
+	 *            What region are we talking about.
+	 * @param spaceRead
+	 *            How much space has been read.
+	 */
+	public HostDataRead(byte sequenceNum, byte channel, byte regionID,
+			int spaceRead) {
+		this((byte) 1, sequenceNum, new byte[] {
 				channel
 		}, new byte[] {
 				regionID
@@ -36,6 +63,12 @@ public class HostDataRead extends EIEIOCommandMessage {
 
 	private static final int NUM_REQUESTS_MASK = 0b00000111;
 
+	/**
+	 * Deseralise.
+	 *
+	 * @param data
+	 *            what to deserialise from
+	 */
 	HostDataRead(ByteBuffer data) {
 		super(data);
 		this.header =

@@ -14,10 +14,27 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 		implements HasCoreLocation {
+	/** What core are we talking about. */
 	public final HasCoreLocation core;
-	public final byte regionID, sequenceNum;
+	/** What region of the core's memory. */
+	public final byte regionID;
+	/** The message sequence number. */
+	public final byte sequenceNum;
+	/** How much space is available. */
 	public final int spaceAvailable;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param core
+	 *            The core being talked about.
+	 * @param regionID
+	 *            The memory region being talked about.
+	 * @param sequenceNum
+	 *            The message sequence number.
+	 * @param spaceAvailable
+	 *            The space available, in bytes.
+	 */
 	public SpinnakerRequestBuffers(HasCoreLocation core, byte regionID,
 			byte sequenceNum, int spaceAvailable) {
 		super(SPINNAKER_REQUEST_BUFFERS);
