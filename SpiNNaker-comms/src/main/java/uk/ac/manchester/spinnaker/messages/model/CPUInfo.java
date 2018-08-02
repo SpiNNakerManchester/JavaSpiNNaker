@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.String.format;
-import static uk.ac.manchester.spinnaker.machine.CPUState.RUN_TIME_EXCEPTION;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r0;
 import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r1;
@@ -16,7 +16,6 @@ import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r7;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import uk.ac.manchester.spinnaker.machine.CPUState;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
