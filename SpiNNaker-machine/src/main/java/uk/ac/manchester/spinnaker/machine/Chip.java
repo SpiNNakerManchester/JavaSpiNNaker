@@ -4,9 +4,11 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 /**
@@ -22,11 +24,9 @@ public class Chip implements HasChipLocation {
 
     private final ChipLocation location;
 
-    // This is private as mutable and implementation could change
-    private final TreeMap<Integer, Processor> processors;
+    private TreeMap<Integer, Processor> monitorProcessors;
 
-    // This is not final as will change as processors become monitors
-    private int nUserProssors;
+    private TreeMap<Integer, Processor> userProcessors;
 
     /** A router for the chip. */
     public final Router router;
@@ -48,8 +48,11 @@ public class Chip implements HasChipLocation {
     /** The nearest Ethernet coordinates or null if none known. */
     public final HasChipLocation nearestEthernet;
 
-    private static final TreeMap<Integer, Processor> DEFAULT_PROCESSORS =
-            defaultProcessors();
+    private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =
+            defaultUserProcessors();
+
+    private static final TreeMap<Integer, Processor> DEFAULT_MONITOR_PROCESSORS =
+            defaultMonitorProcessors();
 
     /**
      * Main Constructor which sets all parameters.
@@ -77,17 +80,19 @@ public class Chip implements HasChipLocation {
             Router router, int sdram, InetAddress ipAddress, boolean virtual,
             int nTagIds, HasChipLocation nearestEthernet) {
         this.location = location;
-        this.processors = new TreeMap<>();
-        nUserProssors = 0;
+        this.monitorProcessors = new TreeMap<>();
+        this.userProcessors =  new TreeMap<>();
         processors.forEach((processor) -> {
-            if (this.processors.containsKey(processor.processorId)) {
+            if (this.monitorProcessors.containsKey(processor.processorId)) {
                 throw new IllegalArgumentException();
+            }
+            if (this.userProcessors.containsKey(processor.processorId)) {
+                throw new IllegalArgumentException();
+            }
+            if (processor.isMonitor) {
+                this.monitorProcessors.put(processor.processorId, processor);
             } else {
-                this.processors.put(processor.processorId, processor);
-                if (!processor.isMonitor) {
-                    nUserProssors += 1;
-                }
-
+                this.userProcessors.put(processor.processorId, processor);
             }
         });
         this.router = router;
@@ -140,8 +145,8 @@ public class Chip implements HasChipLocation {
     public Chip(ChipLocation location, Router router, InetAddress ipAddress,
             HasChipLocation nearestEthernet) {
         this.location = location;
-        processors = new TreeMap<>(DEFAULT_PROCESSORS);
-        nUserProssors = MachineDefaults.PROCESSORS_PER_CHIP - 1;
+        this.monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
+        this.userProcessors =  DEFAULT_USER_PROCESSORS;
         this.router = router;
         this.sdram = MachineDefaults.SDRAM_PER_CHIP;
 
@@ -153,12 +158,17 @@ public class Chip implements HasChipLocation {
         this.nearestEthernet = nearestEthernet;
     }
 
-    private static TreeMap<Integer, Processor> defaultProcessors() {
+    private static TreeMap<Integer, Processor> defaultUserProcessors() {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
+           processors.put(i, Processor.factory(i, false));
+        }
+        return processors;
+    }
+
+    private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         processors.put(0, Processor.factory(0, true));
-        for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
-            processors.put(i, Processor.factory(i, true));
-        }
         return processors;
     }
 
@@ -179,36 +189,143 @@ public class Chip implements HasChipLocation {
 
     /**
      * Determines if a processor with the given ID exists in the chip.
+     * <p>
+     * This method will check both the user and monitor processors.
      *
      * @param processorId
      *            Id of the potential processor.
      * @return True if and only if there is a processor for this ID.
      */
-    public boolean hasProcessor(int processorId) {
-        return this.processors.containsKey(processorId);
+    public boolean hasAnyProcessor(int processorId) {
+        return this.userProcessors.containsKey(processorId)
+                || this.monitorProcessors.containsKey(processorId);
+    }
+
+    /**
+     * Determines if a user processor with the given ID exists in the chip.
+     * <p>
+     * Warning: If a Monitor processor exists with this ID this method will
+     *      return false. Use @see hasAnyProcessor()
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return True if and only if there is a user processor for this ID.
+     */
+    public boolean hasUserProcessor(int processorId) {
+        return this.userProcessors.containsKey(processorId);
+    }
+
+    /**
+     * Determines if a monitor processor with the given ID exists in the chip.
+     * <p>
+     * Warning: If a User processor exists with this ID this method will
+     *      return false. Use @see hasAnyProcessor()
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return True if and only if there is a processor for this ID.
+     */
+    public boolean hasMonitorProcessor(int processorId) {
+        return this.monitorProcessors.containsKey(processorId);
     }
 
     /**
      * Obtains the Processor with this ID or returns null.
+     * <p>
+     * This method will check both the user and monitor processors.
      *
      * @param processorId
      *            Id of the potential processor.
      * @return The Processor or null if not is found.
      */
-    public Processor getProcessor(int processorId) {
-        return this.processors.get(processorId);
+    public Processor getAnyProcessor(int processorId) {
+        if (this.userProcessors.containsKey(processorId)) {
+            return this.userProcessors.get(processorId);
+        } else {
+            // This also covers the return null if neither have it.
+            return this.monitorProcessors.get(processorId);
+        }
     }
 
     /**
-     * Return a view over the Processors on this Chip
+     * Obtains the User Processor with this ID or returns null.
+     * <p>
+     * This method will only check user processors
+     * so will return null even if a monitor processor exists with this id.
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return The Processor or null if not is found.
+     */
+    public Processor getUserProcessor(int processorId) {
+        return this.userProcessors.get(processorId);
+    }
+
+    /**
+     * Obtains the Monitor Processor with this ID or returns null.
+     * <p>
+     * This method will only check monitor processors
+     * so will return null even if a user processor exists with this id.
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return The Processor or null if not is found.
+     */
+    public Processor getMonitorProcessor(int processorId) {
+        return this.monitorProcessors.get(processorId);
+    }
+
+    /**
+     * Return a list off all the Processors on this Chip
+     * <p>
+     * This method will check both the user and monitor processors.
+     * <p>
+     * The Processors will be ordered by ProcessorID which are guaranteed to all
+     *      be different.
+     * <p>
+     * The current implementation builds a new list on the fly so this list is
+     *      mutable without affecting the Chip.
+     * Future implementations could return an unmodifiable list.
+     *
+     * @return A list of all the processors including both monitor and user.
+     */
+    public List<Processor> allProcessors() {
+        ArrayList<Processor> all =
+                new ArrayList(this.monitorProcessors.values());
+        all.addAll(this.userProcessors.values());
+        Collections.sort(all);
+        return all;
+    }
+
+    /**
+     * Return a view over the User Processors on this Chip
+     * <p>
+     * Monitor processors are not included so every Processor in the list is
+     *      guaranteed to have the property isMonitor == false!
      * <p>
      * The Processors will be ordered by ProcessorID which are guaranteed to all
      * be different.
      *
      * @return A unmodifiable View over the processors.
      */
-    public Collection<Processor> processors() {
-        return Collections.unmodifiableCollection(this.processors.values());
+    public Collection<Processor> userProcessors() {
+        return Collections.unmodifiableCollection(this.userProcessors.values());
+    }
+
+    /**
+     * Return a view over the Monitor Processors on this Chip
+     * <p>
+     * User processors are not included so every Processor in the list is
+     *      guaranteed to have the property isMonitor == true!
+     * <p>
+     * The Processors will be ordered by ProcessorID which are guaranteed to all
+     * be different.
+     *
+     * @return A unmodifiable View over the processors.
+     */
+    public Collection<Processor> monitorProcessors() {
+        return Collections.unmodifiableCollection(
+                this.monitorProcessors.values());
     }
 
     /**
@@ -217,33 +334,30 @@ public class Chip implements HasChipLocation {
      * @return The size of the Processor Collection
      */
     public int nProcessors() {
-        return this.processors.size();
+        return this.userProcessors.size() + this.monitorProcessors.size();
     }
 
     /**
-     * The total number of processors that are not monitors.
+     * The total number of user processors.
+     * <p>
+     * For just the user processors so ignores monitor processors.
      *
-     * @return The total number of processors that are not monitors.
+     * @return The size of the Processor Collection
      */
     public int nUserProcessors() {
-        return this.nUserProssors;
+        return this.userProcessors.size();
     }
 
     /**
      * Get the first processor in the list which is not a monitor core.
      *
      * @return A Processor
-     * @throws IllegalStateException
+     * @throws NoSuchElementException
      *             If all the Processor(s) are monitors.
      */
-    public Processor getFirstNoneMonitorProcessor()
-            throws IllegalStateException {
-        for (Processor processor : processors.values()) {
-            if (!processor.isMonitor) {
-                return processor;
-            }
-        }
-        throw new IllegalStateException("No None monitor processor found!");
+    public Processor getFirstUserProcessor()
+            throws NoSuchElementException {
+        return this.userProcessors.get(this.userProcessors.firstKey());
     }
 
     // TODO: Work out if we can guarantee:
@@ -260,22 +374,32 @@ public class Chip implements HasChipLocation {
      *         failure
      */
     int reserveASystemProcessor() throws IllegalStateException {
-        for (Map.Entry<Integer, Processor> entry : processors.entrySet()) {
-            if (!entry.getValue().isMonitor) {
-                Processor monitor = entry.getValue().cloneAsSystemProcessor();
-                processors.replace(entry.getKey(), monitor);
-                nUserProssors -= 1;
-                return entry.getKey();
-            }
+        if (this.monitorProcessors == DEFAULT_MONITOR_PROCESSORS) {
+            this.monitorProcessors = (TreeMap<Integer, Processor>)
+                    DEFAULT_MONITOR_PROCESSORS.clone();
+            this.userProcessors = (TreeMap<Integer, Processor>)
+                    DEFAULT_USER_PROCESSORS.clone();
         }
-        return -1;
+        Integer firstKey;
+        try {
+           firstKey = this.userProcessors.firstKey();
+        } catch (NoSuchElementException ex) {
+            // This will very rarely happen so no need for pretime checking
+            return -1;
+        }
+        Processor mover = this.userProcessors.get(firstKey);
+        this.userProcessors.remove(firstKey);
+        this.monitorProcessors.put(firstKey, mover);
+        return mover.processorId;
     }
 
     @Override
     public String toString() {
         return "[Chip: x=" + getX() + ", y=" + getY() + ", sdram=" + sdram
                 + ", ip_address=" + this.ipAddress + ", router=" + router
-                + ", processors=" + processors.keySet() + ", nearest_ethernet="
+                + ", monitors=" + monitorProcessors.keySet()
+                + ", users=" + userProcessors.keySet()
+                + ", nearest_ethernet="
                 + this.nearestEthernet + "]";
     }
 }

@@ -55,34 +55,55 @@ public class TestChip {
                 createInetAddress(), false, 6, location11);
         assertEquals(0, chip.getX());
         assertEquals(0, chip.getY());
-        assertTrue(chip.hasProcessor(4));
-        assertFalse(chip.hasProcessor(3));
-        assertEquals(Processor.factory(4), chip.getProcessor(4));
-        assertNull(chip.getProcessor(3));
-        assertThat(chip.processors(), contains(
+        assertEquals(3, chip.nProcessors());
+        assertEquals(2, chip.nUserProcessors());
+        assertTrue(chip.hasAnyProcessor(2));
+        assertFalse(chip.hasUserProcessor(2));
+        assertTrue(chip.hasMonitorProcessor(2));
+        assertTrue(chip.hasAnyProcessor(4));
+        assertTrue(chip.hasUserProcessor(4));
+        assertFalse(chip.hasMonitorProcessor(4));
+        assertFalse(chip.hasAnyProcessor(3));
+        assertFalse(chip.hasUserProcessor(3));
+        assertFalse(chip.hasMonitorProcessor(3));
+        assertEquals(Processor.factory(2, true), chip.getAnyProcessor(2));
+        assertEquals(Processor.factory(2, true), chip.getMonitorProcessor(2));
+        assertNull(chip.getUserProcessor(2));
+        assertEquals(Processor.factory(4), chip.getAnyProcessor(4));
+        assertEquals(Processor.factory(4), chip.getUserProcessor(4));
+        assertNull(chip.getMonitorProcessor(4));
+        assertNull(chip.getAnyProcessor(3));
+        assertNull(chip.getUserProcessor(3));
+        assertNull(chip.getMonitorProcessor(3));
+        //contains check that is has exactly these elements in order
+        assertThat(chip.allProcessors(), contains(
                 Processor.factory(1), Processor.factory(2, true),
                 Processor.factory(4)));
-        assertEquals(3, chip.nProcessors());
+        assertThat(chip.userProcessors(), contains(
+                Processor.factory(1),
+                Processor.factory(4)));
+        assertThat(chip.monitorProcessors(), contains(
+                Processor.factory(2, true)));
     }
 
     @Test
     public void testChipMonitors() throws UnknownHostException {
         Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
                 createInetAddress(), false, 6, location11);
-        Processor result = chip.getFirstNoneMonitorProcessor();
+        Processor result = chip.getFirstUserProcessor();
         assertEquals(Processor.factory(1), result);
         assertEquals(2, chip.nUserProcessors());
         assertEquals(1, chip.reserveASystemProcessor());
 
-        result = chip.getFirstNoneMonitorProcessor();
+        result = chip.getFirstUserProcessor();
         assertEquals(Processor.factory(4), result);
         assertEquals(1, chip.nUserProcessors());
         assertEquals(Processor.factory(4), result);
 
         assertEquals(4, chip.reserveASystemProcessor());
         assertEquals(0, chip.nUserProcessors());
-        assertThrows(IllegalStateException.class, () -> {
-            Processor bad = chip.getFirstNoneMonitorProcessor();
+        assertThrows(Exception.class, () -> {
+            Processor bad = chip.getFirstUserProcessor();
         });
         assertEquals(-1, chip.reserveASystemProcessor());
     }

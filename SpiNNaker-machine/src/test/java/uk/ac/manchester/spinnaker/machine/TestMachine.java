@@ -88,8 +88,14 @@ public class TestMachine {
             assertEquals(address, c.ipAddress);
             assertEquals(SDRAM, c.sdram);
             assertEquals(ROUTER, c.router);
-            for (Processor p: c.processors()) {
+            for (Processor p: c.allProcessors()) {
                 assertThat(processors, hasItems(p));
+            }
+            for (Processor p: c.monitorProcessors()) {
+                assertTrue(p.isMonitor);
+            }
+            for (Processor p: c.userProcessors()) {
+                assertFalse(p.isMonitor);
             }
         }
 
