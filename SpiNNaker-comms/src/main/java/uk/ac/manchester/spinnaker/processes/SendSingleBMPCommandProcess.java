@@ -45,6 +45,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  */
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private Logger log = getLogger(RequestPipeline.class);
+	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
 	/**
 	 * The default number of times to resend any packet for any reason before an
