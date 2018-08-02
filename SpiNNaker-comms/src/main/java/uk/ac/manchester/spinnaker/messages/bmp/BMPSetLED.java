@@ -94,7 +94,7 @@ public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 	/**
 	 * The response to a Set LED request.
 	 */
-	public class Response extends BMPRequest.BMPResponse {
+	public final class Response extends BMPRequest.BMPResponse {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Set the LEDs of a board", CMD_LED, buffer);

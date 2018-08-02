@@ -11,22 +11,58 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * An EIEIO message containing data.
+ *
+ * @author Sergio Davies
+ * @author Donal Fellows
+ */
 public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		Iterable<AbstractDataElement> {
 	private final Header header;
 	private ByteBuffer elements;
 	private ByteBuffer data;
 
+	/**
+	 * Create a data message.
+	 *
+	 * @param eieioType
+	 *            The type of data components in the message.
+	 */
 	public EIEIODataMessage(EIEIOType eieioType) {
 		this(eieioType, (byte) 0, null, null, null, null, LOWER_HALF_WORD);
 	}
 
+	/**
+	 * Deserialise a message.
+	 *
+	 * @param data
+	 *            The data to deserialise.
+	 */
 	EIEIODataMessage(ByteBuffer data) {
 		this.header = new Header(data);
 		this.elements = null;
 		this.data = data.asReadOnlyBuffer();
 	}
 
+	/**
+	 * Create a data message.
+	 *
+	 * @param eieioType
+	 *            The type of data components in the message.
+	 * @param count
+	 *            The number of data components in the message.
+	 * @param data
+	 *            The serialized data components.
+	 * @param keyPrefix
+	 *            Any key prefix to apply to the data components.
+	 * @param payloadPrefix
+	 *            The prefix to apply. Overridden by a non-null timestamp.
+	 * @param timestamp
+	 *            The timestamp base to apply.
+	 * @param prefixType
+	 *            The type of prefix to apply.
+	 */
 	public EIEIODataMessage(EIEIOType eieioType, byte count, ByteBuffer data,
 			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
 			EIEIOPrefix prefixType) {
@@ -261,7 +297,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			byte flags = buffer.get();
 			boolean havePrefix = bit(flags, PREFIX_BIT) != 0;
 			if (havePrefix) {
-				prefixType = EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT));
+				prefixType =
+						EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT));
 			} else {
 				prefixType = null;
 			}
@@ -310,6 +347,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 		private static final int SHORT_WIDTH = 2;
 
+		/** @return The unit size per data component. */
 		public int getSize() {
 			int size = SHORT_WIDTH;
 			if (prefix != null) {

@@ -32,7 +32,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request for the contents of an FPGA register. */
-	public class Response extends BMPRequest.BMPResponse {
+	public final class Response extends BMPRequest.BMPResponse {
 		/** The ADC information. */
 		public final int fpgaRegister;
 

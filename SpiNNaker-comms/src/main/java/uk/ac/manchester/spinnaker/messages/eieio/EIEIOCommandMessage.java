@@ -4,7 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
 
-/** An EIEIO command message. */
+/**
+ * An EIEIO message containing a command.
+ *
+ * @author Sergio Davies
+ * @author Donal Fellows
+ */
 public class EIEIOCommandMessage
 		implements EIEIOMessage<EIEIOCommandMessage.Header> {
 	// Must be power of 2 (minus 1)

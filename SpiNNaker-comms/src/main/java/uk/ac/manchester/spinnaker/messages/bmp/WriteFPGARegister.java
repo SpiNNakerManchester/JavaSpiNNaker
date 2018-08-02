@@ -47,7 +47,7 @@ public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
 	}
 
 	/** An SCP response to a request to write an FPGA register. */
-	public class Response extends BMPRequest.BMPResponse {
+	public final class Response extends BMPRequest.BMPResponse {
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Send FPGA register write", CMD_LINK_WRITE, buffer);
