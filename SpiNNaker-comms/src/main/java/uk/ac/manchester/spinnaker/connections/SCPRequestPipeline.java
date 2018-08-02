@@ -4,13 +4,10 @@ import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -21,10 +18,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -33,7 +28,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 /**
@@ -67,13 +61,7 @@ public class SCPRequestPipeline {
 	public static final int DEFAULT_RETRIES = 3;
 	private static final int HEADROOM = 8;
 	private static final int DEFAULT_MAX_CHANNELS = 12;
-	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
-	static {
-		RETRY_CODES.add(RC_TIMEOUT);
-		RETRY_CODES.add(RC_P2P_TIMEOUT);
-		RETRY_CODES.add(RC_LEN);
-		RETRY_CODES.add(RC_P2P_NOREPLY);
-	}
+	private static final int RETRY_DELAY_MS = 100;
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
@@ -173,8 +161,8 @@ public class SCPRequestPipeline {
 		 * @param responseData
 		 *            the content of the message, in a little-endian buffer.
 		 */
-		public void received(ByteBuffer responseData) throws Exception {
-			T response = request.getSCPResponse(responseData);
+		public void received(SCPResultMessage msg) throws Exception {
+			T response = msg.parsePayload(request);
 			if (callback != null) {
 				callback.accept(response);
 			}
@@ -255,62 +243,6 @@ public class SCPRequestPipeline {
 	}
 
 	/**
-	 * Add an SCP request to the set to be sent where we don't care about the
-	 * response when it is successful.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The SCP request to be sent
-	 * @throws IOException
-	 *             If things go really wrong.
-	 */
-	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request)
-			throws IOException {
-		sendRequest(request, null, null);
-	}
-
-	/**
-	 * Add an SCP request to the set to be sent where we don't care about the
-	 * response when it is successful.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The SCP request to be sent
-	 * @param errorCallback
-	 *            A callback function to call when an error is found when
-	 *            processing the message; takes the original SCPRequest, and the
-	 *            exception caught while sending it. If <tt>null</tt>, a simple
-	 *            default logging function is used.
-	 * @throws IOException
-	 *             If things go really wrong.
-	 */
-	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
-			SCPErrorHandler errorCallback) throws IOException {
-		sendRequest(request, null, errorCallback);
-	}
-
-	/**
-	 * Add an SCP request to the set to be sent.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The SCP request to be sent
-	 * @param callback
-	 *            A callback function to call when the response has been
-	 *            received; takes an SCPResponse as a parameter, or a
-	 *            <tt>null</tt> if the response doesn't need to be processed.
-	 * @throws IOException
-	 *             If things go really wrong.
-	 */
-	public final <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
-			Consumer<T> callback) throws IOException {
-		sendRequest(request, callback, null);
-	}
-
-	/**
 	 * Add an SCP request to the set to be sent.
 	 *
 	 * @param <T>
@@ -324,20 +256,13 @@ public class SCPRequestPipeline {
 	 * @param errorCallback
 	 *            A callback function to call when an error is found when
 	 *            processing the message; takes the original SCPRequest, and the
-	 *            exception caught while sending it. If <tt>null</tt>, a simple
-	 *            default logging function is used.
+	 *            exception caught while sending it.
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
 	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
-		// Set the default error callback if needed
-		if (errorCallback == null) {
-			errorCallback = ((r, e) -> log
-					.error("problem sending " + r.getClass(), e));
-		}
-
 		// If the connection has not been measured
 		if (numChannels == null && connection.isReadyToReceive()) {
 			numChannels = max(inProgress + HEADROOM, DEFAULT_MAX_CHANNELS);
@@ -351,7 +276,8 @@ public class SCPRequestPipeline {
 
 		// Update the packet and store required details
 		int sequence = request.scpRequestHeader.issueSequenceNumber();
-		Request<T> req = new Request<>(request, callback, errorCallback);
+		Request<T> req =
+				new Request<>(request, callback, requireNonNull(errorCallback));
 		requests.put(sequence, req);
 
 		// Send the request, keeping track of how many are sent
@@ -372,43 +298,40 @@ public class SCPRequestPipeline {
 		}
 	}
 
-	private static final int RETRY_DELAY_MS = 100;
-
 	private void singleRetrieve(int timeout) throws IOException {
 		// Receive the next response
 		SCPResultMessage msg = connection.receiveSCPResponse(timeout);
+		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests
-		if (!requests.containsKey(msg.sequenceNumber)) {
+		if (req == null) {
 			log.info("discarding message with unknown sequence number: "
-					+ msg.sequenceNumber);
+					+ msg.getSequenceNumber());
 			return;
 		}
-
 		inProgress--;
-		Request<?> req = requests.get(msg.sequenceNumber);
 
 		// If the response can be retried, retry it
-		if (RETRY_CODES.contains(msg.result)) {
+		if (msg.isRetriable()) {
 			try {
 				sleep(RETRY_DELAY_MS);
-				resend(req, msg.result);
+				resend(req, msg.getResult());
 				numRetryCodeResent++;
 			} catch (Exception e) {
 				req.errorCallback.handleError(req.request, e);
-				requests.remove(msg.sequenceNumber);
+				msg.removeRequest(requests);
 			}
 		} else {
 
 			// No retry is possible - try constructing the result
 			try {
-				req.received(msg.responseData);
+				req.received(msg);
 			} catch (Exception e) {
 				req.errorCallback.handleError(req.request, e);
 			}
 
 			// Remove the sequence from the outstanding responses
-			requests.remove(msg.sequenceNumber);
+			msg.removeRequest(requests);
 		}
 	}
 

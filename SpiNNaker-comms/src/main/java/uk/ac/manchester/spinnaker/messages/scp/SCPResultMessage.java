@@ -1,15 +1,31 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /** The low-level format of SCP result message. */
 public class SCPResultMessage {
+	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
+	static {
+		RETRY_CODES.add(RC_TIMEOUT);
+		RETRY_CODES.add(RC_P2P_TIMEOUT);
+		RETRY_CODES.add(RC_LEN);
+		RETRY_CODES.add(RC_P2P_NOREPLY);
+	}
+
 	/** The response code. */
-	public final SCPResult result;
+	private final SCPResult result;
 	/** The sequence number of the request that this is a response to. */
-	public final int sequenceNumber;
+	private final int sequenceNumber;
 	/** The remaining data of the response. */
-	public final ByteBuffer responseData;
+	private ByteBuffer responseData;
 
 	/**
 	 * @param response
@@ -20,6 +36,40 @@ public class SCPResultMessage {
 		result = SCPResult.get(response.getShort());
 		sequenceNumber = response.getShort();
 		responseData = response;
+	}
+
+	/**
+	 * @return Whether this response indicates that the request should be
+	 *         retried.
+	 */
+	public boolean isRetriable() {
+		return RETRY_CODES.contains(result);
+	}
+
+	/**
+	 * Given a collection of requests, pick the one that correlates to this
+	 * result.
+	 *
+	 * @param <T>
+	 *            The type of requests.
+	 * @param requestStore
+	 *            The store of requests.
+	 * @return The correlated request, or <tt>null</tt> if no correlation
+	 *         exists.
+	 */
+	public <T> T pickRequest(Map<Integer, T> requestStore) {
+		return requestStore.get(getSequenceNumber());
+	}
+
+	/**
+	 * Given a collection of requests, remove the one that correlates to this
+	 * result.
+	 *
+	 * @param requestStore
+	 *            The store of requests.
+	 */
+	public void removeRequest(Map<Integer, ?> requestStore) {
+		requestStore.remove(getSequenceNumber());
 	}
 
 	/**
@@ -36,8 +86,23 @@ public class SCPResultMessage {
 	 *             If anything goes wrong with result code checking or
 	 *             deserialization.
 	 */
-	public <T extends SCPResponse> T getResponse(SCPRequest<T> request)
+	public <T extends SCPResponse> T parsePayload(SCPRequest<T> request)
 			throws Exception {
-		return request.getSCPResponse(responseData);
+		if (responseData == null) {
+			throw new IllegalStateException("can only parse a payload once");
+		}
+		try {
+			return request.getSCPResponse(responseData);
+		} finally {
+			responseData = null;
+		}
+	}
+
+	public SCPResult getResult() {
+		return result;
+	}
+
+	public int getSequenceNumber() {
+		return sequenceNumber;
 	}
 }

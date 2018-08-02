@@ -25,18 +25,20 @@ public enum SCPResult {
 	RC_CPU(0x88),
 	/** SHM destination dead. */
 	RC_DEAD(0x89),
-	/** No free Shared Memory buffers. */
+	/** No free shared memory buffers. */
 	RC_BUF(0x8a),
 	/** No reply to open. */
 	RC_P2P_NOREPLY(0x8b),
-	/** Open rejected. */
+	/** Message was rejected. */
 	RC_P2P_REJECT(0x8c),
 	/** Destination busy. */
 	RC_P2P_BUSY(0x8d),
-	/** Dest did not respond. */
+	/** Destination did not respond. */
 	RC_P2P_TIMEOUT(0x8e),
-	/** Pkt Transmission failed. */
+	/** Packet transmission failed. */
 	RC_PKT_TX(0x8f);
+
+	/** The encoded result value. */
 	public final short value;
 	private static final Map<Short, SCPResult> MAP = new HashMap<>();
 
@@ -50,6 +52,13 @@ public enum SCPResult {
 		}
 	}
 
+	/**
+	 * Decode a result.
+	 *
+	 * @param value
+	 *            The value to decode
+	 * @return The decoded value, or <tt>null</tt> if unrecognised.
+	 */
 	public static SCPResult get(short value) {
 		return MAP.get(value);
 	}

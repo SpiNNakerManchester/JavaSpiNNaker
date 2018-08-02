@@ -5,6 +5,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
+/**
+ * Base class for sendable SDP-based messages. SDP-based messages are those
+ * messages that have an SDP header.
+ *
+ * @author Donal Fellows
+ */
 public abstract class SpinnakerRequest implements SerializableMessage {
 	private static final int SDP_SOURCE_PORT = 7;
 	private static final int SDP_SOURCE_CPU = 31;
@@ -16,6 +22,13 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 		this.sdpHeader = sdpHeader;
 	}
 
+	/**
+	 * Prepares this message to be actually sent. This involves setting the tag
+	 * and source of the header to special marker values.
+	 *
+	 * @param chip
+	 *            The notional originating chip location.
+	 */
 	public final void updateSDPHeaderForUDPSend(HasChipLocation chip) {
 		if (sdpHeader.getSource() != null) {
 			throw new IllegalStateException(

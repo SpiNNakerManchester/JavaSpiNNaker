@@ -6,10 +6,6 @@ import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -20,10 +16,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.ws.Holder;
@@ -37,7 +31,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
@@ -58,13 +51,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * error is triggered.
 	 */
 	private static final int DEFAULT_RETRIES = 3;
-	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
-	static {
-		RETRY_CODES.add(RC_TIMEOUT);
-		RETRY_CODES.add(RC_P2P_TIMEOUT);
-		RETRY_CODES.add(RC_LEN);
-		RETRY_CODES.add(RC_P2P_NOREPLY);
-	}
 	private static final int RETRY_SLEEP = 100;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
@@ -184,9 +170,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retryReason.stream().allMatch(r -> reason.equals(r));
 			}
 
-			private void received(ByteBuffer responseData)
+			private void received(SCPResultMessage msg)
 					throws java.lang.Exception {
-				R response = request.getSCPResponse(responseData);
+				R response = msg.parsePayload(request);
 				if (callback != null) {
 					callback.accept(response);
 				}
@@ -256,30 +242,30 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private void retrieve() throws IOException {
 			// Receive the next response
 			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
-			Request req = requests.get(msg.sequenceNumber);
+			Request req = msg.pickRequest(requests);
 			if (req == null) {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: "
-						+ msg.sequenceNumber);
+						+ msg.getSequenceNumber());
 				return;
 			}
 			inProgress--;
 
 			// If the response can be retried, retry it
 			try {
-				if (RETRY_CODES.contains(msg.result)) {
+				if (msg.isRetriable()) {
 					sleep(RETRY_SLEEP);
-					resend(req, msg.result);
+					resend(req, msg.getResult());
 				} else {
 					// No retry is possible. Try constructing the result
-					req.received(msg.responseData);
+					req.received(msg);
 					// Remove the sequence from the outstanding responses
-					requests.remove(msg.sequenceNumber);
+					msg.removeRequest(requests);
 				}
 			} catch (java.lang.Exception e) {
 				errorRequest = req.request;
 				exception = e;
-				requests.remove(msg.sequenceNumber);
+				msg.removeRequest(requests);
 			}
 		}
 
