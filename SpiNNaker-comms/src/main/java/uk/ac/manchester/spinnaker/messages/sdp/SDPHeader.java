@@ -10,7 +10,6 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.machine.MachineDefaults;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
 /**

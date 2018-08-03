@@ -2,15 +2,18 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_DPRI;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 class TestOKResponse {
 	private short encode_addr_tuple(int dest_port, int dest_cpu, int src_port,
@@ -21,8 +24,8 @@ class TestOKResponse {
 
 	@Test
 	void testReadOKResponse() throws UnexpectedResponseCodeException {
-		short result = SCPResult.RC_OK.value;
-		byte flags = SDPHeader.Flag.REPLY_NOT_EXPECTED.value;
+		short result = RC_OK.value;
+		byte flags = REPLY_NOT_EXPECTED.value;
 		byte tag = 0x01;
 		short flag_tag_short = (short) (tag << 8 | flags); // flags << 8 | tag
 		byte dest_port = 7;
@@ -54,8 +57,8 @@ class TestOKResponse {
 
 	@Test
 	void testNotOKResponse() throws UnexpectedResponseCodeException {
-		short result = SCPResult.RC_TIMEOUT.value;
-		byte flags = SDPHeader.Flag.REPLY_NOT_EXPECTED.value;
+		short result = RC_TIMEOUT.value;
+		byte flags = REPLY_NOT_EXPECTED.value;
 		byte tag = 0x01;
 		short flag_tag_short = (short) (tag << 8 | flags); // flags << 8 | tag
 		byte dest_port = 7;

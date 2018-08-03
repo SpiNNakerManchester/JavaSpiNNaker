@@ -30,7 +30,7 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 
-		private Response(ByteBuffer buffer)
+		Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Version", CMD_VER, buffer);
 			versionInfo = new VersionInfo(buffer);
