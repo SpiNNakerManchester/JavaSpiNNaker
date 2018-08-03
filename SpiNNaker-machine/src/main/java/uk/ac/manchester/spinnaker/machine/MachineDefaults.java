@@ -106,7 +106,7 @@ public final class MachineDefaults {
             throws IllegalArgumentException {
         validateChipLocation(x, y);
         if (p < 0 || p >= MAX_NUM_CORES) {
-            throw new IllegalArgumentException("bad processor ID");
+            throw new IllegalArgumentException("bad processor ID: " + p);
         }
     }
 

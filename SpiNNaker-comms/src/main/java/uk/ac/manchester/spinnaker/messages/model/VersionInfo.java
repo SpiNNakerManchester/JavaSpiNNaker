@@ -61,17 +61,26 @@ public final class VersionInfo {
 
 		String decoded = new String(buffer.array(), buffer.position(),
 				buffer.remaining(), UTF_8);
+		String original = decoded;
 		if (vn < MAGIC_VERSION) {
 			versionString = decoded;
 			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
 			String[] bits = decoded.split("\\|0", NBITS);
+			if (bits.length != NBITS) {
+				throw new IllegalArgumentException(
+						"incorrect version format: " + original);
+			}
 			decoded = bits[0].replaceFirst("[|0]+$", "");
 			versionString = bits[1];
 			versionNumber = parseVersionString(versionString);
 		}
 
 		String[] bits = decoded.split("/", NBITS);
+		if (bits.length != NBITS) {
+			throw new IllegalArgumentException(
+					"incorrect version format: " + original);
+		}
 		name = bits[0];
 		hardware = bits[1];
 	}
