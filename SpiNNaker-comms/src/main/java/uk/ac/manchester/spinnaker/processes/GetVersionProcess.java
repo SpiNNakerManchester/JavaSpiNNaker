@@ -28,6 +28,8 @@ public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
 	 * @return The version description.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public VersionInfo getVersion(HasCoreLocation core)
 			throws IOException, Exception {

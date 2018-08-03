@@ -57,6 +57,8 @@ public class ApplicationRunProcess
 	 *            before returning.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void run(int appID, CoreSubsets coreSubsets, boolean wait)
 			throws Exception, IOException {

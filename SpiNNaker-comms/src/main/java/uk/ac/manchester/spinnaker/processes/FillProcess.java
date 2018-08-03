@@ -69,6 +69,8 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The type of data to fill with.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void fillMemory(HasChipLocation chip, int baseAddress, int data,
 			int size, DataType dataType) throws Exception, IOException {

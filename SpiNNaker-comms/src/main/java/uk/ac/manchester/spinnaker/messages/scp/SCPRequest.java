@@ -57,12 +57,19 @@ public abstract class SCPRequest<T extends SCPResponse>
 
 	/**
 	 * Create a new request.
-	 * @param sdpHeader The header.
-	 * @param command The command ID.
-	 * @param argument1 The first argument.
-	 * @param argument2 The second argument.
-	 * @param argument3 The third argument.
-	 * @param data The additional data.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 * @param data
+	 *            The additional data.
 	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
@@ -126,6 +133,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 * @param buffer
 	 *            The buffer to parse.
 	 * @return The message response.
+	 * @throws Exception
+	 *             If anything goes wrong with parsing.
 	 */
 	public abstract T getSCPResponse(ByteBuffer buffer) throws Exception;
 }

@@ -44,6 +44,8 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            deallocated
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
 			throws IOException, Exception {

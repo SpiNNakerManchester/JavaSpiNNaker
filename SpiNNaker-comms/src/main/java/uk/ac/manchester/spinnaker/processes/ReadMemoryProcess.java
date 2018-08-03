@@ -112,6 +112,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            determines how much memory to read.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, Exception {
@@ -141,6 +143,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            determines how much memory to read.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, Exception {
@@ -172,6 +176,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return the filled buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public ByteBuffer readLink(HasChipLocation chip, int linkID,
 			int baseAddress, int size) throws IOException, Exception {
@@ -200,6 +206,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return the filled buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
 			int size) throws IOException, Exception {
@@ -233,6 +241,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			int size, RandomAccessFile dataFile) throws IOException, Exception {
@@ -264,6 +274,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, Exception {
@@ -296,6 +308,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
 			int size, File dataFile) throws IOException, Exception {
@@ -318,6 +332,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
 			File dataFile) throws IOException, Exception {

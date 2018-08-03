@@ -61,6 +61,8 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *         whatever order they are produced in.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws Exception, IOException {

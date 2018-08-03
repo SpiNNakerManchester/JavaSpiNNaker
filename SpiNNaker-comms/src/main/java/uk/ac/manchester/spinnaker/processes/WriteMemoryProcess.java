@@ -88,6 +88,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            (exclusive).
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -111,6 +113,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How many bytes should be copied from the stream?
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -133,6 +137,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -178,6 +184,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How many bytes should be copied from the stream?
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -198,6 +206,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -221,6 +231,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
 			int baseAddress, ByteBuffer data, MessageProvider<T> msgProvider)
@@ -257,6 +269,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
 			int baseAddress, InputStream data, int bytesToWrite,

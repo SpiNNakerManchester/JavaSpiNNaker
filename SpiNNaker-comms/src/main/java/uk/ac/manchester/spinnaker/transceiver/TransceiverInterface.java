@@ -11,14 +11,14 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
@@ -43,7 +43,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -58,6 +57,7 @@ import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.ExecutableTargets;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
@@ -2162,8 +2162,6 @@ public interface TransceiverInterface {
 	 *            The host name of the Ethernet connection on the board
 	 * @return A connection for the given IP address, or <tt>null</tt> if no
 	 *         such connection exists
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
 	 */
 	default SCPConnection locateSpinnakerConnection(String hostname) {
 		try {
@@ -2180,8 +2178,6 @@ public interface TransceiverInterface {
 	 *            The IP address of the Ethernet connection on the board
 	 * @return A connection for the given IP address, or <tt>null</tt> if no
 	 *         such connection exists
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
 	 */
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
 

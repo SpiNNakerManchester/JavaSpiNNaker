@@ -4,10 +4,10 @@ import static java.lang.Math.min;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.N_IPTAGS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_CLOCK_SPEED;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
 
@@ -25,7 +25,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
@@ -34,6 +33,7 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.Router;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -121,6 +121,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return The machine description.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public Machine getMachineDetails(HasChipLocation bootChip,
 			MachineDimensions size) throws IOException, Exception {

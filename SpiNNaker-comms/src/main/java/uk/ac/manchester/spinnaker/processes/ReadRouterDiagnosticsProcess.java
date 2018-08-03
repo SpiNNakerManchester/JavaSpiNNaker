@@ -36,6 +36,8 @@ public class ReadRouterDiagnosticsProcess
 	 * @return The diagnostics from the chip's router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {

@@ -41,6 +41,8 @@ public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return A list of block descriptors, in block chain order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {

@@ -67,6 +67,8 @@ public class WriteMemoryFloodProcess
 	 *            <i>limit</i> (exclusive)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -109,6 +111,8 @@ public class WriteMemoryFloodProcess
 	 *            problems.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
@@ -148,6 +152,8 @@ public class WriteMemoryFloodProcess
 	 *            The data in a file, which will be fully transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			File dataFile) throws IOException, Exception {

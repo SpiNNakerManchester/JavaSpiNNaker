@@ -38,6 +38,8 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *         absent.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {

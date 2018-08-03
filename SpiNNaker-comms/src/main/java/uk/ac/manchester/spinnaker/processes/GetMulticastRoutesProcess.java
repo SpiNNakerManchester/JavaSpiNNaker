@@ -51,6 +51,8 @@ public class GetMulticastRoutesProcess
 	 * @return The list of routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			int baseAddress, Integer appID) throws IOException, Exception {

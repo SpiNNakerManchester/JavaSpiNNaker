@@ -26,6 +26,10 @@ public class ReadFixedRouteEntryProcess
 	 * @param chip
 	 *            The chip to read from
 	 * @return The route.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, Exception {
@@ -42,6 +46,8 @@ public class ReadFixedRouteEntryProcess
 	 * @return The route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
 			throws IOException, Exception {

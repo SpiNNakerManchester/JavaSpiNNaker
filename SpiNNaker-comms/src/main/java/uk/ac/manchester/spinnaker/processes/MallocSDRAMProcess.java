@@ -28,6 +28,10 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param appID
 	 *            What app will own the allocation.
 	 * @return Where the start of the allocated memory is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID)
 			throws IOException, Exception {
@@ -50,6 +54,8 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return Where the start of the allocated memory is.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception {

@@ -23,7 +23,7 @@ public class SCPConnection extends SDPConnection
 	 * @param remoteHost
 	 *            The remote host name or IP address to send messages to.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(String remoteHost) throws IOException {
 		this(DEFAULT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
@@ -38,7 +38,7 @@ public class SCPConnection extends SDPConnection
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(String remoteHost, Integer remotePort)
 			throws IOException {
@@ -58,7 +58,7 @@ public class SCPConnection extends SDPConnection
 	 * @param remoteHost
 	 *            The remote host name or IP address to send messages to.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(String localHost, Integer localPort,
 			String remoteHost) throws IOException {
@@ -81,7 +81,7 @@ public class SCPConnection extends SDPConnection
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(String localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
@@ -96,7 +96,7 @@ public class SCPConnection extends SDPConnection
 	 * @param remoteHost
 	 *            The remote host name or IP address to send messages to.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(HasChipLocation chip, String remoteHost)
 			throws IOException {
@@ -114,7 +114,7 @@ public class SCPConnection extends SDPConnection
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(HasChipLocation chip, String remoteHost,
 			Integer remotePort) throws IOException {
@@ -136,7 +136,7 @@ public class SCPConnection extends SDPConnection
 	 * @param remoteHost
 	 *            The remote host name or IP address to send messages to.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(HasChipLocation chip, String localHost,
 			Integer localPort, String remoteHost) throws IOException {
@@ -160,6 +160,8 @@ public class SCPConnection extends SDPConnection
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
+	 * @throws IOException
+	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(HasChipLocation chip, String localHost,
 			Integer localPort, String remoteHost, Integer remotePort)

@@ -45,6 +45,8 @@ public class LoadFixedRouteEntryProcess
 	 *            The ID of the application with which to associate the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception {

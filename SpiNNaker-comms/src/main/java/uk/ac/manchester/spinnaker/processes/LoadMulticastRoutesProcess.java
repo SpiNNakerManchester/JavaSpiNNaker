@@ -57,6 +57,8 @@ public class LoadMulticastRoutesProcess
 	 *            The application ID associated with the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void loadRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
