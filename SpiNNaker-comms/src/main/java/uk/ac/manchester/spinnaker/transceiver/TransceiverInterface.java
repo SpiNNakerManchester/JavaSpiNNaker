@@ -273,8 +273,8 @@ public interface TransceiverInterface {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
-	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void bootBoard() throws InterruptedException, IOException {
 		bootBoard(null);
@@ -288,8 +288,8 @@ public interface TransceiverInterface {
 	 *            extra values to set during boot
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
-	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException;
@@ -304,6 +304,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, Exception, InterruptedException {
@@ -322,6 +324,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -341,6 +345,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady(int numRetries)
 			throws IOException, Exception, InterruptedException {
@@ -361,6 +367,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -595,6 +603,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID)
@@ -621,6 +631,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID)
@@ -647,6 +659,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID, boolean wait)
@@ -676,6 +690,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID, boolean wait)
@@ -696,6 +712,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID)
 			throws IOException, Exception, InterruptedException {
@@ -719,6 +737,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID)
@@ -743,6 +763,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException {
@@ -768,6 +790,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID, boolean wait)
@@ -787,6 +811,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID)
 			throws IOException, Exception, InterruptedException {
@@ -809,6 +835,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID)
@@ -832,6 +860,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException {
@@ -856,6 +886,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID, boolean wait)
@@ -880,6 +912,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID)
@@ -908,6 +942,8 @@ public interface TransceiverInterface {
 	 *             the input stream.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID, boolean wait)
@@ -930,6 +966,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
 			int appID) throws IOException, Exception, InterruptedException {
@@ -955,6 +993,8 @@ public interface TransceiverInterface {
 	 *             the file.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, File executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException;
@@ -975,6 +1015,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			int appID) throws IOException, Exception, InterruptedException {
@@ -999,6 +1041,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException;
@@ -1017,6 +1061,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
 			int appID) throws IOException, Exception, InterruptedException,
@@ -1057,6 +1103,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void powerOnMachine() throws InterruptedException, IOException, Exception;
 
@@ -1072,6 +1120,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1093,6 +1143,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1108,6 +1160,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board)
 			throws InterruptedException, IOException, Exception {
@@ -1126,6 +1180,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1147,6 +1203,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1160,6 +1218,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void powerOffMachine() throws InterruptedException, IOException, Exception;
 
@@ -1175,6 +1235,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1196,6 +1258,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1211,6 +1275,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board)
 			throws InterruptedException, IOException, Exception {
@@ -1229,6 +1295,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1250,6 +1318,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1273,6 +1343,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
@@ -2182,6 +2254,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates) throws IOException, Exception,
@@ -2218,6 +2292,8 @@ public interface TransceiverInterface {
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
 	 */
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
