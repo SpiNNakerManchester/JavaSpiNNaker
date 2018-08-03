@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -54,5 +55,41 @@ class TestCountState {
 
         Response response = new CountState.Response(data);
         assertEquals(5, response.count);
+	}
+
+	@Test
+	void testFailedDeserialise() throws UnsupportedEncodingException {
+		// SCP Stuff
+		SCPResult rc = SCPResult.RC_TIMEOUT;
+		short seq = 105;
+		short p2p_addr = 1024;
+		byte phys_cpu = 31;
+		byte virt_cpu = 14;
+		short version = 234;
+		short buffer = 250;
+		int build_date = 103117;
+		byte[] ver_string = "sark/spinnaker".getBytes("ASCII");
+
+		// SDP stuff
+		Flag flags = SDPHeader.Flag.REPLY_NOT_EXPECTED;
+		byte tag = 5;
+		byte dest_port_cpu = 0x4f;
+		byte src_port_cpu = 0x6a;
+		byte dest_x = 0x11;
+		byte dest_y = (byte) 0xab;
+		byte src_x = 0x7;
+		byte src_y = 0x0;
+
+		ByteBuffer data = ByteBuffer.allocate(39).order(ByteOrder.LITTLE_ENDIAN);
+		data.put(flags.value).put(tag).put(dest_port_cpu).put(src_port_cpu);
+		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
+		data.putShort(rc.value).putShort(seq).putShort(p2p_addr);
+		data.put(phys_cpu).put(virt_cpu);
+		data.putShort(version).putShort(buffer).putInt(build_date);
+		data.put(ver_string);
+		data.flip();
+
+		assertThrows(UnexpectedResponseCodeException.class,
+				() -> new CountState.Response(data));
 	}
 }
