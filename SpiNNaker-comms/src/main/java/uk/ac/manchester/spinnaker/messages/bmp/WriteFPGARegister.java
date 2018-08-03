@@ -9,8 +9,6 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-// WARNING! The long URL below is broken over two lines correctly
-// See https://stackoverflow.com/a/50987903/301832 for an explanation
 /**
  * A request for writing data to a FPGA register.
  *
