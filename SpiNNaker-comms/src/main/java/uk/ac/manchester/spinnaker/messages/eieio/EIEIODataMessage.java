@@ -315,7 +315,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				switch (eieioType) {
 				case KEY_PAYLOAD_16_BIT:
 				case KEY_16_BIT:
-					payloadBase = (int) buffer.getShort();
+					payloadBase = Short.toUnsignedInt(buffer.getShort());
 					break;
 				case KEY_PAYLOAD_32_BIT:
 				case KEY_32_BIT:

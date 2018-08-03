@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.processes;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
@@ -75,7 +76,7 @@ public class GetMulticastRoutesProcess
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
 			data.get(); // Ignore
 			data.get(); // Ignore
-			int appid = data.get();
+			int appid = toUnsignedInt(data.get());
 			data.get(); // Ignore
 			int route = data.getInt();
 			int key = data.getInt();

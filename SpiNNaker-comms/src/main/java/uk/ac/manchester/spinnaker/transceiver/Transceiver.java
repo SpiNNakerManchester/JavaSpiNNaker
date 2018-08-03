@@ -573,9 +573,9 @@ public class Transceiver extends UDPTransceiver
 						dataItem.type.value);
 		switch (dataItem.type) {
 		case BYTE:
-			return buffer.get();
+			return Byte.toUnsignedInt(buffer.get());
 		case SHORT:
-			return buffer.getShort();
+			return Short.toUnsignedInt(buffer.getShort());
 		case INT:
 			return buffer.getInt();
 		case LONG:

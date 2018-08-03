@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.Byte.toUnsignedInt;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
@@ -50,10 +52,10 @@ public final class VersionInfo {
 	 *            buffer holding an SCP packet containing version information
 	 */
 	public VersionInfo(ByteBuffer buffer) {
-		int p = Byte.toUnsignedInt(buffer.get());
-		physicalCPUID = Byte.toUnsignedInt(buffer.get());
-		int y = Byte.toUnsignedInt(buffer.get());
-		int x = Byte.toUnsignedInt(buffer.get());
+		int p = toUnsignedInt(buffer.get());
+		physicalCPUID = toUnsignedInt(buffer.get());
+		int y = toUnsignedInt(buffer.get());
+		int x = toUnsignedInt(buffer.get());
 		core = new CoreLocation(x, y, p);
 		buffer.getShort(); // Ignore 2 byes
 		int vn = Short.toUnsignedInt(buffer.getShort());

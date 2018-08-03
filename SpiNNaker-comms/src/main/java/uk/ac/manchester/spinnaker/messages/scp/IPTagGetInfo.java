@@ -38,16 +38,16 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		 */
 		public final IPTagTimeOutWaitTime transientTimeout;
 		/** The count of the IP tag pool size. */
-		public final byte poolSize;
+		public final int poolSize;
 		/** The count of the number of fixed IP tag entries. */
-		public final byte fixedSize;
+		public final int fixedSize;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
 			buffer.get(); // skip 1
-			poolSize = buffer.get();
-			fixedSize = buffer.get();
+			poolSize = Byte.toUnsignedInt(buffer.get());
+			fixedSize = Byte.toUnsignedInt(buffer.get());
 		}
 	}
 }

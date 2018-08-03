@@ -14,11 +14,11 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		implements HasCoreLocation {
-	private final byte numRequests;
-	private final byte sequenceNumber;
+	private final int numRequests;
+	private final int sequenceNumber;
 	private final HasCoreLocation core;
-	private final byte[] channel;
-	private final byte[] regionID;
+	private final int[] channel;
+	private final int[] regionID;
 	private final int[] startAddress;
 	private final int[] spaceRead;
 
@@ -40,8 +40,8 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	 * @param spaceRead
 	 *            The number of bytes to read from each.
 	 */
-	public SpinnakerRequestReadData(HasCoreLocation core, byte sequenceNum,
-			byte numRequests, byte[] channel, byte[] regionID,
+	public SpinnakerRequestReadData(HasCoreLocation core, int sequenceNum,
+			int numRequests, int[] channel, int[] regionID,
 			int[] startAddress, int[] spaceRead) {
 		super(SPINNAKER_REQUEST_READ_DATA);
 		this.core = core;
@@ -77,11 +77,11 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	 * @param spaceRead
 	 *            The number of bytes to read.
 	 */
-	public SpinnakerRequestReadData(HasCoreLocation core, byte sequenceNum,
-			byte channel, byte regionID, int startAddress, int spaceRead) {
-		this(core, sequenceNum, (byte) 1, new byte[] {
+	public SpinnakerRequestReadData(HasCoreLocation core, int sequenceNum,
+			int channel, int regionID, int startAddress, int spaceRead) {
+		this(core, sequenceNum, (byte) 1, new int[] {
 				channel
-		}, new byte[] {
+		}, new int[] {
 				regionID
 		}, new int[] {
 				startAddress
@@ -102,18 +102,18 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	SpinnakerRequestReadData(ByteBuffer data) {
 		super(data);
 
-		byte x = data.get();
-		byte y = data.get();
-		byte pr = data.get();
-		this.sequenceNumber = data.get();
+		int x = Byte.toUnsignedInt(data.get());
+		int y = Byte.toUnsignedInt(data.get());
+		int pr = Byte.toUnsignedInt(data.get());
+		this.sequenceNumber = Byte.toUnsignedInt(data.get());
 
 		byte p = (byte) (pr >>> CORE_SHIFT);
 		int n = pr & N_REQUESTS_MASK;
 		this.core = new CoreLocation(x, y, p);
 		this.numRequests = (byte) n;
 
-		channel = new byte[n];
-		regionID = new byte[n];
+		channel = new int[n];
+		regionID = new int[n];
 		startAddress = new int[n];
 		spaceRead = new int[n];
 		for (int i = 0; i < n; i++) {
@@ -121,8 +121,8 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 				// Skip two bytes
 				data.getShort();
 			}
-			channel[i] = data.get();
-			regionID[i] = data.get();
+			channel[i] = Byte.toUnsignedInt(data.get());
+			regionID[i] = Byte.toUnsignedInt(data.get());
 			startAddress[i] = data.getInt();
 			spaceRead[i] = data.getInt();
 		}
@@ -143,19 +143,19 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		return core.getP();
 	}
 
-	public byte getNumRequests() {
+	public int getNumRequests() {
 		return numRequests;
 	}
 
-	public byte getSequenceNumber() {
+	public int getSequenceNumber() {
 		return sequenceNumber;
 	}
 
-	public byte getChannel(int ackID) {
+	public int getChannel(int ackID) {
 		return channel[ackID];
 	}
 
-	public byte getRegionID(int ackID) {
+	public int getRegionID(int ackID) {
 		return regionID[ackID];
 	}
 
@@ -176,13 +176,13 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		for (int i = 0; i < numRequests; i++) {
 			if (i == 0) {
 				buffer.put((byte) (core.getP() << CORE_SHIFT | numRequests));
-				buffer.put(sequenceNumber);
+				buffer.put((byte) sequenceNumber);
 			} else {
 				buffer.putShort((short) 0);
 			}
 
-			buffer.put(channel[i]);
-			buffer.put(regionID[i]);
+			buffer.put((byte) channel[i]);
+			buffer.put((byte) regionID[i]);
 			buffer.putInt(startAddress[i]);
 			buffer.putInt(spaceRead[i]);
 		}

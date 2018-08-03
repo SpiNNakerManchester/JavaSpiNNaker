@@ -86,20 +86,20 @@ public class HostDataRead extends EIEIOCommandMessage {
 		this.acks = new Ack(getNumRequests(), channel, regionID, spaceRead);
 	}
 
-	public byte getNumRequests() {
-		return header.numRequests;
+	public int getNumRequests() {
+		return Byte.toUnsignedInt(header.numRequests);
 	}
 
-	public byte getSequenceNumber() {
-		return header.sequenceNumber;
+	public int getSequenceNumber() {
+		return Byte.toUnsignedInt(header.sequenceNumber);
 	}
 
-	public byte getChannel(int ackID) {
-		return acks.channel[ackID];
+	public int getChannel(int ackID) {
+		return Byte.toUnsignedInt(acks.channel[ackID]);
 	}
 
-	public byte getRegionID(int ackID) {
-		return acks.regionID[ackID];
+	public int getRegionID(int ackID) {
+		return Byte.toUnsignedInt(acks.regionID[ackID]);
 	}
 
 	public int getSpaceRead(int ackID) {
@@ -109,13 +109,13 @@ public class HostDataRead extends EIEIOCommandMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(getNumRequests());
-		buffer.put(getSequenceNumber());
-		for (int i = 0; i < getNumRequests(); i++) {
+		buffer.put(header.numRequests);
+		buffer.put(header.sequenceNumber);
+		for (int i = 0; i < header.numRequests; i++) {
 			buffer.putShort((short) 0);
-			buffer.put(getChannel(i));
-			buffer.put(getRegionID(i));
-			buffer.putInt(getSpaceRead(i));
+			buffer.put(acks.channel[i]);
+			buffer.put(acks.regionID[i]);
+			buffer.putInt(acks.spaceRead[i]);
 		}
 	}
 
