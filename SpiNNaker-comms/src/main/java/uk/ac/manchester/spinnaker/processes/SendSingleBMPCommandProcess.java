@@ -59,11 +59,21 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private BMPRequest<?> errorRequest;
 	private Throwable exception;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector) {
 		this(connectionSelector, DEFAULT_TIMEOUT);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param timeout
+	 *            The timeout on the connection, in milliseconds.
+	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector, int timeout) {
 		this.timeout = timeout;
@@ -85,7 +95,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	public R execute(BMPRequest<R> request) throws IOException, Exception {
 		Holder<R> holder = new Holder<>();
 		/*
-		 * If no pipe line built yet, build one on the connection selected for
+		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
@@ -313,6 +323,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		}
 	}
 
+	/**
+	 * Indicates that message sending timed out.
+	 */
 	@SuppressWarnings("serial")
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
@@ -321,6 +334,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		}
 	}
 
+	/**
+	 * Indicates that message sending failed for various reasons.
+	 */
 	@SuppressWarnings("serial")
 	static final class SendFailedException extends IOException {
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,

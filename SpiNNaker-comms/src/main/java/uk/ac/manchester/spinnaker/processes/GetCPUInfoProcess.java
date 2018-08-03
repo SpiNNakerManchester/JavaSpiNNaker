@@ -6,6 +6,7 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -15,13 +16,27 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
+/**
+ * Get the CPU information structure for a set of processors.
+ */
 public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetCPUInfoProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
-	public List<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+	/**
+	 * Get CPU information.
+	 *
+	 * @param coreSubsets
+	 *            What processors to get the information from
+	 * @return The CPU information, in undetermined order.
+	 */
+	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, Exception {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
 		for (CoreLocation core : coreSubsets) {

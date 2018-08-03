@@ -73,6 +73,12 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
 
+/**
+ * The interface supported by the {@link Transceiver}. Emulates a lot of default
+ * handling and variant-type handling by Python.
+ *
+ * @author Donal Fellows
+ */
 public interface TransceiverInterface {
 	/**
 	 * Delay between starting a program on a core and checking to see if the

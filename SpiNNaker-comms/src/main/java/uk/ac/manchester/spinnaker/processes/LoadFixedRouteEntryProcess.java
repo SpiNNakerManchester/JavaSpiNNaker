@@ -11,6 +11,10 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 /** Load a fixed route routing entry onto a chip. */
 public class LoadFixedRouteEntryProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public LoadFixedRouteEntryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);

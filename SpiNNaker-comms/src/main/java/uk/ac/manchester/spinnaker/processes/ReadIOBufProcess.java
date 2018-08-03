@@ -37,6 +37,10 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf =
 			new DefaultMap<>(TreeMap::new);
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public ReadIOBufProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -46,6 +50,16 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(overall, UDP_MESSAGE_MAX_SIZE);
 	}
 
+	/**
+	 * Get the IOBUF buffers from some cores.
+	 *
+	 * @param size
+	 *            How much to read.
+	 * @param cores
+	 *            Which cores to read from.
+	 * @return The buffers. It is the responsibility of the caller to handle
+	 *         whatever order they are produced in.
+	 */
 	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws Exception, IOException {
 		// Get the IOBuf address for each core

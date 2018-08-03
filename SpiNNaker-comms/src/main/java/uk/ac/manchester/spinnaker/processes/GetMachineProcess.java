@@ -77,6 +77,24 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to talk to the machine.
+	 * @param ignoreChips
+	 *            The chip blacklist. Note that cores on this chip are also
+	 *            blacklisted, and links to and from this chip are also
+	 *            blacklisted.
+	 * @param ignoreCores
+	 *            The core blacklist.
+	 * @param ignoreLinks
+	 *            The link blacklist.
+	 * @param maxCoreID
+	 *            The maximum core ID, or <tt>null</tt> for the system's
+	 *            standard limit. For debugging.
+	 * @param maxSDRAMSize
+	 *            The maximum SDRAM size, or <tt>null</tt> for the system's
+	 *            standard limit. For debugging.
+	 */
 	public GetMachineProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			Collection<ChipLocation> ignoreChips,
@@ -92,6 +110,16 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		this.chipInfo = new HashMap<>();
 	}
 
+	/**
+	 * Get a full, booted machine, populated with information directly from the
+	 * physical hardware.
+	 *
+	 * @param bootChip
+	 *            Which chip is used to boot the machine.
+	 * @param size
+	 *            The dimensions of the machine.
+	 * @return The machine description.
+	 */
 	public Machine getMachineDetails(HasChipLocation bootChip,
 			MachineDimensions size) throws IOException, Exception {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
@@ -208,8 +236,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 	/**
 	 * Get the chip information for the machine. Note that
-	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)} must have
-	 * been called first.
+	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)
+	 * getMachineDetails(...)} must have been called first.
 	 *
 	 * @return The description of what the state of each chip is.
 	 */

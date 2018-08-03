@@ -20,11 +20,27 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 public class WriteMemoryFloodProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param numRetries
+	 *            The number of times to retry a communication.
+	 * @param timeout
+	 *            The timeout (in ms) for the communication.
+	 * @param numChannels
+	 *            The number of parallel communications to support
+	 * @param intermediateChannelWaits
+	 *            How many parallel communications to launch at once. (??)
+	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,

@@ -9,6 +9,10 @@ import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
 
 /** A process for allocating a block of SDRAM on a SpiNNaker chip. */
 public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public MallocSDRAMProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);

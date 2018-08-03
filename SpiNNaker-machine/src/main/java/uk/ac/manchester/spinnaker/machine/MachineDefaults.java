@@ -56,6 +56,10 @@ public final class MachineDefaults {
     /** The offset from zero in chips to get half size root values. */
     public static final int HALF_SIZE = 4;
 
+    /**
+     * The number of router diagnostic counters.
+     */
+    public static final int NUM_ROUTER_DIAGNOSTIC_COUNTERS = 16;
 
     /**
       * Width of field of hashcode for holding (one dimension of the) chip

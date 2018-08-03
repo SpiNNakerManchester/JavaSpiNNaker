@@ -17,6 +17,10 @@ import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
 /** A process for loading the multicast routing table on a SpiNNaker chip. */
 public class LoadMulticastRoutesProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public LoadMulticastRoutesProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -42,6 +46,16 @@ public class LoadMulticastRoutesProcess
 		buffer.putInt(END);
 	}
 
+	/**
+	 * Load some multicast routes into the chip's router.
+	 *
+	 * @param chip
+	 *            The chip whose router is to be updated.
+	 * @param routes
+	 *            The routes to load.
+	 * @param appID
+	 *            The application ID associated with the routes.
+	 */
 	public void loadRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
 			throws IOException, Exception {

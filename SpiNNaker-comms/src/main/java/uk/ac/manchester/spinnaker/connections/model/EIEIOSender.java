@@ -14,5 +14,5 @@ public interface EIEIOSender extends Connection {
 	 * @throws IOException
 	 *             If there is an error sending the message
 	 */
-	void sendEIEIOMessage(EIEIOMessage eieioMessage) throws IOException;
+	void sendEIEIOMessage(EIEIOMessage<?> eieioMessage) throws IOException;
 }

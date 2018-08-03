@@ -48,8 +48,7 @@ public class EIEIOConnection
 	}
 
 	@Override
-	public void sendEIEIOMessage(
-			@SuppressWarnings("rawtypes") EIEIOMessage eieioMessage)
+	public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
 			throws IOException {
 		ByteBuffer b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);

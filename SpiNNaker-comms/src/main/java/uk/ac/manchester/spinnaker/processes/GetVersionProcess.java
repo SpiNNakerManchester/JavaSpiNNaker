@@ -10,11 +10,23 @@ import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 
 /** A process for getting the version of the machine. */
 public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetVersionProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get the version of the software on a particular core. Should usually be a
+	 * SCAMP core.
+	 *
+	 * @param core
+	 *            The core to query.
+	 * @return The version description.
+	 */
 	public VersionInfo getVersion(HasCoreLocation core)
 			throws IOException, Exception {
 		return synchronousCall(new GetVersion(core)).versionInfo;

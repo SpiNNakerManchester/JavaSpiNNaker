@@ -9,6 +9,10 @@ import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 
 /** Deallocate space in the SDRAM. */
 public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public DeallocSDRAMProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);

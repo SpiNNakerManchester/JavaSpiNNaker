@@ -12,6 +12,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
@@ -72,7 +73,6 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSelector;
-import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -99,6 +99,7 @@ import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
@@ -160,6 +161,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * the overall speed of operation, since the multiple calls may be made
  * separately over the set of given connections.
  */
+@SuppressWarnings("checkstyle:ParameterNumber")
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface {
 	private static final int BIGGER_BOARD = 4;
@@ -317,7 +319,6 @@ public class Transceiver extends UDPTransceiver
 	 *            in debugging purposes)
 	 * @return The created transceiver
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
@@ -387,12 +388,36 @@ public class Transceiver extends UDPTransceiver
 				emptyList(), emptyList(), null, false, null, null, null);
 	}
 
+	/**
+	 * Create a transceiver.
+	 * @param version The SpiNNaker board version number.
+	 */
 	public Transceiver(int version)
 			throws IOException, SpinnmanException, Exception {
 		this(version, null, null, null, null, null, null, null);
 	}
 
-	@SuppressWarnings("checkstyle:ParameterNumber")
+	/**
+	 * Create a transceiver.
+	 *
+	 * @param version
+	 *            The SpiNNaker board version number.
+	 * @param connections
+	 *            The connections to use in the transceiver. Note that the
+	 *            transceiver may make additional connections.
+	 * @param ignoreChips
+	 *            Blacklisted chips.
+	 * @param ignoreCores
+	 *            Blacklisted cores.
+	 * @param ignoreLinks
+	 *            Blacklisted links.
+	 * @param maxCoreID
+	 *            If not <tt>null</tt>, the maximum core ID to allow.
+	 * @param scampConnections
+	 *            Descriptions of SCP connections to create.
+	 * @param maxSDRAMSize
+	 *            If not <tt>null</tt>, the maximum SDRAM size to allow.
+	 */
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
 			Collection<CoreLocation> ignoreCores,
@@ -550,9 +575,11 @@ public class Transceiver extends UDPTransceiver
 		return bmpSelectors.get(key);
 	}
 
+	private static final int NNID_MAX = 0x7F;
+
 	private byte getNextNearestNeighbourID() {
 		synchronized (nearestNeighbourLock) {
-			int next = (nearestNeighbourID + 1) & 0x7F;
+			int next = (nearestNeighbourID + 1) & NNID_MAX;
 			nearestNeighbourID = next;
 			return (byte) next;
 		}
@@ -659,6 +686,8 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
+	private static final int CONNECTION_CHECK_DELAY = 100;
+
 	/**
 	 * Check that the given connection to the given chip works.
 	 *
@@ -681,7 +710,7 @@ public class Transceiver extends UDPTransceiver
 				if (chipInfo.isEthernetAvailable) {
 					return true;
 				}
-				sleep(100);
+				sleep(CONNECTION_CHECK_DELAY);
 			} catch (InterruptedException | SocketTimeoutException
 					| Exception e) {
 				// do nothing
@@ -941,6 +970,14 @@ public class Transceiver extends UDPTransceiver
 		return version.minorVersion > SCAMP_VERSION.minorVersion;
 	}
 
+	/**
+	 * The number of milliseconds after powering on the machine to wait before
+	 * attempting to boot SCAMP on its chips. This is time to allow the code on
+	 * each chip's ROM to figure out what the state of the hardware is enough
+	 * for booting to be viable.
+	 */
+	private static final int POST_POWER_ON_DELAY = 2000;
+
 	@Override
 	public VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -962,7 +999,7 @@ public class Transceiver extends UDPTransceiver
 			powerOnMachine();
 
 			// Sleep a bit to let things get going
-			sleep(2000);
+			sleep(POST_POWER_ON_DELAY);
 			log.info("Attempting to boot machine");
 
 			// retry to get a SCAMP version, this time trying multiple times
@@ -1017,7 +1054,7 @@ public class Transceiver extends UDPTransceiver
 				if (versionInfo.core.asChipLocation()
 						.equals(DEFAULT_DESTINATION)) {
 					versionInfo = null;
-					sleep(100);
+					sleep(CONNECTION_CHECK_DELAY);
 				}
 			} catch (Exception e) {
 				if (e.getCause() instanceof SocketTimeoutException) {
@@ -1688,13 +1725,16 @@ public class Transceiver extends UDPTransceiver
 		return new DiagnosticFilter(response.data.getInt());
 	}
 
+	private static final int ENABLE_SHIFT = 16;
+	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
+
 	@Override
 	public void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable, Iterable<Integer> counterIDs)
 			throws IOException, Exception {
 		int clearData = 0;
 		for (int counterID : requireNonNull(counterIDs)) {
-			if (counterID < 0 || counterID > 15) {
+			if (counterID < 0 || counterID >= NUM_ROUTER_DIAGNOSTIC_COUNTERS) {
 				throw new IllegalArgumentException(
 						"Diagnostic counter IDs must be between 0 and 15");
 			}
@@ -1702,10 +1742,10 @@ public class Transceiver extends UDPTransceiver
 		}
 		if (enable) {
 			for (int counterID : counterIDs) {
-				clearData |= 1 << counterID + 16;
+				clearData |= 1 << counterID + ENABLE_SHIFT;
 			}
 		}
-		writeMemory(chip, 0xf100002c, clearData);
+		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER_ADDR, clearData);
 	}
 
 	@Override
@@ -1792,15 +1832,55 @@ public class Transceiver extends UDPTransceiver
 		return bmpSelectors;
 	}
 
+	/**
+	 * A simple description of a connnection to create.
+	 */
 	public static final class ConnectionDescriptor {
-		String hostname;
-		Integer portNumber;
-		ChipLocation chip;
+		/** What host to talk to. */
+		private String hostname;
+		/** What port to talk to, or <tt>null</tt> for default. */
+		private Integer portNumber;
+		/** What chip to talk to. */
+		private ChipLocation chip;
+
+		/**
+		 * Create a connection descriptor.
+		 *
+		 * @param hostname
+		 *            The host to talk to. The default UDP port will be used.
+		 * @param chip
+		 *            The chip to talk to.
+		 */
+		public ConnectionDescriptor(String hostname, HasChipLocation chip) {
+			this.hostname = requireNonNull(hostname);
+			this.chip = chip.asChipLocation();
+			this.portNumber = null;
+		}
+
+		/**
+		 * Create a connection descriptor.
+		 *
+		 * @param hostname
+		 *            The host to talk to.
+		 * @param port
+		 *            The UDP port to talk to.
+		 * @param chip
+		 *            The chip to talk to.
+		 */
+		public ConnectionDescriptor(String hostname, int port,
+				HasChipLocation chip) {
+			this.hostname = requireNonNull(hostname);
+			this.chip = chip.asChipLocation();
+			this.portNumber = port;
+		}
 	}
 
+	/**
+	 * A simple description of a BMP to talk to.
+	 */
 	static final class BMPCoords {
-		final int cabinet;
-		final int frame;
+		private final int cabinet;
+		private final int frame;
 
 		BMPCoords(int cabinet, int frame) {
 			this.cabinet = cabinet;

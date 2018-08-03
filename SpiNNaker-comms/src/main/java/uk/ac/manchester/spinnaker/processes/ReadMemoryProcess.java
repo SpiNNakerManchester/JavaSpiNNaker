@@ -18,6 +18,10 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for reading memory on a SpiNNaker chip. */
 public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public ReadMemoryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);

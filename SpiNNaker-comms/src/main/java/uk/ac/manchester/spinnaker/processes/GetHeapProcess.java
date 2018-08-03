@@ -15,15 +15,31 @@ import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
+/**
+ * Get a description of the heap.
+ */
 public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int HEAP_HEADER_SIZE = 8;
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetHeapProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get the heap block descriptors.
+	 *
+	 * @param chip
+	 *            The chip to ask.
+	 * @param heap
+	 *            The heap to ask about.
+	 * @return A list of block descriptors, in block chain order.
+	 */
 	public List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {
 		int heapBase = readFromAddress(chip,

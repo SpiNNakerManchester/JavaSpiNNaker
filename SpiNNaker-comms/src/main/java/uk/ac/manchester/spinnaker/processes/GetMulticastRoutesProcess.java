@@ -30,11 +30,26 @@ public class GetMulticastRoutesProcess
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetMulticastRoutesProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get the multicast routes from a chip's router.
+	 *
+	 * @param chip
+	 *            The chip to read from.
+	 * @param baseAddress
+	 *            Where the routing table is.
+	 * @param appID
+	 *            What application is associated with the routes.
+	 * @return The list of routes.
+	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			int baseAddress, Integer appID) throws IOException, Exception {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
