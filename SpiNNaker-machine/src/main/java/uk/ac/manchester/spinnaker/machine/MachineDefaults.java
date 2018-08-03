@@ -116,13 +116,17 @@ public final class MachineDefaults {
         }
     }
 
+    //     _4_chip_down_links = {
+    //    (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
+    //    (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+    //}
     private static Map<ChipLocation, Set<Direction>>
             fourChipDownLinks() {
         HashMap<ChipLocation, Set<Direction>> result = new HashMap();
         HashSet<Direction> directions = new HashSet();
-        directions.add(Direction.SOUTH);
+        directions.add(Direction.WEST);
         directions.add(Direction.SOUTHWEST);
-        result.put(ChipLocation.ZERO_ZERO,
+        result.put(new ChipLocation(0, 0),
                 Collections.unmodifiableSet(directions));
         result.put(new ChipLocation(0, 1),
                 Collections.unmodifiableSet(directions));

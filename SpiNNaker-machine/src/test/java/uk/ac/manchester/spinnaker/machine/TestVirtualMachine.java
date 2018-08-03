@@ -3,14 +3,19 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import org.hamcrest.collection.IsEmptyCollection;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 
 /**
  *
@@ -25,6 +30,29 @@ public class TestVirtualMachine {
             new HashMap<ChipLocation, Collection<Integer>>(),
             new HashMap<ChipLocation, Collection<Direction>>());
         assertEquals(4, instance.chips().size());
+        for (Chip chip:instance.chips()) {
+            if (MachineDefaults.FOUR_CHIP_DOWN_LINKS.
+                    containsKey(chip.asChipLocation())) {
+                Set<Direction> bad = MachineDefaults.FOUR_CHIP_DOWN_LINKS.
+                        get(chip.asChipLocation());
+                for (Link link:chip.router.links()) {
+                    assertThat(bad, not(hasItems(link.sourceLinkDirection)));
+                }
+            }
+        }
+
+        InetAddress address00 = instance.bootChip().ipAddress;
+        assertNotNull(address00);
+
+        Collection<SpinnakerLinkData> empty = instance.spinnakerLinks();
+        assertThat(empty, IsEmptyCollection.empty());
+
+        instance.addSpinnakerLinks();
+        Collection<SpinnakerLinkData> links = instance.spinnakerLinks();
+        assertEquals(2, links.size());
+        for (SpinnakerLinkData link:links) {
+            assertEquals(address00, link.boardAddress);
+        }
     }
 
     @Test
@@ -55,16 +83,39 @@ public class TestVirtualMachine {
     }
 
     @Test
-    public void testIgnoresLinks() {
+    public void testSpinnakerLinks() {
         Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap();
-        ignoreLinks.put(new ChipLocation(7, 7), Arrays.asList(Direction.NORTH));
+        ignoreLinks.put(new ChipLocation(0, 0), Arrays.asList(Direction.SOUTHWEST));
+        ignoreLinks.put(new ChipLocation(8, 4), Arrays.asList(Direction.SOUTHWEST));
+        ignoreLinks.put(new ChipLocation(4, 8), Arrays.asList(Direction.SOUTHWEST));
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, null, ignoreLinks);
         assertEquals(3 * 48, instance.chips().size());
         assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
-        // Only ignored in one direction so .5 less
-        assertEquals("2592 cores and 431.5 links", instance.coresAndLinkOutputString());
-    }
+        // Only ignored in one direction so 1.5 less
+        assertEquals("2592 cores and 430.5 links", instance.coresAndLinkOutputString());
+        Collection<SpinnakerLinkData> empty = instance.spinnakerLinks();
+        assertThat(empty, IsEmptyCollection.empty());
+        instance.addSpinnakerLinks();
+        Collection<SpinnakerLinkData> links = instance.spinnakerLinks();
+        assertEquals(3, links.size());
+        for (SpinnakerLinkData link:links) {
+            assertEquals(Direction.SOUTHWEST, link.direction);
+            assertEquals(0, link.spinnakerLinkId);
+            assertNotNull(link.boardAddress);
+        }
+        InetAddress address84 = instance.getChipAt(8, 4).ipAddress;
+        assertNotNull(address84);
+        SpinnakerLinkData data84 = instance.getSpinnakerLink(0, address84);
+        assertEquals(Direction.byId(4), data84.direction);
+        assertEquals(address84, data84.boardAddress);
+        assertEquals(0, data84.spinnakerLinkId);
+        InetAddress address00 = instance.bootChip().ipAddress;
+        SpinnakerLinkData data00 = instance.getBootSpinnakerLink(0);
+        assertEquals(address00, data00.boardAddress);
+        SpinnakerLinkData data00a = instance.getSpinnakerLink(0, address00);
+        assertEquals(data00, data00a);
+     }
 
     @Test
     public void testIgnoreCores() {

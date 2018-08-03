@@ -419,7 +419,7 @@ public class Machine implements Iterable<Chip> {
      * @param id The ID of the link
      * @return The associated SpinnakeLink or null if not found.
      */
-    public final SpinnakerLinkData getSpinnakerLink(int id) {
+    public final SpinnakerLinkData getBootSpinnakerLink(int id) {
         InetIdTuple key = new InetIdTuple(bootEthernetAddress, id);
         return spinnakerLinks.get(key);
     }
@@ -433,17 +433,22 @@ public class Machine implements Iterable<Chip> {
      */
     public final void addSpinnakerLinks() {
         if (version.isFourChip) {
-            Chip chip00 = getChipAt(ChipLocation.ZERO_ZERO);
+            Chip chip00 = getChipAt(new ChipLocation(0, 0));
             if (!chip00.router.hasLink(Direction.WEST)) {
                 spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
                         new SpinnakerLinkData(0, chip00,
                                 Direction.WEST, chip00.ipAddress));
+            } else {
+                throw new Error("pop1");
             }
-            Chip chip10 = getChipAt(ChipLocation.ONE_ZERO);
+            Chip chip10 = getChipAt(new ChipLocation(1, 0));
             if (!chip10.router.hasLink(Direction.EAST)) {
-                spinnakerLinks.put(new InetIdTuple(chip10.ipAddress, 0),
-                        new SpinnakerLinkData(1, chip00,
-                                Direction.WEST, chip10.ipAddress));
+                //As in Python the Ethernet adddress of chip 0 0 is used.
+                spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 1),
+                        new SpinnakerLinkData(1, chip10,
+                                Direction.WEST, chip00.ipAddress));
+            } else {
+                throw new Error("pop2");
             }
         } else {
             for (Chip chip: ethernetConnectedChips) {

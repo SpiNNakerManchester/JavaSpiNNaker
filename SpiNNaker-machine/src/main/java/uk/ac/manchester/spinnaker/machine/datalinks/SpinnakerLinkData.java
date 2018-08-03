@@ -61,7 +61,7 @@ public class SpinnakerLinkData extends AbstractDataLink {
     public String toString() {
         return "SpinnakerLinkData {" + "X:" + getX() + " Y:" + getY()
                 + ", boardAddress=" + boardAddress
-                + ", linkId=" + linkId
+                + ", linkId=" + direction
                 + ", SpinnakerLinkId=" + spinnakerLinkId + "}";
     }
 
