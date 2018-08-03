@@ -318,6 +318,10 @@ public class Transceiver extends UDPTransceiver
 	 *            the max size each chip can say it has for SDRAM (mainly used
 	 *            in debugging purposes)
 	 * @return The created transceiver
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
@@ -381,6 +385,10 @@ public class Transceiver extends UDPTransceiver
 	 *            being used. If a spinn-5 board, then the version will be 5,
 	 *            spinn-3 would equal 3 and so on.
 	 * @return The created transceiver
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version) throws IOException, SpinnmanException, Exception {
@@ -390,7 +398,13 @@ public class Transceiver extends UDPTransceiver
 
 	/**
 	 * Create a transceiver.
-	 * @param version The SpiNNaker board version number.
+	 *
+	 * @param version
+	 *            The SpiNNaker board version number.
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public Transceiver(int version)
 			throws IOException, SpinnmanException, Exception {
@@ -417,6 +431,10 @@ public class Transceiver extends UDPTransceiver
 	 *            Descriptions of SCP connections to create.
 	 * @param maxSDRAMSize
 	 *            If not <tt>null</tt>, the maximum SDRAM size to allow.
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
@@ -789,6 +807,10 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @return An iterable of discovered connections, not including the
 	 *         initially given connections in the constructor
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public List<SCPConnection> discoverScampConnections()
 			throws IOException, Exception {
@@ -1042,6 +1064,10 @@ public class Transceiver extends UDPTransceiver
 	 * @param extraBootValues
 	 *            Any additional values to set during boot
 	 * @return version info for SCAMP on the booted system
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	private VersionInfo findScampAndBoot(int numAttempts,
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -1773,6 +1799,7 @@ public class Transceiver extends UDPTransceiver
 	 * Close the transceiver and any threads that are running.
 	 *
 	 * @throws java.lang.Exception
+	 *             If anything goes wrong
 	 */
 	@Override
 	public void close() throws java.lang.Exception {

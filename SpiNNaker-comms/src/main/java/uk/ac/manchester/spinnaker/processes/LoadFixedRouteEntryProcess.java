@@ -28,6 +28,10 @@ public class LoadFixedRouteEntryProcess
 	 *            The coordinates of the chip.
 	 * @param fixedRoute
 	 *            the fixed route entry
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, Exception {
