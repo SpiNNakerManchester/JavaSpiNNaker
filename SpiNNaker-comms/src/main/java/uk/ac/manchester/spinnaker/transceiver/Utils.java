@@ -37,6 +37,7 @@ public abstract class Utils {
 	 *            the number of boards in the machine
 	 * @return The BMP connection data
 	 * @throws UnknownHostException
+	 *             If the IP address computations fail.
 	 */
 	public static BMPConnectionData workOutBMPFromMachineDetails(
 			String hostname, Integer numberOfBoards)

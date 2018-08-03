@@ -26,6 +26,10 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param appID
 	 *            The ID of the application, between 0 and 255
 	 * @return the number of blocks freed
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int deallocSDRAM(HasChipLocation chip, int appID)
 			throws IOException, Exception {

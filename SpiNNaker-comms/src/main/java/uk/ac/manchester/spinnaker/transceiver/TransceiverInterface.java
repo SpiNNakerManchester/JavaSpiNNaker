@@ -1063,6 +1063,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
+	 * @throws SpinnmanException
+	 *             If some cores enter an unexpected state.
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
 			int appID) throws IOException, Exception, InterruptedException,
@@ -2256,6 +2258,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
+	 * @throws SpinnmanException
+	 *             If some cores enter an error state.
 	 */
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates) throws IOException, Exception,
@@ -2294,6 +2298,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
+	 * @throws SpinnmanException
+	 *             If some cores enter an error state.
 	 */
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,

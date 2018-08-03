@@ -163,6 +163,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            (exclusive).
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {

@@ -322,6 +322,8 @@ public class Transceiver extends UDPTransceiver
 	 *             if networking fails
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
 	 */
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
@@ -389,6 +391,8 @@ public class Transceiver extends UDPTransceiver
 	 *             if networking fails
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
 	 */
 	public static TransceiverInterface createTransceiver(String hostname,
 			int version) throws IOException, SpinnmanException, Exception {
@@ -405,6 +409,8 @@ public class Transceiver extends UDPTransceiver
 	 *             if networking fails
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
 	 */
 	public Transceiver(int version)
 			throws IOException, SpinnmanException, Exception {
@@ -435,6 +441,8 @@ public class Transceiver extends UDPTransceiver
 	 *             if networking fails
 	 * @throws Exception
 	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
 	 */
 	public Transceiver(int version, Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
@@ -916,7 +924,13 @@ public class Transceiver extends UDPTransceiver
 		return machine;
 	}
 
-	/** @return the application ID tracker for this transceiver. */
+	/**
+	 * @return the application ID tracker for this transceiver.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	public AppIdTracker getAppIdTracker() throws IOException, Exception {
 		if (appIDTracker == null) {
 			updateMachine();
