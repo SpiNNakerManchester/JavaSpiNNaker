@@ -259,13 +259,17 @@ public class TestMachine {
         Machine instance = new Machine(new MachineDimensions(48, 24),
                 new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
         assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 24));
+        assertEquals(new ChipLocation(24, 0),
+                instance.normalizedLocation(new ChipLocation(24, 24)));
     }
 
     @Test
     public void testNormalizeWithOutWrapAround() {
         Machine instance = new Machine(new MachineDimensions(52, 28),
                 new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
-        assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 0));
+        assertEquals(new ChipLocation(24, 24), instance.normalizedLocation(24, 24));
+        assertEquals(new ChipLocation(24, 24),
+                instance.normalizedLocation(new ChipLocation(24, 24)));
     }
 
     @Test

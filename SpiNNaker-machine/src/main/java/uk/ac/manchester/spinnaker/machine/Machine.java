@@ -438,8 +438,6 @@ public class Machine implements Iterable<Chip> {
                 spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
                         new SpinnakerLinkData(0, chip00,
                                 Direction.WEST, chip00.ipAddress));
-            } else {
-                throw new Error("pop1");
             }
             Chip chip10 = getChipAt(new ChipLocation(1, 0));
             if (!chip10.router.hasLink(Direction.EAST)) {
@@ -447,8 +445,6 @@ public class Machine implements Iterable<Chip> {
                 spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 1),
                         new SpinnakerLinkData(1, chip10,
                                 Direction.WEST, chip00.ipAddress));
-            } else {
-                throw new Error("pop2");
             }
         } else {
             for (Chip chip: ethernetConnectedChips) {

@@ -115,6 +115,8 @@ public class TestVirtualMachine {
         assertEquals(address00, data00.boardAddress);
         SpinnakerLinkData data00a = instance.getSpinnakerLink(0, address00);
         assertEquals(data00, data00a);
+        SpinnakerLinkData data00b = instance.getSpinnakerLink(0, null);
+        assertEquals(data00, data00b);
      }
 
     @Test
