@@ -17,9 +17,9 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	/** What core are we talking about. */
 	public final HasCoreLocation core;
 	/** What region of the core's memory. */
-	public final byte regionID;
+	public final int regionID;
 	/** The message sequence number. */
-	public final byte sequenceNum;
+	public final int sequenceNum;
 	/** How much space is available. */
 	public final int spaceAvailable;
 
@@ -51,13 +51,13 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	SpinnakerRequestBuffers(ByteBuffer data) {
 		super(data);
 
-		int y = data.get();
-		int x = data.get();
+		int y = Byte.toUnsignedInt(data.get());
+		int x = Byte.toUnsignedInt(data.get());
 		int p = ((data.get() >>> PROC_SHIFT) & PROC_MASK);
 		core = new CoreLocation(x, y, p);
 		data.get(); // ignore
-		regionID = (byte) (data.get() & REGION_MASK);
-		sequenceNum = data.get();
+		regionID = data.get() & REGION_MASK;
+		sequenceNum = Byte.toUnsignedInt(data.get());
 		spaceAvailable = data.getInt();
 	}
 
@@ -68,8 +68,8 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 		buffer.put((byte) core.getX());
 		buffer.put((byte) ((core.getP() & PROC_MASK) << PROC_SHIFT));
 		buffer.put((byte) 0);
-		buffer.put(regionID);
-		buffer.put(sequenceNum);
+		buffer.put((byte) regionID);
+		buffer.put((byte) sequenceNum);
 		buffer.putInt(spaceAvailable);
 	}
 

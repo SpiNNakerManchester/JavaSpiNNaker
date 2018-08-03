@@ -18,9 +18,6 @@ public abstract class Process {
 	private SCPRequest<?> errorRequest;
 	private Throwable exception;
 
-	protected Process() {
-	}
-
 	/**
 	 * A default handler for exceptions that arranges for them to be rethrown
 	 * later.
@@ -177,6 +174,14 @@ public abstract class Process {
 		private static final long serialVersionUID = -1157220025479591572L;
 		private static final String S = "     "; // five spaces
 
+		/**
+		 * Create an exception.
+		 *
+		 * @param core
+		 *            What core were we talking to.
+		 * @param cause
+		 *            What exception caused problems.
+		 */
 		public Exception(HasCoreLocation core, Throwable cause) {
 			super(format("\n" + S + "Received exception class: %s\n" + S
 					+ "With message: %s\n" + S + "When sending to %d:%d:%d\n",

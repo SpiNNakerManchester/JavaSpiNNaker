@@ -13,7 +13,13 @@ import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 
+/**
+ * Support utilities.
+ */
 public abstract class Utils {
+	/**
+	 * The size of buffer to allocate for SpiNNaker messages.
+	 */
 	public static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
 
 	private Utils() {
@@ -31,6 +37,7 @@ public abstract class Utils {
 	 *            the number of boards in the machine
 	 * @return The BMP connection data
 	 * @throws UnknownHostException
+	 *             If the IP address computations fail.
 	 */
 	public static BMPConnectionData workOutBMPFromMachineDetails(
 			String hostname, Integer numberOfBoards)

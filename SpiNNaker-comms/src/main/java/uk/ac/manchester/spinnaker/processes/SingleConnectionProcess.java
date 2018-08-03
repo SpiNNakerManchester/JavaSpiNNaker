@@ -24,11 +24,21 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 	private SCPRequestPipeline requestPipeline;
 	private final int timeout;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	protected SingleConnectionProcess(
 			ConnectionSelector<T> connectionSelector) {
 		this(connectionSelector, SCP_TIMEOUT);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param timeout
+	 *            How long to take sending the message, in milliseconds.
+	 */
 	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int timeout) {
 		this.requestPipeline = null;

@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.Byte.toUnsignedInt;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
@@ -50,10 +52,10 @@ public final class VersionInfo {
 	 *            buffer holding an SCP packet containing version information
 	 */
 	public VersionInfo(ByteBuffer buffer) {
-		int p = Byte.toUnsignedInt(buffer.get());
-		physicalCPUID = Byte.toUnsignedInt(buffer.get());
-		int y = Byte.toUnsignedInt(buffer.get());
-		int x = Byte.toUnsignedInt(buffer.get());
+		int p = toUnsignedInt(buffer.get());
+		physicalCPUID = toUnsignedInt(buffer.get());
+		int y = toUnsignedInt(buffer.get());
+		int x = toUnsignedInt(buffer.get());
 		core = new CoreLocation(x, y, p);
 		buffer.getShort(); // Ignore 2 byes
 		int vn = Short.toUnsignedInt(buffer.getShort());
@@ -61,17 +63,26 @@ public final class VersionInfo {
 
 		String decoded = new String(buffer.array(), buffer.position(),
 				buffer.remaining(), UTF_8);
+		String original = decoded;
 		if (vn < MAGIC_VERSION) {
 			versionString = decoded;
 			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
 			String[] bits = decoded.split("\\|0", NBITS);
+			if (bits.length != NBITS) {
+				throw new IllegalArgumentException(
+						"incorrect version format: " + original);
+			}
 			decoded = bits[0].replaceFirst("[|0]+$", "");
 			versionString = bits[1];
 			versionNumber = parseVersionString(versionString);
 		}
 
 		String[] bits = decoded.split("/", NBITS);
+		if (bits.length != NBITS) {
+			throw new IllegalArgumentException(
+					"incorrect version format: " + original);
+		}
 		name = bits[0];
 		hardware = bits[1];
 	}

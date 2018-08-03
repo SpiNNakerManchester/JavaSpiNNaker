@@ -19,11 +19,26 @@ public class ReadRouterDiagnosticsProcess
 	private static final int ROUTER_ERROR_STATUS = 0xe1000014;
 	private static final int ROUTER_REGISTERS = 0xe1000300;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public ReadRouterDiagnosticsProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get a chip's router's diagnostics.
+	 *
+	 * @param chip
+	 *            The chip.
+	 * @return The diagnostics from the chip's router.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {
 		Holder<Integer> cr = new Holder<>();

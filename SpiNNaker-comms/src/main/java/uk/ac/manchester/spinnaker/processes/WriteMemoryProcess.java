@@ -19,12 +19,31 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 
+/**
+ * Write to memory on SpiNNaker.
+ */
 public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public WriteMemoryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param numRetries
+	 *            The number of times to retry a communication.
+	 * @param timeout
+	 *            The timeout (in ms) for the communication.
+	 * @param numChannels
+	 *            The number of parallel communications to support
+	 * @param intermediateChannelWaits
+	 *            How many parallel communications to launch at once. (??)
+	 */
 	public WriteMemoryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
@@ -33,9 +52,24 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				intermediateChannelWaits);
 	}
 
+	/**
+	 * A general source of messages to write to an address.
+	 *
+	 * @param <T>
+	 *            The type of messages provided.
+	 */
 	@FunctionalInterface
 	interface MessageProvider<T> {
-		T get(int baseAddress, ByteBuffer data);
+		/**
+		 * Provide a message.
+		 *
+		 * @param baseAddress
+		 *            The base address to write to.
+		 * @param data
+		 *            The block of data to write with this message.
+		 * @return The message to send.
+		 */
+		T getMessage(int baseAddress, ByteBuffer data);
 	}
 
 	/**
@@ -52,6 +86,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
 	 *            (exclusive).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -73,6 +111,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            Where to get data from
 	 * @param bytesToWrite
 	 *            How many bytes should be copied from the stream?
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -93,6 +135,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param dataFile
 	 *            The file of binary data to be copied. The whole file is
 	 *            transferred.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -115,6 +161,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
 	 *            (exclusive).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -134,6 +184,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            Where to get data from
 	 * @param bytesToWrite
 	 *            How many bytes should be copied from the stream?
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -152,6 +206,10 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param dataFile
 	 *            The file of binary data to be copied. The whole file is
 	 *            transferred.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -162,8 +220,24 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
+	/**
+	 * Write to memory.
+	 *
+	 * @param <T>
+	 *            The type of messages to send to do the writing.
+	 * @param baseAddress
+	 *            The base address to write.
+	 * @param data
+	 *            The overall block of memory to write
+	 * @param msgProvider
+	 *            The way to create messages to send to do the writing.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
-			int baseAddress, ByteBuffer data, MessageProvider<T> m)
+			int baseAddress, ByteBuffer data, MessageProvider<T> msgProvider)
 			throws IOException, Exception {
 		int offset = data.position();
 		int bytesToWrite = data.remaining();
@@ -173,7 +247,7 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			ByteBuffer tmp = data.asReadOnlyBuffer();
 			tmp.position(offset);
 			tmp.limit(offset + bytesToSend);
-			sendRequest(m.get(writePosition, tmp));
+			sendRequest(msgProvider.getMessage(writePosition, tmp));
 			offset += bytesToSend;
 			writePosition += bytesToSend;
 			bytesToWrite -= bytesToSend;
@@ -182,9 +256,27 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		checkForError();
 	}
 
+	/**
+	 * Write to memory.
+	 *
+	 * @param <T>
+	 *            The type of messages to send to do the writing.
+	 * @param baseAddress
+	 *            The base address to write.
+	 * @param data
+	 *            The stream of data to write.
+	 * @param bytesToWrite
+	 *            The number of bytes to read from the stream and transfer.
+	 * @param msgProvider
+	 *            The way to create messages to send to do the writing.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
 			int baseAddress, InputStream data, int bytesToWrite,
-			MessageProvider<T> m) throws IOException, Exception {
+			MessageProvider<T> msgProvider) throws IOException, Exception {
 		int writePosition = baseAddress;
 		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
@@ -195,7 +287,7 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				break;
 			}
 			tmp.limit(bytesToSend);
-			sendRequest(m.get(writePosition, tmp));
+			sendRequest(msgProvider.getMessage(writePosition, tmp));
 			writePosition += bytesToSend;
 			bytesToWrite -= bytesToSend;
 		}

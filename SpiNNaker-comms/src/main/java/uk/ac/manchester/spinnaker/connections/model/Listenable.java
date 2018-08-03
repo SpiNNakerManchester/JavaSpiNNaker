@@ -21,6 +21,9 @@ public interface Listenable<MessageType> {
 	 * without blocking.
 	 *
 	 * @return true when there is a packet waiting to be received
+	 * @throws IOException
+	 *             If anything goes wrong, e.g., if the socket is closed under
+	 *             our feet.
 	 */
 	default boolean isReadyToReceive() throws IOException {
 		return isReadyToReceive(null);

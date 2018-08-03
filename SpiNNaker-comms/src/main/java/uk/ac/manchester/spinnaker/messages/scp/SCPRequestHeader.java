@@ -29,6 +29,12 @@ public class SCPRequestHeader implements SerializableMessage {
 		buffer.putShort(sequence);
 	}
 
+	/**
+	 * Set the sequence number of this request to the next available number.
+	 * This can only ever be called once per request.
+	 *
+	 * @return The number that was issued.
+	 */
 	public short issueSequenceNumber() {
 		if (sequenceSet) {
 			throw new IllegalStateException(

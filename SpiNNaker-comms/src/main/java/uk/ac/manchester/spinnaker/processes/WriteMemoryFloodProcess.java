@@ -20,11 +20,27 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 public class WriteMemoryFloodProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param numRetries
+	 *            The number of times to retry a communication.
+	 * @param timeout
+	 *            The timeout (in ms) for the communication.
+	 * @param numChannels
+	 *            The number of parallel communications to support
+	 * @param intermediateChannelWaits
+	 *            How many parallel communications to launch at once. (??)
+	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
@@ -34,6 +50,7 @@ public class WriteMemoryFloodProcess
 	}
 
 	private static final float BPW = 4.0F;
+
 	private static int numBlocks(int numBytes) {
 		return (int) ceil(ceil(numBytes / BPW) / UDP_MESSAGE_MAX_SIZE);
 	}
@@ -48,6 +65,10 @@ public class WriteMemoryFloodProcess
 	 * @param data
 	 *            The data, from the <i>position</i> (inclusive) to the
 	 *            <i>limit</i> (exclusive)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -88,6 +109,10 @@ public class WriteMemoryFloodProcess
 	 *            number larger than the number of bytes actually available; if
 	 *            you do so, the fill will terminate early and this may cause
 	 *            problems.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
@@ -125,6 +150,10 @@ public class WriteMemoryFloodProcess
 	 *            Where the data is to be written to
 	 * @param dataFile
 	 *            The data in a file, which will be fully transferred.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or access to the file.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			File dataFile) throws IOException, Exception {

@@ -79,4 +79,9 @@ public final class Version implements Comparable<Version> {
 		}
 		return cmp;
 	}
+
+	@Override
+	public String toString() {
+		return "" + majorVersion + "." + minorVersion + "." + revision;
+	}
 }

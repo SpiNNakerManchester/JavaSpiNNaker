@@ -83,9 +83,9 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 			flags = buffer.getShort();
 			count = buffer.getInt();
 			rxPort = buffer.getShort();
-			byte y = buffer.get();
-			byte x = buffer.get();
-			byte pp = buffer.get();
+			int y = Byte.toUnsignedInt(buffer.get());
+			int x = Byte.toUnsignedInt(buffer.get());
+			int pp = Byte.toUnsignedInt(buffer.get());
 			spinCore = new CoreLocation(x, y, pp & CORE_MASK);
 			spinPort = (pp >>> PORT_SHIFT) & THREE_BITS_MASK;
 		}

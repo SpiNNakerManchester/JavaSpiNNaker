@@ -62,6 +62,10 @@ public final class MachineDefaults {
     /** The offset from zero in chips to get half size root values. */
     public static final int HALF_SIZE = 4;
 
+    /**
+     * The number of router diagnostic counters.
+     */
+    public static final int NUM_ROUTER_DIAGNOSTIC_COUNTERS = 16;
 
     /**
       * Width of field of hashcode for holding (one dimension of the) chip
@@ -94,7 +98,7 @@ public final class MachineDefaults {
         	throw new IllegalArgumentException("bad X cooordinate: " + x);
         }
         if (y < 0 || y > MAX_Y) {
-        	throw new IllegalArgumentException("bad Y cooordinate" + y);
+        	throw new IllegalArgumentException("bad Y cooordinate: " + y);
         }
     }
 
@@ -112,7 +116,7 @@ public final class MachineDefaults {
             throws IllegalArgumentException {
         validateChipLocation(x, y);
         if (p < 0 || p >= MAX_NUM_CORES) {
-            throw new IllegalArgumentException("bad processor ID");
+            throw new IllegalArgumentException("bad processor ID: " + p);
         }
     }
 

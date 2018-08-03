@@ -18,16 +18,33 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
 
+/** Gets IP tags and reverse IP tags. */
 public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetTagsProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get the set of tags that are associated with a connection.
+	 *
+	 * @param connection
+	 *            The connection that the tags are associated with.
+	 * @return A list of allocated tags in ID order. Unallocated tags are
+	 *         absent.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {
-		Response tagInfo = synchronousCall(
-				new IPTagGetInfo(connection.getChip()));
+		Response tagInfo =
+				synchronousCall(new IPTagGetInfo(connection.getChip()));
 
 		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
 		Map<Integer, Tag> tags = new TreeMap<>();

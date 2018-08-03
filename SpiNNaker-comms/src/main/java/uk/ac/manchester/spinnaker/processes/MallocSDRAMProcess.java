@@ -9,6 +9,10 @@ import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
 
 /** A process for allocating a block of SDRAM on a SpiNNaker chip. */
 public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public MallocSDRAMProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -24,6 +28,10 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param appID
 	 *            What app will own the allocation.
 	 * @return Where the start of the allocated memory is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID)
 			throws IOException, Exception {
@@ -44,6 +52,10 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            looked up by a SpiNNaker application to discover the address
 	 *            of the allocated block
 	 * @return Where the start of the allocated memory is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception {

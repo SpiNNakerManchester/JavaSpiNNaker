@@ -104,8 +104,9 @@ public final class ChipSummaryInfo {
         coreStates = parseStates(states);
 
         chip = source;
-        int neY = buffer.get();
-        nearestEthernetChip = new ChipLocation(buffer.get(), neY);
+        int neY = Byte.toUnsignedInt(buffer.get());
+        int neX = Byte.toUnsignedInt(buffer.get());
+        nearestEthernetChip = new ChipLocation(neX, neY);
 
         byte[] ia = new byte[ADDRESS_SIZE];
         buffer.get(ia);

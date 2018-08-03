@@ -12,7 +12,6 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
@@ -258,7 +257,6 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		protected BMPResponse(String operation, SCPCommand command,
 				ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super(buffer);
-			SCPResult result = scpResponseHeader.result;
 			if (result != RC_OK) {
 				throw new UnexpectedResponseCodeException(operation, command,
 						result);

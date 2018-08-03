@@ -5,6 +5,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
 
@@ -30,7 +31,6 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.Router;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
@@ -62,6 +62,24 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to talk to the machine.
+	 * @param ignoreChips
+	 *            The chip blacklist. Note that cores on this chip are also
+	 *            blacklisted, and links to and from this chip are also
+	 *            blacklisted.
+	 * @param ignoreCoresMap
+	 *            The core blacklist.
+	 * @param ignoreLinksMap
+	 *            The link blacklist.
+	 * @param maxCoreID
+	 *            The maximum core ID, or <tt>null</tt> for the system's
+	 *            standard limit. For debugging.
+	 * @param maxSDRAMSize
+	 *            The maximum SDRAM size, or <tt>null</tt> for the system's
+	 *            standard limit. For debugging.
+	 */
     public GetMachineProcess(
             ConnectionSelector<SCPConnection> connectionSelector,
             Collection<ChipLocation> ignoreChips,
@@ -77,8 +95,23 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
         this.chipInfo = new HashMap<>();
     }
 
-    public Machine getMachineDetails(HasChipLocation bootChip,
-        MachineDimensions size) throws IOException, Exception {
+
+	/**
+	 * Get a full, booted machine, populated with information directly from the
+	 * physical hardware.
+	 *
+	 * @param bootChip
+	 *            Which chip is used to boot the machine.
+	 * @param size
+	 *            The dimensions of the machine.
+	 * @return The machine description.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
+	public Machine getMachineDetails(HasChipLocation bootChip,
+			MachineDimensions size) throws IOException, Exception {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
@@ -215,8 +248,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 	/**
 	 * Get the chip information for the machine. Note that
-	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)} must have
-	 * been called first.
+	 * {@link #getMachineDetails(HasChipLocation,MachineDimensions)
+	 * getMachineDetails(...)} must have been called first.
 	 *
 	 * @return The description of what the state of each chip is.
 	 */

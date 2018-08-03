@@ -16,7 +16,7 @@ public interface EIEIOReceiver extends Connection {
 	 * @throws IOException
 	 *             If there is an error receiving the message.
 	 */
-	default EIEIOMessage receiveEIEIOMessage() throws IOException {
+	default EIEIOMessage<?> receiveEIEIOMessage() throws IOException {
 		return receiveEIEIOMessage(null);
 	}
 
@@ -32,5 +32,5 @@ public interface EIEIOReceiver extends Connection {
 	 * @throws IOException
 	 *             If there is an error receiving the message.
 	 */
-	EIEIOMessage receiveEIEIOMessage(Integer timeout) throws IOException;
+	EIEIOMessage<?> receiveEIEIOMessage(Integer timeout) throws IOException;
 }

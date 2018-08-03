@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
  */
 public class HostSendSequencedData extends EIEIOCommandMessage {
 	/** What region will be moved. */
-	public final byte regionID;
+	public final int regionID;
 	/** The message sequence number. */
-	public final byte sequenceNum;
+	public final int sequenceNum;
 	/** The data. */
 	public final EIEIODataMessage eieioDataMessage;
 
@@ -39,8 +39,8 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 	HostSendSequencedData(ByteBuffer data) {
 		super(data);
 
-		regionID = data.get();
-		sequenceNum = data.get();
+		regionID = Byte.toUnsignedInt(data.get());
+		sequenceNum = Byte.toUnsignedInt(data.get());
 		eieioDataMessage = readDataMessage(data);
 	}
 
@@ -52,8 +52,8 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		buffer.put(regionID);
-		buffer.put(sequenceNum);
+		buffer.put((byte) regionID);
+		buffer.put((byte) sequenceNum);
 		eieioDataMessage.addToBuffer(buffer);
 	}
 }

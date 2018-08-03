@@ -11,6 +11,10 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 /** Load a fixed route routing entry onto a chip. */
 public class LoadFixedRouteEntryProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public LoadFixedRouteEntryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -24,6 +28,10 @@ public class LoadFixedRouteEntryProcess
 	 *            The coordinates of the chip.
 	 * @param fixedRoute
 	 *            the fixed route entry
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, Exception {
@@ -39,6 +47,10 @@ public class LoadFixedRouteEntryProcess
 	 *            the fixed route entry
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception {

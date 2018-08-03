@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.processes;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
@@ -30,11 +31,30 @@ public class GetMulticastRoutesProcess
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public GetMulticastRoutesProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
 	}
 
+	/**
+	 * Get the multicast routes from a chip's router.
+	 *
+	 * @param chip
+	 *            The chip to read from.
+	 * @param baseAddress
+	 *            Where the routing table is.
+	 * @param appID
+	 *            What application is associated with the routes.
+	 * @return The list of routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			int baseAddress, Integer appID) throws IOException, Exception {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
@@ -56,7 +76,7 @@ public class GetMulticastRoutesProcess
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
 			data.get(); // Ignore
 			data.get(); // Ignore
-			int appid = data.get();
+			int appid = toUnsignedInt(data.get());
 			data.get(); // Ignore
 			int route = data.getInt();
 			int key = data.getInt();

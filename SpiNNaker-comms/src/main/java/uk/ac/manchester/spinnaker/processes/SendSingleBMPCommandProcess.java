@@ -45,6 +45,7 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  */
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private Logger log = getLogger(RequestPipeline.class);
+	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
 	/**
 	 * The default number of times to resend any packet for any reason before an
@@ -58,11 +59,21 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private BMPRequest<?> errorRequest;
 	private Throwable exception;
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector) {
 		this(connectionSelector, DEFAULT_TIMEOUT);
 	}
 
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 * @param timeout
+	 *            The timeout on the connection, in milliseconds.
+	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector, int timeout) {
 		this.timeout = timeout;
@@ -84,7 +95,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	public R execute(BMPRequest<R> request) throws IOException, Exception {
 		Holder<R> holder = new Holder<>();
 		/*
-		 * If no pipe line built yet, build one on the connection selected for
+		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
@@ -312,6 +323,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		}
 	}
 
+	/**
+	 * Indicates that message sending timed out.
+	 */
 	@SuppressWarnings("serial")
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
@@ -320,6 +334,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		}
 	}
 
+	/**
+	 * Indicates that message sending failed for various reasons.
+	 */
 	@SuppressWarnings("serial")
 	static final class SendFailedException extends IOException {
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,

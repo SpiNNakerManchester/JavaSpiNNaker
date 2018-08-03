@@ -9,6 +9,10 @@ import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 
 /** Deallocate space in the SDRAM. */
 public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
+	 */
 	public DeallocSDRAMProcess(
 			ConnectionSelector<SCPConnection> connectionSelector) {
 		super(connectionSelector);
@@ -22,6 +26,10 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param appID
 	 *            The ID of the application, between 0 and 255
 	 * @return the number of blocks freed
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public int deallocSDRAM(HasChipLocation chip, int appID)
 			throws IOException, Exception {
@@ -38,6 +46,10 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param baseAddress
 	 *            The start address in SDRAM to which the block needs to be
 	 *            deallocated
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects the message.
 	 */
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
 			throws IOException, Exception {

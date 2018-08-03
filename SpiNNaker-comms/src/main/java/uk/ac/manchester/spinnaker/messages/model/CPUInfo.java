@@ -30,7 +30,7 @@ public class CPUInfo implements HasCoreLocation {
 	private final RunTimeError runTimeError;
 	private final byte physicalCPUID;
 	private final CPUState state;
-	private final byte applicationID;
+	private final int applicationID;
 	private final int applicationMailboxDataAddress;
 	private final int monitorMailboxDataAddress;
 	private final MailboxCommand applicationMailboxCommand;
@@ -84,10 +84,10 @@ public class CPUInfo implements HasCoreLocation {
 		processorStateRegister = buffer.getInt();
 		stackPointer = buffer.getInt();
 		linkRegister = buffer.getInt();
-		runTimeError = RunTimeError.get(buffer.get());
+		runTimeError = RunTimeError.get(toUnsignedInt(buffer.get()));
 		physicalCPUID = buffer.get();
 		state = CPUState.get(buffer.get());
-		applicationID = buffer.get();
+		applicationID = toUnsignedInt(buffer.get());
 		applicationMailboxDataAddress = buffer.getInt();
 		monitorMailboxDataAddress = buffer.getInt();
 		applicationMailboxCommand = MailboxCommand.get(buffer.get());
@@ -155,7 +155,7 @@ public class CPUInfo implements HasCoreLocation {
 
 	/** @return The ID of the application running on the core. */
 	public int getApplicationID() {
-		return toUnsignedInt(applicationID);
+		return applicationID;
 	}
 
 	/** @return The address of the data in SDRAM for the application mailbox. */

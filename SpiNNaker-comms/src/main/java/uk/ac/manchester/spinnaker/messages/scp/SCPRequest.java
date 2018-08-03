@@ -14,8 +14,11 @@ import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
  */
 public abstract class SCPRequest<T extends SCPResponse>
 		extends SpinnakerRequest {
-	static final int DEFAULT_DEST_X_COORD = 255;
-	static final int DEFAULT_DEST_Y_COORD = 255;
+	private static final int DEFAULT_DEST_X_COORD = 255;
+	private static final int DEFAULT_DEST_Y_COORD = 255;
+	/**
+	 * The location of the default SCAMP.
+	 */
 	static final CoreLocation DEFAULT_MONITOR_CORE = new CoreLocation(
 			DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
 
@@ -52,6 +55,22 @@ public abstract class SCPRequest<T extends SCPResponse>
 		this(sdpHeader, command, null, null, null, data);
 	}
 
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 * @param data
+	 *            The additional data.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			byte[] data) {
@@ -64,6 +83,23 @@ public abstract class SCPRequest<T extends SCPResponse>
 		this.dataBuffer = null;
 	}
 
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 * @param data
+	 *            The additional data. Starts at the <i>position</i> and goes to
+	 *            the <i>limit</i>.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3,
 			ByteBuffer data) {
@@ -97,6 +133,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 * @param buffer
 	 *            The buffer to parse.
 	 * @return The message response.
+	 * @throws Exception
+	 *             If anything goes wrong with parsing.
 	 */
 	public abstract T getSCPResponse(ByteBuffer buffer) throws Exception;
 }

@@ -10,8 +10,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public abstract class SCPResponse {
 	/** The SDP header from the response. */
 	public final SDPHeader sdpHeader;
-	/** The SCP header from the response. */
-	public final SCPResponseHeader scpResponseHeader;
+	/** The result of the SCP response. */
+	public final SCPResult result;
+	/** The sequence number of the SCP response, between 0 and 65535. */
+	public final short sequence;
 
 	/**
 	 * Reads a packet from a bytestring of data. Subclasses must also
@@ -24,6 +26,7 @@ public abstract class SCPResponse {
 		assert buffer.position() == 0;
 		assert buffer.order() == LITTLE_ENDIAN;
 		sdpHeader = new SDPHeader(buffer);
-		scpResponseHeader = new SCPResponseHeader(buffer);
+		result = SCPResult.get(buffer.getShort());
+		sequence = buffer.getShort();
 	}
 }

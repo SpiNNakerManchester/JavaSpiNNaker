@@ -1,5 +1,9 @@
 package uk.ac.manchester.spinnaker.messages.sdp;
 
+import static java.lang.Byte.toUnsignedInt;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
+
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +29,7 @@ public class SDPHeader implements SerializableMessage {
 	private HasCoreLocation source;
 	private int sourcePort;
 	private Flag flags;
-	private byte tag;
+	private int tag;
 
 	/**
 	 * Create a header with all fields set to default. Note that messages
@@ -64,17 +68,55 @@ public class SDPHeader implements SerializableMessage {
 	 */
 	public SDPHeader(ByteBuffer buffer) {
 		flags = Flag.get(buffer.get());
-		tag = buffer.get();
-		byte dpc = buffer.get();
-		byte spc = buffer.get();
-		byte dcy = buffer.get();
-		byte dcx = buffer.get();
-		byte scy = buffer.get();
-		byte scx = buffer.get();
+		tag = Byte.toUnsignedInt(buffer.get());
+		int dpc = toUnsignedInt(buffer.get());
+		int spc = toUnsignedInt(buffer.get());
+		int dcy = toUnsignedInt(buffer.get());
+		int dcx = toUnsignedInt(buffer.get());
+		int scy = toUnsignedInt(buffer.get());
+		int scx = toUnsignedInt(buffer.get());
 		destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
 		sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
-		destination = new CoreLocation(dcx, dcy, dpc & CPU_MASK);
-		source = new CoreLocation(scx, scy, spc & CPU_MASK);
+		destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
+		source = allocCoreLocation(scx, scy, spc & CPU_MASK);
+	}
+
+	private HasCoreLocation allocCoreLocation(int x, int y, int p) {
+		if (p >= 0 && p < MAX_NUM_CORES) {
+			return new CoreLocation(x, y, p);
+		}
+		validateChipLocation(x, y);
+		return new HasCoreLocation() {
+			@Override
+			public int getX() {
+				return x;
+			}
+
+			@Override
+			public int getY() {
+				return y;
+			}
+
+			@Override
+			public int getP() {
+				return p;
+			}
+
+			@Override
+			public int hashCode() {
+				throw new UnsupportedOperationException(
+						"this object may not be used as a key");
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (other == null || !(other instanceof HasCoreLocation)) {
+					return false;
+				}
+				HasCoreLocation c = (HasCoreLocation) other;
+				return x == c.getX() && y == c.getY() && p == c.getP();
+			}
+		};
 	}
 
 	@Override
@@ -85,7 +127,7 @@ public class SDPHeader implements SerializableMessage {
 				| (source.getP() & CPU_MASK);
 
 		buffer.put(flags.value);
-		buffer.put(tag);
+		buffer.put((byte) tag);
 		buffer.put((byte) dpc);
 		buffer.put((byte) spc);
 		buffer.put((byte) destination.getY());
@@ -172,7 +214,7 @@ public class SDPHeader implements SerializableMessage {
 		this.flags = flags;
 	}
 
-	public byte getTag() {
+	public int getTag() {
 		return tag;
 	}
 
