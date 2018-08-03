@@ -126,6 +126,8 @@ public interface TransceiverInterface {
 	 *            The message to send
 	 * @param connection
 	 *            The connection to use (omit to pick a random one)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException;
@@ -135,6 +137,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param message
 	 *            The message to send
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void sendSDPMessage(SDPMessage message) throws IOException {
 		sendSDPMessage(message, null);
@@ -147,6 +151,8 @@ public interface TransceiverInterface {
 	 *            The message to send
 	 * @param connection
 	 *            An optional connection to use
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException;
@@ -156,6 +162,8 @@ public interface TransceiverInterface {
 	 * chips in the machine.
 	 *
 	 * @return The dimensions of the machine
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	MachineDimensions getMachineDimensions() throws IOException, Exception;
 
@@ -164,6 +172,8 @@ public interface TransceiverInterface {
 	 * are connected to each other.
 	 *
 	 * @return A machine description
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	Machine getMachineDetails() throws IOException, Exception;
 
@@ -191,6 +201,8 @@ public interface TransceiverInterface {
 	 * Get the version of SCAMP which is running on the board.
 	 *
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo getScampVersion() throws IOException, Exception {
 		return getScampVersion(DEFAULT_DESTINATION,
@@ -204,6 +216,8 @@ public interface TransceiverInterface {
 	 *            the connection to send the SCAMP version or none (if none then
 	 *            a random SCAMP connection is used).
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
@@ -217,6 +231,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            the coordinates of the chip to query for SCAMP version
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo getScampVersion(HasChipLocation chip)
 			throws IOException, Exception {
@@ -232,6 +248,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            the coordinates of the chip to query for SCAMP version
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
@@ -240,6 +258,9 @@ public interface TransceiverInterface {
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void bootBoard() throws InterruptedException, IOException {
 		bootBoard(null);
@@ -251,6 +272,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param extraBootValues
 	 *            extra values to set during boot
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException;
@@ -261,6 +284,8 @@ public interface TransceiverInterface {
 	 * version of SCAMP running is compatible with this transceiver.
 	 *
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, Exception, InterruptedException {
@@ -275,6 +300,8 @@ public interface TransceiverInterface {
 	 * @param extraBootValues
 	 *            Any additional values to set during boot
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -290,6 +317,8 @@ public interface TransceiverInterface {
 	 * @param numRetries
 	 *            The number of times to retry booting
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo ensureBoardIsReady(int numRetries)
 			throws IOException, Exception, InterruptedException {
@@ -306,6 +335,8 @@ public interface TransceiverInterface {
 	 * @param extraBootValues
 	 *            Any additional values to set during boot
 	 * @return The version identifier
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
@@ -315,6 +346,8 @@ public interface TransceiverInterface {
 	 * Get information about the processors on the board.
 	 *
 	 * @return An iterable of the CPU information for all cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default Iterable<CPUInfo> getCPUInformation()
 			throws IOException, Exception {
@@ -327,6 +360,8 @@ public interface TransceiverInterface {
 	 * @param core
 	 *            The coordinates of the core to get the information about
 	 * @return The CPU information for the selected core
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, Exception {
@@ -344,6 +379,8 @@ public interface TransceiverInterface {
 	 *            the chips on the board are obtained.
 	 * @return An iterable of the CPU information for the selected cores, or all
 	 *         cores if <tt>coreSubsets</tt> is <tt>null</tt>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, Exception;
@@ -388,6 +425,8 @@ public interface TransceiverInterface {
 	 * Get the contents of the IOBUF buffer for all processors.
 	 *
 	 * @return An iterable of the buffers, order undetermined.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default Iterable<IOBuffer> getIobuf() throws IOException, Exception {
 		return getIobuf((CoreSubsets) null);
@@ -399,6 +438,8 @@ public interface TransceiverInterface {
 	 * @param core
 	 *            The coordinates of the processor to get the IOBUF for
 	 * @return An IOBUF buffer
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, Exception {
@@ -414,6 +455,8 @@ public interface TransceiverInterface {
 	 *            A set of chips and cores from which to get the buffers.
 	 * @return An iterable of the buffers, which may not be in the order of
 	 *         <tt>coreSubsets</tt>
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, Exception;
@@ -425,6 +468,8 @@ public interface TransceiverInterface {
 	 *            coordinates of the chip to write new watchdog parameter to
 	 * @param watchdog
 	 *            value to set the timer count to
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, Exception;
@@ -436,6 +481,8 @@ public interface TransceiverInterface {
 	 *            coordinates of the chip to write new watchdog parameter to
 	 * @param watchdog
 	 *            whether to enable (True) or disable (False) the watchdog timer
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watchdog)
 			throws IOException, Exception;
@@ -445,6 +492,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param watchdog
 	 *            value to set the timer count to.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, Exception {
@@ -459,6 +508,8 @@ public interface TransceiverInterface {
 	 * @param watchdog
 	 *            whether to enable (True) or disable (False) the watch dog
 	 *            timer
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, Exception {
@@ -475,6 +526,8 @@ public interface TransceiverInterface {
 	 * @param state
 	 *            The state count to get
 	 * @return A count of the cores with the given status
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	int getCoreStateCount(int appID, CPUState state)
 			throws IOException, Exception;
@@ -491,6 +544,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID)
@@ -512,6 +568,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID)
@@ -533,6 +592,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID, boolean wait)
@@ -557,6 +619,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID, boolean wait)
@@ -572,6 +637,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID)
 			throws IOException, Exception, InterruptedException {
@@ -590,6 +658,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID)
@@ -609,6 +680,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException {
@@ -629,6 +703,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID, boolean wait)
@@ -644,6 +721,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID)
 			throws IOException, Exception, InterruptedException {
@@ -662,6 +741,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID)
@@ -681,6 +762,8 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException {
@@ -701,6 +784,8 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the binary should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID, boolean wait)
@@ -720,6 +805,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID)
@@ -743,6 +831,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the processors should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID, boolean wait)
@@ -760,6 +851,9 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
 			int appID) throws IOException, Exception, InterruptedException {
@@ -780,6 +874,9 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the processors should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, File executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException;
@@ -796,6 +893,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the
 	 *            executable
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			int appID) throws IOException, Exception, InterruptedException {
@@ -816,6 +915,8 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @param wait
 	 *            True if the processors should enter a "wait" state on loading
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable, int appID,
 			boolean wait) throws IOException, Exception, InterruptedException;
@@ -830,6 +931,8 @@ public interface TransceiverInterface {
 	 *            The binaries to be executed and the cores to execute them on
 	 * @param appID
 	 *            The application ID to give this application
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
 			int appID) throws IOException, Exception, InterruptedException,
@@ -863,7 +966,12 @@ public interface TransceiverInterface {
 		sendSignal(appID, START);
 	}
 
-	/** Power on the whole machine. */
+	/**
+	 * Power on the whole machine.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
 	void powerOnMachine() throws InterruptedException, IOException, Exception;
 
 	/**
@@ -874,6 +982,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the boards, or 0
 	 *            if the boards are not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOn(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -891,6 +1001,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the boards, or 0
 	 *            if the boards are not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -902,6 +1014,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOn(int board)
 			throws InterruptedException, IOException, Exception {
@@ -916,6 +1030,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOn(int board, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -933,13 +1049,20 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOn(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
 		power(POWER_ON, singleton(board), cabinet, frame);
 	}
 
-	/** Power off the whole machine. */
+	/**
+	 * Power off the whole machine.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
 	void powerOffMachine() throws InterruptedException, IOException, Exception;
 
 	/**
@@ -950,6 +1073,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOff(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -967,6 +1092,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -978,6 +1105,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOff(int board)
 			throws InterruptedException, IOException, Exception {
@@ -992,6 +1121,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOff(int board, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1009,6 +1140,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void powerOff(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, Exception {
@@ -1028,6 +1161,8 @@ public interface TransceiverInterface {
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
@@ -1047,6 +1182,8 @@ public interface TransceiverInterface {
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
@@ -1065,6 +1202,8 @@ public interface TransceiverInterface {
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void setLED(Collection<Integer> leds, LEDAction action, int board,
 			int cabinet, int frame) throws IOException, Exception {
@@ -1085,6 +1224,8 @@ public interface TransceiverInterface {
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void setLED(int led, LEDAction action, Collection<Integer> board,
 			int cabinet, int frame) throws IOException, Exception {
@@ -1104,6 +1245,8 @@ public interface TransceiverInterface {
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void setLED(int led, LEDAction action, int board, int cabinet,
 			int frame) throws IOException, Exception {
@@ -1126,6 +1269,8 @@ public interface TransceiverInterface {
 	 * @param board
 	 *            which board to request the FPGA register from
 	 * @return the register data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
 			int board) throws IOException, Exception;
@@ -1147,6 +1292,8 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @param board
 	 *            which board to write the FPGA register to
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
 			int frame, int board) throws IOException, Exception;
@@ -1161,6 +1308,8 @@ public interface TransceiverInterface {
 	 * @param board
 	 *            which board to request the ADC data from
 	 * @return the FPGA's ADC data object
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, Exception;
@@ -1176,6 +1325,8 @@ public interface TransceiverInterface {
 	 *            which board to request the data from; the first board in the
 	 *            collection will be queried
 	 * @return the SVER from the BMP
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default VersionInfo readBMPVersion(Iterable<Integer> boards, int cabinet,
 			int frame) throws IOException, Exception {
@@ -1192,6 +1343,8 @@ public interface TransceiverInterface {
 	 * @param board
 	 *            which board to request the data from
 	 * @return the SVER from the BMP
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, Exception;
@@ -1209,6 +1362,9 @@ public interface TransceiverInterface {
 	 *            The stream of data that is to be written.
 	 * @param numBytes
 	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             input stream.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			InputStream dataStream, int numBytes)
@@ -1229,6 +1385,9 @@ public interface TransceiverInterface {
 	 *            The stream of data that is to be written.
 	 * @param numBytes
 	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             input stream.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes) throws IOException, Exception;
@@ -1244,6 +1403,9 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataFile
 	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             file.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -1261,6 +1423,9 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataFile
 	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             file.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
 			throws IOException, Exception;
@@ -1276,6 +1441,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataWord
 	 *            The word that is to be written (as 4 bytes).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			int dataWord) throws IOException, Exception {
@@ -1293,6 +1460,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataWord
 	 *            The word that is to be written (as 4 bytes).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, Exception {
@@ -1312,6 +1481,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param data
 	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
 			throws IOException, Exception {
@@ -1329,6 +1500,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param data
 	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
 			throws IOException, Exception {
@@ -1347,6 +1520,8 @@ public interface TransceiverInterface {
 	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -1365,6 +1540,8 @@ public interface TransceiverInterface {
 	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
 			throws IOException, Exception;
@@ -1387,6 +1564,9 @@ public interface TransceiverInterface {
 	 *            The stream of data that is to be written.
 	 * @param numBytes
 	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
@@ -1414,6 +1594,9 @@ public interface TransceiverInterface {
 	 *            The stream of data that is to be written.
 	 * @param numBytes
 	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			InputStream dataStream, int numBytes) throws IOException, Exception;
@@ -1434,6 +1617,9 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataFile
 	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, File dataFile) throws IOException, Exception {
@@ -1457,6 +1643,9 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataFile
 	 *            The name of the file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, Exception;
@@ -1477,6 +1666,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataWord
 	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int dataWord) throws IOException, Exception {
@@ -1500,6 +1691,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataWord
 	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int dataWord) throws IOException, Exception {
@@ -1524,6 +1717,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param data
 	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, byte[] data) throws IOException, Exception {
@@ -1547,6 +1742,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param data
 	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, byte[] data) throws IOException, Exception {
@@ -1570,6 +1767,8 @@ public interface TransceiverInterface {
 	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, ByteBuffer data) throws IOException, Exception {
@@ -1594,6 +1793,8 @@ public interface TransceiverInterface {
 	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, Exception;
@@ -1608,6 +1809,9 @@ public interface TransceiverInterface {
 	 *            The stream of data that is to be written.
 	 * @param numBytes
 	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
 	 */
 	void writeMemoryFlood(int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, Exception;
@@ -1620,6 +1824,9 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataFile
 	 *            The name of the file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
 	 */
 	void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, Exception;
@@ -1632,6 +1839,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param dataWord
 	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, Exception {
@@ -1648,6 +1857,8 @@ public interface TransceiverInterface {
 	 *            written
 	 * @param data
 	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void writeMemoryFlood(int baseAddress, byte[] data)
 			throws IOException, Exception {
@@ -1663,6 +1874,8 @@ public interface TransceiverInterface {
 	 * @param data
 	 *            The data that is to be written. The data should be from the
 	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, Exception;
@@ -1680,6 +1893,8 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
 	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
 			int length) throws IOException, Exception {
@@ -1699,6 +1914,8 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data read, positioned at the start of
 	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
 			throws IOException, Exception;
@@ -1718,6 +1935,8 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data that has been read, positioned at
 	 *         the start of the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int length) throws IOException, Exception {
@@ -1744,6 +1963,8 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @return A little-endian buffer of data that has been read, positioned at
 	 *         the start of the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, Exception;
@@ -1753,6 +1974,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param appID
 	 *            The ID of the application to send to
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void stopApplication(int appID) throws IOException, Exception;
 
@@ -1767,6 +1990,8 @@ public interface TransceiverInterface {
 	 * @param cpuStates
 	 *            The expected states once the applications are ready; success
 	 *            is when each application is in one of these states
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates) throws IOException, Exception,
@@ -1799,6 +2024,8 @@ public interface TransceiverInterface {
 	 * @param countsBetweenFullCheck
 	 *            The number of times to use the count signal before instead
 	 *            using the full CPU state check
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
@@ -1814,6 +2041,8 @@ public interface TransceiverInterface {
 	 * @param state
 	 *            The states to filter on
 	 * @return Core subsets object containing cores in the given state
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, Exception {
@@ -1828,6 +2057,8 @@ public interface TransceiverInterface {
 	 * @param states
 	 *            The states to filter on
 	 * @return Core subsets object containing cores in the given states
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, Exception {
@@ -1849,6 +2080,8 @@ public interface TransceiverInterface {
 	 * @param state
 	 *            The state to filter on
 	 * @return Core subsets object containing cores not in the given state
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
@@ -1864,6 +2097,8 @@ public interface TransceiverInterface {
 	 * @param states
 	 *            The states to filter on
 	 * @return Core subsets object containing cores not in the given states
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
@@ -1885,6 +2120,8 @@ public interface TransceiverInterface {
 	 *            The ID of the application to send to
 	 * @param signal
 	 *            The signal to send
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void sendSignal(int appID, Signal signal) throws IOException, Exception;
 
@@ -1896,6 +2133,8 @@ public interface TransceiverInterface {
 	 * @param ledStates
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void setLEDs(HasChipLocation chip,
 			Map<Integer, LEDAction> ledStates) throws IOException, Exception {
@@ -1910,6 +2149,8 @@ public interface TransceiverInterface {
 	 * @param ledStates
 	 *            A map from LED index to state with 0 being off, 1 on and 2
 	 *            inverted.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception;
@@ -1921,6 +2162,8 @@ public interface TransceiverInterface {
 	 *            The host name of the Ethernet connection on the board
 	 * @return A connection for the given IP address, or <tt>null</tt> if no
 	 *         such connection exists
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default SCPConnection locateSpinnakerConnection(String hostname) {
 		try {
@@ -1937,6 +2180,8 @@ public interface TransceiverInterface {
 	 *            The IP address of the Ethernet connection on the board
 	 * @return A connection for the given IP address, or <tt>null</tt> if no
 	 *         such connection exists
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
 
@@ -1947,6 +2192,8 @@ public interface TransceiverInterface {
 	 *            The tag to set up; note its board address can be
 	 *            <tt>null</tt>, in which case, the tag will be assigned to all
 	 *            boards
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setIPTag(IPTag tag) throws IOException, Exception;
 
@@ -1957,6 +2204,8 @@ public interface TransceiverInterface {
 	 *            The reverse tag to set up; note its board address can be
 	 *            <tt>null</tt>, in which case, the tag will be assigned to all
 	 *            boards
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setReverseIPTag(ReverseIPTag tag) throws IOException, Exception;
 
@@ -1965,6 +2214,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearIPTag(Tag tag) throws IOException, Exception {
 		clearIPTag(tag.getTag(), null, tag.getBoardAddress());
@@ -1975,6 +2226,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag ID
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearIPTag(int tag) throws IOException, Exception {
 		clearIPTag(tag, null, null);
@@ -1989,6 +2242,8 @@ public interface TransceiverInterface {
 	 *            Connection where the tag should be cleared. If not specified,
 	 *            all SCPSender connections will send the message to clear the
 	 *            tag
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearIPTag(int tag, SCPConnection connection)
 			throws IOException, Exception {
@@ -2004,6 +2259,8 @@ public interface TransceiverInterface {
 	 *            Connection where the tag should be cleared. If not specified,
 	 *            all SCPSender connections will send the message to clear the
 	 *            tag
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearIPTag(Tag tag, SCPConnection connection)
 			throws IOException, Exception {
@@ -2018,6 +2275,8 @@ public interface TransceiverInterface {
 	 *            The tag ID
 	 * @param boardAddress
 	 *            Board address where the tag should be cleared.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, Exception {
@@ -2037,6 +2296,8 @@ public interface TransceiverInterface {
 	 *            Board address where the tag should be cleared. If not
 	 *            specified, all SCPSender connections will send the message to
 	 *            clear the tag
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
 			throws IOException, Exception;
@@ -2046,6 +2307,8 @@ public interface TransceiverInterface {
 	 * SCPSender connections.
 	 *
 	 * @return An iterable of tags
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default List<Tag> getTags() throws IOException, Exception {
 		return getTags(null);
@@ -2057,6 +2320,8 @@ public interface TransceiverInterface {
 	 * @param connection
 	 *            Connection from which the tags should be received.
 	 * @return An iterable of tags
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	List<Tag> getTags(SCPConnection connection) throws IOException, Exception;
 
@@ -2068,6 +2333,8 @@ public interface TransceiverInterface {
 	 * @param size
 	 *            The amount of memory to allocate in bytes
 	 * @return the base address of the allocated memory
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default int mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, Exception {
@@ -2084,6 +2351,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
 	 * @return the base address of the allocated memory
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default int mallocSDRAM(HasChipLocation chip, int size, int appID)
 			throws IOException, Exception {
@@ -2104,6 +2373,8 @@ public interface TransceiverInterface {
 	 *            looked up by a SpiNNaker application to discover the address
 	 *            of the allocated block.
 	 * @return the base address of the allocated memory
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception;
@@ -2117,6 +2388,8 @@ public interface TransceiverInterface {
 	 *            The base address of the allocated memory
 	 * @param appID
 	 *            The app ID of the allocated memory
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
 			throws IOException, Exception;
@@ -2129,6 +2402,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The app ID of the allocated memory
 	 * @return The number of blocks freed
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	int freeSDRAMByAppID(HasChipLocation chip, int appID)
 			throws IOException, Exception;
@@ -2141,6 +2416,8 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip onto which to load the routes
 	 * @param routes
 	 *            An iterable of multicast routes to load
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
@@ -2157,6 +2434,8 @@ public interface TransceiverInterface {
 	 *            An iterable of multicast routes to load
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
@@ -2169,6 +2448,8 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip onto which to load the route
 	 * @param fixedRoute
 	 *            the route for the fixed route entry on this chip
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, Exception {
@@ -2184,6 +2465,8 @@ public interface TransceiverInterface {
 	 *            the route for the fixed route entry on this chip
 	 * @param appID
 	 *            The ID of the application with which to associate the route.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception;
@@ -2194,6 +2477,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            The coordinate of the chip from which to read the route.
 	 * @return the route as a fixed route entry
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2208,6 +2493,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application associated the route.
 	 * @return the route as a fixed route entry
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
 			throws IOException, Exception;
@@ -2218,6 +2505,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            The coordinates of the chip from which to get the routes
 	 * @return An iterable of multicast routes
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2232,6 +2521,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application to filter the routes for.
 	 * @return An iterable of multicast routes
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			int appID) throws IOException, Exception {
@@ -2246,6 +2537,8 @@ public interface TransceiverInterface {
 	 * @param appID
 	 *            The ID of the application to filter the routes for.
 	 * @return An iterable of multicast routes
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			Integer appID) throws IOException, Exception;
@@ -2255,6 +2548,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip on which to clear the routes
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception;
@@ -2265,6 +2560,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            The coordinates of the chip from which to get the information
 	 * @return The router diagnostic information
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception;
@@ -2281,6 +2578,8 @@ public interface TransceiverInterface {
 	 *            result in a warning).
 	 * @param diagnosticFilter
 	 *            the diagnostic filter being set in the position.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void setRouterDiagnosticFilter(HasChipLocation chip, int position,
 			DiagnosticFilter diagnosticFilter) throws IOException, Exception;
@@ -2295,6 +2594,8 @@ public interface TransceiverInterface {
 	 *            the position in the list of filters where this filter is to be
 	 *            read from
 	 * @return The diagnostic filter read
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, Exception;
@@ -2305,6 +2606,8 @@ public interface TransceiverInterface {
 	 *
 	 * @param chip
 	 *            The coordinates of the chip
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2321,6 +2624,8 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip
 	 * @param enable
 	 *            True (default) if the counters should be enabled
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable) throws IOException, Exception {
@@ -2338,6 +2643,8 @@ public interface TransceiverInterface {
 	 * @param counterIDs
 	 *            The IDs of the counters to reset and enable; each must be
 	 *            between 0 and 15
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			Iterable<Integer> counterIDs) throws IOException, Exception {
@@ -2354,6 +2661,8 @@ public interface TransceiverInterface {
 	 * @param counterIDs
 	 *            The IDs of the counters to reset and enable if enable is True;
 	 *            each must be between 0 and 15
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void clearRouterDiagnosticCounters(HasChipLocation chip, boolean enable,
 			Iterable<Integer> counterIDs) throws IOException, Exception;
@@ -2364,6 +2673,8 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            The coordinates of the chip
 	 * @return the list of chunks in the heap
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, Exception {
@@ -2378,6 +2689,8 @@ public interface TransceiverInterface {
 	 * @param heap
 	 *            The SystemVariableDefinition which is the heap to read
 	 * @return the list of chunks in the heap
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception;
@@ -2395,6 +2708,8 @@ public interface TransceiverInterface {
 	 *            The number of bytes to fill. Must be compatible with the data
 	 *            type i.e. if the data type is WORD, the number of bytes must
 	 *            be divisible by 4
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	default void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size) throws Exception, IOException {
@@ -2416,6 +2731,8 @@ public interface TransceiverInterface {
 	 *            be divisible by 4
 	 * @param dataType
 	 *            The type of data to fill.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
 			int size, DataType dataType) throws Exception, IOException;

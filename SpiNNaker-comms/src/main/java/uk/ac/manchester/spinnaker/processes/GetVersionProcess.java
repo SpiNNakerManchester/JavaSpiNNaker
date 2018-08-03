@@ -26,6 +26,8 @@ public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
 	 * @param core
 	 *            The core to query.
 	 * @return The version description.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public VersionInfo getVersion(HasCoreLocation core)
 			throws IOException, Exception {

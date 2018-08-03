@@ -42,6 +42,8 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param baseAddress
 	 *            The start address in SDRAM to which the block needs to be
 	 *            deallocated
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
 			throws IOException, Exception {

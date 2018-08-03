@@ -59,6 +59,8 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            Which cores to read from.
 	 * @return The buffers. It is the responsibility of the caller to handle
 	 *         whatever order they are produced in.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws Exception, IOException {

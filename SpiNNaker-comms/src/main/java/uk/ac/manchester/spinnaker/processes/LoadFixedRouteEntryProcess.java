@@ -43,6 +43,8 @@ public class LoadFixedRouteEntryProcess
 	 *            the fixed route entry
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			int appID) throws IOException, Exception {

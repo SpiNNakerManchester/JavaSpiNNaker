@@ -30,8 +30,12 @@ public class ReadRouterDiagnosticsProcess
 
 	/**
 	 * Get a chip's router's diagnostics.
-	 * @param chip The chip.
+	 *
+	 * @param chip
+	 *            The chip.
 	 * @return The diagnostics from the chip's router.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {

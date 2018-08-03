@@ -48,6 +48,8 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            looked up by a SpiNNaker application to discover the address
 	 *            of the allocated block
 	 * @return Where the start of the allocated memory is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
 			throws IOException, Exception {

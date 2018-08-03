@@ -39,6 +39,8 @@ public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param heap
 	 *            The heap to ask about.
 	 * @return A list of block descriptors, in block chain order.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, Exception {

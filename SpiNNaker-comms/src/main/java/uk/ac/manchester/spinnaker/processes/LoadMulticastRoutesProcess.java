@@ -55,6 +55,8 @@ public class LoadMulticastRoutesProcess
 	 *            The routes to load.
 	 * @param appID
 	 *            The application ID associated with the routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void loadRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)

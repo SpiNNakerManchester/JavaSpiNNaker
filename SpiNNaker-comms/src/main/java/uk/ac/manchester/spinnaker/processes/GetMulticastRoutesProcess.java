@@ -49,6 +49,8 @@ public class GetMulticastRoutesProcess
 	 * @param appID
 	 *            What application is associated with the routes.
 	 * @return The list of routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			int baseAddress, Integer appID) throws IOException, Exception {

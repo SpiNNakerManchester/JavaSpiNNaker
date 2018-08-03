@@ -55,6 +55,8 @@ public class ApplicationRunProcess
 	 * @param wait
 	 *            Whether to wait for the application launch to fully complete
 	 *            before returning.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void run(int appID, CoreSubsets coreSubsets, boolean wait)
 			throws Exception, IOException {

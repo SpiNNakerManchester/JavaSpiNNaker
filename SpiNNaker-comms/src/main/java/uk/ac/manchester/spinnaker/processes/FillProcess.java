@@ -67,6 +67,8 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The number of bytes to fill.
 	 * @param dataType
 	 *            The type of data to fill with.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void fillMemory(HasChipLocation chip, int baseAddress, int data,
 			int size, DataType dataType) throws Exception, IOException {

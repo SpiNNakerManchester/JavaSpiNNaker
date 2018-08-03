@@ -35,6 +35,8 @@ public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param coreSubsets
 	 *            What processors to get the information from
 	 * @return The CPU information, in undetermined order.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, Exception {

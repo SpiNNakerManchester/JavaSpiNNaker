@@ -40,6 +40,8 @@ public class ReadFixedRouteEntryProcess
 	 * @param appID
 	 *            The application ID associated with the route.
 	 * @return The route.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
 			throws IOException, Exception {

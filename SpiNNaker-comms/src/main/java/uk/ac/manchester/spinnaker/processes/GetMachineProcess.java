@@ -119,6 +119,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param size
 	 *            The dimensions of the machine.
 	 * @return The machine description.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public Machine getMachineDetails(HasChipLocation bootChip,
 			MachineDimensions size) throws IOException, Exception {

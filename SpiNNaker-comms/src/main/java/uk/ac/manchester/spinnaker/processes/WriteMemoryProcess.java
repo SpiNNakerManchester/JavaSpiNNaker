@@ -86,6 +86,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
 	 *            (exclusive).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -107,6 +109,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            Where to get data from
 	 * @param bytesToWrite
 	 *            How many bytes should be copied from the stream?
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -127,6 +131,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param dataFile
 	 *            The file of binary data to be copied. The whole file is
 	 *            transferred.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or access to the file.
 	 */
 	public void writeLink(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -149,6 +155,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
 	 *            (exclusive).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, Exception {
@@ -168,6 +176,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            Where to get data from
 	 * @param bytesToWrite
 	 *            How many bytes should be copied from the stream?
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream data, int bytesToWrite) throws IOException, Exception {
@@ -186,6 +196,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param dataFile
 	 *            The file of binary data to be copied. The whole file is
 	 *            transferred.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or access to the file.
 	 */
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, Exception {
@@ -207,6 +219,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The overall block of memory to write
 	 * @param msgProvider
 	 *            The way to create messages to send to do the writing.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
 			int baseAddress, ByteBuffer data, MessageProvider<T> msgProvider)
@@ -241,6 +255,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The number of bytes to read from the stream and transfer.
 	 * @param msgProvider
 	 *            The way to create messages to send to do the writing.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or the input stream.
 	 */
 	protected <T extends SCPRequest<CheckOKResponse>> void writeMemory(
 			int baseAddress, InputStream data, int bytesToWrite,

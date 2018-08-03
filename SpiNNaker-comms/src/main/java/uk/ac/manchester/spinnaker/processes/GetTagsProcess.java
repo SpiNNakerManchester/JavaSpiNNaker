@@ -36,6 +36,8 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The connection that the tags are associated with.
 	 * @return A list of allocated tags in ID order. Unallocated tags are
 	 *         absent.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
 	 */
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, Exception {
