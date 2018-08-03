@@ -88,7 +88,7 @@ public final class MachineDefaults {
         	throw new IllegalArgumentException("bad X cooordinate: " + x);
         }
         if (y < 0 || y > MAX_Y) {
-        	throw new IllegalArgumentException("bad Y cooordinate" + y);
+        	throw new IllegalArgumentException("bad Y cooordinate: " + y);
         }
     }
 

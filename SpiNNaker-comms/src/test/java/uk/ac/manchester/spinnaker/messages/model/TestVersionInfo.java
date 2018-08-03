@@ -58,9 +58,7 @@ class TestVersionInfo {
 		ByteBuffer version_data = packVersionData(arg1, arg2, arg3, data);
 
 		assertThrows(IllegalArgumentException.class, ()->{
-            VersionInfo vi = new VersionInfo(version_data);
-            // Should be unreachable, but if it ever works, should pass this
-            assertNotNull(vi);
+            new VersionInfo(version_data);
         });
     }
 
@@ -73,16 +71,16 @@ class TestVersionInfo {
 		int arg1 = (p2p_adr << 16) | (phys_cpu << 8) | virt_cpu;
 		int buffer_size = 0x10;
 		int arg2 = ((ver_number << 16) | buffer_size);
-		// build_date = 0x1000
-		// arg3 = build_date
+		// int build_date = 0x1000;
+		// int arg3 = build_date;
         byte[] data = "my/spinnaker".getBytes("ASCII");
 
+        // Oh arg3, where art thou?
         ByteBuffer version_data = ByteBuffer.allocate(21).order(ByteOrder.LITTLE_ENDIAN);
-        version_data.putInt(arg1).putInt(arg2).put(data).flip();
+        version_data.putInt(arg1).putInt(arg2)/*.putInt(arg3)*/.put(data).flip();
+
         assertThrows(IllegalArgumentException.class, ()->{
-            VersionInfo vi = new VersionInfo(version_data);
-            // Should be unreachable, but if it ever works, should pass this
-            assertNotNull(vi);
+            new VersionInfo(version_data);
         });
     }
 }
