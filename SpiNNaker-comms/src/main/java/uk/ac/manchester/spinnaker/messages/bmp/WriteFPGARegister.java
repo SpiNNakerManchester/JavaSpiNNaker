@@ -9,12 +9,14 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
+// WARNING! The long URL below is broken over two lines correctly
+// See https://stackoverflow.com/a/50987903/301832 for an explanation
 /**
  * A request for writing data to a FPGA register.
  *
- * @see <a href=
- *      "https://github.com/SpiNNakerManchester/spio/blob/master/designs/spinnaker_fpgas/README.md#spi-interface"
- *      >spinnaker_fpga design README</a> for a listing of FPGA registers
+ * @see <a href="https://github.com/SpiNNakerManchester/spio/blob/master/
+designs/spinnaker_fpgas/README.md#spi-interface">
+ *      spinnaker_fpga design README</a> for a listing of FPGA registers
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */
