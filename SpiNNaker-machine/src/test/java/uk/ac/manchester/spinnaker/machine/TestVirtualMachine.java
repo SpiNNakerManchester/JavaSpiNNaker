@@ -200,11 +200,15 @@ public class TestVirtualMachine {
 
     @Test
     public void testBiggestWeird() {
-        Machine instance = new VirtualMachine(new MachineDimensions(252,248),
-            new HashSet<ChipLocation>(),
-            new HashMap<ChipLocation, Collection<Integer>>(),
-            new HashMap<ChipLocation, Collection<Direction>>());
+        Machine instance = new VirtualMachine(new MachineDimensions(252,248));
         assertEquals(60528, instance.chips().size());
         assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.version);
     }
+
+    @Test
+    public void testCoverageHackery() {
+        assertThrows(Error.class, () -> {
+            VirtualMachine.addressFromBytes(new byte[0]);
+        });
+   }
 }

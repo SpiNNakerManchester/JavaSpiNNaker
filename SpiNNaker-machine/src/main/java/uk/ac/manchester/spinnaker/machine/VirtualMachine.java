@@ -198,15 +198,28 @@ public class VirtualMachine extends Machine {
             bytes[SECOND_BYTE] = 0;
             bytes[THIRD_BYTE] = (byte) location.getX();
             bytes[FOURTH_BYTE] = (byte) location.getY();
-            try {
-                return InetAddress.getByAddress(bytes);
-            } catch (UnknownHostException ex) {
-                //Should never happen so convert to none catchable
-                throw new Error(ex);
-            }
+            return addressFromBytes(bytes);
         } else {
             return null;
         }
     }
 
+    /**
+     * Converts a byte array to an InetAddress.
+     * <p>
+     * Hides the thrown UnknownHostException in an Runtime error.
+     * <p>
+     * Hackery to get 100% coverage.
+     *
+     * @param bytes The raw IP address in network byte order.
+     * @return
+     */
+    static final InetAddress addressFromBytes(byte[] bytes) {
+        try {
+            return InetAddress.getByAddress(bytes);
+        } catch (UnknownHostException ex) {
+            //Should never happen so convert to none catchable
+            throw new Error(ex);
+        }
+    }
 }
