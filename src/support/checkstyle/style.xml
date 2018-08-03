@@ -64,7 +64,7 @@
 		</module>
 		<module name="LineLength">
 			<property name="ignorePattern"
-				value="^(import |package |^\s*\*[ ]*\S*$)" />
+				value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber">
