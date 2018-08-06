@@ -693,8 +693,20 @@ public class Machine implements Iterable<Chip> {
         return maxUserProssorsOnAChip;
     }
 
-    // Alternative method for demonstrating forEach
-    private int totalAvailableUserCores1() {
+    /**
+     * The maximum number of user cores on any chip.
+     * <p>
+     * A user core is defined as one that has not been reserved as a monitor.
+     * <p>
+     * Warning the accuracy of this method is not guaranteed if
+     *      Chip.reserveASystemProcessor() is called directly.
+     *
+     * @return Maximum for at at least one core.
+     * @deprecated
+     *      This method is purely to demonstrate/test the usage of
+     *      forEach so can be remove at any moment,
+     */
+    int totalAvailableUserCores1() {
         Counter count = new Counter();
         this.chips.forEach((location, chip) -> {
             count.add(chip.nUserProcessors());
@@ -702,8 +714,20 @@ public class Machine implements Iterable<Chip> {
         return count.get();
     }
 
-    // Alternative method for demonstration stream
-    private int totalAvailableUserCores2() {
+    /**
+     * The maximum number of user cores on any chip.
+     * <p>
+     * A user core is defined as one that has not been reserved as a monitor.
+     * <p>
+     * Warning the accuracy of this method is not guaranteed if
+     *      Chip.reserveASystemProcessor() is called directly.
+     *
+     * @return Maximum for at at least one core.
+     * @deprecated
+     *      This method is purely to demonstrate/test the usage of
+     *      stream so can be remove at any moment,
+     */
+    int totalAvailableUserCores2() {
         return chips.values().stream().map(Chip::nUserProcessors).
                 mapToInt(Integer::intValue).sum();
 
@@ -733,10 +757,6 @@ public class Machine implements Iterable<Chip> {
             count += chip.nProcessors();
         }
         return count;
-    }
-
-    public final MachineVersion version() {
-        return version;
     }
 
     @Override

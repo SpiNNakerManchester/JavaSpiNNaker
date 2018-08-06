@@ -7,14 +7,17 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
+import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 
 /**
  *
@@ -102,6 +105,8 @@ public class TestMachine {
 
         assertEquals(450, instance.totalCores());
         assertEquals(425, instance.totalAvailableUserCores());
+        assertEquals(425, instance.totalAvailableUserCores1());
+        assertEquals(425, instance.totalAvailableUserCores2());
         assertEquals(ChipLocation.ZERO_ZERO, instance.boot);
         assertEquals(address, instance.bootChip().ipAddress );
         assertEquals(25, instance.nChips());
@@ -219,13 +224,40 @@ public class TestMachine {
 
     @Test
     public void testReserveSystemProcessor() throws UnknownHostException {
-        ArrayList<Processor> processors = createProcessors();
-        ArrayList<Chip> chips = createdChips(processors);
+        ArrayList<Processor> processors = new ArrayList();
+        processors.add(Processor.factory(0, true));
+        processors.add(Processor.factory(1, true));
+        for (int i = 2; i < 18; i++) {
+            processors.add(Processor.factory(i));
+        }
+        ArrayList<Chip> chips = new ArrayList();
+        byte[] bytes00 = {127, 0, 0, 0};
+        Chip chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, null,
+                        SDRAM, InetAddress.getByAddress(bytes00), false,
+                0, BOOT_CHIP);
+        chips.add(chip00);
+        Chip chip01 = new Chip(new ChipLocation(0, 1), processors, null,
+                        SDRAM, null, false,
+                0, BOOT_CHIP);
+        chips.add(chip01);
+        Chip chip02 = new Chip(new ChipLocation(0, 2), Collections.EMPTY_SET,
+                null, SDRAM, null, false, 0, BOOT_CHIP);
+        chips.add(chip02);
         Machine instance = new Machine(
                 new MachineDimensions(8, 8), chips, BOOT_CHIP);
-        assertEquals(processors.size() -1, instance.maximumUserCoresOnChip());
-        instance.reserveSystemProcessors();
+        // Already 2 cores reserved.
         assertEquals(processors.size() - 2, instance.maximumUserCoresOnChip());
+        assertEquals((processors.size() - 2 ) * 2 , instance.totalAvailableUserCores());
+        assertEquals(processors.size() * 2, instance.totalCores());
+        CoreSubsetsFailedChipsTuple result = instance.reserveSystemProcessors();
+        assertEquals(processors.size() - 3, instance.maximumUserCoresOnChip());
+        assertEquals((processors.size() - 3 ) * 2 , instance.totalAvailableUserCores());
+        assertEquals(processors.size() * 2, instance.totalCores());
+        assertThat(result.failedChips, contains(chip02));
+        ArrayList<CoreLocation> cores = new ArrayList();
+        result.forEach(cores::add);
+        assertThat(cores, containsInAnyOrder(
+                new CoreLocation(0,0,2), new CoreLocation(0,1,2)));
     }
 
     @Test
@@ -238,7 +270,20 @@ public class TestMachine {
         for (Chip chip:instance.iterChipsOnBoard(chips.get(3))) {
             count++;
         }
-        //DOes not include 0.4 as it is not on the board
+        //Does not include 0.4 as it is not on the board
+        assertEquals(24, count);
+        Iterator<Chip> iterator =
+                instance.iterChipsOnBoard(chips.get(3)).iterator();
+        count = 0;
+        while (true) {
+            try {
+                iterator.next();
+                count++;
+            } catch (NoSuchElementException ex) {
+                break;
+            }
+        }
+        //Does not include 0.4 as it is not on the board
         assertEquals(24, count);
     }
 
@@ -309,6 +354,5 @@ public class TestMachine {
         assertThat(instance.ethernetConnectedChips(),
                 containsInAnyOrder(chip00, chip84, chip48));
     }
-
 
 }
