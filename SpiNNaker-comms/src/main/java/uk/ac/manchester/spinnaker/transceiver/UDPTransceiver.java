@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static java.net.InetAddress.getByName;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -97,8 +98,10 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @param localAddress
 		 *            the local address to bind.
 		 * @return the new connection
+		 * @throws IOException
+		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress);
+		Conn getInstance(String localAddress) throws IOException;
 
 		/**
 		 * Make an instance with a caller-selected local port.
@@ -108,8 +111,10 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @param localPort
 		 *            the local port to bind.
 		 * @return the new connection
+		 * @throws IOException
+		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress, int localPort);
+		Conn getInstance(String localAddress, int localPort) throws IOException;
 	}
 
 	@Override
@@ -150,13 +155,13 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
-	 * @throws UnknownHostException
-	 *             If the networking goes wrong.
+	 * @throws IOException
+	 *             If the networking fails.
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
 			ConnectionFactory<? extends UDPConnection<T>> connectionFactory)
-			throws UnknownHostException {
+			throws IOException {
 		return registerUDPListener(callback, connectionFactory, null, null);
 	}
 
@@ -174,13 +179,13 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
-	 * @throws UnknownHostException
-	 *             If the networking goes wrong.
+	 * @throws IOException
+	 *             If the networking fails.
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
 			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			int localPort) throws UnknownHostException {
+			int localPort) throws IOException {
 		return registerUDPListener(callback, connectionFactory, localPort,
 				null);
 	}
@@ -204,13 +209,13 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 * @return The connection to be used
 	 * @throws IllegalArgumentException
 	 *             If basic sanity checks fail.
-	 * @throws UnknownHostException
-	 *             If the hostname is unresolvable.
+	 * @throws IOException
+	 *             If the networking fails.
 	 */
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
 			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			Integer localPort, String localHost) throws UnknownHostException {
+			Integer localPort, String localHost) throws IOException {
 		if (!UDPConnection.class
 				.isAssignableFrom(connectionFactory.getClassKey())) {
 			throw new IllegalArgumentException(

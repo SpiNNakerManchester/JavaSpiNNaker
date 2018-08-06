@@ -330,7 +330,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static TransceiverInterface createTransceiver(String hostname,
+	public static Transceiver createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -400,7 +400,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static TransceiverInterface createTransceiver(String hostname,
+	public static Transceiver createTransceiver(String hostname,
 			int version) throws IOException, SpinnmanException, Exception {
 		return createTransceiver(hostname, version, null, 0, emptyList(),
 				emptyMap(), emptyMap(), null, false, null, null, null);
