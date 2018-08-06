@@ -1,8 +1,12 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
+
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
 
@@ -19,8 +23,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	/**
 	 * The location of the default SCAMP.
 	 */
-	static final CoreLocation DEFAULT_MONITOR_CORE = new CoreLocation(
-			DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
+	static final CoreLocation DEFAULT_MONITOR_CORE =
+			new CoreLocation(DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
 
 	/** The first argument, or <tt>null</tt> if no first argument. */
 	public final Integer argument1;
@@ -37,19 +41,175 @@ public abstract class SCPRequest<T extends SCPResponse>
 
 	private static final byte[] NO_DATA = null;
 
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
+				null, null, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
+				argument1, argument2, argument3, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param data
+	 *            The additional data.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			byte[] data) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
+				null, null, data);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param data
+	 *            The additional data. Starts at the <i>position</i> and goes to
+	 *            the <i>limit</i>.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			ByteBuffer data) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
+				null, null, data);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 * @param data
+	 *            The additional data.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3,
+			byte[] data) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
+				argument1, argument2, argument3, data);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 * @param data
+	 *            The additional data. Starts at the <i>position</i> and goes to
+	 *            the <i>limit</i>.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			Integer argument1, Integer argument2, Integer argument3,
+			ByteBuffer data) {
+		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
+				argument1, argument2, argument3, data);
+	}
+
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command) {
 		this(sdpHeader, command, null, null, null, NO_DATA);
 	}
 
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 * @param argument3
+	 *            The third argument.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			Integer argument1, Integer argument2, Integer argument3) {
 		this(sdpHeader, command, argument1, argument2, argument3, NO_DATA);
 	}
 
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param data
+	 *            The additional data.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, byte[] data) {
 		this(sdpHeader, command, null, null, null, data);
 	}
 
+	/**
+	 * Create a new request.
+	 *
+	 * @param sdpHeader
+	 *            The header.
+	 * @param command
+	 *            The command ID.
+	 * @param data
+	 *            The additional data. Starts at the <i>position</i> and goes to
+	 *            the <i>limit</i>.
+	 */
 	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
 			ByteBuffer data) {
 		this(sdpHeader, command, null, null, null, data);

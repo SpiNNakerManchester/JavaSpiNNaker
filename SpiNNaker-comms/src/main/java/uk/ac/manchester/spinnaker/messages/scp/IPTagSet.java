@@ -8,13 +8,11 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
  * An SCP Request to set a (forward) IP Tag. Forward IP tags are tags that
@@ -37,8 +35,8 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	 */
 	public IPTagSet(HasChipLocation chip, byte[] host, int port, int tag,
 			boolean strip) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
-				argument1(tag, strip), argument2(port), argument3(host));
+		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip),
+				argument2(port), argument3(host));
 	}
 
 	private static int argument1(int tag, boolean strip) {

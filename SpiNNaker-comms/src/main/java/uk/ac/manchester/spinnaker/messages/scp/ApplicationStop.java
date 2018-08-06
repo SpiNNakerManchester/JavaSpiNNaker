@@ -6,12 +6,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.Signal;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to stop an application. */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
@@ -40,8 +38,8 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public ApplicationStop(int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
-				argument1(), argument2(appID, STOP), argument3());
+		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(),
+				argument2(appID, STOP), argument3());
 	}
 
 	@Override

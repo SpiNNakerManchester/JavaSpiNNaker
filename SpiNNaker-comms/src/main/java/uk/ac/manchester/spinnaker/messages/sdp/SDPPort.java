@@ -2,6 +2,8 @@ package uk.ac.manchester.spinnaker.messages.sdp;
 
 /** SDP port handling output buffering data streaming. */
 public enum SDPPort {
+	/** Default port. */
+	DEFAULT_PORT(0),
 	/** Command port for the buffered in functionality. */
 	INPUT_BUFFERING_SDP_PORT(1),
 	/** Command port for the buffered out functionality. */

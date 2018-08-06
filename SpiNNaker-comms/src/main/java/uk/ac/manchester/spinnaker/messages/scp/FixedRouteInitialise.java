@@ -2,12 +2,10 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Sets a fixed route entry. */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
@@ -24,8 +22,7 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public FixedRouteInitialise(HasChipLocation chip, int entry, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
-				argument1(appID), entry, null);
+		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry, null);
 	}
 
 	@Override

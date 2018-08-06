@@ -1,19 +1,18 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_INFO;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read the chip information from a core. */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int FLAGS = 0x5F;
 	private static final int SIZE_FLAG = 0x20;
+
 	/**
 	 * @param chip
 	 *            the chip to read from
@@ -29,8 +28,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	 *            Whether the size should be included in the response
 	 */
 	public GetChipInfo(HasChipLocation chip, boolean withSize) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_INFO,
-				argument1(withSize), null, null);
+		super(chip.getScampCore(), CMD_INFO, argument1(withSize), null, null);
 	}
 
 	private static int argument1(boolean withSize) {

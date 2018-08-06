@@ -4,18 +4,17 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static final int MAGIC = 3;
+
 	private static int argument1(int appID) {
 		return (appID << BYTE1) | (MAGIC << BYTE0);
 	}
@@ -32,8 +31,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	 *            and 255
 	 */
 	public FixedRouteRead(HasChipLocation chip, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
-				argument1(appID), argument2(), null);
+		super(chip.getScampCore(), CMD_RTR, argument1(appID), argument2(),
+				null);
 	}
 
 	@Override

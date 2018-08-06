@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 import static java.util.Collections.min;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -24,12 +25,14 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
 	private static SDPHeader bmpHeader(int board) {
-		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board), 0);
+		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board),
+				DEFAULT_PORT);
 	}
 
 	private static SDPHeader bmpHeader(Collection<Integer> boards) {
 		int board = min(boards);
-		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board), 0);
+		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board),
+				DEFAULT_PORT);
 	}
 
 	/**

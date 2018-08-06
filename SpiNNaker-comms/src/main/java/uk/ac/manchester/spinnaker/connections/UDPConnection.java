@@ -6,6 +6,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -358,7 +359,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
-	private static final int TRIGGER_SDP_PORT = 3;
 
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
@@ -379,7 +379,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		 */
 		SDPMessage triggerMessage = new SDPMessage(
 				new SDPHeader(REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0),
-						TRIGGER_SDP_PORT));
+						RUNNING_COMMAND_SDP_PORT));
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);

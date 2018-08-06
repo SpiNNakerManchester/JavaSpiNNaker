@@ -4,13 +4,11 @@ import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.CLR;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to clear an IP Tag. */
 public class IPTagClear extends SCPRequest<CheckOKResponse> {
@@ -21,8 +19,7 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the tag to clear (0..7)
 	 */
 	public IPTagClear(HasChipLocation chip, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
-				argument1(tag), null, null);
+		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), null, null);
 	}
 
 	private static Integer argument1(int tag) {

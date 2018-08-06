@@ -6,7 +6,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.PORT_SHIFT;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,7 +16,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to get an IP tag. */
 public class IPTagGet extends SCPRequest<IPTagGet.Response> {
@@ -32,8 +30,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	 *            The tag to get the details of.
 	 */
 	public IPTagGet(HasChipLocation chip, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
-				argument1(tag), 1, null);
+		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1, null);
 	}
 
 	@Override

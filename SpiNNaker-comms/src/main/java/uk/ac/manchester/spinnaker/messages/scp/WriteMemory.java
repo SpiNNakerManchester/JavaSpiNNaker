@@ -2,13 +2,11 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_WRITE;
 import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to write memory on a chip. */
 public class WriteMemory extends SCPRequest<CheckOKResponse> {
@@ -21,8 +19,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write
 	 */
 	public WriteMemory(HasCoreLocation core, int baseAddress, byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_WRITE, baseAddress,
-				data.length,
+		super(core, CMD_WRITE, baseAddress, data.length,
 				efficientTransferUnit(baseAddress, data.length).value, data);
 	}
 
@@ -35,8 +32,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_WRITE,
-				baseAddress, data.length,
+		super(chip.getScampCore(), CMD_WRITE, baseAddress, data.length,
 				efficientTransferUnit(baseAddress, data.length).value, data);
 	}
 
@@ -50,8 +46,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            buffer must be the point where the data starts.
 	 */
 	public WriteMemory(HasCoreLocation core, int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_WRITE, baseAddress,
-				data.remaining(),
+		super(core, CMD_WRITE, baseAddress, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -66,8 +61,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            buffer must be the point where the data starts.
 	 */
 	public WriteMemory(HasChipLocation chip, int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_WRITE,
-				baseAddress, data.remaining(),
+		super(chip.getScampCore(), CMD_WRITE, baseAddress, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
