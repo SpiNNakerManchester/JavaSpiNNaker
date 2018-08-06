@@ -80,8 +80,8 @@ public abstract class Reports {
 		if (chip != null) {
 			f.write(format("\nInformation for chip %d:%d\n", chip.getX(),
 					chip.getY()));
-			f.write("Neighbouring chips:\n\t" + chip.router
-					.streamNeighbouringChipsCoords().collect(toList()) + "\n");
+			f.write("Neighbouring chips:\n\t" + chip.router.neighbouringChipsCoords()
+                    + "\n");
 			f.write("Router list of links for this chip are:\n");
 			for (Link link : chip.router.links()) {
 				f.write("\t" + link + "\n");

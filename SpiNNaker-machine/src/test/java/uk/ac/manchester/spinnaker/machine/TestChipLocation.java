@@ -78,4 +78,25 @@ public class TestChipLocation {
 		new ChipLocation(0, 257);
           });
 	}
+
+    private class MockChipLocation implements HasChipLocation{
+
+        @Override
+        public int getX() {
+            return 1;
+        }
+
+        @Override
+        public int getY() {
+            return 2;
+        }
+    }
+
+    @Test
+    public void testDefaults() {
+        assertEquals(new CoreLocation(1, 2, 0),
+                new MockChipLocation().getScampCore());
+        assertEquals(new ChipLocation(1, 2),
+                new MockChipLocation().asChipLocation());
+    }
 }

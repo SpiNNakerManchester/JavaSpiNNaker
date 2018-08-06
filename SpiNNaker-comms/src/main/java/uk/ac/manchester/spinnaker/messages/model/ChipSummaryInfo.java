@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /** Represents the chip summary information read via an SCP command. */
@@ -34,7 +35,7 @@ public final class ChipSummaryInfo {
     /** The location of the nearest Ethernet chip. */
     public final ChipLocation nearestEthernetChip;
     /** The IDs of the working links outgoing from this chip. */
-    public final Set<Integer> workingLinks;
+    public final Set<Direction> workingLinks;
     /** The chip that this data is from. */
     public final HasChipLocation chip;
 
@@ -52,11 +53,11 @@ public final class ChipSummaryInfo {
         return ((value >>> bitnum) & 1) != 0;
     }
 
-    private static Set<Integer> parseWorkingLinks(int flags) {
-        Set<Integer> wl = new LinkedHashSet<>();
+    private static Set<Direction> parseWorkingLinks(int flags) {
+        Set<Direction> wl = new LinkedHashSet<>();
         for (int link = 0; link < NUM_LINKS; link++) {
             if (bitset(flags, LINKS_FIELD_SHIFT + link)) {
-                wl.add(link);
+                wl.add(Direction.byId(link));
             }
         }
         return unmodifiableSet(wl);

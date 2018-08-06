@@ -3,6 +3,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  *
  * @author Christian-B
@@ -73,6 +79,10 @@ public final class MachineDefaults {
     /** Width of field of hashcode for holding processor ID. */
     public static final int CORE_SHIFT = 5;
 
+    /** Ignore Links info for a four chip board. */
+    public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS
+            = fourChipDownLinks();
+
     /**
      * Checks the x and y parameter are legal ones
      *    regardless of the type of machine.
@@ -109,6 +119,27 @@ public final class MachineDefaults {
             throw new IllegalArgumentException("bad processor ID: " + p);
         }
     }
+
+    private static Map<ChipLocation, Set<Direction>>
+            fourChipDownLinks() {
+        HashMap<ChipLocation, Set<Direction>> result = new HashMap();
+        HashSet<Direction> directions = new HashSet();
+        directions.add(Direction.SOUTH);
+        directions.add(Direction.SOUTHWEST);
+        result.put(ChipLocation.ZERO_ZERO,
+                Collections.unmodifiableSet(directions));
+        result.put(new ChipLocation(0, 1),
+                Collections.unmodifiableSet(directions));
+        directions = new HashSet();
+        directions.add(Direction.EAST);
+        directions.add(Direction.NORTHEAST);
+        result.put(new ChipLocation(1, 0),
+                Collections.unmodifiableSet(directions));
+        result.put(new ChipLocation(1, 1),
+                Collections.unmodifiableSet(directions));
+        return Collections.unmodifiableMap(result);
+    }
+
 
     /*
         MAX_BANDWIDTH_PER_ETHERNET_CONNECTED_CHIP = 10 * 256

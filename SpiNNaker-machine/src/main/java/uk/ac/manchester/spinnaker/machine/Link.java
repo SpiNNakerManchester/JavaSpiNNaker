@@ -91,13 +91,17 @@ public final class Link {
             return false;
         }
         final Link other = (Link) obj;
+        System.out.println("Equals called " + this + " " + other);
         if (this.sourceLinkDirection != other.sourceLinkDirection) {
+            System.out.println("direction");
             return false;
         }
         if (!Objects.equals(this.source, other.source)) {
+            System.out.println("source");
             return false;
         }
         if (!Objects.equals(this.destination, other.destination)) {
+            System.out.println("destination");
             return false;
         }
         return true;

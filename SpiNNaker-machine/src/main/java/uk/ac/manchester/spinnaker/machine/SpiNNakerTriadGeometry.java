@@ -215,24 +215,25 @@ public final class SpiNNakerTriadGeometry {
      * No check is done to see if all the boards are present, nor if the root
      * chip is present and active.
      *
-     * @param width
-     *            The width of the machine to find the chips in.
-     * @param height
-     *            The height of the machine to find the chips in.
+     * @param dimensions
+     *      Size of the machine along the x and y axes in Chips.
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
-    public ArrayList<ChipLocation> getPotentialRootChips(int width,
-            int height) {
+    public ArrayList<ChipLocation> getPotentialRootChips(
+            MachineDimensions dimensions) {
         ArrayList<ChipLocation> results = new ArrayList<>();
         int maxWidth;
         int maxHeight;
-        if (width % triadWidth == 0 && height % triadHeight == 0) {
-            maxWidth = width;
-            maxHeight = height;
+        if (dimensions.width % triadWidth == 0
+                && dimensions.height % triadHeight == 0) {
+            maxWidth = dimensions.width;
+            maxHeight = dimensions.height;
         } else {
-            maxWidth = width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
-            maxHeight = height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+            maxWidth = dimensions.width
+                    - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
+            maxHeight = dimensions.height
+                    - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
             if (maxWidth < 0 || maxHeight < 0) {
                 results.add(ChipLocation.ZERO_ZERO);
                 return results;
@@ -249,42 +250,6 @@ public final class SpiNNakerTriadGeometry {
     }
 
     /**
-     * Calculate the machine version based on the size.
-     *
-     * @param dimensions
-     *            The width anmd height of the machine to find the version for.
-     * @return A Board version, which may be the INVALID one.
-     */
-    MachineVersion versionBySize(MachineDimensions dimensions) {
-        if ((dimensions.width == 2) && (dimensions.height == 2)) {
-            return MachineVersion.THREE;
-        }
-        if ((dimensions.width == MachineDefaults.SIZE_X_OF_ONE_BOARD)
-                && (dimensions.height == MachineDefaults.SIZE_Y_OF_ONE_BOARD)) {
-            return MachineVersion.FIVE;
-        }
-        if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_WITH_WRAPAROUND;
-        }
-        if (((dimensions.width - MachineDefaults.HALF_SIZE)
-                % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((dimensions.height - MachineDefaults.HALF_SIZE)
-                        % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_NO_WRAPAROUND;
-        }
-        if (dimensions.width < MachineDefaults.SIZE_X_OF_ONE_BOARD
-                || dimensions.height < MachineDefaults.SIZE_Y_OF_ONE_BOARD) {
-            return MachineVersion.INVALID;
-        }
-        if (dimensions.width % MachineDefaults.HALF_SIZE == 0
-                && dimensions.height % MachineDefaults.HALF_SIZE == 0) {
-            return MachineVersion.NONE_TRIAD_LARGE;
-        }
-        return MachineVersion.INVALID;
-    }
-
-    /**
      * An Collection all the chips on a Single board with a root of 0, 0.
      *
      * @return An unmodifiable Collection of the Locations on one board.
@@ -292,6 +257,7 @@ public final class SpiNNakerTriadGeometry {
     public Collection<ChipLocation> singleBoard() {
         return Collections.unmodifiableList(singleBoardCoordinates);
     }
+
 
     /**
      * An Iterator all the chips on a Single board with a root of 0, 0.
