@@ -168,7 +168,7 @@ public class Transceiver extends UDPTransceiver
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
-	private Machine machine;
+	Machine machine;
 	private MachineDimensions dimensions;
 	/**
 	 * A set of chips to ignore in the machine. Requests for a "machine" will
@@ -768,7 +768,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/** Get the current machine status and store it. */
-	private void updateMachine() throws IOException, Exception {
+	void updateMachine() throws IOException, Exception {
 		// Get the width and height of the machine
 		getMachineDimensions();
 
