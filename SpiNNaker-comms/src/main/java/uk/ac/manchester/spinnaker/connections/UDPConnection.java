@@ -281,7 +281,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(DatagramPacket data, InetAddress address, int port)
 			throws IOException {
-		sendTo(wrap(data.getData(), data.getOffset(), data.getLength()), address, port);
+		sendTo(wrap(data.getData(), data.getOffset(), data.getLength()),
+				address, port);
 	}
 
 	/**
@@ -361,12 +362,15 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		try (Selector selector = Selector.open()) {
 			SelectionKey key = channel.register(selector, OP_READ);
 			try {
+				// TODO Use the default timeout?
 				if (timeout == null || timeout == 0) {
 					selector.selectNow();
 				} else {
 					selector.select(timeout);
 				}
-				return receivable = key.isReadable();
+				boolean r = key.isReadable();
+				receivable = r;
+				return r;
 			} finally {
 				key.cancel();
 			}
