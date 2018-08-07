@@ -65,8 +65,9 @@ public class MulticastRoutingEntry extends RoutingEntry {
      * @param defaultable
      *            Whether this entry is default routable.
      */
-    public MulticastRoutingEntry(int key, int mask, Collection<Integer> processorIDs,
-            Collection<Integer> linkIDs, boolean defaultable) {
+    public MulticastRoutingEntry(int key, int mask,
+            Collection<Integer> processorIDs, Collection<Integer> linkIDs,
+            boolean defaultable) {
         super(tointarray(processorIDs), tointarray(linkIDs));
         this.key = key;
         this.mask = mask;
@@ -76,8 +77,9 @@ public class MulticastRoutingEntry extends RoutingEntry {
     private static int[] tointarray(Collection<Integer> ids) {
         int[] a = new int[ids.size()];
         Iterator<Integer> it = ids.iterator();
-        for (int i = 0; i < a.length && it.hasNext(); i++)
+        for (int i = 0; i < a.length && it.hasNext(); i++) {
             a[i] = it.next();
+        }
         return a;
     }
 

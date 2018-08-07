@@ -8,7 +8,8 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public final class CoreLocation implements HasCoreLocation, Comparable<CoreLocation> {
+public final class CoreLocation
+        implements HasCoreLocation, Comparable<CoreLocation> {
     private final int x;
     private final int y;
     private final int p;
