@@ -3,14 +3,12 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
 import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTransferUnit;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to read a region of memory. */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
@@ -25,8 +23,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasCoreLocation core, int address, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_READ, address,
-				size & SIZE_MASK, efficientTransferUnit(address, size).value);
+		super(core, CMD_READ, address, size & SIZE_MASK,
+				efficientTransferUnit(address, size).value);
 	}
 
 	/**
@@ -38,8 +36,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasChipLocation chip, int address, int size) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_READ,
-				address, size & SIZE_MASK,
+		super(chip.getScampCore(), CMD_READ, address, size & SIZE_MASK,
 				efficientTransferUnit(address, size).value);
 	}
 

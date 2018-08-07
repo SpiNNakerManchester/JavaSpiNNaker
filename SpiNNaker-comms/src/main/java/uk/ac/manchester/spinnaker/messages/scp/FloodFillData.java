@@ -6,11 +6,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FFD;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
-
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
@@ -53,9 +50,9 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, byte[] data, int offset, int length) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_FFD,
-				argument1(nearestNeighbourID), argument2(blockNumber, length),
-				baseAddress, ByteBuffer.wrap(data, offset, length));
+		super(DEFAULT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
+				argument2(blockNumber, length), baseAddress,
+				ByteBuffer.wrap(data, offset, length));
 	}
 
 	/**
@@ -72,8 +69,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_FFD,
-				argument1(nearestNeighbourID),
+		super(DEFAULT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
 				argument2(blockNumber, data.remaining()), baseAddress, data);
 	}
 

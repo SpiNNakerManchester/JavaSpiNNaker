@@ -1,12 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FILL;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP request to fill a region of memory on a chip with repeated data. */
 public final class FillRequest extends SCPRequest<CheckOKResponse> {
@@ -22,8 +20,7 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	 */
 	public FillRequest(HasChipLocation chip, int baseAddress, int data,
 			int size) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_FILL,
-				baseAddress, data, size);
+		super(chip.getScampCore(), CMD_FILL, baseAddress, data, size);
 	}
 
 	@Override

@@ -4,12 +4,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.Signal;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to send a signal to cores. */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
@@ -24,8 +22,8 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 	 *            The coordinates of the chip to run on
 	 */
 	public SendSignal(int appID, Signal signal) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_SIG,
-				signal.type.value, argument2(appID, signal), ALL_CORE_MASK);
+		super(DEFAULT_MONITOR_CORE, CMD_SIG, signal.type.value,
+				argument2(appID, signal), ALL_CORE_MASK);
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(
 					"appID must be between 0 and 255");

@@ -53,13 +53,13 @@ public class VirtualMachine extends Machine {
         super(machineDimensions, ChipLocation.ZERO_ZERO);
 
         if (ignoreChips == null) {
-            ignoreChips = Collections.EMPTY_SET;
+            ignoreChips = Collections.emptySet();
         }
         if (ignoreCores == null) {
-            ignoreCores = Collections.EMPTY_MAP;
+            ignoreCores = Collections.emptyMap();
         }
         if (ignoreLinks == null) {
-            ignoreLinks = new HashMap();
+            ignoreLinks = new HashMap<>();
         }
 
         addVerionIgnores(ignoreLinks);
@@ -72,7 +72,7 @@ public class VirtualMachine extends Machine {
                 geometry.getPotentialRootChips(machineDimensions);
 
         // Get all the valid locations
-        HashMap<ChipLocation, ChipLocation> allChips = new HashMap();
+        HashMap<ChipLocation, ChipLocation> allChips = new HashMap<>();
         for (ChipLocation root: roots) {
             for (ChipLocation local: geometry.singleBoard()) {
                 ChipLocation normalized = normalizedLocation(
@@ -132,7 +132,7 @@ public class VirtualMachine extends Machine {
 
     private ArrayList<Link> getLinks(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips) {
-        ArrayList<Link> links = new ArrayList();
+        ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
             ChipLocation destination = normalizedLocation(
                     location.getX() + direction.xChange,
@@ -147,7 +147,7 @@ public class VirtualMachine extends Machine {
     private ArrayList<Link> getLinks(ChipLocation location,
             HashMap<ChipLocation, ChipLocation> allChips,
             Collection<Direction> ignoreLinks) {
-        ArrayList<Link> links = new ArrayList();
+        ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
             if (!ignoreLinks.contains(direction)) {
                 ChipLocation destination = normalizedLocation(

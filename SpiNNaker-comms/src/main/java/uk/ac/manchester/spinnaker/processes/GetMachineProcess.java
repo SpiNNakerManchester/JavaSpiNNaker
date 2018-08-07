@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.processes;
 
 import static java.lang.Math.min;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import static java.util.Collections.emptyMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,22 +38,22 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
-    private static final Logger log = getLogger(GetMachineProcess.class);
-    /** A dictionary of (x, y) -> ChipInfo. */
-    private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
-    private final Collection<ChipLocation> ignoreChips;
-    private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
-    private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
-    private final Integer maxCoreID;
-    private final Integer maxSDRAMSize;
+	private static final Logger log = getLogger(GetMachineProcess.class);
+	/** A dictionary of (x, y) -> ChipInfo. */
+	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
+	private final Collection<ChipLocation> ignoreChips;
+	private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
+	private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
+	private final Integer maxCoreID;
+	private final Integer maxSDRAMSize;
 
-    private final <T> Collection<T> def(Collection<T> c) {
-        return c == null ? emptyList() : c;
-    }
+	private static <T> Collection<T> def(Collection<T> c) {
+		return c == null ? emptyList() : c;
+	}
 
-    private final <K, V> Map<K, V> def(Map<K, V> m) {
-        return m == null ? emptyMap() : m;
-    }
+	private static <K, V> Map<K, V> def(Map<K, V> m) {
+		return m == null ? emptyMap() : m;
+	}
 
 	private static int clamp(int value, Integer limit) {
 		if (limit == null) {
@@ -94,7 +94,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
         this.maxSDRAMSize = maxSDRAMSize;
         this.chipInfo = new HashMap<>();
     }
-
 
 	/**
 	 * Get a full, booted machine, populated with information directly from the
@@ -150,13 +149,13 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Build a Machine
-        Machine machine = new Machine(size, bootChip);
-        for (Map.Entry<ChipLocation, ChipSummaryInfo> entry:
-                chipInfo.entrySet()) {
-            if (!ignoreChips.contains(entry.getKey())) {
-                machine.addChip(makeChip(size, entry.getValue()));
-            }
-        }
+		Machine machine = new Machine(size, bootChip);
+		for (Map.Entry<ChipLocation, ChipSummaryInfo> entry : chipInfo
+				.entrySet()) {
+			if (!ignoreChips.contains(entry.getKey())) {
+				machine.addChip(makeChip(size, entry.getValue()));
+			}
+		}
 		return machine;
 	}
 
@@ -174,75 +173,73 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		List<Processor> processors = new ArrayList<>();
 		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
 		ChipLocation location = chipInfo.chip.asChipLocation();
-        Collection<Integer> ignoreCores;
-        if (this.ignoreCoresMap.containsKey(location)) {
-            ignoreCores = this.ignoreCoresMap.get(location);
-        } else {
-            ignoreCores = emptyList();
-        }
+		Collection<Integer> ignoreCores;
+		if (ignoreCoresMap.containsKey(location)) {
+			ignoreCores = ignoreCoresMap.get(location);
+		} else {
+			ignoreCores = emptyList();
+		}
 		for (int id = 0; id <= maxCore; id++) {
-            // Add the core provided it is not to be ignored
-            if (!ignoreCores.contains(id)) {
-                if (id == 0) {
-                    processors.add(Processor.factory(id, true));
-                } else if (chipInfo.coreStates.get(id) == IDLE) {
-                    processors.add(Processor.factory(id));
-                } else {
-                    log.warn("Not using core %d,%d,%d in state %s", location.getX(),
-                            location.getY(), id, chipInfo.coreStates.get(id));
+			// Add the core provided it is not to be ignored
+			if (!ignoreCores.contains(id)) {
+				if (id == 0) {
+					processors.add(Processor.factory(id, true));
+				} else if (chipInfo.coreStates.get(id) == IDLE) {
+					processors.add(Processor.factory(id));
+				} else {
+					log.warn("Not using core %d,%d,%d in state %s",
+							location.getX(), location.getY(), id,
+							chipInfo.coreStates.get(id));
 				}
 			}
 		}
 
 		// Create the chip
-        List<Link> links;
-        if (this.ignoreLinksMap.containsKey(location)) {
-            links = makeLinks(chipInfo, size, this.ignoreLinksMap.get(location));
-        } else {
-            links = makeLinks(chipInfo, size);
-        }
+		List<Link> links;
+		if (ignoreLinksMap.containsKey(location)) {
+			links = makeLinks(chipInfo, size, ignoreLinksMap.get(location));
+		} else {
+			links = makeLinks(chipInfo, size);
+		}
 		return new Chip(location, processors,
-                new Router(links, chipInfo.numFreeMulticastRoutingEntries),
-                clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
-                chipInfo.ethernetIPAddress, chipInfo.nearestEthernetChip);
+				new Router(links, chipInfo.numFreeMulticastRoutingEntries),
+				clamp(chipInfo.largestFreeSDRAMBlock, maxSDRAMSize),
+				chipInfo.ethernetIPAddress, chipInfo.nearestEthernetChip);
 	}
 
 	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
-                MachineDimensions size, Collection<Direction> ignoreLinks) {
+			MachineDimensions size, Collection<Direction> ignoreLinks) {
 		HasChipLocation chip = chipInfo.chip;
 		List<Link> links = new ArrayList<>();
-		for (Direction link: chipInfo.workingLinks) {
+		for (Direction link : chipInfo.workingLinks) {
 			ChipLocation dest = getChipOverLink(chip, size, link);
-			if (!ignoreLinks.contains(link)
-                    && !this.ignoreChips.contains(dest)
-                    && this.chipInfo.containsKey(dest)) {
-                links.add(new Link(chip, link, dest));
+			if (!ignoreLinks.contains(link) && !ignoreChips.contains(dest)
+					&& this.chipInfo.containsKey(dest)) {
+				links.add(new Link(chip, link, dest));
 			}
 		}
 		return links;
 	}
 
-	private List<Link> makeLinks(
-            ChipSummaryInfo chipInfo, MachineDimensions size) {
-        HasChipLocation chip = chipInfo.chip;
-        List<Link> links = new ArrayList<>();
-        for (Direction link : chipInfo.workingLinks) {
-            ChipLocation dest = getChipOverLink(chip, size, link);
-            if (!this.ignoreChips.contains(dest)
-                    && this.chipInfo.containsKey(dest)) {
-                links.add(new Link(chip, link, dest));
-            }
-        }
-        return links;
+	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
+			MachineDimensions size) {
+		HasChipLocation chip = chipInfo.chip;
+		List<Link> links = new ArrayList<>();
+		for (Direction link : chipInfo.workingLinks) {
+			ChipLocation dest = getChipOverLink(chip, size, link);
+			if (!ignoreChips.contains(dest)
+					&& this.chipInfo.containsKey(dest)) {
+				links.add(new Link(chip, link, dest));
+			}
+		}
+		return links;
 	}
 
-    private static ChipLocation getChipOverLink(HasChipLocation chip,
+	private static ChipLocation getChipOverLink(HasChipLocation chip,
 			MachineDimensions size, Direction link) {
-        /// TODO CHECK negative wraparound!
-        int x = (chip.getX() + link.xChange + size.width)
-                % size.width;
-		int y = (chip.getY() + link.yChange + size.height)
-                        % size.height;
+		/// TODO CHECK negative wraparound!
+		int x = (chip.getX() + link.xChange + size.width) % size.width;
+		int y = (chip.getY() + link.yChange + size.height) % size.height;
 		return new ChipLocation(x, y);
 	}
 

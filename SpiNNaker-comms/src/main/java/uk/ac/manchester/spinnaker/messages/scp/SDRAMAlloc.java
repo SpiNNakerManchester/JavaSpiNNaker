@@ -5,13 +5,11 @@ import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_SDRAM;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
@@ -43,8 +41,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *            of the allocated block
 	 */
 	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
-				argument1(appID), size, tag);
+		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag > MAX_TAG) {
 			throw new IllegalArgumentException(

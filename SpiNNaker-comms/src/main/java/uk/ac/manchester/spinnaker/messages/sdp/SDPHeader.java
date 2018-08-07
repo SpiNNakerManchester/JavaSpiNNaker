@@ -57,7 +57,31 @@ public class SDPHeader implements SerializableMessage {
 			int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
+		if (destinationPort < 0 || destinationPort > MAX_PORT) {
+			throw new IllegalArgumentException("port out of range");
+		}
 		this.destinationPort = destinationPort;
+	}
+
+	/**
+	 * Create a simple header with just the flags and destination set. Note that
+	 * messages containing this header <i>cannot</i> be sent until a source has
+	 * also been set!
+	 *
+	 * @param flags
+	 *            The header flags.
+	 * @param destination
+	 *            Where the message is bound for.
+	 * @param destinationPort
+	 *            the <i>SDP port</i> that the message routes through. Note that
+	 *            this is <b>not</b> a UDP port! Those are associated with a
+	 *            connection, not a message.
+	 */
+	public SDPHeader(Flag flags, HasCoreLocation destination,
+			SDPPort destinationPort) {
+		this.flags = flags;
+		this.destination = destination;
+		this.destinationPort = destinationPort.value;
 	}
 
 	/**

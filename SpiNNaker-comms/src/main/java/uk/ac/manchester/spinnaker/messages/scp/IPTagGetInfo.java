@@ -3,14 +3,12 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.TTO;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request information about IP tags. */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
@@ -21,8 +19,8 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	 *            The chip to query for information.
 	 */
 	public IPTagGetInfo(HasChipLocation chip) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
-				TTO.value << COMMAND_FIELD, IPTAG_MAX, null);
+		super(chip.getScampCore(), CMD_IPTAG, TTO.value << COMMAND_FIELD,
+				IPTAG_MAX, null);
 	}
 
 	@Override

@@ -1,12 +1,10 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to clear the router on a chip. */
 public class RouterClear extends SCPRequest<CheckOKResponse> {
@@ -15,7 +13,7 @@ public class RouterClear extends SCPRequest<CheckOKResponse> {
 	 *            The coordinates of the chip to clear the router of
 	 */
 	public RouterClear(HasChipLocation chip) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR);
+		super(chip.getScampCore(), CMD_RTR);
 	}
 
 	@Override

@@ -7,12 +7,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to start a flood fill of data. */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
@@ -53,7 +51,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks,
 			HasChipLocation chip) {
-		super(new SDPHeader(REPLY_EXPECTED, DEFAULT_MONITOR_CORE, 0), CMD_NNP,
+		super(DEFAULT_MONITOR_CORE, CMD_NNP,
 				argument1(nearestNeighbourID, numBlocks), argument2(chip),
 				NNP_FORWARD_RETRY);
 	}

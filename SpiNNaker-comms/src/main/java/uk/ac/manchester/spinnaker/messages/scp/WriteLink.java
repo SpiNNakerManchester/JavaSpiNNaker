@@ -1,13 +1,11 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to write memory on a neighbouring chip. */
 public class WriteLink extends SCPRequest<CheckOKResponse> {
@@ -23,8 +21,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, int link, int baseAddress,
 			byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_WRITE,
-				baseAddress, data.length, link, data);
+		super(core, CMD_LINK_WRITE, baseAddress, data.length, link, data);
 	}
 
 	/**
@@ -40,8 +37,7 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, core, 0), CMD_LINK_WRITE,
-				baseAddress, data.remaining(), link, data);
+		super(core, CMD_LINK_WRITE, baseAddress, data.remaining(), link, data);
 	}
 
 	/**
@@ -56,8 +52,8 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasChipLocation chip, int link, int baseAddress,
 			byte[] data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				CMD_LINK_WRITE, baseAddress, data.length, link, data);
+		super(chip.getScampCore(), CMD_LINK_WRITE, baseAddress, data.length,
+				link, data);
 	}
 
 	/**
@@ -73,8 +69,8 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 */
 	public WriteLink(HasChipLocation chip, int link, int baseAddress,
 			ByteBuffer data) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0),
-				CMD_LINK_WRITE, baseAddress, data.remaining(), link, data);
+		super(chip.getScampCore(), CMD_LINK_WRITE, baseAddress,
+				data.remaining(), link, data);
 	}
 
 	@Override

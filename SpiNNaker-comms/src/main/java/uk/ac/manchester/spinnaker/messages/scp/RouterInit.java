@@ -4,12 +4,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** A request to initialise the router on a chip. */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
@@ -27,8 +25,8 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries, int tableAddress,
 			int baseAddress, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_RTR,
-				argument1(numEntries, appID), tableAddress, baseAddress);
+		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
+				tableAddress, baseAddress);
 		if (numEntries < 1) {
 			throw new IllegalArgumentException(
 					"numEntries must be more than 0");

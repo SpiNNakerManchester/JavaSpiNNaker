@@ -7,10 +7,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
@@ -153,11 +150,12 @@ public class Chip implements HasChipLocation {
      *            in the two-dimensional grid of chips.
      * @param processors
      *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
      * @param ipAddress
      *            The IP address of the chip or None if no Ethernet attached.
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
-     * @param links Links to add each of which must have a unique direction.
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
      */
@@ -175,15 +173,17 @@ public class Chip implements HasChipLocation {
      * Creates the Router on the fly based on the links.
      *
      * @param location
-     *            The x and y coordinates of the chip's position
-     *            in the two-dimensional grid of chips.
+     *            The x and y coordinates of the chip's position in the
+     *            two-dimensional grid of chips.
+     * @param router
+     *            A router for the chip.
      * @param ipAddress
      *            The IP address of the chip or None if no Ethernet attached.
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
-     * @param links Links to add each of which must have a unique  direction.
-     * @throws IllegalArgumentException Indicates another Link with this
-     *     sourceLinkDirection has already been added.
+     * @throws IllegalArgumentException
+     *             Indicates another Link with this sourceLinkDirection has
+     *             already been added.
      */
     public Chip(ChipLocation location, Router router, InetAddress ipAddress,
             HasChipLocation nearestEthernet) {
@@ -334,7 +334,7 @@ public class Chip implements HasChipLocation {
      */
     public List<Processor> allProcessors() {
         ArrayList<Processor> all =
-                new ArrayList(this.monitorProcessors.values());
+                new ArrayList<>(this.monitorProcessors.values());
         all.addAll(this.userProcessors.values());
         Collections.sort(all);
         return all;
@@ -416,6 +416,7 @@ public class Chip implements HasChipLocation {
      * @return ID of the processor converted to a monitor or -1 to report a
      *         failure
      */
+    @SuppressWarnings("unchecked")
     int reserveASystemProcessor() throws IllegalStateException {
         if (this.monitorProcessors == DEFAULT_MONITOR_PROCESSORS) {
             this.monitorProcessors = (TreeMap<Integer, Processor>)

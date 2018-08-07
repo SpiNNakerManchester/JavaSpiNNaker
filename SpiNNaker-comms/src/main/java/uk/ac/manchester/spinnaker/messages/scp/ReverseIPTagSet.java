@@ -11,14 +11,12 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.SDP_
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.STRIP_FIELD_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /**
  * An SCP Request to set a Reverse IP Tag. Reverse IP tags are tags that funnel
@@ -41,7 +39,7 @@ public class ReverseIPTagSet extends SCPRequest<CheckOKResponse> {
 	 */
 	public ReverseIPTagSet(HasChipLocation chip, HasCoreLocation destination,
 			int port, int tag, int sdpPort) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_IPTAG,
+		super(chip.getScampCore(), CMD_IPTAG,
 				argument1(sdpPort, destination, tag),
 				argument2(destination, port), 0);
 	}

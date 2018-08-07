@@ -5,13 +5,11 @@ import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** An SCP Request to free space in the SDRAM. */
 public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
@@ -26,8 +24,7 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, int appID) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
-				argument1(appID), null, null);
+		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), null, null);
 		readNumFreedBlocks = true;
 	}
 
@@ -43,8 +40,8 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *            deallocated
 	 */
 	public SDRAMDeAlloc(HasChipLocation chip, int appID, int baseAddress) {
-		super(new SDPHeader(REPLY_EXPECTED, chip.getScampCore(), 0), CMD_ALLOC,
-				(int) FREE_SDRAM_BY_POINTER.value, baseAddress, null);
+		super(chip.getScampCore(), CMD_ALLOC, (int) FREE_SDRAM_BY_POINTER.value,
+				baseAddress, null);
 		readNumFreedBlocks = false;
 	}
 

@@ -169,7 +169,8 @@ public class Transceiver extends UDPTransceiver
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
-	private Machine machine;
+	/** The discovered machine model. */
+	Machine machine;
 	private MachineDimensions dimensions;
 	/**
 	 * A set of chips to ignore in the machine. Requests for a "machine" will
@@ -330,7 +331,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static TransceiverInterface createTransceiver(String hostname,
+	public static Transceiver createTransceiver(String hostname,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -400,7 +401,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static TransceiverInterface createTransceiver(String hostname,
+	public static Transceiver createTransceiver(String hostname,
 			int version) throws IOException, SpinnmanException, Exception {
 		return createTransceiver(hostname, version, null, 0, emptyList(),
 				emptyMap(), emptyMap(), null, false, null, null, null);
@@ -775,7 +776,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/** Get the current machine status and store it. */
-	private void updateMachine() throws IOException, Exception {
+	void updateMachine() throws IOException, Exception {
 		// Get the width and height of the machine
 		getMachineDimensions();
 
