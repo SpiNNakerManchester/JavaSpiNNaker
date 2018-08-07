@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedWriter;
