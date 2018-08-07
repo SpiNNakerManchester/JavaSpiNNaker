@@ -1,7 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByName;
-import static java.nio.ByteBuffer.wrap;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -44,6 +44,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private int remotePort;
 	private final DatagramSocket socket;
 	private final DatagramChannel channel;
+	private boolean receivable;
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
 	private static final int ONE_SECOND = 1000;
 	private static final int PING_COUNT = 5;
@@ -158,17 +159,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		if (timeout == null) {
-			socket.setSoTimeout(0);
-		} else {
-			socket.setSoTimeout(timeout);
+		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+			throw new SocketTimeoutException();
 		}
-		DatagramPacket p =
-				new DatagramPacket(new byte[PACKET_MAX_SIZE], PACKET_MAX_SIZE);
-		socket.receive(p);
-		ByteBuffer buffer = wrap(p.getData(), 0, p.getLength());
-		buffer.order(LITTLE_ENDIAN);
-		return buffer;
+		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
+		channel.receive(buffer);
+		receivable = false;
+		return buffer.order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -203,15 +200,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		if (timeout == null) {
-			socket.setSoTimeout(0);
-		} else {
-			socket.setSoTimeout(timeout);
+		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+			throw new SocketTimeoutException();
 		}
-		DatagramPacket p =
-				new DatagramPacket(new byte[PACKET_MAX_SIZE], PACKET_MAX_SIZE);
-		socket.receive(p);
-		return p;
+		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
+		SocketAddress addr = channel.receive(buffer);
+		receivable = false;
+		return new DatagramPacket(buffer.array(), 0, buffer.position(), addr);
 	}
 
 	/**
@@ -245,7 +240,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		socket.send(data);
+		ByteBuffer src = ByteBuffer.wrap(data.getData(), data.getOffset(),
+				data.getLength());
+		channel.send(src, data.getSocketAddress());
 	}
 
 	/**
@@ -297,7 +294,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		// Clear the destination; use socket's default
 		data.setAddress(address);
 		data.setPort(port);
-		socket.send(data);
+		ByteBuffer buf = ByteBuffer.wrap(data.getData(), data.getOffset(), data.getLength());
+		channel.send(buf, new InetSocketAddress(address, port));
 	}
 
 	/**
@@ -351,11 +349,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	@Override
 	public void close() throws Exception {
 		try {
-			socket.disconnect();
+			channel.disconnect();
 		} catch (Exception e) {
 			// Ignore any possible exception here
 		}
-		socket.close();
+		channel.close();
+		try {
+			socket.close();
+		} catch (Exception e) {
+			// Ignore any possible exception here
+		}
 	}
 
 	@Override
@@ -371,7 +374,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 				} else {
 					selector.select(timeout);
 				}
-				return key.isReadable();
+				return receivable = key.isReadable();
 			} finally {
 				key.cancel();
 			}
