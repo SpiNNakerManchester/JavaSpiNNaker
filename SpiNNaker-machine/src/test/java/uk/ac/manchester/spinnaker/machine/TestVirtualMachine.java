@@ -29,6 +29,11 @@ import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 public class TestVirtualMachine {
 
     @Test
+    public void testSmallBoardsMini() {
+        Machine instance = new VirtualMachine(new MachineDimensions(2, 2));
+    }
+
+    @Test
     public void testSmallBoards() {
         Machine instance = new VirtualMachine(new MachineDimensions(2, 2),
             new HashSet<ChipLocation>(),

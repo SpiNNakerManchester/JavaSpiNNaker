@@ -59,7 +59,7 @@ public class VirtualMachine extends Machine {
             ignoreCores = Collections.EMPTY_MAP;
         }
         if (ignoreLinks == null) {
-            ignoreLinks = Collections.EMPTY_MAP;
+            ignoreLinks = new HashMap();
         }
 
         addVerionIgnores(ignoreLinks);
