@@ -1,12 +1,25 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.lang.Math.random;
+import static java.lang.Thread.sleep;
+import static java.net.InetAddress.getLocalHost;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_0;
+import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_1;
+import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_2;
+import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_5;
+import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.PacketType.POINT_TO_POINT;
+import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.EXT_PP;
+import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -14,7 +27,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -219,9 +231,9 @@ class TransceiverITCase {
 	}
 
 	private void readWrite(Transceiver transceiver) throws Exception {
-		ByteBuffer write_data = ByteBuffer.allocate(1000);
+		ByteBuffer write_data = allocate(1000);
 		while (write_data.hasRemaining()) {
-			write_data.put((byte) (Math.random() * 256));
+			write_data.put((byte) (random() * 256));
 		}
 		write_data.flip();
 		transceiver.writeMemory(SCAMP, MEM, write_data);
@@ -243,15 +255,21 @@ class TransceiverITCase {
 		while (count < 20) {
 			count = transceiver.getCoreStateCount(app_id, CPUState.SYNC0);
 			System.out.printf("Cores in state SYNC0=%d\n", count);
-			Thread.sleep(100);
+			sleep(100);
 		}
 	}
 
-	private void cpuInfo(Transceiver transceiver) throws Exception {
+	private static List<CPUInfo> getCPUInfo(Transceiver transceiver,
+			CoreSubsets cores) throws Exception {
 		List<CPUInfo> cpu_infos = new ArrayList<>();
-		transceiver.getCPUInformation(core_subsets).forEach(cpu_infos::add);
-		Collections.sort(cpu_infos,
+		transceiver.getCPUInformation(cores).forEach(cpu_infos::add);
+		sort(cpu_infos,
 				(o1, o2) -> o1.asCoreLocation().compareTo(o2.asCoreLocation()));
+		return cpu_infos;
+	}
+
+	private void cpuInfo(Transceiver transceiver) throws Exception {
+		List<CPUInfo> cpu_infos = getCPUInfo(transceiver, core_subsets);
 		System.out.printf("%d CPUs\n", cpu_infos.size());
 		for (CPUInfo cpu_info : cpu_infos) {
 			System.out.println(cpu_info);
@@ -264,7 +282,7 @@ class TransceiverITCase {
 		while (count < 20) {
 			count = transceiver.getCoreStateCount(app_id, CPUState.FINISHED);
 			System.out.printf("Cores in state FINISHED=%d\n", count);
-			Thread.sleep(100);
+			sleep(100);
 		}
 	}
 
@@ -276,11 +294,8 @@ class TransceiverITCase {
 
 	private void stop(Transceiver transceiver, int app_id) throws Exception {
 		transceiver.sendSignal(app_id, Signal.STOP);
-		Thread.sleep(500);
-		List<CPUInfo> cpu_infos = new ArrayList<>();
-		transceiver.getCPUInformation(core_subsets).forEach(cpu_infos::add);
-		Collections.sort(cpu_infos,
-				(o1, o2) -> o1.asCoreLocation().compareTo(o2.asCoreLocation()));
+		sleep(500);
+		List<CPUInfo> cpu_infos = getCPUInfo(transceiver, core_subsets);
 		System.out.printf("%d CPUs\n", cpu_infos.size());
 		for (CPUInfo cpu_info : cpu_infos) {
 			System.out.println(cpu_info);
@@ -288,7 +303,7 @@ class TransceiverITCase {
 	}
 
 	private void iptags(Transceiver transceiver) throws Exception {
-		InetAddress localhost = InetAddress.getLocalHost();
+		InetAddress localhost = getLocalHost();
 
 		transceiver.setIPTag(new IPTag(null, SCAMP, 1, localhost, 50000));
 		transceiver.setIPTag(new IPTag(null, SCAMP, 2, localhost, 60000, true));
@@ -309,9 +324,8 @@ class TransceiverITCase {
 	private void routes(Transceiver transceiver, int app_id) throws Exception {
 		List<MulticastRoutingEntry> routes;
 
-		routes = Collections.singletonList(new MulticastRoutingEntry(0x10000000,
-				0xFFFF7000, Arrays.asList(1, 2, 3, 4, 5),
-				Arrays.asList(0, 1, 2), false));
+		routes = singletonList(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
+				asList(1, 2, 3, 4, 5), asList(0, 1, 2), false));
 		transceiver.loadMulticastRoutes(new ChipLocation(0, 0), routes, app_id);
 
 		routes = transceiver.getMulticastRoutes(new ChipLocation(0, 0), app_id);
@@ -334,24 +348,18 @@ class TransceiverITCase {
 
 	private void diagnostics(Transceiver transceiver) throws Exception {
 		// Set Router Diagnostic Filter
-		List<Destination> destinations =
-				asList(DiagnosticFilter.Destination.LINK_0,
-						DiagnosticFilter.Destination.LINK_1,
-						DiagnosticFilter.Destination.LINK_2,
-						DiagnosticFilter.Destination.LINK_5);
+		List<Destination> destinations = asList(LINK_0, LINK_1, LINK_2, LINK_5);
 		for (int i = 0; i < destinations.size(); i++) {
 			DiagnosticFilter current_filter = new DiagnosticFilter(false, true,
 					singletonList(destinations.get(i)), null, null, emptyList(),
-					emptyList(),
-					singletonList(DiagnosticFilter.PacketType.POINT_TO_POINT));
+					emptyList(), singletonList(POINT_TO_POINT));
 			transceiver.setRouterDiagnosticFilter(SCAMP, i + 12,
 					current_filter);
 		}
 
 		// Clear Router Diagnostics
 		transceiver.clearRouterDiagnosticCounters(SCAMP,
-				Arrays.asList(RouterDiagnostics.RouterRegister.LOC_PP.ordinal(),
-						RouterDiagnostics.RouterRegister.EXT_PP.ordinal()));
+				asList(LOC_PP.ordinal(), EXT_PP.ordinal()));
 		RouterDiagnostics diagnostics = transceiver.getRouterDiagnostics(SCAMP);
 		for (RouterRegister register : RouterDiagnostics.RouterRegister
 				.values()) {
@@ -438,7 +446,7 @@ class TransceiverITCase {
 			 */
 			long longVal = 123456789123456789L;
 			int intVal = 123456789;
-			ByteBuffer longData = ByteBuffer.allocate(8).order(LITTLE_ENDIAN);
+			ByteBuffer longData = allocate(8).order(LITTLE_ENDIAN);
 			longData.putLong(longVal).flip();
 
 			section("Test reading/writing blobs", () -> {
