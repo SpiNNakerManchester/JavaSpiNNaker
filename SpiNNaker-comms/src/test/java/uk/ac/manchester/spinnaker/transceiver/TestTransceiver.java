@@ -114,12 +114,14 @@ class TestTransceiver {
 		}
 	}
 
+	private static final String DUMMY_ADDR = "127.0.0.1";
+
 	/** Tests the creation of listening sockets */
 	@Test
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(null, (Integer) null, null, null));
+		connections.add(new SCPConnection(null, (Integer) null, DUMMY_ADDR, null));
 		EIEIOConnection orig_connection =
 				new EIEIOConnection(null, null, null, null);
 		connections.add(orig_connection);
@@ -175,7 +177,7 @@ class TestTransceiver {
 		});
 
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(null));
+		connections.add(new SCPConnection(DUMMY_ADDR));
 		try (MockWriteTransceiver tx =
 				new MockWriteTransceiver(5, connections)) {
 			// All chips
