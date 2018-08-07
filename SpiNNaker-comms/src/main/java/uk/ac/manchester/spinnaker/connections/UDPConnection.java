@@ -73,13 +73,15 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
+		channel.configureBlocking(false);
 		socket = channel.socket();
 		socket.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
 		canSend = false;
 		if (remoteHost != null && remotePort != null && remotePort != 0) {
 			remoteIPAddress = (Inet4Address) getByName(remoteHost);
 			this.remotePort = remotePort;
-			socket.connect(remoteIPAddress, this.remotePort);
+			channel.connect(
+					new InetSocketAddress(remoteIPAddress, this.remotePort));
 			canSend = true;
 		}
 		socket.setSoTimeout(ONE_SECOND);
@@ -240,6 +242,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
 		}
+		if (!channel.isOpen()) {
+			throw new EOFException();
+		}
 		socket.send(data);
 	}
 
@@ -285,6 +290,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!canSend) {
 			throw new IOException("Remote host address or port not set; "
 					+ "data cannot be sent with this connection");
+		}
+		if (!channel.isOpen()) {
+			throw new EOFException();
 		}
 		// Clear the destination; use socket's default
 		data.setAddress(address);
@@ -356,21 +364,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			return false;
 		}
 		try (Selector selector = Selector.open()) {
-			channel.configureBlocking(false);
+			SelectionKey key = channel.register(selector, OP_READ);
 			try {
-				SelectionKey key = channel.register(selector, OP_READ);
-				try {
-					if (timeout == null || timeout == 0) {
-						selector.selectNow();
-					} else {
-						selector.select(timeout);
-					}
-					return key.isReadable();
-				} finally {
-					key.cancel();
+				if (timeout == null || timeout == 0) {
+					selector.selectNow();
+				} else {
+					selector.select(timeout);
 				}
+				return key.isReadable();
 			} finally {
-				channel.configureBlocking(true);
+				key.cancel();
 			}
 		}
 	}
