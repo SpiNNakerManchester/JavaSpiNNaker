@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -41,6 +42,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean canSend;
 	private Inet4Address remoteIPAddress;
+	private InetSocketAddress remoteAddress;
 	private int remotePort;
 	private final DatagramSocket socket;
 	private final DatagramChannel channel;
@@ -78,11 +80,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		socket = channel.socket();
 		socket.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
 		canSend = false;
-		if (remoteHost != null && remotePort != null && remotePort != 0) {
+		if (remoteHost != null && remotePort != null && remotePort > 0) {
 			remoteIPAddress = (Inet4Address) getByName(remoteHost);
 			this.remotePort = remotePort;
-			channel.connect(
-					new InetSocketAddress(remoteIPAddress, this.remotePort));
+			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
+			channel.connect(remoteAddress);
 			canSend = true;
 		}
 		socket.setSoTimeout(ONE_SECOND);
@@ -218,9 +220,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error sending the data
 	 */
 	public void send(DatagramPacket data) throws IOException {
-		// Clear the destination; use socket's default
-		doSend(new DatagramPacket(data.getData(), data.getOffset(),
-				data.getLength()));
+		doSend(wrap(data.getData(), data.getOffset(), data.getLength()));
 	}
 
 	/**
@@ -232,7 +232,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	private void doSend(DatagramPacket data) throws IOException {
+	private void doSend(ByteBuffer data) throws IOException {
 		if (!canSend) {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
@@ -240,9 +240,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		ByteBuffer src = ByteBuffer.wrap(data.getData(), data.getOffset(),
-				data.getLength());
-		channel.send(src, data.getSocketAddress());
+		channel.send(data, remoteAddress);
 	}
 
 	/**
@@ -254,7 +252,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error sending the data
 	 */
 	public void send(byte[] data) throws IOException {
-		doSend(new DatagramPacket(data, 0, data.length));
+		doSend(wrap(data));
 	}
 
 	/**
@@ -266,8 +264,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error sending the data
 	 */
 	public void send(ByteBuffer data) throws IOException {
-		doSend(new DatagramPacket(data.array(), data.position(),
-				data.remaining()));
+		doSend(data);
 	}
 
 	/**
@@ -284,18 +281,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(DatagramPacket data, InetAddress address, int port)
 			throws IOException {
-		if (!canSend) {
-			throw new IOException("Remote host address or port not set; "
-					+ "data cannot be sent with this connection");
-		}
-		if (!channel.isOpen()) {
-			throw new EOFException();
-		}
-		// Clear the destination; use socket's default
-		data.setAddress(address);
-		data.setPort(port);
-		ByteBuffer buf = ByteBuffer.wrap(data.getData(), data.getOffset(), data.getLength());
-		channel.send(buf, new InetSocketAddress(address, port));
+		sendTo(wrap(data.getData(), data.getOffset(), data.getLength()), address, port);
 	}
 
 	/**
@@ -312,7 +298,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(byte[] data, InetAddress address, int port)
 			throws IOException {
-		sendTo(new DatagramPacket(data, 0, data.length), address, port);
+		sendTo(wrap(data, 0, data.length), address, port);
 	}
 
 	/**
@@ -329,8 +315,14 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		sendTo(new DatagramPacket(data.array(), data.position(),
-				data.remaining()), address, port);
+		if (!canSend) {
+			throw new IOException("Remote host address or port not set; "
+					+ "data cannot be sent with this connection");
+		}
+		if (!channel.isOpen()) {
+			throw new EOFException();
+		}
+		channel.send(data, new InetSocketAddress(address, port));
 	}
 
 	@Override
