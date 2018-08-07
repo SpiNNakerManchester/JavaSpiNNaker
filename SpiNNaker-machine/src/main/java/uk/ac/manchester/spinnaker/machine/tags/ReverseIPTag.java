@@ -87,6 +87,9 @@ public final class ReverseIPTag extends Tag {
      * @return whether they are equal
      */
     public boolean equals(ReverseIPTag otherTag) {
+        if (otherTag == null) {
+            return false;
+        }
         return partialEquals(otherTag) && sdpPort == otherTag.sdpPort
                 && destination.equals(otherTag.destination);
     }
