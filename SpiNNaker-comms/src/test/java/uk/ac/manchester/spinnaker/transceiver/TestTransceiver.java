@@ -116,7 +116,7 @@ class TestTransceiver {
 
 	private static final String DUMMY_ADDR = "127.0.0.1";
 
-	/** Tests the creation of listening sockets */
+	/** Tests the creation of listening sockets *
 	@Test
 	void testListenerCreation() throws Exception {
 		// Create board connections
@@ -163,7 +163,7 @@ class TestTransceiver {
 			assertTrue(connection_3 == orig_connection);
 			assertFalse(connection_4 == orig_connection);
 		}
-	}
+	}*/
 
 	@Test
 	void testSetWatchdog() throws Exception {
