@@ -40,8 +40,9 @@ public class MulticastRoutingEntry extends RoutingEntry {
      * @param defaultable
      *            Whether this entry is default routable.
      */
-    public MulticastRoutingEntry(int key, int mask, int[] processorIDs,
-            int[] linkIDs, boolean defaultable) {
+    public MulticastRoutingEntry(
+            int key, int mask, Iterable<Integer> processorIDs,
+            Iterable<Direction> linkIDs, boolean defaultable) {
         super(processorIDs, linkIDs);
         this.key = key;
         this.mask = mask;
