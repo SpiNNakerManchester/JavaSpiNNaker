@@ -169,6 +169,7 @@ public class Transceiver extends UDPTransceiver
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
 	private int version;
+	/** The discovered machine model. */
 	Machine machine;
 	private MachineDimensions dimensions;
 	/**

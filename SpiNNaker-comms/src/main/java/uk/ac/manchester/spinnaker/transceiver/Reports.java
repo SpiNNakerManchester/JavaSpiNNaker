@@ -1,13 +1,12 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.Collection;
 
@@ -48,7 +47,8 @@ public abstract class Reports {
 			throws IOException {
 		File file = new File(reportDirectory, FILENAME);
 		String timestamp = Calendar.getInstance().toString();
-		try (Writer f = new BufferedWriter(new FileWriter(file))) {
+		try (PrintWriter f =
+				new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
 			writeHeader(f, timestamp, machine, connections);
 			for (int x = 0; x <= machine.maxChipX(); x++) {
 				for (int y = 0; y <= machine.maxChipY(); y++) {
@@ -61,31 +61,32 @@ public abstract class Reports {
 		}
 	}
 
-	private static void writeHeader(Writer f, String timestamp, Machine machine,
-			Collection<Connection> connections) throws IOException {
-		f.write("\t\tTarget SpiNNaker Machine Structure\n");
-		f.write("\t\t==================================\n");
-		f.write(format("\nGenerated: %s for target machine '%s'\n\n", timestamp,
-				connections));
-		f.write(format("Machine dimensions (in chips) x : %d  y : %d\n\n",
-				machine.maxChipX() + 1, machine.maxChipY() + 1));
-		f.write("\t\tMachine router information\n");
-		f.write("\t\t==========================\n");
+	private static void writeHeader(PrintWriter f, String timestamp,
+			Machine machine, Collection<Connection> connections)
+			throws IOException {
+		f.println("\t\tTarget SpiNNaker Machine Structure");
+		f.println("\t\t==================================");
+		f.printf("\nGenerated: %s for target machine '%s'\n\n", timestamp,
+				connections);
+		f.printf("Machine dimensions (in chips) x : %d  y : %d\n\n",
+				machine.maxChipX() + 1, machine.maxChipY() + 1);
+		f.println("\t\tMachine router information");
+		f.println("\t\t==========================");
 	}
 
-	private static void writeChipRouterReport(Writer f, Machine machine, int x,
-			int y) throws IOException {
+	private static void writeChipRouterReport(PrintWriter f, Machine machine,
+			int x, int y) throws IOException {
 		Chip chip = machine.getChipAt(new ChipLocation(x, y));
 		if (chip != null) {
-			f.write(format("\nInformation for chip %d:%d\n", chip.getX(),
-					chip.getY()));
-			f.write("Neighbouring chips:\n\t" + chip.router.neighbouringChipsCoords()
-                    + "\n");
-			f.write("Router list of links for this chip are:\n");
+			f.printf("\nInformation for chip %d:%d\n", chip.getX(),
+					chip.getY());
+			f.printf("Neighbouring chips:\n\t%s\n",
+					chip.router.neighbouringChipsCoords());
+			f.println("Router list of links for this chip are:");
 			for (Link link : chip.router.links()) {
-				f.write("\t" + link + "\n");
+				f.printf("\t%s\n", link);
 			}
-			f.write("\t\t==========================\n");
+			f.println("\t\t==========================");
 		}
 	}
 }
