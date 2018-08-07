@@ -10,12 +10,16 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SD
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -38,8 +42,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean canSend;
 	private Inet4Address remoteIPAddress;
 	private int remotePort;
-	private DatagramSocket socket;
-	private DatagramChannel channel;
+	private final DatagramSocket socket;
+	private final DatagramChannel channel;
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
 	private static final int ONE_SECOND = 1000;
 	private static final int PING_COUNT = 5;
@@ -67,25 +71,30 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public UDPConnection(String localHost, Integer localPort, String remoteHost,
 			Integer remotePort) throws IOException {
-		if (localPort == null) {
-			localPort = 0;
-		}
-		if (localHost != null) {
-			Inet4Address local = (Inet4Address) getByName(localHost);
-			socket = new DatagramSocket(localPort, local);
-		} else {
-			socket = new DatagramSocket(localPort);
-		}
+		channel = DatagramChannel.open();
+		channel.bind(createLocalAddress(localHost, localPort));
+		socket = channel.socket();
 		socket.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
 		canSend = false;
 		if (remoteHost != null && remotePort != null && remotePort != 0) {
-			this.remoteIPAddress = (Inet4Address) getByName(remoteHost);
+			remoteIPAddress = (Inet4Address) getByName(remoteHost);
 			this.remotePort = remotePort;
 			socket.connect(remoteIPAddress, this.remotePort);
 			canSend = true;
 		}
 		socket.setSoTimeout(ONE_SECOND);
-		channel = socket.getChannel();
+	}
+
+	private static SocketAddress createLocalAddress(String localHost,
+			Integer localPort) throws UnknownHostException {
+		// Convert null into wildcard
+		if (localPort == null) {
+			localPort = 0;
+		}
+		if (localHost == null) {
+			return new InetSocketAddress(localPort);
+		}
+		return new InetSocketAddress(getByName(localHost), localPort);
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -110,7 +119,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	/**
-	 * @return The remte port to which the connection is connected, or zero if
+	 * @return The remote port to which the connection is connected, or zero if
 	 *         it is not connected.
 	 */
 	@Override
@@ -144,13 +153,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		if (!channel.isOpen()) {
+			throw new EOFException();
+		}
 		if (timeout == null) {
 			socket.setSoTimeout(0);
 		} else {
 			socket.setSoTimeout(timeout);
 		}
-		DatagramPacket p = new DatagramPacket(new byte[PACKET_MAX_SIZE],
-				PACKET_MAX_SIZE);
+		DatagramPacket p =
+				new DatagramPacket(new byte[PACKET_MAX_SIZE], PACKET_MAX_SIZE);
 		socket.receive(p);
 		ByteBuffer buffer = wrap(p.getData(), 0, p.getLength());
 		buffer.order(LITTLE_ENDIAN);
@@ -186,13 +198,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		if (!channel.isOpen()) {
+			throw new EOFException();
+		}
 		if (timeout == null) {
 			socket.setSoTimeout(0);
 		} else {
 			socket.setSoTimeout(timeout);
 		}
-		DatagramPacket p = new DatagramPacket(new byte[PACKET_MAX_SIZE],
-				PACKET_MAX_SIZE);
+		DatagramPacket p =
+				new DatagramPacket(new byte[PACKET_MAX_SIZE], PACKET_MAX_SIZE);
 		socket.receive(p);
 		return p;
 	}
@@ -267,7 +282,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(DatagramPacket data, InetAddress address, int port)
 			throws IOException {
-		if (address == null || port == 0) {
+		if (!canSend) {
 			throw new IOException("Remote host address or port not set; "
 					+ "data cannot be sent with this connection");
 		}
@@ -333,28 +348,30 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			// Ignore any possible exception here
 		}
 		socket.close();
-		channel = null;
 	}
 
 	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
-		Selector selector = Selector.open();
-		channel.configureBlocking(false);
-		try {
-			SelectionKey key = channel.register(selector, OP_READ);
+		if (!channel.isOpen()) {
+			return false;
+		}
+		try (Selector selector = Selector.open()) {
+			channel.configureBlocking(false);
 			try {
-				if (timeout == null || timeout == 0) {
-					selector.selectNow();
-				} else {
-					selector.select(timeout);
+				SelectionKey key = channel.register(selector, OP_READ);
+				try {
+					if (timeout == null || timeout == 0) {
+						selector.selectNow();
+					} else {
+						selector.select(timeout);
+					}
+					return key.isReadable();
+				} finally {
+					key.cancel();
 				}
-				return key.isReadable();
 			} finally {
-				key.cancel();
+				channel.configureBlocking(true);
 			}
-		} finally {
-			channel.configureBlocking(true);
-			selector.close();
 		}
 	}
 
@@ -377,9 +394,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		 * message, but then fail to send a response since the
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
-		SDPMessage triggerMessage = new SDPMessage(
-				new SDPHeader(REPLY_NOT_EXPECTED, new CoreLocation(0, 0, 0),
-						RUNNING_COMMAND_SDP_PORT));
+		SDPMessage triggerMessage =
+				new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
+						new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);
