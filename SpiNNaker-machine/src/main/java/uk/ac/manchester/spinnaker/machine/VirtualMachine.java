@@ -212,7 +212,8 @@ public class VirtualMachine extends Machine {
      * Hackery to get 100% coverage.
      *
      * @param bytes The raw IP address in network byte order.
-     * @return
+     * @return The InetAddress for these bytes
+     * @throws Error if InetAddress.getByAddress throws UnknownHostException
      */
     static final InetAddress addressFromBytes(byte[] bytes) {
         try {

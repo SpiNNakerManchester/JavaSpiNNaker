@@ -3,7 +3,6 @@ package uk.ac.manchester.spinnaker.machine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 import static java.util.stream.IntStream.range;
 
 /** A basic SpiNNaker routing entry. */

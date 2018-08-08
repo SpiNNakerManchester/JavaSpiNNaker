@@ -1,13 +1,10 @@
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 /** A multicast packet routing table entry. */
 public class MulticastRoutingEntry extends RoutingEntry {
-    private int key;
-    private int mask;
-    private boolean defaultable;
+    private final int key;
+    private final int mask;
+    private final boolean defaultable;
 
     /**
      * Create a multicast routing table entry.
