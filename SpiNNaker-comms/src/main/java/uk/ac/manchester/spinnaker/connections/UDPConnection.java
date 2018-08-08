@@ -1,10 +1,12 @@
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.net.InetAddress.getByAddress;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
+import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
@@ -90,16 +92,24 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		socket.setSoTimeout(ONE_SECOND);
 	}
 
-	private static SocketAddress createLocalAddress(String localHost,
+	private SocketAddress createLocalAddress(String localHost,
 			Integer localPort) throws UnknownHostException {
 		// Convert null into wildcard
 		if (localPort == null) {
 			localPort = 0;
 		}
-		if (localHost == null) {
-			return new InetSocketAddress(localPort);
+		Inet4Address localAddr;
+		try {
+			if (localHost == null) {
+				localAddr = (Inet4Address) getByAddress(new byte[IPV4_SIZE]);
+			} else {
+				localAddr = (Inet4Address) getByName(localHost);
+			}
+		} catch (ClassCastException e) {
+			throw new UnknownHostException("SpiNNaker only talks IPv4");
 		}
-		return new InetSocketAddress(getByName(localHost), localPort);
+		InetSocketAddress addr = new InetSocketAddress(localAddr, localPort);
+		return addr;
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -165,8 +175,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
-		channel.receive(buffer);
+		Object addr = channel.receive(buffer);
 		receivable = false;
+		if (addr == null) {
+			throw new SocketTimeoutException();
+		}
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
@@ -208,6 +221,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
+		if (addr == null) {
+			throw new SocketTimeoutException();
+		}
 		return new DatagramPacket(buffer.array(), 0, buffer.position(), addr);
 	}
 

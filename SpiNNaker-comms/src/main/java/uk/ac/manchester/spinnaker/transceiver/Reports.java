@@ -56,7 +56,7 @@ public abstract class Reports {
 				}
 			}
 		} catch (IOException e) {
-			log.error("can't open file " + file + " for writing");
+			log.error("can't open file {} for writing", file);
 			throw e;
 		}
 	}

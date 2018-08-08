@@ -87,7 +87,7 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 					size, dataType.size));
 		}
 		if (baseAddress % ALIGNMENT != 0) {
-			log.warn("Unaligned fill starting at %d; please use aligned fills",
+			log.warn("Unaligned fill starting at {}; please use aligned fills",
 					baseAddress);
 		}
 

@@ -341,7 +341,7 @@ public class Transceiver extends UDPTransceiver
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, Exception {
 		if (hostname != null) {
-			log.info("Creating transceiver for %s", hostname);
+			log.info("Creating transceiver for {}", hostname);
 		}
 		List<Connection> connections = new ArrayList<>();
 
@@ -364,7 +364,7 @@ public class Transceiver extends UDPTransceiver
 				connections.add(connection);
 				bmpIPs.add(connection.getRemoteIPAddress());
 			}
-			log.info("Transceiver using BMPs: %s", bmpIPs);
+			log.info("Transceiver using BMPs: {}", bmpIPs);
 		}
 
 		// handle the SpiNNaker connection
@@ -700,7 +700,7 @@ public class Transceiver extends UDPTransceiver
 							BMP_MAJOR_VERSIONS));
 				}
 
-				log.info("Using BMP at %s with version %s %s",
+				log.info("Using BMP at {} with version {} {}",
 						conn.getRemoteIPAddress(), versionInfo.name,
 						versionInfo.versionString);
 			} catch (SocketTimeoutException e) {
@@ -713,8 +713,8 @@ public class Transceiver extends UDPTransceiver
 								conn.getRemoteIPAddress()),
 						e);
 			} catch (Exception e) {
-				log.error(format("Failed to speak to BMP at %s",
-						conn.getRemoteIPAddress()), e);
+				log.error("Failed to speak to BMP at {}",
+						conn.getRemoteIPAddress(), e);
 				throw e;
 			}
 		}
@@ -810,7 +810,7 @@ public class Transceiver extends UDPTransceiver
 		// TODO: Actually get the existing APP_IDs in use
 		appIDTracker = new AppIdTracker();
 
-		log.info("Detected a machine on IP address %s which has %s",
+		log.info("Detected a machine on IP address {} which has {}",
 				bootSendConnection.getRemoteIPAddress(),
 				machine.coresAndLinkOutputString());
 	}
@@ -873,8 +873,8 @@ public class Transceiver extends UDPTransceiver
 				newConnections.add(conn);
 			} else {
 				log.warn(
-						"Additional Ethernet connection on %s at chip %d,%d "
-								+ "cannot be contacted",
+						"Additional Ethernet connection on {} at "
+								+ "chip {},{} cannot be contacted",
 						ipAddress, chip.getX(), chip.getY());
 			}
 		}
@@ -1133,7 +1133,7 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 		if (versionInfo != null) {
-			log.info("Found board with version %s", versionInfo);
+			log.info("Found board with version {}", versionInfo);
 		}
 		return versionInfo;
 	}

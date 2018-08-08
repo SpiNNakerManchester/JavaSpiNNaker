@@ -33,7 +33,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 */
 	public static final int TIMEOUT = 1000;
 	private static final long POOL_TIMEOUT = 1000L;
-	private Logger log = getLogger(ConnectionListener.class);
+	private static final Logger log = getLogger(ConnectionListener.class);
 	private ThreadPoolExecutor callbackPool;
 	private Set<MessageHandler<MessageType>> callbacks;
 	private Listenable<MessageType> connection;

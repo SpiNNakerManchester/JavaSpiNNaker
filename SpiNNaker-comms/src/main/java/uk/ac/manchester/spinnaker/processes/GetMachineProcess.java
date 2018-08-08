@@ -143,7 +143,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		// Warn about unexpected missing chips
 		for (ChipLocation chip : p2pTable.getChips()) {
 			if (!chipInfo.containsKey(chip)) {
-				log.warn("Chip %d,%d was expected but didn't reply",
+				log.warn("Chip {},{} was expected but didn't reply",
 						chip.getX(), chip.getY());
 			}
 		}
@@ -187,7 +187,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 				} else if (chipInfo.coreStates.get(id) == IDLE) {
 					processors.add(Processor.factory(id));
 				} else {
-					log.warn("Not using core %d,%d,%d in state %s",
+					log.warn("Not using core {},{},{} in state {}",
 							location.getX(), location.getY(), id,
 							chipInfo.coreStates.get(id));
 				}
