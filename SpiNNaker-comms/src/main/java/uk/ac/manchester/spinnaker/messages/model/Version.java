@@ -3,6 +3,9 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * A three-part semantic version description.
  *
@@ -51,6 +54,26 @@ public final class Version implements Comparable<Version> {
 		majorVersion = parseInt(major);
 		minorVersion = parseInt(minor);
 		revision = parseInt(rev);
+	}
+
+	static final Pattern VERSION_RE =
+			Pattern.compile("^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+))?)?$");
+
+	/**
+	 * Create a version number.
+	 *
+	 * @param threePartVersion
+	 *            the version identifier, as X or X.Y or X.Y.Z
+	 */
+	public Version(String threePartVersion) {
+		Matcher m = VERSION_RE.matcher(threePartVersion);
+		if (!m.matches()) {
+			throw new IllegalArgumentException(
+					"bad version string: " + threePartVersion);
+		}
+		majorVersion = parseInt(m.group(1));
+		minorVersion = (m.groupCount() > 1 ? parseInt(m.group(2)) : 0);
+		revision = (m.groupCount() > 2 ? parseInt(m.group(3)) : 0);
 	}
 
 	@Override
