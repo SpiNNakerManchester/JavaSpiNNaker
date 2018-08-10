@@ -78,7 +78,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  * interface to the server. For a higher-level interface built on top of this
  * client, see {@link Job}.
  */
-public class ProtocolClient implements Closeable {
+public class ProtocolClient implements Closeable, SpallocAPI {
 	/** The default spalloc port. */
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
@@ -95,8 +95,10 @@ public class ProtocolClient implements Closeable {
 	 * down all sockets at once.
 	 */
 	private final Map<Thread, TextSocket> socks = new HashMap<>();
-	/** The thread-aware socket factory. */
-	private final ProtocolThreadLocal local = new ProtocolThreadLocal();
+	/**
+	 * The thread-aware socket factory. Every thread gets exactly one socket.
+	 */
+	private final TextSocketFactory local = new TextSocketFactory();
 	/** A queue of unprocessed notifications. */
 	private final Deque<Notification> notifications = new LinkedList<>();
 	private final Object socksLock = new Object();
@@ -186,6 +188,8 @@ public class ProtocolClient implements Closeable {
 		if (connectNeeded) {
 			if (timeout != null) {
 				sock.setSoTimeout(timeout);
+			} else {
+				sock.setSoTimeout(0);
 			}
 			if (!doConnect(sock)) {
 				close(key);
@@ -212,10 +216,6 @@ public class ProtocolClient implements Closeable {
 		return success;
 	}
 
-	private boolean hasOpenSocket() {
-		return !local.get().isClosed();
-	}
-
 	/**
 	 * (Re)connect to the server.
 	 *
@@ -234,17 +234,15 @@ public class ProtocolClient implements Closeable {
 	 */
 	public void connect(Integer timeout) throws IOException {
 		// Close any existing connection
-		if (hasOpenSocket()) {
+		Socket s = local.get();
+		if (s.isClosed()) {
+			close(null);
+		} else if (!s.isConnected()) {
 			close(null);
 		}
 		dead = false;
-		doConnect(timeout);
-	}
-
-	/** Try to (re)connect to the server. */
-	private TextSocket doConnect(Integer timeout) throws IOException {
 		try {
-			return getConnection(timeout);
+			getConnection(timeout);
 		} catch (IOException e) {
 			// Failure, try again...
 			close(null);
@@ -302,7 +300,7 @@ public class ProtocolClient implements Closeable {
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
-	protected Response receiveJson(Integer timeout) throws IOException {
+	protected Response receiveResponse(Integer timeout) throws IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Wait for some data to arrive
@@ -330,14 +328,22 @@ public class ProtocolClient implements Closeable {
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
-	protected void sendJson(Command<?> command, Integer timeout)
+	protected void sendCommand(Command<?> command, Integer timeout)
 			throws IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line
 		String msg = MAPPER.writeValueAsString(command);
 		try {
-			sock.getWriter().println(msg);
+			PrintWriter pw = sock.getWriter();
+			pw.println(msg);
+			if (pw.checkError()) {
+				/*
+				 * Socket started giving errors; presume EOF since the
+				 * PrintWriter won't actually tell us why...
+				 */
+				throw new EOFException("command write failed");
+			}
 		} catch (SocketTimeoutException e) {
 			throw new ProtocolTimeoutException("send timed out", e);
 		}
@@ -387,11 +393,11 @@ public class ProtocolClient implements Closeable {
 			Long finishTime = makeTimeout(timeout);
 
 			// Construct and send the command message
-			sendJson(command, timeout);
+			sendCommand(command, timeout);
 
 			// Command sent! Attempt to receive the response...
 			while (!timedOut(finishTime)) {
-				Response r = receiveJson(timeLeft(finishTime));
+				Response r = receiveResponse(timeLeft(finishTime));
 				if (r == null) {
 					continue;
 				}
@@ -420,22 +426,7 @@ public class ProtocolClient implements Closeable {
 		}
 	}
 
-	/**
-	 * Return the next notification to arrive.
-	 *
-	 * @param timeout
-	 *            The number of seconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever. If
-	 *            negative, only responses already-received will be returned; if
-	 *            no responses are available, in this case the function does not
-	 *            raise a ProtocolTimeoutError but returns <tt>null</tt>
-	 *            instead.
-	 * @return The notification sent by the server.
-	 * @throws ProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws ProtocolException
-	 *             If the socket is unusable or becomes disconnected.
-	 */
+	@Override
 	public Notification waitForNotification(Integer timeout)
 			throws ProtocolException, ProtocolTimeoutException {
 		// If we already have a notification, return it
@@ -452,7 +443,7 @@ public class ProtocolClient implements Closeable {
 
 		// Otherwise, wait for a notification to arrive
 		try {
-			return (Notification) receiveJson(timeout);
+			return (Notification) receiveResponse(timeout);
 		} catch (ProtocolTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
@@ -464,11 +455,13 @@ public class ProtocolClient implements Closeable {
 	 * The bindings of the Spalloc protocol methods themselves.
 	 */
 
+	@Override
 	public Version version(Integer timeout)
 			throws IOException, SpallocServerException {
 		return new Version(call(new VersionCommand(), timeout));
 	}
 
+	@Override
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call
@@ -479,17 +472,20 @@ public class ProtocolClient implements Closeable {
 		return parseInt(call(new CreateJobCommand(args, kwargs), timeout));
 	}
 
+	@Override
 	public void jobKeepAlive(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		call(new JobKeepAliveCommand(jobID), timeout);
 	}
 
+	@Override
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(call(new GetJobStateCommand(jobID), timeout),
 				JobState.class);
 	}
 
+	@Override
 	public JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(
@@ -497,21 +493,25 @@ public class ProtocolClient implements Closeable {
 				JobMachineInfo.class);
 	}
 
+	@Override
 	public void powerOnJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		call(new PowerOnJobBoardsCommand(jobID), timeout);
 	}
 
+	@Override
 	public void powerOffJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		call(new PowerOffJobBoardsCommand(jobID), timeout);
 	}
 
+	@Override
 	public void destroyJob(int jobID, String reason, Integer timeout)
 			throws IOException, SpallocServerException {
 		call(new DestroyJobCommand(jobID, reason), timeout);
 	}
 
+	@Override
 	public void notifyJob(Integer jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		if (jobID == null) {
@@ -521,6 +521,7 @@ public class ProtocolClient implements Closeable {
 		}
 	}
 
+	@Override
 	public void noNotifyJob(Integer jobID, Integer timeout)
 			throws IOException, SpallocServerException {
 		if (jobID == null) {
@@ -530,6 +531,7 @@ public class ProtocolClient implements Closeable {
 		}
 	}
 
+	@Override
 	public void notifyMachine(String machineName, Integer timeout)
 			throws IOException, SpallocServerException {
 		if (machineName == null) {
@@ -539,6 +541,7 @@ public class ProtocolClient implements Closeable {
 		}
 	}
 
+	@Override
 	public void noNotifyMachine(String machineName, Integer timeout)
 			throws IOException, SpallocServerException {
 		if (machineName == null) {
@@ -548,27 +551,30 @@ public class ProtocolClient implements Closeable {
 		}
 	}
 
+	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(call(new ListJobsCommand(), timeout),
 				ListJobsResponse.class).getJobs();
 	}
 
+	@Override
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(call(new ListMachinesCommand(), timeout),
 				ListMachinesResponse.class).getMachines();
 	}
 
+	@Override
 	public BoardPhysicalCoordinates getBoardPosition(String machineName,
 			BoardCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(
-				call(new GetBoardPositionCommand(machineName, coords),
-						timeout),
+				call(new GetBoardPositionCommand(machineName, coords), timeout),
 				BoardPhysicalCoordinates.class);
 	}
 
+	@Override
 	public BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
@@ -578,6 +584,7 @@ public class ProtocolClient implements Closeable {
 				BoardCoordinates.class);
 	}
 
+	@Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
 		return MAPPER.readValue(
@@ -585,6 +592,7 @@ public class ProtocolClient implements Closeable {
 				WhereIs.class);
 	}
 
+	@Override
 	public WhereIs whereIs(String machine, HasChipLocation chip,
 			Integer timeout) throws IOException, SpallocServerException {
 		return MAPPER.readValue(
@@ -592,15 +600,16 @@ public class ProtocolClient implements Closeable {
 				WhereIs.class);
 	}
 
-	public WhereIs whereIs(String machine, int cabinet, int frame, int board,
+	@Override
+	public WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-		return MAPPER
-				.readValue(
-						call(new WhereIsMachineBoardPhysicalCommand(machine,
-								cabinet, frame, board), timeout),
-						WhereIs.class);
+		return MAPPER.readValue(
+				call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
+						timeout),
+				WhereIs.class);
 	}
 
+	@Override
 	public WhereIs whereIs(String machine, BoardCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
 		return MAPPER.readValue(
@@ -613,7 +622,7 @@ public class ProtocolClient implements Closeable {
 	 * Subclass of threading.local to ensure that we get sane initialisation of
 	 * our state in each thread.
 	 */
-	static class ProtocolThreadLocal extends ThreadLocal<TextSocket> {
+	private static class TextSocketFactory extends ThreadLocal<TextSocket> {
 		@Override
 		protected TextSocket initialValue() {
 			return new TextSocket();

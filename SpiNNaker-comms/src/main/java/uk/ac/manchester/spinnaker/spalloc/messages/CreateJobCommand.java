@@ -3,7 +3,6 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Request to create a job.
  */

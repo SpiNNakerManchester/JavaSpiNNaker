@@ -4,7 +4,6 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  * Request to get notifications about a machine.
  */
 public class NotifyMachineCommand extends Command<String> {
-	//
 	/**
 	 * Create a request to be notified of changes in machine state.
 	 *
