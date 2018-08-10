@@ -14,6 +14,7 @@ public class JobMachineInfo {
 	private int height;
 	private List<Connection> connections;
 	private String machineName;
+	private List<BoardCoordinates> boards;
 
 	public int getWidth() {
 		return width;
@@ -46,5 +47,13 @@ public class JobMachineInfo {
 
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
+	}
+
+	public List<BoardCoordinates> getBoards() {
+		return boards;
+	}
+
+	public void setBoards(List<BoardCoordinates> boards) {
+		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
 }

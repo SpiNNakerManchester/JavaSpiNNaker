@@ -4,30 +4,30 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  * The description of where some resource is on a SpiNNaker system.
  */
 public class WhereIs {
-	private int[] jobChip;
+	private Chip jobChip;
 	private int jobId;
-	private int[] chip;
-	private int[] logical;
+	private Chip chip;
+	private BoardCoordinates logical;
 	private String machine;
-	private int[] boardChip;
-	private int[] physical;
+	private Chip boardChip;
+	private BoardPhysicalCoordinates physical;
 
 	/**
-	 * Get the job_chip.
+	 * Get the chip location relative to the job's allocation.
 	 *
-	 * @return the job_chip
+	 * @return the job-relative chip location
 	 */
-	public int[] getJobChip() {
+	public Chip getJobChip() {
 		return jobChip;
 	}
 
 	/**
-	 * Sets the job chip.
+	 * Sets the chip location relative to the job's allocation.
 	 *
 	 * @param jobChip
-	 *            the job chip to set
+	 *            the job-relative chip location to set
 	 */
-	public void setJobChip(int[] jobChip) {
+	public void setJobChip(Chip jobChip) {
 		this.jobChip = jobChip;
 	}
 
@@ -55,7 +55,7 @@ public class WhereIs {
 	 *
 	 * @return the chip
 	 */
-	public int[] getChip() {
+	public Chip getChip() {
 		return chip;
 	}
 
@@ -65,26 +65,26 @@ public class WhereIs {
 	 * @param chip
 	 *            the chip to set
 	 */
-	public void setChip(int[] chip) {
+	public void setChip(Chip chip) {
 		this.chip = chip;
 	}
 
 	/**
-	 * Get the logical.
+	 * Get the logical board coordinates.
 	 *
-	 * @return the logical
+	 * @return the logical board coordinates
 	 */
-	public int[] getLogical() {
+	public BoardCoordinates getLogical() {
 		return logical;
 	}
 
 	/**
-	 * Sets the logical.
+	 * Sets the logical board coordinates.
 	 *
 	 * @param logical
-	 *            the logical to set
+	 *            the logical board coordinates to set
 	 */
-	public void setLogical(int[] logical) {
+	public void setLogical(BoardCoordinates logical) {
 		this.logical = logical;
 	}
 
@@ -108,40 +108,40 @@ public class WhereIs {
 	}
 
 	/**
-	 * Get the board chip.
+	 * Get the chip location relative to the board.
 	 *
-	 * @return the board chip
+	 * @return the board chip location
 	 */
-	public int[] getBoardChip() {
+	public Chip getBoardChip() {
 		return boardChip;
 	}
 
 	/**
-	 * Sets the board chip.
+	 * Sets the chip location relative to the board.
 	 *
 	 * @param boardChip
-	 *            the board chip to set
+	 *            the board chip location to set
 	 */
-	public void setBoardChip(int[] boardChip) {
+	public void setBoardChip(Chip boardChip) {
 		this.boardChip = boardChip;
 	}
 
 	/**
-	 * Get the physical.
+	 * Get the physical board coordinates.
 	 *
-	 * @return the physical
+	 * @return the physical board coordinates
 	 */
-	public int[] getPhysical() {
+	public BoardPhysicalCoordinates getPhysical() {
 		return physical;
 	}
 
 	/**
-	 * Sets the physical.
+	 * Sets the physical board coordinates.
 	 *
 	 * @param physical
-	 *            the physical to set
+	 *            the physical board coordinates to set
 	 */
-	public void setPhysical(int[] physical) {
+	public void setPhysical(BoardPhysicalCoordinates physical) {
 		this.physical = physical;
 	}
 }

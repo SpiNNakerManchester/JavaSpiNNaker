@@ -3,9 +3,10 @@ package uk.ac.manchester.spinnaker.spalloc;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.max;
-import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.currentThread;
+import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
+import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
+import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -347,27 +348,6 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		} catch (SocketTimeoutException e) {
 			throw new ProtocolTimeoutException("send timed out", e);
 		}
-	}
-
-	/** Convert a timestamp into how long to wait for it. */
-	private static Integer timeLeft(Long timestamp) {
-		if (timestamp == null) {
-			return null;
-		}
-		return max(0, (int) (timestamp - currentTimeMillis()));
-	}
-
-	/** Check if a timestamp has been reached. */
-	private static boolean timedOut(Long timestamp) {
-		return timestamp != null && timestamp < currentTimeMillis();
-	}
-
-	/** Convert a delay (in milliseconds) into a timestamp. */
-	private static Long makeTimeout(Integer delay) {
-		if (delay == null) {
-			return null;
-		}
-		return currentTimeMillis() + delay;
 	}
 
 	/**
