@@ -56,8 +56,13 @@ public final class Version implements Comparable<Version> {
 		revision = parseInt(rev);
 	}
 
-	static final Pattern VERSION_RE =
-			Pattern.compile("^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+))?)?$");
+	private static final Pattern VERSION_RE = Pattern.compile(
+			// A major version number
+			"^(?<major>\\d+)"
+					// An optional minor version number
+					+ "(?:\\.(?<minor>\\d+)"
+					// An optional revision number
+					+ "(?:\\.(?<revision>\\d+))?)?$");
 
 	/**
 	 * Create a version number.
@@ -71,9 +76,9 @@ public final class Version implements Comparable<Version> {
 			throw new IllegalArgumentException(
 					"bad version string: " + threePartVersion);
 		}
-		majorVersion = parseInt(m.group(1));
-		minorVersion = (m.groupCount() > 1 ? parseInt(m.group(2)) : 0);
-		revision = (m.groupCount() > 2 ? parseInt(m.group(3)) : 0);
+		majorVersion = parseInt(m.group("major"));
+		minorVersion = (m.groupCount() > 1 ? parseInt(m.group("minor")) : 0);
+		revision = (m.groupCount() > 2 ? parseInt(m.group("revision")) : 0);
 	}
 
 	@Override

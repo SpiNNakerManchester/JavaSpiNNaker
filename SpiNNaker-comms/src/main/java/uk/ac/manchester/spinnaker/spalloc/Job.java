@@ -12,6 +12,7 @@ import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.DESTROYED;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MS_PER_S;
 
 import java.io.IOException;
 import java.util.List;
@@ -82,6 +83,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * </blockquote>
  */
 public class Job implements AutoCloseable {
+	private static final Logger log = getLogger(Job.class);
+	private static final int DEFAULT_KEEPALIVE = 30;
+	private static final int KEEPALIVE_INTERVAL =
+			(int) (DEFAULT_KEEPALIVE * MS_PER_S);
+	private static final ChipLocation ROOT = new ChipLocation(0, 0);
+
 	private ProtocolClient client;
 	private int id;
 	private Integer timeout;
@@ -91,12 +98,7 @@ public class Job implements AutoCloseable {
 	private JobState status;
 	private long statusTimestamp;
 	private JobMachineInfo machineInfo;
-	private int reconnect_delay;
-
-	private static final Logger log = getLogger(Job.class);
-	private static final int KEEPALIVE_INTERVAL = 30 * 1000;
-	private static final ChipLocation ROOT = new ChipLocation(0, 0);
-	private static final int DEFAULT_KEEPALIVE = 30;
+	private int reconnectDelay = (int) (10 * MS_PER_S);
 
 	public Job(String hostname, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
@@ -112,12 +114,11 @@ public class Job implements AutoCloseable {
 		if (kwargs.containsKey("keepalive")) {
 			keepaliveTime =
 					(int) (((Number) kwargs.get("keepalive")).doubleValue()
-							* 1000);
+							* MS_PER_S);
 		} else {
 			keepaliveTime = KEEPALIVE_INTERVAL;
 			kwargs.put("keepalive", DEFAULT_KEEPALIVE);
 		}
-		// FIXME
 		id = client.createJob(args, kwargs, timeout);
 		log.info("created spalloc job with ID: {}", id);
 		keepalive = new Thread(() -> keepalive(),
@@ -169,21 +170,21 @@ public class Job implements AutoCloseable {
 		 * If the job no longer exists, we can't get the keepalive interval (and
 		 * there's nothing to keepalive) so just bail out.
 		 */
-		JobState job_state = getStatus();
-		if (job_state.getState() == UNKNOWN
-				|| job_state.getState() == DESTROYED) {
-			if (job_state.getReason() != null) {
+		JobState jobState = getStatus();
+		if (jobState.getState() == UNKNOWN
+				|| jobState.getState() == DESTROYED) {
+			if (jobState.getReason() != null) {
 				throw new JobDestroyedException(format(
 						"Job %d does not exist: %s: %s", id,
-						job_state.getState().name(), job_state.getReason()));
+						jobState.getState().name(), jobState.getReason()));
 			} else {
 				throw new JobDestroyedException(
 						format("Job %d does not exist: %s", id,
-								job_state.getState().name()));
+								jobState.getState().name()));
 			}
 		}
 		// Snag the keepalive interval from the job
-		keepaliveTime = (int) (job_state.getKeepAlive() * 1000);
+		keepaliveTime = (int) (jobState.getKeepAlive() * MS_PER_S);
 		log.info("resumed spalloc job with ID: {}", id);
 		keepalive = new Thread(() -> keepalive(),
 				"keepalive for spalloc job " + id);
@@ -241,6 +242,9 @@ public class Job implements AutoCloseable {
 		}
 	}
 
+	private static final Version MIN = new Version(0, 4, 0);
+	private static final Version MAX = new Version(2, 0, 0);
+
 	/**
 	 * Assert that the server version is compatible. This client supports from
 	 * 0.4.0 to 2.0.0 (but not including the latter).
@@ -251,8 +255,7 @@ public class Job implements AutoCloseable {
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {
 		Version v = client.version(timeout);
-		if (v.majorVersion == 1
-				|| (v.majorVersion == 0 && v.minorVersion >= 4)) {
+		if (MIN.compareTo(v) <= 0 && MAX.compareTo(v) > 0) {
 			return;
 		}
 		client.close();
@@ -278,7 +281,7 @@ public class Job implements AutoCloseable {
 	 * <p>
 	 * Does nothing if the job has not yet been allocated any boards.
 	 * <p>
-	 * The {@link #wait_until_ready()} method may be used to wait for the boards
+	 * The {@link #waitUntilReady(Integer)} method may be used to wait for the boards
 	 * to fully turn on or off.
 	 *
 	 * @param powerOn
@@ -303,7 +306,7 @@ public class Job implements AutoCloseable {
 	 * <p>
 	 * Does nothing if the job has not been allocated.
 	 * <p>
-	 * The {@link #wait_until_ready()} method may be used to wait for the boards
+	 * The {@link #waitUntilReady(Integer)} method may be used to wait for the boards
 	 * to fully turn on or off.
 	 */
 	public void reset() throws IOException, SpallocServerException {
@@ -420,24 +423,24 @@ public class Job implements AutoCloseable {
 	 */
 	public State waitForStateChange(State oldState, Integer timeout)
 			throws SpallocServerException {
-		Long finish_time = makeTimeout(timeout);
+		Long finishTime = makeTimeout(timeout);
 
 		// We may get disconnected while waiting so keep listening...
-		while (!timedOut(finish_time)) {
+		while (!timedOut(finishTime)) {
 			try {
 				// Watch for changes in this Job's state
 				client.notifyJob(id);
 
 				// Wait for job state to change
-				while (!timedOut(finish_time)) {
+				while (!timedOut(finishTime)) {
 					// Has the job changed state?
-					State new_state = getStatus().getState();
-					if (new_state != oldState) {
-						return new_state;
+					State newState = getStatus().getState();
+					if (newState != oldState) {
+						return newState;
 					}
 
 					// Wait for a state change and keep the job alive
-					if (!do_wait_for_a_change(finish_time)) {
+					if (!doWaitForAChange(finishTime)) {
 						/*
 						 * The user's timeout expired while waiting for a state
 						 * change, return the old state and give up.
@@ -452,7 +455,7 @@ public class Job implements AutoCloseable {
 				 * came first).
 				 */
 				try {
-					do_reconnect(finish_time);
+					doReconnect(finishTime);
 				} catch (IOException | InterruptedException e1) {
 					log.error("problem when reconnecting after disconnect", e1);
 				}
@@ -469,16 +472,19 @@ public class Job implements AutoCloseable {
 	/**
 	 * Wait for a state change and keep the job alive.
 	 *
+	 * @param finishTime
+	 *            when our timeout expires, or <tt>null</tt> for never
+	 * @return True if the state has changed, or false on timeout
 	 * @throws SpallocServerException
 	 * @throws IOException
 	 */
-	private boolean do_wait_for_a_change(Long finish_time)
+	private boolean doWaitForAChange(Long finishTime)
 			throws IOException, SpallocServerException {
 		/*
 		 * Since we're about to block holding the client lock, we must be
 		 * responsible for keeping everything alive.
 		 */
-		while (!timedOut(finish_time)) {
+		while (!timedOut(finishTime)) {
 			client.jobKeepAlive(id, timeout);
 
 			// Wait for the job to change
@@ -487,18 +493,18 @@ public class Job implements AutoCloseable {
 				 * Block waiting for the job to change no-longer than the
 				 * user-specified timeout or half the keepalive interval.
 				 */
-				Integer wait_timeout;
-				if (finish_time != null && keepaliveTime != null) {
-					wait_timeout =
-							min(keepaliveTime / 2, timeLeft(finish_time));
-				} else if (finish_time == null) {
-					wait_timeout =
+				Integer waitTimeout;
+				if (finishTime != null && keepaliveTime != null) {
+					waitTimeout =
+							min(keepaliveTime / 2, timeLeft(finishTime));
+				} else if (finishTime == null) {
+					waitTimeout =
 							(keepalive == null) ? null : keepaliveTime / 2;
 				} else {
-					wait_timeout = timeLeft(finish_time);
+					waitTimeout = timeLeft(finishTime);
 				}
-				if (wait_timeout == null || wait_timeout >= 0) {
-					client.waitForNotification(wait_timeout);
+				if (waitTimeout == null || waitTimeout >= 0) {
+					client.waitForNotification(waitTimeout);
 					return true;
 				}
 			} catch (ProtocolTimeoutException e) {
@@ -519,14 +525,14 @@ public class Job implements AutoCloseable {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void do_reconnect(Long finish_time)
+	private void doReconnect(Long finishTime)
 			throws IOException, InterruptedException {
 		client.close();
 		int delay;
-		if (finish_time != null) {
-			delay = min(timeLeft(finish_time), reconnect_delay);
+		if (finishTime != null) {
+			delay = min(timeLeft(finishTime), reconnectDelay);
 		} else {
-			delay = reconnect_delay;
+			delay = reconnectDelay;
 		}
 		sleep(max(0, delay));
 		reconnect();
@@ -545,21 +551,21 @@ public class Job implements AutoCloseable {
 	 * @throws JobDestroyedException
 	 *             If the job was destroyed before becoming ready.
 	 */
-	public void wait_until_ready(Integer timeout) throws JobDestroyedException,
+	public void waitUntilReady(Integer timeout) throws JobDestroyedException,
 			IOException, SpallocServerException, StateChangeTimeoutException {
-		State cur_state = null;
-		Long finish_time = makeTimeout(timeout);
-		while (!timedOut(finish_time)) {
-			if (cur_state == null) {
+		State curState = null;
+		Long finishTime = makeTimeout(timeout);
+		while (!timedOut(finishTime)) {
+			if (curState == null) {
 				/*
 				 * Get initial state (NB: done here such that the command is
 				 * never sent if the timeout has already occurred)
 				 */
-				cur_state = getStatus().getState();
+				curState = getStatus().getState();
 			}
 
 			// Are we ready yet?
-			switch (cur_state) {
+			switch (curState) {
 			case READY:
 				// Now in the ready state!
 				return;
@@ -578,7 +584,7 @@ public class Job implements AutoCloseable {
 						"Spalloc server no longer recognises job");
 			}
 			// Wait for a state change...
-			cur_state = waitForStateChange(cur_state, timeLeft(finish_time));
+			curState = waitForStateChange(curState, timeLeft(finishTime));
 		}
 		// Timed out!
 		throw new StateChangeTimeoutException();
@@ -605,11 +611,14 @@ public class Job implements AutoCloseable {
 
 /** Thrown when a state change takes too long to occur. */
 class StateChangeTimeoutException extends Exception {
+	private static final long serialVersionUID = 4879238794331037892L;
 
 }
 
 /** Thrown when the job was destroyed while waiting for it to become ready. */
 class JobDestroyedException extends Exception {
+	private static final long serialVersionUID = 6082560756316191208L;
+
 	public JobDestroyedException(String destroyReason) {
 		super(destroyReason);
 	}
