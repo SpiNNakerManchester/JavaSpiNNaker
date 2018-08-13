@@ -50,6 +50,17 @@ public enum Direction {
         this.yChange = yChange;
     }
 
+    Direction inverse() {
+        switch(this) {
+            case EAST: return WEST;
+            case NORTHEAST: return SOUTHWEST;
+            case NORTH: return SOUTH;
+            case WEST: return EAST;
+            case SOUTHWEST: return NORTHEAST;
+            default: return NORTH;
+        }
+    }
+
     /**
      * The Direction with this id when expressed as an int.
      *
