@@ -21,7 +21,7 @@ public class JobDescription {
 	private String reason;
 	private String machine;
 	private List<Integer> args;
-	private Map<String,Object> kwargs;
+	private Map<String, Object> kwargs;
 	private List<BoardCoordinates> boards;
 	private String keepAliveHost;
 

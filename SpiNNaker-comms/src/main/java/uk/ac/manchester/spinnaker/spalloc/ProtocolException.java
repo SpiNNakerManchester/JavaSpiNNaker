@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /** Thrown when a network-level problem occurs during protocol handling. */
 @SuppressWarnings("serial")
-class ProtocolException extends IOException {
+public class ProtocolException extends IOException {
 
 	public ProtocolException(Throwable e) {
 		super(e);

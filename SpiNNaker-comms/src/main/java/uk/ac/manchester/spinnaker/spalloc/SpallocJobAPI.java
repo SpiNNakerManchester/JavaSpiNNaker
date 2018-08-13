@@ -15,7 +15,9 @@ public interface SpallocJobAPI {
 	/**
 	 * Destroy the job and disconnect from the server.
 	 */
-	void destroy() throws IOException, SpallocServerException;
+	default void destroy() throws IOException, SpallocServerException {
+		destroy(null);
+	};
 
 	/**
 	 * Destroy the job and disconnect from the server.
@@ -102,7 +104,8 @@ public interface SpallocJobAPI {
 	 * @return The new state.
 	 * @throws SpallocServerException
 	 */
-	default State waitForStateChange(State oldState) throws SpallocServerException{
+	default State waitForStateChange(State oldState)
+			throws SpallocServerException {
 		return waitForStateChange(oldState, null);
 	}
 

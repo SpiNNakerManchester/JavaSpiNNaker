@@ -541,13 +541,9 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 							+ MAX_SHAPE_ARGS);
 		}
 		if (kwargs.containsKey(RECONNECT_DELAY_PROPERTY)) {
-			reconnectDelay =
-					(int) (((Number) kwargs.get(RECONNECT_DELAY_PROPERTY))
-							.doubleValue() * MS_PER_S);
+			reconnectDelay = f2ms(kwargs.get(RECONNECT_DELAY_PROPERTY));
 		} else {
-			reconnectDelay =
-					(int) (((Number) defaults.get(RECONNECT_DELAY_PROPERTY))
-							.doubleValue() * MS_PER_S);
+			reconnectDelay = f2ms(defaults.get(RECONNECT_DELAY_PROPERTY));
 		}
 		kwargs = makeJobKeywordArguments(kwargs, defaults);
 		id = client.createJob(args, kwargs, timeout);
@@ -555,9 +551,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 		 * We also need the keepalive configuration so we know when to send
 		 * keepalive messages.
 		 */
-		keepaliveTime =
-				(int) (((Number) kwargs.get(KEEPALIVE_PROPERTY)).doubleValue()
-						* MS_PER_S);
+		keepaliveTime = f2ms(kwargs.get(KEEPALIVE_PROPERTY));
 		log.info("created spalloc job with ID: {}", id);
 		launchKeepaliveDaemon();
 	}
@@ -676,6 +670,19 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	}
 
 	/**
+	 * Converts a "float" number of seconds to milliseconds.
+	 *
+	 * @param obj
+	 *            The number of seconds as a {@link Number} but up-casted to an
+	 *            object for convenience.
+	 * @return The number of milliseconds, suitable for use with Java timing
+	 *         operations.
+	 */
+	private static int f2ms(Object obj) {
+		return (int) (((Number) obj).doubleValue() * MS_PER_S);
+	}
+
+	/**
 	 * Create a job client that resumes an existing job given its ID.
 	 *
 	 * @param hostname
@@ -695,9 +702,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 		this.client = new ProtocolClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
-		reconnectDelay =
-				(int) (((Number) defaults.get(RECONNECT_DELAY_PROPERTY))
-						.doubleValue() * MS_PER_S);
+		reconnectDelay = f2ms(defaults.get(RECONNECT_DELAY_PROPERTY));
 		/*
 		 * If the job no longer exists, we can't get the keepalive interval (and
 		 * there's nothing to keepalive) so just bail out.
@@ -716,7 +721,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 			}
 		}
 		// Snag the keepalive interval from the job
-		keepaliveTime = (int) (jobState.getKeepAlive() * MS_PER_S);
+		keepaliveTime = f2ms(jobState.getKeepAlive());
 		log.info("resumed spalloc job with ID: {}", id);
 		launchKeepaliveDaemon();
 	}
@@ -800,11 +805,6 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 		client.close();
 		throw new IllegalStateException(
 				"Server version " + v + " is not compatible with this client");
-	}
-
-	@Override
-	public void destroy() throws IOException, SpallocServerException {
-		destroy(null);
 	}
 
 	@Override
@@ -1090,20 +1090,5 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 					"received null instead of machine location");
 		}
 		return result.getPhysical();
-	}
-}
-
-/** Thrown when a state change takes too long to occur. */
-class StateChangeTimeoutException extends Exception {
-	private static final long serialVersionUID = 4879238794331037892L;
-
-}
-
-/** Thrown when the job was destroyed while waiting for it to become ready. */
-class JobDestroyedException extends Exception {
-	private static final long serialVersionUID = 6082560756316191208L;
-
-	public JobDestroyedException(String destroyReason) {
-		super(destroyReason);
 	}
 }

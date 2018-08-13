@@ -7,7 +7,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
  * a message.
  */
 @SuppressWarnings("serial")
-class SpallocServerException extends Exception {
+public class SpallocServerException extends Exception {
 	public SpallocServerException(String string) {
 		super(string);
 	}
