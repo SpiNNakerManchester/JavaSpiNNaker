@@ -301,7 +301,8 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
-	protected Response receiveResponse(Integer timeout) throws IOException {
+	protected Response receiveResponse(Integer timeout)
+			throws ProtocolTimeoutException, IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Wait for some data to arrive
@@ -330,7 +331,7 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 *             If the socket is unusable or becomes disconnected.
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
-			throws IOException {
+			throws ProtocolTimeoutException, IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line

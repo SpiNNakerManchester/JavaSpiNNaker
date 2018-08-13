@@ -50,7 +50,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	Version version(Integer timeout) throws IOException, SpallocServerException;
+	Version version(Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Create a job.
@@ -97,7 +98,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	int createJob(List<Integer> args, Map<String, Object> kwargs,
-			Integer timeout) throws IOException, SpallocServerException;
+			Integer timeout) throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Keep a job alive. Needs to be regularly called.
@@ -129,8 +131,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void jobKeepAlive(int jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	void jobKeepAlive(int jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the state of a job.
@@ -164,8 +166,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	JobState getJobState(int jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	JobState getJobState(int jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get information about a job's allocated machine.
@@ -200,7 +202,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Turn on a job's allocated boards.
@@ -232,8 +235,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void powerOnJobBoards(int jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	void powerOnJobBoards(int jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Turn off a job's allocated boards.
@@ -265,8 +268,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void powerOffJobBoards(int jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	void powerOffJobBoards(int jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Destroy a job.
@@ -305,7 +308,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	void destroyJob(int jobID, String reason, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Ask to be notified of changes in job state.
@@ -343,8 +347,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyJob(Integer jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	void notifyJob(Integer jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to not be notified of changes in job state.
@@ -380,8 +384,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void noNotifyJob(Integer jobID, Integer timeout)
-			throws IOException, SpallocServerException;
+	void noNotifyJob(Integer jobID, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to be notified of changes in machine state.
@@ -419,13 +423,13 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyMachine(String machineName, Integer timeout)
-			throws IOException, SpallocServerException;
+	void notifyMachine(String machineName, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to not be notified of changes in machine state.
 	 *
-	 * @param jobId
+	 * @param machineName
 	 *            The machine to cancel requests about, or <tt>null</tt> to
 	 *            cancel being notified about all machines.
 	 * @see #notifyMachine(String)
@@ -442,7 +446,7 @@ public interface SpallocAPI {
 	/**
 	 * Ask to not be notified of changes in machine state.
 	 *
-	 * @param jobId
+	 * @param machineName
 	 *            The machine to cancel requests about, or <tt>null</tt> to
 	 *            cancel being notified about all machines.
 	 * @param timeout
@@ -457,7 +461,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	void noNotifyMachine(String machineName, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * List all jobs.
@@ -489,8 +494,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	List<JobDescription> listJobs(Integer timeout)
-			throws IOException, SpallocServerException;
+	List<JobDescription> listJobs(Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * List all known machines.
@@ -522,8 +527,8 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	List<Machine> listMachines(Integer timeout)
-			throws IOException, SpallocServerException;
+	List<Machine> listMachines(Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the physical location of a board.
@@ -565,8 +570,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	BoardPhysicalCoordinates getBoardPosition(String machineName,
-			BoardCoordinates coords, Integer timeout)
-			throws IOException, SpallocServerException;
+			BoardCoordinates coords, Integer timeout) throws IOException,
+			ProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the logical location of a board.
@@ -609,7 +614,8 @@ public interface SpallocAPI {
 	 */
 	BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Locate a chip within a job's allocation.
@@ -650,7 +656,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Locate a chip within a machine.
@@ -691,7 +698,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, HasChipLocation chip, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Locate a board within a machine.
@@ -732,7 +740,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
-			Integer timeout) throws IOException, SpallocServerException;
+			Integer timeout) throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Locate a board within a machine.
@@ -773,7 +782,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, BoardCoordinates coords, Integer timeout)
-			throws IOException, SpallocServerException;
+			throws IOException, ProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
 	 * Return the next notification to arrive.

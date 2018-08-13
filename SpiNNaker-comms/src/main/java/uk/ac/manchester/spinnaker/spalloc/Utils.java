@@ -34,8 +34,7 @@ abstract class Utils {
 	 * @param timestamp
 	 *            the time of expiry, or <tt>null</tt> for a timestamp that is
 	 *            never expired.
-	 * @param true
-	 *            if the timestamp has been passed.
+	 * @return true if the timestamp has been passed.
 	 */
 	static boolean timedOut(Long timestamp) {
 		return timestamp != null && timestamp < currentTimeMillis();
