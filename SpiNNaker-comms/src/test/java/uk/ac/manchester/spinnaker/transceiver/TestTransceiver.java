@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
+import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
@@ -39,9 +40,11 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverToBoard() throws Exception {
-		board_config.set_up_remote_board();
 		List<Connection> connections = new ArrayList<>();
+
+		board_config.set_up_remote_board();
 		connections.add(new SCPConnection(board_config.remotehost));
+
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
 			assertEquals(1, trans.getConnections().size());
@@ -50,9 +53,11 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverOneConnection() throws Exception {
-		board_config.set_up_remote_board();
 		List<Connection> connections = new ArrayList<>();
+
+		board_config.set_up_remote_board();
 		connections.add(new SCPConnection(board_config.remotehost));
+
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
 			assertEquals(connections, trans.getConnections());
@@ -61,11 +66,14 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverFromListConnections() throws Exception {
-		board_config.set_up_remote_board();
 		List<Connection> connections = new ArrayList<>();
+
+		board_config.set_up_remote_board();
 		connections.add(new SCPConnection(board_config.remotehost));
+
 		board_config.set_up_local_virtual_board();
 		connections.add(new SCPConnection(board_config.remotehost));
+
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
 			for (Connection c : trans.getConnections()) {
@@ -77,12 +85,15 @@ class TestTransceiver {
 
 	@Test
 	void testRetrievingMachineDetails() throws Exception {
-		board_config.set_up_remote_board();
 		List<Connection> connections = new ArrayList<>();
+
+		board_config.set_up_remote_board();
 		connections.add(new SCPConnection(board_config.remotehost));
+
 		board_config.set_up_local_virtual_board();
 		connections.add(
 				new BootConnection(null, null, board_config.remotehost, null));
+
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
 			if (board_config.board_version == 3
@@ -107,6 +118,7 @@ class TestTransceiver {
 	@Test
 	void testBootBoard() throws Exception {
 		board_config.set_up_remote_board();
+
 		try (Transceiver trans = Transceiver.createTransceiver(
 				board_config.remotehost, board_config.board_version)) {
 			// self.assertFalse(trans.is_connected())
@@ -114,54 +126,29 @@ class TestTransceiver {
 		}
 	}
 
-	private static final String DUMMY_ADDR = "127.0.0.1";
-
-	/** Tests the creation of listening sockets */
+	/** Tests the creation of listening sockets. */
 	@Test
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(null, (Integer) null, DUMMY_ADDR, null));
-		EIEIOConnection orig_connection =
-				new EIEIOConnection(null, null, null, null);
-		connections.add(orig_connection);
+		connections.add(new SCPConnection(null, (Integer) null, NOHOST, null));
+		EIEIOConnection orig = new EIEIOConnection(null, null, null, null);
+		connections.add(orig);
 
 		// Create transceiver
 		try (Transceiver trnx = new Transceiver(5, connections, null, null,
 				null, null, null, null)) {
-			ConnectionFactory<EIEIOConnection> cf =
-					new ConnectionFactory<EIEIOConnection>() {
-						@Override
-						public Class<EIEIOConnection> getClassKey() {
-							return EIEIOConnection.class;
-						}
-
-						@Override
-						public EIEIOConnection getInstance(String localAddress)
-								throws IOException {
-							return new EIEIOConnection(localAddress, null, null,
-									null);
-						}
-
-						@Override
-						public EIEIOConnection getInstance(String localAddress,
-								int localPort) throws IOException {
-							return new EIEIOConnection(localAddress, localPort,
-									null, null);
-						}
-					};
+			int port = orig.getLocalPort();
+			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
 			// Register a UDP listeners
-			Connection connection_1 = trnx.registerUDPListener(null, cf);
-			Connection connection_2 = trnx.registerUDPListener(null, cf);
-			Connection connection_3 = trnx.registerUDPListener(null, cf,
-					orig_connection.getLocalPort());
-			Connection connection_4 = trnx.registerUDPListener(null, cf,
-					orig_connection.getLocalPort() + 1);
-
-			assertTrue(connection_1 == orig_connection);
-			assertTrue(connection_2 == orig_connection);
-			assertTrue(connection_3 == orig_connection);
-			assertFalse(connection_4 == orig_connection);
+			Connection c1 = trnx.registerUDPListener(null, cf);
+			assertTrue(c1 == orig, "first connection must be original");
+			Connection c2 = trnx.registerUDPListener(null, cf);
+			assertTrue(c2 == orig, "second connection must be original");
+			Connection c3 = trnx.registerUDPListener(null, cf, port);
+			assertTrue(c3 == orig, "third connection must be original");
+			Connection c4 = trnx.registerUDPListener(null, cf, port + 1);
+			assertFalse(c4 == orig, "fourth connection must not be original");
 		}
 	}
 
@@ -169,7 +156,7 @@ class TestTransceiver {
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expected_writes = asList(new byte[] {
-				((Integer) software_watchdog_count.getDefault()).byteValue()
+				((Number) software_watchdog_count.getDefault()).byteValue()
 		}, new byte[] {
 				0
 		}, new byte[] {
@@ -177,7 +164,7 @@ class TestTransceiver {
 		});
 
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(DUMMY_ADDR));
+		connections.add(new SCPConnection(NOHOST));
 		try (MockWriteTransceiver tx =
 				new MockWriteTransceiver(5, connections)) {
 			// All chips
@@ -247,5 +234,24 @@ class TestTransceiver {
 				ByteBuffer data) {
 			written_memory.add(new Write(core, baseAddress, data));
 		}
+	}
+}
+
+class EIEIOConnectionFactory implements ConnectionFactory<EIEIOConnection> {
+	@Override
+	public Class<EIEIOConnection> getClassKey() {
+		return EIEIOConnection.class;
+	}
+
+	@Override
+	public EIEIOConnection getInstance(String localAddress)
+			throws IOException {
+		return new EIEIOConnection(localAddress, null, null, null);
+	}
+
+	@Override
+	public EIEIOConnection getInstance(String localAddress, int localPort)
+			throws IOException {
+		return new EIEIOConnection(localAddress, localPort, null, null);
 	}
 }

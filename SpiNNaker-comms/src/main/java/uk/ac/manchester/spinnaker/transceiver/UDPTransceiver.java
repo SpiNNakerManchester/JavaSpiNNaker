@@ -2,14 +2,19 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.net.InetAddress.getByName;
+import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionListener;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
@@ -23,6 +28,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * @author Donal Fellows
  */
 public abstract class UDPTransceiver implements AutoCloseable {
+	private static final Logger log = getLogger(UDPTransceiver.class);
 	/**
 	 * A map of port -> map of IP address -> (connection, listener) for UDP
 	 * connections. Note listener might be <tt>null</tt> if the connection has
@@ -58,8 +64,10 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 */
 	final void registerConnection(UDPConnection<?> connection) {
 		Pair<?> pair = new Pair<>(connection, null);
-		connectionsByPort.get(connection.getLocalPort())
-				.put(connection.getLocalIPAddress(), pair);
+		InetAddress addr = normalize(connection.getLocalIPAddress());
+		log.info("registering connection {} from {}:{}", connection, addr,
+				connection.getLocalPort());
+		connectionsByPort.get(connection.getLocalPort()).put(addr, pair);
 		connectionsByClass.get(connection.getClass()).add(pair);
 	}
 
@@ -131,16 +139,24 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private static final InetAddress WILDCARD_ADDRESS;
 	static {
 		try {
-			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[] {
-					0, 0, 0, 0
-			});
+			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[IPV4_SIZE]);
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
 				throw new RuntimeException(
 						"wildcard address is not wildcard address?");
 			}
+			if (!(WILDCARD_ADDRESS instanceof Inet4Address)) {
+				throw new RuntimeException("wildcard address is not IPv4?");
+			}
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("unexpected failure to initialise", e);
 		}
+	}
+
+	private static InetAddress normalize(InetAddress addr) {
+		if (addr == null || addr.isAnyLocalAddress()) {
+			return WILDCARD_ADDRESS;
+		}
+		return addr;
 	}
 
 	/**
@@ -223,15 +239,20 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		}
 
 		// normalise local_host to the IP address
-		InetAddress addr = getByName(localHost == null ? "0.0.0.0" : localHost);
+		InetAddress addr =
+				normalize(localHost == null ? null : getByName(localHost));
 
 		// If the local port was specified
 		Pair<T> pair;
-		if (localPort != null) {
+		log.info("creating connection listening on {}:{}",
+				addr.getHostAddress(), localPort);
+		if (localPort != null && localPort != 0) {
 			pair = lookup(connectionFactory.getClassKey(), addr, localPort);
 
 			// Create a connection if there isn't already one
 			if (pair.connection == null) {
+				log.info("creating connection on {}:{}", addr.getHostAddress(),
+						localPort);
 				pair.connection = connectionFactory
 						.getInstance(addr.getHostAddress(), localPort);
 				addConnection(pair.connection);
@@ -241,6 +262,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 			// Create a connection if there isn't already one
 			if (pair.connection == null) {
+				log.info("creating connection on {}:0 (arbitrary port)",
+						addr.getHostAddress());
 				pair.connection =
 						connectionFactory.getInstance(addr.getHostAddress());
 				addConnection(pair.connection);
@@ -253,6 +276,9 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			@SuppressWarnings("resource")
 			ConnectionListener<T> listener =
 					new ConnectionListener<>(pair.connection);
+			log.info("launching listener for {}:{}",
+					pair.connection.getLocalIPAddress(),
+					pair.connection.getLocalPort());
 			listener.start();
 			pair.listener = listener;
 			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
@@ -274,7 +300,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
 			InetAddress addr) {
 		for (Pair<T> a : getConnections(clazz)) {
-			if (a.connection.getLocalIPAddress().equals(addr)) {
+			if (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
 				if (a.listener == null) {
 					a = a.clone();
 				}
@@ -288,6 +314,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private <T> Pair<T> getPair(Map<InetAddress, Pair<?>> receivers,
 			InetAddress addr, Class<? extends UDPConnection<T>> clazz) {
 		Pair<?> p = receivers.get(addr);
+		// If the type of an existing connection is wrong, this is an error
 		if (!clazz.isInstance(p.connection)) {
 			throw new IllegalArgumentException(format(
 					"A connection of class %s is already "
@@ -323,7 +350,6 @@ public abstract class UDPTransceiver implements AutoCloseable {
 				}
 			}
 
-			// If the type of an existing connection is wrong, this is an error
 			if (receivers.containsKey(addr)) {
 				Pair<T> p = getPair(receivers, addr, clazz);
 				if (p.listener == null) {

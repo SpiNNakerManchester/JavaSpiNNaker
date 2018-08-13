@@ -44,7 +44,8 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
  * @author Donal Fellows
  */
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
-	private Logger log = getLogger(RequestPipeline.class);
+	private static final Logger log =
+			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
 	/**
@@ -256,8 +257,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			Request req = msg.pickRequest(requests);
 			if (req == null) {
 				// Only process responses which have matching requests
-				log.info("discarding message with unknown sequence number: "
-						+ msg.getSequenceNumber());
+				log.info("discarding message with unknown sequence number: {}",
+						msg.getSequenceNumber());
 				return;
 			}
 			inProgress--;

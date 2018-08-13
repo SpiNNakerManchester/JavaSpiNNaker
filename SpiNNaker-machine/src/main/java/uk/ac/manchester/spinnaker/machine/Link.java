@@ -3,7 +3,11 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.Objects;
+
+import org.slf4j.Logger;
 
 /**
  * Represents a directional link between SpiNNaker chips in the machine.
@@ -15,6 +19,7 @@ import java.util.Objects;
  * @author Christian-B
  */
 public final class Link {
+    private static final Logger log = getLogger(Link.class);
 
     /** The coordinates of the source chip of the link. */
     public final HasChipLocation source;
@@ -91,17 +96,14 @@ public final class Link {
             return false;
         }
         final Link other = (Link) obj;
-        System.out.println("Equals called " + this + " " + other);
+        log.trace("Equals called {} {}", this, other);
         if (this.sourceLinkDirection != other.sourceLinkDirection) {
-            System.out.println("direction");
             return false;
         }
         if (!Objects.equals(this.source, other.source)) {
-            System.out.println("source");
             return false;
         }
         if (!Objects.equals(this.destination, other.destination)) {
-            System.out.println("destination");
             return false;
         }
         return true;

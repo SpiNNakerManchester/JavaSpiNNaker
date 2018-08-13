@@ -85,4 +85,6 @@ public abstract class Constants {
 	public static final int SHORT_SIZE = 2;
 	/** ms per second. */
 	public static final double MS_PER_S = UnitConstants.MS_PER_S;
+	/** Number of bytes in an IPv4 address. */
+	public static final int IPV4_SIZE = 4;
 }

@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
  * @author Donal Fellows
  */
 public class SCPRequestPipeline {
-	private Logger log = getLogger(SCPRequestPipeline.class);
+	private static final Logger log = getLogger(SCPRequestPipeline.class);
 	/** The default number of requests to send before checking for responses. */
 	public static final int DEFAULT_NUM_CHANNELS = 1;
 	/**
@@ -305,8 +305,8 @@ public class SCPRequestPipeline {
 
 		// Only process responses which have matching requests
 		if (req == null) {
-			log.info("discarding message with unknown sequence number: "
-					+ msg.getSequenceNumber());
+			log.info("discarding message with unknown sequence number: {}",
+					msg.getSequenceNumber());
 			return;
 		}
 		inProgress--;

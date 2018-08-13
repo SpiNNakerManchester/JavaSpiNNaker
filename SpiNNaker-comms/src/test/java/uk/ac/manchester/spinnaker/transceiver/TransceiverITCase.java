@@ -82,7 +82,7 @@ class TransceiverITCase {
 		core_subsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
 		down_cores = new HashMap<>();
-		down_cores.put(new ChipLocation(0, 0), Arrays.asList(5));
+		down_cores.put(new ChipLocation(0, 0), singletonList(5));
 
 		down_chips = new ArrayList<>();
 		down_chips.add(new ChipLocation(0, 1));
@@ -96,18 +96,15 @@ class TransceiverITCase {
 		System.out.println(sb.toString());
 	}
 
-	void printWordAsBinary(String name, int word, int[][] fields) {
+	void printWordAsBinary(String name, int word, Field[] fields) {
 		int start = 0;
 		int end = 32;
 
 		Set<Integer> start_fields = new HashSet<>();
 		Set<Integer> end_fields = new HashSet<>();
-		for (int[] field : fields) {
-			start_fields.add(field[0]);
-			end_fields.add(field[1]);
-		}
-		for (Integer v : start_fields) {
-			end_fields.remove(v - 1);
+		for (Field field : fields) {
+			start_fields.add(field.from);
+			end_fields.add(field.to);
 		}
 
 		StringBuilder prefix = new StringBuilder(" ");
@@ -116,8 +113,9 @@ class TransceiverITCase {
 		StringBuilder header2 = new StringBuilder(prefix);
 		StringBuilder header3 = new StringBuilder(prefix);
 		StringBuilder mainline = new StringBuilder(name).append(" ");
+		boolean sep = false;
 		for (int i = start; i < end; i++) {
-			if (start_fields.contains(i)) {
+			if (!sep && start_fields.contains(i)) {
 				header1.append("|");
 				header2.append("|");
 				header3.append("|");
@@ -127,7 +125,8 @@ class TransceiverITCase {
 			header2.append(i % 10);
 			header3.append("=");
 			mainline.append((word >>> i) & 0x1);
-			if (end_fields.contains(i)) {
+			sep = end_fields.contains(i);
+			if (sep) {
 				header1.append("|");
 				header2.append("|");
 				header3.append("|");
@@ -141,32 +140,24 @@ class TransceiverITCase {
 		System.out.println(mainline);
 	}
 
-	private static final int[][] FILTER_FIELDS = new int[][] {
-			{
-					31, 31
-			}, {
-					30, 30
-			}, {
-					29, 29
-			}, {
-					28, 25
-			}, {
-					24, 16
-			}, {
-					15, 14
-			}, {
-					13, 12
-			}, {
-					11, 10
-			}, {
-					9, 9
-			}, {
-					8, 8
-			}, {
-					7, 4
-			}, {
-					3, 0
-			}
+	private static class Field {
+		private int from, to;
+
+		Field(int value) {
+			from = to = value;
+		}
+
+		Field(int from, int to) {
+			this.from = from;
+			this.to = to;
+		}
+	}
+
+	private static final Field[] FILTER_FIELDS = new Field[] {
+			new Field(31), new Field(30), new Field(29), new Field(28, 25),
+			new Field(24, 16), new Field(15, 14), new Field(13, 12),
+			new Field(11, 10), new Field(9), new Field(8), new Field(7, 4),
+			new Field(3, 0)
 	};
 
 	void printFilter(DiagnosticFilter filter) {
