@@ -166,6 +166,16 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		}
 	}
 
+	/**
+	 * Context adapter. Allows this code to be used like this:
+	 * <pre>
+	 * try (AutoCloseable c = client.withConnection()) {
+	 *     ...
+	 * }
+	 * </pre>
+	 * @return
+	 * @throws IOException
+	 */
 	public AutoCloseable withConnection() throws IOException {
 		connect();
 		return () -> close();
@@ -230,6 +240,8 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	/**
 	 * (Re)connect to the server.
 	 *
+	 * @param timeout
+	 *            How long to spend (re)connecting.
 	 * @throws IOException
 	 *             If a connection failure occurs.
 	 */

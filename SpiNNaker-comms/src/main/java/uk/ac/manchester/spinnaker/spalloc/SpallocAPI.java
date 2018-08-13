@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
+//CHECKSTYLE:OFF
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
+//CHECKSTYLE:ON
 
 /**
  * The interface exposed by the low-level Spalloc Client.
@@ -280,8 +282,6 @@ public interface SpallocAPI {
 	 *            Why the job is to be destroyed.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
-	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
