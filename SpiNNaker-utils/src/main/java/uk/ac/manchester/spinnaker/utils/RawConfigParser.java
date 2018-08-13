@@ -3,6 +3,8 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -40,6 +42,13 @@ public class RawConfigParser {
 	}
 
 	/**
+	 * Create a configuration with no values defined in it.
+	 */
+	public RawConfigParser() {
+		this("=:", "#;");
+	}
+
+	/**
 	 * Create a configuration from the given configuration file. This is
 	 * designed to be used with {@link Class#getResource(String)}.
 	 *
@@ -47,7 +56,7 @@ public class RawConfigParser {
 	 *            The handle to the configuration file.
 	 */
 	public RawConfigParser(URL resource) {
-		this("=:", "#;");
+		this();
 		try {
 			if (resource != null) {
 				read(resource);
@@ -55,6 +64,23 @@ public class RawConfigParser {
 		} catch (IOException e) {
 			throw new RuntimeException("failed to read config from " + resource,
 					e);
+		}
+	}
+
+	/**
+	 * Create a configuration from the given configuration file.
+	 *
+	 * @param file
+	 *            The handle to the configuration file.
+	 */
+	public RawConfigParser(File file) {
+		this();
+		try {
+			if (file != null) {
+				read(file);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("failed to read config from " + file, e);
 		}
 	}
 
@@ -89,39 +115,56 @@ public class RawConfigParser {
 	 *             if the reading fails.
 	 */
 	public void read(URL resource) throws IOException {
-		try (ReaderLineIterable lines = new ReaderLineIterable(
-				resource.openStream())) {
-			int ln = 0;
-			String sect = null;
-			for (String line : lines) {
-				ln++;
-				line = clean(line);
-				if (line.isEmpty()) {
-					continue;
-				}
-				// System.out.println(line); // TODO: log this
-				Matcher m = sectRE.matcher(line);
-				if (m.matches()) {
-					sect = normaliseSectionName(m.group("name"));
-					if (!map.containsKey(sect)) {
-						map.put(sect, new HashMap<>());
-					}
-					continue;
-				} else if (sect == null) {
-					throw new IllegalArgumentException(
-							"content before first section starts, at line "
-									+ ln);
-				}
-				m = optRE.matcher(line);
-				if (m.matches()) {
-					String key = normaliseOptionName(m.group("key"));
-					String value = m.group("value");
-					map.get(sect).put(key, value);
-					continue;
-				}
-				throw new IllegalArgumentException(
-						"unknown line format, at line " + ln);
+		try (ReaderLineIterable lines =
+				new ReaderLineIterable(resource.openStream())) {
+			read(lines);
+		}
+	}
+
+	/**
+	 * Read a configuration file.
+	 *
+	 * @param file
+	 *            Where the file is.
+	 * @throws IOException
+	 *             if the reading fails.
+	 */
+	public void read(File file) throws IOException {
+		try (ReaderLineIterable lines =
+				new ReaderLineIterable(new FileInputStream(file))) {
+			read(lines);
+		}
+	}
+
+	private void read(ReaderLineIterable lines) {
+		int ln = 0;
+		String sect = null;
+		for (String line : lines) {
+			ln++;
+			line = clean(line);
+			if (line.isEmpty()) {
+				continue;
 			}
+			Matcher m = sectRE.matcher(line);
+			if (m.matches()) {
+				sect = normaliseSectionName(m.group("name"));
+				if (!map.containsKey(sect)) {
+					map.put(sect, new HashMap<>());
+				}
+				continue;
+			} else if (sect == null) {
+				throw new IllegalArgumentException(
+						"content before first section starts, at line " + ln);
+			}
+			m = optRE.matcher(line);
+			if (m.matches()) {
+				String key = normaliseOptionName(m.group("key"));
+				String value = m.group("value");
+				map.get(sect).put(key, value);
+				continue;
+			}
+			throw new IllegalArgumentException(
+					"unknown line format, at line " + ln);
 		}
 	}
 

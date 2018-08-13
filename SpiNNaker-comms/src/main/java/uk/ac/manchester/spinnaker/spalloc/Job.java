@@ -6,6 +6,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
+import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
@@ -15,9 +16,20 @@ import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MS_PER_S;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration2.INIConfiguration;
+import org.apache.commons.configuration2.SubnodeConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
+import org.apache.commons.configuration2.io.CombinedLocationStrategy;
+import org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy;
+import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -82,50 +94,567 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * </ul>
  * </blockquote>
  */
-public class Job implements AutoCloseable {
+public class Job implements AutoCloseable, SpallocJobAPI {
 	private static final Logger log = getLogger(Job.class);
 	private static final int DEFAULT_KEEPALIVE = 30;
-	private static final int KEEPALIVE_INTERVAL =
-			(int) (DEFAULT_KEEPALIVE * MS_PER_S);
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
+	private static final int MAX_SHAPE_ARGS = 3;
+	private static final String HOSTNAME_PROPERTY = "hostname";
+	private static final String PORT_PROPERTY = "port";
+	private static final String USER_PROPERTY = "owner";
+	private static final String KEEPALIVE_PROPERTY = "keepalive";
+	private static final String RECONNECT_DELAY_PROPERTY = "reconnect_delay";
+	private static final String MACHINE_PROPERTY = "machine";
+	private static final String TAGS_PROPERTY = "tags";
+	private static final String MIN_RATIO_PROPERTY = "min_ratio";
+	private static final String MAX_DEAD_BOARDS_PROPERTY = "max_dead_boards";
+	private static final String MAX_DEAD_LINKS_PROPERTY = "max_dead_links";
+	private static final String REQUIRE_TORUS_PROPERTY = "require_torus";
+	private static final String TIMEOUT_PROPERTY = "timeout";
 
 	private ProtocolClient client;
 	private int id;
 	private Integer timeout;
 	private Integer keepaliveTime;
+	/** The keepalive thread. */
 	private Thread keepalive;
+	/** Used to signal that the keepalive thread should stop. */
 	private volatile boolean stopping;
-	private JobState status;
+	/**
+	 * Cache of information about a job's state. This information can change,
+	 * but not usually extremely rapidly; it has a caching period, implemented
+	 * using the {@link #statusTimestamp} field.
+	 */
+	private JobState statusCache;
+	/**
+	 * The time when the information in {@link #statusCache} was last collected.
+	 */
 	private long statusTimestamp;
-	private JobMachineInfo machineInfo;
+	/**
+	 * Cache of information about a machine. This is information which doesn't
+	 * change once it is assigned, so there is no expiry mechanism.
+	 */
+	private JobMachineInfo machineInfoCache;
 	private int reconnectDelay = (int) (10 * MS_PER_S);
+	private static final ThreadGroup SPALLOC_WORKERS =
+			new ThreadGroup("spalloc worker threads");
 
+	static Map<String, Object> defaults;
+	static SubnodeConfiguration config;
+
+	static {
+		try {
+			// TODO is this the right way to set this up?
+			/*
+			 * By default, configuration files are read (in ascending order of
+			 * priority) from a system-wide configuration directory (e.g.
+			 * ``/etc/xdg/spalloc``), user configuration file (e.g.
+			 * ``$HOME/.config/spalloc``) and finally the current working
+			 * directory (in a file named ``.spalloc``).
+			 */
+			INIConfiguration fullconfig = new FileBasedConfigurationBuilder<>(
+					INIConfiguration.class).configure(
+							new Parameters().ini().setLocationStrategy(
+									new CombinedLocationStrategy(asList(
+											new ProvidedURLLocationStrategy(),
+											new HomeDirectoryLocationStrategy(),
+											new ClasspathLocationStrategy())))
+									.setThrowExceptionOnMissing(true)
+									.setListDelimiterHandler(
+											new DefaultListDelimiterHandler(
+													' '))
+									.setFileName("spalloc.ini"))
+							.getConfiguration();
+			config = fullconfig.getSection("spalloc");
+		} catch (ConfigurationException e) {
+			throw new RuntimeException(
+					"failed to load configuration from spalloc.ini", e);
+		}
+		defaults = new HashMap<>();
+		initDefaultDefaults(defaults);
+		setDefaultsFromConfig(defaults);
+	}
+
+	private static void initDefaultDefaults(Map<String, Object> defaults) {
+		defaults.put(PORT_PROPERTY, 22244);
+		defaults.put(KEEPALIVE_PROPERTY, 60.0);
+		defaults.put(RECONNECT_DELAY_PROPERTY, 5.0);
+		defaults.put(TIMEOUT_PROPERTY, 5.0);
+		defaults.put(MACHINE_PROPERTY, null);
+		defaults.put(TAGS_PROPERTY, null);
+		defaults.put(MIN_RATIO_PROPERTY, 0.333);
+		defaults.put(MAX_DEAD_BOARDS_PROPERTY, 0);
+		defaults.put(MAX_DEAD_LINKS_PROPERTY, null);
+		defaults.put(REQUIRE_TORUS_PROPERTY, false);
+	}
+
+	private static final String NULL_MARKER = "None";
+
+	private static Double readNoneOrFloat(String prop) {
+		String val = config.getString(prop);
+		if (NULL_MARKER.equals(val)) {
+			return null;
+		}
+		return Double.parseDouble(val);
+	}
+
+	private static Integer readNoneOrInt(String prop) {
+		String val = config.getString(prop);
+		if (NULL_MARKER.equals(val)) {
+			return null;
+		}
+		return Integer.parseInt(val);
+	}
+
+	private static String readNoneOrString(String prop) {
+		String val = config.getString(prop);
+		if (NULL_MARKER.equals(val)) {
+			return null;
+		}
+		return val;
+	}
+
+	private static void setDefaultsFromConfig(Map<String, Object> defaults) {
+		defaults.put(HOSTNAME_PROPERTY,
+				config.getString(HOSTNAME_PROPERTY, null));
+		if (config.containsKey(USER_PROPERTY)) {
+			defaults.put(USER_PROPERTY, config.getString(USER_PROPERTY));
+		}
+		if (config.containsKey(KEEPALIVE_PROPERTY)) {
+			defaults.put(KEEPALIVE_PROPERTY,
+					readNoneOrFloat(KEEPALIVE_PROPERTY));
+		}
+		if (config.containsKey(RECONNECT_DELAY_PROPERTY)) {
+			defaults.put(RECONNECT_DELAY_PROPERTY,
+					config.getDouble(RECONNECT_DELAY_PROPERTY));
+		}
+		if (config.containsKey(TIMEOUT_PROPERTY)) {
+			defaults.put(TIMEOUT_PROPERTY, readNoneOrFloat(TIMEOUT_PROPERTY));
+		}
+		if (config.containsKey(MACHINE_PROPERTY)) {
+			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
+		}
+		if (config.containsKey(TAGS_PROPERTY)) {
+			if (NULL_MARKER.equals(config.getString(TAGS_PROPERTY))) {
+				defaults.put(TAGS_PROPERTY, null);
+			} else {
+				defaults.put(TAGS_PROPERTY,
+						config.getArray(String.class, TAGS_PROPERTY));
+			}
+		}
+		if (config.containsKey(MIN_RATIO_PROPERTY)) {
+			defaults.put(MIN_RATIO_PROPERTY,
+					readNoneOrFloat(MIN_RATIO_PROPERTY));
+		}
+		if (config.containsKey(MAX_DEAD_BOARDS_PROPERTY)) {
+			defaults.put(MAX_DEAD_BOARDS_PROPERTY,
+					readNoneOrInt(MAX_DEAD_BOARDS_PROPERTY));
+		}
+		if (config.containsKey(MAX_DEAD_LINKS_PROPERTY)) {
+			defaults.put(MAX_DEAD_LINKS_PROPERTY,
+					readNoneOrInt(MAX_DEAD_LINKS_PROPERTY));
+		}
+		if (config.containsKey(REQUIRE_TORUS_PROPERTY)) {
+			defaults.put(REQUIRE_TORUS_PROPERTY,
+					config.getBoolean(REQUIRE_TORUS_PROPERTY));
+		}
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 * <p>
+	 * The requested machine shape can be one of the following:
+	 * <ul>
+	 * <li><b>Empty</b> list, to get a single board.
+	 * <li><b>Singleton</b> list, to get a machine with that number of boards.
+	 * <li><b>Pair</b>, to get a rectangle of boards,
+	 * <i>width</i>&times;<i>height</i>.
+	 * <li><b>Triple</b>, to get a specific board (<i>x, y, z</i>).
+	 * </ul>
+	 * The supported extra properties consist of:
+	 * <dl>
+	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dd>The name of the owner of the job. By convention this should be your
+	 * email address.</dd>
+	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dd>The number of seconds after which the server may consider the job
+	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
+	 * timeout will be used and the job will run until explicitly destroyed. Use
+	 * with extreme caution.</dd>
+	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dd>Specify the name of a machine which this job must be executed on. If
+	 * <tt>null</tt>, the first suitable machine available will be used,
+	 * according to the tags selected below. Must be <tt>null</tt> when
+	 * {@value #TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * <dd>The set of tags which any machine running this job must have. If
+	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
+	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
+	 * be <tt>null</tt>.</dd>
+	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
+	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
+	 * to be exactly square etc. Ignored when allocating single boards or
+	 * specific rectangles of triads.</dd>
+	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken or unreachable boards to allow in the
+	 * allocated region. If <tt>null</tt>, any number of dead boards is
+	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
+	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken links allow in the allocated region.
+	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
+	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
+	 * number of broken links is allowed.</dd>
+	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
+	 * general this will only succeed for requests to allocate an entire
+	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
+	 * boards.</dd>
+	 * </dl>
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param timeout
+	 *            The communications timeout
+	 * @param args
+	 *            The machine shape description.
+	 * @param kwargs
+	 *            The extra properties.
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 */
 	public Job(String hostname, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
-		this(hostname, ProtocolClient.DEFAULT_PORT, timeout, args, kwargs);
+		this(hostname, (Integer) defaults.get(PORT_PROPERTY), timeout, args,
+				kwargs);
 	}
 
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 * <p>
+	 * The requested machine shape can be one of the following:
+	 * <ul>
+	 * <li><b>Empty</b> list, to get a single board.
+	 * <li><b>Singleton</b> list, to get a machine with that number of boards.
+	 * <li><b>Pair</b>, to get a rectangle of boards,
+	 * <i>width</i>&times;<i>height</i>.
+	 * <li><b>Triple</b>, to get a specific board (<i>x, y, z</i>).
+	 * </ul>
+	 * The supported extra properties consist of:
+	 * <dl>
+	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dd>The name of the owner of the job. By convention this should be your
+	 * email address.</dd>
+	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dd>The number of seconds after which the server may consider the job
+	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
+	 * timeout will be used and the job will run until explicitly destroyed. Use
+	 * with extreme caution.</dd>
+	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dd>Specify the name of a machine which this job must be executed on. If
+	 * <tt>null</tt>, the first suitable machine available will be used,
+	 * according to the tags selected below. Must be <tt>null</tt> when
+	 * {@value #TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * <dd>The set of tags which any machine running this job must have. If
+	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
+	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
+	 * be <tt>null</tt>.</dd>
+	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
+	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
+	 * to be exactly square etc. Ignored when allocating single boards or
+	 * specific rectangles of triads.</dd>
+	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken or unreachable boards to allow in the
+	 * allocated region. If <tt>null</tt>, any number of dead boards is
+	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
+	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken links allow in the allocated region.
+	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
+	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
+	 * number of broken links is allowed.</dd>
+	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
+	 * general this will only succeed for requests to allocate an entire
+	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
+	 * boards.</dd>
+	 * </dl>
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param args
+	 *            The machine shape description.
+	 * @param kwargs
+	 *            The extra properties.
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 */
+	public Job(String hostname, List<Integer> args, Map<String, Object> kwargs)
+			throws IOException, SpallocServerException {
+		this(hostname, (Integer) defaults.get(PORT_PROPERTY),
+				(Integer) defaults.get(TIMEOUT_PROPERTY), args, kwargs);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 * <p>
+	 * The requested machine shape can be one of the following:
+	 * <ul>
+	 * <li><b>Empty</b> list, to get a single board.
+	 * <li><b>Singleton</b> list, to get a machine with that number of boards.
+	 * <li><b>Pair</b>, to get a rectangle of boards,
+	 * <i>width</i>&times;<i>height</i>.
+	 * <li><b>Triple</b>, to get a specific board (<i>x, y, z</i>).
+	 * </ul>
+	 * The supported extra properties consist of:
+	 * <dl>
+	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dd>The name of the owner of the job. By convention this should be your
+	 * email address.</dd>
+	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dd>The number of seconds after which the server may consider the job
+	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
+	 * timeout will be used and the job will run until explicitly destroyed. Use
+	 * with extreme caution.</dd>
+	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dd>Specify the name of a machine which this job must be executed on. If
+	 * <tt>null</tt>, the first suitable machine available will be used,
+	 * according to the tags selected below. Must be <tt>null</tt> when
+	 * {@value #TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * <dd>The set of tags which any machine running this job must have. If
+	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
+	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
+	 * be <tt>null</tt>.</dd>
+	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
+	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
+	 * to be exactly square etc. Ignored when allocating single boards or
+	 * specific rectangles of triads.</dd>
+	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken or unreachable boards to allow in the
+	 * allocated region. If <tt>null</tt>, any number of dead boards is
+	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
+	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken links allow in the allocated region.
+	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
+	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
+	 * number of broken links is allowed.</dd>
+	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
+	 * general this will only succeed for requests to allocate an entire
+	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
+	 * boards.</dd>
+	 * </dl>
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param args
+	 *            The machine shape description.
+	 * @param kwargs
+	 *            The extra properties.
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 */
+	public Job(List<Integer> args, Map<String, Object> kwargs)
+			throws IOException, SpallocServerException {
+		this((String) defaults.get(HOSTNAME_PROPERTY),
+				(Integer) defaults.get(PORT_PROPERTY),
+				(Integer) defaults.get(TIMEOUT_PROPERTY), args, kwargs);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 * <p>
+	 * The requested machine shape can be one of the following:
+	 * <ul>
+	 * <li><b>Empty</b> list, to get a single board.
+	 * <li><b>Singleton</b> list, to get a machine with that number of boards.
+	 * <li><b>Pair</b>, to get a rectangle of boards,
+	 * <i>width</i>&times;<i>height</i>.
+	 * <li><b>Triple</b>, to get a specific board (<i>x, y, z</i>).
+	 * </ul>
+	 * The supported extra properties consist of:
+	 * <dl>
+	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dd>The name of the owner of the job. By convention this should be your
+	 * email address.</dd>
+	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dd>The number of seconds after which the server may consider the job
+	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
+	 * timeout will be used and the job will run until explicitly destroyed. Use
+	 * with extreme caution.</dd>
+	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dd>Specify the name of a machine which this job must be executed on. If
+	 * <tt>null</tt>, the first suitable machine available will be used,
+	 * according to the tags selected below. Must be <tt>null</tt> when
+	 * {@value #TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * <dd>The set of tags which any machine running this job must have. If
+	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
+	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
+	 * be <tt>null</tt>.</dd>
+	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
+	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
+	 * to be exactly square etc. Ignored when allocating single boards or
+	 * specific rectangles of triads.</dd>
+	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken or unreachable boards to allow in the
+	 * allocated region. If <tt>null</tt>, any number of dead boards is
+	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
+	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dd>The maximum number of broken links allow in the allocated region.
+	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
+	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
+	 * number of broken links is allowed.</dd>
+	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
+	 * general this will only succeed for requests to allocate an entire
+	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
+	 * boards.</dd>
+	 * </dl>
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param port
+	 *            The spalloc server port
+	 * @param timeout
+	 *            The communications timeout
+	 * @param args
+	 *            The machine shape description.
+	 * @param kwargs
+	 *            The extra properties.
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 */
 	public Job(String hostname, int port, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
 		this.client = new ProtocolClient(hostname, port, timeout);
 		this.timeout = timeout;
-		if (kwargs.containsKey("keepalive")) {
-			keepaliveTime =
-					(int) (((Number) kwargs.get("keepalive")).doubleValue()
-							* MS_PER_S);
-		} else {
-			keepaliveTime = KEEPALIVE_INTERVAL;
-			kwargs.put("keepalive", DEFAULT_KEEPALIVE);
+		if (args == null || args.size() > MAX_SHAPE_ARGS) {
+			throw new IllegalArgumentException(
+					"the machine shape description must have between 0 and "
+							+ MAX_SHAPE_ARGS);
 		}
+		if (kwargs.containsKey(RECONNECT_DELAY_PROPERTY)) {
+			reconnectDelay =
+					(int) (((Number) kwargs.get(RECONNECT_DELAY_PROPERTY))
+							.doubleValue() * MS_PER_S);
+		} else {
+			reconnectDelay =
+					(int) (((Number) defaults.get(RECONNECT_DELAY_PROPERTY))
+							.doubleValue() * MS_PER_S);
+		}
+		kwargs = makeJobKeywordArguments(kwargs, defaults);
 		id = client.createJob(args, kwargs, timeout);
+		/*
+		 * We also need the keepalive configuration so we know when to send
+		 * keepalive messages.
+		 */
+		keepaliveTime =
+				(int) (((Number) kwargs.get(KEEPALIVE_PROPERTY)).doubleValue()
+						* MS_PER_S);
 		log.info("created spalloc job with ID: {}", id);
-		keepalive = new Thread(() -> keepalive(),
-				"keepalive for spalloc job " + id);
-		keepalive.setDaemon(true);
-		stopping = false;
-		keepalive.start();
+		launchKeepaliveDaemon();
+	}
+
+	private static void setIfValid(Map<String, Object> map, String key,
+			Object value, Class<?> clazz) {
+		if (value == null) {
+			return;
+		}
+		try {
+			map.put(key, clazz.cast(value));
+		} catch (ClassCastException e) {
+			throw new IllegalArgumentException("the \"" + key
+					+ "\" property must map to a " + clazz.getSimpleName());
+		}
+	}
+
+	/**
+	 * Conditions the arguments for spalloc.
+	 *
+	 * @param kwargs
+	 *            The arguments supplied by the caller.
+	 * @param defaults
+	 *            The set of defaults read from the configuration file.
+	 * @return The actual arguments to give to spalloc.
+	 * @throws IllegalArgumentException
+	 *             if a bad argument is given.
+	 */
+	private Map<String, Object> makeJobKeywordArguments(
+			Map<String, Object> kwargs, Map<String, Object> defaults) {
+		Map<String, Object> map = new HashMap<>();
+		map.put(USER_PROPERTY, kwargs.getOrDefault(USER_PROPERTY, defaults
+				.getOrDefault(USER_PROPERTY, System.getProperty("user.name"))));
+		if (!(map.get(USER_PROPERTY) instanceof String)) {
+			throw new IllegalArgumentException(
+					"the \"" + USER_PROPERTY + "\" key must map to a string");
+		}
+		setIfValid(map, KEEPALIVE_PROPERTY,
+				kwargs.getOrDefault(KEEPALIVE_PROPERTY, defaults
+						.getOrDefault(KEEPALIVE_PROPERTY, DEFAULT_KEEPALIVE)),
+				Number.class);
+		setIfValid(map, MACHINE_PROPERTY, kwargs.getOrDefault(MACHINE_PROPERTY,
+				defaults.get(MACHINE_PROPERTY)), String.class);
+		setIfValid(map, TAGS_PROPERTY,
+				kwargs.getOrDefault(TAGS_PROPERTY, defaults.get(TAGS_PROPERTY)),
+				String[].class);
+		setIfValid(map, MIN_RATIO_PROPERTY,
+				kwargs.getOrDefault(MIN_RATIO_PROPERTY,
+						defaults.get(MIN_RATIO_PROPERTY)),
+				Double.class);
+		setIfValid(map, MAX_DEAD_BOARDS_PROPERTY,
+				kwargs.getOrDefault(MAX_DEAD_BOARDS_PROPERTY,
+						defaults.get(MAX_DEAD_BOARDS_PROPERTY)),
+				Integer.class);
+		setIfValid(map, MAX_DEAD_LINKS_PROPERTY,
+				kwargs.getOrDefault(MAX_DEAD_LINKS_PROPERTY,
+						defaults.get(MAX_DEAD_LINKS_PROPERTY)),
+				Integer.class);
+		setIfValid(map, REQUIRE_TORUS_PROPERTY,
+				kwargs.getOrDefault(REQUIRE_TORUS_PROPERTY,
+						defaults.get(REQUIRE_TORUS_PROPERTY)),
+				Boolean.class);
+		map.put(TIMEOUT_PROPERTY, timeout);
+		return map;
+	}
+
+	/**
+	 * Create a job client that resumes an existing job given its ID.
+	 *
+	 * @param id
+	 *            The job ID
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 * @throws JobDestroyedException
+	 */
+	public Job(int id)
+			throws IOException, SpallocServerException, JobDestroyedException {
+		this((String) defaults.get(HOSTNAME_PROPERTY),
+				(Integer) defaults.get(PORT_PROPERTY),
+				(Integer) defaults.get(TIMEOUT_PROPERTY), id);
+	}
+
+	/**
+	 * Create a job client that resumes an existing job given its ID.
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param id
+	 *            The job ID
+	 * @throws IOException
+	 * @throws SpallocServerException
+	 * @throws JobDestroyedException
+	 */
+	public Job(String hostname, int id)
+			throws IOException, SpallocServerException, JobDestroyedException {
+		this(hostname, (Integer) defaults.get(PORT_PROPERTY),
+				(Integer) defaults.get(TIMEOUT_PROPERTY), id);
 	}
 
 	/**
@@ -143,7 +672,7 @@ public class Job implements AutoCloseable {
 	 */
 	public Job(String hostname, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
-		this(hostname, ProtocolClient.DEFAULT_PORT, timeout, id);
+		this(hostname, (Integer) defaults.get(PORT_PROPERTY), timeout, id);
 	}
 
 	/**
@@ -166,6 +695,9 @@ public class Job implements AutoCloseable {
 		this.client = new ProtocolClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
+		reconnectDelay =
+				(int) (((Number) defaults.get(RECONNECT_DELAY_PROPERTY))
+						.doubleValue() * MS_PER_S);
 		/*
 		 * If the job no longer exists, we can't get the keepalive interval (and
 		 * there's nothing to keepalive) so just bail out.
@@ -186,7 +718,14 @@ public class Job implements AutoCloseable {
 		// Snag the keepalive interval from the job
 		keepaliveTime = (int) (jobState.getKeepAlive() * MS_PER_S);
 		log.info("resumed spalloc job with ID: {}", id);
-		keepalive = new Thread(() -> keepalive(),
+		launchKeepaliveDaemon();
+	}
+
+	private void launchKeepaliveDaemon() {
+		if (keepalive != null) {
+			log.warn("launching second keepalive thread for " + id);
+		}
+		keepalive = new Thread(SPALLOC_WORKERS, this::keepalive,
 				"keepalive for spalloc job " + id);
 		keepalive.setDaemon(true);
 		stopping = false;
@@ -263,10 +802,12 @@ public class Job implements AutoCloseable {
 				"Server version " + v + " is not compatible with this client");
 	}
 
+	@Override
 	public void destroy() throws IOException, SpallocServerException {
 		destroy(null);
 	}
 
+	@Override
 	public void destroy(String reason)
 			throws IOException, SpallocServerException {
 		try {
@@ -276,19 +817,7 @@ public class Job implements AutoCloseable {
 		}
 	}
 
-	/**
-	 * Turn the boards allocated to the job on or off.
-	 * <p>
-	 * Does nothing if the job has not yet been allocated any boards.
-	 * <p>
-	 * The {@link #waitUntilReady(Integer)} method may be used to wait for the boards
-	 * to fully turn on or off.
-	 *
-	 * @param powerOn
-	 *            true to power on the boards, false to power off. If the boards
-	 *            are already turned on, setting power to true will reset them.
-	 *            If <tt>null</tt>, this method does nothing.
-	 */
+	@Override
 	public void setPower(Boolean powerOn)
 			throws IOException, SpallocServerException {
 		if (powerOn == null) {
@@ -301,19 +830,7 @@ public class Job implements AutoCloseable {
 		}
 	}
 
-	/**
-	 * Reset (power-cycle) the boards allocated to the job.
-	 * <p>
-	 * Does nothing if the job has not been allocated.
-	 * <p>
-	 * The {@link #waitUntilReady(Integer)} method may be used to wait for the boards
-	 * to fully turn on or off.
-	 */
-	public void reset() throws IOException, SpallocServerException {
-		setPower(true);
-	}
-
-	/** @return The ID of the job. */
+	@Override
 	public int getID() {
 		return id;
 	}
@@ -321,30 +838,25 @@ public class Job implements AutoCloseable {
 	private static final int STATUS_CACHE_PERIOD = 500;
 
 	private JobState getStatus() throws IOException, SpallocServerException {
-		if (status == null || statusTimestamp < currentTimeMillis()
+		if (statusCache == null || statusTimestamp < currentTimeMillis()
 				- STATUS_CACHE_PERIOD) {
-			status = client.getJobState(id, timeout);
+			statusCache = client.getJobState(id, timeout);
 			statusTimestamp = currentTimeMillis();
 		}
-		return status;
+		return statusCache;
 	}
 
-	/** @return The current state of the job. */
+	@Override
 	public State getState() throws IOException, SpallocServerException {
 		return getStatus().getState();
 	}
 
-	/** @return The current power state of the job. */
+	@Override
 	public Boolean getPower() throws IOException, SpallocServerException {
 		return getStatus().getPower();
 	}
 
-	/**
-	 * @return The reason for destruction of the job, or <tt>null</tt> if there
-	 *         is no reason (perhaps because the job isn't destroyed). Note that
-	 *         you should use {@link #getState()} to determine if the job is
-	 *         destroyed, not this method.
-	 */
+	@Override
 	public String getDestroyReason()
 			throws IOException, SpallocServerException {
 		return getStatus().getReason();
@@ -352,17 +864,20 @@ public class Job implements AutoCloseable {
 
 	private void retrieveMachineInfo()
 			throws IOException, SpallocServerException {
-		machineInfo = client.getJobMachineInfo(id, timeout);
+		machineInfoCache = client.getJobMachineInfo(id, timeout);
 	}
 
+	@Override
 	public List<Connection> getConnections()
 			throws IOException, SpallocServerException {
-		if (machineInfo == null || machineInfo.getConnections() == null) {
+		if (machineInfoCache == null
+				|| machineInfoCache.getConnections() == null) {
 			retrieveMachineInfo();
 		}
-		return machineInfo.getConnections();
+		return machineInfoCache.getConnections();
 	}
 
+	@Override
 	public String getHostname() throws IOException, SpallocServerException {
 		for (Connection c : getConnections()) {
 			if (c.getChip().onSameChipAs(ROOT)) {
@@ -372,55 +887,44 @@ public class Job implements AutoCloseable {
 		return null;
 	}
 
+	@Override
 	public MachineDimensions getDimensions()
 			throws IOException, SpallocServerException {
-		if (machineInfo == null || machineInfo.getWidth() == 0) {
+		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
 			retrieveMachineInfo();
 		}
-		if (machineInfo == null || machineInfo.getWidth() == 0) {
+		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
 			return null;
 		}
-		return new MachineDimensions(machineInfo.getWidth(),
-				machineInfo.getHeight());
+		return new MachineDimensions(machineInfoCache.getWidth(),
+				machineInfoCache.getHeight());
 	}
 
+	@Override
 	public String getMachineName() throws IOException, SpallocServerException {
-		if (machineInfo == null || machineInfo.getMachineName() == null) {
+		if (machineInfoCache == null
+				|| machineInfoCache.getMachineName() == null) {
 			retrieveMachineInfo();
 		}
-		if (machineInfo == null) {
+		if (machineInfoCache == null) {
 			return null;
 		}
-		return machineInfo.getMachineName();
+		return machineInfoCache.getMachineName();
 	}
 
+	@Override
 	public List<BoardCoordinates> getBoards()
 			throws IOException, SpallocServerException {
-		if (machineInfo == null || machineInfo.getBoards() == null) {
+		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
 			retrieveMachineInfo();
 		}
-		if (machineInfo == null || machineInfo.getBoards() == null) {
+		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
 			return null;
 		}
-		return machineInfo.getBoards();
+		return machineInfoCache.getBoards();
 	}
 
-	public State waitForStateChange(State oldState)
-			throws SpallocServerException {
-		return waitForStateChange(oldState, null);
-	}
-
-	/**
-	 * Block until the job's state changes from the supplied state.
-	 *
-	 * @param oldState
-	 *            The current state.
-	 * @param timeout
-	 *            The number of seconds to wait for a change before timing out.
-	 *            If None, wait forever.
-	 * @return The new state, or old state if timed out.
-	 * @throws SpallocServerException
-	 */
+	@Override
 	public State waitForStateChange(State oldState, Integer timeout)
 			throws SpallocServerException {
 		Long finishTime = makeTimeout(timeout);
@@ -495,8 +999,7 @@ public class Job implements AutoCloseable {
 				 */
 				Integer waitTimeout;
 				if (finishTime != null && keepaliveTime != null) {
-					waitTimeout =
-							min(keepaliveTime / 2, timeLeft(finishTime));
+					waitTimeout = min(keepaliveTime / 2, timeLeft(finishTime));
 				} else if (finishTime == null) {
 					waitTimeout =
 							(keepalive == null) ? null : keepaliveTime / 2;
@@ -538,19 +1041,7 @@ public class Job implements AutoCloseable {
 		reconnect();
 	}
 
-	/**
-	 * Block until the job is allocated and ready.
-	 *
-	 * @param timeout
-	 *            The number of milliseconds to wait before timing out. If None,
-	 *            wait forever.
-	 * @throws SpallocServerException
-	 * @throws IOException
-	 * @throws StateChangeTimeoutException
-	 *             If the timeout expired before the ready state was entered.
-	 * @throws JobDestroyedException
-	 *             If the job was destroyed before becoming ready.
-	 */
+	@Override
 	public void waitUntilReady(Integer timeout) throws JobDestroyedException,
 			IOException, SpallocServerException, StateChangeTimeoutException {
 		State curState = null;
@@ -590,15 +1081,8 @@ public class Job implements AutoCloseable {
 		throw new StateChangeTimeoutException();
 	}
 
-	/**
-	 * Locates and returns the physical coordinates containing a given chip in a
-	 * machine allocated to this job.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip
-	 * @return the physical coordinates of the board
-	 */
-	public BoardPhysicalCoordinates whereIsOnMachine(HasChipLocation chip)
+	@Override
+	public BoardPhysicalCoordinates whereIs(HasChipLocation chip)
 			throws IOException, SpallocServerException {
 		WhereIs result = client.whereIs(id, chip, timeout);
 		if (result == null) {
