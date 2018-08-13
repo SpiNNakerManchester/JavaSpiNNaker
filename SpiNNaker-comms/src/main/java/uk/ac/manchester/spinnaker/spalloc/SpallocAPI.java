@@ -1,6 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
-//CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
-//CHECKSTYLE:ON
+// CHECKSTYLE:ON
 
 /**
  * The interface exposed by the low-level Spalloc Client.
