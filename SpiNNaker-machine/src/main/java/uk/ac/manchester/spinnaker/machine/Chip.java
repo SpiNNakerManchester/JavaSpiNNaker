@@ -238,6 +238,9 @@ public class Chip implements HasChipLocation {
      * @param processorId
      *            Id of the potential processor.
      * @return True if and only if there is a processor for this ID.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public boolean hasAnyProcessor(int processorId) {
         return this.userProcessors.containsKey(processorId)
@@ -267,6 +270,9 @@ public class Chip implements HasChipLocation {
      * @param processorId
      *            Id of the potential processor.
      * @return True if and only if there is a processor for this ID.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public boolean hasMonitorProcessor(int processorId) {
         return this.monitorProcessors.containsKey(processorId);
@@ -280,6 +286,9 @@ public class Chip implements HasChipLocation {
      * @param processorId
      *            Id of the potential processor.
      * @return The Processor or null if not is found.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public Processor getAnyProcessor(int processorId) {
         if (this.userProcessors.containsKey(processorId)) {
@@ -313,6 +322,9 @@ public class Chip implements HasChipLocation {
      * @param processorId
      *            Id of the potential processor.
      * @return The Processor or null if not is found.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public Processor getMonitorProcessor(int processorId) {
         return this.monitorProcessors.get(processorId);
@@ -331,6 +343,9 @@ public class Chip implements HasChipLocation {
      * Future implementations could return an unmodifiable list.
      *
      * @return A list of all the processors including both monitor and user.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public List<Processor> allProcessors() {
         ArrayList<Processor> all =
@@ -365,6 +380,9 @@ public class Chip implements HasChipLocation {
      * be different.
      *
      * @return A unmodifiable View over the processors.
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public Collection<Processor> monitorProcessors() {
         return Collections.unmodifiableCollection(
@@ -375,6 +393,9 @@ public class Chip implements HasChipLocation {
      * The total number of processors.
      *
      * @return The size of the Processor Collection
+     * @deprecated
+     *            Keeping track of the Monitor(s) processors may be removed
+     *            unless a use case can be found.
      */
     public int nProcessors() {
         return this.userProcessors.size() + this.monitorProcessors.size();
@@ -413,6 +434,7 @@ public class Chip implements HasChipLocation {
      * <p>
      * This will reduce by one the result of nUserProcessors()
      *
+     * @deprecated Will be removed if confirmed to never be called any more.
      * @return ID of the processor converted to a monitor or -1 to report a
      *         failure
      */
@@ -447,96 +469,4 @@ public class Chip implements HasChipLocation {
                 + this.nearestEthernet + "]";
     }
 
-    // Previous Router stuff
-
-    /**
-     * Adds a link with a unique sourceLinkDirection to this router.
-     *
-     * @param link Link to add,
-     *     which must have a sourceLinkDirection not yet used.
-     * @throws IllegalArgumentException Indicates another Link with this
-     *     sourceLinkDirection has already been added.
-     * /
-    public void addLink(Link link) throws IllegalArgumentException {
-        if (this.links.containsKey(link.sourceLinkDirection)) {
-            throw new IllegalArgumentException(
-                    "Link already exists: " + link);
-        }
-        this.links.put(link.sourceLinkDirection, link);
-    }
-
-    /**
-     * Indicates if there is a Link going in this direction.
-     *
-     * @param direction Direction to find link for.
-     * @return True if and only if there is a link in this direction,
-     * /
-    public boolean hasLink(Direction direction) {
-        return links.containsKey(direction);
-    }
-
-    /**
-     * Obtains a Link going in this direction.
-     * <p>
-     * None is returned if no link found.
-     *
-     * @param direction Direction to find link for.
-     * @return The Link or none
-     * /
-    public Link getLink(Direction direction) {
-        return links.get(direction);
-    }
-
-    /**
-     * Return a View over the links.
-     * <p>
-     * Each Link is guaranteed to differ in at least the sourceLinkDirection.
-     *
-     * @return An unmodifiable Collection of Link(s).
-     * /
-    public Collection<Link> links() {
-        return Collections.unmodifiableCollection(links.values());
-    }
-
-    /**
-     * The number of Link(s).
-     * <p>
-     * The number of NeighbouringChipsCoords will always be equal to the
-     *     number of links.
-     *
-     * @return The number of Link(s) and therefor NeighbouringChipsCoords
-     * /
-    public int nLinks() {
-        return links.size();
-    }
-
-    /**
-     * Iterable over the destinations of each link.
-     * <p>
-     * There will be exactly one destination for each Link.
-     * While normally all destinations will be unique the is no guarantee.
-     *
-     * @return A Stream over the destination locations.
-     * /
-    public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
-        return new Iterable<HasChipLocation>() {
-            @Override
-            public Iterator<HasChipLocation> iterator() {
-                return new NeighbourIterator(links.values().iterator());
-            }
-        };
-    }
-
-    /**
-     * List of the destination for all links.
-     *
-     * @return The destination locations
-     * /
-    public List<HasChipLocation> neighbouringChipsCoords() {
-        ArrayList<HasChipLocation> neighbours = new ArrayList();
-        for (Link link: links.values()) {
-            neighbours.add(link.destination);
-        }
-        return neighbours;
-    }*/
 }

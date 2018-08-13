@@ -660,6 +660,7 @@ public class Machine implements Iterable<Chip> {
      * Chips where this was not possible are added as failedChips.
      *
      * @return Locations of the new monitor processors and the failed chips.
+     * @deprecated Will be removed if confirmed to never be called any more.
      */
     public final CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
         maxUserProssorsOnAChip = 0;
