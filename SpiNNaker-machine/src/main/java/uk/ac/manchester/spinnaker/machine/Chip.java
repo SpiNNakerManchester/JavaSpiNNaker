@@ -163,7 +163,7 @@ public class Chip implements HasChipLocation {
              Router router, InetAddress ipAddress,
              HasChipLocation nearestEthernet) {
         this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
-                ipAddress, true, MachineDefaults.N_IPTAGS_PER_CHIP,
+                ipAddress, false, MachineDefaults.N_IPTAGS_PER_CHIP,
                 nearestEthernet);
     }
 
@@ -195,7 +195,7 @@ public class Chip implements HasChipLocation {
         this.sdram = MachineDefaults.SDRAM_PER_CHIP;
         this.ipAddress = ipAddress;
 
-        this.virtual = true;
+        this.virtual = false;
         this.nTagIds = MachineDefaults.N_IPTAGS_PER_CHIP;
 
         this.nearestEthernet = nearestEthernet;
