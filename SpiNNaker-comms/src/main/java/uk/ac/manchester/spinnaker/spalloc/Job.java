@@ -8,6 +8,16 @@ import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.KEEPALIVE_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MACHINE_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MAX_DEAD_BOARDS_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MAX_DEAD_LINKS_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MIN_RATIO_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.PORT_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.RECONNECT_DELAY_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.REQUIRE_TORUS_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.TAGS_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
@@ -135,14 +145,15 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * change once it is assigned, so there is no expiry mechanism.
 	 */
 	private JobMachineInfo machineInfoCache;
-	private int reconnectDelay = (int) (10 * MS_PER_S);
+	private int reconnectDelay = f2ms(RECONNECT_DELAY_DEFAULT);
 	private static final ThreadGroup SPALLOC_WORKERS =
 			new ThreadGroup("spalloc worker threads");
 
-	static Map<String, Object> defaults;
-	static SubnodeConfiguration config;
+	private static Map<String, Object> defaults;
+	private static SubnodeConfiguration config;
 
 	static {
+		defaults = initDefaultDefaults();
 		try {
 			// TODO is this the right way to set this up?
 			/*
@@ -170,22 +181,22 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 			throw new RuntimeException(
 					"failed to load configuration from spalloc.ini", e);
 		}
-		defaults = new HashMap<>();
-		initDefaultDefaults(defaults);
 		setDefaultsFromConfig(defaults);
 	}
 
-	private static void initDefaultDefaults(Map<String, Object> defaults) {
-		defaults.put(PORT_PROPERTY, 22244);
-		defaults.put(KEEPALIVE_PROPERTY, 60.0);
-		defaults.put(RECONNECT_DELAY_PROPERTY, 5.0);
-		defaults.put(TIMEOUT_PROPERTY, 5.0);
-		defaults.put(MACHINE_PROPERTY, null);
-		defaults.put(TAGS_PROPERTY, null);
-		defaults.put(MIN_RATIO_PROPERTY, 0.333);
-		defaults.put(MAX_DEAD_BOARDS_PROPERTY, 0);
-		defaults.put(MAX_DEAD_LINKS_PROPERTY, null);
-		defaults.put(REQUIRE_TORUS_PROPERTY, false);
+	private static Map<String, Object> initDefaultDefaults() {
+		Map<String, Object> defaults = new HashMap<>();
+		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
+		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
+		defaults.put(RECONNECT_DELAY_PROPERTY, RECONNECT_DELAY_DEFAULT);
+		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
+		defaults.put(MACHINE_PROPERTY, MACHINE_DEFAULT);
+		defaults.put(TAGS_PROPERTY, TAGS_DEFAULT);
+		defaults.put(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT);
+		defaults.put(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT);
+		defaults.put(MAX_DEAD_LINKS_PROPERTY, MAX_DEAD_LINKS_DEFAULT);
+		defaults.put(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT);
+		return defaults;
 	}
 
 	private static final String NULL_MARKER = "None";
@@ -449,8 +460,6 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * boards.</dd>
 	 * </dl>
 	 *
-	 * @param hostname
-	 *            The spalloc server host
 	 * @param args
 	 *            The machine shape description.
 	 * @param kwargs
