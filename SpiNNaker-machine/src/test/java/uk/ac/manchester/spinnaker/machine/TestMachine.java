@@ -7,25 +7,24 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
-import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  *
  * @author Christian-B
  */
 public class TestMachine {
-
-    private ArrayList<Processor> processors;
 
     public TestMachine() {
     }
@@ -74,6 +73,23 @@ public class TestMachine {
             }
         }
         return chips;
+    }
+
+    private Router createRouter(
+            ChipLocation source, Collection<ChipLocation> all) {
+        ArrayList<Link> links = new ArrayList<>();
+        for (Direction direction: Direction.values()) {
+            int dest_x = source.getX() + direction.xChange;
+            int dest_y = source.getY() + direction.yChange;
+            if (dest_x >= 0 && dest_y >= 0) {
+                ChipLocation destination = new ChipLocation(dest_x, dest_y);
+                if (all.contains(destination)) {
+                    links.add(new Link(
+                        source, direction, new ChipLocation(dest_x, dest_y)));
+                }
+            }
+        }
+        return new Router(links);
     }
 
     @Test
@@ -354,5 +370,62 @@ public class TestMachine {
         assertThat(instance.ethernetConnectedChips(),
                 containsInAnyOrder(chip00, chip84, chip48));
     }
+
+    @Test
+    public void testHole() throws UnknownHostException {
+        SpiNNakerTriadGeometry geometry =
+                SpiNNakerTriadGeometry.getSpinn5Geometry();
+
+        ArrayList<Processor> processors = createProcessors();
+        ArrayList<Chip> chips = new ArrayList();
+        ArrayList<ChipLocation> all = new ArrayList(geometry.singleBoard());
+        for (ChipLocation location:all){
+            Router router = createRouter(location, all);
+            if (location.equals(new ChipLocation(0, 0))) {
+                byte[] bytes00 = {127, 0, 0, 0};
+                chips.add(new Chip(location, processors, router,
+                        SDRAM, InetAddress.getByAddress(bytes00), false,
+                        0, BOOT_CHIP));
+            } else if (location.equals(new ChipLocation(3, 3))) {
+                // Leave a hole
+            } else {
+                 chips.add(new Chip(location, processors, router,
+                        SDRAM, null, false, 0, BOOT_CHIP));
+            }
+        }
+
+        Machine instance = new Machine(
+                new MachineDimensions(12, 12), chips, BOOT_CHIP);
+        assertEquals(47, instance.nChips());
+
+        Map<ChipLocation, Collection<Direction>> abnormal =
+                instance.findAbnormalLinks();
+        // 7 as it also has the invers links from 3,3
+        assertEquals(7, abnormal.size());
+
+        assertEquals("846 cores and 117.0 links",
+                instance.coresAndLinkOutputString());
+    }
+
+
+    /*
+    @Test
+    public void testUnreachableIncomingChips() {
+        Map<ChipLocation, Collection<Direction>> ignoreLinks =
+                new DefaultMap<>(ArrayList::new);
+        ignoreLinks.get(new ChipLocation(2, 2)).add(Direction.NORTHEAST);
+        ignoreLinks.get(new ChipLocation(2, 3)).add(Direction.EAST);
+        ignoreLinks.get(new ChipLocation(3, 4)).add(Direction.SOUTH);
+        ignoreLinks.get(new ChipLocation(4, 4)).add(Direction.SOUTHWEST);
+        ignoreLinks.get(new ChipLocation(4, 3)).add(Direction.WEST);
+        ignoreLinks.get(new ChipLocation(3, 2)).add(Direction.NORTH);
+
+        Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
+                null, null, ignoreLinks);
+        Map<ChipLocation, Collection<Direction>> abnormal =
+                instance.findAbnormalLinks();
+        System.out.print(abnormal);
+        assertEquals(1, abnormal.size());
+    }*/
 
 }

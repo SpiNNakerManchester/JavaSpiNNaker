@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
@@ -21,6 +23,7 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.Counter;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
@@ -263,6 +266,19 @@ public class Machine implements Iterable<Chip> {
             return false;
         }
         return chips.containsKey(location);
+    }
+
+    /**
+     * Determine if a chip exists at the given coordinates.
+     *
+     * @param location x and y coordinates of the requested chip.
+     * @return True if and only if the machine has a Chip at that location.
+     */
+    public final boolean hasChipAt(HasChipLocation location) {
+        if (location == null) {
+            return false;
+        }
+        return chips.containsKey(location.asChipLocation());
     }
 
     /**
@@ -766,6 +782,21 @@ public class Machine implements Iterable<Chip> {
                 + ", n_chips=" + nChips() + "]";
     }
 
+    Map<ChipLocation, Collection<Direction>> findAbnormalLinks() {
+        Map<ChipLocation, Collection<Direction>> ignoreLinks =
+                new DefaultMap<>(ArrayList::new);
+        for (Chip chip: chips.values()) {
+            for (Link link:chip.router.links()) {
+                if (!this.hasChipAt(link.destination)) {
+                    ignoreLinks.get(link.source).add(link.sourceLinkDirection);
+                    ignoreLinks.get(link.destination).add(
+                            link.sourceLinkDirection.inverse());
+                }
+            }
+        }
+        return ignoreLinks;
+    }
+
     private class ChipOnBoardIterator implements Iterator<Chip> {
 
         private HasChipLocation root;
@@ -807,7 +838,6 @@ public class Machine implements Iterable<Chip> {
             }
             nextChip = null;
         }
-
     }
 
-}
+ }

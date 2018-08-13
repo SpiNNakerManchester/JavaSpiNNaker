@@ -181,7 +181,7 @@ public class TestChip {
         Chip chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
                 createInetAddress(), location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
-        assertTrue(chip.virtual);
+        assertFalse(chip.virtual);
         assertEquals(17, chip.nUserProcessors());
         assertEquals(18, chip.nProcessors());
         assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
