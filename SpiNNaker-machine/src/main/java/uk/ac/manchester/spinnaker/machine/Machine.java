@@ -151,6 +151,7 @@ public class Machine implements Iterable<Chip> {
      *
      * @param ignoreChips The locations of the chips (if any)
      *      that should not be in the rebuilt machine.
+     *      Chips not specified to be ignore or not checked in any way.
      *      If this parameter is null the result of
      *      {@link #findAbnormalLinks()} is used.
      *      If this parameter is empty it is ignored as are any location that
@@ -158,6 +159,7 @@ public class Machine implements Iterable<Chip> {
      *
      * @param ignoreLinks A mapping of Locations to Directions of links that
      *      should be in the rebuilt machine.
+     *      Links not specified to be ignored are not checked in any way.
      *      If this parameter is null the result of
      *      {@link #findAbnormalChips()} is used.
      *      If this parameter is empty it is ignored as are any location that
