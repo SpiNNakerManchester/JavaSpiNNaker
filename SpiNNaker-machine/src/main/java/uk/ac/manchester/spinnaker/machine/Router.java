@@ -192,7 +192,7 @@ public final class Router {
      *
      * @return A Stream over the destination locations.
      */
-    public Stream<HasChipLocation> streamNeighbouringChipsCoords() {
+    public Stream<ChipLocation> streamNeighbouringChipsCoords() {
         return links.values().stream().map(
             link -> {
                 return link.destination;
@@ -207,10 +207,10 @@ public final class Router {
      *
      * @return A Stream over the destination locations.
      */
-    public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
-        return new Iterable<HasChipLocation>() {
+    public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
+        return new Iterable<ChipLocation>() {
             @Override
-            public Iterator<HasChipLocation> iterator() {
+            public Iterator<ChipLocation> iterator() {
                 return new NeighbourIterator(links.values().iterator());
             }
         };
@@ -224,8 +224,8 @@ public final class Router {
      *
      * @return The destination locations
      */
-    public List<HasChipLocation> neighbouringChipsCoords() {
-        ArrayList<HasChipLocation> neighbours = new ArrayList();
+    public List<ChipLocation> neighbouringChipsCoords() {
+        ArrayList<ChipLocation> neighbours = new ArrayList();
         for (Link link: links.values()) {
             neighbours.add(link.destination);
         }
