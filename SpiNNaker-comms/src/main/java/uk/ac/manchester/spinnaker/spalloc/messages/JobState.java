@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 /**
  * A description of the state of a job, in terms of its state, whether its
  * boards are powered, the advised keep-alive polling interval and the reason
- * that the job died (if in the {@link Shape#DESTROYED DESTROYED} state).
+ * that the job died (if in the {@link State#DESTROYED DESTROYED} state).
  */
 public class JobState {
 	private State state;

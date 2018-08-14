@@ -143,39 +143,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * </ul>
 	 * The supported extra properties consist of:
 	 * <dl>
-	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#USER_PROPERTY} ({@link String})</dt>
 	 * <dd>The name of the owner of the job. By convention this should be your
 	 * email address.</dd>
-	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dt>{@value JobConstants#KEEPALIVE_PROPERTY} ({@link Number})</dt>
 	 * <dd>The number of seconds after which the server may consider the job
 	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
 	 * timeout will be used and the job will run until explicitly destroyed. Use
 	 * with extreme caution.</dd>
-	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#MACHINE_PROPERTY} ({@link String})</dt>
 	 * <dd>Specify the name of a machine which this job must be executed on. If
 	 * <tt>null</tt>, the first suitable machine available will be used,
 	 * according to the tags selected below. Must be <tt>null</tt> when
-	 * {@value #TAGS_PROPERTY} are given.</dd>
-	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * {@value JobConstants#TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value JobConstants#TAGS_PROPERTY} ({@link String}[])</dt>
 	 * <dd>The set of tags which any machine running this job must have. If
 	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
-	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
-	 * be <tt>null</tt>.</dd>
-	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * will be used. If {@value JobConstants#MACHINE_PROPERTY} is given, this
+	 * argument must be <tt>null</tt>.</dd>
+	 * <dt>{@value JobConstants#MIN_RATIO_PROPERTY} ({@link Double})</dt>
 	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
 	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
 	 * to be exactly square etc. Ignored when allocating single boards or
 	 * specific rectangles of triads.</dd>
-	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken or unreachable boards to allow in the
 	 * allocated region. If <tt>null</tt>, any number of dead boards is
 	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
-	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken links allow in the allocated region.
-	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
-	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
-	 * number of broken links is allowed.</dd>
-	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * When {@value JobConstants#REQUIRE_TORUS_PROPERTY} is true this includes
+	 * wrap-around links, otherwise peripheral links are not counted. If
+	 * <tt>null</tt>, any number of broken links is allowed.</dd>
+	 * <dt>{@value JobConstants#REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
 	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
 	 * general this will only succeed for requests to allocate an entire
 	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
@@ -212,39 +212,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * </ul>
 	 * The supported extra properties consist of:
 	 * <dl>
-	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#USER_PROPERTY} ({@link String})</dt>
 	 * <dd>The name of the owner of the job. By convention this should be your
 	 * email address.</dd>
-	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dt>{@value JobConstants#KEEPALIVE_PROPERTY} ({@link Number})</dt>
 	 * <dd>The number of seconds after which the server may consider the job
 	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
 	 * timeout will be used and the job will run until explicitly destroyed. Use
 	 * with extreme caution.</dd>
-	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#MACHINE_PROPERTY} ({@link String})</dt>
 	 * <dd>Specify the name of a machine which this job must be executed on. If
 	 * <tt>null</tt>, the first suitable machine available will be used,
 	 * according to the tags selected below. Must be <tt>null</tt> when
-	 * {@value #TAGS_PROPERTY} are given.</dd>
-	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * {@value JobConstants#TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value JobConstants#TAGS_PROPERTY} ({@link String}[])</dt>
 	 * <dd>The set of tags which any machine running this job must have. If
 	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
-	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
-	 * be <tt>null</tt>.</dd>
-	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * will be used. If {@value JobConstants#MACHINE_PROPERTY} is given, this
+	 * argument must be <tt>null</tt>.</dd>
+	 * <dt>{@value JobConstants#MIN_RATIO_PROPERTY} ({@link Double})</dt>
 	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
 	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
 	 * to be exactly square etc. Ignored when allocating single boards or
 	 * specific rectangles of triads.</dd>
-	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken or unreachable boards to allow in the
 	 * allocated region. If <tt>null</tt>, any number of dead boards is
 	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
-	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken links allow in the allocated region.
-	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
-	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
-	 * number of broken links is allowed.</dd>
-	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * When {@value JobConstants#REQUIRE_TORUS_PROPERTY} is true this includes
+	 * wrap-around links, otherwise peripheral links are not counted. If
+	 * <tt>null</tt>, any number of broken links is allowed.</dd>
+	 * <dt>{@value JobConstants#REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
 	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
 	 * general this will only succeed for requests to allocate an entire
 	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
@@ -280,39 +280,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * </ul>
 	 * The supported extra properties consist of:
 	 * <dl>
-	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#USER_PROPERTY} ({@link String})</dt>
 	 * <dd>The name of the owner of the job. By convention this should be your
 	 * email address.</dd>
-	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dt>{@value JobConstants#KEEPALIVE_PROPERTY} ({@link Number})</dt>
 	 * <dd>The number of seconds after which the server may consider the job
 	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
 	 * timeout will be used and the job will run until explicitly destroyed. Use
 	 * with extreme caution.</dd>
-	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#MACHINE_PROPERTY} ({@link String})</dt>
 	 * <dd>Specify the name of a machine which this job must be executed on. If
 	 * <tt>null</tt>, the first suitable machine available will be used,
 	 * according to the tags selected below. Must be <tt>null</tt> when
-	 * {@value #TAGS_PROPERTY} are given.</dd>
-	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * {@value JobConstants#TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value JobConstants#TAGS_PROPERTY} ({@link String}[])</dt>
 	 * <dd>The set of tags which any machine running this job must have. If
 	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
-	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
-	 * be <tt>null</tt>.</dd>
-	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * will be used. If {@value JobConstants#MACHINE_PROPERTY} is given, this
+	 * argument must be <tt>null</tt>.</dd>
+	 * <dt>{@value JobConstants#MIN_RATIO_PROPERTY} ({@link Double})</dt>
 	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
 	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
 	 * to be exactly square etc. Ignored when allocating single boards or
 	 * specific rectangles of triads.</dd>
-	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken or unreachable boards to allow in the
 	 * allocated region. If <tt>null</tt>, any number of dead boards is
 	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
-	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken links allow in the allocated region.
-	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
-	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
-	 * number of broken links is allowed.</dd>
-	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * When {@value JobConstants#REQUIRE_TORUS_PROPERTY} is true this includes
+	 * wrap-around links, otherwise peripheral links are not counted. If
+	 * <tt>null</tt>, any number of broken links is allowed.</dd>
+	 * <dt>{@value JobConstants#REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
 	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
 	 * general this will only succeed for requests to allocate an entire
 	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
@@ -345,39 +345,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * </ul>
 	 * The supported extra properties consist of:
 	 * <dl>
-	 * <dt>{@value #USER_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#USER_PROPERTY} ({@link String})</dt>
 	 * <dd>The name of the owner of the job. By convention this should be your
 	 * email address.</dd>
-	 * <dt>{@value #KEEPALIVE_PROPERTY} ({@link Number})</dt>
+	 * <dt>{@value JobConstants#KEEPALIVE_PROPERTY} ({@link Number})</dt>
 	 * <dd>The number of seconds after which the server may consider the job
 	 * dead if this client cannot communicate with it. If <tt>null</tt>, no
 	 * timeout will be used and the job will run until explicitly destroyed. Use
 	 * with extreme caution.</dd>
-	 * <dt>{@value #MACHINE_PROPERTY} ({@link String})</dt>
+	 * <dt>{@value JobConstants#MACHINE_PROPERTY} ({@link String})</dt>
 	 * <dd>Specify the name of a machine which this job must be executed on. If
 	 * <tt>null</tt>, the first suitable machine available will be used,
 	 * according to the tags selected below. Must be <tt>null</tt> when
-	 * {@value #TAGS_PROPERTY} are given.</dd>
-	 * <dt>{@value #TAGS_PROPERTY} ({@link String}[])</dt>
+	 * {@value JobConstants#TAGS_PROPERTY} are given.</dd>
+	 * <dt>{@value JobConstants#TAGS_PROPERTY} ({@link String}[])</dt>
 	 * <dd>The set of tags which any machine running this job must have. If
 	 * <tt>null</tt> is supplied, only machines with the <tt>"default"</tt> tag
-	 * will be used. If {@value #MACHINE_PROPERTY} is given, this argument must
-	 * be <tt>null</tt>.</dd>
-	 * <dt>{@value #MIN_RATIO_PROPERTY} ({@link Double})</dt>
+	 * will be used. If {@value JobConstants#MACHINE_PROPERTY} is given, this
+	 * argument must be <tt>null</tt>.</dd>
+	 * <dt>{@value JobConstants#MIN_RATIO_PROPERTY} ({@link Double})</dt>
 	 * <dd>The aspect ratio (h/w) which the allocated region must be 'at least
 	 * as square as'. Set to <tt>0.0</tt> for any allowable shape, <tt>1.0</tt>
 	 * to be exactly square etc. Ignored when allocating single boards or
 	 * specific rectangles of triads.</dd>
-	 * <dt>{@value #MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_BOARDS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken or unreachable boards to allow in the
 	 * allocated region. If <tt>null</tt>, any number of dead boards is
 	 * permitted, as long as the board on the bottom-left corner is alive.</dd>
-	 * <dt>{@value #MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
+	 * <dt>{@value JobConstants#MAX_DEAD_LINKS_PROPERTY} ({@link Integer})</dt>
 	 * <dd>The maximum number of broken links allow in the allocated region.
-	 * When {@value #REQUIRE_TORUS_PROPERTY} is true this includes wrap-around
-	 * links, otherwise peripheral links are not counted. If <tt>null</tt>, any
-	 * number of broken links is allowed.</dd>
-	 * <dt>{@value #REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
+	 * When {@value JobConstants#REQUIRE_TORUS_PROPERTY} is true this includes
+	 * wrap-around links, otherwise peripheral links are not counted. If
+	 * <tt>null</tt>, any number of broken links is allowed.</dd>
+	 * <dt>{@value JobConstants#REQUIRE_TORUS_PROPERTY} ({@link Boolean})</dt>
 	 * <dd>If <tt>true</tt>, only allocate blocks with torus connectivity. In
 	 * general this will only succeed for requests to allocate an entire
 	 * machine. Must be <tt>false</tt> (or not supplied) when allocating
