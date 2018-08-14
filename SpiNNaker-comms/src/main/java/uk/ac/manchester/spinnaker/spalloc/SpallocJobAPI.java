@@ -14,6 +14,11 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 public interface SpallocJobAPI {
 	/**
 	 * Destroy the job and disconnect from the server.
+	 *
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	default void destroy() throws IOException, SpallocServerException {
 		destroy(null);
@@ -25,6 +30,10 @@ public interface SpallocJobAPI {
 	 * @param reason
 	 *            Gives a human-readable explanation for the destruction of the
 	 *            job.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	void destroy(String reason) throws IOException, SpallocServerException;
 
@@ -40,6 +49,10 @@ public interface SpallocJobAPI {
 	 *            true to power on the boards, false to power off. If the boards
 	 *            are already turned on, setting power to true will reset them.
 	 *            If <tt>null</tt>, this method does nothing.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	void setPower(Boolean powerOn) throws IOException, SpallocServerException;
 
@@ -50,6 +63,11 @@ public interface SpallocJobAPI {
 	 * <p>
 	 * The {@link #waitUntilReady(Integer)} method may be used to wait for the
 	 * boards to fully turn on or off.
+	 *
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	default void reset() throws IOException, SpallocServerException {
 		setPower(true);
@@ -58,10 +76,22 @@ public interface SpallocJobAPI {
 	/** @return The ID of the job. */
 	int getID();
 
-	/** @return The current state of the job. */
+	/**
+	 * @return The current state of the job.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
 	State getState() throws IOException, SpallocServerException;
 
-	/** @return The current power state of the job. */
+	/**
+	 * @return The current power state of the job.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
 	Boolean getPower() throws IOException, SpallocServerException;
 
 	/**
@@ -69,6 +99,10 @@ public interface SpallocJobAPI {
 	 *         is no reason (perhaps because the job isn't destroyed). Note that
 	 *         you should use {@link #getState()} to determine if the job is
 	 *         destroyed, not this method.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	String getDestroyReason() throws IOException, SpallocServerException;
 
@@ -82,17 +116,39 @@ public interface SpallocJobAPI {
 	/**
 	 * @return The name of the host that is the root chip of the whole
 	 *         allocation.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	String getHostname() throws IOException, SpallocServerException;
 
-	/** @return The dimensions of the machine in chips, e.g., for booting. */
+	/**
+	 * @return The dimensions of the machine in chips, e.g., for booting.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
 	MachineDimensions getDimensions()
 			throws IOException, SpallocServerException;
 
-	/** @return The name of the machine the job is allocated on. */
+	/**
+	 * @return The name of the machine the job is allocated on.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
 	String getMachineName() throws IOException, SpallocServerException;
 
-	/** @return All the boards allocated to the job. */
+	/**
+	 * @return All the boards allocated to the job.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
 	List<BoardCoordinates> getBoards()
 			throws IOException, SpallocServerException;
 
@@ -103,6 +159,7 @@ public interface SpallocJobAPI {
 	 *            The current state.
 	 * @return The new state.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	default State waitForStateChange(State oldState)
 			throws SpallocServerException {
@@ -119,6 +176,7 @@ public interface SpallocJobAPI {
 	 *            If None, wait forever.
 	 * @return The new state, or old state if timed out.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	State waitForStateChange(State oldState, Integer timeout)
 			throws SpallocServerException;
@@ -129,8 +187,10 @@ public interface SpallocJobAPI {
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out. If None,
 	 *            wait forever.
-	 * @throws SpallocServerException
 	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 * @throws SpallocStateChangeTimeoutException
 	 *             If the timeout expired before the ready state was entered.
 	 * @throws JobDestroyedException
@@ -147,6 +207,10 @@ public interface SpallocJobAPI {
 	 * @param chip
 	 *            The coordinates of the chip
 	 * @return the physical coordinates of the board
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	BoardPhysicalCoordinates whereIs(HasChipLocation chip)
 			throws IOException, SpallocServerException;

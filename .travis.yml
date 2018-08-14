@@ -15,4 +15,7 @@ script:
   - mvn javadoc:javadoc
 after_success:
   - mvn coveralls:report
-  
+before_cache:
+  # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
+  # will always rebuild internal snapshots.
+  - mvn dependency:purge-local-repository -DsnapshotsOnly=true -DreResolve=false
