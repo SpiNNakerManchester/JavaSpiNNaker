@@ -168,6 +168,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	 *
 	 * @return the auto-closeable context.
 	 * @throws IOException
+	 *             If the connect to the spalloc server fails.
 	 */
 	public AutoCloseable withConnection() throws IOException {
 		connect();

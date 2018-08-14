@@ -109,6 +109,10 @@ public interface SpallocJobAPI {
 	/**
 	 * @return The list of connections, where each connection says what the
 	 *         hostname is to talk to a particular board's root chip.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	List<Connection> getConnections()
 			throws IOException, SpallocServerException;

@@ -191,7 +191,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(String hostname, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
@@ -258,7 +260,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(String hostname, List<Integer> args,
 			Map<String, Object> kwargs)
@@ -324,7 +328,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
@@ -395,7 +401,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(String hostname, int port, Integer timeout,
 			List<Integer> args, Map<String, Object> kwargs)
@@ -495,8 +503,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param id
 	 *            The job ID
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
 	 */
 	public SpallocJob(int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
@@ -511,8 +522,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param id
 	 *            The job ID
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
 	 */
 	public SpallocJob(String hostname, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
@@ -529,8 +543,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param id
 	 *            The job ID
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
 	 */
 	public SpallocJob(String hostname, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
@@ -562,8 +579,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param id
 	 *            The job ID
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
 	 */
 	public SpallocJob(String hostname, int port, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
@@ -662,7 +682,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * 0.4.0 to 2.0.0 (but not including the latter).
 	 *
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {
