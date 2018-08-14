@@ -100,8 +100,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	int createJob(List<Integer> args, Map<String, Object> kwargs,
-			Integer timeout) throws IOException, SpallocProtocolTimeoutException,
-			SpallocServerException;
+			Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Keep a job alive. Needs to be regularly called.
@@ -740,8 +740,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
-			Integer timeout) throws IOException, SpallocProtocolTimeoutException,
-			SpallocServerException;
+			Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Locate a board within a machine.

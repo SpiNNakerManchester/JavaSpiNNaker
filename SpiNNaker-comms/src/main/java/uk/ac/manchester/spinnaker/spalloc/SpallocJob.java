@@ -54,8 +54,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * monitor the state of the request, control the boards allocated and determine
  * their IP addresses.
  * <p>
- * In its simplest form, a {@link SpallocJob} can be used as a context manager like
- * so::
+ * In its simplest form, a {@link SpallocJob} can be used as a context manager
+ * like so::
  *
  * <pre>
     >>> from spalloc import SpallocJob
@@ -259,7 +259,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public SpallocJob(String hostname, List<Integer> args, Map<String, Object> kwargs)
+	public SpallocJob(String hostname, List<Integer> args,
+			Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), args,
 				kwargs);
@@ -395,8 +396,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public SpallocJob(String hostname, int port, Integer timeout, List<Integer> args,
-			Map<String, Object> kwargs)
+	public SpallocJob(String hostname, int port, Integer timeout,
+			List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
@@ -905,8 +906,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	@Override
-	public void waitUntilReady(Integer timeout) throws JobDestroyedException,
-			IOException, SpallocServerException, SpallocStateChangeTimeoutException {
+	public void waitUntilReady(Integer timeout)
+			throws JobDestroyedException, IOException, SpallocServerException,
+			SpallocStateChangeTimeoutException {
 		State curState = null;
 		Long finishTime = makeTimeout(timeout);
 		while (!timedOut(finishTime)) {

@@ -136,8 +136,9 @@ public interface SpallocJobAPI {
 	 * @throws JobDestroyedException
 	 *             If the job was destroyed before becoming ready.
 	 */
-	void waitUntilReady(Integer timeout) throws JobDestroyedException,
-			IOException, SpallocServerException, SpallocStateChangeTimeoutException;
+	void waitUntilReady(Integer timeout)
+			throws JobDestroyedException, IOException, SpallocServerException,
+			SpallocStateChangeTimeoutException;
 
 	/**
 	 * Locates and returns the physical coordinates containing a given chip in a
