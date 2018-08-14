@@ -4,13 +4,13 @@ import java.io.IOException;
 
 /** Thrown upon a protocol-level timeout. */
 @SuppressWarnings("serial")
-public class ProtocolTimeoutException extends IOException {
+public class SpallocProtocolTimeoutException extends IOException {
 
-	public ProtocolTimeoutException(String string, Throwable e) {
+	public SpallocProtocolTimeoutException(String string, Throwable e) {
 		super(string, e);
 	}
 
-	public ProtocolTimeoutException(String string) {
+	public SpallocProtocolTimeoutException(String string) {
 		super(string);
 	}
 }

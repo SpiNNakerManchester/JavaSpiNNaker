@@ -6,18 +6,18 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.KEEPALIVE_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MACHINE_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MAX_DEAD_BOARDS_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MAX_DEAD_LINKS_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.MIN_RATIO_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.PORT_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.RECONNECT_DELAY_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.REQUIRE_TORUS_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.TAGS_DEFAULT;
-import static uk.ac.manchester.spinnaker.spalloc.JobDefaults.TIMEOUT_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
@@ -30,16 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration2.INIConfiguration;
-import org.apache.commons.configuration2.SubnodeConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
-import org.apache.commons.configuration2.io.CombinedLocationStrategy;
-import org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy;
-import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -58,18 +48,18 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * A high-level interface for requesting and managing allocations of SpiNNaker
  * boards.
  * <p>
- * Constructing a {@link Job} object connects to a
+ * Constructing a {@link SpallocJob} object connects to a
  * <a href="https://github.com/project-rig/spalloc_server">spalloc-server</a>
  * and requests a number of SpiNNaker boards. The job object may then be used to
  * monitor the state of the request, control the boards allocated and determine
  * their IP addresses.
  * <p>
- * In its simplest form, a {@link Job} can be used as a context manager like
+ * In its simplest form, a {@link SpallocJob} can be used as a context manager like
  * so::
  *
  * <pre>
-    >>> from spalloc import Job
-    >>> with Job(6) as j:
+    >>> from spalloc import SpallocJob
+    >>> with SpallocJob(6) as j:
     ...     my_boot(j.hostname, j.width, j.height)
     ...     my_application(j.hostname)
  * </pre>
@@ -83,8 +73,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * various methods:
  *
  * <pre>
-    >>> from spalloc import Job
-    >>> j = Job(6)
+    >>> from spalloc import SpallocJob
+    >>> j = SpallocJob(6)
     >>> j.wait_until_ready()
     >>> my_boot(j.hostname, j.width, j.height)
     >>> my_application(j.hostname)
@@ -104,25 +94,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * </ul>
  * </blockquote>
  */
-public class Job implements AutoCloseable, SpallocJobAPI {
-	private static final Logger log = getLogger(Job.class);
+public class SpallocJob implements AutoCloseable, SpallocJobAPI {
+	private static final Logger log = getLogger(SpallocJob.class);
 	private static final int DEFAULT_KEEPALIVE = 30;
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
 	private static final int MAX_SHAPE_ARGS = 3;
-	private static final String HOSTNAME_PROPERTY = "hostname";
-	private static final String PORT_PROPERTY = "port";
-	private static final String USER_PROPERTY = "owner";
-	private static final String KEEPALIVE_PROPERTY = "keepalive";
-	private static final String RECONNECT_DELAY_PROPERTY = "reconnect_delay";
-	private static final String MACHINE_PROPERTY = "machine";
-	private static final String TAGS_PROPERTY = "tags";
-	private static final String MIN_RATIO_PROPERTY = "min_ratio";
-	private static final String MAX_DEAD_BOARDS_PROPERTY = "max_dead_boards";
-	private static final String MAX_DEAD_LINKS_PROPERTY = "max_dead_links";
-	private static final String REQUIRE_TORUS_PROPERTY = "require_torus";
-	private static final String TIMEOUT_PROPERTY = "timeout";
 
-	private ProtocolClient client;
+	private SpallocClient client;
 	private int id;
 	private Integer timeout;
 	private Integer keepaliveTime;
@@ -149,127 +127,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	private static final ThreadGroup SPALLOC_WORKERS =
 			new ThreadGroup("spalloc worker threads");
 
-	private static Map<String, Object> defaults;
-	private static SubnodeConfiguration config;
-
-	static {
-		defaults = initDefaultDefaults();
-		try {
-			// TODO is this the right way to set this up?
-			/*
-			 * By default, configuration files are read (in ascending order of
-			 * priority) from a system-wide configuration directory (e.g.
-			 * ``/etc/xdg/spalloc``), user configuration file (e.g.
-			 * ``$HOME/.config/spalloc``) and finally the current working
-			 * directory (in a file named ``.spalloc``).
-			 */
-			INIConfiguration fullconfig = new FileBasedConfigurationBuilder<>(
-					INIConfiguration.class).configure(
-							new Parameters().ini().setLocationStrategy(
-									new CombinedLocationStrategy(asList(
-											new ProvidedURLLocationStrategy(),
-											new HomeDirectoryLocationStrategy(),
-											new ClasspathLocationStrategy())))
-									.setThrowExceptionOnMissing(true)
-									.setListDelimiterHandler(
-											new DefaultListDelimiterHandler(
-													' '))
-									.setFileName("spalloc.ini"))
-							.getConfiguration();
-			config = fullconfig.getSection("spalloc");
-		} catch (ConfigurationException e) {
-			throw new RuntimeException(
-					"failed to load configuration from spalloc.ini", e);
-		}
-		setDefaultsFromConfig(defaults);
-	}
-
-	private static Map<String, Object> initDefaultDefaults() {
-		Map<String, Object> defaults = new HashMap<>();
-		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
-		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
-		defaults.put(RECONNECT_DELAY_PROPERTY, RECONNECT_DELAY_DEFAULT);
-		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
-		defaults.put(MACHINE_PROPERTY, MACHINE_DEFAULT);
-		defaults.put(TAGS_PROPERTY, TAGS_DEFAULT);
-		defaults.put(MIN_RATIO_PROPERTY, MIN_RATIO_DEFAULT);
-		defaults.put(MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_BOARDS_DEFAULT);
-		defaults.put(MAX_DEAD_LINKS_PROPERTY, MAX_DEAD_LINKS_DEFAULT);
-		defaults.put(REQUIRE_TORUS_PROPERTY, REQUIRE_TORUS_DEFAULT);
-		return defaults;
-	}
-
-	private static final String NULL_MARKER = "None";
-
-	private static Double readNoneOrFloat(String prop) {
-		String val = config.getString(prop);
-		if (NULL_MARKER.equals(val)) {
-			return null;
-		}
-		return Double.parseDouble(val);
-	}
-
-	private static Integer readNoneOrInt(String prop) {
-		String val = config.getString(prop);
-		if (NULL_MARKER.equals(val)) {
-			return null;
-		}
-		return Integer.parseInt(val);
-	}
-
-	private static String readNoneOrString(String prop) {
-		String val = config.getString(prop);
-		if (NULL_MARKER.equals(val)) {
-			return null;
-		}
-		return val;
-	}
-
-	private static void setDefaultsFromConfig(Map<String, Object> defaults) {
-		defaults.put(HOSTNAME_PROPERTY,
-				config.getString(HOSTNAME_PROPERTY, null));
-		if (config.containsKey(USER_PROPERTY)) {
-			defaults.put(USER_PROPERTY, config.getString(USER_PROPERTY));
-		}
-		if (config.containsKey(KEEPALIVE_PROPERTY)) {
-			defaults.put(KEEPALIVE_PROPERTY,
-					readNoneOrFloat(KEEPALIVE_PROPERTY));
-		}
-		if (config.containsKey(RECONNECT_DELAY_PROPERTY)) {
-			defaults.put(RECONNECT_DELAY_PROPERTY,
-					config.getDouble(RECONNECT_DELAY_PROPERTY));
-		}
-		if (config.containsKey(TIMEOUT_PROPERTY)) {
-			defaults.put(TIMEOUT_PROPERTY, readNoneOrFloat(TIMEOUT_PROPERTY));
-		}
-		if (config.containsKey(MACHINE_PROPERTY)) {
-			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
-		}
-		if (config.containsKey(TAGS_PROPERTY)) {
-			if (NULL_MARKER.equals(config.getString(TAGS_PROPERTY))) {
-				defaults.put(TAGS_PROPERTY, null);
-			} else {
-				defaults.put(TAGS_PROPERTY,
-						config.getArray(String.class, TAGS_PROPERTY));
-			}
-		}
-		if (config.containsKey(MIN_RATIO_PROPERTY)) {
-			defaults.put(MIN_RATIO_PROPERTY,
-					readNoneOrFloat(MIN_RATIO_PROPERTY));
-		}
-		if (config.containsKey(MAX_DEAD_BOARDS_PROPERTY)) {
-			defaults.put(MAX_DEAD_BOARDS_PROPERTY,
-					readNoneOrInt(MAX_DEAD_BOARDS_PROPERTY));
-		}
-		if (config.containsKey(MAX_DEAD_LINKS_PROPERTY)) {
-			defaults.put(MAX_DEAD_LINKS_PROPERTY,
-					readNoneOrInt(MAX_DEAD_LINKS_PROPERTY));
-		}
-		if (config.containsKey(REQUIRE_TORUS_PROPERTY)) {
-			defaults.put(REQUIRE_TORUS_PROPERTY,
-					config.getBoolean(REQUIRE_TORUS_PROPERTY));
-		}
-	}
+	private static Configuration config;
 
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
@@ -334,11 +192,10 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public Job(String hostname, Integer timeout, List<Integer> args,
+	public SpallocJob(String hostname, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
-		this(hostname, (Integer) defaults.get(PORT_PROPERTY), timeout, args,
-				kwargs);
+		this(hostname, config.getPort(), timeout, args, kwargs);
 	}
 
 	/**
@@ -402,10 +259,10 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public Job(String hostname, List<Integer> args, Map<String, Object> kwargs)
+	public SpallocJob(String hostname, List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
-		this(hostname, (Integer) defaults.get(PORT_PROPERTY),
-				(Integer) defaults.get(TIMEOUT_PROPERTY), args, kwargs);
+		this(hostname, config.getPort(), f2ms(config.getTimeout()), args,
+				kwargs);
 	}
 
 	/**
@@ -467,11 +324,10 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public Job(List<Integer> args, Map<String, Object> kwargs)
+	public SpallocJob(List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
-		this((String) defaults.get(HOSTNAME_PROPERTY),
-				(Integer) defaults.get(PORT_PROPERTY),
-				(Integer) defaults.get(TIMEOUT_PROPERTY), args, kwargs);
+		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
+				args, kwargs);
 	}
 
 	/**
@@ -539,10 +395,10 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws IOException
 	 * @throws SpallocServerException
 	 */
-	public Job(String hostname, int port, Integer timeout, List<Integer> args,
+	public SpallocJob(String hostname, int port, Integer timeout, List<Integer> args,
 			Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
-		this.client = new ProtocolClient(hostname, port, timeout);
+		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		if (args == null || args.size() > MAX_SHAPE_ARGS) {
 			throw new IllegalArgumentException(
@@ -552,9 +408,9 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 		if (kwargs.containsKey(RECONNECT_DELAY_PROPERTY)) {
 			reconnectDelay = f2ms(kwargs.get(RECONNECT_DELAY_PROPERTY));
 		} else {
-			reconnectDelay = f2ms(defaults.get(RECONNECT_DELAY_PROPERTY));
+			reconnectDelay = f2ms(config.getReconnectDelay());
 		}
-		kwargs = makeJobKeywordArguments(kwargs, defaults);
+		kwargs = makeJobKeywordArguments(kwargs);
 		id = client.createJob(args, kwargs, timeout);
 		/*
 		 * We also need the keepalive configuration so we know when to send
@@ -590,7 +446,8 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 *             if a bad argument is given.
 	 */
 	private Map<String, Object> makeJobKeywordArguments(
-			Map<String, Object> kwargs, Map<String, Object> defaults) {
+			Map<String, Object> kwargs) {
+		Map<String, Object> defaults = config.getDefaults();
 		Map<String, Object> map = new HashMap<>();
 		map.put(USER_PROPERTY, kwargs.getOrDefault(USER_PROPERTY, defaults
 				.getOrDefault(USER_PROPERTY, System.getProperty("user.name"))));
@@ -636,11 +493,9 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 * @throws JobDestroyedException
 	 */
-	public Job(int id)
+	public SpallocJob(int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
-		this((String) defaults.get(HOSTNAME_PROPERTY),
-				(Integer) defaults.get(PORT_PROPERTY),
-				(Integer) defaults.get(TIMEOUT_PROPERTY), id);
+		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()), id);
 	}
 
 	/**
@@ -654,10 +509,9 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 * @throws JobDestroyedException
 	 */
-	public Job(String hostname, int id)
+	public SpallocJob(String hostname, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
-		this(hostname, (Integer) defaults.get(PORT_PROPERTY),
-				(Integer) defaults.get(TIMEOUT_PROPERTY), id);
+		this(hostname, config.getPort(), f2ms(config.getTimeout()), id);
 	}
 
 	/**
@@ -673,9 +527,9 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 * @throws JobDestroyedException
 	 */
-	public Job(String hostname, Integer timeout, int id)
+	public SpallocJob(String hostname, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
-		this(hostname, (Integer) defaults.get(PORT_PROPERTY), timeout, id);
+		this(hostname, config.getPort(), timeout, id);
 	}
 
 	/**
@@ -706,12 +560,12 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 * @throws JobDestroyedException
 	 */
-	public Job(String hostname, int port, Integer timeout, int id)
+	public SpallocJob(String hostname, int port, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
-		this.client = new ProtocolClient(hostname, port, timeout);
+		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
-		reconnectDelay = f2ms(defaults.get(RECONNECT_DELAY_PROPERTY));
+		reconnectDelay = f2ms(config.getReconnectDelay());
 		/*
 		 * If the job no longer exists, we can't get the keepalive interval (and
 		 * there's nothing to keepalive) so just bail out.
@@ -721,11 +575,11 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 				|| jobState.getState() == DESTROYED) {
 			if (jobState.getReason() != null) {
 				throw new JobDestroyedException(format(
-						"Job %d does not exist: %s: %s", id,
+						"SpallocJob %d does not exist: %s: %s", id,
 						jobState.getState().name(), jobState.getReason()));
 			} else {
 				throw new JobDestroyedException(
-						format("Job %d does not exist: %s", id,
+						format("SpallocJob %d does not exist: %s", id,
 								jobState.getState().name()));
 			}
 		}
@@ -941,7 +795,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 		// We may get disconnected while waiting so keep listening...
 		while (!timedOut(finishTime)) {
 			try {
-				// Watch for changes in this Job's state
+				// Watch for changes in this SpallocJob's state
 				client.notifyJob(id);
 
 				// Wait for job state to change
@@ -1019,7 +873,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 					client.waitForNotification(waitTimeout);
 					return true;
 				}
-			} catch (ProtocolTimeoutException e) {
+			} catch (SpallocProtocolTimeoutException e) {
 				/*
 				 * Its been a while, send a keep-alive since we're still holding
 				 * the lock
@@ -1052,7 +906,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public void waitUntilReady(Integer timeout) throws JobDestroyedException,
-			IOException, SpallocServerException, StateChangeTimeoutException {
+			IOException, SpallocServerException, SpallocStateChangeTimeoutException {
 		State curState = null;
 		Long finishTime = makeTimeout(timeout);
 		while (!timedOut(finishTime)) {
@@ -1070,7 +924,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 				// Now in the ready state!
 				return;
 			case QUEUED:
-				log.info("Job has been queued by the spalloc server");
+				log.info("SpallocJob has been queued by the spalloc server");
 				break;
 			case POWER:
 				log.info("Waiting for board power commands to complete");
@@ -1087,7 +941,7 @@ public class Job implements AutoCloseable, SpallocJobAPI {
 			curState = waitForStateChange(curState, timeLeft(finishTime));
 		}
 		// Timed out!
-		throw new StateChangeTimeoutException();
+		throw new SpallocStateChangeTimeoutException();
 	}
 
 	@Override

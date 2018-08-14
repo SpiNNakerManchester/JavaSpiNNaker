@@ -10,7 +10,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
-/** The interface supported by a {@linkplain Job spalloc job}. */
+/** The interface supported by a {@linkplain SpallocJob spalloc job}. */
 public interface SpallocJobAPI {
 	/**
 	 * Destroy the job and disconnect from the server.
@@ -131,13 +131,13 @@ public interface SpallocJobAPI {
 	 *            wait forever.
 	 * @throws SpallocServerException
 	 * @throws IOException
-	 * @throws StateChangeTimeoutException
+	 * @throws SpallocStateChangeTimeoutException
 	 *             If the timeout expired before the ready state was entered.
 	 * @throws JobDestroyedException
 	 *             If the job was destroyed before becoming ready.
 	 */
 	void waitUntilReady(Integer timeout) throws JobDestroyedException,
-			IOException, SpallocServerException, StateChangeTimeoutException;
+			IOException, SpallocServerException, SpallocStateChangeTimeoutException;
 
 	/**
 	 * Locates and returns the physical coordinates containing a given chip in a

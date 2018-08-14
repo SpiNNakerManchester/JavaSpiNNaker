@@ -12,14 +12,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @JsonFormat(shape = NUMBER)
 public enum State {
-	/** Job is unknown. */
+	/** SpallocJob is unknown. */
 	UNKNOWN,
-	/** Job is in the queue, awaiting allocation. */
+	/** SpallocJob is in the queue, awaiting allocation. */
 	QUEUED,
-	/** Job is having its boards powered up. */
+	/** SpallocJob is having its boards powered up. */
 	POWER,
-	/** Job is running (or at least ready to run). */
+	/** SpallocJob is running (or at least ready to run). */
 	READY,
-	/** Job has terminated, see the <tt>reason</tt> property for why. */
+	/** SpallocJob has terminated, see the <tt>reason</tt> property for why. */
 	DESTROYED;
 }

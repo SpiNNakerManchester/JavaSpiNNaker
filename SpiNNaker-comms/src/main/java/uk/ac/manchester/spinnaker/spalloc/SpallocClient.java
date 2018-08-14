@@ -4,6 +4,15 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
@@ -22,9 +31,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -70,25 +81,31 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 
 /**
  * A simple (blocking) client implementation of the
- * <a href="https://github.com/project-rig/spalloc_server">spalloc-server</a>
- * protocol.
+ * <a href="https://github.com/SpiNNakerManchester/spalloc_server">
+ * spalloc-server</a> protocol.
  * <p>
  * This minimal implementation is intended to serve both simple applications and
  * as an example implementation of the protocol for other applications. This
  * implementation simply implements the protocol, presenting an RPC-like
  * interface to the server. For a higher-level interface built on top of this
- * client, see {@link Job}.
+ * client, see {@link SpallocJob}.
  */
-public class ProtocolClient implements Closeable, SpallocAPI {
+public class SpallocClient implements Closeable, SpallocAPI {
 	/** The default spalloc port. */
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
 	public static final Integer DEFAULT_TIMEOUT = null;
 
-	private final String hostname;
-	private final int port;
+	/**
+	 * The hostname and port of the spalloc server.
+	 */
+	private final InetSocketAddress addr;
 	private final Integer defaultTimeout;
 
+	/**
+	 * Whether this connection is in the dead state. Dead connections have no
+	 * underlying connections open.
+	 */
 	private boolean dead;
 
 	/**
@@ -96,15 +113,19 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 * down all sockets at once.
 	 */
 	private final Map<Thread, TextSocket> socks = new HashMap<>();
+	/** Lock for access to {@link #socks}. */
+	private final Object socksLock = new Object();
 	/**
 	 * The thread-aware socket factory. Every thread gets exactly one socket.
 	 */
 	private final TextSocketFactory local = new TextSocketFactory();
 	/** A queue of unprocessed notifications. */
 	private final Deque<Notification> notifications = new LinkedList<>();
-	private final Object socksLock = new Object();
+	/** Lock for access to {@link #notifications}. */
 	private final Object notificationsLock = new Object();
+
 	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
 
 	static {
 		SimpleModule module = new SimpleModule();
@@ -112,6 +133,11 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		MAPPER.registerModule(module);
 		MAPPER.setPropertyNamingStrategy(SNAKE_CASE);
 		MAPPER.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
+				MACHINE_PROPERTY, TAGS_PROPERTY, MIN_RATIO_PROPERTY,
+				MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_LINKS_PROPERTY,
+				REQUIRE_TORUS_PROPERTY));
 	}
 
 	/**
@@ -125,69 +151,65 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 * @param timeout
 	 *            The default timeout.
 	 */
-	public ProtocolClient(String hostname, int port, Integer timeout) {
-		this.hostname = hostname;
-		this.port = port;
+	public SpallocClient(String hostname, int port, Integer timeout) {
+		addr = new InetSocketAddress(hostname, port);
 		this.dead = true;
 		this.defaultTimeout = timeout;
 	}
 
-	@SuppressWarnings("serial")
-	private static class ResponseBasedDeserializer
-			extends PropertyBasedDeserialiser<Response> {
-		ResponseBasedDeserializer() {
-			super(Response.class);
-			register("jobs_changed", JobsChangedNotification.class);
-			register("machines_changed", MachinesChangedNotification.class);
-			register("return", ReturnResponse.class);
-			register("exception", ExceptionResponse.class);
-		}
-	}
-
-	private static class TextSocket extends Socket {
-		private BufferedReader br;
-		private PrintWriter pw;
-		private static final Charset UTF8 = Charset.forName("UTF-8");
-
-		public PrintWriter getWriter() throws IOException {
-			if (pw == null) {
-				pw = new PrintWriter(
-						new OutputStreamWriter(getOutputStream(), UTF8));
-			}
-			return pw;
-		}
-
-		public BufferedReader getReader() throws IOException {
-			if (br == null) {
-				br = new BufferedReader(
-						new InputStreamReader(getInputStream(), UTF8));
-			}
-			return br;
-		}
-	}
-
 	/**
 	 * Context adapter. Allows this code to be used like this:
+	 *
 	 * <pre>
 	 * try (AutoCloseable c = client.withConnection()) {
 	 *     ...
 	 * }
 	 * </pre>
+	 *
 	 * @return
 	 * @throws IOException
 	 */
 	public AutoCloseable withConnection() throws IOException {
 		connect();
-		return () -> close();
+		return this::close;
 	}
 
 	private TextSocket getConnection(Integer timeout) throws IOException {
-		if (dead) {
-			throw new EOFException("not connected");
-		}
-		boolean connectNeeded = false;
+		TextSocket sock = null;
 		Thread key = currentThread();
+		/*
+		 * This loop will keep trying to connect until the socket exists and is
+		 * in a connected state. It's labelled just for clarity.
+		 */
+		while (sock == null) {
+			if (dead) {
+				throw new EOFException("not connected");
+			}
+			sock = getConnectedSocket(key, timeout);
+		}
+
+		if (timeout != null) {
+			sock.setSoTimeout(timeout);
+		}
+		return sock;
+	}
+
+	/**
+	 * Try to get a connected socket.
+	 *
+	 * @param key
+	 *            The thread that wants the connection (i.e., the current
+	 *            thread; cached for efficiency).
+	 * @param timeout
+	 *            The socket's timeout.
+	 * @return The socket, or <tt>null</tt> if the connection failed.
+	 * @throws IOException
+	 *             if something really bad goes wrong.
+	 */
+	private TextSocket getConnectedSocket(Thread key, Integer timeout)
+			throws IOException {
 		TextSocket sock;
+		boolean connectNeeded = false;
 		synchronized (socksLock) {
 			sock = local.get();
 			if (!socks.containsKey(key)) {
@@ -197,19 +219,11 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		}
 
 		if (connectNeeded) {
-			if (timeout != null) {
-				sock.setSoTimeout(timeout);
-			} else {
-				sock.setSoTimeout(0);
-			}
+			sock.setSoTimeout(timeout != null ? timeout : 0);
 			if (!doConnect(sock)) {
-				close(key);
-				return getConnection(timeout);
+				closeThreadConnection(key);
+				return null;
 			}
-		}
-
-		if (timeout != null) {
-			sock.setSoTimeout(timeout);
 		}
 		return sock;
 	}
@@ -217,7 +231,7 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	private boolean doConnect(Socket sock) throws IOException {
 		boolean success = false;
 		try {
-			sock.connect(new InetSocketAddress(hostname, port));
+			sock.connect(addr);
 			success = true;
 		} catch (IOException e) {
 			if (!e.getMessage().contains("EISCONN")) {
@@ -249,37 +263,34 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		// Close any existing connection
 		Socket s = local.get();
 		if (s.isClosed()) {
-			close(null);
+			closeThreadConnection(currentThread());
 		} else if (!s.isConnected()) {
-			close(null);
+			closeThreadConnection(currentThread());
 		}
 		dead = false;
 		try {
 			getConnection(timeout);
 		} catch (IOException e) {
 			// Failure, try again...
-			close(null);
+			closeThreadConnection(currentThread());
 			// Pass on the exception
 			throw e;
 		}
 	}
 
-	private void close(Thread key) throws IOException {
-		if (key == null) {
-			key = currentThread();
-		}
+	private void closeThreadConnection(Thread key) throws IOException {
 		Socket sock;
 		synchronized (socksLock) {
-			sock = socks.get(key);
-			if (sock == null) {
-				return;
+			sock = socks.remove(key);
+		}
+		if (sock != null) {
+			// Mark the thread local so it will reinitialise
+			if (key == currentThread()) {
+				local.remove();
 			}
-			socks.remove(key);
+			// Close the socket itself
+			sock.close();
 		}
-		if (key == currentThread()) {
-			local.remove();
-		}
-		sock.close();
 	}
 
 	/**
@@ -291,12 +302,13 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	@Override
 	public void close() throws IOException {
 		dead = true;
-		Iterable<Thread> keys;
+		List<Thread> keys;
 		synchronized (socksLock) {
+			// Copy so we can safely remove asynchronously
 			keys = new ArrayList<>(socks.keySet());
 		}
 		for (Thread key : keys) {
-			close(key);
+			closeThreadConnection(key);
 		}
 		local.remove();
 	}
@@ -308,13 +320,13 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 *            The number of milliseconds to wait before timing out or
 	 *            <tt>null</tt> if this function should try again forever.
 	 * @return The unpacked JSON line received.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
 	protected Response receiveResponse(Integer timeout)
-			throws ProtocolTimeoutException, IOException {
+			throws SpallocProtocolTimeoutException, IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Wait for some data to arrive
@@ -325,7 +337,7 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 			}
 			return MAPPER.readValue(line, Response.class);
 		} catch (SocketTimeoutException e) {
-			throw new ProtocolTimeoutException("recv timed out", e);
+			throw new SpallocProtocolTimeoutException("recv timed out", e);
 		}
 	}
 
@@ -337,13 +349,13 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out or
 	 *            <tt>null</tt> if this function should try again forever.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
-			throws ProtocolTimeoutException, IOException {
+			throws SpallocProtocolTimeoutException, IOException {
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line
@@ -359,7 +371,7 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 				throw new EOFException("command write failed");
 			}
 		} catch (SocketTimeoutException e) {
-			throw new ProtocolTimeoutException("send timed out", e);
+			throw new SpallocProtocolTimeoutException("send timed out", e);
 		}
 	}
 
@@ -374,14 +386,14 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	 * @return The result string returned by the server.
 	 * @throws SpallocServerException
 	 *             If the server sends an error.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
-	 * @throws ProtocolException
+	 * @throws SpallocProtocolException
 	 *             If the connection is unavailable or is closed.
 	 */
 	protected String call(Command<?> command, Integer timeout)
-			throws SpallocServerException, ProtocolTimeoutException,
-			ProtocolException {
+			throws SpallocServerException, SpallocProtocolTimeoutException,
+			SpallocProtocolException {
 		try {
 			Long finishTime = makeTimeout(timeout);
 
@@ -406,22 +418,22 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 						notifications.push((Notification) r);
 					}
 				} else {
-					throw new ProtocolException(
+					throw new SpallocProtocolException(
 							"bad response: " + r.getClass());
 				}
 			}
-			throw new ProtocolTimeoutException(
+			throw new SpallocProtocolTimeoutException(
 					"timed out while calling " + command.getCommand());
-		} catch (ProtocolTimeoutException e) {
+		} catch (SpallocProtocolTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
-			throw new ProtocolException(e);
+			throw new SpallocProtocolException(e);
 		}
 	}
 
 	@Override
 	public Notification waitForNotification(Integer timeout)
-			throws ProtocolException, ProtocolTimeoutException {
+			throws SpallocProtocolException, SpallocProtocolTimeoutException {
 		// If we already have a notification, return it
 		synchronized (notificationsLock) {
 			if (!notifications.isEmpty()) {
@@ -437,10 +449,10 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 		// Otherwise, wait for a notification to arrive
 		try {
 			return (Notification) receiveResponse(timeout);
-		} catch (ProtocolTimeoutException e) {
+		} catch (SpallocProtocolTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
-			throw new ProtocolException(e);
+			throw new SpallocProtocolException(e);
 		}
 	}
 
@@ -458,10 +470,11 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call
-		if (!kwargs.containsKey("owner")) {
+		if (!kwargs.containsKey(USER_PROPERTY)) {
 			throw new SpallocServerException(
-					"owner must be specified for all jobs.");
+					USER_PROPERTY + " must be specified for all jobs.");
 		}
+		kwargs.keySet().retainAll(ALLOWED_KWARGS);
 		return parseInt(call(new CreateJobCommand(args, kwargs), timeout));
 	}
 
@@ -611,9 +624,48 @@ public class ProtocolClient implements Closeable, SpallocAPI {
 				WhereIs.class);
 	}
 
+	@SuppressWarnings("serial")
+	private static class ResponseBasedDeserializer
+			extends PropertyBasedDeserialiser<Response> {
+		ResponseBasedDeserializer() {
+			super(Response.class);
+			register("jobs_changed", JobsChangedNotification.class);
+			register("machines_changed", MachinesChangedNotification.class);
+			register("return", ReturnResponse.class);
+			register("exception", ExceptionResponse.class);
+		}
+	}
+
 	/**
-	 * Subclass of threading.local to ensure that we get sane initialisation of
-	 * our state in each thread.
+	 * Subclass of Socket to encapsulate reading and writing text by lines. This
+	 * handles all buffering internally, locking that close to the socket
+	 * itself.
+	 */
+	private static class TextSocket extends Socket {
+		private BufferedReader br;
+		private PrintWriter pw;
+		private static final Charset UTF8 = Charset.forName("UTF-8");
+
+		PrintWriter getWriter() throws IOException {
+			if (pw == null) {
+				pw = new PrintWriter(
+						new OutputStreamWriter(getOutputStream(), UTF8));
+			}
+			return pw;
+		}
+
+		BufferedReader getReader() throws IOException {
+			if (br == null) {
+				br = new BufferedReader(
+						new InputStreamReader(getInputStream(), UTF8));
+			}
+			return br;
+		}
+	}
+
+	/**
+	 * Subclass of ThreadLocal to ensure that we get sane initialisation of our
+	 * state in each thread.
 	 */
 	private static class TextSocketFactory extends ThreadLocal<TextSocket> {
 		@Override

@@ -47,13 +47,13 @@ public interface SpallocAPI {
 	 * @return the server's version.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	Version version(Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Create a job.
@@ -94,13 +94,13 @@ public interface SpallocAPI {
 	 * @return the ID of the created job.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	int createJob(List<Integer> args, Map<String, Object> kwargs,
-			Integer timeout) throws IOException, ProtocolTimeoutException,
+			Integer timeout) throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -128,13 +128,13 @@ public interface SpallocAPI {
 	 *            or <tt>null</tt> to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void jobKeepAlive(int jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the state of a job.
@@ -163,13 +163,13 @@ public interface SpallocAPI {
 	 * @return a description of the job's state.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	JobState getJobState(int jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get information about a job's allocated machine.
@@ -198,13 +198,13 @@ public interface SpallocAPI {
 	 * @return a description of the machine.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -232,13 +232,13 @@ public interface SpallocAPI {
 	 *            or <tt>null</tt> to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void powerOnJobBoards(int jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Turn off a job's allocated boards.
@@ -265,13 +265,13 @@ public interface SpallocAPI {
 	 *            or <tt>null</tt> to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void powerOffJobBoards(int jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Destroy a job.
@@ -302,13 +302,13 @@ public interface SpallocAPI {
 	 *            or <tt>null</tt> to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void destroyJob(int jobID, String reason, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -342,13 +342,13 @@ public interface SpallocAPI {
 	 * @see #noNotifyJob(Integer,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void notifyJob(Integer jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to not be notified of changes in job state.
@@ -379,13 +379,13 @@ public interface SpallocAPI {
 	 * @see #notifyJob(Integer,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void noNotifyJob(Integer jobID, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to be notified of changes in machine state.
@@ -418,13 +418,13 @@ public interface SpallocAPI {
 	 * @see #noNotifyMachine(String,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void notifyMachine(String machineName, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Ask to not be notified of changes in machine state.
@@ -455,13 +455,13 @@ public interface SpallocAPI {
 	 * @see #notifyMachine(String,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	void noNotifyMachine(String machineName, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -489,13 +489,13 @@ public interface SpallocAPI {
 	 *         (first) to newest (last).
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	List<JobDescription> listJobs(Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * List all known machines.
@@ -522,13 +522,13 @@ public interface SpallocAPI {
 	 *         from highest (first) to lowest (last).
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	List<Machine> listMachines(Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the physical location of a board.
@@ -564,14 +564,14 @@ public interface SpallocAPI {
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	BoardPhysicalCoordinates getBoardPosition(String machineName,
 			BoardCoordinates coords, Integer timeout) throws IOException,
-			ProtocolTimeoutException, SpallocServerException;
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Get the logical location of a board.
@@ -607,14 +607,14 @@ public interface SpallocAPI {
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -650,13 +650,13 @@ public interface SpallocAPI {
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -692,13 +692,13 @@ public interface SpallocAPI {
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, HasChipLocation chip, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -734,13 +734,13 @@ public interface SpallocAPI {
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
-			Integer timeout) throws IOException, ProtocolTimeoutException,
+			Integer timeout) throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -776,13 +776,13 @@ public interface SpallocAPI {
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             if the request times out.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
 	WhereIs whereIs(String machine, BoardCoordinates coords, Integer timeout)
-			throws IOException, ProtocolTimeoutException,
+			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 
 	/**
@@ -791,13 +791,13 @@ public interface SpallocAPI {
 	 * @return The notification sent by the server.
 	 * @see JobsChangedNotification
 	 * @see MachinesChangedNotification
-	 * @throws ProtocolException
+	 * @throws SpallocProtocolException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
-	default Notification waitForNotification() throws ProtocolException {
+	default Notification waitForNotification() throws SpallocProtocolException {
 		try {
 			return waitForNotification(null);
-		} catch (ProtocolTimeoutException e) {
+		} catch (SpallocProtocolTimeoutException e) {
 			throw new RuntimeException("unexpected timeout", e);
 		}
 	}
@@ -815,11 +815,11 @@ public interface SpallocAPI {
 	 * @return The notification sent by the server.
 	 * @see JobsChangedNotification
 	 * @see MachinesChangedNotification
-	 * @throws ProtocolTimeoutException
+	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
-	 * @throws ProtocolException
+	 * @throws SpallocProtocolException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
 	Notification waitForNotification(Integer timeout)
-			throws ProtocolException, ProtocolTimeoutException;
+			throws SpallocProtocolException, SpallocProtocolTimeoutException;
 }

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 /** Thrown when a network-level problem occurs during protocol handling. */
 @SuppressWarnings("serial")
-public class ProtocolException extends IOException {
+public class SpallocProtocolException extends IOException {
 
-	public ProtocolException(Throwable e) {
+	public SpallocProtocolException(Throwable e) {
 		super(e);
 	}
 
-	public ProtocolException(String string) {
+	public SpallocProtocolException(String string) {
 		super(string);
 	}
 }
