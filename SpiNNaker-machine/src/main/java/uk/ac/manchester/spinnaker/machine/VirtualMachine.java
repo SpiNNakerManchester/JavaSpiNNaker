@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -47,7 +46,7 @@ public class VirtualMachine extends Machine {
      *      as if they never existed.
      */
     public VirtualMachine(MachineDimensions machineDimensions,
-            Set<ChipLocation> ignoreChips,
+            Collection<ChipLocation> ignoreChips,
             Map<ChipLocation, Collection<Integer>> ignoreCores,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         super(machineDimensions, ChipLocation.ZERO_ZERO);

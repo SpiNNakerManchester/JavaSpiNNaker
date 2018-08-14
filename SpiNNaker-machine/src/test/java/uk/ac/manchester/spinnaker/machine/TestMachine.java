@@ -148,6 +148,11 @@ public class TestMachine {
         SortedMap<ChipLocation, Chip> all = instance.chipsMap();
         assertEquals(25, all.size());
         assertFalse(instance.hasChipAt(null));
+
+        HasChipLocation hasLocation = null;
+        assertFalse(instance.hasChipAt(hasLocation));
+        hasLocation = new CoreLocation(3, 3, 2);
+        assertTrue(instance.hasChipAt(hasLocation));
     }
 
     @Test
@@ -397,16 +402,67 @@ public class TestMachine {
         Machine instance = new Machine(
                 new MachineDimensions(12, 12), chips, BOOT_CHIP);
         assertEquals(47, instance.nChips());
-
-        Map<ChipLocation, Collection<Direction>> abnormal =
-                instance.findAbnormalLinks();
-        // 7 as it also has the invers links from 3,3
-        assertEquals(7, abnormal.size());
-
         assertEquals("846 cores and 117.0 links",
                 instance.coresAndLinkOutputString());
+
+        Collection<ChipLocation> abnormalChips = instance.findAbnormalChips();
+        assertEquals(0, abnormalChips.size());
+
+        Map<ChipLocation, Collection<Direction>> abnormalLinks =
+                instance.findAbnormalLinks();
+        assertEquals(6, abnormalLinks.size());
+
+        Machine rebuilt = instance.rebuild(abnormalChips, abnormalLinks);
+        assertEquals("846 cores and 114.0 links",
+                rebuilt.coresAndLinkOutputString());
     }
 
+    @Test
+    public void testUnreachable() throws UnknownHostException {
+        SpiNNakerTriadGeometry geometry =
+                SpiNNakerTriadGeometry.getSpinn5Geometry();
+
+        ArrayList<Processor> processors = createProcessors();
+        ArrayList<Chip> chips = new ArrayList();
+        ArrayList<ChipLocation> all = new ArrayList(geometry.singleBoard());
+        for (ChipLocation location:all){
+            if (location.equals(new ChipLocation(0, 0))) {
+                byte[] bytes00 = {127, 0, 0, 0};
+                chips.add(new Chip(location, processors,
+                        createRouter(location, all),
+                        SDRAM, InetAddress.getByAddress(bytes00), false,
+                        0, BOOT_CHIP));
+            } else if (location.equals(new ChipLocation(3, 3))) {
+                 chips.add(new Chip(location, processors, new Router(),
+                         SDRAM, null, false, 0, BOOT_CHIP));
+                // Leave a hole
+            } else {
+                 chips.add(new Chip(location, processors,
+                         createRouter(location, all),
+                         SDRAM, null, false, 0, BOOT_CHIP));
+            }
+        }
+
+        Machine instance = new Machine(
+                new MachineDimensions(12, 12), chips, BOOT_CHIP);
+        assertEquals(48, instance.nChips());
+        assertEquals("864 cores and 117.0 links",
+                instance.coresAndLinkOutputString());
+
+        Collection<ChipLocation> abnormalChips = instance.findAbnormalChips();
+        assertThat(abnormalChips, contains(new ChipLocation(3, 3)));
+
+        Map<ChipLocation, Collection<Direction>> abnormalLinks =
+                instance.findAbnormalLinks();
+        // 6 as it also has only the invers links from 3,3
+        assertEquals(6, abnormalLinks.size());
+
+        Machine rebuilt = instance.rebuild(abnormalChips, abnormalLinks);
+        assertEquals("846 cores and 114.0 links",
+                rebuilt.coresAndLinkOutputString());
+
+        Machine rebuilt2 = rebuilt.rebuild();
+     }
 
     /*
     @Test

@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Christian-B
  */
-public final class Router implements Iterable<Link>{
+public final class Router implements Iterable<Link> {
 
     private final EnumMap<Direction, Link> links =
             new EnumMap<>(Direction.class);
@@ -121,6 +121,19 @@ public final class Router implements Iterable<Link>{
     public Router(Stream<Link> links) throws IllegalArgumentException {
         this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
                 MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+    }
+
+    /**
+     * Shallow copy of all values except the links.
+     *
+     * @param router original to copy other parameters from.
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     */
+    Router(Router router, ArrayList<Link> links) {
+        this(links, router.clockSpeed, router.nAvailableMulticastEntries);
     }
 
     /**

@@ -50,8 +50,13 @@ public enum Direction {
         this.yChange = yChange;
     }
 
+    /**
+     * Obtains the inverse direction.
+     *
+     * @return The inverse direction.
+     */
     Direction inverse() {
-        switch(this) {
+        switch (this) {
             case EAST: return WEST;
             case NORTHEAST: return SOUTHWEST;
             case NORTH: return SOUTH;

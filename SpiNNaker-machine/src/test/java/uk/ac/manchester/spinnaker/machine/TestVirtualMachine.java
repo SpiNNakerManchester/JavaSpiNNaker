@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  *
