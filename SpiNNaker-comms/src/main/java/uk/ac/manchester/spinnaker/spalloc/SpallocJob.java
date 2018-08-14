@@ -6,6 +6,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
+import static java.util.Collections.emptyMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
@@ -58,39 +59,39 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * like so::
  *
  * <pre>
-    >>> from spalloc import SpallocJob
-    >>> with SpallocJob(6) as j:
-    ...     my_boot(j.hostname, j.width, j.height)
-    ...     my_application(j.hostname)
+ * try (SpallocJob j = new SpallocJob(Arrays.asList(6), null)) {
+ * 	myApplication.boot(j.getHostname(), j.getDimensions());
+ * 	myApplication.run(j.getHostname());
+ * }
  * </pre>
  *
- * In this example a six-board machine is requested and the <tt>with</tt>
- * context is entered once the allocation has been made and the allocated boards
- * are fully powered on. When control leaves the block, the job is destroyed and
- * the boards shut down by the server ready for another job.
+ * In this example a six-board machine is requested and the
+ * <tt>try</tt>-with-resources context is entered once the allocation has been
+ * made and the allocated boards are fully powered on. When control leaves the
+ * block, the job is destroyed and the boards shut down by the server ready for
+ * another job.
  * <p>
  * For more fine-grained control, the same functionality is available via
  * various methods:
  *
  * <pre>
-    >>> from spalloc import SpallocJob
-    >>> j = SpallocJob(6)
-    >>> j.wait_until_ready()
-    >>> my_boot(j.hostname, j.width, j.height)
-    >>> my_application(j.hostname)
-    >>> j.destroy()
+ * SpallocJob j = new SpallocJob(Arrays.asList(6), null));
+ * j.waitUntilReady();
+ * myApplication.boot(j.getHostname(), j.getDimensions());
+ * myApplication.run(j.getHostname());
+ * j.destroy();
  * </pre>
  *
  * <b>Note:</b> <blockquote class="note"> More complex applications may wish to
  * log the following properties of their job to support later debugging efforts:
  * <ul>
- * <li><tt>job.id</tt> &mdash; May be used to query the state of the job and
- * find out its fate if cancelled or destroyed. The <i>spalloc-job</i> command
- * can be used to discover the state/fate of the job and <i>spalloc-where-is</i>
- * may be used to find out what boards problem chips reside on.
- * <li><tt>job.machine_name</tt> and <tt>job.boards</tt> together give a
- * complete record of the hardware used by the job. The <i>spalloc-where-is</i>
- * command may be used to find out the physical locations of the boards used.
+ * <li><tt>ID</tt> &mdash; May be used to query the state of the job and find
+ * out its fate if cancelled or destroyed. The <i>spalloc-job</i> command can be
+ * used to discover the state/fate of the job and <i>spalloc-where-is</i> may be
+ * used to find out what boards problem chips reside on.
+ * <li><tt>machineName</tt> and <tt>boards</tt> together give a complete record
+ * of the hardware used by the job. The <i>spalloc-where-is</i> command may be
+ * used to find out the physical locations of the boards used.
  * </ul>
  * </blockquote>
  */
@@ -406,7 +407,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 					"the machine shape description must have between 0 and "
 							+ MAX_SHAPE_ARGS);
 		}
-		if (kwargs.containsKey(RECONNECT_DELAY_PROPERTY)) {
+		if (kwargs != null && kwargs.containsKey(RECONNECT_DELAY_PROPERTY)) {
 			reconnectDelay = f2ms(kwargs.get(RECONNECT_DELAY_PROPERTY));
 		} else {
 			reconnectDelay = f2ms(config.getReconnectDelay());
@@ -439,7 +440,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * Conditions the arguments for spalloc.
 	 *
 	 * @param kwargs
-	 *            The arguments supplied by the caller.
+	 *            The arguments supplied by the caller. May be <tt>null</tt>.
 	 * @param defaults
 	 *            The set of defaults read from the configuration file.
 	 * @return The actual arguments to give to spalloc.
@@ -448,6 +449,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 */
 	private Map<String, Object> makeJobKeywordArguments(
 			Map<String, Object> kwargs) {
+		if (kwargs == null) {
+			kwargs = emptyMap();
+		}
 		Map<String, Object> defaults = config.getDefaults();
 		Map<String, Object> map = new HashMap<>();
 		map.put(USER_PROPERTY, kwargs.getOrDefault(USER_PROPERTY, defaults

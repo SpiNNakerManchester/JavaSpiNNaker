@@ -79,6 +79,14 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+		<!-- We are *NOT* interested in snapshot repos! -->
+			<id>apache-snapshots</id>
+			<url>https://repository.apache.org/snapshots/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<build>
