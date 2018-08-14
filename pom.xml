@@ -195,7 +195,7 @@
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
-		<module>SpiNNaker-spalloc-client</module>
+		
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
