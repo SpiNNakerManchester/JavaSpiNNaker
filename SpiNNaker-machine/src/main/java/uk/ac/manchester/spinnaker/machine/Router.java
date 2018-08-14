@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Christian-B
  */
-public final class Router {
+public final class Router implements Iterable<Link>{
 
     private final EnumMap<Direction, Link> links =
             new EnumMap<>(Direction.class);
@@ -244,6 +244,11 @@ public final class Router {
         result.setLength(result.length() - 1);
         result.append("]");
         return result.toString();
+    }
+
+    @Override
+    public Iterator<Link> iterator() {
+        return links.values().iterator();
     }
 
 }

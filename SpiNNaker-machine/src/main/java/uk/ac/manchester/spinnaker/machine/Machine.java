@@ -786,11 +786,19 @@ public class Machine implements Iterable<Chip> {
         Map<ChipLocation, Collection<Direction>> ignoreLinks =
                 new DefaultMap<>(ArrayList::new);
         for (Chip chip: chips.values()) {
-            for (Link link:chip.router.links()) {
+            for (Link link:chip.router) {
                 if (!this.hasChipAt(link.destination)) {
                     ignoreLinks.get(link.source).add(link.sourceLinkDirection);
                     ignoreLinks.get(link.destination).add(
                             link.sourceLinkDirection.inverse());
+                } else {
+                    Chip destChip = this.getChipAt(link.destination);
+                    Link inverse = destChip.router.getLink(
+                            link.sourceLinkDirection.inverse());
+                    if (inverse == null) {
+                        ignoreLinks.get(link.source).add(
+                                link.sourceLinkDirection);
+                    }
                 }
             }
         }

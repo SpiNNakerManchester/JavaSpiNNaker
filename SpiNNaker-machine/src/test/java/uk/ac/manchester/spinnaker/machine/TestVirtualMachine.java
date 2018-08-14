@@ -47,7 +47,7 @@ public class TestVirtualMachine {
                     containsKey(chip.asChipLocation())) {
                 Set<Direction> bad = MachineDefaults.FOUR_CHIP_DOWN_LINKS.
                         get(chip.asChipLocation());
-                for (Link link:chip.router.links()) {
+                for (Link link:chip.router) {
                     assertThat(bad, not(hasItems(link.sourceLinkDirection)));
                 }
             }
