@@ -6,6 +6,8 @@ import java.io.EOFException;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.ws.Holder;
 
@@ -298,6 +300,24 @@ class TestClient {
 			s.send("{\"jobs_changed\": [3]}");
 			assertEquals(new JobsChangedNotification(3),
 					c.waitForNotification());
+		});
+	}
+
+	@Test
+	void testCommandsAsMethods() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\": 123}");
+			Map<String,Object>kwargs= new HashMap<>();
+			kwargs.put("bar", 2);
+			kwargs.put("owner", "dummy");
+		    assertEquals(123, c.createJob(Arrays.asList(1), kwargs));
+			JSONAssert.assertEquals(
+					"{\"command\": \"create_job\", \"args\": [1], "
+					+ "\"kwargs\": {\"owner\": \"dummy\"}}",
+					s.recv(), true);
 		});
 	}
 }
