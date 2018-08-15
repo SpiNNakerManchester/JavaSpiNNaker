@@ -336,7 +336,12 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			if (line == null) {
 				throw new EOFException("Connection closed");
 			}
-			return MAPPER.readValue(line, Response.class);
+			Response response = MAPPER.readValue(line, Response.class);
+			if (response == null) {
+				throw new SpallocProtocolException(
+						"unexpected response: " + line);
+			}
+			return response;
 		} catch (SocketTimeoutException e) {
 			throw new SpallocProtocolTimeoutException("recv timed out", e);
 		}
@@ -416,7 +421,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 				} else if (r instanceof Notification) {
 					// Got a notification, keep trying...
 					synchronized (notificationsLock) {
-						notifications.push((Notification) r);
+						notifications.addLast((Notification) r);
 					}
 				} else {
 					throw new SpallocProtocolException(
@@ -438,7 +443,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 		// If we already have a notification, return it
 		synchronized (notificationsLock) {
 			if (!notifications.isEmpty()) {
-				return notifications.pop();
+				return notifications.removeFirst();
 			}
 		}
 

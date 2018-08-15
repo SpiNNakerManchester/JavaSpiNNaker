@@ -62,6 +62,10 @@ class MockServer implements AutoCloseable {
 		out.flush();
 	}
 
+	public void send(String obj) {
+		send(new JSONObject(obj));
+	}
+
 	public JSONObject recv() throws JSONException, IOException {
 		return new JSONObject(in.readLine());
 	}
