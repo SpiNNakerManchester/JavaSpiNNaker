@@ -89,8 +89,7 @@ public class RawConfigParser {
 	 *             if the reading fails.
 	 */
 	public void read(URL resource) throws IOException {
-		try (ReaderLineIterable lines = new ReaderLineIterable(
-				resource.openStream())) {
+		try (ReaderLineIterable lines = new ReaderLineIterable(resource)) {
 			int ln = 0;
 			String sect = null;
 			for (String line : lines) {
