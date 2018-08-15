@@ -11,7 +11,7 @@ import java.util.Iterator;
 /**
  * A simple iterable wrapper for a reader.
  *
- * @author Donal Fellows
+ * @author Donal Fellows, Christian
  */
 public class ReaderLineIterable implements Iterable<String>, Closeable {
 	private BufferedReader r;
@@ -54,7 +54,7 @@ public class ReaderLineIterable implements Iterable<String>, Closeable {
 						return false;
 					}
 				}
-				return s == null;
+				return s != null;
 			}
 
 			@Override
