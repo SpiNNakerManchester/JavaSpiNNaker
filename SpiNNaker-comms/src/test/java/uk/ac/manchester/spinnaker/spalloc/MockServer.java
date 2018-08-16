@@ -76,6 +76,8 @@ class MockServer implements AutoCloseable {
 		return line == null ? null : new JSONObject(line);
 	}
 
+	public static final String STOP = "STOP";
+
 	public void advancedEmulationMode(LinkedBlockingDeque<String> send,
 			LinkedBlockingDeque<JSONObject> received,
 			LinkedBlockingDeque<JSONObject> keepaliveQueue, Thread bgAccept) {
@@ -84,7 +86,7 @@ class MockServer implements AutoCloseable {
 				bgAccept.join();
 				launchKeepaliveListener(keepaliveQueue);
 				while (true) {
-					if ("STOP".equals(send.peek())) {
+					if (STOP.equals(send.peek())) {
 						send.take();
 						break;
 					}
