@@ -94,6 +94,7 @@ public class RawConfigParser {
 			int ln = 0;
 			String sect = null;
 			for (String line : lines) {
+                System.out.println(line);
 				ln++;
 				line = clean(line);
 				if (line.isEmpty()) {
