@@ -55,21 +55,6 @@ public abstract class Ping {
 		return ping(address.getHostAddress());
 	}
 
-
-	/**
-	 * Pings to detect if a host or IP address is reachable. May wait for up to
-	 * about a second. Technically, it only detects if a host is reachable by
-	 * ICMP ECHO requests.
-	 *
-	 * @param address
-	 *            Where should be pinged.
-	 * @return 0 on success, other values on failure (reflecting the result of
-	 *         the OS subprocess).
-	 */
-	public static int ping(Inet4Address address) {
-		return ping(address.getHostAddress());
-	}
-
 	private static class InputStreamDrain implements Runnable {
 		private static final int BUFFER_SIZE = 256;
 		private InputStream is;
