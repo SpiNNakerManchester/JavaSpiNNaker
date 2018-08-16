@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -10,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +42,7 @@ class MockServer implements AutoCloseable {
 	public InetAddress connect() throws IOException {
 		started.fire();
 		sock = serverSocket.accept();
+		serverSocket.close();
 		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF8));
 		in = new BufferedReader(
@@ -54,7 +57,9 @@ class MockServer implements AutoCloseable {
 			sock.close();
 		}
 		sock = null;
-		serverSocket.close();
+		if (!serverSocket.isClosed()) {
+			serverSocket.close();
+		}
 	}
 
 	public void send(JSONObject obj) {
@@ -67,6 +72,60 @@ class MockServer implements AutoCloseable {
 	}
 
 	public JSONObject recv() throws JSONException, IOException {
-		return new JSONObject(in.readLine());
+		String line = in.readLine();
+		return line == null ? null : new JSONObject(line);
+	}
+
+	public void advancedEmulationMode(LinkedBlockingDeque<String> send,
+			LinkedBlockingDeque<JSONObject> received,
+			LinkedBlockingDeque<JSONObject> keepaliveQueue, Thread bgAccept) {
+		new Thread(() -> {
+			try {
+				bgAccept.join();
+				launchKeepaliveListener(keepaliveQueue);
+				while (true) {
+					if ("STOP".equals(send.peek())) {
+						send.take();
+						break;
+					}
+					JSONObject r = recv();
+					if (r == null) {
+						break;
+					}
+					received.offer(r);
+					do {
+						send(send.take());
+					} while (send.peek().contains("changed"));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	private static void launchKeepaliveListener(
+			LinkedBlockingDeque<JSONObject> keepaliveQueue) {
+		Thread t = new Thread(() -> {
+			try {
+				MockServer s = new MockServer();
+				s.listen();
+				s.connect();
+				while (true) {
+					JSONObject o = s.recv();
+					if (o == null) {
+						break;
+					}
+					keepaliveQueue.offer(o);
+					s.send("{\"return\": null}");
+				}
+				s.close();
+			} catch (EOFException e) {
+				// do nothing
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+		t.setDaemon(true);
+		t.start();
 	}
 }

@@ -1,15 +1,18 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.backgroundAccept;
+import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 
 import java.io.EOFException;
 import java.net.ConnectException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,49 +25,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
-import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class TestClient {
-	private static final void assertTimeout(long before, long after) {
-		assertTrue(after - before > 100 && after - before < 200,
-				"measured timeout must be between 0.1s and 0.2s (measured"
-						+ (after - before) + "ms)");
-	}
-
-	private static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
-	private static final int TIMEOUT = 101;
-
-	private Thread backgroundAccept(MockServer s) throws Exception {
-		OneShotEvent started = new OneShotEvent();
-		Thread main = Thread.currentThread();
-		Holder<Exception> problem = new Holder<>();
-		Thread t = new Thread(() -> {
-			try {
-				s.listen();
-				started.fire();
-				s.connect();
-			} catch (Exception e) {
-				problem.value = e;
-				main.interrupt();
-			}
-		});
-		t.start();
-		try {
-			started.await();
-		} catch (InterruptedException e) {
-			if (problem.value != null) {
-				throw problem.value;
-			}
-			throw e;
-		}
-		return t;
-	}
-
-	interface WithConn {
-		void act(MockServer s, SpallocClient c, Thread bgAccept)
-				throws Exception;
-	}
-
 	static class MockCommand extends Command<Integer> {
 		MockCommand(String name, int arg, String key, Object val) {
 			super(name);
@@ -75,21 +37,6 @@ class TestClient {
 
 	private static final String MOCK_RECEIVED_MESSAGE =
 			"{\"command\": \"foo\", \"args\": [1], \"kwargs\": {\"bar\": 2}}";
-
-	void withConnection(WithConn op) throws Exception {
-		assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-			MockServer s = new MockServer();
-			try {
-				SpallocClient c = new SpallocClient("localhost", 22244, null);
-				Thread bgAccept = backgroundAccept(s);
-				op.act(s, c, bgAccept);
-				bgAccept.join();
-				c.close();
-			} finally {
-				s.close();
-			}
-		});
-	}
 
 	@Test
 	void testConnectNoServer() throws Exception {

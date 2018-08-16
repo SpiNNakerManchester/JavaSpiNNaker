@@ -129,6 +129,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			new ThreadGroup("spalloc worker threads");
 
 	private static Configuration config;
+	static {
+		config = new Configuration("spalloc.ini");
+	}
 
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
@@ -410,6 +413,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throws IOException, SpallocServerException {
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
+		client.connect();
 		if (args == null || args.size() > MAX_SHAPE_ARGS) {
 			throw new IllegalArgumentException(
 					"the machine shape description must have between 0 and "
@@ -563,7 +567,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @return The number of milliseconds, suitable for use with Java timing
 	 *         operations.
 	 */
-	private static int f2ms(Object obj) {
+	private static Integer f2ms(Object obj) {
+		if (obj == null) {
+			return null;
+		}
 		return (int) (((Number) obj).doubleValue() * MS_PER_S);
 	}
 
@@ -590,6 +597,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		this.client = new SpallocClient(hostname, port, timeout);
 		this.timeout = timeout;
 		this.id = id;
+		client.connect();
 		reconnectDelay = f2ms(config.getReconnectDelay());
 		/*
 		 * If the job no longer exists, we can't get the keepalive interval (and
@@ -615,6 +623,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private void launchKeepaliveDaemon() {
+		log.info("launching keepalive thread for " + id +" with interval " + (keepaliveTime/2) +"ms");
 		if (keepalive != null) {
 			log.warn("launching second keepalive thread for " + id);
 		}
@@ -663,8 +672,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			 * Connect/version command failed... Leave the socket clearly broken
 			 * so that we retry again
 			 */
-			log.warn("Spalloc server is unreachable (%s), will keep trying...",
-					e);
+			log.warn("Spalloc server is unreachable ({}), will keep trying...",
+					e.getMessage());
 			try {
 				client.close();
 			} catch (IOException inner) {
@@ -734,6 +743,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			statusTimestamp = currentTimeMillis();
 		}
 		return statusCache;
+	}
+
+	private void purgeStatus() {
+		statusCache = null;
 	}
 
 	@Override
@@ -828,6 +841,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				// Wait for job state to change
 				while (!timedOut(finishTime)) {
 					// Has the job changed state?
+					purgeStatus();
 					State newState = getStatus().getState();
 					if (newState != oldState) {
 						return newState;
@@ -949,13 +963,16 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			// Are we ready yet?
 			switch (curState) {
 			case READY:
+				log.info("job:{} is now ready", id);
 				// Now in the ready state!
 				return;
 			case QUEUED:
-				log.info("SpallocJob has been queued by the spalloc server");
+				log.info("job:{} has been queued by the spalloc server", id);
 				break;
 			case POWER:
-				log.info("Waiting for board power commands to complete");
+				log.info(
+						"waiting for board power commands to complete for job:{}",
+						id);
 				break;
 			case DESTROYED:
 				// In a state which can never become ready
@@ -963,7 +980,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			default: // UNKNOWN
 				// Server has forgotten what this job even was...
 				throw new JobDestroyedException(
-						"Spalloc server no longer recognises job");
+						"Spalloc server no longer recognises job:" + id);
 			}
 			// Wait for a state change...
 			curState = waitForStateChange(curState, timeLeft(finishTime));

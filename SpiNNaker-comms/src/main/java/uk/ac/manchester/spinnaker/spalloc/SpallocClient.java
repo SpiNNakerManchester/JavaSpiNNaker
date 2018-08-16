@@ -5,6 +5,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
@@ -36,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -91,6 +94,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  * client, see {@link SpallocJob}.
  */
 public class SpallocClient implements Closeable, SpallocAPI {
+	private static final Logger log = getLogger(SpallocClient.class);
 	/** The default spalloc port. */
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
@@ -362,6 +366,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
+		log.debug("sending a {}", command.getClass());
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line
