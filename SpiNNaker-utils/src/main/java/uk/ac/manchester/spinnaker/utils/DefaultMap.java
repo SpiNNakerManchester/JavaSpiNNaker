@@ -42,10 +42,17 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 
 	/**
 	 * Create a new map.
-	 *
+     * <p>
+     * The defaultFactory can be a method or an Object.
+     * If V is mutable it is HIGHLY recommended to pass in a method and not an
+     *     Object.
+     * For example use ArrayList::new and not new ArrayList() otherwise the
+     *     Single will be used every time and values added after one get will
+     *     be in the default for the next get.
+     *
 	 * @param defaultFactory
-	 *            A method to create a new value to insert in the map.
-	 */
+	 *            A method to create a new value/ an Object to insert in the map.
+ 	 */
 	public DefaultMap(Supplier<? extends V> defaultFactory) {
 		direct = false;
 		defValue = null;
@@ -59,7 +66,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * @param dummy
 	 *            Just something to make this constructor distinct.
 	 * @param defaultFactory
-	 *            A method to create a new value to insert in the map.
+	 *            An Object of a Class that implement KeyAwareFactory.
 	 */
 	private DefaultMap(Class<?> dummy,
 			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
