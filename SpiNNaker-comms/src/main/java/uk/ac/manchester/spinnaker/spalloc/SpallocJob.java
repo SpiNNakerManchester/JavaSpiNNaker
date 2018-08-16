@@ -714,6 +714,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		} finally {
 			close();
 		}
+		purgeStatus();
 	}
 
 	@Override
@@ -727,6 +728,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		} else {
 			client.powerOffJobBoards(id, timeout);
 		}
+		purgeStatus();
 	}
 
 	@Override
