@@ -61,6 +61,14 @@ public class TestDefaultMap {
         assertEquals(2, two.intValue());
     }
 
+    @Test
+    public void testKeyAware2() {
+         DefaultMap<Integer, Integer> instance =
+                DefaultMap.newAdvancedDefaultMap(i->i*2);
+        Integer two = instance.get(1);
+        assertEquals(2, two.intValue());
+    }
+
     public class Doubler implements DefaultMap.KeyAwareFactory<Integer, Integer> {
 
         @Override
@@ -69,4 +77,5 @@ public class TestDefaultMap {
         }
 
     }
+
 }
