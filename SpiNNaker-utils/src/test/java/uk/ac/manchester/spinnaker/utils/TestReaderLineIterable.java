@@ -3,7 +3,9 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
@@ -24,6 +26,27 @@ public class TestReaderLineIterable {
     public void testSimple() {
         StringReader reader = new StringReader("First\nSecond\nThird");
         ReaderLineIterable iterable = new ReaderLineIterable(reader);
+        int count = 0;
+        for (String line:iterable) {
+            count += 1;
+        }
+        assertEquals(3, count);
+        assertThrows(IllegalStateException.class, () -> {
+            for (String line:iterable) {
+            }
+        });
+        assertEquals(3, count);
+        try {
+            iterable.close();
+        } catch (IOException ex) {
+            assertTrue(false, "Unexpected Exception");
+        }
+    }
+
+    @Test
+    public void testStream() {
+        InputStream inputStream = new ByteArrayInputStream("First\nSecond\nThird".getBytes());
+        ReaderLineIterable iterable = new ReaderLineIterable(inputStream);
         int count = 0;
         for (String line:iterable) {
             count += 1;
