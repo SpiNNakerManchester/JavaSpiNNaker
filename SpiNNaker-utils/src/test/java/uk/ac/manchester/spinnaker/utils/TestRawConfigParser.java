@@ -24,4 +24,6 @@ public class TestRawConfigParser {
         assertTrue(parser.getboolean("Other", "alan_is_scotish"));
     }
 
+
+
 }

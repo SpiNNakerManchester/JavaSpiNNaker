@@ -51,7 +51,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
      *     be in the default for the next get.
      *
 	 * @param defaultFactory
-	 *            A method to create a new value/ an Object to insert in the map.
+	 *         A method to create a new value/ an Object to insert in the map.
  	 */
 	public DefaultMap(Supplier<? extends V> defaultFactory) {
 		direct = false;

@@ -2,7 +2,6 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 /**
