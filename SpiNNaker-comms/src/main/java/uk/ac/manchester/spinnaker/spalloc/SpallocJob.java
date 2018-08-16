@@ -623,7 +623,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private void launchKeepaliveDaemon() {
-		log.info("launching keepalive thread for " + id +" with interval " + (keepaliveTime/2) +"ms");
+		log.info("launching keepalive thread for " + id + " with interval "
+				+ (keepaliveTime / 2) + "ms");
 		if (keepalive != null) {
 			log.warn("launching second keepalive thread for " + id);
 		}
@@ -972,9 +973,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				log.info("job:{} has been queued by the spalloc server", id);
 				break;
 			case POWER:
-				log.info(
-						"waiting for board power commands to complete for job:{}",
-						id);
+				log.info("waiting for board power commands to "
+						+ "complete for job:{}", id);
 				break;
 			case DESTROYED:
 				// In a state which can never become ready

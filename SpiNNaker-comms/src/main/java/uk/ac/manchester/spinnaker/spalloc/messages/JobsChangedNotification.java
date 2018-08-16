@@ -13,7 +13,8 @@ public class JobsChangedNotification implements Notification {
 	private List<Integer> jobsChanged = emptyList();
 
 	/** Create a notification response. */
-	public JobsChangedNotification() {}
+	public JobsChangedNotification() {
+	}
 
 	/**
 	 * A response that reports a single job has changed.

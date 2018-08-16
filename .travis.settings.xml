@@ -14,6 +14,14 @@
 					</snapshots>
 					<url>https://repository.apache.org/snapshots/</url>
 				</repository>
+				<repository>
+					<id>apache.snapshots</id>
+					<snapshots>
+						<enabled>false</enabled>
+						<updatePolicy>never</updatePolicy>
+					</snapshots>
+					<url>https://repository.apache.org/snapshots/</url>
+				</repository>
 			</repositories>
 		</profile>
 	</profiles>
