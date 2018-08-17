@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  */
-package uk.ac.manchester.spinnaker.utils;
+package uk.ac.manchester.spinnaker.utils.progress;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Iterator;
  * @author Christian-B
  * @param <E>
  */
-public class ProgressIterable<E> extends ProgressBar implements Iterable<E>{
+public class ProgressIterable<E> extends AbstractProgress implements Iterable<E>{
 
     private final Collection<E> things;
     private boolean started = false;
@@ -34,6 +34,7 @@ public class ProgressIterable<E> extends ProgressBar implements Iterable<E>{
 
             @Override
             public E next() {
+                calcUpdate(1);
                 return inner.next();
             }
         };
@@ -44,9 +45,21 @@ public class ProgressIterable<E> extends ProgressBar implements Iterable<E>{
         for (int i = 0; i < 5 ; i++){
             pb.update();
         }
-        System.out.println("Simple");
         for (Integer i:  new ProgressIterable<Integer>(Arrays.asList(1,2,3,4,5), "iterable")){
 
+        }
+        pb = new ProgressBar(5, "Stopped");
+        for (int i = 0; i < 3 ; i++){
+            pb.update();
+        }
+        pb.close();
+
+        try (ProgressIterable<Integer> bar = new ProgressIterable<Integer>(Arrays.asList(1,2,3,4,5), "complex"); ) {
+            for (int i:bar) {
+                if (i == 3) {
+                    break;
+                }
+            }
         }
     }
 

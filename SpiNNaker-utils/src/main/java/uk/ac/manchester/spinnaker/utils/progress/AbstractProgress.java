@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2018 The University of Manchester
  */
-package uk.ac.manchester.spinnaker.utils;
+package uk.ac.manchester.spinnaker.utils.progress;
 
 import java.io.Closeable;
 import java.io.PrintStream;
@@ -11,7 +11,7 @@ import java.util.Iterator;
  *
  * @author Christian-B
  */
-public class ProgressBar implements Closeable {
+public abstract class AbstractProgress implements Closeable {
 
     private static final int MAX_LENGTH_IN_CHARS = 60;
     private static final float MAX_LENGTH = MAX_LENGTH_IN_CHARS;
@@ -28,7 +28,7 @@ public class ProgressBar implements Closeable {
     private int charsDone = 0;
     private boolean closed = false;
 
-    public ProgressBar(int numberOfThings, String description) {
+    AbstractProgress(int numberOfThings, String description) {
         this.numberOfThings = numberOfThings;
         charsPerThing = MAX_LENGTH / numberOfThings;
         printHeader(description);
@@ -42,11 +42,7 @@ public class ProgressBar implements Closeable {
         output.print(" ");
     }
 
-    public void update() {
-        update(1);
-    }
-
-    public void update(int amountToAdd) {
+    void calcUpdate(int amountToAdd) {
         if ((currentlyCompleted + amountToAdd) > numberOfThings) {
             throw new IllegalStateException("too many update steps");
         }
@@ -70,14 +66,13 @@ public class ProgressBar implements Closeable {
         if (closed) {
             return;
         }
-        printProgress(MAX_LENGTH_IN_CHARS);
         output.println();
         closed = true;
     }
 
     private static String distanceIndicator() {
         // Find the mid point
-        int mid_point = ProgressBar.MAX_LENGTH_IN_CHARS / 2;
+        int mid_point = AbstractProgress.MAX_LENGTH_IN_CHARS / 2;
 
         StringBuilder builder = new StringBuilder("0%");
 
