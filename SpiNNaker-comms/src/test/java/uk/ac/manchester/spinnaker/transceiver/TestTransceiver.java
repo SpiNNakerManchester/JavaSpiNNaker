@@ -61,7 +61,7 @@ class TestTransceiver {
 
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
-			assertEquals(connections, trans.getConnections());
+			assertEquals(new HashSet<>(connections), trans.getConnections());
 		}
 	}
 
