@@ -71,33 +71,6 @@ public class BootMessage implements SerializableMessage {
 	}
 
 	/**
-	 * Create a boot message.
-	 *
-	 * @param opcode
-	 *            The boot opcode
-	 * @param operand1
-	 *            The first arg
-	 * @param operand2
-	 *            The second arg
-	 * @param operand3
-	 *            The third arg
-	 * @param bytes
-	 *            The payload
-	 */
-	public BootMessage(BootOpCode opcode, int operand1,
-			int operand2, int operand3, byte[] bytes) {
-		this.opcode = opcode;
-		this.operand1 = operand1;
-		this.operand2 = operand2;
-		this.operand3 = operand3;
-		this.data = wrap(bytes).asReadOnlyBuffer();
-		if (data.remaining() > BOOT_PACKET_SIZE) {
-			throw new IllegalArgumentException(
-					"A boot packet can contain at most 256 words of data");
-		}
-	}
-
-	/**
 	 * Deserialise a boot message from a received message.
 	 *
 	 * @param buffer
