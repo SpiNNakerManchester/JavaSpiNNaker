@@ -76,6 +76,7 @@ public class TestUDPConnection {
 			try (SCPConnection connection = new SCPConnection(
 					board_config.remotehost)) {
 				ReadMemory scp = new ReadMemory(ZERO_CHIP, 0, 256);
+				scp.scpRequestHeader.issueSequenceNumber();
 				connection.sendSCPRequest(scp);
 				connection.receiveSCPResponse(2);
 			}

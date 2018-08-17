@@ -480,7 +480,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public String toString() {
-		InetSocketAddress la=null, ra=null;
+		InetSocketAddress la = null, ra = null;
 		try {
 			la = this.getLocalAddress();
 		} catch (IOException e) {
