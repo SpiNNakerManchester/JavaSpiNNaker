@@ -52,6 +52,7 @@ public enum DataType {
 			return;
 		case BYTE_ARRAY:
 			buffer.put((byte[]) value);
+			return;
 		default:
 			throw new Error("unreachable?");
 		}
