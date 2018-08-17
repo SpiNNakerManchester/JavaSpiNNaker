@@ -4,8 +4,8 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Iterator;
 
 /**
  *
@@ -98,16 +98,6 @@ public class ProgressBar implements Closeable {
         builder.append("100%");
 
         return builder.toString();
-    }
-
-    public static void main(String [] args) throws InterruptedException {
-        ProgressBar pb = new ProgressBar(5, "Easiest");
-        for (int i = 0; i < 5 ; i++){
-            pb.update();
-        }
-        //pb.close();
-        System.out.println("AFTER");
-
     }
 
 }
