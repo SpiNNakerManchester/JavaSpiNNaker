@@ -5,6 +5,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
+import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.DEFAULT_CONFIGURATION_SOURCE;
+import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.setConfigurationSource;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
@@ -12,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -19,6 +23,16 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 class TestJob {
+	@BeforeAll
+	private static void setupConfiguration() {
+		setConfigurationSource("spalloc-test.ini");
+	}
+
+	@AfterAll
+	private static void resetConfiguration() {
+		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
+	}
+
 	@Test
 	void testCoreJobFlow() throws Exception {
 		LinkedBlockingDeque<String> send = new LinkedBlockingDeque<>();

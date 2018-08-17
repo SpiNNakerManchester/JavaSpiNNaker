@@ -129,8 +129,28 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			new ThreadGroup("spalloc worker threads");
 
 	private static Configuration config;
+
+	/**
+	 * Set up where configuration settings come from. By default, this is from a
+	 * file called {@value #DEFAULT_CONFIGURATION_SOURCE}; this method allows
+	 * you to override that (e.g., for testing).
+	 *
+	 * @param filename
+	 *            the base filename (without a path) to load the configuration
+	 *            from. This is expected to be a <tt>.ini</tt> file.
+	 * @see Configuration
+	 */
+	public static void setConfigurationSource(String filename) {
+		config = new Configuration(filename);
+	}
+
+	/**
+	 * The name of the default file to load the configuration from.
+	 */
+	public static final String DEFAULT_CONFIGURATION_SOURCE = "spalloc.ini";
+
 	static {
-		config = new Configuration("spalloc.ini");
+		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
 	}
 
 	/**
