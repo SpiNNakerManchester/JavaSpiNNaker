@@ -16,7 +16,6 @@ public class ProgressBar implements Closeable {
     private static final int MAX_LENGTH_IN_CHARS = 60;
     private static final float MAX_LENGTH = MAX_LENGTH_IN_CHARS;
     private static final String DISTANCE_INDICATOR = distanceIndicator();
-    private static PrintStream output = System.out;
 
     private final char stepChar = '-';
     private final char endChar = '|';
@@ -24,25 +23,32 @@ public class ProgressBar implements Closeable {
 
     private final int numberOfThings;
     private final float charsPerThing;
+    private PrintStream output = System.out;
     private int currentlyCompleted = 0;
     private int charsDone = 0;
     private boolean closed = false;
 
-    public ProgressBar(int numberOfThings, String description) {
+    public ProgressBar(
+            int numberOfThings, String description, PrintStream output) {
         this.numberOfThings = numberOfThings;
         charsPerThing = MAX_LENGTH / numberOfThings;
+        this.output = output;
         printHeader(description);
     }
+
+    public ProgressBar(int numberOfThings, String description) {
+        this(numberOfThings, description, System.out);
+    }
+
 
     public void update(int amountToAdd) {
         if ((currentlyCompleted + amountToAdd) > numberOfThings) {
             throw new IllegalStateException("too many update steps");
         }
         currentlyCompleted += amountToAdd;
+        printProgress((int)(currentlyCompleted * charsPerThing));
         if (currentlyCompleted == numberOfThings) {
-           close();
-        } else {
-            printProgress((int)(currentlyCompleted * charsPerThing));
+            close();
         }
     }
 
@@ -57,6 +63,18 @@ public class ProgressBar implements Closeable {
         }
         output.println();
         closed = true;
+    }
+
+    public void setOutput(PrintStream output) {
+        if (output == null) {
+            resetOutput();
+        } else {
+            this.output = output;
+        }
+    }
+
+    public void resetOutput() {
+        this.output = System.out;
     }
 
     private void printHeader(String description) {

@@ -5,6 +5,7 @@ package uk.ac.manchester.spinnaker.utils.progress;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -19,8 +20,9 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable{
 
     private final Iterator<E> inner; // = things.iterator();
 
-    public ProgressIterator(Collection<E> outer, String description) {
-        bar = new ProgressBar(outer.size(), description);
+    public ProgressIterator(
+            Collection<E> outer, String description, PrintStream output) {
+        bar = new ProgressBar(outer.size(), description, output);
         inner = outer.iterator();
     }
 
@@ -50,4 +52,11 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable{
         bar.close();
     }
 
+    public void setOutput(PrintStream output) {
+        bar.setOutput(output);
+    }
+
+    public void resetOutput() {
+        bar.resetOutput();
+    }
 }
