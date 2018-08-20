@@ -3,6 +3,9 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,35 +15,36 @@ import java.util.Iterator;
  * @author Christian-B
  * @param <E>
  */
-public class ProgressIterable<E> extends AbstractProgress implements Iterable<E>{
+public class ProgressIterable<E> implements Iterable<E>, Closeable  {
 
     private final Collection<E> things;
-    private boolean started = false;
+    private final String description;
+    private final ArrayList<ProgressIterator<E>> progressIterables;
 
     public ProgressIterable(Collection<E> things, String description) {
-        super(things.size(), description);
         this.things = things;
+        this.description = description;
+        progressIterables = new ArrayList<>();
     }
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            private final Iterator<E> inner = things.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return inner.hasNext();
-            }
-
-            @Override
-            public E next() {
-                calcUpdate(1);
-                return inner.next();
-            }
-        };
+        ProgressIterator<E> iterator =
+                new ProgressIterator(things, description);
+        progressIterables.add(iterator);
+        return iterator;
     }
 
-    public static void main(String [] args) throws InterruptedException {
+    @Override
+    public void close() {
+        Iterator<ProgressIterator<E>> iter = progressIterables.iterator();
+        while(iter.hasNext()) {
+            iter.next().close();
+            iter.remove();
+        }
+    }
+
+    public static void main(String [] args) throws InterruptedException, IOException {
         ProgressBar pb = new ProgressBar(5, "Easiest");
         for (int i = 0; i < 5 ; i++){
             pb.update();

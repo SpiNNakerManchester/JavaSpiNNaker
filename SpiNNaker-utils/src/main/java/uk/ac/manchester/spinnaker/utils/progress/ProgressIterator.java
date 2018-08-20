@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ */
+package uk.ac.manchester.spinnaker.utils.progress;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.function.Consumer;
+
+/**
+ *
+ * @author Christian-B
+ */
+public class ProgressIterator<E>  implements Iterator<E>, Closeable{
+
+    private final ProgressBar bar; // = new ProgressBar(things.size(), description);
+
+    private final Iterator<E> inner; // = things.iterator();
+
+    public ProgressIterator(Collection<E> outer, String description) {
+        bar = new ProgressBar(outer.size(), description);
+        inner = outer.iterator();
+    }
+
+    @Override
+    public boolean hasNext() {
+        boolean result = inner.hasNext();
+        if (!result) {
+            bar.close();
+        }
+        return result;
+    }
+
+    @Override
+    public E next() {
+        bar.update();
+        return inner.next();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super E> action) {
+        inner.forEachRemaining(action); //To change body of generated methods, choose Tools | Templates.
+        bar.close();
+    }
+
+    @Override
+    public void close() {
+        bar.close();
+    }
+
+}
