@@ -44,6 +44,19 @@ public class TestBar {
     }
 
     @Test
+    public void testToMany() {
+        String description = "tooMany";
+        ProgressBar pb = new ProgressBar(5, description);
+        for (int i = 0; i < 5 ; i++){
+            pb.update();
+        }
+        assertThrows(IllegalStateException.class, () -> {
+            pb.update();
+        });
+
+    }
+
+    @Test
     public void testSimple() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);

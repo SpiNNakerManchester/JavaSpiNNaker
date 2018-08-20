@@ -42,12 +42,6 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable{
     }
 
     @Override
-    public void forEachRemaining(Consumer<? super E> action) {
-        inner.forEachRemaining(action); //To change body of generated methods, choose Tools | Templates.
-        bar.close();
-    }
-
-    @Override
     public void close() {
         bar.close();
     }

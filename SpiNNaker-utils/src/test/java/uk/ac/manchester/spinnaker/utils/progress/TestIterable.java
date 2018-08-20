@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import uk.ac.manchester.spinnaker.utils.Counter;
 
 /**
  *
@@ -79,13 +80,39 @@ public class TestIterable {
             assertEquals(2, (int)iterator.next());
             bar.resetOutput();
             assertEquals(3, (int)iterator.next());
+            bar.setOutput(ps);
+            assertEquals(4, (int)iterator.next());
+            bar.setOutput(null);
+            assertEquals(5, (int)iterator.next());
         }
         String lines[] = baos.toString().split("\\r?\\n");
         // Header lines not there as created on Iterator call
         assertEquals(1, lines.length);
-        // Only first two written to Stream. Space was before setOutput()
-        assertEquals(60 / 10 * 2, lines[0].length());
+        // First space written before setOutput
+        // Two to stream and then one more second time around.
+        assertEquals(60 / 10 * 3, lines[0].length());
     }
+
+    @Test
+    public void testForEachRemaining() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        String description = "Easiest";
+        ProgressIterable<Integer> pb = new ProgressIterable<>(
+                Arrays.asList(1,2,3,4,5), description);
+        pb.setOutput(ps);
+        Counter sum = new Counter();
+        pb.forEach(i -> {;
+            sum.add(i);
+        });
+        assertEquals(1+2+3+4+5, sum.get());
+        String lines[] = baos.toString().split("\\r?\\n");
+        assertEquals(3, lines.length);
+        assertEquals(description, lines[0]);
+        assertEquals(PERCENTS, lines[1]);
+        assertEquals(DASHES, lines[2]);
+    }
+
 }
 
 
