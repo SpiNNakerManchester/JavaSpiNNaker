@@ -42,10 +42,17 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 
 	/**
 	 * Create a new map.
-	 *
+     * <p>
+     * The defaultFactory can be a method or an Object.
+     * If V is mutable it is HIGHLY recommended to pass in a method and not an
+     *     Object.
+     * For example use ArrayList::new and not new ArrayList() otherwise the
+     *     Single will be used every time and values added after one get will
+     *     be in the default for the next get.
+     *
 	 * @param defaultFactory
-	 *            A method to create a new value to insert in the map.
-	 */
+	 *         A method to create a new value/ an Object to insert in the map.
+ 	 */
 	public DefaultMap(Supplier<? extends V> defaultFactory) {
 		direct = false;
 		defValue = null;
@@ -59,7 +66,8 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * @param dummy
 	 *            Just something to make this constructor distinct.
 	 * @param defaultFactory
-	 *            A method to create a new value to insert in the map.
+	 *            Can be an Object of a Class that implement KeyAwareFactory.
+     *            Can be a method expressed as a lambda.
 	 */
 	private DefaultMap(Class<?> dummy,
 			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
@@ -74,18 +82,27 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * Create a new map that manufactures new elements that are aware of their
 	 * key from the beginning. This is done through this method because
 	 * otherwise it clashes with the more common case of the unaware factory.
-	 *
+	 * <p>
+     * The Factory can be a lambda method to create a me value based on the key.
+     * <br>For example:
+     * <p>
+     * {@code DefaultMap.newAdvancedDefaultMap(i->i*2);}
+     * <p>
+     * The Factory can also be a Object of a class that implements the
+     * KeyAwareFactory interface.
+     *
 	 * @param <K>
 	 *            The type of keys.
 	 * @param <V>
 	 *            The type of values.
-	 * @param defaultFactory
-	 *            A method to create a new value to insert in the map.
+	 * @param keyAwareFactory
+     *            Method or Object to create the default values.
+	 *
 	 * @return The new default map.
 	 */
 	public static <K, V> DefaultMap<K, V> newAdvancedDefaultMap(
-			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
-		return new DefaultMap<>(defaultFactory.getClass(), defaultFactory);
+			KeyAwareFactory<? super K, ? extends V> keyAwareFactory) {
+		return new DefaultMap<>(keyAwareFactory.getClass(), keyAwareFactory);
 	}
 
 	private V defaultFactory(K key) {

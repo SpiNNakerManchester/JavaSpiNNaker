@@ -151,21 +151,21 @@ public class BootMessages {
 		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
 	}
 
-	private byte[] getPacketData(int blockID) {
-		int offset = blockID * BOOT_MESSAGE_DATA_BYTES;
-		int numBytes = min(bootData.limit() - offset, BOOT_MESSAGE_DATA_BYTES);
-		byte[] dst = new byte[numBytes];
-		bootData.get(dst, offset, numBytes);
-		return dst;
+	private BootMessage getBootMessage(int blockID) {
+		ByteBuffer buffer = bootData.duplicate();
+		buffer.position(blockID * BOOT_MESSAGE_DATA_BYTES);
+		buffer.limit(buffer.position()
+				+ min(buffer.remaining(), BOOT_MESSAGE_DATA_BYTES));
+		assert buffer.hasRemaining();
+		return new BootMessage(FLOOD_FILL_BLOCK, 1, 0, 0, buffer);
 	}
 
 	/** @return a stream of message to be sent. */
 	public Stream<BootMessage> getMessages() {
 		Stream<BootMessage> first = singleton(new BootMessage(
 				FLOOD_FILL_START, 0, 0, numDataPackets - 1)).stream();
-		Stream<BootMessage> mid = range(0, numDataPackets)
-				.mapToObj(blockID -> new BootMessage(FLOOD_FILL_BLOCK,
-						1, 0, 0, getPacketData(blockID)));
+		Stream<BootMessage> mid =
+				range(0, numDataPackets).mapToObj(this::getBootMessage);
 		Stream<BootMessage> last = singleton(
 				new BootMessage(FLOOD_FILL_CONTROL, 1, 0, 0)).stream();
 		return concat(first, concat(mid, last));
