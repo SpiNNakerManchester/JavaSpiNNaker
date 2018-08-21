@@ -204,6 +204,9 @@ public class TestCoreSubsets {
         Collection<CoreLocation>  empty = css1.coreByChip(ChipLocation.ZERO_ZERO);
         assertEquals(0, empty.size());
 
+        Collection<Integer>  emptyP = css1.pByChip(ChipLocation.ZERO_ZERO);
+        assertEquals(0, emptyP.size());
+
         assertThrows(NoSuchElementException.class, () -> {
             css1.iterator().next();
         });

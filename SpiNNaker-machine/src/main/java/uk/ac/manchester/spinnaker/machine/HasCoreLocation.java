@@ -24,4 +24,13 @@ public interface HasCoreLocation extends HasChipLocation {
     default boolean onSameCoreAs(HasCoreLocation other) {
         return onSameChipAs(other) && (getP() == other.getP());
     }
+
+    /**
+     * Converts (if required) this to a simple X, Y, P tuple.
+     *
+     * @return A CoreLocation representation of the X, Y, P tuple
+     */
+    default CoreLocation asCoreLocation()  {
+        return new CoreLocation(getX(), getY(), getP());
+    }
 }

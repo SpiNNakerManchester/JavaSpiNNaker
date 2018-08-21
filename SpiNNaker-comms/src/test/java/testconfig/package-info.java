@@ -1,0 +1,4 @@
+/**
+ * Testing configuration.
+ */
+package testconfig;

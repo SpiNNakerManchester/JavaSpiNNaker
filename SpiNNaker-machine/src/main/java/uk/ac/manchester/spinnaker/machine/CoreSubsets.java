@@ -33,7 +33,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Bases constructor which creates an empty set of CoreSubset(s).
      */
     public CoreSubsets() {
-        locations = new TreeMap();
+        locations = new TreeMap<>();
         immutable = false;
     }
 
@@ -167,7 +167,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      */
     private TreeMap<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
         if (!locations.containsKey(chip)) {
-            locations.put(chip, new TreeMap());
+            locations.put(chip, new TreeMap<>());
         }
         return locations.get(chip);
     }
@@ -314,7 +314,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 
     @Override
     public Iterator<CoreLocation> iterator() {
-        return new DoubleMapIterator<CoreLocation>(locations);
+        return new DoubleMapIterator<>(locations);
     }
 
     /**
@@ -330,7 +330,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return Collections.unmodifiableCollection(
                     locations.get(chip).values());
         } else {
-            return new ArrayList<CoreLocation>();
+            return new ArrayList<>();
         }
     }
 
@@ -347,7 +347,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return Collections.unmodifiableSet(
                     locations.get(chip).keySet());
         } else {
-            return new HashSet<Integer>();
+            return new HashSet<>();
         }
     }
 
