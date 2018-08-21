@@ -2,7 +2,6 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 /**
@@ -52,21 +51,6 @@ public abstract class Ping {
 	 *         the OS subprocess).
 	 */
 	public static int ping(InetAddress address) {
-		return ping(address.getHostAddress());
-	}
-
-
-	/**
-	 * Pings to detect if a host or IP address is reachable. May wait for up to
-	 * about a second. Technically, it only detects if a host is reachable by
-	 * ICMP ECHO requests.
-	 *
-	 * @param address
-	 *            Where should be pinged.
-	 * @return 0 on success, other values on failure (reflecting the result of
-	 *         the OS subprocess).
-	 */
-	public static int ping(Inet4Address address) {
 		return ping(address.getHostAddress());
 	}
 

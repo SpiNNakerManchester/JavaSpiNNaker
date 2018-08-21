@@ -270,7 +270,7 @@ public class SCPRequestPipeline {
 		}
 
 		// If all the channels are used, start to receive packets
-		while (numChannels != null && inProgress >= numChannels) {
+		while (inProgress >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
@@ -300,7 +300,9 @@ public class SCPRequestPipeline {
 
 	private void singleRetrieve(int timeout) throws IOException {
 		// Receive the next response
+		log.debug("waiting for message...");
 		SCPResultMessage msg = connection.receiveSCPResponse(timeout);
+		log.debug("received message {}", msg.getResult());
 		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests

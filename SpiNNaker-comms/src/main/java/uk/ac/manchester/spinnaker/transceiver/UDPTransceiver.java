@@ -65,8 +65,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	final void registerConnection(UDPConnection<?> connection) {
 		Pair<?> pair = new Pair<>(connection, null);
 		InetAddress addr = normalize(connection.getLocalIPAddress());
-		log.info("registering connection {} from {}:{}", connection, addr,
-				connection.getLocalPort());
+		log.info("registering connection {} for {}", connection, addr);
 		connectionsByPort.get(connection.getLocalPort()).put(addr, pair);
 		connectionsByClass.get(connection.getClass()).add(pair);
 	}

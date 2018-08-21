@@ -99,6 +99,7 @@ public class RawConfigParser {
 				if (line.isEmpty()) {
 					continue;
 				}
+				// System.out.println(line); // TODO: log this
 				Matcher m = sectRE.matcher(line);
 				if (m.matches()) {
 					sect = normaliseSectionName(m.group("name"));

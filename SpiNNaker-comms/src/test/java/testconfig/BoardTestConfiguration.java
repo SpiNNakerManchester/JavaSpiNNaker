@@ -54,19 +54,19 @@ public class BoardTestConfiguration {
 	public void set_up_remote_board() throws SocketException {
 		remotehost = config.get("Machine", "machineName");
 		Assumptions.assumeTrue(host_is_reachable(remotehost),
-				() -> "test board appears to be down");
+				() -> "test board (" + remotehost + ") appears to be down");
 		board_version = config.getint("Machine", "version");
 		String names = config.get("Machine", "bmp_names");
 		if (names == "None") {
 			bmp_names = null;
 		} else {
-			bmp_names = asList(
-					new BMPConnectionData(0, 0, names, asList(0), null));
+			bmp_names =
+					asList(new BMPConnectionData(0, 0, names, asList(0), null));
 		}
 		auto_detect_bmp = config.getboolean("Machine", "auto_detect_bmp");
 		localport = PORT;
 		try (DatagramSocket s = new DatagramSocket()) {
-			s.connect(new InetSocketAddress(remotehost, 0));
+			s.connect(new InetSocketAddress(remotehost, PORT));
 			localhost = s.getLocalAddress().getHostAddress();
 		}
 	}

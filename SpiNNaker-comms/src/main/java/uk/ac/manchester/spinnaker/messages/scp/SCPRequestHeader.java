@@ -26,6 +26,9 @@ public class SCPRequestHeader implements SerializableMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		buffer.putShort(command.value);
+		if (!sequenceSet) {
+			throw new IllegalStateException("sequence number not set");
+		}
 		buffer.putShort(sequence);
 	}
 
@@ -40,7 +43,7 @@ public class SCPRequestHeader implements SerializableMessage {
 			throw new IllegalStateException(
 					"a message can only have its sequence number set once");
 		}
-		sequence = (short) getNextSequenceNumber();
+		sequence = getNextSequenceNumber();
 		sequenceSet = true;
 		return sequence;
 	}
