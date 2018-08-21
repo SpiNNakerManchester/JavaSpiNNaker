@@ -7,6 +7,32 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-data-specification</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>java-hamcrest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-storage</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+	</dependencies>
 	<description>Data specification generator and executor</description>
 	<name>SpiNNaker Data Specification</name>
 </project>
