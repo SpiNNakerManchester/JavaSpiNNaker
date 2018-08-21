@@ -3,6 +3,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  *
  * @author Christian-B
@@ -56,6 +62,10 @@ public final class MachineDefaults {
     /** The offset from zero in chips to get half size root values. */
     public static final int HALF_SIZE = 4;
 
+    /**
+     * The number of router diagnostic counters.
+     */
+    public static final int NUM_ROUTER_DIAGNOSTIC_COUNTERS = 16;
 
     /**
       * Width of field of hashcode for holding (one dimension of the) chip
@@ -68,6 +78,10 @@ public final class MachineDefaults {
 
     /** Width of field of hashcode for holding processor ID. */
     public static final int CORE_SHIFT = 5;
+
+    /** Ignore Links info for a four chip board. */
+    public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS
+            = fourChipDownLinks();
 
     /**
      * Checks the x and y parameter are legal ones
@@ -84,7 +98,7 @@ public final class MachineDefaults {
         	throw new IllegalArgumentException("bad X cooordinate: " + x);
         }
         if (y < 0 || y > MAX_Y) {
-        	throw new IllegalArgumentException("bad Y cooordinate" + y);
+        	throw new IllegalArgumentException("bad Y cooordinate: " + y);
         }
     }
 
@@ -102,9 +116,30 @@ public final class MachineDefaults {
             throws IllegalArgumentException {
         validateChipLocation(x, y);
         if (p < 0 || p >= MAX_NUM_CORES) {
-            throw new IllegalArgumentException("bad processor ID");
+            throw new IllegalArgumentException("bad processor ID: " + p);
         }
     }
+
+    private static Map<ChipLocation, Set<Direction>>
+            fourChipDownLinks() {
+        HashMap<ChipLocation, Set<Direction>> result = new HashMap();
+        HashSet<Direction> directions = new HashSet();
+        directions.add(Direction.SOUTH);
+        directions.add(Direction.SOUTHWEST);
+        result.put(ChipLocation.ZERO_ZERO,
+                Collections.unmodifiableSet(directions));
+        result.put(new ChipLocation(0, 1),
+                Collections.unmodifiableSet(directions));
+        directions = new HashSet();
+        directions.add(Direction.EAST);
+        directions.add(Direction.NORTHEAST);
+        result.put(new ChipLocation(1, 0),
+                Collections.unmodifiableSet(directions));
+        result.put(new ChipLocation(1, 1),
+                Collections.unmodifiableSet(directions));
+        return Collections.unmodifiableMap(result);
+    }
+
 
     /*
         MAX_BANDWIDTH_PER_ETHERNET_CONNECTED_CHIP = 10 * 256

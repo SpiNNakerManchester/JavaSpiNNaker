@@ -6,8 +6,11 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.stream.Stream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.*;
 
 
@@ -42,8 +45,8 @@ public class TestRouter {
         final Collection<Link> values = router.links();
         assertEquals(1, values.size());
         assertThrows(UnsupportedOperationException.class, () -> {
-		values.remove(link00_01);
-            });
+            values.remove(link00_01);
+        });
         Collection<Link> values2 = router.links();
         assertEquals(1, values2.size());
     }
@@ -51,21 +54,29 @@ public class TestRouter {
     @Test
     public void testgetNeighbouringChipsCoords() throws UnknownHostException {
         ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_10);
         links.add(link00_01);
-        links.add(link01_01);
+        assertThat(chip01, is(oneOf(chip01, chip10)));
         Router router = new Router(links);
         Stream<HasChipLocation> neighbours = router.streamNeighbouringChipsCoords();
         neighbours.forEach(loc -> {
-                assertEquals(loc, chip01);
+                assertThat(loc, is(oneOf(chip01, chip10)));
             });
+        //Streams can only be run through ONCE!
         assertThrows(IllegalStateException.class, () -> {
             neighbours.forEach(loc -> {
-                assertEquals(loc, chip01);
+                assertThat(loc, is(oneOf(chip01, chip10)));
             });
         });
         for (HasChipLocation loc:router.iterNeighbouringChipsCoords()){
-            assertEquals(loc, chip01);
+                assertThat(loc, is(oneOf(chip01, chip10)));
         }
+        Iterator<HasChipLocation> iterator =
+                router.iterNeighbouringChipsCoords().iterator();
+        // Note Order is now by Direction
+        assertEquals(chip01, iterator.next());
+        assertEquals(chip10, iterator.next());
+        assertFalse(iterator.hasNext());
     }
 
     @Test
@@ -88,6 +99,7 @@ public class TestRouter {
             Router router = new Router(links);
         });
     }
+
 
 
 

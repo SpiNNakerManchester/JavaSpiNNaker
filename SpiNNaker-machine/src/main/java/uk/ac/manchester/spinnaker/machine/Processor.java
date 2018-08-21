@@ -16,7 +16,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  *
  * @author Christian-B
  */
-public final class Processor implements Comparable {
+public final class Processor implements Comparable<Processor> {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
     private static final Processor[] MONITOR =
@@ -60,7 +60,7 @@ public final class Processor implements Comparable {
      * @return The number of CPU cycles available from this processor per ms.
      */
     public int cpuCyclesAvailable() {
-        return clockSpeed / UnitConstants.MEGAHERTZ_PRE_KILOHERTZ;
+        return clockSpeed / UnitConstants.MEGAHERTZ_PER_KILOHERTZ;
     }
 
     /**
@@ -83,7 +83,7 @@ public final class Processor implements Comparable {
     public String toString() {
         return "[CPU: id=" + this.processorId
             + ", clock_speed="
-            + this.clockSpeed / UnitConstants.MEGAHERTZ_PRE_HERTZ
+            + this.clockSpeed / UnitConstants.MEGAHERTZ_PER_HERTZ
             + " MHz, monitor=" + this.isMonitor + "]";
     }
 
@@ -125,8 +125,7 @@ public final class Processor implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        Processor other = (Processor) o;
+    public int compareTo(Processor other) {
         if (this.processorId < other.processorId) {
             return -1;
         }

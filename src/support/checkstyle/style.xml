@@ -14,11 +14,21 @@
 		<property name="maximum" value="0" />
 		<property name="message" value="Line has trailing spaces." />
 	</module>
-        <module name="SuppressWarningsFilter"/>
+	<module name="SuppressWarningsFilter" />
 	<module name="TreeWalker">
-                <module name="SuppressWarningsHolder"/>
+		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="JavadocMethod">
+			<property name="tokens" value="CTOR_DEF"/>
+			<property name="scope" value="protected" />
+			<property name="allowMissingPropertyJavadoc" value="true" />
+			<property name="validateThrows" value="true" />
+			<property name="allowMissingThrowsTags" value="true" />
+			<property name="allowUndeclaredRTE" value="true" />
+			<property name="minLineCount" value="1" />
+		</module>
+		<module name="JavadocMethod">
+			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="scope" value="package" />
 			<property name="allowMissingPropertyJavadoc" value="true" />
 			<property name="validateThrows" value="true" />
@@ -35,7 +45,8 @@
 		</module>
 		<module name="JavadocStyle" />
 		<module name="ConstantName">
-			<property name="format" value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
+			<property name="format"
+				value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
 		</module>
 		<module name="LocalFinalVariableName" />
 		<module name="LocalVariableName" />
@@ -52,12 +63,13 @@
 			<property name="processJavadoc" value="false" />
 		</module>
 		<module name="LineLength">
-			<property name="ignorePattern" value="^(import |package |^\s*\*[ ]?\S*$)" />
+			<property name="ignorePattern"
+				value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber">
-                    <property name="ignoreOverriddenMethods" value="true"/>
-                 </module>
+			<property name="ignoreOverriddenMethods" value="true" />
+		</module>
 		<module name="EmptyForIteratorPad" />
 		<module name="GenericWhitespace" />
 		<module name="MethodParamPad" />
@@ -80,7 +92,7 @@
 		<module name="IllegalInstantiation" />
 		<module name="InnerAssignment" />
 		<module name="MagicNumber">
-			<property name="ignoreHashCodeMethod" value="true"/>
+			<property name="ignoreHashCodeMethod" value="true" />
 		</module>
 		<module name="MissingSwitchDefault" />
 		<module name="SimplifyBooleanExpression" />
@@ -90,7 +102,7 @@
 		<module name="InterfaceIsType" />
 		<module name="VisibilityModifier">
 			<property name="packageAllowed" value="true" />
-			<property name="allowPublicFinalFields" value="true"/>
+			<property name="allowPublicFinalFields" value="true" />
 		</module>
 		<module name="ArrayTypeStyle" />
 		<module name="UpperEll" />

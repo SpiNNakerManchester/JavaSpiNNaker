@@ -8,7 +8,8 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
-public final class CoreLocation implements HasCoreLocation {
+public final class CoreLocation
+        implements HasCoreLocation, Comparable<CoreLocation> {
     private final int x;
     private final int y;
     private final int p;
@@ -66,11 +67,6 @@ public final class CoreLocation implements HasCoreLocation {
     }
 
     @Override
-    public ChipLocation asChipLocation() {
-        return new ChipLocation(getX(), getY());
-    }
-
-    @Override
     public int getP() {
         return p;
     }
@@ -80,4 +76,28 @@ public final class CoreLocation implements HasCoreLocation {
         return "X:" + getX() + " Y:" + getY() + " P:" + getP();
     }
 
+    @Override
+    public CoreLocation asCoreLocation() {
+        return this;
+    }
+
+    @Override
+    public int compareTo(CoreLocation o) {
+        if (this.x < o.x) {
+            return -1;
+        } else if (this.x > o.x) {
+            return 1;
+        }
+        if (this.y < o.y) {
+            return -1;
+        } else if (this.y > o.y) {
+            return 1;
+        }
+        if (this.p < o.p) {
+            return -1;
+        } else if (this.p > o.p) {
+            return 1;
+        }
+        return 0;
+    }
 }

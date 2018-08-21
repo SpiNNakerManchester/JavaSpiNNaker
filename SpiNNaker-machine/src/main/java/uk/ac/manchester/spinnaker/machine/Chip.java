@@ -4,17 +4,22 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 /**
- * A Description of a Spinnaker Chip.
- * <p>
- * @see <a
- * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
- * Python Version</a>
+ * A Description of a Spinnaker Chip including its Router.
+ *
+ * @see <a href=
+ * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
+ * Python Chip Version</a>
+ * @see <a href=
+ * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/router.py">
+ * Python Router Version</a>
  *
  * @author Christian-B
  */
@@ -22,11 +27,9 @@ public class Chip implements HasChipLocation {
 
     private final ChipLocation location;
 
-    // This is private as mutable and implementation could change
-    private final TreeMap<Integer, Processor> processors;
+    private TreeMap<Integer, Processor> monitorProcessors;
 
-    // This is not final as will change as processors become monitors
-    private int nUserProssors;
+    private TreeMap<Integer, Processor> userProcessors;
 
     /** A router for the chip. */
     public final Router router;
@@ -48,79 +51,148 @@ public class Chip implements HasChipLocation {
     /** The nearest Ethernet coordinates or null if none known. */
     public final HasChipLocation nearestEthernet;
 
-    private static final TreeMap<Integer, Processor> DEFAULT_PROCESSORS =
-            defaultProcessors();
+    private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =
+            defaultUserProcessors();
+
+    private static final TreeMap<Integer, Processor>
+            DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
+
+    // Note: emergency_routing_enabled not implemented as not used
+    // TODO convert_routing_table_entry_to_spinnaker_route
 
     /**
      * Main Constructor which sets all parameters.
      *
-     * @param x The x-coordinate of the chip's position in the two-dimensional
-     *      grid of chips.
-     * @param y The y-coordinate of the chip's position in the two-dimensional
-     *      grid of chips
-     * @param processors An iterable of processor objects.
-     * @param router a router for the chip.
-     * @param sdram The size of the sdram.
-     * @param ipAddress The IP address of the chip or None if no Ethernet
-     *      attached.
-     * @param virtual boolean which defines if this chip is a virtual one
-     * @param nTagIds Number of SDP identifers available.
-     * @param nearestEthernet The nearest Ethernet coordinates
-     *      or null if none known.
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
+     * @param processors
+     *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
+     * @param sdram
+     *            The size of the sdram.
+     * @param ipAddress
+     *            The IP address of the chip or None if no Ethernet attached.
+     * @param virtual
+     *            boolean which defines if this chip is a virtual one
+     * @param nTagIds
+     *            Number of SDP identifers available.
+     * @param nearestEthernet
+     *            The nearest Ethernet coordinates or null if none known.
+     * @throws IllegalArgumentException
+     *            Thrown if multiple chips share the same id.
      */
     @SuppressWarnings("checkstyle:parameternumber")
-    public Chip(int x, int y, Iterable<Processor> processors, Router router,
-            int sdram, InetAddress ipAddress, boolean virtual, int nTagIds,
-            HasChipLocation nearestEthernet) {
-        MachineDefaults.validateChipLocation(x, y);
-        this.location = new ChipLocation(x, y);
-        this.processors = new TreeMap<>();
-        nUserProssors = 0;
+    public Chip(ChipLocation location, Iterable<Processor> processors,
+            Router router, int sdram, InetAddress ipAddress, boolean virtual,
+            int nTagIds, HasChipLocation nearestEthernet) {
+        this.location = location;
+        this.monitorProcessors = new TreeMap<>();
+        this.userProcessors =  new TreeMap<>();
         processors.forEach((processor) -> {
-            if (this.processors.containsKey(processor.processorId)) {
+            if (this.monitorProcessors.containsKey(processor.processorId)) {
                 throw new IllegalArgumentException();
+            }
+            if (this.userProcessors.containsKey(processor.processorId)) {
+                throw new IllegalArgumentException();
+            }
+            if (processor.isMonitor) {
+                this.monitorProcessors.put(processor.processorId, processor);
             } else {
-                this.processors.put(processor.processorId, processor);
-                if (!processor.isMonitor) {
-                    nUserProssors += 1;
-                }
-
+                this.userProcessors.put(processor.processorId, processor);
             }
         });
         this.router = router;
         this.sdram = sdram;
-
         this.ipAddress = ipAddress;
-
         this.virtual = virtual;
         this.nTagIds = nTagIds;
 
+        // previous Router stuff
         this.nearestEthernet = nearestEthernet;
     }
 
     /**
-     * Main Constructor which sets all parameters.
+     * Constructor which fills in some default values.
      *
-     * @param x The x-coordinate of the chip's position in the two-dimensional
-     *      grid of chips.
-     * @param y The y-coordinate of the chip's position in the two-dimensional
-     *      grid of chips
-     * @param router a router for the chip.
-     * @param ipAddress The IP address of the chip or None if no Ethernet
-     *      attached.
-     * @param nearestEthernet The nearest Ethernet coordinates
-     *      or null if none known.
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
+     * @param processors
+     *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
+     * @param sdram
+     *            The size of the sdram.
+     * @param ipAddress
+     *            The IP address of the chip or None if no Ethernet attached.
+     * @param nearestEthernet
+     *            The nearest Ethernet coordinates or null if none known.
+     * @throws IllegalArgumentException
+     *            Thrown if multiple Links share the same sourceLinkDirection.
+     *            Thrown if multiple chips share the same id.
      */
-    @SuppressWarnings("checkstyle:parameternumber")
-    public Chip(int x, int y, Router router, InetAddress ipAddress,
+    public Chip(ChipLocation location, Iterable<Processor> processors,
+            Router router, int sdram, InetAddress ipAddress,
             HasChipLocation nearestEthernet) {
-        MachineDefaults.validateChipLocation(x, y);
-        this.location = new ChipLocation(x, y);
-        processors = (TreeMap<Integer, Processor>) DEFAULT_PROCESSORS.clone();
-        nUserProssors = MachineDefaults.PROCESSORS_PER_CHIP - 1;
-        this.router = router;
-        this.sdram = MachineDefaults.SDRAM_PER_CHIP;
+        this(location, processors, router, sdram, ipAddress, false,
+                MachineDefaults.N_IPTAGS_PER_CHIP, nearestEthernet);
+    }
 
+   /**
+     * Constructor for a virtual Chip with the none default processors.
+     * <p>
+     * Creates the Router on the fly based on the links.
+     *
+     * @param location
+     *            The x and y coordinates of the chip's position
+     *            in the two-dimensional grid of chips.
+     * @param processors
+     *            An iterable of processor objects.
+     * @param router
+     *            A router for the chip.
+     * @param ipAddress
+     *            The IP address of the chip or None if no Ethernet attached.
+     * @param nearestEthernet
+     *            The nearest Ethernet coordinates or null if none known.
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     */
+     public Chip(ChipLocation location, Iterable<Processor> processors,
+             Router router, InetAddress ipAddress,
+             HasChipLocation nearestEthernet) {
+        this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
+                ipAddress, true, MachineDefaults.N_IPTAGS_PER_CHIP,
+                nearestEthernet);
+    }
+
+    /**
+     * Constructor for a virtual Chip with the default processors.
+     * <p>
+     * Creates the Router on the fly based on the links.
+     *
+     * @param location
+     *            The x and y coordinates of the chip's position in the
+     *            two-dimensional grid of chips.
+     * @param router
+     *            A router for the chip.
+     * @param ipAddress
+     *            The IP address of the chip or None if no Ethernet attached.
+     * @param nearestEthernet
+     *            The nearest Ethernet coordinates or null if none known.
+     * @throws IllegalArgumentException
+     *             Indicates another Link with this sourceLinkDirection has
+     *             already been added.
+     */
+    public Chip(ChipLocation location, Router router, InetAddress ipAddress,
+            HasChipLocation nearestEthernet) {
+        this.location = location;
+        this.monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
+        this.userProcessors =  DEFAULT_USER_PROCESSORS;
+        this.router = router;
+
+        this.sdram = MachineDefaults.SDRAM_PER_CHIP;
         this.ipAddress = ipAddress;
 
         this.virtual = true;
@@ -129,12 +201,17 @@ public class Chip implements HasChipLocation {
         this.nearestEthernet = nearestEthernet;
     }
 
-    private static TreeMap<Integer, Processor> defaultProcessors() {
+    private static TreeMap<Integer, Processor> defaultUserProcessors() {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
+           processors.put(i, Processor.factory(i, false));
+        }
+        return processors;
+    }
+
+    private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         processors.put(0, Processor.factory(0, true));
-        for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
-           processors.put(i, Processor.factory(i, true));
-        }
         return processors;
     }
 
@@ -155,33 +232,143 @@ public class Chip implements HasChipLocation {
 
     /**
      * Determines if a processor with the given ID exists in the chip.
-     * @param processorId Id of the potential processor.
+     * <p>
+     * This method will check both the user and monitor processors.
+     *
+     * @param processorId
+     *            Id of the potential processor.
      * @return True if and only if there is a processor for this ID.
      */
-    public boolean hasProcessor(int processorId) {
-        return this.processors.containsKey(processorId);
+    public boolean hasAnyProcessor(int processorId) {
+        return this.userProcessors.containsKey(processorId)
+                || this.monitorProcessors.containsKey(processorId);
+    }
+
+    /**
+     * Determines if a user processor with the given ID exists in the chip.
+     * <p>
+     * Warning: If a Monitor processor exists with this ID this method will
+     *      return false. Use @see hasAnyProcessor()
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return True if and only if there is a user processor for this ID.
+     */
+    public boolean hasUserProcessor(int processorId) {
+        return this.userProcessors.containsKey(processorId);
+    }
+
+    /**
+     * Determines if a monitor processor with the given ID exists in the chip.
+     * <p>
+     * Warning: If a User processor exists with this ID this method will
+     *      return false. Use @see hasAnyProcessor()
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return True if and only if there is a processor for this ID.
+     */
+    public boolean hasMonitorProcessor(int processorId) {
+        return this.monitorProcessors.containsKey(processorId);
     }
 
     /**
      * Obtains the Processor with this ID or returns null.
+     * <p>
+     * This method will check both the user and monitor processors.
      *
-     * @param processorId Id of the potential processor.
+     * @param processorId
+     *            Id of the potential processor.
      * @return The Processor or null if not is found.
      */
-    public Processor getProcessor(int processorId) {
-        return this.processors.get(processorId);
+    public Processor getAnyProcessor(int processorId) {
+        if (this.userProcessors.containsKey(processorId)) {
+            return this.userProcessors.get(processorId);
+        } else {
+            // This also covers the return null if neither have it.
+            return this.monitorProcessors.get(processorId);
+        }
     }
 
     /**
-     * Return a view over the Processors on this Chip
+     * Obtains the User Processor with this ID or returns null.
      * <p>
-     * The Processors will be ordered by ProcessorID
-     *      which are guaranteed to all be different.
+     * This method will only check user processors
+     * so will return null even if a monitor processor exists with this id.
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return The Processor or null if not is found.
+     */
+    public Processor getUserProcessor(int processorId) {
+        return this.userProcessors.get(processorId);
+    }
+
+    /**
+     * Obtains the Monitor Processor with this ID or returns null.
+     * <p>
+     * This method will only check monitor processors
+     * so will return null even if a user processor exists with this id.
+     *
+     * @param processorId
+     *            Id of the potential processor.
+     * @return The Processor or null if not is found.
+     */
+    public Processor getMonitorProcessor(int processorId) {
+        return this.monitorProcessors.get(processorId);
+    }
+
+    /**
+     * Return a list off all the Processors on this Chip
+     * <p>
+     * This method will check both the user and monitor processors.
+     * <p>
+     * The Processors will be ordered by ProcessorID which are guaranteed to all
+     *      be different.
+     * <p>
+     * The current implementation builds a new list on the fly so this list is
+     *      mutable without affecting the Chip.
+     * Future implementations could return an unmodifiable list.
+     *
+     * @return A list of all the processors including both monitor and user.
+     */
+    public List<Processor> allProcessors() {
+        ArrayList<Processor> all =
+                new ArrayList<>(this.monitorProcessors.values());
+        all.addAll(this.userProcessors.values());
+        Collections.sort(all);
+        return all;
+    }
+
+    /**
+     * Return a view over the User Processors on this Chip
+     * <p>
+     * Monitor processors are not included so every Processor in the list is
+     *      guaranteed to have the property isMonitor == false!
+     * <p>
+     * The Processors will be ordered by ProcessorID which are guaranteed to all
+     * be different.
      *
      * @return A unmodifiable View over the processors.
      */
-    public Collection<Processor> processors() {
-        return Collections.unmodifiableCollection(this.processors.values());
+    public Collection<Processor> userProcessors() {
+        return Collections.unmodifiableCollection(this.userProcessors.values());
+    }
+
+    /**
+     * Return a view over the Monitor Processors on this Chip
+     * <p>
+     * User processors are not included so every Processor in the list is
+     *      guaranteed to have the property isMonitor == true!
+     * <p>
+     * The Processors will be ordered by ProcessorID which are guaranteed to all
+     * be different.
+     *
+     * @return A unmodifiable View over the processors.
+     */
+    public Collection<Processor> monitorProcessors() {
+        return Collections.unmodifiableCollection(
+                this.monitorProcessors.values());
     }
 
     /**
@@ -190,62 +377,166 @@ public class Chip implements HasChipLocation {
      * @return The size of the Processor Collection
      */
     public int nProcessors() {
-        return this.processors.size();
+        return this.userProcessors.size() + this.monitorProcessors.size();
     }
 
     /**
-     * The total number of processors that are not monitors.
+     * The total number of user processors.
+     * <p>
+     * For just the user processors so ignores monitor processors.
      *
-     * @return The total number of processors that are not monitors.
+     * @return The size of the Processor Collection
      */
     public int nUserProcessors() {
-        return this.nUserProssors;
+        return this.userProcessors.size();
     }
 
     /**
      * Get the first processor in the list which is not a monitor core.
      *
      * @return A Processor
-     * @throws IllegalStateException If all the Processor(s) are monitors.
+     * @throws NoSuchElementException
+     *             If all the Processor(s) are monitors.
      */
-    public Processor getFirstNoneMonitorProcessor()
-            throws IllegalStateException {
-        for (Processor processor:processors.values()) {
-            if (!processor.isMonitor) {
-                return processor;
-            }
-        }
-        throw new IllegalStateException("No None monitor processor found!");
+    public Processor getFirstUserProcessor()
+            throws NoSuchElementException {
+        return this.userProcessors.get(this.userProcessors.firstKey());
     }
 
     // TODO: Work out if we can guarantee:
-    // This method should ONLY be called via\
-    //        :py:meth:`spinn_machine.Machine.reserve_system_processors`
+    /*
+     * This method should ONLY be called via
+     * :py:meth:`spinn_machine.Machine.reserve_system_processors`
+     */
     /**
      * Sets one of the none monitor processors as a system processor.
      * <p>
      * This will reduce by one the result of nUserProcessors()
      *
-     * @return ID of the processor converted to a monitor
-     *      or -1 to report a failure
+     * @return ID of the processor converted to a monitor or -1 to report a
+     *         failure
      */
+    @SuppressWarnings("unchecked")
     int reserveASystemProcessor() throws IllegalStateException {
-        for (Map.Entry<Integer, Processor> entry : processors.entrySet()) {
-            if (!entry.getValue().isMonitor) {
-                Processor monitor = entry.getValue().cloneAsSystemProcessor();
-                processors.replace(entry.getKey(), monitor);
-                nUserProssors -= 1;
-                return entry.getKey();
-            }
+        if (this.monitorProcessors == DEFAULT_MONITOR_PROCESSORS) {
+            this.monitorProcessors = (TreeMap<Integer, Processor>)
+                    DEFAULT_MONITOR_PROCESSORS.clone();
+            this.userProcessors = (TreeMap<Integer, Processor>)
+                    DEFAULT_USER_PROCESSORS.clone();
         }
-        return -1;
+        Integer firstKey;
+        try {
+           firstKey = this.userProcessors.firstKey();
+        } catch (NoSuchElementException ex) {
+            // This will very rarely happen so no need for pretime checking
+            return -1;
+        }
+        Processor mover = this.userProcessors.get(firstKey);
+        this.userProcessors.remove(firstKey);
+        this.monitorProcessors.put(firstKey, mover);
+        return mover.processorId;
     }
 
     @Override
     public String toString() {
         return "[Chip: x=" + getX() + ", y=" + getY() + ", sdram=" + sdram
-            + ", ip_address=" + this.ipAddress + ", router=" + router
-            + ", processors=" + processors.keySet()
-            + ", nearest_ethernet=" + this.nearestEthernet + "]";
+                + ", ip_address=" + this.ipAddress + ", router=" + router
+                + ", monitors=" + monitorProcessors.keySet()
+                + ", users=" + userProcessors.keySet()
+                + ", nearest_ethernet="
+                + this.nearestEthernet + "]";
     }
+
+    // Previous Router stuff
+
+    /**
+     * Adds a link with a unique sourceLinkDirection to this router.
+     *
+     * @param link Link to add,
+     *     which must have a sourceLinkDirection not yet used.
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     * /
+    public void addLink(Link link) throws IllegalArgumentException {
+        if (this.links.containsKey(link.sourceLinkDirection)) {
+            throw new IllegalArgumentException(
+                    "Link already exists: " + link);
+        }
+        this.links.put(link.sourceLinkDirection, link);
+    }
+
+    /**
+     * Indicates if there is a Link going in this direction.
+     *
+     * @param direction Direction to find link for.
+     * @return True if and only if there is a link in this direction,
+     * /
+    public boolean hasLink(Direction direction) {
+        return links.containsKey(direction);
+    }
+
+    /**
+     * Obtains a Link going in this direction.
+     * <p>
+     * None is returned if no link found.
+     *
+     * @param direction Direction to find link for.
+     * @return The Link or none
+     * /
+    public Link getLink(Direction direction) {
+        return links.get(direction);
+    }
+
+    /**
+     * Return a View over the links.
+     * <p>
+     * Each Link is guaranteed to differ in at least the sourceLinkDirection.
+     *
+     * @return An unmodifiable Collection of Link(s).
+     * /
+    public Collection<Link> links() {
+        return Collections.unmodifiableCollection(links.values());
+    }
+
+    /**
+     * The number of Link(s).
+     * <p>
+     * The number of NeighbouringChipsCoords will always be equal to the
+     *     number of links.
+     *
+     * @return The number of Link(s) and therefor NeighbouringChipsCoords
+     * /
+    public int nLinks() {
+        return links.size();
+    }
+
+    /**
+     * Iterable over the destinations of each link.
+     * <p>
+     * There will be exactly one destination for each Link.
+     * While normally all destinations will be unique the is no guarantee.
+     *
+     * @return A Stream over the destination locations.
+     * /
+    public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
+        return new Iterable<HasChipLocation>() {
+            @Override
+            public Iterator<HasChipLocation> iterator() {
+                return new NeighbourIterator(links.values().iterator());
+            }
+        };
+    }
+
+    /**
+     * List of the destination for all links.
+     *
+     * @return The destination locations
+     * /
+    public List<HasChipLocation> neighbouringChipsCoords() {
+        ArrayList<HasChipLocation> neighbours = new ArrayList();
+        for (Link link: links.values()) {
+            neighbours.add(link.destination);
+        }
+        return neighbours;
+    }*/
 }
