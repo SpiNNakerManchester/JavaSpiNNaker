@@ -80,20 +80,20 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The maximum SDRAM size, or <tt>null</tt> for the system's
 	 *            standard limit. For debugging.
 	 */
-	public GetMachineProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
-			Collection<ChipLocation> ignoreChips,
-			Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
-			Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
-			Integer maxCoreID, Integer maxSDRAMSize) {
-		super(connectionSelector);
-		this.ignoreChips = def(ignoreChips);
-		this.ignoreCoresMap = def(ignoreCoresMap);
-		this.ignoreLinksMap = def(ignoreLinksMap);
-		this.maxCoreID = maxCoreID;
-		this.maxSDRAMSize = maxSDRAMSize;
-		this.chipInfo = new HashMap<>();
-	}
+    public GetMachineProcess(
+            ConnectionSelector<SCPConnection> connectionSelector,
+            Collection<ChipLocation> ignoreChips,
+            Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
+            Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
+            Integer maxCoreID, Integer maxSDRAMSize) {
+        super(connectionSelector);
+        this.ignoreChips = def(ignoreChips);
+        this.ignoreCoresMap = def(ignoreCoresMap);
+        this.ignoreLinksMap = def(ignoreLinksMap);
+        this.maxCoreID = maxCoreID;
+        this.maxSDRAMSize = maxSDRAMSize;
+        this.chipInfo = new HashMap<>();
+    }
 
 	/**
 	 * Get a full, booted machine, populated with information directly from the

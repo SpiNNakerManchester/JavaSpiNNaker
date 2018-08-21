@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Christian-B
  */
-public final class Router {
+public final class Router implements Iterable<Link> {
 
     private final EnumMap<Direction, Link> links =
             new EnumMap<>(Direction.class);
@@ -124,6 +124,19 @@ public final class Router {
     }
 
     /**
+     * Shallow copy of all values except the links.
+     *
+     * @param router original to copy other parameters from.
+     * @param links Known Link(s) to add.
+     *      All must have unique sourceLinkDirection(s).
+     * @throws IllegalArgumentException Indicates another Link with this
+     *     sourceLinkDirection has already been added.
+     */
+    Router(Router router, ArrayList<Link> links) {
+        this(links, router.clockSpeed, router.nAvailableMulticastEntries);
+    }
+
+    /**
      * Adds a link with a unique sourceLinkDirection to this router.
      *
      * @param link Link to add,
@@ -192,7 +205,7 @@ public final class Router {
      *
      * @return A Stream over the destination locations.
      */
-    public Stream<HasChipLocation> streamNeighbouringChipsCoords() {
+    public Stream<ChipLocation> streamNeighbouringChipsCoords() {
         return links.values().stream().map(
             link -> {
                 return link.destination;
@@ -207,10 +220,10 @@ public final class Router {
      *
      * @return A Stream over the destination locations.
      */
-    public Iterable<HasChipLocation> iterNeighbouringChipsCoords() {
-        return new Iterable<HasChipLocation>() {
+    public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
+        return new Iterable<ChipLocation>() {
             @Override
-            public Iterator<HasChipLocation> iterator() {
+            public Iterator<ChipLocation> iterator() {
                 return new NeighbourIterator(links.values().iterator());
             }
         };
@@ -224,8 +237,8 @@ public final class Router {
      *
      * @return The destination locations
      */
-    public List<HasChipLocation> neighbouringChipsCoords() {
-        ArrayList<HasChipLocation> neighbours = new ArrayList();
+    public List<ChipLocation> neighbouringChipsCoords() {
+        ArrayList<ChipLocation> neighbours = new ArrayList();
         for (Link link: links.values()) {
             neighbours.add(link.destination);
         }
@@ -244,6 +257,11 @@ public final class Router {
         result.setLength(result.length() - 1);
         result.append("]");
         return result.toString();
+    }
+
+    @Override
+    public Iterator<Link> iterator() {
+        return links.values().iterator();
     }
 
 }

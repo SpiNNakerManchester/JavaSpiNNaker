@@ -51,6 +51,22 @@ public enum Direction {
     }
 
     /**
+     * Obtains the inverse direction.
+     *
+     * @return The inverse direction.
+     */
+    Direction inverse() {
+        switch (this) {
+            case EAST: return WEST;
+            case NORTHEAST: return SOUTHWEST;
+            case NORTH: return SOUTH;
+            case WEST: return EAST;
+            case SOUTHWEST: return NORTHEAST;
+            default: return NORTH;
+        }
+    }
+
+    /**
      * The Direction with this id when expressed as an int.
      *
      * @param id int id of this Direction

@@ -170,6 +170,9 @@ public final class IPTag extends Tag {
      * @return whether they are equal
      */
     public boolean equals(IPTag otherTag) {
+        if (otherTag == null) {
+            return false;
+        }
         return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
                 && stripSDP == otherTag.stripSDP
                 && trafficIdentifier.equals(otherTag.trafficIdentifier)
