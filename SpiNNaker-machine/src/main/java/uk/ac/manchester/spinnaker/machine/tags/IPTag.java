@@ -143,6 +143,7 @@ public final class IPTag extends Tag {
         return stripSDP;
     }
 
+    //BM
     /** @return The identifier of traffic using this tag. */
     public TrafficIdentifer getTrafficIdentifier() {
         return trafficIdentifier;

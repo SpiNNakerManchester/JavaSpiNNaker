@@ -37,6 +37,7 @@ public abstract class Tag {
         return tagID;
     }
 
+    //BM
     /**
      * @return The port of the tagID, or <tt>null</tt> if there isn't one yet.
      */
