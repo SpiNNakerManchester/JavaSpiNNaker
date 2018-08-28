@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import java.net.InetAddress;
 import static java.net.InetAddress.getByAddress;
 import static java.net.InetAddress.getByName;
 import static java.util.Collections.singletonList;
@@ -53,17 +54,17 @@ public class BMPConnectionData {
 	 * final part e.g. if the machine IP address is 192.168.0.5, the BMP IP
 	 * address is assumed to be 192.168.0.4
 	 *
-	 * @param hostname
-	 *            the SpiNNaker machine main hostname or IP address
+	 * @param host
+	 *            the SpiNNaker machine main host
 	 * @param numBoards
 	 *            the number of boards in the machine
 	 * @throws UnknownHostException
 	 *             If the IP address computations fail
 	 */
-	public BMPConnectionData(String hostname, int numBoards)
+	public BMPConnectionData(InetAddress host, int numBoards)
 			throws UnknownHostException {
 		// take the IP address, split by dots, and subtract 1 off last bit
-		byte[] ipBits = getByName(hostname).getAddress();
+		byte[] ipBits = host.getAddress();
 		ipBits[MIN_BYTE_FIELD]--;
 		ipAddress = getByAddress(ipBits).toString();
 		portNumber = SCP_SCAMP_PORT;

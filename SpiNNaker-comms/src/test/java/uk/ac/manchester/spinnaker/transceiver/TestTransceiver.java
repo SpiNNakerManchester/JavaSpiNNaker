@@ -30,6 +30,7 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
+import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 class TestTransceiver {
 	static BoardTestConfiguration board_config;
@@ -120,9 +121,10 @@ class TestTransceiver {
 	@Test
 	void testBootBoard() throws Exception {
 		board_config.set_up_remote_board();
+        InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
 
 		try (Transceiver trans = Transceiver.createTransceiver(
-				board_config.remotehost, board_config.board_version)) {
+				remoteHost, board_config.board_version)) {
 			// self.assertFalse(trans.is_connected())
 			trans.bootBoard();
 		}

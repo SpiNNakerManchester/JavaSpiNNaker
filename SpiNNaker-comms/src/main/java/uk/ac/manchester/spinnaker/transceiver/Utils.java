@@ -6,6 +6,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
@@ -32,7 +33,7 @@ public abstract class Utils {
 	 * address is assumed to be 192.168.0.4
 	 *
 	 * @param hostname
-	 *            the SpiNNaker machine main hostname or IP address
+	 *            the SpiNNaker machine main host
 	 * @param numberOfBoards
 	 *            the number of boards in the machine
 	 * @return The BMP connection data
@@ -40,9 +41,9 @@ public abstract class Utils {
 	 *             If the IP address computations fail.
 	 */
 	public static BMPConnectionData workOutBMPFromMachineDetails(
-			String hostname, Integer numberOfBoards)
+			InetAddress host, Integer numberOfBoards)
 			throws UnknownHostException {
-		return new BMPConnectionData(hostname,
+		return new BMPConnectionData(host,
 				numberOfBoards == null ? 0 : numberOfBoards);
 	}
 
