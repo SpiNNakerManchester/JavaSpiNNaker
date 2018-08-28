@@ -73,7 +73,7 @@ public class BufferManager {
         finished = false;
     }
 
-    public void loadInitialBuffers() throws IOException, Process.Exception {
+    public void loadInitialBuffers() throws IOException, Process.Exception, BufferableRegionTooSmall {
         int totalData = 0;
         for (Vertex vertex:this.senderVertices) {
             for (Integer region:vertex.getRegions()){
