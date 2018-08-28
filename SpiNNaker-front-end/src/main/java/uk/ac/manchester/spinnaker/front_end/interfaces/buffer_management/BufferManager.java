@@ -170,7 +170,7 @@ public class BufferManager {
         };
     }
 
-    private void sendInitialMessages(Vertex vertex, Integer region, ProgressBar progress) throws IOException, Process.Exception {
+    private void sendInitialMessages(Vertex vertex, Integer region, ProgressBar progress) throws IOException, Process.Exception, BufferableRegionTooSmall {
         Placement placement = placements.getPlacementOfVertex(vertex);
         int regionBaseAddress = locateMemoryRegionForPlacement(placement, region, tranceiver);
         // Add packets until out of space
@@ -180,30 +180,63 @@ public class BufferManager {
             throw new Error(
                     "The buffer region of " + vertex + " must be divisible by 2");
         }
-        //allData = = b""
+        //TODO: verify if bytesToGo is big enough (Python has no capacity)
+        ByteBuffer allData = ByteBuffer.allocate(bytesToGo);
         if (vertex.isEmpty(region))
             sentMessage = true;
         else {
             while (vertex.isNextTimestamp(region) &&
                     bytesToGo > MIN_MESSAGE_SIZE) {
                 int spaceAvailable = Math.min(bytesToGo, 280);
-                createMessageToSend(spaceAvailable, vertex, region);
+                EIEIODataMessage nextMessage = createMessageToSend(spaceAvailable, vertex, region);
 
-                //next_message = self._create_message_to_send(
-                //    space_available, vertex, region)
-                //if next_message is None:
-                //    break
-
-                //# Write the message to the memory
-                //data = next_message.bytestring
-                //all_data += data
-                //sent_message = True
-
-                //# Update the positions
-                //bytes_to_go -= len(data)
-                //progress.update(len(data))
+                if (nextMessage == null) {
+                    break;
+                }
+                // Write the message to the memory
+                ByteBuffer data = nextMessage.getData();  // next_message.bytestring
+                allData.put(data);
+                sentMessage = true;
+                // Update the positions
+                //TODO verify position can be used for size
+                bytesToGo -= data.position();
+                progress.update(data.position());
             }
         }
+
+        if (!sentMessage) {
+            throw new BufferableRegionTooSmall(
+                "The buffer size " + bytesToGo
+                + " is too small for any data to be added for region "
+                + region + " of vertex " + vertex);
+        }
+        /*
+        # If there are no more messages and there is space, add a stop request
+        if (not vertex.is_next_timestamp(region) and
+                bytes_to_go >= EventStopRequest.get_min_packet_length()):
+            data = EventStopRequest().bytestring
+            # logger.debug(
+            #    "Writing stop message of {} bytes to {} on {}, {}, {}".format(
+            #         len(data), hex(region_base_address),
+            #         placement.x, placement.y, placement.p))
+            all_data += data
+            bytes_to_go -= len(data)
+            progress.update(len(data))
+            self._sent_messages[vertex] = BuffersSentDeque(
+                region, sent_stop_message=True)
+
+        # If there is any space left, add padding
+        if bytes_to_go > 0:
+            padding_packet = PaddingRequest()
+            n_packets = bytes_to_go // padding_packet.get_min_packet_length()
+            data = padding_packet.bytestring
+            data *= n_packets
+            all_data += data
+
+        # Do the writing all at once for efficiency
+        self._transceiver.write_memory(
+            placement.x, placement.y, region_base_address, all_data)
+            */
     }
 
     //found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
@@ -219,7 +252,7 @@ public class BufferManager {
         return appDataBaseAddress + APP_PTR_TABLE_HEADER_BYTE_SIZE + (region * 4);
     }
 
-    private Object createMessageToSend(int spaceAvailable, Vertex vertex, Integer region) {
+    private EIEIODataMessage createMessageToSend(int size, Vertex vertex, Integer region) {
         if (!vertex.isNextTimestamp(region)) {
             return null;
         }
@@ -238,26 +271,19 @@ public class BufferManager {
         EIEIODataMessage message = new EIEIODataMessage(EIEIOType.KEY_32_BIT, count, data,
 			keyPrefix, nextTimestamp, timestamp, prefixType);
 
-        //message = EIEIODataMessage.create(
-        //    EIEIOType.KEY_32_BIT, timestamp=next_timestamp)
+        // If there is no room for the message, return None
+        // TODO: Work out if this ever happens
+        if (message.getSize() + EIEIOType.KEY_32_BIT.keyBytes > size) {
+            return null;
+        }
 
-        //# If there is no room for the message, return None
-        //if message.size + _N_BYTES_PER_KEY > size:
-        //    return None
+        // Add keys up to the limit
+        int bytesToGo = size - message.getSize();
+        while (bytesToGo >= EIEIOType.KEY_32_BIT.keyBytes && vertex.isNextKey(region, nextTimestamp)){
+           message.addKey(vertex.getNextKey(region));
+           bytesToGo -= EIEIOType.KEY_32_BIT.keyBytes;
+        }
 
-        //# Add keys up to the limit
-        //bytes_to_go = size - message.size
-        //while (bytes_to_go >= _N_BYTES_PER_KEY and
-        //        vertex.is_next_key(region, next_timestamp)):
-
-        //    key = vertex.get_next_key(region)
-        //    message.add_key(key)
-        //    bytes_to_go -= _N_BYTES_PER_KEY
-
-        //return message
-
-
-        //TODO
-        return null;
+        return message;
     }
 }
