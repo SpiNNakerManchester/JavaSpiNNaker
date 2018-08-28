@@ -29,7 +29,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 *            The local port to bind to, between 1025 and 65535. If
 	 *            <tt>null</tt>, defaults to a random unused local port
 	 * @param remoteHost
-	 *            The remote host name or IP address to send packets to. If
+	 *            The remote host to send packets to. If
 	 *            <tt>null</tt>, the socket will be available for listening
 	 *            only, and will throw and exception if used for sending
 	 * @param remotePort
@@ -39,7 +39,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 *             If there is an error setting up the communication channel
 	 */
 	public BootConnection(InetAddress localHost, Integer localPort,
-			String remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost,
 				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
 						: remotePort);

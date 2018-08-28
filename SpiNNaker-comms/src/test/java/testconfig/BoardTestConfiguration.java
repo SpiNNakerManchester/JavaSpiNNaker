@@ -5,13 +5,16 @@ import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.junit.jupiter.api.Assumptions;
 
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
 public class BoardTestConfiguration {
@@ -51,17 +54,18 @@ public class BoardTestConfiguration {
 		board_version = config.getint("Machine", "version");
 	}
 
-	public void set_up_remote_board() throws SocketException {
+	public void set_up_remote_board() throws SocketException, UnknownHostException {
 		remotehost = config.get("Machine", "machineName");
 		Assumptions.assumeTrue(host_is_reachable(remotehost),
 				() -> "test board (" + remotehost + ") appears to be down");
 		board_version = config.getint("Machine", "version");
 		String names = config.get("Machine", "bmp_names");
+        Inet4Address bmpHost = InetFactory.getByName(names);
 		if (names == "None") {
 			bmp_names = null;
 		} else {
 			bmp_names =
-					asList(new BMPConnectionData(0, 0, names, asList(0), null));
+					asList(new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
 		auto_detect_bmp = config.getboolean("Machine", "auto_detect_bmp");
 		localport = PORT;

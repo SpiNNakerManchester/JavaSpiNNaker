@@ -14,7 +14,7 @@ import uk.ac.manchester.spinnaker.connections.model.Listenable;
 public class UDPListenableConnection extends UDPConnection<ByteBuffer>
 		implements Listenable.MessageReceiver<ByteBuffer> {
 	public UDPListenableConnection(InetAddress localHost, Integer localPort,
-			String remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 	}
 

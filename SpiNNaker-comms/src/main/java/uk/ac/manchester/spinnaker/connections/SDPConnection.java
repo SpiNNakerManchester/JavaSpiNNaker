@@ -32,7 +32,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	 * @throws IOException
 	 *             If anything goes wrong with the setup.
 	 */
-	public SDPConnection(HasChipLocation remoteChip, String remoteHost,
+	public SDPConnection(HasChipLocation remoteChip, InetAddress remoteHost,
 			Integer remotePort) throws IOException {
 		this(remoteChip, null, null, remoteHost, remotePort);
 	}
@@ -57,7 +57,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	 *             port is specified and already bound).
 	 */
 	public SDPConnection(HasChipLocation remoteChip, InetAddress localHost,
-			Integer localPort, String remoteHost, Integer remotePort)
+			Integer localPort, InetAddress remoteHost, Integer remotePort)
 			throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 		this.chip = remoteChip.asChipLocation();

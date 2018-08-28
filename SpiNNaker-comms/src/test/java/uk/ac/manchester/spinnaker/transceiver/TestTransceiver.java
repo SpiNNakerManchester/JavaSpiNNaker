@@ -8,6 +8,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -46,7 +47,8 @@ class TestTransceiver {
 		List<Connection> connections = new ArrayList<>();
 
 		board_config.set_up_remote_board();
-		connections.add(new SCPConnection(board_config.remotehost));
+        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
+		connections.add(new SCPConnection(remoteHost));
 
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
@@ -59,7 +61,8 @@ class TestTransceiver {
 		List<Connection> connections = new ArrayList<>();
 
 		board_config.set_up_remote_board();
-		connections.add(new SCPConnection(board_config.remotehost));
+        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
+		connections.add(new SCPConnection(remoteHost));
 
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
@@ -72,10 +75,11 @@ class TestTransceiver {
 		List<Connection> connections = new ArrayList<>();
 
 		board_config.set_up_remote_board();
-		connections.add(new SCPConnection(board_config.remotehost));
+        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
+		connections.add(new SCPConnection(remoteHost));
 
 		board_config.set_up_local_virtual_board();
-		connections.add(new SCPConnection(board_config.remotehost));
+		connections.add(new SCPConnection(remoteHost));
 
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
@@ -91,11 +95,12 @@ class TestTransceiver {
 		List<Connection> connections = new ArrayList<>();
 
 		board_config.set_up_remote_board();
-		connections.add(new SCPConnection(board_config.remotehost));
+        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
+		connections.add(new SCPConnection(remoteHost));
 
 		board_config.set_up_local_virtual_board();
 		connections.add(
-				new BootConnection(null, null, board_config.remotehost, null));
+				new BootConnection(null, null, remoteHost, null));
 
 		try (Transceiver trans = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
@@ -135,7 +140,8 @@ class TestTransceiver {
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(null, (Integer) null, NOHOST, null));
+        Inet4Address noHost = InetFactory.getByName(NOHOST);
+		connections.add(new SCPConnection(null, (Integer) null, noHost, null));
 		EIEIOConnection orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
 
@@ -168,7 +174,8 @@ class TestTransceiver {
 		});
 
 		List<Connection> connections = new ArrayList<>();
-		connections.add(new SCPConnection(NOHOST));
+        Inet4Address noHost = InetFactory.getByName(NOHOST);
+		connections.add(new SCPConnection(noHost));
 		try (MockWriteTransceiver tx =
 				new MockWriteTransceiver(5, connections)) {
 			// All chips

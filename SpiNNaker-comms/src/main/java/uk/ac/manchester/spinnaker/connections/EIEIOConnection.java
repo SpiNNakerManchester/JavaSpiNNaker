@@ -31,7 +31,7 @@ public class EIEIOConnection
 	 * @param localPort
 	 *            The local port to bind to, 0 or between 1025 and 65535.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send packets to. If not
+	 *            The remote host to send packets to. If not
 	 *            specified, the socket will be available for listening only,
 	 *            and will throw and exception if used for sending.
 	 * @param remotePort
@@ -43,7 +43,7 @@ public class EIEIOConnection
 	 *             If there is an error setting up the communication channel
 	 */
 	public EIEIOConnection(InetAddress localHost, Integer localPort,
-			String remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 	}
 

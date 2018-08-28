@@ -91,8 +91,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
-	public UDPConnection(InetAddress localHost, Integer localPort, String remoteHost,
-			Integer remotePort) throws IOException {
+	public UDPConnection(InetAddress localHost, Integer localPort,
+            InetAddress remoteHost, Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
 		channel.configureBlocking(false);
@@ -108,7 +108,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		});
 		canSend = false;
 		if (remoteHost != null && remotePort != null && remotePort > 0) {
-			remoteIPAddress = (Inet4Address) getByName(remoteHost);
+			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
 			channel.connect(remoteAddress);
 			canSend = true;

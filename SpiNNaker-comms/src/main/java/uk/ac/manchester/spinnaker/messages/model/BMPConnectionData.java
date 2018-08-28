@@ -22,8 +22,8 @@ public class BMPConnectionData {
 	public final int cabinet;
 	/** The frame number. Frames are contained within a cabinet. */
 	public final int frame;
-	/** The IP address or host name of the BMP. */
-	public final String ipAddress;
+	/** The IP address of the BMP. */
+	public final InetAddress ipAddress;
 	/**
 	 * The port number associated with the BMP connection, or <tt>null</tt> for
 	 * the default.
@@ -37,7 +37,7 @@ public class BMPConnectionData {
 	 * @param boards The boards controlled by the BMP.
 	 * @param portNumber The BMP's port.
 	 */
-	public BMPConnectionData(int cabinet, int frame, String ipAddress,
+	public BMPConnectionData(int cabinet, int frame, InetAddress ipAddress,
 			Collection<Integer> boards, Integer portNumber) {
 		this.cabinet = cabinet;
 		this.frame = frame;
@@ -66,7 +66,7 @@ public class BMPConnectionData {
 		// take the IP address, split by dots, and subtract 1 off last bit
 		byte[] ipBits = host.getAddress();
 		ipBits[MIN_BYTE_FIELD]--;
-		ipAddress = getByAddress(ipBits).toString();
+		ipAddress = getByAddress(ipBits);
 		portNumber = SCP_SCAMP_PORT;
 
 		// Assume a single board with no cabinet or frame specified
