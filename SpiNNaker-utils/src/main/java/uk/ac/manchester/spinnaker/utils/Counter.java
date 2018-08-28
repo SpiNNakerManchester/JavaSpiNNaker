@@ -4,11 +4,11 @@
 package uk.ac.manchester.spinnaker.utils;
 
 /**
- * Thin wrapper around an int for Counting.
+ * Thin wrapper around an <tt>int</tt> for counting.
  * <p>
- * This allows the Object to be final and therefor passed into inner classes.
+ * This allows the object to be final and therefore passed into inner classes.
  * <p>
- * This is NOT thread safe.
+ * This is <i>not</i> thread safe.
  *
  * @author Christian-B
  */
@@ -27,7 +27,7 @@ public final class Counter {
      * Add one to the count.
      */
     public void increment() {
-        count += 1;
+        count++;
     }
 
     /**

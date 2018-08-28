@@ -32,7 +32,8 @@ import java.util.NoSuchElementException;
  * The recommended way to make sure close is called is with a
  *      try-with-resources statement
  *
- * @author Donal Fellows, Christian
+ * @author Donal Fellows
+ * @author Christian
  */
 public class ReaderLineIterable implements Iterable<String>, Closeable {
 	private final BufferedReader r;
