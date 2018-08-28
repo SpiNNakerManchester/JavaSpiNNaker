@@ -121,7 +121,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @throws IOException
 		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(InetAddress localAddress, int localPort) throws IOException;
+		Conn getInstance(InetAddress localAddress, int localPort)
+                throws IOException;
 	}
 
 	@Override

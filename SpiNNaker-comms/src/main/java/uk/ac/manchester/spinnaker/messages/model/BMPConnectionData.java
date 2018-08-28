@@ -2,7 +2,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import java.net.InetAddress;
 import static java.net.InetAddress.getByAddress;
-import static java.net.InetAddress.getByName;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;

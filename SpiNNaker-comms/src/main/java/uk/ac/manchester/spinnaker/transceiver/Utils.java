@@ -32,7 +32,7 @@ public abstract class Utils {
 	 * final part e.g. if the machine IP address is 192.168.0.5, the BMP IP
 	 * address is assumed to be 192.168.0.4
 	 *
-	 * @param hostname
+	 * @param host
 	 *            the SpiNNaker machine main host
 	 * @param numberOfBoards
 	 *            the number of boards in the machine

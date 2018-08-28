@@ -1900,7 +1900,8 @@ public class Transceiver extends UDPTransceiver
 		 * @param chip
 		 *            The chip to talk to.
 		 */
-		public ConnectionDescriptor(InetAddress hostname, HasChipLocation chip) {
+		public ConnectionDescriptor(
+                InetAddress hostname, HasChipLocation chip) {
 			this.hostname = requireNonNull(hostname);
 			this.chip = chip.asChipLocation();
 			this.portNumber = null;
@@ -1909,14 +1910,14 @@ public class Transceiver extends UDPTransceiver
 		/**
 		 * Create a connection descriptor.
 		 *
-		 * @param hostname
+		 * @param host
 		 *            The host to talk to.
 		 * @param port
 		 *            The UDP port to talk to.
 		 * @param chip
 		 *            The chip to talk to.
 		 */
-		public ConnectionDescriptor(String InetAddress, int port,
+		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
 			this.hostname = requireNonNull(hostname);
 			this.chip = chip.asChipLocation();

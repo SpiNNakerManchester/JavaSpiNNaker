@@ -126,7 +126,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (localHost == null) {
 				localAddr = (Inet4Address) getByAddress(new byte[IPV4_SIZE]);
 			} else {
-				localAddr = (Inet4Address)localHost;
+				localAddr = (Inet4Address) localHost;
 			}
 		} catch (ClassCastException e) {
 			throw new UnknownHostException("SpiNNaker only talks IPv4");
