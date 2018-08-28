@@ -4,6 +4,7 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
@@ -32,12 +33,12 @@ public class EIEIOConnectionFactory1 implements
     }
 
     @Override
-    public UDPConnection<EIEIOMessage<? extends EIEIOHeader>> getInstance(String localAddress) throws IOException {
+    public UDPConnection<EIEIOMessage<? extends EIEIOHeader>> getInstance(InetAddress localAddress) throws IOException {
         return new EIEIOConnection(localAddress, null, null, null);
     }
 
     @Override
-    public UDPConnection<EIEIOMessage<? extends EIEIOHeader>> getInstance(String localAddress, int localPort) throws IOException {
+    public UDPConnection<EIEIOMessage<? extends EIEIOHeader>> getInstance(InetAddress localAddress, int localPort) throws IOException {
         return new EIEIOConnection(localAddress, null, null, null);
     }
 

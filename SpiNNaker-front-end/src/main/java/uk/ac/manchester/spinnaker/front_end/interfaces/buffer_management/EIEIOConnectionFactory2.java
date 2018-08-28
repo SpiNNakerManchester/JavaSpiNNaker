@@ -4,6 +4,7 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
@@ -24,12 +25,12 @@ public class EIEIOConnectionFactory2 implements
     }
 
     @Override
-    public UDPConnection<EIEIOMessage> getInstance(String localAddress) throws IOException {
+    public UDPConnection<EIEIOMessage> getInstance(InetAddress localAddress) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public UDPConnection<EIEIOMessage> getInstance(String localAddress, int localPort) throws IOException {
+    public UDPConnection<EIEIOMessage> getInstance(InetAddress localAddress, int localPort) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
