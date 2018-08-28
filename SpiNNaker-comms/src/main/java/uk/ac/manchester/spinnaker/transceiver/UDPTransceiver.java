@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static java.net.InetAddress.getByName;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
@@ -231,7 +230,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
 			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			Integer localPort, String localHost) throws IOException {
+			Integer localPort, InetAddress localHost) throws IOException {
 		if (!UDPConnection.class
 				.isAssignableFrom(connectionFactory.getClassKey())) {
 			throw new IllegalArgumentException(
@@ -240,7 +239,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 		// normalise local_host to the IP address
 		InetAddress addr =
-				normalize(localHost == null ? null : getByName(localHost));
+				normalize(localHost == null ? null : localHost);
 
 		// If the local port was specified
 		Pair<T> pair;
