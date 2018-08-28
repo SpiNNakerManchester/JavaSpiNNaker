@@ -31,9 +31,9 @@ public class BufferManager {
     //Found in DataSpecification/data_specification/constants.py
     private static final int APP_PTR_TABLE_HEADER_BYTE_SIZE = 8;
 
-    //EIEIODataMessage.min_packet_length(
-    //eieio_type=EIEIOType.KEY_32_BIT, is_timestamp=True)
-    private static final int MIN_MESSAGE_SIZE = 4;
+    //2 bytes of generic EIEIO header, 4 bytes of key (for 32 bits)
+    //and 0 bytes of payload (as it is KEY_32_BIT, not KEY_PAYLOAD_32_BIT).
+    private static final int MIN_MESSAGE_SIZE = 6;
 
     Placements placements;
     Tags tags;
