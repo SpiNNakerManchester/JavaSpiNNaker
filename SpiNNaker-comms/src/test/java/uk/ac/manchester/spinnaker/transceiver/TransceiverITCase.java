@@ -57,6 +57,7 @@ import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegiste
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
  * Communications integration test.
@@ -396,8 +397,9 @@ class TransceiverITCase {
 
 	@Test
 	void testTransceiver() throws Exception {
+        InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (Transceiver transceiver = Transceiver.createTransceiver(
-				board_config.remotehost, board_config.board_version,
+				remoteHost, board_config.board_version,
 				board_config.bmp_names, null, down_chips, down_cores, null,
 				null, board_config.auto_detect_bmp, null, null, null)) {
 

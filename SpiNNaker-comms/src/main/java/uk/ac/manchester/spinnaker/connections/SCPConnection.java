@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -21,11 +22,11 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String remoteHost) throws IOException {
+	public SCPConnection(InetAddress remoteHost) throws IOException {
 		this(DEFAULT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
 	}
 
@@ -33,14 +34,14 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String remoteHost, Integer remotePort)
+	public SCPConnection(InetAddress remoteHost, Integer remotePort)
 			throws IOException {
 		this(DEFAULT_CHIP, null, null, remoteHost, remotePort);
 	}
@@ -49,19 +50,19 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
 	 *            The optional local port to listen on; use <tt>null</tt> to
 	 *            pick a random port.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String localHost, Integer localPort,
-			String remoteHost) throws IOException {
+	public SCPConnection(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost) throws IOException {
 		this(DEFAULT_CHIP, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
 
@@ -69,22 +70,22 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
 	 *            The optional local port to listen on; use <tt>null</tt> to
 	 *            pick a random port.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String localHost, Integer localPort,
-			String remoteHost, Integer remotePort) throws IOException {
+	public SCPConnection(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		this(DEFAULT_CHIP, localHost, localPort, remoteHost, remotePort);
 	}
 
@@ -94,11 +95,11 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String remoteHost)
+	public SCPConnection(HasChipLocation chip, InetAddress remoteHost)
 			throws IOException {
 		this(chip, null, null, remoteHost, SCP_SCAMP_PORT);
 	}
@@ -109,14 +110,14 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host nto send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String remoteHost,
+	public SCPConnection(HasChipLocation chip, InetAddress remoteHost,
 			Integer remotePort) throws IOException {
 		this(chip, null, null, remoteHost, remotePort);
 	}
@@ -127,19 +128,19 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host name of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
 	 *            The optional local port to listen on; use <tt>null</tt> to
 	 *            pick a random port.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String localHost,
-			Integer localPort, String remoteHost) throws IOException {
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
+			Integer localPort, InetAddress remoteHost) throws IOException {
 		this(chip, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
 
@@ -149,22 +150,22 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
 	 *            The optional local port to listen on; use <tt>null</tt> to
 	 *            pick a random port.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send messages to.
+	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
 	 *            <tt>null</tt>, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String localHost,
-			Integer localPort, String remoteHost, Integer remotePort)
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
+			Integer localPort, InetAddress remoteHost, Integer remotePort)
 			throws IOException {
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
 				"SCPConnection only meaningful with a real remote host"),

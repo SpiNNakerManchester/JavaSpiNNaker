@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
@@ -12,8 +13,8 @@ import uk.ac.manchester.spinnaker.connections.model.Listenable;
  */
 public class UDPListenableConnection extends UDPConnection<ByteBuffer>
 		implements Listenable.MessageReceiver<ByteBuffer> {
-	public UDPListenableConnection(String localHost, Integer localPort,
-			String remoteHost, Integer remotePort) throws IOException {
+	public UDPListenableConnection(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 	}
 

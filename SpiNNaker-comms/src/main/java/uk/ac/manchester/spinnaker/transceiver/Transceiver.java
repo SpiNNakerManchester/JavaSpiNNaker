@@ -285,8 +285,8 @@ public class Transceiver extends UDPTransceiver
 	 * the conjunction of the created UDPConnection and the discovered
 	 * connections.
 	 *
-	 * @param hostname
-	 *            The hostname or IP address of the board
+	 * @param host
+	 *            The host IP address of the board
 	 * @param numberOfBoards
 	 *            a number of boards expected to be supported, or <tt>null</tt>,
 	 *            which defaults to a single board
@@ -331,7 +331,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static Transceiver createTransceiver(String hostname,
+	public static Transceiver createTransceiver(InetAddress host,
 			int version, Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -340,8 +340,8 @@ public class Transceiver extends UDPTransceiver
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, Exception {
-		if (hostname != null) {
-			log.info("Creating transceiver for {}", hostname);
+		if (host != null) {
+			log.info("Creating transceiver for {}", host);
 		}
 		List<Connection> connections = new ArrayList<>();
 
@@ -353,7 +353,7 @@ public class Transceiver extends UDPTransceiver
 		if (version >= BIGGER_BOARD && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData = singletonList(
-					workOutBMPFromMachineDetails(hostname, numberOfBoards));
+					workOutBMPFromMachineDetails(host, numberOfBoards));
 		}
 
 		// handle BMP connections
@@ -369,12 +369,12 @@ public class Transceiver extends UDPTransceiver
 
 		// handle the SpiNNaker connection
 		if (scampConnections == null) {
-			connections.add(new SCPConnection(hostname));
+			connections.add(new SCPConnection(host));
 		}
 
 		// handle the boot connection
 		connections
-				.add(new BootConnection(null, null, hostname, bootPortNumber));
+				.add(new BootConnection(null, null, host, bootPortNumber));
 
 		return new Transceiver(version, connections, ignoreChips, ignoreCores,
 				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
@@ -401,7 +401,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static Transceiver createTransceiver(String hostname,
+	public static Transceiver createTransceiver(InetAddress hostname,
 			int version) throws IOException, SpinnmanException, Exception {
 		return createTransceiver(hostname, version, null, 0, emptyList(),
 				emptyMap(), emptyMap(), null, false, null, null, null);
@@ -854,7 +854,7 @@ public class Transceiver extends UDPTransceiver
 
 			// if no data, no proxy
 			if (conn == null) {
-				conn = new SCPConnection(chip, ipAddress.getHostAddress());
+				conn = new SCPConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
 				if (udpScampConnections
@@ -1886,7 +1886,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public static final class ConnectionDescriptor {
 		/** What host to talk to. */
-		private String hostname;
+		private InetAddress hostname;
 		/** What port to talk to, or <tt>null</tt> for default. */
 		private Integer portNumber;
 		/** What chip to talk to. */
@@ -1900,7 +1900,8 @@ public class Transceiver extends UDPTransceiver
 		 * @param chip
 		 *            The chip to talk to.
 		 */
-		public ConnectionDescriptor(String hostname, HasChipLocation chip) {
+		public ConnectionDescriptor(
+                InetAddress hostname, HasChipLocation chip) {
 			this.hostname = requireNonNull(hostname);
 			this.chip = chip.asChipLocation();
 			this.portNumber = null;
@@ -1909,14 +1910,14 @@ public class Transceiver extends UDPTransceiver
 		/**
 		 * Create a connection descriptor.
 		 *
-		 * @param hostname
+		 * @param host
 		 *            The host to talk to.
 		 * @param port
 		 *            The UDP port to talk to.
 		 * @param chip
 		 *            The chip to talk to.
 		 */
-		public ConnectionDescriptor(String hostname, int port,
+		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
 			this.hostname = requireNonNull(hostname);
 			this.chip = chip.asChipLocation();
