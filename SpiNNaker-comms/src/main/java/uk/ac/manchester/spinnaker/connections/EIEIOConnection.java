@@ -24,7 +24,7 @@ public class EIEIOConnection
 	 * Create an EIEIO connection.
 	 *
 	 * @param localHost
-	 *            The local host name or IP address to bind to. If not
+	 *            The local host to bind to. If not
 	 *            specified, it defaults to binding to all interfaces, unless
 	 *            remoteHost is specified, in which case binding is done to the
 	 *            IP address that will be used to send packets.
@@ -42,7 +42,7 @@ public class EIEIOConnection
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
-	public EIEIOConnection(String localHost, Integer localPort,
+	public EIEIOConnection(InetAddress localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
 	}

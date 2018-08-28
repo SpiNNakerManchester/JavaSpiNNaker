@@ -8,6 +8,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -245,13 +246,13 @@ class EIEIOConnectionFactory implements ConnectionFactory<EIEIOConnection> {
 	}
 
 	@Override
-	public EIEIOConnection getInstance(String localAddress)
+	public EIEIOConnection getInstance(InetAddress localAddress)
 			throws IOException {
 		return new EIEIOConnection(localAddress, null, null, null);
 	}
 
 	@Override
-	public EIEIOConnection getInstance(String localAddress, int localPort)
+	public EIEIOConnection getInstance(InetAddress localAddress, int localPort)
 			throws IOException {
 		return new EIEIOConnection(localAddress, localPort, null, null);
 	}

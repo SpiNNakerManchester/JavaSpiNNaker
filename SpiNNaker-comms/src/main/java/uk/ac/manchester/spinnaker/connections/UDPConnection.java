@@ -73,7 +73,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/**
 	 * @param localHost
-	 *            The local host name or IP address to bind to. If not
+	 *            The local host to bind to. If not
 	 *            specified, it defaults to binding to all interfaces, unless
 	 *            remoteHost is specified, in which case binding is done to the
 	 *            IP address that will be used to send packets.
@@ -91,7 +91,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
-	public UDPConnection(String localHost, Integer localPort, String remoteHost,
+	public UDPConnection(InetAddress localHost, Integer localPort, String remoteHost,
 			Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
@@ -115,7 +115,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 	}
 
-	private SocketAddress createLocalAddress(String localHost,
+	private SocketAddress createLocalAddress(InetAddress localHost,
 			Integer localPort) throws UnknownHostException {
 		// Convert null into wildcard
 		if (localPort == null) {
@@ -126,7 +126,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (localHost == null) {
 				localAddr = (Inet4Address) getByAddress(new byte[IPV4_SIZE]);
 			} else {
-				localAddr = (Inet4Address) getByName(localHost);
+				localAddr = (Inet4Address)localHost;
 			}
 		} catch (ClassCastException e) {
 			throw new UnknownHostException("SpiNNaker only talks IPv4");

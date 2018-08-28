@@ -108,7 +108,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @throws IOException
 		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress) throws IOException;
+		Conn getInstance(InetAddress localAddress) throws IOException;
 
 		/**
 		 * Make an instance with a caller-selected local port.
@@ -121,7 +121,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @throws IOException
 		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress, int localPort) throws IOException;
+		Conn getInstance(InetAddress localAddress, int localPort) throws IOException;
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 				log.info("creating connection on {}:{}", addr.getHostAddress(),
 						localPort);
 				pair.connection = connectionFactory
-						.getInstance(addr.getHostAddress(), localPort);
+						.getInstance(addr, localPort);
 				addConnection(pair.connection);
 			}
 		} else {
@@ -264,7 +264,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 				log.info("creating connection on {}:0 (arbitrary port)",
 						addr.getHostAddress());
 				pair.connection =
-						connectionFactory.getInstance(addr.getHostAddress());
+						connectionFactory.getInstance(addr);
 				addConnection(pair.connection);
 			}
 		}

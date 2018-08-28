@@ -5,6 +5,7 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.SDPReceiver;
@@ -55,7 +56,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	 *             If anything goes wrong with the setup (e.g., if the local
 	 *             port is specified and already bound).
 	 */
-	public SDPConnection(HasChipLocation remoteChip, String localHost,
+	public SDPConnection(HasChipLocation remoteChip, InetAddress localHost,
 			Integer localPort, String remoteHost, Integer remotePort)
 			throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);

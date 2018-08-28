@@ -5,6 +5,7 @@ import static java.nio.ByteBuffer.allocate;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
@@ -20,7 +21,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 
 	/**
 	 * @param localHost
-	 *            The local host name or IP address to bind to. If <tt>null</tt>
+	 *            The local host to bind to. If <tt>null</tt>
 	 *            defaults to bind to all interfaces, unless remoteHost is
 	 *            specified, in which case binding is done to the IP address
 	 *            that will be used to send packets.
@@ -37,7 +38,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
-	public BootConnection(String localHost, Integer localPort,
+	public BootConnection(InetAddress localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost,
 				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT

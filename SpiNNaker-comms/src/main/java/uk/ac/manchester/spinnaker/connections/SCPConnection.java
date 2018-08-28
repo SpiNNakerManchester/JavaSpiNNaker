@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -49,7 +50,7 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
@@ -60,7 +61,7 @@ public class SCPConnection extends SDPConnection
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String localHost, Integer localPort,
+	public SCPConnection(InetAddress localHost, Integer localPort,
 			String remoteHost) throws IOException {
 		this(DEFAULT_CHIP, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
@@ -69,7 +70,7 @@ public class SCPConnection extends SDPConnection
 	 * Create a connection to a particular instance of SCAMP.
 	 *
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
@@ -83,7 +84,7 @@ public class SCPConnection extends SDPConnection
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(String localHost, Integer localPort,
+	public SCPConnection(InetAddress localHost, Integer localPort,
 			String remoteHost, Integer remotePort) throws IOException {
 		this(DEFAULT_CHIP, localHost, localPort, remoteHost, remotePort);
 	}
@@ -127,7 +128,7 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host name of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
@@ -138,7 +139,7 @@ public class SCPConnection extends SDPConnection
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String localHost,
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
 			Integer localPort, String remoteHost) throws IOException {
 		this(chip, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
 	}
@@ -149,7 +150,7 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
-	 *            The optional IP address or host name of the local interface to
+	 *            The optional host of the local interface to
 	 *            listen on; use <tt>null</tt> to listen on all local
 	 *            interfaces.
 	 * @param localPort
@@ -163,7 +164,7 @@ public class SCPConnection extends SDPConnection
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
-	public SCPConnection(HasChipLocation chip, String localHost,
+	public SCPConnection(HasChipLocation chip, InetAddress localHost,
 			Integer localPort, String remoteHost, Integer remotePort)
 			throws IOException {
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
