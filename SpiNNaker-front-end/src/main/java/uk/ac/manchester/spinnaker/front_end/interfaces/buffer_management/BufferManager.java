@@ -116,9 +116,9 @@ public class BufferManager {
         MessageHandler callback = receiveBufferCommandMessage();
         UDPConnection connection = tranceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory(), tag.getPort(),
-                tag.getIPAddress().toString());
+                tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
-        connection.sendPortTriggerMessage(tag.getBoardAddress().toString());
+        connection.sendPortTriggerMessage(tag.getBoardAddress());
         return connection;
     }
 
@@ -128,9 +128,9 @@ public class BufferManager {
         UDPTransceiver.ConnectionFactory<UDPConnection<EIEIOMessage<? extends EIEIOHeader>>> connectionFactory = new EIEIOConnectionFactory();
         UDPConnection<EIEIOMessage<? extends EIEIOHeader>> connection = tranceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory(), tag.getPort(),
-                tag.getIPAddress().toString());
+                tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
-        connection.sendPortTriggerMessage(tag.getBoardAddress().toString());
+        connection.sendPortTriggerMessage(tag.getBoardAddress());
         return connection;
     }
 
@@ -139,9 +139,9 @@ public class BufferManager {
         UDPTransceiver.ConnectionFactory<UDPConnection<EIEIOMessage<? extends EIEIOHeader>>> connectionFactory = new EIEIOConnectionFactory();
         UDPConnection<EIEIOMessage> connection = tranceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory2(), tag.getPort(),
-                tag.getIPAddress().toString());
+                tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
-        connection.sendPortTriggerMessage(tag.getBoardAddress().toString());
+        connection.sendPortTriggerMessage(tag.getBoardAddress());
         return connection;
     }
     //        <T> UDPConnection<T> registerUDPListener(
