@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByAddress;
-import static java.net.InetAddress.getByName;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.nio.ByteBuffer.allocate;
@@ -455,13 +454,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Sends a port trigger message using a connection to (hopefully) open a
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
 	 *
-	 * @param hostname
+	 * @param host
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
-	public void sendPortTriggerMessage(String hostname) throws IOException {
+	public void sendPortTriggerMessage(InetAddress host) throws IOException {
 		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
@@ -474,8 +473,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);
-		InetAddress addr = getByName(hostname);
-		sendTo(b, addr, SCP_SCAMP_PORT);
+		sendTo(b, host, SCP_SCAMP_PORT);
 	}
 
 	@Override

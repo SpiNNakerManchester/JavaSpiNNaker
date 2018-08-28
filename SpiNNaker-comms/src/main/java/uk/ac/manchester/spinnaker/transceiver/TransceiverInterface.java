@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Thread.sleep;
-import static java.net.InetAddress.getByName;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -30,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
@@ -2442,22 +2440,6 @@ public interface TransceiverInterface {
 	 */
 	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception;
-
-	/**
-	 * Find a connection that matches the given board host name.
-	 *
-	 * @param hostname
-	 *            The host name of the Ethernet connection on the board
-	 * @return A connection for the given IP address, or <tt>null</tt> if no
-	 *         such connection exists
-	 */
-	default SCPConnection locateSpinnakerConnection(String hostname) {
-		try {
-			return locateSpinnakerConnection(getByName(hostname));
-		} catch (UnknownHostException e) {
-			return null;
-		}
-	}
 
 	/**
 	 * Find a connection that matches the given board IP address.
