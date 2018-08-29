@@ -6,7 +6,10 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -16,6 +19,8 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOType;
+import uk.ac.manchester.spinnaker.messages.eieio.EventStopRequest;
+import uk.ac.manchester.spinnaker.messages.eieio.PaddingRequest;
 import uk.ac.manchester.spinnaker.processes.Process;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver;
@@ -37,19 +42,24 @@ public class BufferManager {
 
     Placements placements;
     Tags tags;
-    Transceiver tranceiver;
+    Transceiver transceiver;
     DefaultMap<InetAddress, HashSet> seenTags = new DefaultMap<>(HashSet::new);
     HashSet<Vertex> senderVertices = new HashSet<>();
     BufferedReceivingData receivedData;
-    boolean finished;
+    volatile boolean finished;
     Integer listenerPort;  //may be null
+    HashMap<Vertex,BuffersSentDeque> sentMessages = new HashMap<>();
+    final boolean usesAdvancedMonitors;
 
 
-    public BufferManager(Placements placements, Tags tags, Transceiver tranceiver, boolean storeToFile) {
+    public BufferManager(Placements placements, Tags tags, Transceiver tranceiver,
+            boolean usesAdvancedMonitors, boolean storeToFile) {
         this.placements = placements;
         this.tags = tags;
-        this.tranceiver = tranceiver;
-        BufferedReceivingData receivedData = new BufferedReceivingData(storeToFile);
+        this.transceiver = tranceiver;
+        this.usesAdvancedMonitors = usesAdvancedMonitors;
+
+        receivedData = new BufferedReceivingData(storeToFile);
         finished = false;
         listenerPort = null;
     }
@@ -87,6 +97,8 @@ public class BufferManager {
                 sendInitialMessages(vertex, region, progress);
             }
         }
+
+        progress.close();
     }
 
     private void addBufferListeners(Vertex vertex) throws IOException {
@@ -114,7 +126,7 @@ public class BufferManager {
 
     private UDPConnection createConnection(IPTag tag) throws IOException {
         MessageHandler callback = receiveBufferCommandMessage();
-        UDPConnection connection = tranceiver.registerUDPListener(
+        UDPConnection connection = transceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory(), tag.getPort(),
                 tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
@@ -126,7 +138,7 @@ public class BufferManager {
     private UDPConnection<EIEIOMessage<? extends EIEIOHeader>> createConnection1(IPTag tag) throws IOException {
         MessageHandler<EIEIOMessage<? extends EIEIOHeader>> callback = receiveBufferCommandMessage();
         UDPTransceiver.ConnectionFactory<UDPConnection<EIEIOMessage<? extends EIEIOHeader>>> connectionFactory = new EIEIOConnectionFactory();
-        UDPConnection<EIEIOMessage<? extends EIEIOHeader>> connection = tranceiver.registerUDPListener(
+        UDPConnection<EIEIOMessage<? extends EIEIOHeader>> connection = transceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory(), tag.getPort(),
                 tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
@@ -137,7 +149,7 @@ public class BufferManager {
     private UDPConnection<EIEIOMessage> createConnection2(IPTag tag) throws IOException {
         MessageHandler<EIEIOMessage> callback = receiveBufferCommandMessage2();
         UDPTransceiver.ConnectionFactory<UDPConnection<EIEIOMessage<? extends EIEIOHeader>>> connectionFactory = new EIEIOConnectionFactory();
-        UDPConnection<EIEIOMessage> connection = tranceiver.registerUDPListener(
+        UDPConnection<EIEIOMessage> connection = transceiver.registerUDPListener(
                 callback, new EIEIOConnectionFactory2(), tag.getPort(),
                 tag.getIPAddress());
         seenTags.get(tag.getIPAddress()).add(connection.getLocalPort());
@@ -172,7 +184,7 @@ public class BufferManager {
 
     private void sendInitialMessages(Vertex vertex, Integer region, ProgressBar progress) throws IOException, Process.Exception, BufferableRegionTooSmall {
         Placement placement = placements.getPlacementOfVertex(vertex);
-        int regionBaseAddress = locateMemoryRegionForPlacement(placement, region, tranceiver);
+        int regionBaseAddress = locateMemoryRegionForPlacement(placement, region, transceiver);
         // Add packets until out of space
         boolean sentMessage = false;
         int bytesToGo = vertex.getRegionBufferSize(region);
@@ -181,7 +193,7 @@ public class BufferManager {
                     "The buffer region of " + vertex + " must be divisible by 2");
         }
         //TODO: verify if bytesToGo is big enough (Python has no capacity)
-        ByteBuffer allData = ByteBuffer.allocate(bytesToGo);
+        ByteBuffer allData = ByteBuffer.allocate(bytesToGo).order(ByteOrder.LITTLE_ENDIAN);
         if (vertex.isEmpty(region))
             sentMessage = true;
         else {
@@ -210,33 +222,40 @@ public class BufferManager {
                 + " is too small for any data to be added for region "
                 + region + " of vertex " + vertex);
         }
-        /*
-        # If there are no more messages and there is space, add a stop request
-        if (not vertex.is_next_timestamp(region) and
-                bytes_to_go >= EventStopRequest.get_min_packet_length()):
-            data = EventStopRequest().bytestring
-            # logger.debug(
-            #    "Writing stop message of {} bytes to {} on {}, {}, {}".format(
-            #         len(data), hex(region_base_address),
-            #         placement.x, placement.y, placement.p))
-            all_data += data
-            bytes_to_go -= len(data)
-            progress.update(len(data))
-            self._sent_messages[vertex] = BuffersSentDeque(
-                region, sent_stop_message=True)
 
-        # If there is any space left, add padding
-        if bytes_to_go > 0:
-            padding_packet = PaddingRequest()
-            n_packets = bytes_to_go // padding_packet.get_min_packet_length()
-            data = padding_packet.bytestring
-            data *= n_packets
-            all_data += data
 
-        # Do the writing all at once for efficiency
-        self._transceiver.write_memory(
-            placement.x, placement.y, region_base_address, all_data)
-            */
+        // If there are no more messages and there is space, add a stop request
+        EventStopRequest stopRequest = new EventStopRequest();
+        if (! vertex.isNextTimestamp(region) && bytesToGo >= stopRequest.minPacketLength()){
+            //ByteBuffer data = ByteBuffer.allocate(stopRequest.minPacketLength()).order(ByteOrder.LITTLE_ENDIAN);
+            int start = allData.position();
+            stopRequest.getHeader().addToBuffer(allData);
+            int added = allData.position() - start;
+            bytesToGo -= added;
+            progress.update(added);
+            sentMessages.put(vertex, new BuffersSentDeque(region, true));
+        }
+        // If there is any space left, add padding
+        if (bytesToGo > 0) {
+            PaddingRequest padding_packet = new PaddingRequest();
+            //n_packets = bytes_to_go // padding_packet.get_min_packet_length()
+            for (int i = 0; i < bytesToGo; i++) {
+                padding_packet.addToBuffer(allData);
+            }
+            progress.update(bytesToGo);
+        }
+        // Do the writing all at once for efficiency
+         transceiver.writeMemory(placement, regionBaseAddress, allData);
+    }
+
+    public void stop() {
+        //Python version used lock_buffer_in and thread_lock_buffer_out
+        finished = true;
+    }
+
+    public void getDataForVertices(List<Vertex> vertices, ProgressBar progress){
+        // TODO  with self._thread_lock_buffer_out:
+        getDataForVerticesLocked(vertices, progress);
     }
 
     //found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
@@ -285,5 +304,43 @@ public class BufferManager {
         }
 
         return message;
+    }
+
+    private void getDataForVerticesLocked(List<Vertex> vertices, ProgressBar progress) {
+        LinkedHashSet<Vertex> = new LinkedHashSet<>();
+
+        if (usesAdvancedMonitors) {
+
+            // locate receivers
+            for (Vertex vertex : vertices) {
+                Placement placement = placements.getPlacementOfVertex(vertex);
+                receivers.add(funs.locate_extra_monitor_mc_receiver(
+                    self._machine, placement.x, placement.y,
+                    self._extra_monitor_cores_to_ethernet_connection_map))
+            }
+
+            # set time out
+            for receiver in receivers:
+                receiver.set_cores_for_data_extraction(
+                    transceiver=self._transceiver, placements=self._placements,
+                    extra_monitor_cores_for_router_timeout=(
+                        self._extra_monitor_cores))
+
+        }
+        # get data
+        for vertex in vertices:
+            placement = self._placements.get_placement_of_vertex(vertex)
+            for recording_region_id in vertex.get_recorded_region_ids():
+                self.get_data_for_vertex(placement, recording_region_id)
+                if progress is not None:
+                    progress.update()
+
+        # revert time out
+        if self._uses_advanced_monitors:
+            for receiver in receivers:
+                receiver.unset_cores_for_data_extraction(
+                    transceiver=self._transceiver, placements=self._placements,
+                    extra_monitor_cores_for_router_timeout=(
+                        self._extra_monitor_cores))
     }
 }
