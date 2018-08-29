@@ -26,6 +26,8 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
 
     private final Iterator<E> inner;
 
+    private boolean first;
+
     /**
      * Creates a new Progress Iterable and a bar on the output stream.
      *
@@ -41,6 +43,7 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
             Collection<E> outer, String description, PrintStream output) {
         bar = new ProgressBar(outer.size(), description, output);
         inner = outer.iterator();
+        first = true;
     }
 
     /**
@@ -73,7 +76,11 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
      */
     @Override
     public E next() throws NoSuchElementException {
-        bar.update();
+        if (first) {
+            first = false;
+        } else {
+            bar.update();
+        }
         return inner.next();
     }
 
@@ -87,6 +94,10 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
      */
     @Override
     public void close() {
+        // As we did not update on the first pass we have to update once
+        if (!bar.isClosed()){
+            bar.update();
+        }
         bar.close();
     }
 

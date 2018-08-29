@@ -91,7 +91,7 @@ public class ProgressBar implements Closeable {
         if ((currentlyCompleted + amountToAdd) > numberOfThings) {
             throw new IllegalStateException("too many update steps!");
         }
-        if (closed) {
+        if (isClosed()) {
             throw new IllegalStateException("bar already closed!");
         }
         currentlyCompleted += amountToAdd;
@@ -115,7 +115,7 @@ public class ProgressBar implements Closeable {
      */
     @Override
     public void close() {
-        if (closed) {
+        if (isClosed()) {
             return;
         }
         if (charsDone < MAX_LENGTH_IN_CHARS) {
@@ -160,6 +160,13 @@ public class ProgressBar implements Closeable {
         }
         builder.append("100%");
         return builder.toString();
+    }
+
+    /**
+     * @return the closed
+     */
+    public boolean isClosed() {
+        return closed;
     }
 
 }
