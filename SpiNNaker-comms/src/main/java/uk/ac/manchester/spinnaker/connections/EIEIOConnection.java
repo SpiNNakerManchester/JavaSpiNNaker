@@ -20,7 +20,42 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 public class EIEIOConnection
 		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>>
 		implements EIEIOReceiver, EIEIOSender {
-	/**
+
+    /**
+	 * Create an EIEIO connection only available for listening,
+     * using default local port.
+	 *
+	 * @param localHost
+	 *            The local host name or IP address to bind to. If not
+	 *            specified, it defaults to binding to all interfaces, unless
+	 *            remoteHost is specified, in which case binding is done to the
+	 *            IP address that will be used to send packets.
+	 * @throws IOException
+	 *             If there is an error setting up the communication channel
+	 */
+	public EIEIOConnection(String localHost) throws IOException {
+		super(localHost, null, null, null);
+	}
+
+    /**
+	 * Create an EIEIO connection only available for listening.
+	 *
+	 * @param localHost
+	 *            The local host name or IP address to bind to. If not
+	 *            specified, it defaults to binding to all interfaces, unless
+	 *            remoteHost is specified, in which case binding is done to the
+	 *            IP address that will be used to send packets.
+	 * @param localPort
+	 *            The local port to bind to, 0 or between 1025 and 65535.
+	 * @throws IOException
+	 *             If there is an error setting up the communication channel
+	 */
+	public EIEIOConnection(String localHost, Integer localPort)
+            throws IOException {
+		super(localHost, localPort, null, null);
+	}
+
+    /**
 	 * Create an EIEIO connection.
 	 *
 	 * @param localHost
