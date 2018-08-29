@@ -72,6 +72,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 
 	/**
+     * Main constructor any of which could null.
+     * <p>
+     * No default constructors are provided as it would not be possible to
+     *      disambiguate between
+     *      ones with only a local host/port like IPAddressConnection
+     *      and ones with only remote host/port like BMPConnection
+     *
 	 * @param localHost
 	 *            The local host name or IP address to bind to. If not
 	 *            specified, it defaults to binding to all interfaces, unless
