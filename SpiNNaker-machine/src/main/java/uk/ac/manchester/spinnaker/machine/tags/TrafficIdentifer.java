@@ -3,53 +3,61 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The types of traffic an IpTag can handle.
  *
  * @author Christian-B
  */
-public enum TrafficIdentifer {
-
+public class TrafficIdentifer {
     /** Default if not provided.
-     *  @see <a href=
+     *
+     * @see <a href=
      * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/tags/iptag.py">
      * Python IPTag</a>
      */
-    DEFAULT("DEFAULT"),
+    public static final TrafficIdentifer DEFAULT = new TrafficIdentifer(
+            "DEFAULT");
     /** Used to identify buffered traffic.
      *
-     *  @see <a href=
+     * @see <a href=
      * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/recording_utilities.py">
      * Python Recording Utilities</a>
      */
-    BUFFERED("BufferTraffic");
+    public static final TrafficIdentifer BUFFERED = new TrafficIdentifer(
+            "BufferTraffic");
 
     /** Label used in Python. */
     public final String label;
 
-    /**
-     * Main Constructor.
-     *
-     * @param label Python label.
-     */
-    TrafficIdentifer(String label) {
-        this.label = label;
-    }
+    private static final Map<String, TrafficIdentifer> MAP = new HashMap<>();
 
     /**
      * Finds a TrafficIdentier based on the label.
-     * @param label The label to check for. Currently case sensitive.
      *
+     * @param label
+     *            The label to check for. Currently case sensitive.
      * @return The TrafficIdentifer with this label
-     * @throws IllegalArgumentException If this is an unexpected label.
+     * @throws IllegalArgumentException
+     *             If this is an unexpected label.
      */
-    public static TrafficIdentifer bylabel(String label) {
-        for (TrafficIdentifer ti: TrafficIdentifer.values()) {
-            if (ti.label.equals(label)) {
-                return ti;
-            }
+    public static TrafficIdentifer getInstance(String label) {
+        if (!MAP.containsKey(label)) {
+            new TrafficIdentifer(label);
         }
-        throw new IllegalArgumentException(
-                "No TrafficIdentifer with label " + label);
+        return MAP.get(label);
+    }
+
+    /**
+     * Main Constructor.
+     *
+     * @param label
+     *            Python label.
+     */
+    private TrafficIdentifer(String label) {
+        this.label = label;
+        MAP.put(label, this);
     }
 }
