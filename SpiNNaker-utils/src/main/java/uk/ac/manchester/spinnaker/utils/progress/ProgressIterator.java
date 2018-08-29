@@ -95,7 +95,7 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
     @Override
     public void close() {
         // As we did not update on the first pass we have to update once
-        if (!bar.isClosed()){
+        if (!bar.isClosed()) {
             bar.update();
         }
         bar.close();

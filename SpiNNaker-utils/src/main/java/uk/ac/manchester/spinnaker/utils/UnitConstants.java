@@ -3,10 +3,6 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,14 +49,14 @@ public final class UnitConstants {
         long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis) % S_PER_M;
         long ms = TimeUnit.MILLISECONDS.toMillis(durationInMillis) % MS_PER_S;
         if (hr > 0) {
-            return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms) ;
+            return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
         }
         if (min > 0) {
-            return String.format("%d:%02d.%03d m", min, sec, ms) ;
+            return String.format("%d:%02d.%03d m", min, sec, ms);
 
         }
         if (sec > 0) {
-            return String.format("%d.%03d s", sec, ms) ;
+            return String.format("%d.%03d s", sec, ms);
 
         }
         return durationInMillis + " ms";
