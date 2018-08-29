@@ -41,8 +41,20 @@ public class TestUnits {
     }
 
     @Test
+    public void testFewwHours() {
+        long ms = 6 * 60 * 60 * 1000 + 34 * 60 * 1000 + 7 * 1000 + 45;
+        assertEquals("6:34:07.045 h", UnitConstants.formatDuration(ms));
+    }
+
+    @Test
     public void testDuration() {
         long ms = 14 * 60 * 60 * 1000 + 34 * 60 * 1000 + 7 * 1000 + 45;
         assertEquals("14:34:07.045 h", UnitConstants.formatDuration(ms));
+    }
+
+    @Test
+    public void testMoreThanaDay() {
+        long ms = 87 * 60 * 60 * 1000 + 34 * 60 * 1000 + 7 * 1000 + 45;
+        assertEquals("87:34:07.045 h", UnitConstants.formatDuration(ms));
     }
 }
