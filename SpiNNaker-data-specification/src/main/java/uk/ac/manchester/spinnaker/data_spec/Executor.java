@@ -5,11 +5,8 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,9 +80,8 @@ public class Executor implements AutoCloseable {
 	 *            Where in memory the memory block is being written.
 	 */
 	public void addPointerTable(ByteBuffer buffer, int startAddress) {
-		int nextOffset =
-				MAX_MEM_REGIONS * INT_SIZE + APP_PTR_TABLE_HEADER_BYTE_SIZE;
-		for (MemoryRegion r : funcs.memRegions) {
+		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
+		for (MemoryRegion r : funcs.getRegions()) {
 			if (r != null) {
 				buffer.putInt(nextOffset + startAddress);
 				nextOffset += r.getAllocatedSize();
@@ -98,7 +94,7 @@ public class Executor implements AutoCloseable {
 	/** @return the size of the data that will be written to memory. */
 	public int getConstructedDataSize() {
 		return APP_PTR_TABLE_BYTE_SIZE
-				+ funcs.memRegions.stream().filter(r -> r != null)
+				+ funcs.getRegions().stream().filter(r -> r != null)
 						.mapToInt(r -> r.getAllocatedSize()).sum();
 	}
 }

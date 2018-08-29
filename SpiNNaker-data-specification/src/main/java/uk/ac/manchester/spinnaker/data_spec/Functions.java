@@ -3,7 +3,6 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
@@ -20,6 +19,8 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_REGISTERS;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.lang3.BitField;
 
@@ -33,12 +34,18 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.UnknownTypeLengthExceptio
 
 @SuppressWarnings("unused")
 class Functions implements FunctionAPI {
+	/** Where we are reading the data spec from. */
 	private final ByteBuffer spec;
+	/** How much space do we have available? Maximum <i>per region</i>. */
 	private int memorySpace;
-	private int spaceAllocated;
+	/** How much space has been allocated. */
+	int spaceAllocated;
+	/** What is the current region that we're writing to. */
 	private Integer currentRegion;
+	/** The model registers, an array of 16 ints. */
 	private final int[] registers;
-	final MemoryRegionCollection memRegions;
+	/** The collection of memory regions that can be written to. */
+	private final MemoryRegionCollection memRegions;
 
 	static final int SIZE_FIELD = 28;
 	static final int OPCODE_FIELD = 20;
@@ -81,12 +88,19 @@ class Functions implements FunctionAPI {
 	public Functions(ByteBuffer input, int memorySpace) {
 		spec = input;
 		this.memorySpace = memorySpace;
-		this.spaceAllocated = 0;
-		this.currentRegion = null;
-		this.registers = new int[MAX_REGISTERS];
-		this.memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
+		spaceAllocated = 0;
+		currentRegion = null;
+		registers = new int[MAX_REGISTERS];
+		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
 	}
 
+	/**
+	 * Get the memory region with a particular ID.
+	 *
+	 * @param regionID
+	 *            The ID to look up.
+	 * @return The memory region with that ID.
+	 */
 	public MemoryRegion getRegion(int regionID) {
 		return memRegions.get(regionID);
 	}
@@ -96,6 +110,10 @@ class Functions implements FunctionAPI {
 			return null;
 		}
 		return memRegions.get(currentRegion);
+	}
+
+	public Collection<MemoryRegion> getRegions() {
+		return Collections.unmodifiableCollection(memRegions);
 	}
 
 	@Override
