@@ -12,6 +12,9 @@ import java.util.Map;
  * @author Christian-B
  */
 public class TrafficIdentifer {
+
+    private static final Map<String, TrafficIdentifer> MAP = new HashMap<>();
+
     /** Default if not provided.
      *
      * @see <a href=
@@ -31,8 +34,6 @@ public class TrafficIdentifer {
 
     /** Label used in Python. */
     public final String label;
-
-    private static final Map<String, TrafficIdentifer> MAP = new HashMap<>();
 
     /**
      * Finds a TrafficIdentier based on the label.
