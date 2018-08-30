@@ -311,6 +311,8 @@ class Functions implements FunctionAPI {
 		}
 
 		// We can safely write
+		int addr = r.getWritePointer();
 		r.getRegionData().put(array);
+		r.setWritePointer(addr + array.length);
 	}
 }
