@@ -38,6 +38,21 @@ public class Executor implements AutoCloseable {
 		this.funcs = new Functions(input, memorySpace);
 	}
 
+	/**
+	 * Create an executor.
+	 *
+	 * @param input
+	 *            The object to read the specification language file from
+	 * @param memorySpace
+	 *            memory available on the destination architecture
+	 */
+	public Executor(ByteBuffer input, int memorySpace)
+			throws IOException {
+		this.input = input.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.input.rewind(); // Ensure we start from the beginning
+		this.funcs = new Functions(input, memorySpace);
+	}
+
 	@Override
 	public void close() {
 		// Does nothing; the original spec is read eagerly

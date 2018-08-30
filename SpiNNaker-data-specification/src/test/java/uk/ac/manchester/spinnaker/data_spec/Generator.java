@@ -1,0 +1,218 @@
+package uk.ac.manchester.spinnaker.data_spec;
+
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE_ARRAY;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.DEST_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN1;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN2;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN3;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.NO_REGS;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC1_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC2_ONLY;
+
+import java.nio.ByteBuffer;
+
+/** Severely cut down version of the DSG, for testing only. */
+public class Generator {
+	private ByteBuffer buffer;
+
+	public Generator() {
+		buffer = allocate(32 * 1024).order(LITTLE_ENDIAN);
+	}
+
+	public ByteBuffer getSpecification() {
+		ByteBuffer result = buffer.asReadOnlyBuffer();
+		result.flip();
+		return result;
+	}
+
+	/**
+	 * Various shifts for fields used with
+	 * {@link #command(Command,int,int,Object[]) command(...)}.
+	 */
+	enum Field {
+		/** length field. */
+		LENGTH(28),
+		/** opcode field. */
+		COMMAND(20),
+		/** signed bit. */
+		SIGNED(19),
+		/** usage field. */
+		USAGE(16),
+		/** dest field. */
+		DESTINATION(12),
+		/** function ID field. */
+		FUNCTION(11),
+		/** src1 field. */
+		SOURCE_1(8),
+		/** empty field. */
+		EMPTY(7),
+		/** shrink field. */
+		SHRINK(6),
+		/** src2 field. */
+		SOURCE_2(4),
+		/** immediate value field. */
+		IMMEDIATE(0);
+		final int offset;
+
+		Field(int offset) {
+			this.offset = offset;
+		}
+	}
+
+	public enum DataType {
+		INT8(1, LEN2), INT16(2, LEN2), INT32(4, LEN2), INT64(8, LEN3);
+		final int size, writeLength;
+
+		DataType(int size, int writeLength) {
+			this.size = size;
+			this.writeLength = writeLength;
+		}
+
+		void put(ByteBuffer buffer, Number n) {
+			switch (this) {
+			case INT8:
+				buffer.put(n.byteValue());
+				break;
+			case INT16:
+				buffer.putShort(n.shortValue());
+				break;
+			case INT32:
+				buffer.putInt(n.intValue());
+				break;
+			case INT64:
+				buffer.putLong(n.longValue());
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Encode the command word and add it to the buffer.
+	 *
+	 * @param command
+	 *            The command to write.
+	 * @param length
+	 *            The command length. One of {@link Constants#LEN1},
+	 *            {@link Constants#LEN2}, {@link Constants#LEN3}, or
+	 *            {@link Constants#LEN4}.
+	 * @param usage
+	 *            The command's register usage. One of
+	 *            {@link Constants#NO_REGS}, {@link Constants#SRC1_ONLY},
+	 *            {@link Constants#SRC2_ONLY}, {@link Constants#DEST_ONLY},
+	 *            {@link Constants#SRC1_AND_SRC2},
+	 *            {@link Constants#DEST_AND_SRC1},
+	 *            {@link Constants#DEST_AND_SRC2} or {@link Constants#ALL_REGS}.
+	 * @param arguments
+	 *            Additional fields to be set, as pairs of arguments; the first
+	 *            of each pair is a {@link Field} and the second is a
+	 *            {@link Number} (encoded as its integer value), a
+	 *            {@link Boolean} (encoded as 0 or 1) or a non-Field
+	 *            {@link Enum} (encoded as its ordinal value). There must be an
+	 *            even number of arguments overall.
+	 */
+	private void command(Commands command, int length, int usage,
+			Object... arguments) {
+		int word = command.value << Field.COMMAND.offset;
+		word |= length << Field.LENGTH.offset;
+		word |= usage << Field.USAGE.offset;
+		for (int i = 0; i < arguments.length; i += 2) {
+			Field f = (Field) arguments[i];
+			Object val = arguments[i + 1];
+			if (val instanceof Boolean) {
+				word |= (((Boolean) val) ? 1 : 0) << f.offset;
+			} else if (val instanceof Enum && !(val instanceof Field)) {
+				word |= ((Enum<?>) val).ordinal() << f.offset;
+			} else if (val instanceof Number) {
+				word |= ((Number) val).intValue() << f.offset;
+			} else {
+				throw new IllegalArgumentException("arg: " + i + " = " + val);
+			}
+		}
+		buffer.putInt(word);
+	}
+
+	public void end_specification() {
+		command(END_SPEC, LEN1, NO_REGS);
+		buffer.putInt(-1);
+	}
+
+	public void reserve_memory_region(int region, int size) {
+		reserve_memory_region(region, size, false);
+	}
+
+	public void reserve_memory_region(int region, int size, boolean empty) {
+		boolean shrink = false;
+		command(RESERVE, LEN2, NO_REGS, Field.EMPTY, empty, Field.SHRINK,
+				shrink, Field.IMMEDIATE, region);
+		buffer.putInt(size);
+	}
+
+	public void switch_write_focus(int region) {
+		command(SWITCH_FOCUS, LEN1, NO_REGS, Field.SOURCE_1, region);
+	}
+
+	public void set_write_pointer(int address) {
+		boolean relative = false;
+		command(SET_WR_PTR, LEN2, NO_REGS, Field.IMMEDIATE, relative);
+		buffer.putInt(address);
+	}
+
+	public void set_write_pointer_from_register(int register) {
+		boolean relative = false;
+		command(SET_WR_PTR, LEN1, SRC1_ONLY, Field.SOURCE_1, register,
+				Field.IMMEDIATE, relative);
+	}
+
+	public void set_register_value(int register, int value) {
+		command(MV, LEN2, DEST_ONLY, Field.DESTINATION, register);
+		buffer.putInt(value);
+	}
+
+	public void write_array(Integer... values) {
+		write_array(values, DataType.INT32);
+	}
+
+	public void write_array(Number[] values, DataType type) {
+		command(WRITE_ARRAY, LEN2, NO_REGS, Field.IMMEDIATE, type.size);
+		int pos = buffer.position();
+		buffer.putInt(0); // dummy
+		for (Number n : values) {
+			type.put(buffer, n);
+		}
+		buffer.putInt(pos, (buffer.position() - pos) / INT_SIZE);
+	}
+
+	public void write_value(int value) {
+		write_value(value, DataType.INT32);
+	}
+
+	public void write_value(Number value, DataType type) {
+		int repeats = 1;
+		command(WRITE, type.writeLength, NO_REGS, Field.DESTINATION, type,
+				Field.IMMEDIATE, repeats);
+		type.put(buffer, value);
+	}
+
+	public void write_repeated_value(Number value, int register,
+			DataType type) {
+		command(WRITE, type.writeLength, SRC2_ONLY, Field.DESTINATION, type,
+				Field.SOURCE_2, register);
+		type.put(buffer, value);
+	}
+
+	public void write_value_from_register(int register) {
+		int repeats = 1;
+		DataType type = DataType.INT32;
+		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type,
+				Field.IMMEDIATE, repeats);
+	}
+}
