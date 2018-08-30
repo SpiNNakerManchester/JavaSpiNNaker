@@ -14,25 +14,34 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 
-class TestDSE {
+public class TestDataSpecExecutor {
+
+	private ByteBuffer makeSpec(SpecGen specGen) {
+		Generator spec = new Generator();
+		specGen.generate(spec);
+		return spec.getSpecification();
+	}
+	@FunctionalInterface
+	private interface SpecGen {
+		void generate(Generator generator);
+	}
 
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {
-		Generator specGen = new Generator();
-		specGen.reserve_memory_region(0, 100);
-		specGen.reserve_memory_region(1, 200, true);
-		specGen.reserve_memory_region(2, 4);
-		specGen.switch_write_focus(0);
-		specGen.write_array(0, 1, 2);
-		specGen.set_write_pointer(20);
-		specGen.write_value(4);
-		specGen.switch_write_focus(2);
-		specGen.write_value(3);
-		specGen.set_write_pointer(0);
-		specGen.write_value(10);
-		specGen.end_specification();
-
-		ByteBuffer spec = specGen.getSpecification();
+		ByteBuffer spec = makeSpec(specGen -> {
+			specGen.reserve_memory_region(0, 100);
+			specGen.reserve_memory_region(1, 200, true);
+			specGen.reserve_memory_region(2, 4);
+			specGen.switch_write_focus(0);
+			specGen.write_array(0, 1, 2);
+			specGen.set_write_pointer(20);
+			specGen.write_value(4);
+			specGen.switch_write_focus(2);
+			specGen.write_value(3);
+			specGen.set_write_pointer(0);
+			specGen.write_value(10);
+			specGen.end_specification();
+		});
 
 		// Execute the spec
 		Executor executor = new Executor(spec, 400);
@@ -94,9 +103,9 @@ class TestDSE {
 
 	@Test
 	void testTrivialSpec() throws IOException, DataSpecificationException {
-		Generator specGen = new Generator();
-		specGen.end_specification();
-		ByteBuffer spec = specGen.getSpecification();
+		ByteBuffer spec = makeSpec(specGen -> {
+			specGen.end_specification();
+		});
 
 		// Execute the spec
 		Executor executor = new Executor(spec, 400);
@@ -109,29 +118,29 @@ class TestDSE {
 
 	@Test
 	void testComplexSpec() throws IOException, DataSpecificationException {
-		Generator specGen = new Generator();
-		specGen.reserve_memory_region(0, 44);
-		specGen.switch_write_focus(0);
-		specGen.set_register_value(3, 0x31323341);
-		specGen.write_value_from_register(3);
-		specGen.set_register_value(3, 0x31323342);
-		specGen.write_value_from_register(3);
-		specGen.set_register_value(3, 0x31323344);
-		specGen.write_value_from_register(3);
-		specGen.set_register_value(3, 0x31323347);
-		specGen.write_value_from_register(3);
-		specGen.set_register_value(3, 0x3132334B);
-		specGen.write_value_from_register(3);
-		specGen.set_register_value(2, 24);
-		specGen.set_write_pointer_from_register(2);
-		specGen.write_array(new Number[] {
-				0x61, 0x62, 0x63, 0x64
-		}, Generator.DataType.INT8);
-		specGen.set_register_value(5, 4);
-		specGen.write_repeated_value(0x70, 5, Generator.DataType.INT8);
-		specGen.write_value(0x7d, Generator.DataType.INT64);
-		specGen.end_specification();
-		ByteBuffer spec = specGen.getSpecification();
+		ByteBuffer spec = makeSpec(specGen -> {
+			specGen.reserve_memory_region(0, 44);
+			specGen.switch_write_focus(0);
+			specGen.set_register_value(3, 0x31323341);
+			specGen.write_value_from_register(3);
+			specGen.set_register_value(3, 0x31323342);
+			specGen.write_value_from_register(3);
+			specGen.set_register_value(3, 0x31323344);
+			specGen.write_value_from_register(3);
+			specGen.set_register_value(3, 0x31323347);
+			specGen.write_value_from_register(3);
+			specGen.set_register_value(3, 0x3132334B);
+			specGen.write_value_from_register(3);
+			specGen.set_register_value(2, 24);
+			specGen.set_write_pointer_from_register(2);
+			specGen.write_array(new Number[] {
+					0x61, 0x62, 0x63, 0x64
+			}, Generator.DataType.INT8);
+			specGen.set_register_value(5, 4);
+			specGen.write_repeated_value(0x70, 5, Generator.DataType.INT8);
+			specGen.write_value(0x7d, Generator.DataType.INT64);
+			specGen.end_specification();
+		});
 
 		// Execute the spec
 		try (Executor executor = new Executor(spec, 400)) {

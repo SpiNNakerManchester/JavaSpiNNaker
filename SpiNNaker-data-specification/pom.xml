@@ -8,10 +8,16 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-data-specification</artifactId>
+	<description>Data specification generator and executor</description>
+	<name>SpiNNaker Data Specification</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -42,6 +48,4 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 	</dependencies>
-	<description>Data specification generator and executor</description>
-	<name>SpiNNaker Data Specification</name>
 </project>
