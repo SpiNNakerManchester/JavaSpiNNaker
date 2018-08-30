@@ -3,6 +3,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+
 /**
  *
  * @author Christian-B
@@ -36,6 +38,14 @@ public class Vertex {
     }
 
     int getNextKey(Integer region) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    int[] getRecordedRegionIds() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    int getRecordingRegionBaseAddress(Transceiver transceiver, Placement placement) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
