@@ -31,10 +31,11 @@ abstract class OperationCallableMapper {
 				Commands c = m.getAnnotation(Operation.class).value();
 				if (m.getReturnType().equals(Void.TYPE)) {
 					map.put(c, cmd -> {
+						o.get().unpack(cmd);
+						System.out.println("EXEC: " + c + " (" + cmd + ")");
 						try {
-							o.get().unpack(cmd);
 							m.invoke(o.get());
-							return null;
+							return 0;
 						} catch (IllegalAccessException
 								| IllegalArgumentException e) {
 							// Should be unreachable
@@ -54,9 +55,10 @@ abstract class OperationCallableMapper {
 					});
 				} else {
 					map.put(c, cmd -> {
+						o.get().unpack(cmd);
+						System.out.println("EXEC: " + c + " (" + cmd + ")");
 						try {
-							o.get().unpack(cmd);
-							return (Integer) m.invoke(o.get());
+							return (int) m.invoke(o.get());
 						} catch (IllegalAccessException
 								| IllegalArgumentException e) {
 							// Should be unreachable

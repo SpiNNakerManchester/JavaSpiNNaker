@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.Math.max;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 import java.nio.ByteBuffer;
 
@@ -14,7 +15,7 @@ public class MemoryRegion {
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
 		this.unfilled = unfilled;
-		this.buffer = ByteBuffer.allocate(size);
+		this.buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	public int getMemoryPointer() {
@@ -35,6 +36,11 @@ public class MemoryRegion {
 
 	public ByteBuffer getRegionData() {
 		return buffer;
+	}
+
+	public void writeIntoRegionData(byte[] data) {
+		buffer.put(data);
+		maxWritePointer = max(maxWritePointer, buffer.position());
 	}
 
 	public int getWritePointer() {

@@ -17,10 +17,10 @@ interface OperationCallable {
 	 *
 	 * @param cmd
 	 *            The encoded command word.
-	 * @return Usually <tt>null</tt>. Sometimes a marker to indicate special
+	 * @return Usually <tt>0</tt>. Sometimes a marker to indicate special
 	 *         states (currently just for end-of-specification).
 	 * @throws DataSpecificationException
 	 *             If anything goes wrong in the data specification.
 	 */
-	Integer execute(int cmd) throws DataSpecificationException;
+	int execute(int cmd) throws DataSpecificationException;
 }

@@ -19,6 +19,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_REGISTERS;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -166,9 +167,9 @@ class Functions implements FunctionAPI {
 		long value;
 		if (src1_reg != null) {
 			value = registers[src1_reg];
-		} else if (cmd_size == LEN2 && data_len != LONG_SIZE) {
+		} else if (cmd_size == LEN2 && dataLen != LONG_SIZE) {
 			value = spec.getInt();
-		} else if (cmd_size == LEN3 && data_len == LONG_SIZE) {
+		} else if (cmd_size == LEN3 && dataLen == LONG_SIZE) {
 			value = spec.getLong();
 		} else {
 			throw new DataSpecificationException(String.format(
@@ -259,12 +260,13 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(END_SPEC)
 	public int endSpecification() throws DataSpecificationException {
+		int p = spec.position();
 		int value = spec.getInt();
 		if (value != END_SPEC_EXECUTOR) {
 			throw new DataSpecificationException(format(
 					"Command END_SPEC requires an argument equal to -1. The "
-							+ "current argument value is %d",
-					value));
+							+ "current argument value is %d (from %d)",
+					value, p));
 		}
 		return END_SPEC_EXECUTOR;
 	}
@@ -272,6 +274,7 @@ class Functions implements FunctionAPI {
 	private void writeToMemory(long value, int dataLen, int numRepeats,
 			Commands command) throws DataSpecificationException {
 		ByteBuffer b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
+		System.out.println("write " + value + " x " + numRepeats + " (" + b.limit() + " bytes)");
 		for (int i = 0; i < numRepeats; i++) {
 			switch (dataLen) {
 			case 1:
@@ -310,9 +313,9 @@ class Functions implements FunctionAPI {
 					currentRegion);
 		}
 
+		System.out.println("writing " + array.length + " bytes at " + getRegion().getWritePointer() + " of region #" + currentRegion);
+		System.out.println("data: " + Arrays.toString(array));
 		// We can safely write
-		int addr = r.getWritePointer();
-		r.getRegionData().put(array);
-		r.setWritePointer(addr + array.length);
+		r.writeIntoRegionData(array);
 	}
 }

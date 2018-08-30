@@ -29,8 +29,9 @@ public class Generator {
 	}
 
 	public ByteBuffer getSpecification() {
-		ByteBuffer result = buffer.asReadOnlyBuffer();
+		ByteBuffer result = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		result.flip();
+		System.out.println("generated a spec of " + result.limit() + " bytes");
 		return result;
 	}
 
@@ -77,13 +78,36 @@ public class Generator {
 			this.writeLength = writeLength;
 		}
 
-		void put(ByteBuffer buffer, Number n) {
+		void putPacked(ByteBuffer buffer, Number n) {
 			switch (this) {
 			case INT8:
 				buffer.put(n.byteValue());
 				break;
 			case INT16:
 				buffer.putShort(n.shortValue());
+				break;
+			case INT32:
+				buffer.putInt(n.intValue());
+				break;
+			case INT64:
+				buffer.putLong(n.longValue());
+				break;
+			}
+		}
+
+		void putPadded(ByteBuffer buffer, Number n) {
+			switch (this) {
+			case INT8:
+				buffer.put(n.byteValue());
+				// Add padding
+				buffer.put((byte) 0);
+				buffer.put((byte) 0);
+				buffer.put((byte) 0);
+				break;
+			case INT16:
+				buffer.putShort(n.shortValue());
+				// Add padding
+				buffer.putShort((short) 0);
 				break;
 			case INT32:
 				buffer.putInt(n.intValue());
@@ -185,10 +209,11 @@ public class Generator {
 		command(WRITE_ARRAY, LEN2, NO_REGS, Field.IMMEDIATE, type.size);
 		int pos = buffer.position();
 		buffer.putInt(0); // dummy
+		int mark = buffer.position();
 		for (Number n : values) {
-			type.put(buffer, n);
+			type.putPacked(buffer, n);
 		}
-		buffer.putInt(pos, (buffer.position() - pos) / INT_SIZE);
+		buffer.putInt(pos, (buffer.position() - mark) / INT_SIZE);
 	}
 
 	public void write_value(int value) {
@@ -199,14 +224,14 @@ public class Generator {
 		int repeats = 1;
 		command(WRITE, type.writeLength, NO_REGS, Field.DESTINATION, type,
 				Field.IMMEDIATE, repeats);
-		type.put(buffer, value);
+		type.putPadded(buffer, value);
 	}
 
 	public void write_repeated_value(Number value, int register,
 			DataType type) {
 		command(WRITE, type.writeLength, SRC2_ONLY, Field.DESTINATION, type,
 				Field.SOURCE_2, register);
-		type.put(buffer, value);
+		type.putPadded(buffer, value);
 	}
 
 	public void write_value_from_register(int register) {

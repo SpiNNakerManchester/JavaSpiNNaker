@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
@@ -9,6 +10,10 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +26,7 @@ public class TestDataSpecExecutor {
 		specGen.generate(spec);
 		return spec.getSpecification();
 	}
+
 	@FunctionalInterface
 	private interface SpecGen {
 		void generate(Generator generator);
@@ -62,13 +68,16 @@ public class TestDataSpecExecutor {
 		assertEquals(100, region_0.getAllocatedSize());
 		assertEquals(24, region_0.getMaxWritePointer());
 		assertFalse(region_0.isUnfilled());
-		IntBuffer r0data = region_0.getRegionData().asIntBuffer();
-		r0data.rewind();
-		int[] dst = new int[6];
-		r0data.get(dst);
-		assertEquals(new int[] {
+		int[] expectedR0 = new int[] {
 				0, 1, 2, 0, 0, 4
-		}, dst);
+		};
+		ByteBuffer r0data = region_0.getRegionData().asReadOnlyBuffer()
+				.order(LITTLE_ENDIAN);
+		r0data.flip();
+		System.out.println(r0data.order());
+		int[] dst = new int[expectedR0.length];
+		r0data.asIntBuffer().get(dst);
+		assertArrayEquals(expectedR0, dst);
 
 		// Test region 1
 		MemoryRegion region_1 = executor.getRegion(1);
@@ -81,11 +90,10 @@ public class TestDataSpecExecutor {
 		assertEquals(10, region_2.getRegionData().getInt(0));
 
 		// Test the pointer table
-		ByteBuffer buffer = ByteBuffer.allocate(4096);
+		ByteBuffer buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
 		executor.addPointerTable(buffer, 0);
-		IntBuffer table = buffer.asIntBuffer();
-		assertEquals(MAX_MEM_REGIONS, table.position());
-		table.rewind();
+		IntBuffer table = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		assertEquals(MAX_MEM_REGIONS, table.limit());
 		assertEquals(header_and_table_size, table.get(0));
 		assertEquals(header_and_table_size + 100, table.get(1));
 		assertEquals(header_and_table_size + 300, table.get(2));
@@ -94,9 +102,8 @@ public class TestDataSpecExecutor {
 		// Test the header
 		buffer.clear();
 		executor.addHeader(buffer);
-		IntBuffer header = buffer.asIntBuffer();
-		assertEquals(2, header.position());
-		header.rewind();
+		IntBuffer header = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		assertEquals(2, header.limit());
 		assertEquals(APPDATA_MAGIC_NUM, header.get(0));
 		assertEquals(DSE_VERSION, header.get(1));
 	}
@@ -150,12 +157,11 @@ public class TestDataSpecExecutor {
 			assertEquals(44, r.getAllocatedSize());
 			assertEquals(40, r.getMaxWritePointer());
 			assertFalse(r.isUnfilled());
-			assertEquals(
-					"A321" + "B321" + "D321" + "G321" + "K321" + "\0\0\0\0"
-							+ "abcd" + "pppp" + "}\0\0\0" + "\0\0\0\0"
-							+ "\0\0\0\0".getBytes("ISO 8859-1"),
+			assertArrayEquals(
+					("A321" + "B321" + "D321" + "G321" + "K321"
+							+ "\0\0\0\0" + "abcd" + "pppp" + "}\0\0\0"
+							+ "\0\0\0\0" + "\0\0\0\0").getBytes("ASCII"),
 					r.getRegionData().array());
-
 		}
 	}
 }
