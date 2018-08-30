@@ -51,9 +51,10 @@ public abstract class Tag {
      *            the port to set
      */
     public void setPort(int port) {
-        if (this.port != null) {
+        if (this.port != null && this.port != port) {
             throw new IllegalStateException(
-                    "port cannot be set more than once");
+                    "port cannot be changed to " + port
+                    + " once set to " + this.port);
         }
         this.port = port;
     }

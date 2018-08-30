@@ -21,6 +21,8 @@ public class TestMachineDimensions {
        MachineDimensions m1 = new MachineDimensions(2, 3);
        MachineDimensions m2 = new MachineDimensions(2, 3);
        assertEquals(m1, m2);
+       assertEquals(m1.hashCode(), m2.hashCode());
+       assertEquals(m1.toString(), m2.toString());
     }
 
     @Test
