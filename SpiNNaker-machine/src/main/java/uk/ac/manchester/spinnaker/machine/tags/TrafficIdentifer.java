@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Christian-B
  */
-public class TrafficIdentifer {
+public final class TrafficIdentifer {
 
     private static final Map<String, TrafficIdentifer> MAP = new HashMap<>();
 
