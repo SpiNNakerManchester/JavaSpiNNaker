@@ -6,10 +6,9 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  * How to actually call a DSE operation.
  *
  * @author Donal Fellows
- *
  */
 @FunctionalInterface
-interface OperationCallable {
+interface Callable {
 	/**
 	 * The outer interface of a DSE operation. Note that this is subject to
 	 * coercion to make the actual operations have a wider range of supported

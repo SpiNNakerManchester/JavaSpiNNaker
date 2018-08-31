@@ -86,24 +86,13 @@ class Functions implements FunctionAPI {
 	private Integer src2_reg;
 	private int data_len;
 
-	public Functions(ByteBuffer input, int memorySpace) {
+	Functions(ByteBuffer input, int memorySpace, MemoryRegionCollection memRegions) {
 		spec = input;
 		this.memorySpace = memorySpace;
 		spaceAllocated = 0;
 		currentRegion = null;
 		registers = new int[MAX_REGISTERS];
-		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
-	}
-
-	/**
-	 * Get the memory region with a particular ID.
-	 *
-	 * @param regionID
-	 *            The ID to look up.
-	 * @return The memory region with that ID.
-	 */
-	public MemoryRegion getRegion(int regionID) {
-		return memRegions.get(regionID);
+		this.memRegions = memRegions;
 	}
 
 	private MemoryRegion getRegion() {
@@ -111,10 +100,6 @@ class Functions implements FunctionAPI {
 			return null;
 		}
 		return memRegions.get(currentRegion);
-	}
-
-	public Collection<MemoryRegion> getRegions() {
-		return Collections.unmodifiableCollection(memRegions);
 	}
 
 	@Override
@@ -274,7 +259,6 @@ class Functions implements FunctionAPI {
 	private void writeToMemory(long value, int dataLen, int numRepeats,
 			Commands command) throws DataSpecificationException {
 		ByteBuffer b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
-		System.out.println("write " + value + " x " + numRepeats + " (" + b.limit() + " bytes)");
 		for (int i = 0; i < numRepeats; i++) {
 			switch (dataLen) {
 			case 1:
@@ -313,8 +297,6 @@ class Functions implements FunctionAPI {
 					currentRegion);
 		}
 
-		System.out.println("writing " + array.length + " bytes at " + getRegion().getWritePointer() + " of region #" + currentRegion);
-		System.out.println("data: " + Arrays.toString(array));
 		// We can safely write
 		r.writeIntoRegionData(array);
 	}

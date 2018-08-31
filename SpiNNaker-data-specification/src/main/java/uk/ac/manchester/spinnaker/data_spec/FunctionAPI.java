@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.UnimplementedDSECommandEx
 
 /**
  * The interface supported by the {@link Functions} class. This makes generating
- * an {@link OperationCallable} much easier.
+ * an {@link Callable} much easier.
  *
  * @author Donal Fellows
  */
@@ -24,7 +24,7 @@ public interface FunctionAPI {
 	 */
 	void unpack(int cmd);
 
-	default OperationCallable getOperation(int cmd, int index)
+	default Callable getOperation(int cmd, int index)
 			throws DataSpecificationException {
 		int opcode = (cmd >> OPCODE_FIELD) & OPCODE_MASK;
 		Commands c = Commands.get(opcode);
@@ -32,7 +32,7 @@ public interface FunctionAPI {
 			throw new DataSpecificationException(
 					"unknown opcocode at index " + index + ": " + opcode);
 		}
-		OperationCallable opImpl = OperationCallableMapper.getOperationImpl(this, c);
+		Callable opImpl = OperationMapper.getOperationImpl(this, c);
 		if (opImpl == null) {
 			throw new UnimplementedDSECommandException(c);
 		}

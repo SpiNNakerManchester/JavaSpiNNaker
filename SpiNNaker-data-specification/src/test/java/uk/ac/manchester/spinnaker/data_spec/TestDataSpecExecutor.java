@@ -6,14 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
+import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpec;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,32 +18,21 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
 
 public class TestDataSpecExecutor {
 
-	private ByteBuffer makeSpec(SpecGen specGen) {
-		Generator spec = new Generator();
-		specGen.generate(spec);
-		return spec.getSpecification();
-	}
-
-	@FunctionalInterface
-	private interface SpecGen {
-		void generate(Generator generator);
-	}
-
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(specGen -> {
-			specGen.reserve_memory_region(0, 100);
-			specGen.reserve_memory_region(1, 200, true);
-			specGen.reserve_memory_region(2, 4);
-			specGen.switch_write_focus(0);
-			specGen.write_array(0, 1, 2);
-			specGen.set_write_pointer(20);
-			specGen.write_value(4);
-			specGen.switch_write_focus(2);
-			specGen.write_value(3);
-			specGen.set_write_pointer(0);
-			specGen.write_value(10);
-			specGen.end_specification();
+		ByteBuffer spec = makeSpec(s -> {
+			s.reserve_memory_region(0, 100);
+			s.reserve_memory_region(1, 200, true);
+			s.reserve_memory_region(2, 4);
+			s.switch_write_focus(0);
+			s.write_array(0, 1, 2);
+			s.set_write_pointer(20);
+			s.write_value(4);
+			s.switch_write_focus(2);
+			s.write_value(3);
+			s.set_write_pointer(0);
+			s.write_value(10);
+			s.end_specification();
 		});
 
 		// Execute the spec
@@ -74,7 +60,6 @@ public class TestDataSpecExecutor {
 		ByteBuffer r0data = region_0.getRegionData().asReadOnlyBuffer()
 				.order(LITTLE_ENDIAN);
 		r0data.flip();
-		System.out.println(r0data.order());
 		int[] dst = new int[expectedR0.length];
 		r0data.asIntBuffer().get(dst);
 		assertArrayEquals(expectedR0, dst);

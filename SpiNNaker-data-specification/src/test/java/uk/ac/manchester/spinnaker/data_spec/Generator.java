@@ -24,6 +24,17 @@ import java.nio.ByteBuffer;
 public class Generator {
 	private ByteBuffer buffer;
 
+	public static ByteBuffer makeSpec(SpecGen specGen) {
+		Generator spec = new Generator();
+		specGen.generate(spec);
+		return spec.getSpecification();
+	}
+
+	@FunctionalInterface
+	interface SpecGen {
+		void generate(Generator generator);
+	}
+
 	public Generator() {
 		buffer = allocate(32 * 1024).order(LITTLE_ENDIAN);
 	}
@@ -31,7 +42,6 @@ public class Generator {
 	public ByteBuffer getSpecification() {
 		ByteBuffer result = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		result.flip();
-		System.out.println("generated a spec of " + result.limit() + " bytes");
 		return result;
 	}
 
@@ -237,7 +247,7 @@ public class Generator {
 	public void write_value_from_register(int register) {
 		int repeats = 1;
 		DataType type = DataType.INT32;
-		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type,
-				Field.IMMEDIATE, repeats);
+		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type, Field.SOURCE_1,
+				register, Field.IMMEDIATE, repeats);
 	}
 }
