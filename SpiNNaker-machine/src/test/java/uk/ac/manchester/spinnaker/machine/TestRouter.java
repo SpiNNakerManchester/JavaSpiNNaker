@@ -7,10 +7,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.*;
 
 
@@ -58,7 +60,7 @@ public class TestRouter {
         links.add(link00_01);
         assertThat(chip01, is(oneOf(chip01, chip10)));
         Router router = new Router(links);
-        Stream<HasChipLocation> neighbours = router.streamNeighbouringChipsCoords();
+        Stream<ChipLocation> neighbours = router.streamNeighbouringChipsCoords();
         neighbours.forEach(loc -> {
                 assertThat(loc, is(oneOf(chip01, chip10)));
             });
@@ -71,12 +73,14 @@ public class TestRouter {
         for (HasChipLocation loc:router.iterNeighbouringChipsCoords()){
                 assertThat(loc, is(oneOf(chip01, chip10)));
         }
-        Iterator<HasChipLocation> iterator =
+        Iterator<ChipLocation> iterator =
                 router.iterNeighbouringChipsCoords().iterator();
         // Note Order is now by Direction
         assertEquals(chip01, iterator.next());
         assertEquals(chip10, iterator.next());
         assertFalse(iterator.hasNext());
+        assertThat(router.neighbouringChipsCoords(),
+               containsInAnyOrder(chip01, chip10));
     }
 
     @Test
@@ -100,7 +104,36 @@ public class TestRouter {
         });
     }
 
+    @Test
+    public void testDefaults1() {
+        Router router = new Router();
+        assertThat(router.links(), IsEmptyCollection.empty());
+        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
+        assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES, router.nAvailableMulticastEntries);
+    }
 
+    @Test
+    public void testDefaults2() {
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_01);
+        links.add(link00_10);
+        Router router = new Router(links);
+        assertThat(router.links(), containsInAnyOrder(links.toArray()));
+        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
+        assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES, router.nAvailableMulticastEntries);
+    }
 
+    @Test
+    public void testDefaults3() {
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link00_01);
+        links.add(link00_10);
+        Router router = new Router(
+                links, MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1);
+        assertThat(router.links(), containsInAnyOrder(links.toArray()));
+        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
+        assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1,
+                router.nAvailableMulticastEntries);
+    }
 
 }

@@ -3,6 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +57,20 @@ public class TestDirection {
         HasChipLocation expResult = new ChipLocation(0, 1);
         HasChipLocation result = instance.typicalMove(source);
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test the inverse and that they all return unique values.
+     *
+     * This makes sure two values do not use the same default.
+     */
+    @Test
+    public void testInverse() {
+        HashSet<Direction> inverses = new HashSet<>();
+        for (Direction direction: Direction.values()) {
+            inverses.add(direction.inverse());
+        }
+        assertEquals(Direction.values().length, inverses.size());
     }
 
 }

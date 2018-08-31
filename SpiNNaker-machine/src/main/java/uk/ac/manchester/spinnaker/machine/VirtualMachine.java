@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 
@@ -49,7 +48,7 @@ public class VirtualMachine extends Machine {
      *      as if they never existed.
      */
     public VirtualMachine(MachineDimensions machineDimensions,
-            Set<ChipLocation> ignoreChips,
+            Collection<ChipLocation> ignoreChips,
             Map<ChipLocation, Collection<Integer>> ignoreCores,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         super(machineDimensions, ChipLocation.ZERO_ZERO);
@@ -211,4 +210,23 @@ public class VirtualMachine extends Machine {
         }
     }
 
+    /**
+     * Converts a byte array to an InetAddress.
+     * <p>
+     * Hides the thrown UnknownHostException in an Runtime error.
+     * <p>
+     * Hackery to get 100% coverage.
+     *
+     * @param bytes The raw IP address in network byte order.
+     * @return The InetAddress for these bytes
+     * @throws Error if InetAddress.getByAddress throws UnknownHostException
+     */
+    static final InetAddress addressFromBytes(byte[] bytes) {
+        try {
+            return InetAddress.getByAddress(bytes);
+        } catch (UnknownHostException ex) {
+            //Should never happen so convert to none catchable
+            throw new Error(ex);
+        }
+    }
 }

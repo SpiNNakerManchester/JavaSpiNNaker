@@ -70,7 +70,7 @@ public final class FPGALinkData extends AbstractDataLink {
     public String toString() {
         return "FPGALinkData {" + "X:" + getX() + " Y:" + getY()
                 + ", boardAddress=" + boardAddress
-                + ", linkId=" + linkId + ", fpgaLinkId=" + fpgaLinkId
+                + ", linkId=" + direction + ", fpgaLinkId=" + fpgaLinkId
                 + ", fpgaId=" + fpgaId + "}";
     }
 
