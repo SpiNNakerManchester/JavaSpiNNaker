@@ -102,21 +102,25 @@ public enum Commands {
 	PRINT_STRUCT(0X82),
 	/** Cleanly ends the parsing of the data specs. */
 	END_SPEC(0XFF);
+	/**
+	 * The value of the command, from the Data Specification specification
+	 * itself.
+	 */
 	public final int value;
-	private static final Map<Integer, Commands> map;
+	private static final Map<Integer, Commands> MAP;
 
 	Commands(int value) {
 		this.value = value;
 	}
 
 	static {
-		map = new HashMap<>();
+		MAP = new HashMap<>();
 		for (Commands cmd : values()) {
-			map.put(cmd.value, cmd);
+			MAP.put(cmd.value, cmd);
 		}
 	}
 
 	public static Commands get(int value) {
-		return map.get(value);
+		return MAP.get(value);
 	}
 }

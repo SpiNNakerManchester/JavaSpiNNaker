@@ -2,8 +2,8 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
-import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE_FIELD;
-import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE_MASK;
+import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE;
+import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationImpl;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.ExecuteBreakInstruction;
@@ -24,15 +24,30 @@ public interface FunctionAPI {
 	 */
 	void unpack(int cmd);
 
-	default Callable getOperation(int cmd, int index)
-			throws DataSpecificationException {
-		int opcode = (cmd >> OPCODE_FIELD) & OPCODE_MASK;
+	/**
+	 * Get the implementation of an operation.
+	 *
+	 * @param cmdOpcode
+	 *            The <i>encoded</i> opcode value.
+	 * @param index
+	 *            The location in the data specification data stream where the
+	 *            command was read from, for reporting errors to the user.
+	 * @return The operation implementation. Never <tt>null</tt>.
+	 * @throws DataSpecificationException
+	 *             If a bad opcode is given.
+	 * @throws UnimplementedDSECommandException
+	 *             If the opcode used is not implemented.
+	 */
+	default Callable getOperation(int cmdOpcode, int index)
+			throws DataSpecificationException,
+			UnimplementedDSECommandException {
+		int opcode = OPCODE.getValue(cmdOpcode);
 		Commands c = Commands.get(opcode);
 		if (c == null) {
 			throw new DataSpecificationException(
 					"unknown opcocode at index " + index + ": " + opcode);
 		}
-		Callable opImpl = OperationMapper.getOperationImpl(this, c);
+		Callable opImpl = getOperationImpl(this, c);
 		if (opImpl == null) {
 			throw new UnimplementedDSECommandException(c);
 		}
@@ -43,7 +58,7 @@ public interface FunctionAPI {
 	 * This command executes no operation.
 	 */
 	@Operation(NOP)
-	default void execute_nop() {
+	default void doNOP() {
 		// Does nothing
 	}
 
@@ -52,7 +67,7 @@ public interface FunctionAPI {
 	 * specification executor (DSE).
 	 */
 	@Operation(BREAK)
-	default void execute_break() throws DataSpecificationException {
+	default void doBreak() throws DataSpecificationException {
 		throw new ExecuteBreakInstruction();
 	}
 }

@@ -15,13 +15,9 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN2;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN3;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.LONG_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_REGISTERS;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.commons.lang3.BitField;
 
@@ -35,34 +31,21 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.UnknownTypeLengthExceptio
 
 @SuppressWarnings("unused")
 class Functions implements FunctionAPI {
-	/** Where we are reading the data spec from. */
-	private final ByteBuffer spec;
-	/** How much space do we have available? Maximum <i>per region</i>. */
-	private int memorySpace;
-	/** How much space has been allocated. */
-	int spaceAllocated;
-	/** What is the current region that we're writing to. */
-	private Integer currentRegion;
-	/** The model registers, an array of 16 ints. */
-	private final int[] registers;
-	/** The collection of memory regions that can be written to. */
-	private final MemoryRegionCollection memRegions;
-
-	static final int SIZE_FIELD = 28;
-	static final int OPCODE_FIELD = 20;
-	static final int DEST_FLAG = 18;
-	static final int SRC1_FLAG = 17;
-	static final int SRC2_FLAG = 16;
-	static final int DEST_FIELD = 12;
-	static final int SRC1_FIELD = 8;
-	static final int SRC2_FIELD = 4;
-	static final int BIT_MASK = 0b00000001;
-	static final int SIZE_MASK = 0b00000011;
-	static final int REG_MASK = 0b00001111;
-	static final int OPCODE_MASK = 0b11111111;
+	private static final int SIZE_FIELD = 28;
+	private static final int OPCODE_FIELD = 20;
+	private static final int DEST_FLAG = 18;
+	private static final int SRC1_FLAG = 17;
+	private static final int SRC2_FLAG = 16;
+	private static final int DEST_FIELD = 12;
+	private static final int SRC1_FIELD = 8;
+	private static final int SRC2_FIELD = 4;
+	private static final int BIT_MASK = 0b00000001;
+	private static final int SIZE_MASK = 0b00000011;
+	private static final int REG_MASK = 0b00001111;
+	private static final int OPCODE_MASK = 0b11111111;
 
 	private static final BitField SIZE = new BitField(SIZE_MASK << SIZE_FIELD);
-	private static final BitField OPCODE =
+	static final BitField OPCODE =
 			new BitField(OPCODE_MASK << OPCODE_FIELD);
 	private static final BitField DEST_BIT = new BitField(1 << DEST_FLAG);
 	private static final BitField SRC1_BIT = new BitField(1 << SRC1_FLAG);
@@ -76,17 +59,32 @@ class Functions implements FunctionAPI {
 	private static final BitField UNFILLED = new BitField(0b10000000);
 	private static final BitField RELATIVE = new BitField(0b00000001);
 	private static final BitField REPEATS = new BitField(0b11111111);
+
 	private static final int SIZE_LOW_BITS = 0b00000011;
 
-	private int packedCommand;
-	private int cmd_size;
-	private int opcode;
-	private Integer dest_reg;
-	private Integer src1_reg;
-	private Integer src2_reg;
-	private int data_len;
+	/** Where we are reading the data spec from. */
+	private final ByteBuffer spec;
+	/** How much space do we have available? Maximum <i>per region</i>. */
+	private int memorySpace;
+	/** How much space has been allocated. */
+	int spaceAllocated;
+	/** What is the current region that we're writing to. */
+	private Integer currentRegion;
+	/** The model registers, an array of 16 ints. */
+	private final int[] registers;
+	/** The collection of memory regions that can be written to. */
+	private final MemoryRegionCollection memRegions;
 
-	Functions(ByteBuffer input, int memorySpace, MemoryRegionCollection memRegions) {
+	private int packedCommand;
+	private int cmdSize;
+	private int opcode;
+	private Integer dest;
+	private Integer src1;
+	private Integer src2;
+	private int dataLength;
+
+	Functions(ByteBuffer input, int memorySpace,
+			MemoryRegionCollection memRegions) {
 		spec = input;
 		this.memorySpace = memorySpace;
 		spaceAllocated = 0;
@@ -105,24 +103,24 @@ class Functions implements FunctionAPI {
 	@Override
 	public void unpack(int command) {
 		packedCommand = command;
-		cmd_size = SIZE.getValue(command);
+		cmdSize = SIZE.getValue(command);
 		opcode = OPCODE.getValue(command);
-		dest_reg = DEST_BIT.isSet(command) ? DEST.getValue(command) : null;
-		src1_reg = SRC1_BIT.isSet(command) ? SRC1.getValue(command) : null;
-		src2_reg = SRC2_BIT.isSet(command) ? SRC2.getValue(command) : null;
-		data_len = DATA_LEN.getValue(command);
+		dest = DEST_BIT.isSet(command) ? DEST.getValue(command) : null;
+		src1 = SRC1_BIT.isSet(command) ? SRC1.getValue(command) : null;
+		src2 = SRC2_BIT.isSet(command) ? SRC2.getValue(command) : null;
+		dataLength = 1 << DATA_LEN.getValue(command);
 	}
 
 	/** This command reserves a region and assigns some memory space to it. */
 	@Operation(RESERVE)
-	public void execute_reserve() throws DataSpecificationException {
+	public void reserve() throws DataSpecificationException {
 		int region = REGION.getValue(packedCommand);
-		if (cmd_size != LEN2) {
+		if (cmdSize != LEN2) {
 			throw new DataSpecificationException(format(
 					"Command %s requires one word as argument (total 2 words),"
 							+ " but the current encoding (%08X) is specified"
 							+ " to be %d words long",
-					RESERVE, packedCommand, cmd_size));
+					RESERVE, packedCommand, cmdSize));
 		}
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
@@ -146,15 +144,14 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(WRITE)
 	public void write() throws DataSpecificationException {
-		int numRepeats = (src2_reg != null ? registers[src2_reg]
+		int numRepeats = (src2 != null ? registers[src2]
 				: REPEATS.getValue(packedCommand));
-		int dataLen = 1 << this.data_len;
 		long value;
-		if (src1_reg != null) {
-			value = registers[src1_reg];
-		} else if (cmd_size == LEN2 && dataLen != LONG_SIZE) {
+		if (src1 != null) {
+			value = registers[src1];
+		} else if (cmdSize == LEN2 && dataLength != LONG_SIZE) {
 			value = spec.getInt();
-		} else if (cmd_size == LEN3 && dataLen == LONG_SIZE) {
+		} else if (cmdSize == LEN3 && dataLength == LONG_SIZE) {
 			value = spec.getLong();
 		} else {
 			throw new DataSpecificationException(String.format(
@@ -162,9 +159,9 @@ class Functions implements FunctionAPI {
 							+ "current encoding (%08X) is specified to be %d "
 							+ "words long and the data length command argument "
 							+ "is specified to be %d bytes long",
-					WRITE, packedCommand, cmd_size, dataLen));
+					WRITE, packedCommand, cmdSize, dataLength));
 		}
-		writeToMemory(value, dataLen, numRepeats, WRITE);
+		writeToMemory(value, dataLength, numRepeats, WRITE);
 	}
 
 	/** This command writes an array of values in the specified region. */
@@ -181,8 +178,8 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(SWITCH_FOCUS)
 	public void switchFocus() throws DataSpecificationException {
-		int region = (src1_reg != null ? registers[src1_reg]
-				: SRC1.getValue(packedCommand));
+		int region =
+				(src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
 		if (memRegions.isEmpty(region)) {
 			throw new RegionUnfilledException(region, SWITCH_FOCUS);
 		}
@@ -195,14 +192,14 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(MV)
 	public void move() throws DataSpecificationException {
-		if (dest_reg == null) {
+		if (dest == null) {
 			throw new DataSpecificationException(
 					"destination register not correctly specified");
 		}
-		if (src1_reg != null) {
-			registers[dest_reg] = registers[src1_reg];
+		if (src1 != null) {
+			registers[dest] = registers[src1];
 		} else {
-			registers[dest_reg] = spec.getInt();
+			registers[dest] = spec.getInt();
 		}
 	}
 
@@ -211,13 +208,13 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(SET_WR_PTR)
 	public void setWritePointer() throws DataSpecificationException {
-		int future_address, address;
-		if (src1_reg != null) {
+		int address;
+		if (src1 != null) {
 			// the data is a register
-			future_address = registers[src1_reg];
+			address = registers[src1];
 		} else {
 			// the data is a raw address
-			future_address = spec.getInt();
+			address = spec.getInt();
 		}
 
 		// check that the address is relative or absolute
@@ -230,9 +227,7 @@ class Functions implements FunctionAPI {
 			}
 
 			// relative to the base address of the region (obsolete)
-			address = getRegion().getWritePointer() + future_address;
-		} else {
-			address = future_address;
+			address += getRegion().getWritePointer();
 		}
 
 		// update write pointer

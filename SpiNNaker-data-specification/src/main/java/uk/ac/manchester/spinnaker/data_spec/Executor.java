@@ -96,6 +96,17 @@ public class Executor implements AutoCloseable {
 	}
 
 	/**
+	 * Get how much space was allocated overall. Only useful after a
+	 * specification has been executed.
+	 *
+	 * @return The total space allocated, not including any header or region
+	 *         address table.
+	 */
+	public int getTotalSpaceAllocated() {
+		return funcs.spaceAllocated;
+	}
+
+	/**
 	 * Get the memory region with a particular ID.
 	 *
 	 * @param regionID
