@@ -40,7 +40,7 @@ public class Executor implements AutoCloseable {
 	/**
 	 * Create an executor.
 	 *
-	 * @param inputStream
+	 * @param inputFile
 	 *            The file to read the specification from
 	 * @param memorySpace
 	 *            memory available on the destination architecture
