@@ -120,10 +120,11 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * Get whether a particular region needs to be written
+	 * Get whether a particular region needs to be written.
 	 *
-	 * @param regionID
-	 * @return
+	 * @param regionID The ID of the region to check.
+	 * @return True if the region must be written. A region must be written if
+	 *         it is filled or if it has a region after it that must be written.
 	 */
 	public boolean needsToWriteRegion(int regionID) {
 		if (regionID >= regions.length) {

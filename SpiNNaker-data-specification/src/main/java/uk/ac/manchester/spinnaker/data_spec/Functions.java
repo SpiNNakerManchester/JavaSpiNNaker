@@ -51,19 +51,32 @@ class Functions implements FunctionAPI {
 	private static final int REG_MASK = 0b00001111;
 	private static final int OPCODE_MASK = 0b11111111;
 
+	/** How to extract the size field from the bit-encoded form. */
 	private static final BitField SIZE = new BitField(SIZE_MASK << SIZE_FIELD);
+	/** How to extract the opcode field from the bit-encoded form. */
 	static final BitField OPCODE = new BitField(OPCODE_MASK << OPCODE_FIELD);
+	/** How to extract the dest-is-register flag from the bit-encoded form. */
 	private static final BitField DEST_BIT = new BitField(1 << DEST_FLAG);
+	/** How to extract the src1-is-register flag from the bit-encoded form. */
 	private static final BitField SRC1_BIT = new BitField(1 << SRC1_FLAG);
+	/** How to extract the src2-is-register flag from the bit-encoded form. */
 	private static final BitField SRC2_BIT = new BitField(1 << SRC2_FLAG);
+	/** How to extract the dest field from the bit-encoded form. */
 	private static final BitField DEST = new BitField(REG_MASK << DEST_FIELD);
+	/** How to extract the src1 field from the bit-encoded form. */
 	private static final BitField SRC1 = new BitField(REG_MASK << SRC1_FIELD);
+	/** How to extract the src2 field from the bit-encoded form. */
 	private static final BitField SRC2 = new BitField(REG_MASK << SRC2_FIELD);
+	/** How to extract the data length field from the bit-encoded form. */
 	private static final BitField DATA_LEN =
 			new BitField(SIZE_MASK << DEST_FIELD);
+	/** How to extract the region field from the bit-encoded form. */
 	private static final BitField REGION = new BitField(0b00011111);
+	/** How to extract the unfilled flag from the bit-encoded form. */
 	private static final BitField UNFILLED = new BitField(0b10000000);
+	/** How to extract the relative flag from the bit-encoded form. */
 	private static final BitField RELATIVE = new BitField(0b00000001);
+	/** How to extract the repeats field from the bit-encoded form. */
 	private static final BitField REPEATS = new BitField(0b11111111);
 
 	private static final int SIZE_LOW_BITS = 0b00000011;
@@ -255,6 +268,8 @@ class Functions implements FunctionAPI {
 	/**
 	 * This command indicates that the data specification has completed
 	 * successfully.
+	 *
+	 * @return Special end-of-execution token.
 	 */
 	@Operation(END_SPEC)
 	public int endSpecification() throws DataSpecificationException {

@@ -81,6 +81,13 @@ public class MemoryRegion {
 		return maxWritePointer;
 	}
 
+	/**
+	 * Set the write pointer. The write pointer is where the next block of data
+	 * to be written will actually be written.
+	 *
+	 * @param address
+	 *            The address to set.
+	 */
 	public void setWritePointer(int address) {
 		buffer.position(address);
 		maxWritePointer = max(maxWritePointer, address);
