@@ -18,11 +18,11 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 		this(null, UDP_BOOT_CONNECTION_DEFAULT_PORT);
 	}
 
-	public IPAddressConnection(String localHost) throws IOException {
+	public IPAddressConnection(InetAddress localHost) throws IOException {
 		this(localHost, UDP_BOOT_CONNECTION_DEFAULT_PORT);
 	}
 
-	public IPAddressConnection(String localHost, int localPort)
+	public IPAddressConnection(InetAddress localHost, int localPort)
 			throws IOException {
 		super(localHost, localPort, null, null);
 	}

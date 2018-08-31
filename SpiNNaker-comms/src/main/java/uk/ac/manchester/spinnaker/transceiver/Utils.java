@@ -6,6 +6,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
@@ -31,8 +32,8 @@ public abstract class Utils {
 	 * final part e.g. if the machine IP address is 192.168.0.5, the BMP IP
 	 * address is assumed to be 192.168.0.4
 	 *
-	 * @param hostname
-	 *            the SpiNNaker machine main hostname or IP address
+	 * @param host
+	 *            the SpiNNaker machine main host
 	 * @param numberOfBoards
 	 *            the number of boards in the machine
 	 * @return The BMP connection data
@@ -40,9 +41,9 @@ public abstract class Utils {
 	 *             If the IP address computations fail.
 	 */
 	public static BMPConnectionData workOutBMPFromMachineDetails(
-			String hostname, Integer numberOfBoards)
+			InetAddress host, Integer numberOfBoards)
 			throws UnknownHostException {
-		return new BMPConnectionData(hostname,
+		return new BMPConnectionData(host,
 				numberOfBoards == null ? 0 : numberOfBoards);
 	}
 
@@ -75,17 +76,18 @@ public abstract class Utils {
 	 * @param connection
 	 *            The UDP connection down which the trigger message should be
 	 *            sent
-	 * @param hostname
+	 * @param host
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
-	 * @deprecated Call {@link UDPConnection#sendPortTriggerMessage(String)}
+	 * @deprecated Call
+     *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
 	 *             directly instead.
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
 	public static void sendPortTriggerMessage(UDPConnection<?> connection,
-			String hostname) throws IOException {
-		connection.sendPortTriggerMessage(hostname);
+			InetAddress host) throws IOException {
+		connection.sendPortTriggerMessage(host);
 	}
 
 	/**
