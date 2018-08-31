@@ -1,5 +1,7 @@
 package uk.ac.manchester.spinnaker.data_spec.exceptions;
 
+import static java.lang.String.format;
+
 import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
@@ -8,8 +10,14 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
 @SuppressWarnings("serial")
 public class UnimplementedDSECommandException
 		extends UnsupportedOperationException {
+	/**
+	 * Create an instance.
+	 *
+	 * @param command
+	 *            The command that was unimplemented.
+	 */
 	public UnimplementedDSECommandException(Commands command) {
-		super(String.format("Command %s in the data specification executor "
+		super(format("Command %s in the data specification executor "
 				+ "has not yet been implemented", command));
 	}
 }

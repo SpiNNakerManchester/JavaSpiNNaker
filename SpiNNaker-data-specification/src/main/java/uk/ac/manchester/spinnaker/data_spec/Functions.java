@@ -29,6 +29,13 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionNotAllocatedExcepti
 import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionUnfilledException;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.UnknownTypeLengthException;
 
+/**
+ * Functions that implement {@linkplain Operation operations} for the
+ * {@link Executor}.
+ *
+ * @author Donal Fellows
+ * @see OperationMapper
+ */
 @SuppressWarnings("unused")
 class Functions implements FunctionAPI {
 	private static final int SIZE_FIELD = 28;
@@ -45,8 +52,7 @@ class Functions implements FunctionAPI {
 	private static final int OPCODE_MASK = 0b11111111;
 
 	private static final BitField SIZE = new BitField(SIZE_MASK << SIZE_FIELD);
-	static final BitField OPCODE =
-			new BitField(OPCODE_MASK << OPCODE_FIELD);
+	static final BitField OPCODE = new BitField(OPCODE_MASK << OPCODE_FIELD);
 	private static final BitField DEST_BIT = new BitField(1 << DEST_FLAG);
 	private static final BitField SRC1_BIT = new BitField(1 << SRC1_FLAG);
 	private static final BitField SRC2_BIT = new BitField(1 << SRC2_FLAG);
@@ -83,6 +89,18 @@ class Functions implements FunctionAPI {
 	private Integer src2;
 	private int dataLength;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param input
+	 *            Where to read immediate payload arguments from.
+	 * @param memorySpace
+	 *            What's the maximum size of memory that a memory region may
+	 *            occupy.
+	 * @param memRegions
+	 *            Where are we storing the memory regions that we are
+	 *            allocating.
+	 */
 	Functions(ByteBuffer input, int memorySpace,
 			MemoryRegionCollection memRegions) {
 		spec = input;

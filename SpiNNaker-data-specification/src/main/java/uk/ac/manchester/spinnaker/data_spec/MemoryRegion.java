@@ -5,12 +5,35 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 import java.nio.ByteBuffer;
 
+/**
+ * A memory region storage object.
+ * <p>
+ * As memory regions are modifiable objects, their equality is defined in terms
+ * of their fundamental object identity.
+ */
 public class MemoryRegion {
+	/** The write pointer position, saying where the start of the block is. */
 	private int memPointer;
+	/** The maximum point where writes have happened up to within the region. */
 	private int maxWritePointer;
+	/** The buffer storing the written data. */
 	private ByteBuffer buffer;
+	/**
+	 * Whether this is an unfilled region. Unfilled regions can be written
+	 * efficiently as a block of zeroes.
+	 */
 	private boolean unfilled;
 
+	/**
+	 * Create a memory region.
+	 *
+	 * @param memoryPointer
+	 *            where the start of the block is
+	 * @param unfilled
+	 *            whether this is an unfilled region
+	 * @param size
+	 *            the allocated size of the memory region
+	 */
 	public MemoryRegion(int memoryPointer, boolean unfilled, int size) {
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
@@ -38,6 +61,13 @@ public class MemoryRegion {
 		return buffer;
 	}
 
+	/**
+	 * Write a chunk of data into the region, updating the maximum point where
+	 * the writes occurred.
+	 *
+	 * @param data
+	 *            The chunk of data to write at the current write pointer.
+	 */
 	public void writeIntoRegionData(byte[] data) {
 		buffer.put(data);
 		maxWritePointer = max(maxWritePointer, buffer.position());
