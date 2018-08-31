@@ -65,9 +65,12 @@ public interface FunctionAPI {
 	/**
 	 * This command raises an exception to stop the execution of the data
 	 * specification executor (DSE).
+	 *
+	 * @throws ExecuteBreakInstruction
+	 *             Always
 	 */
 	@Operation(BREAK)
-	default void doBreak() throws DataSpecificationException {
+	default void doBreak() throws ExecuteBreakInstruction {
 		throw new ExecuteBreakInstruction();
 	}
 }

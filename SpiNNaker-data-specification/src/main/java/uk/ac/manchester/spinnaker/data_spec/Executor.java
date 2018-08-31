@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
+import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
@@ -11,6 +12,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -29,6 +31,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  */
 public class Executor implements AutoCloseable {
 	private static final Logger log = getLogger(Executor.class);
+	private InputStream inputStream;
 	private final ByteBuffer input;
 	private final Functions funcs;
 	/** The collection of memory regions that can be written to. */
@@ -38,12 +41,29 @@ public class Executor implements AutoCloseable {
 	 * Create an executor.
 	 *
 	 * @param inputStream
+	 *            The file to read the specification from
+	 * @param memorySpace
+	 *            memory available on the destination architecture
+	 * @throws IOException
+	 *             If a problem happens when reading the file
+	 */
+	public Executor(File inputFile, int memorySpace) throws IOException {
+		this(openInputStream(inputFile), memorySpace);
+	}
+
+	/**
+	 * Create an executor.
+	 *
+	 * @param inputStream
 	 *            The object to read the specification language file from
 	 * @param memorySpace
 	 *            memory available on the destination architecture
+	 * @throws IOException
+	 *             If a problem happens when reading the input stream
 	 */
 	public Executor(InputStream inputStream, int memorySpace)
 			throws IOException {
+		this.inputStream = inputStream;
 		this.input = wrap(toByteArray(inputStream)).order(LITTLE_ENDIAN);
 		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
 		funcs = new Functions(input, memorySpace, memRegions);
@@ -60,7 +80,7 @@ public class Executor implements AutoCloseable {
 	 * @param memorySpace
 	 *            memory available on the destination architecture
 	 */
-	public Executor(ByteBuffer input, int memorySpace) throws IOException {
+	public Executor(ByteBuffer input, int memorySpace) {
 		this.input = input.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		this.input.rewind(); // Ensure we start from the beginning
 		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
@@ -78,12 +98,25 @@ public class Executor implements AutoCloseable {
 				.mapToObj(Integer::toHexString).collect(Collectors.toList()));
 	}
 
+	/**
+	 * @throws IOException
+	 *             if the spec is being read from a stream and a close of the
+	 *             stream fails.
+	 */
 	@Override
-	public void close() {
-		// Does nothing; the original spec is read eagerly
+	public void close() throws IOException {
+		if (inputStream != null) {
+			inputStream.close();
+			inputStream = null;
+		}
 	}
 
-	/** Executes the specification. */
+	/**
+	 * Executes the specification.
+	 *
+	 * @throws DataSpecificationException
+	 *             if anything goes wrong
+	 */
 	public void execute() throws DataSpecificationException {
 		while (true) {
 			int index = input.position();
