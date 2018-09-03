@@ -36,12 +36,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	@Override
-	public final int size() {
+	public int size() {
 		return regions.length;
 	}
 
 	@Override
-	public final boolean isEmpty() {
+	public boolean isEmpty() {
 		return regions.length == 0;
 	}
 
@@ -52,7 +52,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *            The region ID to retrieve.
 	 * @return The memory region, or <tt>null</tt> if that region is empty.
 	 */
-	public final MemoryRegion get(int regionID) {
+	public MemoryRegion get(int regionID) {
 		return regions[regionID];
 	}
 
@@ -82,7 +82,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *            The ID of the region to test.
 	 * @return True exactly when the region is empty.
 	 */
-	public final boolean isEmpty(int regionID) {
+	public boolean isEmpty(int regionID) {
 		return isEmpty() || regions[regionID] == null;
 	}
 
@@ -94,7 +94,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return True exactly when the region is unfilled. Empty regions are
 	 *         always unfilled.
 	 */
-	public final boolean isUnfilled(int regionID) {
+	public boolean isUnfilled(int regionID) {
 		return isEmpty(regionID) || regions[regionID].isUnfilled();
 	}
 
@@ -105,7 +105,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *            The ID of the region to get the size of.
 	 * @return The size of the region. Empty regions have zero size.
 	 */
-	public final int getSize(int regionID) {
+	public int getSize(int regionID) {
 		return regions[regionID] == null ? 0
 				: regions[regionID].getAllocatedSize();
 	}
@@ -139,12 +139,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	@Override
-	public final boolean contains(Object o) {
+	public boolean contains(Object o) {
 		return stream().anyMatch(r -> r.equals(o));
 	}
 
 	@Override
-	public final Iterator<MemoryRegion> iterator() {
+	public Iterator<MemoryRegion> iterator() {
 		return asList(regions).iterator();
 	}
 
@@ -170,12 +170,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	@Override
-	public final Stream<MemoryRegion> stream() {
+	public Stream<MemoryRegion> stream() {
 		return Arrays.stream(regions);
 	}
 
 	@Override
-	public final Spliterator<MemoryRegion> spliterator() {
+	public Spliterator<MemoryRegion> spliterator() {
 		return Arrays.spliterator(regions);
 	}
 
