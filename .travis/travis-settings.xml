@@ -5,6 +5,7 @@
 	<profiles>
 		<profile>
 			<id>override-stupid-apache-snapshots</id>
+			<!-- NEVER get SNAPSHOTs from external repos -->
 			<repositories>
 				<repository>
 					<id>apache-snapshots</id>
@@ -12,7 +13,7 @@
 						<enabled>false</enabled>
 						<updatePolicy>never</updatePolicy>
 					</snapshots>
-					<url>https://repository.apache.org/snapshots/</url>
+					<url>http://localhost/snapshots/</url>
 				</repository>
 				<repository>
 					<id>apache.snapshots</id>
@@ -20,7 +21,7 @@
 						<enabled>false</enabled>
 						<updatePolicy>never</updatePolicy>
 					</snapshots>
-					<url>https://repository.apache.org/snapshots/</url>
+					<url>http://localhost/snapshots/</url>
 				</repository>
 			</repositories>
 		</profile>
