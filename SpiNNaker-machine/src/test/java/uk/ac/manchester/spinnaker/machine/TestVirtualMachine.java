@@ -46,7 +46,7 @@ public class TestVirtualMachine {
                     containsKey(chip.asChipLocation())) {
                 Set<Direction> bad = MachineDefaults.FOUR_CHIP_DOWN_LINKS.
                         get(chip.asChipLocation());
-                for (Link link:chip.router.links()) {
+                for (Link link:chip.router) {
                     assertThat(bad, not(hasItems(link.sourceLinkDirection)));
                 }
             }
@@ -86,6 +86,9 @@ public class TestVirtualMachine {
                instance.addFpgaLinks();
         InetAddress address = instance.bootChip().ipAddress;
 
+        assertEquals("864 cores and 120.0 links",
+                instance.coresAndLinkOutputString());
+
         instance.addFpgaLinks();
         FPGALinkData link = instance.getFpgaLink(FpgaId.BOTTOM, 3, address);
         assertEquals(address, link.boardAddress);
@@ -105,7 +108,6 @@ public class TestVirtualMachine {
         assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
         instance.reserveSystemProcessors();
         assertEquals(3 * 48 * 16, instance.totalAvailableUserCores());
-        assertEquals("2592 cores and 432.0 links", instance.coresAndLinkOutputString());
 
         instance.addFpgaLinks();
         ArrayList<FPGALinkData> links = new ArrayList();
@@ -175,7 +177,7 @@ public class TestVirtualMachine {
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, null, ignoreLinks);
         // Only ignored in one direction so 2.5 less
-        //assertEquals("2592 cores and 429.5 links", instance.coresAndLinkOutputString());
+        assertEquals("2592 cores and 429.5 links", instance.coresAndLinkOutputString());
         assertFalse(instance.hasLinkAt(new ChipLocation(7, 2), Direction.NORTH));
         instance.addFpgaLinks();
         ArrayList<FPGALinkData> links = new ArrayList();
@@ -312,5 +314,6 @@ public class TestVirtualMachine {
         assertThrows(Error.class, () -> {
             VirtualMachine.addressFromBytes(new byte[0]);
         });
-   }
+    }
+
 }

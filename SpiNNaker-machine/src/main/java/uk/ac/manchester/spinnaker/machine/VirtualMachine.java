@@ -3,6 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 
 /**
@@ -47,7 +48,7 @@ public class VirtualMachine extends Machine {
      *      as if they never existed.
      */
     public VirtualMachine(MachineDimensions machineDimensions,
-            Set<ChipLocation> ignoreChips,
+            Collection<ChipLocation> ignoreChips,
             Map<ChipLocation, Collection<Integer>> ignoreCores,
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         super(machineDimensions, ChipLocation.ZERO_ZERO);
@@ -190,7 +191,7 @@ public class VirtualMachine extends Machine {
     private static final int THIRD_BYTE = 2;
     private static final int FOURTH_BYTE = 3;
 
-    private InetAddress getIpaddress(
+    private Inet4Address getIpaddress(
             ChipLocation location, Collection<ChipLocation> roots) {
         if (roots.contains(location)) {
             byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
@@ -198,7 +199,12 @@ public class VirtualMachine extends Machine {
             bytes[SECOND_BYTE] = 0;
             bytes[THIRD_BYTE] = (byte) location.getX();
             bytes[FOURTH_BYTE] = (byte) location.getY();
-            return addressFromBytes(bytes);
+            try {
+                return InetFactory.getByAddress(bytes);
+            } catch (UnknownHostException ex) {
+                //Should never happen so convert to none catchable
+                throw new Error(ex);
+            }
         } else {
             return null;
         }

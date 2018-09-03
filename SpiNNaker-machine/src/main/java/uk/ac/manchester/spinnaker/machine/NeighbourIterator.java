@@ -9,7 +9,7 @@ import java.util.Iterator;
  *
  * @author Christian-B
  */
-public class NeighbourIterator implements Iterator<HasChipLocation> {
+public class NeighbourIterator implements Iterator<ChipLocation> {
 
     private Iterator<Link> linksIter;
 
@@ -23,7 +23,7 @@ public class NeighbourIterator implements Iterator<HasChipLocation> {
     }
 
     @Override
-    public HasChipLocation next() {
+    public ChipLocation next() {
         return linksIter.next().destination;
     }
 

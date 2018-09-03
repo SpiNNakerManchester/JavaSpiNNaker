@@ -60,7 +60,7 @@ public class TestRouter {
         links.add(link00_01);
         assertThat(chip01, is(oneOf(chip01, chip10)));
         Router router = new Router(links);
-        Stream<HasChipLocation> neighbours = router.streamNeighbouringChipsCoords();
+        Stream<ChipLocation> neighbours = router.streamNeighbouringChipsCoords();
         neighbours.forEach(loc -> {
                 assertThat(loc, is(oneOf(chip01, chip10)));
             });
@@ -73,7 +73,7 @@ public class TestRouter {
         for (HasChipLocation loc:router.iterNeighbouringChipsCoords()){
                 assertThat(loc, is(oneOf(chip01, chip10)));
         }
-        Iterator<HasChipLocation> iterator =
+        Iterator<ChipLocation> iterator =
                 router.iterNeighbouringChipsCoords().iterator();
         // Note Order is now by Direction
         assertEquals(chip01, iterator.next());
