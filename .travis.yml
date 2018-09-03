@@ -10,12 +10,13 @@ before_install:
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dmaven.compiler.showDeprecation=true
 script:
-  - mvn test -B -Dmaven.javadoc.skip=true jacoco:report
-  - mvn checkstyle:check -Dmaven.javadoc.skip=true
-  - mvn javadoc:javadoc
+  - mvn test --settings .travis/travis-settings.xml -B -Dmaven.javadoc.skip=true jacoco:report
+  - mvn checkstyle:check --settings .travis/travis-settings.xml -Dmaven.javadoc.skip=true
+  - mvn javadoc:javadoc --settings .travis/travis-settings.xml
 after_success:
+  - mvn coveralls:report --settings .travis/travis-settings.xml
   - mvn coveralls:report
 before_cache:
   # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
   # will always rebuild internal snapshots.
-  - mvn dependency:purge-local-repository -DsnapshotsOnly=true -DreResolve=false
+  - mvn dependency:purge-local-repository --settings .travis/travis-settings.xml -DsnapshotsOnly=true -DreResolve=false
