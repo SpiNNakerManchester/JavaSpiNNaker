@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import static java.util.Collections.unmodifiableMap;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.hardware_version;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
 
@@ -105,42 +104,44 @@ public class SystemVariableBootValues implements SerializableMessage {
 	void unmodifiable() {
 		unmodifiable = true;
 	}
-}
 
-class BootValues {
-	private static final Map<Integer, SystemVariableBootValues> MAP;
-	/**
-	 * Deeply magical values, used to configure board LED states. Note that
-	 * index 0 corresponds to board hardware version 1, index 1 to hardware
-	 * version 2, etc.
-	 */
-	private static final int[] LED0 = {
-			0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
-	};
+	private static class BootValues {
+		private static final SystemVariableBootValues[] MAP;
+		/**
+		 * Deeply magical values, used to configure board LED states. Note that
+		 * index 0 corresponds to board hardware version 1, index 1 to hardware
+		 * version 2, etc.
+		 */
+		private static final int[] LED0 = {
+				0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
+		};
 
-	static {
-		HashMap<Integer, SystemVariableBootValues> bootValues = new HashMap<>();
-		int hwver = 1;
-		for (int led0 : LED0) {
-			SystemVariableBootValues bv = new SystemVariableBootValues();
-			bv.setValue(hardware_version, hwver);
-			bv.setValue(led_0, led0);
-			bv.unmodifiable();
-			bootValues.put(hwver, bv);
-			hwver++;
+		static {
+			MAP = new SystemVariableBootValues[LED0.length + 1];
+			int hwver = 1;
+			for (int led0 : LED0) {
+				SystemVariableBootValues bv = new SystemVariableBootValues();
+				bv.setValue(hardware_version, hwver);
+				bv.setValue(led_0, led0);
+				bv.unmodifiable();
+				MAP[hwver] = bv;
+				hwver++;
+			}
+		};
+
+		/**
+		 * Look up the defaults for a particular version of board.
+		 *
+		 * @param boardVersion
+		 *            The board version.
+		 * @return The defaults. Note that this should be treated as
+		 *         <i>unmodifiable</i>.
+		 */
+		static SystemVariableBootValues get(int boardVersion) {
+			if (boardVersion > 0 && boardVersion < MAP.length) {
+				return MAP[boardVersion];
+			}
+			return null;
 		}
-		MAP = unmodifiableMap(bootValues);
-	};
-
-	/**
-	 * Look up the defaults for a particular version of board.
-	 *
-	 * @param boardVersion
-	 *            The board version.
-	 * @return The defaults. Note that this should be treated as
-	 *         <i>unmodifiable</i>.
-	 */
-	static SystemVariableBootValues get(int boardVersion) {
-		return MAP.get(boardVersion);
 	}
 }
