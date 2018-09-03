@@ -35,7 +35,7 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
      *      A text description to add at the start and
      *      when reporting duration.
      * @param output
-     *      The Stream to write output too. For example System.out
+     *      The Stream to write output too. For example {@link System#out}
      */
     public ProgressIterator(
             Collection<E> outer, String description, PrintStream output) {
@@ -49,7 +49,7 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
 	 * true if {@link #next()} would return an element rather than throwing an
 	 * exception.)
 	 * <p>
-	 * When <code>hasNext()</code> returns false the ProgessBAr is closed.
+	 * When <code>hasNext()</code> returns false the ProgessBar is closed.
 	 *
 	 * @return the next element in the iteration
 	 */
@@ -63,13 +63,15 @@ public class ProgressIterator<E>  implements Iterator<E>, Closeable {
     }
 
     /**
-     * Returns the next element in the iteration, and updates the ProgressBar.
-     *
-     * @throws NoSuchElementException - if the iteration has no more elements
-     * @throws IllegalStateException is the Iterator and therefor the
-     *         ProgressBar have been closed.
-     * @return
-     */
+	 * Returns the next element in the iteration, and updates the ProgressBar.
+	 *
+	 * @throws NoSuchElementException
+	 *             if the iteration has no more elements
+	 * @throws IllegalStateException
+	 *             is the Iterator and therefore the ProgressBar have been
+	 *             closed.
+	 * @return The next element from the underlying iterator.
+	 */
     @Override
     public E next() throws NoSuchElementException {
         if (first) {

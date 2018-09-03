@@ -13,12 +13,12 @@ import java.util.Iterator;
  * An {@link Iterable} wrapper that will start a {@link ProgressBar} for each
  * iterator.
  * <p>
- * As items are obtained by calling {@link #next()} the ProgressBar is updated.
- * When {@link #hasNext()} returns false the ProgressBar is closed resulting in
- * the duration to be written out. If the Iterable is used in a for loop the
- * duration is started at the beginning of the for loop and duration finishes
- * and reports as the for loop ends. (Not at the time the last element is
- * provided.)
+ * As items are obtained by calling {@link ProgressIterator#next()next()} the
+ * ProgressBar is updated. When {@link ProgressIterator#hasNext() hasNext()}
+ * returns false the ProgressBar is closed resulting in the duration to be
+ * written out. If the Iterable is used in a for loop the duration is started at
+ * the beginning of the for loop and duration finishes and reports as the for
+ * loop ends. (Not at the time the last element is provided.)
  * <p>
  * Calling {@link #iterator()} more than once is supported but could result in
  * mixed output if they are run at the same time.
