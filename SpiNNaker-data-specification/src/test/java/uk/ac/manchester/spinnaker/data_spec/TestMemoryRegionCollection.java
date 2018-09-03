@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class TestMemoryRegionCollection {
 	}
 
 	@Test
-	void test() throws RegionInUseException {
+	void testSingleRegion() throws RegionInUseException {
 		MemoryRegionCollection c = new MemoryRegionCollection(1);
 		assertEquals(1, c.size());
 		assertFalse(c.isEmpty());
@@ -49,5 +50,25 @@ class TestMemoryRegionCollection {
 		assertArrayEquals(new Object[] {
 				mr
 		}, c.toArray());
+	}
+
+	@Test
+	void testMultiRegions() throws RegionInUseException {
+		MemoryRegionCollection c = new MemoryRegionCollection(6);
+		MemoryRegion mr1 = new MemoryRegion(123, true, 5);
+		MemoryRegion mr2 = new MemoryRegion(123, false, 7);
+		c.set(2, mr1);
+		c.set(4, mr2);
+		assertTrue(c.needsToWriteRegion(1));
+		assertFalse(c.needsToWriteRegion(5));
+		assertEquals(6, c.size());
+		c.spliterator();
+		assertArrayEquals(new Object[] {
+				null, null, mr1, null, mr2, null, null
+		}, c.toArray(new Object[7]));
+		assertFalse(c.containsAll(
+				Arrays.asList(mr1, mr2, new MemoryRegion(123, true, 123))));
+		assertThrows(IllegalArgumentException.class,
+				() -> c.needsToWriteRegion(6));
 	}
 }
