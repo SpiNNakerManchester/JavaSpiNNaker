@@ -10,8 +10,8 @@ public class RoutingEntry {
     private static final int NUM_PROCESSORS = 32 - Direction.values().length;
     private static final int NUM_LINKS = Direction.values().length;
 
-    private final ArrayList<Integer> processorIDs = new ArrayList();
-    private final ArrayList<Direction> linkIDs = new ArrayList();
+    private final List<Integer> processorIDs = new ArrayList<>();
+    private final List<Direction> linkIDs = new ArrayList<>();
 
     private static boolean bitset(int word, int bit) {
         return (word & (1 << bit)) != 0;
@@ -164,8 +164,9 @@ public class RoutingEntry {
      *      If the new Value does not map to a Direction.
      */
     public void addLinkID(int newValue) {
-        if (!linkIDs.contains(newValue)) {
-            linkIDs.add(Direction.byId(newValue));
+        Direction d = Direction.byId(newValue);
+        if (!linkIDs.contains(d)) {
+            linkIDs.add(d);
         }
     }
 

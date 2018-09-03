@@ -10,20 +10,22 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * An Iterable wrapper that will start a {@link ProgressBar} for each iterator.
+ * An {@link Iterable} wrapper that will start a {@link ProgressBar} for each
+ * iterator.
  * <p>
- * As items are obtained by calling next() the ProgressBar is updated.
- * When hasNext() returns false the ProgressBar is closed resulting in the
- *      duration to be written out.
- * If the Iterable is used in a for loop the duration is started at the
- *      beginning of the for loop and duration finishes and reports as the for
- *      loop ends. (Not at the time the last element is provided.)
+ * As items are obtained by calling {@link #next()} the ProgressBar is updated.
+ * When {@link #hasNext()} returns false the ProgressBar is closed resulting in
+ * the duration to be written out. If the Iterable is used in a for loop the
+ * duration is started at the beginning of the for loop and duration finishes
+ * and reports as the for loop ends. (Not at the time the last element is
+ * provided.)
  * <p>
- * Calling iterator() more than once is supported but could result in mixed
- *      output if they are run at the same time.
+ * Calling {@link #iterator()} more than once is supported but could result in
+ * mixed output if they are run at the same time.
  *
  * @author Christian-B
- * @param <E> Type of Element to be iterated over.
+ * @param <E>
+ *            Type of Element to be iterated over.
  */
 public class ProgressIterable<E> implements Iterable<E>, Closeable  {
 
@@ -72,22 +74,22 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable  {
     @Override
     public Iterator<E> iterator() {
         ProgressIterator<E> iterator =
-                new ProgressIterator(things, description, output);
+                new ProgressIterator<>(things, description, output);
         progressIterables.add(iterator);
         return iterator;
     }
 
     /**
-     * Closes all created Iterators and their ProgressBar(s).
-     * <p>
-     * This method allows the Iterable to be used in a try with resource
-     *      statement, which guarantees the ProgressBar is closed.
-     * <p>
-     * Note: As hasNext() == false automatically calls close there is no need
-     *      to call this method unless you break out of the iterator early.
-     * <p>
-     * If the bar is already closed then invoking this method has no effect.
-     */
+	 * Closes all created Iterators and their ProgressBar(s).
+	 * <p>
+	 * This method allows the Iterable to be used in a try with resource
+	 * statement, which guarantees the ProgressBar is closed.
+	 * <p>
+	 * Note: As <tt>hasNext() == false</tt> automatically calls close there is
+	 * no need to call this method unless you break out of the iterator early.
+	 * <p>
+	 * If the bar is already closed then invoking this method has no effect.
+	 */
     @Override
     public void close() {
         Iterator<ProgressIterator<E>> iter = progressIterables.iterator();

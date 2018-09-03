@@ -8,18 +8,15 @@ import java.io.PrintStream;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
- * Progress bar for telling the user where a task is up to and for reporting
- * the duration.
+ * Progress bar for telling the user where a task is up to and for reporting the
+ * duration.
  * <p>
  * The timer is started and the header of the bar is written during
- *      construction.
- * <p>
- * The dash line is terminated when the last expected update arrives.
- * (or if close is called before that update).
- * <p>
- * The timer is stopped and the duration written when close is called.
- * If close is not called the duration is never written out.
- * <p>
+ * construction. The dash line is terminated when the last expected update
+ * arrives. (or if {@link #close()} is called before that update). The timer is
+ * stopped and the duration written when {@link #close()} is called. If
+ * {@link #close()} is not called the duration is never written out.
+ *
  * @author Christian-B
  */
 public class ProgressBar implements Closeable {
@@ -51,13 +48,17 @@ public class ProgressBar implements Closeable {
     private final long startTime;
 
     /**
-     * Creates a Progress bar which outputs to the printStream.
-     *
-     * @param numberOfThings The number of items to progress over
-     * @param description A text description to add at the start and
-     *      when reporting duration.
-     * @param output The Stream to write output too. For example System.out
-     */
+	 * Creates a progress bar which outputs to the given {@link PrintStream}.
+	 *
+	 * @param numberOfThings
+	 *            The number of items to progress over
+	 * @param description
+	 *            A text description to add at the start and when reporting
+	 *            duration.
+	 * @param output
+	 *            The stream to write output too. For example
+	 *            {@link System#out}.
+	 */
     public ProgressBar(
             int numberOfThings, String description, PrintStream output) {
         this.numberOfThings = numberOfThings;
@@ -70,23 +71,27 @@ public class ProgressBar implements Closeable {
 
 
     /**
-     * Creates a Progress bar which outputs to System.out.
-     *
-     * @param numberOfThings The number of items to progress over
-     * @param description A text description to add at the start and
-     *      when reporting duration.
-     */
+	 * Creates a Progress bar which outputs to {@link System#out}.
+	 *
+	 * @param numberOfThings
+	 *            The number of items to progress over
+	 * @param description
+	 *            A text description to add at the start and when reporting
+	 *            duration.
+	 */
     public ProgressBar(int numberOfThings, String description) {
         this(numberOfThings, description, System.out);
     }
 
     /**
-     * Update the progress bar by a given amount.
-     *
-     * @param amountToAdd Amount of things to update by.
-     * @throws IllegalStateException Throws if the bar is updated too often
-     *      or updated after it was closed.
-     */
+	 * Update the progress bar by a given amount.
+	 *
+	 * @param amountToAdd
+	 *            Amount of things to update by.
+	 * @throws IllegalStateException
+	 *             Throws if the bar is updated too often or updated after it
+	 *             was closed.
+	 */
     public void update(int amountToAdd) {
         if ((currentlyCompleted + amountToAdd) > numberOfThings) {
             throw new IllegalStateException("too many update steps!");
@@ -98,21 +103,22 @@ public class ProgressBar implements Closeable {
         printProgress((int) (currentlyCompleted * charsPerThing));
     }
 
-    /**
-     * Update the progress bar by a one thing..
-     *
-     * @throws IllegalStateException Throws if the bar is updated too often
-     *      or updated after it was closed.
-     */
-    public void update() {
-        update(1);
-    }
+	/**
+	 * Update the progress bar by a one unit.
+	 *
+	 * @throws IllegalStateException
+	 *             Throws if the bar is updated too often or updated after it
+	 *             was closed.
+	 */
+	public void update() {
+		update(1);
+	}
 
-    /**
-     * Ends the Progress bar line and prints a duration line.
-     * <p>
-     *  If the bar is already closed then invoking this method has no effect.
-     */
+	/**
+	 * Ends the Progress bar line and prints a duration line.
+	 * <p>
+	 * If the bar is already closed then invoking this method has no effect.
+	 */
     @Override
     public void close() {
         if (isClosed()) {
@@ -163,7 +169,7 @@ public class ProgressBar implements Closeable {
     }
 
     /**
-     * @return the closed
+     * @return True if the progress bar is closed
      */
     public boolean isClosed() {
         return closed;
