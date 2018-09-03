@@ -60,6 +60,7 @@ public class Chip implements HasChipLocation {
     // Note: emergency_routing_enabled not implemented as not used
     // TODO convert_routing_table_entry_to_spinnaker_route
 
+
     /**
      * Main Constructor which sets all parameters.
      *
@@ -199,6 +200,21 @@ public class Chip implements HasChipLocation {
         this.nTagIds = MachineDefaults.N_IPTAGS_PER_CHIP;
 
         this.nearestEthernet = nearestEthernet;
+    }
+
+    Chip(Chip chip, Router newRouter) {
+        this.location = chip.location;
+        this.monitorProcessors = chip.monitorProcessors;
+        this.userProcessors =  chip.userProcessors;
+        this.router = newRouter;
+
+        this.sdram = chip.sdram;
+        this.ipAddress = chip.ipAddress;
+
+        this.virtual = chip.virtual;
+        this.nTagIds = chip.nTagIds;
+
+        this.nearestEthernet = chip.nearestEthernet;
     }
 
     private static TreeMap<Integer, Processor> defaultUserProcessors() {

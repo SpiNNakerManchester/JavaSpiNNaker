@@ -15,12 +15,15 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.Counter;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
@@ -40,6 +43,8 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @author Christian-B
  */
 public class Machine implements Iterable<Chip> {
+
+    private static final Logger log = getLogger(Link.class);
 
     /** Size of the machine along the x and y axes in Chips. */
     public final MachineDimensions machineDimensions;
@@ -108,6 +113,95 @@ public class Machine implements Iterable<Chip> {
             HasChipLocation boot) {
         this(machineDimensions, boot);
         addChips(chips);
+    }
+
+    /**
+     * Provides a machine without abnormal chips or links.
+     * <p>
+     * This may be the original machine or it may be a shallow near copy.
+     * <p>
+     * Once this method is run it is expected that the original Machine is no
+     *      longer used.
+     * The original internal objects are reused whenever possible.
+     * Changes made to the original Machine may or may not effect the new
+     *      Machine. This includes changes made to the chips, their routers
+     *      or their processors.
+     * <p>
+     * For what makes up an abnormal link see {@link #findAbnormalLinks()}.
+     * <p>
+     * For what makes up an abnormal chip see {@link #findAbnormalChips()}.
+     *
+     * @return A Machine (possibly the original one) without the abnormal bits.
+     */
+    public Machine rebuild() {
+        return rebuild(null, null);
+    }
+
+    /**
+     * Provides a machine without ignored chips or links.
+     * <p>
+     * This may be the original machine or it may be a shallow near copy.
+     * <p>
+     * Once this method is run it is expected that the original Machine is no
+     *      longer used.
+     * The original internal objects are reused whenever possible.
+     * Changes made to the original Machine may or may not effect the new
+     *      Machine. This includes changes made to the chips, their routers
+     *      or their processors.
+     *
+     * @param ignoreChips The locations of the chips (if any)
+     *      that should not be in the rebuilt machine.
+     *      Chips not specified to be ignore or not checked in any way.
+     *      If this parameter is null the result of
+     *      {@link #findAbnormalLinks()} is used.
+     *      If this parameter is empty it is ignored as are any location that
+     *      do not represent a chip in the machine.
+     *
+     * @param ignoreLinks A mapping of Locations to Directions of links that
+     *      should be in the rebuilt machine.
+     *      Links not specified to be ignored are not checked in any way.
+     *      If this parameter is null the result of
+     *      {@link #findAbnormalChips()} is used.
+     *      If this parameter is empty it is ignored as are any location that
+     *      do not represent a chip in the machine,
+     *      or direction that do not represent an existing link.
+     * @return A Machine (possibly the original one) without the
+     *      ignore/abnormal bits.
+     */
+    public Machine rebuild(Collection<ChipLocation> ignoreChips,
+            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+        if (ignoreChips == null) {
+            ignoreChips = this.findAbnormalChips();
+        }
+        if (ignoreLinks == null) {
+            ignoreLinks = this.findAbnormalLinks();
+        }
+        if (ignoreLinks.isEmpty() && ignoreChips.isEmpty()) {
+            return this;
+        }
+        Machine rebuilt = new Machine(
+                this.machineDimensions, this.boot);
+        for (Chip chip: this) {
+            ChipLocation location = chip.asChipLocation();
+            if (ignoreChips.contains(location)) {
+                log.info("Rebuilt machine without Chip " + location);
+            } else if (ignoreLinks.containsKey(location)) {
+                Collection downDirections = ignoreLinks.get(location);
+                ArrayList<Link> links = new ArrayList<>();
+                for (Link link:chip.router) {
+                    if (downDirections.contains(link.sourceLinkDirection)) {
+                        log.info("Rebuilt machine without Link " + location
+                                + " " + link.sourceLinkDirection);
+                    } else {
+                        links.add(link);
+                    }
+                }
+                rebuilt.addChip(new Chip(chip, new Router(chip.router, links)));
+            } else {
+                rebuilt.addChip(chip);
+            }
+        }
+        return rebuilt;
     }
 
     /**
@@ -263,6 +357,19 @@ public class Machine implements Iterable<Chip> {
             return false;
         }
         return chips.containsKey(location);
+    }
+
+    /**
+     * Determine if a chip exists at the given coordinates.
+     *
+     * @param location x and y coordinates of the requested chip.
+     * @return True if and only if the machine has a Chip at that location.
+     */
+    public final boolean hasChipAt(HasChipLocation location) {
+        if (location == null) {
+            return false;
+        }
+        return chips.containsKey(location.asChipLocation());
     }
 
     /**
@@ -766,6 +873,60 @@ public class Machine implements Iterable<Chip> {
                 + ", n_chips=" + nChips() + "]";
     }
 
+    /**
+     * Returns a list of the abnormal links that are recommended for removal.
+     * <p>
+     * The current implementation identifies the Links where there is no
+     *      matching reverse link as abnormal.
+     * This includes case where the whole destination chip is missing.
+     * <p>
+     * Future implementations may add other tests for abnormal Chips.
+     *
+     * @return A Map of ChipLocations to Direction (hopefully empty)
+     *      which identifies links to remove
+     */
+    public Map<ChipLocation, Collection<Direction>> findAbnormalLinks() {
+        Map<ChipLocation, Collection<Direction>> abnormalLinks =
+                new DefaultMap<>(ArrayList::new);
+        for (Chip chip: chips.values()) {
+            for (Link link:chip.router) {
+                if (!this.hasChipAt(link.destination)) {
+                    abnormalLinks.get(link.source).add(
+                            link.sourceLinkDirection);
+                } else {
+                    Chip destChip = this.getChipAt(link.destination);
+                    Link inverse = destChip.router.getLink(
+                            link.sourceLinkDirection.inverse());
+                    if (inverse == null) {
+                        abnormalLinks.get(link.source).add(
+                                link.sourceLinkDirection);
+                    }
+                }
+            }
+        }
+        return abnormalLinks;
+    }
+
+    /**
+     * Returns a list of the abnormal Chips that are recommended for removal.
+     * <p>
+     * The current implementation identifies Chips with no outgoing links as
+     *      abnormal.
+     * <p>
+     * Future implementations may add other tests for abnormal Chips.
+     *
+     * @return A list (hopefully empty) of ChipLocations to remove.
+     */
+    public List<ChipLocation> findAbnormalChips() {
+        ArrayList<ChipLocation> abnormalCores = new ArrayList<>();
+        for (Chip chip: chips.values()) {
+            if (chip.router.size() == 0) {
+                abnormalCores.add(chip.asChipLocation());
+            }
+        }
+        return abnormalCores;
+    }
+
     private class ChipOnBoardIterator implements Iterator<Chip> {
 
         private HasChipLocation root;
@@ -807,7 +968,6 @@ public class Machine implements Iterable<Chip> {
             }
             nextChip = null;
         }
-
     }
 
-}
+ }

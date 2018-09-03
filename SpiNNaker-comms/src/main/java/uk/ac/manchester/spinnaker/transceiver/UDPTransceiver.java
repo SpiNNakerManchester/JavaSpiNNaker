@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
-import static java.net.InetAddress.getByName;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
@@ -108,7 +107,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @throws IOException
 		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress) throws IOException;
+		Conn getInstance(InetAddress localAddress) throws IOException;
 
 		/**
 		 * Make an instance with a caller-selected local port.
@@ -121,7 +120,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 * @throws IOException
 		 *             If the connection can't be opened.
 		 */
-		Conn getInstance(String localAddress, int localPort) throws IOException;
+		Conn getInstance(InetAddress localAddress, int localPort)
+                throws IOException;
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	public final <T> UDPConnection<T> registerUDPListener(
 			MessageHandler<T> callback,
 			ConnectionFactory<? extends UDPConnection<T>> connectionFactory,
-			Integer localPort, String localHost) throws IOException {
+			Integer localPort, InetAddress localHost) throws IOException {
 		if (!UDPConnection.class
 				.isAssignableFrom(connectionFactory.getClassKey())) {
 			throw new IllegalArgumentException(
@@ -239,7 +239,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 		// normalise local_host to the IP address
 		InetAddress addr =
-				normalize(localHost == null ? null : getByName(localHost));
+				normalize(localHost == null ? null : localHost);
 
 		// If the local port was specified
 		Pair<T> pair;
@@ -253,7 +253,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 				log.info("creating connection on {}:{}", addr.getHostAddress(),
 						localPort);
 				pair.connection = connectionFactory
-						.getInstance(addr.getHostAddress(), localPort);
+						.getInstance(addr, localPort);
 				addConnection(pair.connection);
 			}
 		} else {
@@ -264,7 +264,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 				log.info("creating connection on {}:0 (arbitrary port)",
 						addr.getHostAddress());
 				pair.connection =
-						connectionFactory.getInstance(addr.getHostAddress());
+						connectionFactory.getInstance(addr);
 				addConnection(pair.connection);
 			}
 		}

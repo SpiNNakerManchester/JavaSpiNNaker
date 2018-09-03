@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByAddress;
-import static java.net.InetAddress.getByName;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.nio.ByteBuffer.allocate;
@@ -72,8 +71,15 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 
 	/**
+     * Main constructor any of which could null.
+     * <p>
+     * No default constructors are provided as it would not be possible to
+     *      disambiguate between
+     *      ones with only a local host/port like IPAddressConnection
+     *      and ones with only remote host/port like BMPConnection
+     *
 	 * @param localHost
-	 *            The local host name or IP address to bind to. If not
+	 *            The local host to bind to. If not
 	 *            specified, it defaults to binding to all interfaces, unless
 	 *            remoteHost is specified, in which case binding is done to the
 	 *            IP address that will be used to send packets.
@@ -91,8 +97,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
-	public UDPConnection(String localHost, Integer localPort, String remoteHost,
-			Integer remotePort) throws IOException {
+	public UDPConnection(InetAddress localHost, Integer localPort,
+            InetAddress remoteHost, Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
 		channel.configureBlocking(false);
@@ -108,14 +114,14 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		});
 		canSend = false;
 		if (remoteHost != null && remotePort != null && remotePort > 0) {
-			remoteIPAddress = (Inet4Address) getByName(remoteHost);
+			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
 			channel.connect(remoteAddress);
 			canSend = true;
 		}
 	}
 
-	private SocketAddress createLocalAddress(String localHost,
+	private SocketAddress createLocalAddress(InetAddress localHost,
 			Integer localPort) throws UnknownHostException {
 		// Convert null into wildcard
 		if (localPort == null) {
@@ -126,7 +132,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (localHost == null) {
 				localAddr = (Inet4Address) getByAddress(new byte[IPV4_SIZE]);
 			} else {
-				localAddr = (Inet4Address) getByName(localHost);
+				localAddr = (Inet4Address) localHost;
 			}
 		} catch (ClassCastException e) {
 			throw new UnknownHostException("SpiNNaker only talks IPv4");
@@ -455,13 +461,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Sends a port trigger message using a connection to (hopefully) open a
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
 	 *
-	 * @param hostname
+	 * @param host
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
-	public void sendPortTriggerMessage(String hostname) throws IOException {
+	public void sendPortTriggerMessage(InetAddress host) throws IOException {
 		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
@@ -474,8 +480,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);
-		InetAddress addr = getByName(hostname);
-		sendTo(b, addr, SCP_SCAMP_PORT);
+		sendTo(b, host, SCP_SCAMP_PORT);
 	}
 
 	@Override
