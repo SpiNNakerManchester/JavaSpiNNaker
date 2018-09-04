@@ -173,7 +173,8 @@ public class Executor implements AutoCloseable {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (MemoryRegion r : memRegions) {
 			if (r != null) {
-				buffer.putInt(nextOffset + startAddress);
+				r.setRegionBase(nextOffset + startAddress);
+				buffer.putInt(r.getRegionBase());
 				nextOffset += r.getAllocatedSize();
 			} else {
 				buffer.putInt(0);

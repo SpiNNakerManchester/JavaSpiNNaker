@@ -23,6 +23,8 @@ public class MemoryRegion {
 	 * efficiently as a block of zeroes.
 	 */
 	private boolean unfilled;
+	/** The base address of the region. Set after the fact. */
+	private int regionBaseAddress;
 
 	/**
 	 * Create a memory region.
@@ -91,5 +93,24 @@ public class MemoryRegion {
 	public void setWritePointer(int address) {
 		buffer.position(address);
 		maxWritePointer = max(maxWritePointer, address);
+	}
+
+	/**
+	 * Get the address of the first byte in the region.
+	 *
+	 * @return The address.
+	 */
+	public int getRegionBase() {
+		return regionBaseAddress;
+	}
+
+	/**
+	 * Set the address of the first byte in the region.
+	 *
+	 * @param address
+	 *            The address to set.
+	 */
+	public void setRegionBase(int address) {
+		regionBaseAddress = address;
 	}
 }
