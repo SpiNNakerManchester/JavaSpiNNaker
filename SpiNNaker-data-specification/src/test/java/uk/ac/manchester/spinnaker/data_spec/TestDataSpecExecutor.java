@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
-import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpec;
+import static uk.ac.manchester.spinnaker.data_spec.Generator.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -21,18 +23,18 @@ public class TestDataSpecExecutor {
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {
 		ByteBuffer spec = makeSpec(s -> {
-			s.reserve_memory_region(0, 100);
-			s.reserve_memory_region(1, 200, true);
-			s.reserve_memory_region(2, 4);
-			s.switch_write_focus(0);
-			s.write_array(0, 1, 2);
-			s.set_write_pointer(20);
-			s.write_value(4);
-			s.switch_write_focus(2);
-			s.write_value(3);
-			s.set_write_pointer(0);
-			s.write_value(10);
-			s.end_specification();
+			s.reserveMemoryRegion(0, 100);
+			s.reserveMemoryRegion(1, 200, true);
+			s.reserveMemoryRegion(2, 4);
+			s.switchWriteFocus(0);
+			s.writeArray(0, 1, 2);
+			s.setWritePointer(20);
+			s.writeValue(4);
+			s.switchWriteFocus(2);
+			s.writeValue(3);
+			s.setWritePointer(0);
+			s.writeValue(10);
+			s.endSpecification();
 		});
 
 		// Execute the spec
@@ -95,8 +97,8 @@ public class TestDataSpecExecutor {
 
 	@Test
 	void testTrivialSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(specGen -> {
-			specGen.end_specification();
+		ByteBuffer spec = makeSpec(s -> {
+			s.endSpecification();
 		});
 
 		// Execute the spec
@@ -110,28 +112,28 @@ public class TestDataSpecExecutor {
 
 	@Test
 	void testComplexSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(specGen -> {
-			specGen.reserve_memory_region(0, 44);
-			specGen.switch_write_focus(0);
-			specGen.set_register_value(3, 0x31323341);
-			specGen.write_value_from_register(3);
-			specGen.set_register_value(3, 0x31323342);
-			specGen.write_value_from_register(3);
-			specGen.set_register_value(3, 0x31323344);
-			specGen.write_value_from_register(3);
-			specGen.set_register_value(3, 0x31323347);
-			specGen.write_value_from_register(3);
-			specGen.set_register_value(3, 0x3132334B);
-			specGen.write_value_from_register(3);
-			specGen.set_register_value(2, 24);
-			specGen.set_write_pointer_from_register(2);
-			specGen.write_array(new Number[] {
+		ByteBuffer spec = makeSpec(s -> {
+			s.reserveMemoryRegion(0, 44);
+			s.switchWriteFocus(0);
+			s.setRegisterValue(3, 0x31323341);
+			s.writeValueFromRegister(3);
+			s.setRegisterValue(3, 0x31323342);
+			s.writeValueFromRegister(3);
+			s.setRegisterValue(3, 0x31323344);
+			s.writeValueFromRegister(3);
+			s.setRegisterValue(3, 0x31323347);
+			s.writeValueFromRegister(3);
+			s.setRegisterValue(3, 0x3132334B);
+			s.writeValueFromRegister(3);
+			s.setRegisterValue(2, 24);
+			s.setWritePointerFromRegister(2);
+			s.writeArray(new Number[] {
 					0x61, 0x62, 0x63, 0x64
 			}, Generator.DataType.INT8);
-			specGen.set_register_value(5, 4);
-			specGen.write_repeated_value(0x70, 5, Generator.DataType.INT8);
-			specGen.write_value(0x7d, Generator.DataType.INT64);
-			specGen.end_specification();
+			s.setRegisterValue(5, 4);
+			s.writeRepeatedValue(0x70, 5, Generator.DataType.INT8);
+			s.writeValue(0x7d, Generator.DataType.INT64);
+			s.endSpecification();
 		});
 
 		// Execute the spec
@@ -143,10 +145,46 @@ public class TestDataSpecExecutor {
 			assertEquals(40, r.getMaxWritePointer());
 			assertFalse(r.isUnfilled());
 			assertArrayEquals(
-					("A321" + "B321" + "D321" + "G321" + "K321"
-							+ "\0\0\0\0" + "abcd" + "pppp" + "}\0\0\0"
-							+ "\0\0\0\0" + "\0\0\0\0").getBytes("ASCII"),
+					("A321" + "B321" + "D321" + "G321" + "K321" + "\0\0\0\0"
+							+ "abcd" + "pppp" + "}\0\0\0" + "\0\0\0\0"
+							+ "\0\0\0\0").getBytes("ASCII"),
 					r.getRegionData().array());
+			assertEquals(44, executor.getTotalSpaceAllocated());
+		}
+	}
+
+	@Test
+	void testTrivialSpecFromStream()
+			throws IOException, DataSpecificationException {
+		ByteArrayInputStream spec = makeSpecStream(s -> {
+			s.endSpecification();
+		});
+
+		// Execute the spec
+		try (Executor executor = new Executor(spec, 400)) {
+			executor.execute();
+			range(0, MAX_MEM_REGIONS)
+					.forEach(r -> assertNull(executor.getRegion(r)));
+		}
+	}
+
+	@Test
+	void testTrivialSpecFromFile()
+			throws IOException, DataSpecificationException {
+		File f = File.createTempFile("dse", ".spec");
+		try {
+			makeSpec(f, s -> {
+				s.endSpecification();
+			});
+
+			// Execute the spec
+			try (Executor executor = new Executor(f, 400)) {
+				executor.execute();
+				range(0, MAX_MEM_REGIONS)
+						.forEach(r -> assertNull(executor.getRegion(r)));
+			}
+		} finally {
+			f.delete();
 		}
 	}
 }

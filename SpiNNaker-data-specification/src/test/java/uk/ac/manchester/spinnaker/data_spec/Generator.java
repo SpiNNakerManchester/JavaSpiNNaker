@@ -18,6 +18,10 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.NO_REGS;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC1_ONLY;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC2_ONLY;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** Severely cut down version of the DSG, for testing only. */
@@ -27,7 +31,25 @@ public class Generator {
 	public static ByteBuffer makeSpec(SpecGen specGen) {
 		Generator spec = new Generator();
 		specGen.generate(spec);
-		return spec.getSpecification();
+		ByteBuffer result = spec.buffer.asReadOnlyBuffer();
+		result.order(LITTLE_ENDIAN).flip();
+		return result;
+	}
+
+	public static void makeSpec(File f, SpecGen specGen) throws IOException {
+		Generator spec = new Generator();
+		specGen.generate(spec);
+		try (FileOutputStream os = new FileOutputStream(f)) {
+			os.write(spec.buffer.array(), 0, spec.buffer.position());
+		}
+	}
+
+	public static ByteArrayInputStream makeSpecStream(SpecGen specGen)
+			throws IOException {
+		Generator spec = new Generator();
+		specGen.generate(spec);
+		return new ByteArrayInputStream(spec.buffer.array(), 0,
+				spec.buffer.position());
 	}
 
 	@FunctionalInterface
@@ -35,14 +57,8 @@ public class Generator {
 		void generate(Generator generator);
 	}
 
-	public Generator() {
+	private Generator() {
 		buffer = allocate(32 * 1024).order(LITTLE_ENDIAN);
-	}
-
-	public ByteBuffer getSpecification() {
-		ByteBuffer result = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-		result.flip();
-		return result;
 	}
 
 	/**
@@ -174,48 +190,48 @@ public class Generator {
 		buffer.putInt(word);
 	}
 
-	public void end_specification() {
+	public void endSpecification() {
 		command(END_SPEC, LEN1, NO_REGS);
 		buffer.putInt(-1);
 	}
 
-	public void reserve_memory_region(int region, int size) {
-		reserve_memory_region(region, size, false);
+	public void reserveMemoryRegion(int region, int size) {
+		reserveMemoryRegion(region, size, false);
 	}
 
-	public void reserve_memory_region(int region, int size, boolean empty) {
+	public void reserveMemoryRegion(int region, int size, boolean empty) {
 		boolean shrink = false;
 		command(RESERVE, LEN2, NO_REGS, Field.EMPTY, empty, Field.SHRINK,
 				shrink, Field.IMMEDIATE, region);
 		buffer.putInt(size);
 	}
 
-	public void switch_write_focus(int region) {
+	public void switchWriteFocus(int region) {
 		command(SWITCH_FOCUS, LEN1, NO_REGS, Field.SOURCE_1, region);
 	}
 
-	public void set_write_pointer(int address) {
+	public void setWritePointer(int address) {
 		boolean relative = false;
 		command(SET_WR_PTR, LEN2, NO_REGS, Field.IMMEDIATE, relative);
 		buffer.putInt(address);
 	}
 
-	public void set_write_pointer_from_register(int register) {
+	public void setWritePointerFromRegister(int register) {
 		boolean relative = false;
 		command(SET_WR_PTR, LEN1, SRC1_ONLY, Field.SOURCE_1, register,
 				Field.IMMEDIATE, relative);
 	}
 
-	public void set_register_value(int register, int value) {
+	public void setRegisterValue(int register, int value) {
 		command(MV, LEN2, DEST_ONLY, Field.DESTINATION, register);
 		buffer.putInt(value);
 	}
 
-	public void write_array(Integer... values) {
-		write_array(values, DataType.INT32);
+	public void writeArray(Integer... values) {
+		writeArray(values, DataType.INT32);
 	}
 
-	public void write_array(Number[] values, DataType type) {
+	public void writeArray(Number[] values, DataType type) {
 		command(WRITE_ARRAY, LEN2, NO_REGS, Field.IMMEDIATE, type.size);
 		int pos = buffer.position();
 		buffer.putInt(0); // dummy
@@ -226,25 +242,25 @@ public class Generator {
 		buffer.putInt(pos, (buffer.position() - mark) / INT_SIZE);
 	}
 
-	public void write_value(int value) {
-		write_value(value, DataType.INT32);
+	public void writeValue(int value) {
+		writeValue(value, DataType.INT32);
 	}
 
-	public void write_value(Number value, DataType type) {
+	public void writeValue(Number value, DataType type) {
 		int repeats = 1;
 		command(WRITE, type.writeLength, NO_REGS, Field.DESTINATION, type,
 				Field.IMMEDIATE, repeats);
 		type.putPadded(buffer, value);
 	}
 
-	public void write_repeated_value(Number value, int register,
+	public void writeRepeatedValue(Number value, int register,
 			DataType type) {
 		command(WRITE, type.writeLength, SRC2_ONLY, Field.DESTINATION, type,
 				Field.SOURCE_2, register);
 		type.putPadded(buffer, value);
 	}
 
-	public void write_value_from_register(int register) {
+	public void writeValueFromRegister(int register) {
 		int repeats = 1;
 		DataType type = DataType.INT32;
 		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type, Field.SOURCE_1,
