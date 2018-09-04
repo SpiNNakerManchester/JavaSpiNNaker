@@ -40,9 +40,9 @@ public enum Direction {
 
     /**
      * Constructs the Enum.
-     * @param id int id of this Direction.
-     * @param xChange Typical change to x if moving in this Direction.
-     * @param yChange Typical change to y if moving in this Direction.
+     * @param id ID of this Direction.
+     * @param xChange Typical change to X if moving in this Direction.
+     * @param yChange Typical change to Y if moving in this Direction.
      */
     Direction(int id, int xChange, int yChange) {
         this.id = id;
@@ -69,7 +69,7 @@ public enum Direction {
     /**
      * The Direction with this id when expressed as an int.
      *
-     * @param id int id of this Direction
+     * @param id ID of this Direction
      * @return Direction with this id
      * @throws ArrayIndexOutOfBoundsException if the id is not correct
      */

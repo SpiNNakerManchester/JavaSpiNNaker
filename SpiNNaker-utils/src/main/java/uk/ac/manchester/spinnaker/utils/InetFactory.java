@@ -34,7 +34,7 @@ public abstract class InetFactory {
         InetAddress general = InetAddress.getByAddress(addr);
         try {
             return (Inet4Address) general;
-        } catch (java.lang.ClassCastException ex) {
+        } catch (ClassCastException ex) {
             if (general.getClass() == Inet6Address.class) {
                 throw new Inet6NotSupportedException(
                         "Spinnaker does not support IpV6.");
@@ -60,7 +60,7 @@ public abstract class InetFactory {
         InetAddress general = InetAddress.getByName(host);
         try {
             return (Inet4Address) general;
-        } catch (java.lang.ClassCastException ex) {
+        } catch (ClassCastException ex) {
             if (general.getClass() == Inet6Address.class) {
                 throw new Inet6NotSupportedException(host
                     + " converts to an IpV6 which Spinnaker does not support");
@@ -69,20 +69,21 @@ public abstract class InetFactory {
         }
     }
 
-    /**
-     * Specific Exception to show Ipv6 is not supported.
-     */
-    public static class Inet6NotSupportedException
-            extends UnknownHostException {
-
-    /**
-     * Constructs a new {@code Inet6NotSupportedException} with the
-     * specified detail message.
-     *
-     * @param  msg the detail message.
-     */
-        public Inet6NotSupportedException(String msg) {
-            super(msg);
-        }
-    }
+	/**
+	 * Specific Exception to show Ipv6 is not supported.
+	 */
+	@SuppressWarnings("serial")
+	public static class Inet6NotSupportedException
+			extends UnknownHostException {
+		/**
+		 * Constructs a new {@code Inet6NotSupportedException} with the
+		 * specified detail message.
+		 *
+		 * @param msg
+		 *            the detail message.
+		 */
+		public Inet6NotSupportedException(String msg) {
+			super(msg);
+		}
+	}
 }
