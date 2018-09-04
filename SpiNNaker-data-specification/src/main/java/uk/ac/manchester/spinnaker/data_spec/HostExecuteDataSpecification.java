@@ -18,9 +18,33 @@ import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
 
-/** Executes the host based data specification. */
+/**
+ * Executes the host based data specification.
+ *
+ * @author Donal Fellows
+ */
 public class HostExecuteDataSpecification {
-	/** Executes the host based data specification. */
+	/**
+	 * Executes the host based data specification.
+	 *
+	 * @param txrx
+	 *            The transceiver used to do the communication.
+	 * @param machine
+	 *            The machine we're talking to.
+	 * @param appID
+	 *            The application we're loading.
+	 * @param dsgTargets
+	 *            Where to find a file for each core to write that holds the
+	 *            data specification for that core.
+	 * @return Information about what was written on each core where a write
+	 *         happened.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
 	public Map<CoreLocation, LocationInfo> hostExecuteDataSpecification(
 			Transceiver txrx, Machine machine, int appID,
 			Map<CoreLocation, File> dsgTargets)
@@ -29,7 +53,30 @@ public class HostExecuteDataSpecification {
 				null);
 	}
 
-	/** Executes the host based data specification. */
+	/**
+	 * Executes the host based data specification.
+	 *
+	 * @param txrx
+	 *            The transceiver used to do the communication.
+	 * @param machine
+	 *            The machine we're talking to.
+	 * @param appID
+	 *            The application we're loading.
+	 * @param dsgTargets
+	 *            Where to find a file for each core to write that holds the
+	 *            data specification for that core.
+	 * @param info
+	 *            The map to update with information about what writes have
+	 *            happened on what core.
+	 * @return Information about what was written on each core where a write
+	 *         happened.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
 	public Map<CoreLocation, LocationInfo> hostExecuteDataSpecification(
 			Transceiver txrx, Machine machine, int appID,
 			Map<CoreLocation, File> dsgTargets,
@@ -46,6 +93,27 @@ public class HostExecuteDataSpecification {
 		return info;
 	}
 
+	/**
+	 * Executes the host based data specification on a specific core.
+	 *
+	 * @param txrx
+	 *            The transceiver used to do the communication.
+	 * @param machine
+	 *            The machine we're talking to.
+	 * @param appID
+	 *            The application we're loading.
+	 * @param core
+	 *            Which core of the machine to generate for and load onto.
+	 * @param dataSpec
+	 *            The file holding the data specification for the core.
+	 * @return Information about what was written.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
 	protected LocationInfo executeDSGFirstTime(Transceiver txrx,
 			Machine machine, int appID, HasCoreLocation core, File dataSpec)
 			throws IOException, Exception, DataSpecificationException {
@@ -82,9 +150,17 @@ public class HostExecuteDataSpecification {
 
 	}
 
+	/**
+	 * A description of information about what writes were done.
+	 *
+	 * @author Donal Fellows
+	 */
 	public static class LocationInfo {
+		/** Where did the writes start. */
 		public final int startAddress;
+		/** How much memory was allocated. */
 		public final int memoryUsed;
+		/** How much memory was written. No more than the space allocated. */
 		public final int bytesWrittenBySpec;
 
 		LocationInfo(int startAddress, int memoryUsed, int bytesWrittenBySpec) {
