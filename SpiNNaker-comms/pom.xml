@@ -69,6 +69,14 @@
 						<suppressionsLocation>src/support/checkstyle/suppressions.xml</suppressionsLocation>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<!-- Some tests are timing-sensitive. -->
+						<rerunFailingTestsCount>5</rerunFailingTestsCount>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
