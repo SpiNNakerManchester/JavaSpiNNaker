@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
+import static java.io.File.createTempFile;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +18,7 @@ import java.nio.IntBuffer;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+import uk.ac.manchester.spinnaker.data_spec.exceptions.ExecuteBreakInstruction;
 
 public class TestDataSpecExecutor {
 
@@ -98,6 +100,7 @@ public class TestDataSpecExecutor {
 	@Test
 	void testTrivialSpec() throws IOException, DataSpecificationException {
 		ByteBuffer spec = makeSpec(s -> {
+			s.nop();
 			s.endSpecification();
 		});
 
@@ -156,9 +159,7 @@ public class TestDataSpecExecutor {
 	@Test
 	void testTrivialSpecFromStream()
 			throws IOException, DataSpecificationException {
-		ByteArrayInputStream spec = makeSpecStream(s -> {
-			s.endSpecification();
-		});
+		ByteArrayInputStream spec = makeSpecStream(s -> s.endSpecification());
 
 		// Execute the spec
 		try (Executor executor = new Executor(spec, 400)) {
@@ -171,11 +172,9 @@ public class TestDataSpecExecutor {
 	@Test
 	void testTrivialSpecFromFile()
 			throws IOException, DataSpecificationException {
-		File f = File.createTempFile("dse", ".spec");
+		File f = createTempFile("dse", ".spec");
 		try {
-			makeSpec(f, s -> {
-				s.endSpecification();
-			});
+			makeSpec(f, s -> s.endSpecification());
 
 			// Execute the spec
 			try (Executor executor = new Executor(f, 400)) {
@@ -185,6 +184,19 @@ public class TestDataSpecExecutor {
 			}
 		} finally {
 			f.delete();
+		}
+	}
+
+	@Test
+	void testFailingSpec() throws IOException, DataSpecificationException {
+		ByteBuffer spec = makeSpec(s -> {
+			s.fail();
+			s.endSpecification();
+		});
+
+		// Execute the spec
+		try (Executor executor = new Executor(spec, 400)) {
+			assertThrows(ExecuteBreakInstruction.class, executor::execute);
 		}
 	}
 }

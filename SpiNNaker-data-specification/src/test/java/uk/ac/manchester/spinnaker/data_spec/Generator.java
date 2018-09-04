@@ -2,8 +2,10 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
@@ -265,5 +267,13 @@ public class Generator {
 		DataType type = DataType.INT32;
 		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type, Field.SOURCE_1,
 				register, Field.IMMEDIATE, repeats);
+	}
+
+	public void nop() {
+		command(NOP, LEN1, NO_REGS);
+	}
+
+	public void fail() {
+		command(BREAK, LEN1, NO_REGS);
 	}
 }
