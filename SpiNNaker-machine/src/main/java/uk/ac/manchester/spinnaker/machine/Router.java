@@ -238,7 +238,7 @@ public final class Router implements Iterable<Link> {
      * @return The destination locations
      */
     public List<ChipLocation> neighbouringChipsCoords() {
-        ArrayList<ChipLocation> neighbours = new ArrayList();
+        ArrayList<ChipLocation> neighbours = new ArrayList<>();
         for (Link link: links.values()) {
             neighbours.add(link.destination);
         }
