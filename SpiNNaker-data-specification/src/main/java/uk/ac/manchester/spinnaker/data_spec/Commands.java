@@ -25,6 +25,15 @@ public enum Commands {
 	STRUCT_ELEM(0x11),
 	/** Ends declaration of new structure. */
 	END_STRUCT(0x12),
+	/** Begins definition of a packing specification. */
+    START_PACKSPEC(0x1A),
+	/**
+	 * Writes one bit field inside a single parameter from a bit field of a
+	 * source parameter.
+	 */
+    PACK_PARAM(0x1B),
+	/** Ends definition of a packing specification. */
+    END_PACKSPEC(0x1C),
 	/** Begins definition of a function to write data structures to memory. */
 	START_CONSTRUCTOR(0x20),
 	/** Ends definition of the write function. */
