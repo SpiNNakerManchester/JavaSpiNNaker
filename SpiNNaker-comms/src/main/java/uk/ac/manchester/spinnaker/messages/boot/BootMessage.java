@@ -63,7 +63,7 @@ public class BootMessage implements SerializableMessage {
 		this.operand1 = operand1;
 		this.operand2 = operand2;
 		this.operand3 = operand3;
-		this.data = buffer.asReadOnlyBuffer();
+		this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		if (data.remaining() > BOOT_PACKET_SIZE) {
 			throw new IllegalArgumentException(
 					"A boot packet can contain at most 256 words of data");
@@ -84,7 +84,7 @@ public class BootMessage implements SerializableMessage {
 		operand3 = buffer.getInt();
 		if (buffer.hasRemaining()) {
 			data = wrap(buffer.array(), buffer.position(), buffer.remaining())
-					.order(LITTLE_ENDIAN).asReadOnlyBuffer();
+					.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		} else {
 			data = null;
 		}

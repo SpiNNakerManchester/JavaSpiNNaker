@@ -52,7 +52,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		synchronized ByteBuffer finish() {
 			done = true;
 			buffer.flip();
-			return buffer.asReadOnlyBuffer();
+			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
 
