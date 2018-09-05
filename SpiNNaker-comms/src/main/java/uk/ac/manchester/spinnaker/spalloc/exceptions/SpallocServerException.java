@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.spalloc;
+package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
 
@@ -12,7 +12,7 @@ public class SpallocServerException extends Exception {
 		super(string);
 	}
 
-	SpallocServerException(ExceptionResponse r) {
+	public SpallocServerException(ExceptionResponse r) {
 		super(r.getException());
 	}
 }

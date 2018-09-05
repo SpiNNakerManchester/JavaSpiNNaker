@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.spalloc;
+package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
 /** Thrown when the job was destroyed while waiting for it to become ready. */
 public class JobDestroyedException extends Exception {

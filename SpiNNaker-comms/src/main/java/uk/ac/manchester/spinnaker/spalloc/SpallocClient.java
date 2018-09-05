@@ -45,6 +45,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;

@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.spalloc;
+package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
 import java.io.IOException;
 

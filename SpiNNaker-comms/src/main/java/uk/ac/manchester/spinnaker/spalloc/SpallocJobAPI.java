@@ -5,6 +5,9 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;

@@ -19,6 +19,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
