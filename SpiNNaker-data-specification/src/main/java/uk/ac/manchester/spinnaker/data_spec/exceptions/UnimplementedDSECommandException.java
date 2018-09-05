@@ -13,11 +13,25 @@ public class UnimplementedDSECommandException
 	/**
 	 * Create an instance.
 	 *
+	 * @param index
+	 *            Where the command was located.
 	 * @param command
 	 *            The command that was unimplemented.
 	 */
-	public UnimplementedDSECommandException(Commands command) {
-		super(format("Command %s in the data specification executor "
-				+ "has not yet been implemented", command));
+	public UnimplementedDSECommandException(int index, Commands command) {
+		super(format("Command %s (at index %d) in the data specification "
+				+ "executor has not yet been implemented", command, index));
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param index
+	 *            Where the opcode was located.
+	 * @param opcode
+	 *            The opcode that couldn't be converted into a command.
+	 */
+	public UnimplementedDSECommandException(int index, int opcode) {
+		super(format("unknown opcocode (%d) at index %d", opcode, index));
 	}
 }

@@ -65,13 +65,8 @@ public class Executor implements AutoCloseable {
 	 */
 	public Executor(InputStream inputStream, int memorySpace)
 			throws IOException {
+		this(wrap(toByteArray(inputStream)), memorySpace);
 		this.inputStream = inputStream;
-		this.input = wrap(toByteArray(inputStream)).order(LITTLE_ENDIAN);
-		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
-		funcs = new Functions(input, memorySpace, memRegions);
-		if (log.isDebugEnabled()) {
-			logInput();
-		}
 	}
 
 	/**
@@ -175,7 +170,8 @@ public class Executor implements AutoCloseable {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (MemoryRegion r : memRegions) {
 			if (r != null) {
-				buffer.putInt(nextOffset + startAddress);
+				r.setRegionBase(nextOffset + startAddress);
+				buffer.putInt(r.getRegionBase());
 				nextOffset += r.getAllocatedSize();
 			} else {
 				buffer.putInt(0);

@@ -15,6 +15,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.UnimplementedDSECommandEx
 
 class TestOperationMapper {
 	static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
+	static final int BAD_CMD = 0xEE << COMMAND.offset;
 
 	static class MockFunctions implements FunctionAPI {
 		int cmd;
@@ -30,6 +31,8 @@ class TestOperationMapper {
 		MockFunctions mock = new MockFunctions();
 		assertThrows(UnimplementedDSECommandException.class,
 				() -> mock.getOperation(KEY, 0));
+		assertThrows(UnimplementedDSECommandException.class,
+				() -> mock.getOperation(BAD_CMD, 0));
 	}
 
 	@Test

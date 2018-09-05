@@ -5,7 +5,6 @@ import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
 import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE;
 import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationImpl;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.ExecuteBreakInstruction;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.UnimplementedDSECommandException;
 
@@ -33,23 +32,19 @@ public interface FunctionAPI {
 	 *            The location in the data specification data stream where the
 	 *            command was read from, for reporting errors to the user.
 	 * @return The operation implementation. Never <tt>null</tt>.
-	 * @throws DataSpecificationException
-	 *             If a bad opcode is given.
 	 * @throws UnimplementedDSECommandException
 	 *             If the opcode used is not implemented.
 	 */
 	default Callable getOperation(int cmdOpcode, int index)
-			throws DataSpecificationException,
-			UnimplementedDSECommandException {
+			throws UnimplementedDSECommandException {
 		int opcode = OPCODE.getValue(cmdOpcode);
 		Commands c = Commands.get(opcode);
 		if (c == null) {
-			throw new DataSpecificationException(
-					"unknown opcocode at index " + index + ": " + opcode);
+			throw new UnimplementedDSECommandException(index, opcode);
 		}
 		Callable opImpl = getOperationImpl(this, c);
 		if (opImpl == null) {
-			throw new UnimplementedDSECommandException(c);
+			throw new UnimplementedDSECommandException(index, c);
 		}
 		return opImpl;
 	}
