@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
@@ -109,8 +110,7 @@ public class TestDataSpecExecutor {
 		executor.execute();
 		executor.close();
 
-		range(0, MAX_MEM_REGIONS)
-				.forEach(r -> assertNull(executor.getRegion(r)));
+		executor.regions().forEach(Assertions::assertNull);
 	}
 
 	@Test
@@ -164,8 +164,7 @@ public class TestDataSpecExecutor {
 		// Execute the spec
 		try (Executor executor = new Executor(spec, 400)) {
 			executor.execute();
-			range(0, MAX_MEM_REGIONS)
-					.forEach(r -> assertNull(executor.getRegion(r)));
+			executor.regions().forEach(Assertions::assertNull);
 		}
 	}
 
@@ -179,8 +178,7 @@ public class TestDataSpecExecutor {
 			// Execute the spec
 			try (Executor executor = new Executor(f, 400)) {
 				executor.execute();
-				range(0, MAX_MEM_REGIONS)
-						.forEach(r -> assertNull(executor.getRegion(r)));
+				executor.regions().forEach(Assertions::assertNull);
 			}
 		} finally {
 			f.delete();
