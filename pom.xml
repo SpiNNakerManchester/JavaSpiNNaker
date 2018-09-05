@@ -130,6 +130,24 @@
 					<version>3.0.1</version>
 					<configuration>
 						<quiet>true</quiet>
+						<groups>
+							<group>
+								<title>System Model</title>
+								<packages>uk.ac.manchester.spinnaker.machine*</packages>
+							</group>
+							<group>
+								<title>Communications</title>
+								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
+							</group>
+							<group>
+								<title>Data Specification</title>
+								<packages>uk.ac.manchester.spinnaker.data_spec*</packages>
+							</group>
+							<group>
+								<title>Utilities</title>
+								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*</packages>
+							</group>
+						</groups>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -234,4 +252,39 @@
 			<name>Oliver Rhodes</name>
 		</developer>
 	</developers>
+
+	<profiles>
+		<profile>
+			<id>MergedBuild</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>check-java-style</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>aggregate-javadoc</id>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+								<phase>process-classes</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
