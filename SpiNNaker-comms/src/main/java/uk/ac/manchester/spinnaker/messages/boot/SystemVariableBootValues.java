@@ -4,7 +4,6 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,22 +18,8 @@ public class SystemVariableBootValues implements SerializableMessage {
 	/** The size of the boot variable block, in bytes. */
 	static final int BOOT_VARIABLE_SIZE = 256;
 
-	@SuppressWarnings("checkstyle:MagicNumber")
-	private static class BootValues {
-		private static final Map<Integer, SystemVariableBootValues> MAP;
-		static {
-			HashMap<Integer, SystemVariableBootValues> bootValues =
-					new HashMap<>();
-			bootValues.put(1, new SystemVariableBootValues(1, 0x00076104));
-			bootValues.put(2, new SystemVariableBootValues(2, 0x00006103));
-			bootValues.put(3, new SystemVariableBootValues(3, 0x00000502));
-			bootValues.put(4, new SystemVariableBootValues(4, 0x00000001));
-			bootValues.put(5, new SystemVariableBootValues(5, 0x00000001));
-			MAP = Collections.unmodifiableMap(bootValues);
-		};
-	}
-
 	private final Map<SystemVariableDefinition, Object> values;
+	private boolean unmodifiable;
 
 	/** Create a set of boot values using all the defaults. */
 	public SystemVariableBootValues() {
@@ -44,10 +29,15 @@ public class SystemVariableBootValues implements SerializableMessage {
 		}
 	}
 
-	private SystemVariableBootValues(int hardwareVersion, int led0) {
-		this();
-		values.put(hardware_version, hardwareVersion);
-		values.put(led_0, led0);
+	/**
+	 * Create a set of boot values that is a copy of an existing set of boot
+	 * values.
+	 *
+	 * @param original
+	 *            The set of boot values to copy from.
+	 */
+	public SystemVariableBootValues(SystemVariableBootValues original) {
+		values = new HashMap<>(original.values);
 	}
 
 	/**
@@ -61,6 +51,10 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 */
 	public void setValue(SystemVariableDefinition systemVariable,
 			Object value) {
+		if (unmodifiable) {
+			throw new UnsupportedOperationException(
+					"the standard defaults are not modifiable");
+		}
 		switch (systemVariable.type) {
 		case BYTE_ARRAY:
 			byte[] defbytes = (byte[]) values.get(systemVariable);
@@ -91,7 +85,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 * @return The defaults for the specific board.
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
-		SystemVariableBootValues bv = BootValues.MAP.get(boardVersion);
+		SystemVariableBootValues bv = BootValues.get(boardVersion);
 		if (bv != null) {
 			return bv;
 		}
@@ -103,6 +97,51 @@ public class SystemVariableBootValues implements SerializableMessage {
 	public void addToBuffer(ByteBuffer buffer) {
 		for (SystemVariableDefinition svd : SystemVariableDefinition.values()) {
 			svd.addToBuffer(values.get(svd), buffer);
+		}
+	}
+
+	/** Mark this object as unmodifiable. */
+	void unmodifiable() {
+		unmodifiable = true;
+	}
+
+	private static class BootValues {
+		private static final SystemVariableBootValues[] MAP;
+		/**
+		 * Deeply magical values, used to configure board LED states. Note that
+		 * index 0 corresponds to board hardware version 1, index 1 to hardware
+		 * version 2, etc.
+		 */
+		private static final int[] LED0 = {
+				0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
+		};
+
+		static {
+			MAP = new SystemVariableBootValues[LED0.length + 1];
+			int hwver = 1;
+			for (int led0 : LED0) {
+				SystemVariableBootValues bv = new SystemVariableBootValues();
+				bv.setValue(hardware_version, hwver);
+				bv.setValue(led_0, led0);
+				bv.unmodifiable();
+				MAP[hwver] = bv;
+				hwver++;
+			}
+		};
+
+		/**
+		 * Look up the defaults for a particular version of board.
+		 *
+		 * @param boardVersion
+		 *            The board version.
+		 * @return The defaults. Note that this should be treated as
+		 *         <i>unmodifiable</i>.
+		 */
+		static SystemVariableBootValues get(int boardVersion) {
+			if (boardVersion > 0 && boardVersion < MAP.length) {
+				return MAP[boardVersion];
+			}
+			return null;
 		}
 	}
 }

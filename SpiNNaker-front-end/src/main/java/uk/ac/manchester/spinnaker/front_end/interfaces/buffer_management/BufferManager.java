@@ -446,7 +446,7 @@ public class BufferManager {
 
         // Read the data if not already received
         if (receivedData.isDataFromRegionFlushed(placement, recordingRegionId)) {
-
+/*
             // Read the end state of the recording for this region
             if (!receivedData.isEndBufferingStateRecovered(placement, recordingRegionId){
                 end_state = self._generate_end_buffering_state_from_machine(
@@ -459,7 +459,7 @@ public class BufferManager {
                     placement.x, placement.y, placement.p, recording_region_id)
             }
 
-/*            # current read needs to be adjusted in case the last portion of the
+            # current read needs to be adjusted in case the last portion of the
             # memory has already been read, but the HostDataRead packet has not
             # been processed by the chip before simulation finished.
             # This situation is identified by the sequence number of the last
@@ -600,10 +600,10 @@ public class BufferManager {
 
     private void generateEndBufferingStateFromMachine(Placement placement, int state_region_base_address) {
          // retrieve channel state memory area
-        channel_state_data = requestData(transceiver=self._transceiver, placement_x=placement.x,
-            address=state_region_base_address, placement_y=placement.y,
-            length=ChannelBufferState.STATE_SIZE)
-        return ChannelBufferState.create_from_bytearray(channel_state_data)
+//        channel_state_data = requestData(transceiver=self._transceiver, placement_x=placement.x,
+//            address=state_region_base_address, placement_y=placement.y,
+//            length=ChannelBufferState.STATE_SIZE)
+//        return ChannelBufferState.create_from_bytearray(channel_state_data)
     }
 
     /**
@@ -620,7 +620,7 @@ public class BufferManager {
      */
     private ByteBuffer requestData(Placement placement, int address, int length) {
         //    :return: data as a byte array
-        if (!this.usesAdvancedMonitors) {
+/*        if (!this.usesAdvancedMonitors) {
             return transceiver.readMemory(placement, address, length);
         }
         extraMonitorCoresByChip.get(this)
@@ -631,6 +631,7 @@ public class BufferManager {
         return receiver.get_data(
             transceiver, self._placements.get_placement_of_vertex(sender),
             address, length, self._fixed_routes)
-
+*/
+        return null;
     }
 }

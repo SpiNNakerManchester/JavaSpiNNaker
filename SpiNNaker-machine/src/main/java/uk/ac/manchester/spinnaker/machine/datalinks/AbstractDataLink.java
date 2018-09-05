@@ -24,7 +24,7 @@ public class AbstractDataLink implements HasChipLocation {
     public final ChipLocation location;
 
     /** link Direction/id for this link. */
-    public final Direction linkId;
+    public final Direction direction;
 
 
     /**
@@ -43,7 +43,7 @@ public class AbstractDataLink implements HasChipLocation {
             throw new IllegalArgumentException("linkId was null");
         }
         this.location = location.asChipLocation();
-        this.linkId = linkId;
+        this.direction = linkId;
         this.boardAddress = boardAddress;
     }
 
@@ -66,7 +66,7 @@ public class AbstractDataLink implements HasChipLocation {
     public int hashCode() {
         int hash = 41 * (getX() << MachineDefaults.COORD_SHIFT) ^ getY();
         hash = 41 * hash + Objects.hashCode(this.boardAddress);
-        hash = 41 * hash + this.linkId.hashCode();
+        hash = 41 * hash + this.direction.hashCode();
         return hash;
     }
 
@@ -97,7 +97,7 @@ public class AbstractDataLink implements HasChipLocation {
      *      the links are on the same chip
      */
     boolean sameAs(AbstractDataLink other) {
-        if (!this.linkId.equals(other.linkId)) {
+        if (!this.direction.equals(other.direction)) {
             return false;
         }
         if (!Objects.equals(this.boardAddress, other.boardAddress)) {

@@ -2,6 +2,9 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.util.HashMap;
 import java.util.Map;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -117,4 +120,26 @@ public class TestCoreLocation {
         assertEquals(new CoreLocation(1, 2, 3),
                 new MockCoreLocation().asCoreLocation());
     }
+
+        @Test
+    public void testCompare() {
+        CoreLocation core001 = new CoreLocation(0, 0, 1);
+        CoreLocation core001a = new CoreLocation(0, 0, 1);
+        CoreLocation core002 = new CoreLocation(0, 0, 2);
+        CoreLocation core102 = new CoreLocation(1, 0, 2);
+        CoreLocation core013 = new CoreLocation(0, 1, 3);
+        CoreLocation core114 = new CoreLocation(1, 1, 4);
+        assertThat("114 > 001", core114, greaterThan(core001));
+        assertThat("114 > 013", core114, greaterThan(core013));
+        assertThat("114 > 102", core114, greaterThan(core102));
+        assertThat("102 > 114", core102, lessThan(core114));
+        assertThat("102 < 013", core102, greaterThan(core013));
+        assertThat("013 > 102", core013, lessThan(core102));
+        assertThat("114 < 102", core114, greaterThan(core102));
+        assertThat("001 < 002", core001, lessThan(core002));
+        assertThat("002 < 001", core002, greaterThan(core001));
+        assertEquals(0, core001.compareTo(core001a));
+        assertEquals(0, core001.compareTo(core001));
+    }
+
 }

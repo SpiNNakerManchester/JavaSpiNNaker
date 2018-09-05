@@ -41,6 +41,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -317,15 +318,17 @@ class TransceiverITCase {
 		List<MulticastRoutingEntry> routes;
 
 		routes = singletonList(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
-				asList(1, 2, 3, 4, 5), asList(0, 1, 2), false));
+				asList(1, 2, 3, 4, 5),
+                asList(Direction.EAST, Direction.NORTHEAST, Direction.NORTH),
+                false));
 		transceiver.loadMulticastRoutes(new ChipLocation(0, 0), routes, app_id);
 
 		routes = transceiver.getMulticastRoutes(new ChipLocation(0, 0), app_id);
 		for (MulticastRoutingEntry route : routes) {
 			System.out.printf("Key=%x, Mask=%x, processors=%s, links=%s\n",
 					route.getKey(), route.getMask(),
-					Arrays.toString(route.getProcessorIDs()),
-					Arrays.toString(route.getLinkIDs()));
+					route.getProcessorIDs(),
+					route.getLinkIDs());
 		}
 
 		transceiver.clearMulticastRoutes(new ChipLocation(0, 0));
@@ -333,8 +336,8 @@ class TransceiverITCase {
 		for (MulticastRoutingEntry route : routes) {
 			System.out.printf("Key=%x, Mask=%x, processors=%s, links=%s\n",
 					route.getKey(), route.getMask(),
-					Arrays.toString(route.getProcessorIDs()),
-					Arrays.toString(route.getLinkIDs()));
+					route.getProcessorIDs(),
+					route.getLinkIDs());
 		}
 	}
 
