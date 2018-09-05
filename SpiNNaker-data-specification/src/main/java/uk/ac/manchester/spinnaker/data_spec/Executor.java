@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
+import static java.util.Collections.unmodifiableCollection;
 import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -17,7 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -187,5 +191,14 @@ public class Executor implements AutoCloseable {
 		return APP_PTR_TABLE_BYTE_SIZE
 				+ memRegions.stream().filter(r -> r != null)
 						.mapToInt(r -> r.getAllocatedSize()).sum();
+	}
+
+	/**
+	 * Get the regions of the executor as an unmodifiable iterable.
+	 *
+	 * @return The regions.
+	 */
+	public Collection<MemoryRegion> regions() {
+		return unmodifiableCollection(memRegions);
 	}
 }

@@ -2,11 +2,14 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_BYTE_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +27,8 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
  * @author Donal Fellows
  */
 public class HostExecuteDataSpecification {
+	private static final int DEFAULT_SDRAM_BYTES = 117 * 1024 * 1024;
+
 	/**
 	 * Executes the host based data specification.
 	 *
@@ -45,12 +50,10 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> hostExecuteDataSpecification(
-			Transceiver txrx, Machine machine, int appID,
-			Map<CoreLocation, File> dsgTargets)
+	public Map<CoreLocation, LocationInfo> load(Transceiver txrx,
+			Machine machine, int appID, Map<CoreLocation, File> dsgTargets)
 			throws IOException, Exception, DataSpecificationException {
-		return hostExecuteDataSpecification(txrx, machine, appID, dsgTargets,
-				null);
+		return load(txrx, machine, appID, dsgTargets, null);
 	}
 
 	/**
@@ -77,9 +80,8 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> hostExecuteDataSpecification(
-			Transceiver txrx, Machine machine, int appID,
-			Map<CoreLocation, File> dsgTargets,
+	public Map<CoreLocation, LocationInfo> load(Transceiver txrx,
+			Machine machine, int appID, Map<CoreLocation, File> dsgTargets,
 			Map<CoreLocation, LocationInfo> info)
 			throws IOException, Exception, DataSpecificationException {
 		if (info == null) {
@@ -87,8 +89,8 @@ public class HostExecuteDataSpecification {
 		}
 		for (CoreLocation core : new ProgressIterable<>(dsgTargets.keySet(),
 				"Executing data specifications and loading data")) {
-			info.put(core, executeDSGFirstTime(txrx, machine, appID, core,
-					dsgTargets.get(core)));
+			info.put(core,
+					load(txrx, machine, appID, core, dsgTargets.get(core)));
 		}
 		return info;
 	}
@@ -114,8 +116,8 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	protected LocationInfo executeDSGFirstTime(Transceiver txrx,
-			Machine machine, int appID, HasCoreLocation core, File dataSpec)
+	public LocationInfo load(Transceiver txrx, Machine machine, int appID,
+			HasCoreLocation core, File dataSpec)
 			throws IOException, Exception, DataSpecificationException {
 		try (Executor executor =
 				new Executor(dataSpec, machine.getChipAt(core).sdram)) {
@@ -130,10 +132,8 @@ public class HostExecuteDataSpecification {
 			txrx.writeMemory(core, startAddress, b);
 			int bytesWritten = b.remaining();
 
-			for (int rID = 0; rID < MAX_MEM_REGIONS; rID++) {
-				MemoryRegion r = executor.getRegion(rID);
-				if (r == null || r.isUnfilled()
-						|| r.getMaxWritePointer() <= 0) {
+			for (MemoryRegion r : executor.regions()) {
+				if (isToBeIgnored(r)) {
 					continue;
 				}
 
@@ -147,7 +147,107 @@ public class HostExecuteDataSpecification {
 			txrx.writeMemory(core, user0, startAddress);
 			return new LocationInfo(startAddress, bytesUsed, bytesWritten);
 		}
+	}
 
+	/**
+	 * Executes the host based data specification on a specific core for the
+	 * purpose of reloading, using default assumptions about how much space was
+	 * allocated.
+	 *
+	 * @param txrx
+	 *            The transceiver used to do the communication.
+	 * @param core
+	 *            Which core of the machine to generate for and load onto.
+	 * @param dataSpec
+	 *            The file holding the data specification for the core.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
+	public void reload(Transceiver txrx, HasCoreLocation core, File dataSpec)
+			throws DataSpecificationException, IOException, Exception {
+		try (Executor executor = new Executor(dataSpec, DEFAULT_SDRAM_BYTES)) {
+			// execute the spec
+			executor.execute();
+
+			// Read the region table for the placement
+			int baseAddress = txrx.getCPUInformation(core).getUser()[0];
+			int startRegion = getRegionAddress(baseAddress, 0);
+			int tableSize = getRegionAddress(baseAddress, MAX_MEM_REGIONS)
+					- startRegion;
+			IntBuffer offsets =
+					txrx.readMemory(core, startRegion, tableSize).asIntBuffer();
+
+			// Write the regions to the machine
+			for (MemoryRegion r : executor.regions()) {
+				int offset = offsets.get();
+				if (isToBeIgnored(r)) {
+					continue;
+				}
+				ByteBuffer data = r.getRegionData().duplicate();
+				data.flip();
+				txrx.writeMemory(core, offset, data);
+			}
+		}
+	}
+
+	/**
+	 * Executes the host based data specification on a specific core for the
+	 * purpose of reloading.
+	 *
+	 * @param txrx
+	 *            The transceiver used to do the communication.
+	 * @param core
+	 *            Which core of the machine to generate for and load onto.
+	 * @param info
+	 *            Description of what was previously actually allocated by this
+	 *            core's previous DSE execution.
+	 * @param dataSpec
+	 *            The file holding the data specification for the core.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
+	public void reload(Transceiver txrx, HasCoreLocation core,
+			LocationInfo info, File dataSpec)
+			throws DataSpecificationException, IOException, Exception {
+		try (Executor executor = new Executor(dataSpec, info.memoryUsed)) {
+			// execute the spec
+			executor.execute();
+
+			// Read the region table for the placement
+			int baseAddress = txrx.getCPUInformation(core).getUser()[0];
+			int startRegion = getRegionAddress(baseAddress, 0);
+			int tableSize = getRegionAddress(baseAddress, MAX_MEM_REGIONS)
+					- startRegion;
+			IntBuffer offsets =
+					txrx.readMemory(core, startRegion, tableSize).asIntBuffer();
+
+			// Write the regions to the machine
+			for (MemoryRegion r : executor.regions()) {
+				int offset = offsets.get();
+				if (isToBeIgnored(r)) {
+					continue;
+				}
+				ByteBuffer data = r.getRegionData().duplicate();
+				data.flip();
+				txrx.writeMemory(core, offset, data);
+			}
+		}
+	}
+
+	private boolean isToBeIgnored(MemoryRegion r) {
+		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
+	}
+
+	private int getRegionAddress(int baseAddress, int region) {
+		return baseAddress + APP_PTR_TABLE_HEADER_BYTE_SIZE + region * INT_SIZE;
 	}
 
 	/**
