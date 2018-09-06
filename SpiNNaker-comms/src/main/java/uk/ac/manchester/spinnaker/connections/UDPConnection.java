@@ -69,20 +69,19 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean receivable;
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
-
 	/**
-     * Main constructor any of which could null.
-     * <p>
-     * No default constructors are provided as it would not be possible to
-     *      disambiguate between
-     *      ones with only a local host/port like IPAddressConnection
-     *      and ones with only remote host/port like BMPConnection
-     *
+	 * Main constructor any of which could null.
+	 * <p>
+	 * No default constructors are provided as it would not be possible to
+	 * disambiguate between ones with only a local host/port like
+	 * {@link IPAddressConnection} and ones with only remote host/port like
+	 * {@link BMPConnection}.
+	 *
 	 * @param localHost
-	 *            The local host to bind to. If not
-	 *            specified, it defaults to binding to all interfaces, unless
-	 *            remoteHost is specified, in which case binding is done to the
-	 *            IP address that will be used to send packets.
+	 *            The local host to bind to. If not specified, it defaults to
+	 *            binding to all interfaces, unless remoteHost is specified, in
+	 *            which case binding is done to the IP address that will be used
+	 *            to send packets.
 	 * @param localPort
 	 *            The local port to bind to, 0 or between 1025 and 65535.
 	 * @param remoteHost
@@ -98,7 +97,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error setting up the communication channel
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
-            InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
 		channel.configureBlocking(false);

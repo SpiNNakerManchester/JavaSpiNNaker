@@ -35,7 +35,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.router_table_copy_address;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.workOutBMPFromMachineDetails;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 
 import java.io.File;
 import java.io.IOException;
@@ -352,8 +352,8 @@ public class Transceiver extends UDPTransceiver
 		 */
 		if (version >= BIGGER_BOARD && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
-			bmpConnectionData = singletonList(
-					workOutBMPFromMachineDetails(host, numberOfBoards));
+			bmpConnectionData =
+					singletonList(defaultBMPforMachine(host, numberOfBoards));
 		}
 
 		// handle BMP connections
@@ -373,8 +373,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// handle the boot connection
-		connections
-				.add(new BootConnection(null, null, host, bootPortNumber));
+		connections.add(new BootConnection(host, bootPortNumber));
 
 		return new Transceiver(version, connections, ignoreChips, ignoreCores,
 				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
@@ -758,21 +757,21 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
-		if (connection == null) {
-			connection =
-					(SCPConnection) getRandomConnection(scpSenderConnections);
+		SCPSender c = connection;
+		if (c == null) {
+			c = getRandomConnection(scpSenderConnections);
 		}
-		connection.sendSCPRequest(message);
+		c.sendSCPRequest(message);
 	}
 
 	@Override
 	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException {
-		if (connection == null) {
-			connection =
-					(SDPConnection) getRandomConnection(sdpSenderConnections);
+		SDPSender c = connection;
+		if (c == null) {
+			c = getRandomConnection(sdpSenderConnections);
 		}
-		connection.sendSDPMessage(message);
+		c.sendSDPMessage(message);
 	}
 
 	/** Get the current machine status and store it. */

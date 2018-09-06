@@ -20,18 +20,20 @@ public class BootConnection extends UDPConnection<BootMessage>
 	private static final int ANTI_FLOOD_DELAY = 100;
 
 	/**
+	 * Creates a boot connection.
+	 *
 	 * @param localHost
-	 *            The local host to bind to. If <tt>null</tt>
-	 *            defaults to bind to all interfaces, unless remoteHost is
-	 *            specified, in which case binding is done to the IP address
-	 *            that will be used to send packets.
+	 *            The local host to bind to. If <tt>null</tt> defaults to bind
+	 *            to all interfaces, unless remoteHost is specified, in which
+	 *            case binding is done to the IP address that will be used to
+	 *            send packets.
 	 * @param localPort
-	 *            The local port to bind to, between 1025 and 65535. If
+	 *            The local port to bind to, between 1025 and 32767. If
 	 *            <tt>null</tt>, defaults to a random unused local port
 	 * @param remoteHost
-	 *            The remote host to send packets to. If
-	 *            <tt>null</tt>, the socket will be available for listening
-	 *            only, and will throw and exception if used for sending
+	 *            The remote host to send packets to. If <tt>null</tt>, the
+	 *            socket will be available for listening only, and will throw
+	 *            and exception if used for sending
 	 * @param remotePort
 	 *            The remote port to send packets to. If <tt>null</tt>, a
 	 *            default value is used.
@@ -41,6 +43,27 @@ public class BootConnection extends UDPConnection<BootMessage>
 	public BootConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost,
+				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
+						: remotePort);
+	}
+
+	/**
+	 * Creates a boot connection that binds to all local interfaces on an
+	 * arbitrary port from the range 1025 to 32767.
+	 *
+	 * @param remoteHost
+	 *            The remote host to send packets to. If <tt>null</tt>, the
+	 *            socket will be available for listening only, and will throw
+	 *            and exception if used for sending
+	 * @param remotePort
+	 *            The remote port to send packets to. If <tt>null</tt>, a
+	 *            default value is used.
+	 * @throws IOException
+	 *             If there is an error setting up the communication channel
+	 */
+	public BootConnection(InetAddress remoteHost, Integer remotePort)
+			throws IOException {
+		super(null, null, remoteHost,
 				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
 						: remotePort);
 	}
