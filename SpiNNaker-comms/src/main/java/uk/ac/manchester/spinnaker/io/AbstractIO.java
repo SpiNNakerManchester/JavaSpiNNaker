@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import uk.ac.manchester.spinnaker.processes.FillProcess;
-import uk.ac.manchester.spinnaker.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 
 /**
  * Presents a view of an entity (SpiNNaker memory or a file on disk) as

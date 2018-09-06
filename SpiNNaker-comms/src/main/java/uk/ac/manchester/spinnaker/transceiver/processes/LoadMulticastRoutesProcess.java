@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;

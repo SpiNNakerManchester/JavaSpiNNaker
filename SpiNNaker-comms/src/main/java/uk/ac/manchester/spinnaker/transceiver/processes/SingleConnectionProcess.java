@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 

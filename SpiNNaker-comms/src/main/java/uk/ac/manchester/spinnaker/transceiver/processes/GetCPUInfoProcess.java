@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;

@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 
 /**
  * A process for handling communicating with the BMP.

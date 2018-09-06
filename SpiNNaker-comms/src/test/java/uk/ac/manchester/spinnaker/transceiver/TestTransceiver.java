@@ -226,7 +226,7 @@ class TestTransceiver {
 		public MockWriteTransceiver(int version,
 				Collection<Connection> connections)
 				throws IOException, SpinnmanException,
-				uk.ac.manchester.spinnaker.processes.Process.Exception {
+				uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception {
 			super(version, connections, null, null, null, null, null, null);
 		}
 

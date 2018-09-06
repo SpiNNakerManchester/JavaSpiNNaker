@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.processes;
+package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;

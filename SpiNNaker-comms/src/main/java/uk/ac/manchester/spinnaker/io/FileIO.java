@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 
 /** A file input/output interface to match the MemoryIO interface. */
 public class FileIO implements AbstractIO {

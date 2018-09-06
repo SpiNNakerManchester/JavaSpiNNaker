@@ -8,10 +8,12 @@ import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
@@ -45,7 +47,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import static java.util.Collections.emptyMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -81,7 +82,6 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.Processor;
@@ -127,28 +127,28 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.processes.ApplicationRunProcess;
-import uk.ac.manchester.spinnaker.processes.DeallocSDRAMProcess;
-import uk.ac.manchester.spinnaker.processes.FillProcess;
-import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.processes.GetCPUInfoProcess;
-import uk.ac.manchester.spinnaker.processes.GetHeapProcess;
-import uk.ac.manchester.spinnaker.processes.GetMachineProcess;
-import uk.ac.manchester.spinnaker.processes.GetMulticastRoutesProcess;
-import uk.ac.manchester.spinnaker.processes.GetTagsProcess;
-import uk.ac.manchester.spinnaker.processes.GetVersionProcess;
-import uk.ac.manchester.spinnaker.processes.LoadFixedRouteEntryProcess;
-import uk.ac.manchester.spinnaker.processes.LoadMulticastRoutesProcess;
-import uk.ac.manchester.spinnaker.processes.MallocSDRAMProcess;
-import uk.ac.manchester.spinnaker.processes.Process.Exception;
-import uk.ac.manchester.spinnaker.processes.ReadFixedRouteEntryProcess;
-import uk.ac.manchester.spinnaker.processes.ReadIOBufProcess;
-import uk.ac.manchester.spinnaker.processes.ReadMemoryProcess;
-import uk.ac.manchester.spinnaker.processes.ReadRouterDiagnosticsProcess;
-import uk.ac.manchester.spinnaker.processes.SendSingleBMPCommandProcess;
-import uk.ac.manchester.spinnaker.processes.SendSingleSCPCommandProcess;
-import uk.ac.manchester.spinnaker.processes.WriteMemoryFloodProcess;
-import uk.ac.manchester.spinnaker.processes.WriteMemoryProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetHeapProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetMulticastRoutesProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.GetVersionProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.LoadFixedRouteEntryProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.LoadMulticastRoutesProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.MallocSDRAMProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.ReadFixedRouteEntryProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ReadIOBufProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ReadRouterDiagnosticsProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -1139,6 +1139,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, Exception {
 		// Get all the cores if the subsets are not given
