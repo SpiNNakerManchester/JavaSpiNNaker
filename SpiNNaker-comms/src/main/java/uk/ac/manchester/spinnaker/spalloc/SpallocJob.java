@@ -8,6 +8,7 @@ import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.emptyMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
@@ -33,7 +34,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -102,8 +102,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private static final Logger log = getLogger(SpallocJob.class);
 	private static final int DEFAULT_KEEPALIVE = 30;
-	private static final ChipLocation ROOT = new ChipLocation(0, 0);
 	private static final int MAX_SHAPE_ARGS = 3;
+	/** Minimum supported server version. */
+	private static final Version MIN_VER = new Version(0, 4, 0);
+	/** Maximum supported server version. */
+	private static final Version MAX_VER = new Version(2, 0, 0);
+	private static final int STATUS_CACHE_PERIOD = 500;
 
 	private SpallocClient client;
 	private int id;
@@ -708,9 +712,6 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		}
 	}
 
-	private static final Version MIN = new Version(0, 4, 0);
-	private static final Version MAX = new Version(2, 0, 0);
-
 	/**
 	 * Assert that the server version is compatible. This client supports from
 	 * 0.4.0 to 2.0.0 (but not including the latter).
@@ -723,7 +724,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {
 		Version v = client.version(timeout);
-		if (MIN.compareTo(v) <= 0 && MAX.compareTo(v) > 0) {
+		if (MIN_VER.compareTo(v) <= 0 && MAX_VER.compareTo(v) > 0) {
 			return;
 		}
 		client.close();
@@ -760,8 +761,6 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public int getID() {
 		return id;
 	}
-
-	private static final int STATUS_CACHE_PERIOD = 500;
 
 	private JobState getStatus() throws IOException, SpallocServerException {
 		if (statusCache == null || statusTimestamp < currentTimeMillis()
@@ -810,7 +809,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public String getHostname() throws IOException, SpallocServerException {
 		for (Connection c : getConnections()) {
-			if (c.getChip().onSameChipAs(ROOT)) {
+			if (c.getChip().onSameChipAs(ZERO_ZERO)) {
 				return c.getHostname();
 			}
 		}

@@ -30,13 +30,13 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 
@@ -102,6 +102,8 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
 	public static final Integer DEFAULT_TIMEOUT = null;
+	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
 
 	/**
 	 * The hostname and port of the spalloc server.
@@ -127,12 +129,8 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	 */
 	private final TextSocketFactory local = new TextSocketFactory();
 	/** A queue of unprocessed notifications. */
-	private final Deque<Notification> notifications = new LinkedList<>();
-	/** Lock for access to {@link #notifications}. */
-	private final Object notificationsLock = new Object();
-
-	private static final ObjectMapper MAPPER = new ObjectMapper();
-	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
+	private final Queue<Notification> notifications =
+			new ConcurrentLinkedQueue<>();
 
 	static {
 		SimpleModule module = new SimpleModule();
@@ -428,9 +426,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 					throw new SpallocServerException((ExceptionResponse) r);
 				} else if (r instanceof Notification) {
 					// Got a notification, keep trying...
-					synchronized (notificationsLock) {
-						notifications.addLast((Notification) r);
-					}
+					notifications.add((Notification) r);
 				} else {
 					throw new SpallocProtocolException(
 							"bad response: " + r.getClass());
@@ -449,10 +445,9 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
 		// If we already have a notification, return it
-		synchronized (notificationsLock) {
-			if (!notifications.isEmpty()) {
-				return notifications.removeFirst();
-			}
+		Notification n = notifications.poll();
+		if (n != null) {
+			return n;
 		}
 
 		// Check for a duff timeout
