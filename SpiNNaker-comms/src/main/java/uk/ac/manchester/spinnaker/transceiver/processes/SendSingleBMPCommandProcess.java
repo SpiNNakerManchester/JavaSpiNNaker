@@ -42,6 +42,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
  * @param <R>
  *            The type of the response; implicit in the type of the request.
  * @author Donal Fellows
+ * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
+ *      SCPRequestPipeline
  */
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
@@ -182,7 +184,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retryReason.stream().allMatch(r -> reason.equals(r));
 			}
 
-			private void received(SCPResultMessage msg)
+			private void parseReceivedResponse(SCPResultMessage msg)
 					throws java.lang.Exception {
 				R response = msg.parsePayload(request);
 				if (callback != null) {
@@ -270,7 +272,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					resend(req, msg.getResult());
 				} else {
 					// No retry is possible. Try constructing the result
-					req.received(msg);
+					req.parseReceivedResponse(msg);
 					// Remove the sequence from the outstanding responses
 					msg.removeRequest(requests);
 				}

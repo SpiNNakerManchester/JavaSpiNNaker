@@ -1,7 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static java.util.Collections.min;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
@@ -260,10 +259,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		protected BMPResponse(String operation, SCPCommand command,
 				ByteBuffer buffer) throws UnexpectedResponseCodeException {
 			super(buffer);
-			if (result != RC_OK) {
-				throw new UnexpectedResponseCodeException(operation, command,
-						result);
-			}
+			throwIfNotOK(operation, command);
 		}
 	};
 }

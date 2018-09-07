@@ -1,9 +1,11 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Represents an abstract SCP response. */
@@ -28,5 +30,13 @@ public abstract class SCPResponse {
 		sdpHeader = new SDPHeader(buffer);
 		result = SCPResult.get(buffer.getShort());
 		sequence = buffer.getShort();
+	}
+
+	protected final void throwIfNotOK(String operation, SCPCommand command)
+			throws UnexpectedResponseCodeException {
+		if (result != RC_OK) {
+			throw new UnexpectedResponseCodeException(operation, command,
+					result);
+		}
 	}
 }

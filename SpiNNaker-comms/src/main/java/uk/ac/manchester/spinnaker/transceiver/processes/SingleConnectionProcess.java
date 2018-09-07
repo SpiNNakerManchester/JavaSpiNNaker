@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -48,11 +47,7 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 
 	@Override
 	protected final <R extends SCPResponse> void sendRequest(
-			SCPRequest<R> request, Consumer<R> callback,
-			SCPErrorHandler errorCallback) throws IOException {
-		if (errorCallback == null) {
-			errorCallback = this::receiveError;
-		}
+			SCPRequest<R> request, Consumer<R> callback) throws IOException {
 		/*
 		 * If no pipe line built yet, build one on the connection selected for
 		 * it
@@ -61,7 +56,7 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 			requestPipeline = new SCPRequestPipeline(
 					connectionSelector.getNextConnection(request), timeout);
 		}
-		requestPipeline.sendRequest(request, callback, errorCallback);
+		requestPipeline.sendRequest(request, callback, this::receiveError);
 	}
 
 	@Override

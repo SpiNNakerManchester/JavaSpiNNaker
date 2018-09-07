@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -62,6 +63,7 @@ public class SCPRequestPipeline {
 	private static final int HEADROOM = 8;
 	private static final int DEFAULT_MAX_CHANNELS = 12;
 	private static final int RETRY_DELAY_MS = 100;
+	private static final String REASON_TIMEOUT = "timeout";
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
@@ -100,9 +102,9 @@ public class SCPRequestPipeline {
 	 * @param <T>
 	 *            The type of response expected to the request in the message.
 	 */
-	private class Request<T extends SCPResponse> {
+	private final class Request<T extends SCPResponse> {
 		/** Request in progress. */
-		final SCPRequest<T> request;
+		private final SCPRequest<T> request;
 		/** Payload of request in progress. */
 		private final ByteBuffer requestData;
 		/** Callback function for response. */
@@ -116,42 +118,73 @@ public class SCPRequestPipeline {
 
 		/**
 		 * Make a record.
-		 * @param request The request.
-		 * @param callback The success callback.
-		 * @param errorCallback The failure callback.
+		 *
+		 * @param request
+		 *            The request.
+		 * @param callback
+		 *            The success callback.
+		 * @param errorCallback
+		 *            The failure callback.
 		 */
 		Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
-			this.requestData = getSCPData(request, connection.getChip());
 			this.callback = callback;
 			this.errorCallback = errorCallback;
 			retryReason = new ArrayList<>();
 			retries = numRetries;
+			requestData = getSCPData(connection.getChip());
 		}
 
-		private ByteBuffer getSCPData(SCPRequest<T> scpRequest,
-				ChipLocation chip) {
+		/**
+		 * Prepare the request for sending to a particular chip.
+		 *
+		 * @param chip
+		 *            The chip that the request is being sent to.
+		 * @return The buffer containing the serialized request.
+		 */
+		private ByteBuffer getSCPData(ChipLocation chip) {
 			ByteBuffer buffer = newMessageBuffer();
-			if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-				scpRequest.updateSDPHeaderForUDPSend(chip);
+			if (request.sdpHeader.getFlags() == REPLY_EXPECTED) {
+				request.updateSDPHeaderForUDPSend(chip);
 			}
-			scpRequest.addToBuffer(buffer);
+			request.addToBuffer(buffer);
 			buffer.flip();
 			return buffer;
 		}
 
-		private void send() throws IOException {
-			connection.send(requestData.asReadOnlyBuffer());
+		/**
+		 * Do the actual sending of the request.
+		 *
+		 * @throws IOException
+		 *             If the connection throws.
+		 */
+		void send() throws IOException {
+			connection.send(requestData);
 		}
 
-		private void resend(Object reason) throws IOException {
+		/**
+		 * Send the request again.
+		 *
+		 * @param reason
+		 *            Why the request is being sent again.
+		 * @throws IOException
+		 *             If the connection throws.
+		 */
+		void resend(Object reason) throws IOException {
 			retries--;
 			retryReason.add(reason.toString());
 			send();
 		}
 
-		private boolean allOneReason(String reason) {
+		/**
+		 * Tests whether the reasons for resending are consistent.
+		 *
+		 * @param reason
+		 *            The particular reason being checked for.
+		 * @return True if all reasons are that reason.
+		 */
+		boolean allOneReason(String reason) {
 			return retryReason.stream().allMatch(r -> reason.equals(r));
 		}
 
@@ -161,15 +194,41 @@ public class SCPRequestPipeline {
 		 * @param responseData
 		 *            the content of the message, in a little-endian buffer.
 		 */
-		public void received(SCPResultMessage msg) throws Exception {
+		void parseReceivedResponse(SCPResultMessage msg) throws Exception {
 			T response = msg.parsePayload(request);
 			if (callback != null) {
 				callback.accept(response);
 			}
 		}
 
-		private HasCoreLocation getDestination() {
+		/**
+		 * Which core is the destination of the request?
+		 *
+		 * @return The core location.
+		 */
+		HasCoreLocation getDestination() {
 			return request.sdpHeader.getDestination();
+		}
+
+		/**
+		 * Report a failure to the higher-level code that created the request.
+		 *
+		 * @param exception
+		 *            The problem that is being reported.
+		 */
+		void handleError(Throwable exception) {
+			if (errorCallback != null) {
+				errorCallback.handleError(request, exception);
+			}
+		}
+
+		/**
+		 * Get the command being sent in the request.
+		 *
+		 * @return The request's SCP command.
+		 */
+		SCPCommand getCommand() {
+			return request.scpRequestHeader.command;
 		}
 	}
 
@@ -320,16 +379,16 @@ public class SCPRequestPipeline {
 				resend(req, msg.getResult());
 				numRetryCodeResent++;
 			} catch (Exception e) {
-				req.errorCallback.handleError(req.request, e);
+				req.handleError(e);
 				msg.removeRequest(requests);
 			}
 		} else {
 
 			// No retry is possible - try constructing the result
 			try {
-				req.received(msg);
+				req.parseReceivedResponse(msg);
 			} catch (Exception e) {
-				req.errorCallback.handleError(req.request, e);
+				req.handleError(e);
 			}
 
 			// Remove the sequence from the outstanding responses
@@ -352,9 +411,9 @@ public class SCPRequestPipeline {
 
 			inProgress--;
 			try {
-				resend(req, "timeout");
+				resend(req, REASON_TIMEOUT);
 			} catch (Exception e) {
-				req.errorCallback.handleError(req.request, e);
+				req.handleError(e);
 				toRemove.set(seq);
 			}
 		}
@@ -365,7 +424,7 @@ public class SCPRequestPipeline {
 	private void resend(Request<?> req, Object reason) throws IOException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
-			if (req.allOneReason("timeout")) {
+			if (req.allOneReason(REASON_TIMEOUT)) {
 				throw new SendTimedOutException(req, packetTimeout);
 			}
 
@@ -394,7 +453,7 @@ public class SCPRequestPipeline {
 		 */
 		SendTimedOutException(Request<?> req, int timeout) {
 			super(format("Operation %s timed out after %f seconds",
-					req.request.scpRequestHeader.command, timeout / MS_PER_S));
+					req.getCommand(), timeout / MS_PER_S));
 		}
 	}
 
@@ -414,9 +473,9 @@ public class SCPRequestPipeline {
 		SendFailedException(Request<?> req, int numRetries) {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
-					req.request.scpRequestHeader.command,
-					req.getDestination().getX(), req.getDestination().getY(),
-					req.getDestination().getP(), numRetries, req.retryReason));
+					req.getCommand(), req.getDestination().getX(),
+					req.getDestination().getY(), req.getDestination().getP(),
+					numRetries, req.retryReason));
 		}
 	}
 

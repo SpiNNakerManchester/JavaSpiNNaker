@@ -182,15 +182,15 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Integer>> ignoreCores
-                =  new DefaultMap<>(new HashSet<>());
+	private final DefaultMap<ChipLocation, Collection<Integer>> ignoreCores =
+			new DefaultMap<>(new HashSet<>());
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Direction>>
-                ignoreLinks = new DefaultMap<>(new HashSet<>());
+	private final DefaultMap<ChipLocation, Collection<Direction>> ignoreLinks =
+			new DefaultMap<>(new HashSet<>());
 
 	/**
 	 * The maximum core ID in any discovered machine. Requests for a "machine"
@@ -250,9 +250,8 @@ public class Transceiver extends UDPTransceiver
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
-	private final Map<BMPCoords,
-				ConnectionSelector<BMPConnection>> bmpSelectors =
-			new HashMap<>();
+	private final Map<BMPCoords, ConnectionSelector<BMPConnection>>
+			bmpSelectors = new HashMap<>();
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
 	/** The nearest neighbour start ID. */
@@ -296,9 +295,9 @@ public class Transceiver extends UDPTransceiver
 	 *            never existed. The processors of the specified chips are
 	 *            ignored.
 	 * @param ignoreCores
-	 *            An optional map of cores to ignore in the machine.
-         *            Requests for a "machine" will have these cores excluded,
-         *            as if they never existed.
+	 *            An optional map of cores to ignore in the machine. Requests
+	 *            for a "machine" will have these cores excluded, as if they
+	 *            never existed.
 	 * @param ignoredLinks
 	 *            An optional set of links to ignore in the machine. Requests
 	 *            for a "machine" will have these links excluded, as if they
@@ -331,11 +330,11 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static Transceiver createTransceiver(InetAddress host,
-			int version, Collection<BMPConnectionData> bmpConnectionData,
+	public static Transceiver createTransceiver(InetAddress host, int version,
+			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
-            Map<ChipLocation, Collection<Direction>> ignoredLinks,
+			Map<ChipLocation, Collection<Direction>> ignoredLinks,
 			Integer maxCoreID, boolean autodetectBMP,
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
 			Integer maxSDRAMSize)
@@ -454,7 +453,7 @@ public class Transceiver extends UDPTransceiver
 			Collection<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
 			Map<ChipLocation, Collection<Direction>> ignoreLinks,
-            Integer maxCoreID,
+			Integer maxCoreID,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, Exception {
@@ -785,7 +784,7 @@ public class Transceiver extends UDPTransceiver
 		// Get the details of all the chips
 		machine = new GetMachineProcess(scpSelector, ignoreChips, ignoreCores,
 				ignoreLinks, maxCoreID, maxSDRAMSize)
-            .getMachineDetails(versionInfo.core, dimensions);
+						.getMachineDetails(versionInfo.core, dimensions);
 
 		// update the SCAMP selector with the machine
 		if (scpSelector instanceof MachineAware) {
@@ -1014,6 +1013,15 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
+	 * A neater way of getting a process for running simple SCP requests.
+	 *
+	 * @return The SCP runner process
+	 */
+	private SendSingleSCPCommandProcess simpleProcess() {
+		return new SendSingleSCPCommandProcess(scpSelector);
+	}
+
+	/**
 	 * The number of milliseconds after powering on the machine to wait before
 	 * attempting to boot SCAMP on its chips. This is time to allow the code on
 	 * each chip's ROM to figure out what the state of the hardware is enough
@@ -1070,7 +1078,7 @@ public class Transceiver extends UDPTransceiver
 		 * revert at close
 		 */
 		for (SCPConnection connection : scampConnections) {
-			new SendSingleSCPCommandProcess(scpSelector).execute(
+			simpleProcess().execute(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
 
@@ -1203,8 +1211,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public int getCoreStateCount(int appID, CPUState state)
 			throws IOException, Exception {
-		return new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new CountState(appID, state)).count;
+		return simpleProcess().execute(new CountState(appID, state)).count;
 	}
 
 	@Override
@@ -1217,7 +1224,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable, numBytes);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpSelector)
+			simpleProcess()
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1232,7 +1239,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpSelector)
+			simpleProcess()
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1247,7 +1254,7 @@ public class Transceiver extends UDPTransceiver
 			writeMemory(chip, EXECUTABLE_ADDRESS, executable);
 
 			// Request the start of the executable
-			new SendSingleSCPCommandProcess(scpSelector)
+			simpleProcess()
 					.execute(new ApplicationRun(appID, chip, processors, wait));
 		}
 	}
@@ -1304,9 +1311,8 @@ public class Transceiver extends UDPTransceiver
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
 
 			// Execute the binary on the cores on the chips where required
-			ApplicationRunProcess process =
-					new ApplicationRunProcess(scpSelector);
-			process.run(appID, coreSubsets, wait);
+			new ApplicationRunProcess(scpSelector).run(appID, coreSubsets,
+					wait);
 		}
 	}
 
@@ -1498,8 +1504,7 @@ public class Transceiver extends UDPTransceiver
 					+ "Please fix and try again");
 			return;
 		}
-		new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new ApplicationStop(appID));
+		simpleProcess().execute(new ApplicationStop(appID));
 	}
 
 	@Override
@@ -1571,15 +1576,13 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void sendSignal(int appID, Signal signal)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new SendSignal(appID, signal));
+		simpleProcess().execute(new SendSignal(appID, signal));
 	}
 
 	@Override
 	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new SetLED(core, ledStates));
+		simpleProcess().execute(new SetLED(core, ledStates));
 	}
 
 	@Override
@@ -1614,7 +1617,7 @@ public class Transceiver extends UDPTransceiver
 				host = connection.getLocalIPAddress();
 			}
 
-			new SendSingleSCPCommandProcess(scpSelector).execute(
+			simpleProcess().execute(
 					new IPTagSet(connection.getChip(), host.getAddress(),
 							tag.getPort(), tag.getTag(), tag.isStripSDP()));
 		}
@@ -1643,10 +1646,9 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		for (SCPConnection connection : connections) {
-			new SendSingleSCPCommandProcess(scpSelector)
-					.execute(new ReverseIPTagSet(connection.getChip(),
-							tag.getDestination(), tag.getPort(), tag.getTag(),
-							tag.getPort()));
+			simpleProcess().execute(new ReverseIPTagSet(connection.getChip(),
+					tag.getDestination(), tag.getPort(), tag.getTag(),
+					tag.getPort()));
 		}
 	}
 
@@ -1654,8 +1656,7 @@ public class Transceiver extends UDPTransceiver
 	public void clearIPTag(int tag, SCPConnection connection,
 			InetAddress boardAddress) throws IOException, Exception {
 		for (SCPConnection conn : getConnectionList(connection, boardAddress)) {
-			new SendSingleSCPCommandProcess(scpSelector)
-					.execute(new IPTagClear(conn.getChip(), tag));
+			simpleProcess().execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
 
@@ -1722,8 +1723,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, Exception {
-		new SendSingleSCPCommandProcess(scpSelector)
-				.execute(new RouterClear(chip));
+		simpleProcess().execute(new RouterClear(chip));
 	}
 
 	@Override
@@ -1768,7 +1768,7 @@ public class Transceiver extends UDPTransceiver
 		int address =
 				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
 						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
-		Response response = new SendSingleSCPCommandProcess(scpSelector)
+		Response response = simpleProcess()
 				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
@@ -1861,7 +1861,7 @@ public class Transceiver extends UDPTransceiver
 	private static final InetAddress WILDCARD_ADDRESS;
 	static {
 		try {
-			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[] {
+			WILDCARD_ADDRESS = getByAddress(new byte[] {
 					0, 0, 0, 0
 			});
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
@@ -1876,8 +1876,7 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>>
-			getBMPConnection() {
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;
 	}
 
@@ -1900,8 +1899,8 @@ public class Transceiver extends UDPTransceiver
 		 * @param chip
 		 *            The chip to talk to.
 		 */
-		public ConnectionDescriptor(
-                InetAddress hostname, HasChipLocation chip) {
+		public ConnectionDescriptor(InetAddress hostname,
+				HasChipLocation chip) {
 			this.hostname = requireNonNull(hostname);
 			this.chip = chip.asChipLocation();
 			this.portNumber = null;

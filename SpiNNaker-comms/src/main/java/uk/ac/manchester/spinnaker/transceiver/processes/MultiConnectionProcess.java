@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -75,11 +74,7 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 
 	@Override
 	protected <R extends SCPResponse> void sendRequest(SCPRequest<R> request,
-			Consumer<R> callback, SCPErrorHandler errorCallback)
-			throws IOException {
-		if (errorCallback == null) {
-			errorCallback = this::receiveError;
-		}
+			Consumer<R> callback) throws IOException {
 		T connection = selector.getNextConnection(request);
 		if (!requestPipelines.containsKey(connection)) {
 			SCPRequestPipeline pipeline = new SCPRequestPipeline(connection,
@@ -87,7 +82,7 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 			requestPipelines.put(connection, pipeline);
 		}
 		requestPipelines.get(connection).sendRequest(request, callback,
-				errorCallback);
+				this::receiveError);
 	}
 
 	@Override

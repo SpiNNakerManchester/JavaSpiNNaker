@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
@@ -33,9 +34,11 @@ public class SCPResultMessage {
 	 *            without header stripped.
 	 */
 	public SCPResultMessage(ByteBuffer response) {
+		responseData = response.duplicate().order(LITTLE_ENDIAN);
+		responseData.mark();
 		result = SCPResult.get(response.getShort());
 		sequenceNumber = response.getShort();
-		responseData = response;
+		responseData.reset();
 	}
 
 	/**

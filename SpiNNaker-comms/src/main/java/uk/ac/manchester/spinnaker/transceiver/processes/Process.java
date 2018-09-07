@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 
 import javax.xml.ws.Holder;
 
-import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
@@ -57,7 +56,8 @@ public abstract class Process {
 	}
 
 	/**
-	 * Send a request.
+	 * Send a request. The actual payload of the response to this request is to
+	 * be considered to be uninteresting provided it doesn't indicate a failure.
 	 *
 	 * @param <T>
 	 *            The type of response expected to the request.
@@ -68,7 +68,7 @@ public abstract class Process {
 	 */
 	protected final <T extends SCPResponse> void sendRequest(
 			SCPRequest<T> request) throws IOException {
-		sendRequest(request, null, this::receiveError);
+		sendRequest(request, null);
 	}
 
 	/**
@@ -80,31 +80,11 @@ public abstract class Process {
 	 *            The request to send.
 	 * @param callback
 	 *            The callback that handles the request's response.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected final <T extends SCPResponse> void sendRequest(
-			SCPRequest<T> request, Consumer<T> callback) throws IOException {
-		sendRequest(request, callback, this::receiveError);
-	}
-
-	/**
-	 * Send a request.
-	 *
-	 * @param <T>
-	 *            The type of response expected to the request.
-	 * @param request
-	 *            The request to send.
-	 * @param callback
-	 *            The callback that handles the request's response.
-	 * @param errorCallback
-	 *            The callback that handles errors.
 	 * @throws IOException
 	 *             If sending fails.
 	 */
 	protected abstract <T extends SCPResponse> void sendRequest(
-			SCPRequest<T> request, Consumer<T> callback,
-			SCPErrorHandler errorCallback) throws IOException;
+			SCPRequest<T> request, Consumer<T> callback) throws IOException;
 
 	/**
 	 * Wait for all outstanding requests sent by this process to receive replies
@@ -123,33 +103,6 @@ public abstract class Process {
 	 *            The type of the response; implicit in the type of the request.
 	 * @param request
 	 *            The request to send
-	 * @param errorCallback
-	 *            A custom error handler
-	 * @return The successful response to the request
-	 * @throws IOException
-	 *             If the communications fail
-	 * @throws Exception
-	 *             If the other side responds with a failure code
-	 */
-	protected final <T extends SCPResponse> T synchronousCall(
-			SCPRequest<T> request, SCPErrorHandler errorCallback)
-			throws IOException, Exception {
-		Holder<T> holder = new Holder<>();
-		sendRequest(request, response -> holder.value = response,
-				errorCallback);
-		finish();
-		checkForError();
-		return holder.value;
-	}
-
-	/**
-	 * Do a synchronous call of an SCP operation, sending the given message and
-	 * completely processing the interaction before returning its response.
-	 *
-	 * @param <T>
-	 *            The type of the response; implicit in the type of the request.
-	 * @param request
-	 *            The request to send
 	 * @return The successful response to the request
 	 * @throws IOException
 	 *             If the communications fail
@@ -159,8 +112,7 @@ public abstract class Process {
 	protected final <T extends SCPResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, Exception {
 		Holder<T> holder = new Holder<>();
-		sendRequest(request, response -> holder.value = response,
-				this::receiveError);
+		sendRequest(request, response -> holder.value = response);
 		finish();
 		checkForError();
 		return holder.value;
