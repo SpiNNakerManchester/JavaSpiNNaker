@@ -7,6 +7,6 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
  *
  * @author Christian-B
  */
-class ExtraMonitorSupportMachineVertex extends Vertex {
+class FixedRouteEntry {
 
 }

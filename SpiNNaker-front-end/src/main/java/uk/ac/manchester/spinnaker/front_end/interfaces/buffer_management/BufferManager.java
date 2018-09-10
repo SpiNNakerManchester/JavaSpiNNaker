@@ -12,10 +12,14 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.ChannelBufferState;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -35,6 +39,10 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
 /**
  *
+ * @see <a href=
+ * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/buffer_manager.py">
+ * Python Version</a>
+
  * @author Christian-B
  */
 public class BufferManager {
@@ -90,20 +98,22 @@ public class BufferManager {
 
         //"_extra_monitor_cores_by_chip",
 
-        //# fixed routes, used by the speed up functionality for reports
-        //"_fixed_routes",
+    //# fixed routes, used by the speed up functionality for reports
+    private final Map<CoreLocation, FixedRouteEntry> fixedRoutes;
 
-        //# machine object
-        private final Machine machine;
+    //# machine object
+    private final Machine machine;
 
-        // flag for what data extraction to use
-        private final  boolean usesAdvancedMonitors;
+    // flag for what data extraction to use
+    private final  boolean usesAdvancedMonitors;
+
+	private static final Logger log = getLogger(BufferManager.class);
 
     public BufferManager(Placements placements, Tags tags, Transceiver tranceiver,
             List<ExtraMonitorSupportMachineVertex> extraMonitorCores,
             Map<ChipLocation, DataSpeedUpPacketGatherMachineVertex> extraMonitorCoresToEthernetConnectionMap,
             Map<ChipLocation, ExtraMonitorSupportMachineVertex> extraMonitorCoresByChip,
-            Machine machine,
+            Machine machine, Map<CoreLocation, FixedRouteEntry> fixedRoutes,
             boolean usesAdvancedMonitors, boolean storeToFile) {
         this.placements = placements;
         this.tags = tags;
@@ -111,7 +121,7 @@ public class BufferManager {
         this.extraMonitorCores = extraMonitorCores;
         this.extraMonitorCoresToEthernetConnectionMap = extraMonitorCoresToEthernetConnectionMap;
         this.extraMonitorCoresByChip = extraMonitorCoresByChip;
-        //self._fixed_routes = fixed_routes
+        this.fixedRoutes = fixedRoutes;
         this.machine = machine;
         this.usesAdvancedMonitors = usesAdvancedMonitors;
 
@@ -446,123 +456,114 @@ public class BufferManager {
 
         // Read the data if not already received
         if (receivedData.isDataFromRegionFlushed(placement, recordingRegionId)) {
-/*
+
             // Read the end state of the recording for this region
-            if (!receivedData.isEndBufferingStateRecovered(placement, recordingRegionId){
-                end_state = self._generate_end_buffering_state_from_machine(
-                    placement, getRegionPointer(placement, recordingDataAddress, region));
-                self._received_data.store_end_buffering_state(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    end_state)
+            ChannelBufferState endState;
+            if (!receivedData.isEndBufferingStateRecovered(placement, recordingRegionId)) {
+                int regionPointer = this.getRegionPointer(placement, recordingDataAddress, recordingRegionId);
+                endState = generateEndBufferingStateFromMachine(placement, regionPointer);
+                receivedData.storeEndBufferingState(placement, recordingRegionId, endState);
             } else {
-                end_state = self._received_data.get_end_buffering_state(
-                    placement.x, placement.y, placement.p, recording_region_id)
+                endState = receivedData.getEndBufferingState(placement, recordingRegionId);
             }
 
-            # current read needs to be adjusted in case the last portion of the
-            # memory has already been read, but the HostDataRead packet has not
-            # been processed by the chip before simulation finished.
-            # This situation is identified by the sequence number of the last
-            # packet sent to this core and the core internal state of the
-            # output buffering finite state machine
-            seq_no_last_ack_packet = \
-                self._received_data.last_sequence_no_for_core(
-                    placement.x, placement.y, placement.p)
 
-            # get the sequence number the core was expecting to see next
-            core_next_sequence_number = \
-                self._received_data.get_end_buffering_sequence_number(
-                    placement.x, placement.y, placement.p)
+            // current read needs to be adjusted in case the last portion of the
+            // memory has already been read, but the HostDataRead packet has not
+            // been processed by the chip before simulation finished.
+            // This situation is identified by the sequence number of the last
+            // packet sent to this core and the core internal state of the
+            // output buffering finite state machine
+            Integer seqNoLastAckPacket = receivedData.lastSequenceNoForCore(placement);
 
-            # if the core was expecting to see our last sent sequence,
-            # it must not have received it
-            if core_next_sequence_number == seq_no_last_ack_packet:
-                self._process_last_ack(placement, recording_region_id,
-                                       end_state)
+            // get the sequence number the core was expecting to see next
+            Integer coreNextSequenceNumber = receivedData.getEndBufferingSequenceNumber(placement);
 
-            # now state is updated, read back values for read pointer and
-            # last operation performed
-            last_operation = end_state.last_buffer_operation
-            start_ptr = end_state.start_address
-            end_ptr = end_state.end_address
-            write_ptr = end_state.current_write
-            read_ptr = end_state.current_read
+            // if the core was expecting to see our last sent sequence,
+            // it must not have received it
+            if (coreNextSequenceNumber == seqNoLastAckPacket) {
+                processLastAck(placement, recordingRegionId, endState);
+            }
 
-            # now read_ptr is updated, check memory to read
-            if read_ptr < write_ptr:
-                length = write_ptr - read_ptr
-                logger.debug(
-                    "< Reading {} bytes from {}, {}, {}: {} for region {}",
-                    length, placement.x, placement.y, placement.p,
-                    hex(read_ptr), recording_region_id)
-                data = self._request_data(
-                    transceiver=self._transceiver, placement_x=placement.x,
-                    address=read_ptr, length=length, placement_y=placement.y)
+            // now state is updated, read back values for read pointer and
+            // last operation performed
+            //last_operation = endState.;// ..last_buffer_operation
+            //start_ptr = end_state.start_address
+            //end_ptr = end_state.end_address
+            //write_ptr = end_state.current_write
+            //read_ptr = end_state.current_read
+
+            if (endState.currentRead < endState.currentWrite) {
+                int length = endState.currentWrite - endState.currentRead;
+                log.debug("< Reading " + length + " bytes from "
+                        + placement.asCoreLocation() + ": "
+                        + endState.currentRead
+                        + " for region " + recordingRegionId);
+                ByteBuffer data = requestData(placement, endState.currentRead, length);
+                receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
                 self._received_data.flushing_data_from_region(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-
+                placement.x, placement.y, placement.p, recording_region_id,
+                data)
+            }
             elif read_ptr > write_ptr:
-                length = end_ptr - read_ptr
-                if length < 0:
-                    raise exceptions.ConfigurationException(
-                        "The amount of data to read is negative!")
-                logger.debug(
-                    "> Reading {} bytes from {}, {}, {}: {} for region {}",
-                    length, placement.x, placement.y, placement.p,
-                    hex(read_ptr), recording_region_id)
-                data = self._request_data(
-                    transceiver=self._transceiver, placement_x=placement.x,
-                    address=read_ptr, length=length, placement_y=placement.y)
-                self._received_data.store_data_in_region_buffer(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-                read_ptr = start_ptr
-                length = write_ptr - read_ptr
-                logger.debug(
-                    "Reading {} bytes from {}, {}, {}: {} for region {}",
-                    length, placement.x, placement.y, placement.p,
-                    hex(read_ptr), recording_region_id)
-                data = self._request_data(
-                    transceiver=self._transceiver, placement_x=placement.x,
-                    address=read_ptr, length=length, placement_y=placement.y)
-                self._received_data.flushing_data_from_region(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-
+            length = end_ptr - read_ptr
+            if length < 0:
+            raise exceptions.ConfigurationException(
+            "The amount of data to read is negative!")
+            logger.debug(
+            "> Reading {} bytes from {}, {}, {}: {} for region {}",
+            length, placement.x, placement.y, placement.p,
+            hex(read_ptr), recording_region_id)
+            data = self._request_data(
+            transceiver=self._transceiver, placement_x=placement.x,
+            address=read_ptr, length=length, placement_y=placement.y)
+            self._received_data.store_data_in_region_buffer(
+            placement.x, placement.y, placement.p, recording_region_id,
+            data)
+            read_ptr = start_ptr
+            length = write_ptr - read_ptr
+            logger.debug(
+            "Reading {} bytes from {}, {}, {}: {} for region {}",
+            length, placement.x, placement.y, placement.p,
+            hex(read_ptr), recording_region_id)
+            data = self._request_data(
+            transceiver=self._transceiver, placement_x=placement.x,
+            address=read_ptr, length=length, placement_y=placement.y)
+            self._received_data.flushing_data_from_region(
+            placement.x, placement.y, placement.p, recording_region_id,
+            data)
             elif (read_ptr == write_ptr and
-                    last_operation == BUFFERING_OPERATIONS.BUFFER_WRITE.value):
-                length = end_ptr - read_ptr
-                logger.debug(
-                    "= Reading {} bytes from {}, {}, {}: {} for region {}",
-                    length, placement.x, placement.y, placement.p,
-                    hex(read_ptr), recording_region_id)
-                data = self._request_data(
-                    transceiver=self._transceiver, placement_x=placement.x,
-                    address=read_ptr, length=length, placement_y=placement.y)
-                self._received_data.store_data_in_region_buffer(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-                read_ptr = start_ptr
-                length = write_ptr - read_ptr
-                logger.debug(
-                    "Reading {} bytes from {}, {}, {}: {} for region {}",
-                    length, placement.x, placement.y, placement.p,
-                    hex(read_ptr), recording_region_id)
-                data = self._request_data(
-                    transceiver=self._transceiver, placement_x=placement.x,
-                    address=read_ptr, length=length, placement_y=placement.y)
-                self._received_data.flushing_data_from_region(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-
+            last_operation == BUFFERING_OPERATIONS.BUFFER_WRITE.value):
+            length = end_ptr - read_ptr
+            logger.debug(
+            "= Reading {} bytes from {}, {}, {}: {} for region {}",
+            length, placement.x, placement.y, placement.p,
+            hex(read_ptr), recording_region_id)
+            data = self._request_data(
+            transceiver=self._transceiver, placement_x=placement.x,
+            address=read_ptr, length=length, placement_y=placement.y)
+            self._received_data.store_data_in_region_buffer(
+            placement.x, placement.y, placement.p, recording_region_id,
+            data)
+            read_ptr = start_ptr
+            length = write_ptr - read_ptr
+            logger.debug(
+            "Reading {} bytes from {}, {}, {}: {} for region {}",
+            length, placement.x, placement.y, placement.p,
+            hex(read_ptr), recording_region_id)
+            data = self._request_data(
+            transceiver=self._transceiver, placement_x=placement.x,
+            address=read_ptr, length=length, placement_y=placement.y)
+            self._received_data.flushing_data_from_region(
+            placement.x, placement.y, placement.p, recording_region_id,
+            data)
             elif (read_ptr == write_ptr and
-                    last_operation == BUFFERING_OPERATIONS.BUFFER_READ.value):
-                data = bytearray()
-                self._received_data.flushing_data_from_region(
-                    placement.x, placement.y, placement.p, recording_region_id,
-                    data)
-*/
+            last_operation == BUFFERING_OPERATIONS.BUFFER_READ.value):
+            data = bytearray()
+            self._received_data.flushing_data_from_region(
+            placement.x, placement.y, placement.p, recording_region_id,
+            data)
+             */
         }
         /*
         # data flush has been completed - return appropriate data
@@ -598,12 +599,12 @@ public class BufferManager {
         return data.getInt(0);
     }
 
-    private void generateEndBufferingStateFromMachine(Placement placement, int state_region_base_address) {
-         // retrieve channel state memory area
-//        channel_state_data = requestData(transceiver=self._transceiver, placement_x=placement.x,
-//            address=state_region_base_address, placement_y=placement.y,
-//            length=ChannelBufferState.STATE_SIZE)
-//        return ChannelBufferState.create_from_bytearray(channel_state_data)
+    private ChannelBufferState generateEndBufferingStateFromMachine(Placement placement, int state_region_base_address) throws IOException, Process.Exception {
+        // retrieve channel state memory area
+        ByteBuffer channelStateData = requestData(
+                placement, state_region_base_address,
+                ChannelBufferState.STATE_SIZE);
+        return new ChannelBufferState(channelStateData);
     }
 
     /**
@@ -618,20 +619,52 @@ public class BufferManager {
      * @return
      *      data as a byte array
      */
-    private ByteBuffer requestData(Placement placement, int address, int length) {
+    private ByteBuffer requestData(Placement placement, int address, int length) throws IOException, Process.Exception {
         //    :return: data as a byte array
-/*        if (!this.usesAdvancedMonitors) {
+        if (!this.usesAdvancedMonitors) {
             return transceiver.readMemory(placement, address, length);
         }
-        extraMonitorCoresByChip.get(this)
-        sender = self._extra_monitor_cores_by_chip[placement_x, placement_y]
-        receiver = funs.locate_extra_monitor_mc_receiver(
-            self._machine, placement_x, placement_y,
-            self._extra_monitor_cores_to_ethernet_connection_map)
-        return receiver.get_data(
-            transceiver, self._placements.get_placement_of_vertex(sender),
-            address, length, self._fixed_routes)
+
+        ExtraMonitorSupportMachineVertex sender = extraMonitorCoresByChip.get(placement.asChipLocation());
+        DataSpeedUpPacketGatherMachineVertex receiver = locateExtraMonitorMcReceiver(placement);
+        Placement senderPlacement = placements.getPlacementOfVertex(sender);
+        return receiver.getData(transceiver, senderPlacement, address, length, fixedRoutes);
+    }
+
+    private void processLastAck(Placement placement, int recordingRegionId, ChannelBufferState endState) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+/*      # if the last ACK packet has not been processed on the chip,
+        # process it now
+        last_sent_ack = self._received_data.last_sent_packet_to_core(
+            placement.x, placement.y, placement.p)
+        last_sent_ack = create_eieio_command.read_eieio_command_message(
+            last_sent_ack.data, 0)
+        if not isinstance(last_sent_ack, HostDataRead):
+            raise Exception(
+                "Something somewhere went terribly wrong; looking for a "
+                "HostDataRead packet, while I got {0:s}".format(last_sent_ack))
+
+        start_ptr = end_state.start_address
+        write_ptr = end_state.current_write
+        end_ptr = end_state.end_address
+        read_ptr = end_state.current_read
+
+        for i in xrange(last_sent_ack.n_requests):
+            in_region = region_id == last_sent_ack.region_id(i)
+            if in_region and not end_state.is_state_updated:
+                read_ptr += last_sent_ack.space_read(i)
+                if (read_ptr == write_ptr or
+                        (read_ptr == end_ptr and write_ptr == start_ptr)):
+                    end_state.update_last_operation(
+                        BUFFERING_OPERATIONS.BUFFER_READ.value)
+                if read_ptr == end_ptr:
+                    read_ptr = start_ptr
+                elif read_ptr > end_ptr:
+                    raise Exception(
+                        "Something somewhere went terribly wrong; I was "
+                        "reading beyond the region area")
+        end_state.update_read_pointer(read_ptr)
+        end_state.set_update_completed()
 */
-        return null;
     }
 }
