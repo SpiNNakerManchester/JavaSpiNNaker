@@ -441,8 +441,17 @@ public class BufferManager {
         return extraMonitorCoresToEthernetConnectionMap.get(ethernet);
     }
 
-        //TODO TYPE
-    private Object getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
+    private void readSomeData(
+            Placement placement, int recordingRegionId, int address, int length) 
+            throws IOException, Process.Exception {
+        log.debug("< Reading " + length + " bytes from "
+            + placement.asCoreLocation() + ": " + address
+            + " for region " + recordingRegionId);
+        ByteBuffer data = requestData(placement, address, length);
+        receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
+    }
+    
+    private BufferedDataStorage getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
 
         Vertex vertex = placement.getVertex();
         int recordingDataAddress = vertex.getRecordingRegionBaseAddress(transceiver, placement);
@@ -487,7 +496,7 @@ public class BufferManager {
 
             // now state is updated, read back values for read pointer and
             // last operation performed
-            //last_operation = endState.;// ..last_buffer_operation
+            //last_operation = end_state.last_buffer_operation
             //start_ptr = end_state.start_address
             //end_ptr = end_state.end_address
             //write_ptr = end_state.current_write
@@ -495,86 +504,25 @@ public class BufferManager {
 
             if (endState.currentRead < endState.currentWrite) {
                 int length = endState.currentWrite - endState.currentRead;
-                log.debug("< Reading " + length + " bytes from "
-                        + placement.asCoreLocation() + ": "
-                        + endState.currentRead
-                        + " for region " + recordingRegionId);
-                ByteBuffer data = requestData(placement, endState.currentRead, length);
-                receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
-                self._received_data.flushing_data_from_region(
-                placement.x, placement.y, placement.p, recording_region_id,
-                data)
+                readSomeData(placement, recordingRegionId, endState.currentRead, length); 
+            } else if (endState.currentRead > endState.currentWrite || 
+                    endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
+                int length = endState.endAddress - endState.currentRead;
+                if (length < 0) {
+                    throw new IOException ("The amount of data to read is negative!");
+                }        
+                readSomeData(placement, recordingRegionId, endState.currentRead, length); 
+                length = endState.endAddress - endState.startAddress;
+                readSomeData(placement, recordingRegionId, endState.startAddress, length); 
+            } else {
+               ByteBuffer data = ByteBuffer.allocate(0);
+               receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
             }
-            elif read_ptr > write_ptr:
-            length = end_ptr - read_ptr
-            if length < 0:
-            raise exceptions.ConfigurationException(
-            "The amount of data to read is negative!")
-            logger.debug(
-            "> Reading {} bytes from {}, {}, {}: {} for region {}",
-            length, placement.x, placement.y, placement.p,
-            hex(read_ptr), recording_region_id)
-            data = self._request_data(
-            transceiver=self._transceiver, placement_x=placement.x,
-            address=read_ptr, length=length, placement_y=placement.y)
-            self._received_data.store_data_in_region_buffer(
-            placement.x, placement.y, placement.p, recording_region_id,
-            data)
-            read_ptr = start_ptr
-            length = write_ptr - read_ptr
-            logger.debug(
-            "Reading {} bytes from {}, {}, {}: {} for region {}",
-            length, placement.x, placement.y, placement.p,
-            hex(read_ptr), recording_region_id)
-            data = self._request_data(
-            transceiver=self._transceiver, placement_x=placement.x,
-            address=read_ptr, length=length, placement_y=placement.y)
-            self._received_data.flushing_data_from_region(
-            placement.x, placement.y, placement.p, recording_region_id,
-            data)
-            elif (read_ptr == write_ptr and
-            last_operation == BUFFERING_OPERATIONS.BUFFER_WRITE.value):
-            length = end_ptr - read_ptr
-            logger.debug(
-            "= Reading {} bytes from {}, {}, {}: {} for region {}",
-            length, placement.x, placement.y, placement.p,
-            hex(read_ptr), recording_region_id)
-            data = self._request_data(
-            transceiver=self._transceiver, placement_x=placement.x,
-            address=read_ptr, length=length, placement_y=placement.y)
-            self._received_data.store_data_in_region_buffer(
-            placement.x, placement.y, placement.p, recording_region_id,
-            data)
-            read_ptr = start_ptr
-            length = write_ptr - read_ptr
-            logger.debug(
-            "Reading {} bytes from {}, {}, {}: {} for region {}",
-            length, placement.x, placement.y, placement.p,
-            hex(read_ptr), recording_region_id)
-            data = self._request_data(
-            transceiver=self._transceiver, placement_x=placement.x,
-            address=read_ptr, length=length, placement_y=placement.y)
-            self._received_data.flushing_data_from_region(
-            placement.x, placement.y, placement.p, recording_region_id,
-            data)
-            elif (read_ptr == write_ptr and
-            last_operation == BUFFERING_OPERATIONS.BUFFER_READ.value):
-            data = bytearray()
-            self._received_data.flushing_data_from_region(
-            placement.x, placement.y, placement.p, recording_region_id,
-            data)
-             */
         }
-        /*
-        # data flush has been completed - return appropriate data
-        # the two returns can be exchanged - one returns data and the other
-        # returns a pointer to the structure holding the data
-        data = self._received_data.get_region_data_pointer(
-            placement.x, placement.y, placement.p, recording_region_id)
-        return data
-*/
-        //TODO TYPE
-        return null;
+        // data flush has been completed - return appropriate data
+        // the two returns can be exchanged - one returns data and the other
+        // returns a pointer to the structure holding the data
+        return receivedData.getRegionDataPointer(placement, recordingRegionId);
     }
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/buffer_management/recording_utilities.py
