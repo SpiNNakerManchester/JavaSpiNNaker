@@ -5,9 +5,11 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.ChannelBufferState;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -17,13 +19,13 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 class BufferedReceivingData {
 
         // # the data to store
-    private final HashMap<CoreLocation, HashMap<Integer, BufferedDataStorage>> data;
+    private final Map<RegionLocation, BufferedDataStorage> data;
 
         //# dict of booleans indicating if a region on a core has been flushed
-    private final HashMap<CoreLocation, HashMap<Integer, Boolean>> isFlushed;
+    private final Map<RegionLocation, Boolean> isFlushed;
 
     // dict of last sequence number received by core
-    private final DefaultMap<CoreLocation, Integer> sequenceNo;
+    private final Map<CoreLocation, Integer> sequenceNo;
 
         //# dict of last packet received by core
         //"_last_packet_received",
@@ -32,25 +34,25 @@ class BufferedReceivingData {
         //"_last_packet_sent",
 
     //# dict of end buffer sequence number
-    private final HashMap<CoreLocation, Integer> endBufferingSequenceNo;
+    private final Map<CoreLocation, Integer> endBufferingSequenceNo;
 
         //# dict of end state by core
-    private final HashMap<CoreLocation, HashMap<Integer, ChannelBufferState>> endBufferingState;
+    private final Map<RegionLocation, ChannelBufferState> endBufferingState;
 
     public BufferedReceivingData(boolean storeToFile) {
-        data = new HashMap<>();
+        data = new DefaultMap<>(BufferedDataStorage::new);
         //if store_to_file:
         //    self._data = defaultdict(BufferedTempfileDataStorage)
         //else:
         //    self._data = defaultdict(BufferedBytearrayDataStorage)
-        isFlushed = new HashMap<>();
+        isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(0xFF);
         //self._last_packet_received = defaultdict(lambda: None)
         //self._last_packet_sent = defaultdict(lambda: None)
         endBufferingSequenceNo = new HashMap<>();
         endBufferingState = new HashMap<>();
     }
-
+ 
     public void resume() {
         //self._end_buffering_state = dict()
         //self._is_flushed = defaultdict(lambda: False)
@@ -87,80 +89,29 @@ class BufferedReceivingData {
         return getEndBufferingSequenceNumber(location.asCoreLocation());
     }
 
-    public boolean isDataFromRegionFlushed(CoreLocation location, Integer recordingRegionId) {
-        if (isFlushed.containsKey(location)) {
-            HashMap inner = isFlushed.get(location);
-            return inner.containsKey(recordingRegionId);
-        } else {
-            return false;
-        }
+    public boolean isDataFromRegionFlushed(RegionLocation location) {
+        return isFlushed.containsKey(location);
     }
 
-    public boolean isDataFromRegionFlushed(HasCoreLocation location, Integer recordingRegionId) {
-        return isDataFromRegionFlushed(location.asCoreLocation(), recordingRegionId);
-    }
-
-    private void setFlushed(CoreLocation location, Integer recordingRegionId, Boolean newValue) {
-        HashMap<Integer, Boolean> inner;
-        if (isFlushed.containsKey(location)) {
-            inner = isFlushed.get(location);
-        } else {
-            inner = new HashMap<>();
-            isFlushed.put(location, inner);
-        }
-        inner.put(recordingRegionId, newValue);
+    private void setFlushed(RegionLocation location, Boolean newValue) {
+        isFlushed.put(location, newValue);
     }
     
-    public boolean isEndBufferingStateRecovered(HasCoreLocation location, Integer recordingRegionId) {
-        return isEndBufferingStateRecovered(location.asCoreLocation(), recordingRegionId);
+    public boolean isEndBufferingStateRecovered(RegionLocation location) {
+        return endBufferingState.containsKey(location);
     }
 
-    public boolean isEndBufferingStateRecovered(CoreLocation location, Integer recordingRegionId) {
+    public void storeEndBufferingState(
+            RegionLocation location, ChannelBufferState state) {
+        endBufferingState.put(location, state);
+    }
+
+    public ChannelBufferState getEndBufferingState(RegionLocation location) {
         if (endBufferingState.containsKey(location)) {
-            HashMap inner = endBufferingState.get(location);
-            return inner.containsKey(recordingRegionId);
-        } else {
-            return false;
-        }
-    }
-
-    public void storeEndBufferingState(CoreLocation location,
-            int recordingRegionId, ChannelBufferState state) {
-        HashMap<Integer, ChannelBufferState> inner;
-        if (endBufferingState.containsKey(location)) {
-            inner = endBufferingState.get(location);
-        } else {
-            inner = new HashMap<>();
-            endBufferingState.put(location, inner);
-        }
-        inner.put(recordingRegionId, state);
-    }
-
-    public void storeEndBufferingState(HasCoreLocation location,
-           int recordingRegionId, ChannelBufferState state) {
-        storeEndBufferingState(location.asCoreLocation(),
-                recordingRegionId, state);
-    }
-
-    public ChannelBufferState getEndBufferingState(CoreLocation location,
-            int recordingRegionId) {
-        HashMap<Integer, ChannelBufferState> inner;
-        if (endBufferingState.containsKey(location)) {
-            inner = endBufferingState.get(location);
+            return endBufferingState.get(location);
         } else {
             throw new IllegalArgumentException("no state know for " + location);
         }
-        if (inner.containsKey(recordingRegionId)) {
-            return inner.get(recordingRegionId);
-        } else {
-            throw new IllegalArgumentException("no state know for " + location
-                    + " and region " + recordingRegionId);
-        }
-    }
-
-    public ChannelBufferState getEndBufferingState(HasCoreLocation location,
-            int recordingRegionId) {
-        return getEndBufferingState(location.asCoreLocation(), recordingRegionId);
     }
 
     public Integer lastSequenceNoForCore(CoreLocation location) {
@@ -171,56 +122,26 @@ class BufferedReceivingData {
         return this.sequenceNo.get(location.asCoreLocation());
     }
 
-    private BufferedDataStorage getRegionBuffer(CoreLocation location, Integer recordingRegionId) {
-        HashMap<Integer, BufferedDataStorage> inner;
-        if (data.containsKey(location)) {
-            inner = data.get(location);
-        } else {
-            inner = new HashMap<>();
-            data.put(location, inner);
-        }
-        BufferedDataStorage store;
-        if (inner.containsKey(recordingRegionId)) {
-            store = inner.get(recordingRegionId);
-        } else {
-            store = new BufferedDataStorage();
-            inner.put(recordingRegionId, store);
-        }
-        return store;
+    private BufferedDataStorage getRegionBuffer(RegionLocation location) {
+        return data.get(location);
     }
     
-    BufferedDataStorage getRegionDataPointer(CoreLocation location, Integer recordingRegionId) {
-       HashMap<Integer, BufferedDataStorage> inner;
+    BufferedDataStorage getRegionDataPointer(RegionLocation location) {
        if (data.containsKey(location)) {
-            inner = data.get(location);
+            return data.get(location);
        } else {
             throw new IllegalArgumentException("no data know for " + location);
        }
-       if (inner.containsKey(recordingRegionId)) {
-           return inner.get(recordingRegionId);
-       } else {
-            throw new IllegalArgumentException("no data know for " + location
-                    + " and region " + recordingRegionId);
-       }
     }
 
-    BufferedDataStorage getRegionDataPointer(HasCoreLocation location, Integer recordingRegionId) {
-        return getRegionDataPointer(location.asCoreLocation(), recordingRegionId);
-    }
-    
-    public void storeDataInRegionBuffer(
-            CoreLocation location, Integer recordingRegionId, ByteBuffer data) {
-        BufferedDataStorage store = getRegionBuffer(location, recordingRegionId);
+    public void storeDataInRegionBuffer(RegionLocation location, ByteBuffer data) {
+        BufferedDataStorage store = getRegionBuffer(location);
         store.write(data);
     }
 
-    public void flushingDataFromRegion(CoreLocation location, Integer recordingRegionId, ByteBuffer data) {
-        storeDataInRegionBuffer(location, recordingRegionId, data);
-        setFlushed(location, recordingRegionId, true);
-    }
-
-    public void flushingDataFromRegion(HasCoreLocation location, Integer recordingRegionId, ByteBuffer data) {
-        flushingDataFromRegion(location.asCoreLocation(), recordingRegionId, data);
+    public void flushingDataFromRegion(RegionLocation location, ByteBuffer data) {
+        storeDataInRegionBuffer(location, data);
+        setFlushed(location, true);
     }
 
  }

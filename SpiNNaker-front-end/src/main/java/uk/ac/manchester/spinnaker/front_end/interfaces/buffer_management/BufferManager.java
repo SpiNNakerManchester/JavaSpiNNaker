@@ -21,7 +21,9 @@ import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifer;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
@@ -435,27 +437,26 @@ public class BufferManager {
     }
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
-    private DataSpeedUpPacketGatherMachineVertex locateExtraMonitorMcReceiver(HasChipLocation placement){
-        Chip chip = machine.getChipAt(placement);
+    private DataSpeedUpPacketGatherMachineVertex locateExtraMonitorMcReceiver(HasCoreLocation location){
+        Chip chip = machine.getChipAt(location);
         ChipLocation ethernet = chip.nearestEthernet.asChipLocation();
         return extraMonitorCoresToEthernetConnectionMap.get(ethernet);
     }
 
-    private void readSomeData(
-            Placement placement, int recordingRegionId, int address, int length) 
+    private void readSomeData(RegionLocation location, int address, int length) 
             throws IOException, Process.Exception {
         log.debug("< Reading " + length + " bytes from "
-            + placement.asCoreLocation() + ": " + address
-            + " for region " + recordingRegionId);
-        ByteBuffer data = requestData(placement, address, length);
-        receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
+            + location + " at " + address);
+        ByteBuffer data = requestData(location, address, length);
+        receivedData.flushingDataFromRegion(location, data);
     }
     
     private BufferedDataStorage getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
 
         Vertex vertex = placement.getVertex();
         int recordingDataAddress = vertex.getRecordingRegionBaseAddress(transceiver, placement);
-
+        RegionLocation location = new RegionLocation(placement, recordingRegionId);
+        
         // TODO Just because we have A sequence number can we assume it is the last one?
         // Ensure the last sequence number sent has been retrieved
         if (!receivedData.isEndBufferingSequenceNumberStored(placement)) {
@@ -464,16 +465,16 @@ public class BufferManager {
         }
 
         // Read the data if not already received
-        if (receivedData.isDataFromRegionFlushed(placement, recordingRegionId)) {
+        if (receivedData.isDataFromRegionFlushed(location)) {
 
             // Read the end state of the recording for this region
             ChannelBufferState endState;
-            if (!receivedData.isEndBufferingStateRecovered(placement, recordingRegionId)) {
+            if (!receivedData.isEndBufferingStateRecovered(location)) {
                 int regionPointer = this.getRegionPointer(placement, recordingDataAddress, recordingRegionId);
                 endState = generateEndBufferingStateFromMachine(placement, regionPointer);
-                receivedData.storeEndBufferingState(placement, recordingRegionId, endState);
+                receivedData.storeEndBufferingState(location, endState);
             } else {
-                endState = receivedData.getEndBufferingState(placement, recordingRegionId);
+                endState = receivedData.getEndBufferingState(location);
             }
 
 
@@ -494,35 +495,27 @@ public class BufferManager {
                 processLastAck(placement, recordingRegionId, endState);
             }
 
-            // now state is updated, read back values for read pointer and
-            // last operation performed
-            //last_operation = end_state.last_buffer_operation
-            //start_ptr = end_state.start_address
-            //end_ptr = end_state.end_address
-            //write_ptr = end_state.current_write
-            //read_ptr = end_state.current_read
-
             if (endState.currentRead < endState.currentWrite) {
                 int length = endState.currentWrite - endState.currentRead;
-                readSomeData(placement, recordingRegionId, endState.currentRead, length); 
+                readSomeData(location, endState.currentRead, length); 
             } else if (endState.currentRead > endState.currentWrite || 
                     endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
                 int length = endState.endAddress - endState.currentRead;
                 if (length < 0) {
                     throw new IOException ("The amount of data to read is negative!");
                 }        
-                readSomeData(placement, recordingRegionId, endState.currentRead, length); 
+                readSomeData(location, endState.currentRead, length); 
                 length = endState.endAddress - endState.startAddress;
-                readSomeData(placement, recordingRegionId, endState.startAddress, length); 
+                readSomeData(location, endState.startAddress, length); 
             } else {
                ByteBuffer data = ByteBuffer.allocate(0);
-               receivedData.flushingDataFromRegion(placement, recordingRegionId, data);
+               receivedData.flushingDataFromRegion(location, data);
             }
         }
         // data flush has been completed - return appropriate data
         // the two returns can be exchanged - one returns data and the other
         // returns a pointer to the structure holding the data
-        return receivedData.getRegionDataPointer(placement, recordingRegionId);
+        return receivedData.getRegionDataPointer(location);
     }
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/buffer_management/recording_utilities.py
@@ -567,14 +560,14 @@ public class BufferManager {
      * @return
      *      data as a byte array
      */
-    private ByteBuffer requestData(Placement placement, int address, int length) throws IOException, Process.Exception {
+    private ByteBuffer requestData(HasCoreLocation location, int address, int length) throws IOException, Process.Exception {
         //    :return: data as a byte array
         if (!this.usesAdvancedMonitors) {
-            return transceiver.readMemory(placement, address, length);
+            return transceiver.readMemory(location, address, length);
         }
 
-        ExtraMonitorSupportMachineVertex sender = extraMonitorCoresByChip.get(placement.asChipLocation());
-        DataSpeedUpPacketGatherMachineVertex receiver = locateExtraMonitorMcReceiver(placement);
+        ExtraMonitorSupportMachineVertex sender = extraMonitorCoresByChip.get(location.asChipLocation());
+        DataSpeedUpPacketGatherMachineVertex receiver = locateExtraMonitorMcReceiver(location);
         Placement senderPlacement = placements.getPlacementOfVertex(sender);
         return receiver.getData(transceiver, senderPlacement, address, length, fixedRoutes);
     }
