@@ -330,7 +330,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static Transceiver createTransceiver(InetAddress host, int version,
+	public Transceiver(InetAddress host, int version,
 			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -368,14 +368,37 @@ public class Transceiver extends UDPTransceiver
 
 		// handle the SpiNNaker connection
 		if (scampConnections == null) {
+			scampConnections = emptyList();
+		}
+		if (scampConnections.isEmpty()) {
 			connections.add(new SCPConnection(host));
 		}
 
 		// handle the boot connection
 		connections.add(new BootConnection(host, bootPortNumber));
 
-		return new Transceiver(version, connections, ignoreChips, ignoreCores,
-				ignoredLinks, maxCoreID, scampConnections, maxSDRAMSize);
+		this.version = version;
+		if (ignoreChips != null) {
+			this.ignoreChips.addAll(ignoreChips);
+		}
+		if (ignoreCores != null) {
+			this.ignoreCores.putAll(ignoreCores);
+		}
+		if (ignoreLinks != null) {
+			this.ignoreLinks.putAll(ignoreLinks);
+		}
+		this.maxCoreID = maxCoreID;
+		this.maxSDRAMSize = maxSDRAMSize;
+
+		originalConnections.addAll(connections);
+		allConnections.addAll(connections);
+		// if there has been SCAMP connections given, build them
+		for (ConnectionDescriptor desc : scampConnections) {
+			connections.add(new SCPConnection(desc.chip, desc.hostname,
+					desc.portNumber));
+		}
+		scpSelector = identifyConnections(connections);
+		checkBMPConnections();
 	}
 
 	/**
@@ -399,10 +422,10 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public static Transceiver createTransceiver(InetAddress hostname,
-			int version) throws IOException, SpinnmanException, Exception {
-		return createTransceiver(hostname, version, null, 0, emptyList(),
-				emptyMap(), emptyMap(), null, false, null, null, null);
+	public Transceiver(InetAddress hostname, int version)
+			throws IOException, SpinnmanException, Exception {
+		this(hostname, version, null, 0, emptyList(), emptyMap(), emptyMap(),
+				null, false, null, null, null);
 	}
 
 	/**

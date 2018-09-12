@@ -1,17 +1,15 @@
 package testconfig;
 
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
-
-import org.junit.jupiter.api.Assumptions;
 
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
@@ -33,41 +31,42 @@ public class BoardTestConfiguration {
 
 	public String localhost;
 	public Integer localport;
-	public String remotehost;
-	public Integer board_version;
-	public List<BMPConnectionData> bmp_names;
-	public Boolean auto_detect_bmp;
+	public Inet4Address remotehost;
+	public Integer boardVersion;
+	public List<BMPConnectionData> bmpNames;
+	public Boolean autoDetectBMP;
 
-	public BoardTestConfiguration() throws IOException {
+	public BoardTestConfiguration() {
 		this.localhost = null;
 		this.localport = null;
 		this.remotehost = null;
-		this.board_version = null;
-		this.bmp_names = null;
-		this.auto_detect_bmp = null;
+		this.boardVersion = null;
+		this.bmpNames = null;
+		this.autoDetectBMP = null;
 	}
 
-	public void set_up_local_virtual_board() {
+	public void setUpLocalVirtualBoard() throws UnknownHostException {
 		localhost = LOCALHOST;
 		localport = PORT;
-		remotehost = LOCALHOST;
-		board_version = config.getint("Machine", "version");
+		remotehost = InetFactory.getByName(LOCALHOST);
+		boardVersion = config.getint("Machine", "version");
 	}
 
-	public void set_up_remote_board() throws SocketException, UnknownHostException {
-		remotehost = config.get("Machine", "machineName");
-		Assumptions.assumeTrue(host_is_reachable(remotehost),
+	public void setUpRemoteBoard()
+			throws SocketException, UnknownHostException {
+		remotehost = InetFactory.getByName(config.get("Machine", "machineName"));
+		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
 				() -> "test board (" + remotehost + ") appears to be down");
-		board_version = config.getint("Machine", "version");
-		String names = config.get("Machine", "bmp_names");
-        Inet4Address bmpHost = InetFactory.getByName(names);
+		boardVersion = config.getint("Machine", "version");
+		String names = config.get("Machine", "bmpNames");
 		if (names == "None") {
-			bmp_names = null;
+			bmpNames = null;
 		} else {
-			bmp_names =
-					asList(new BMPConnectionData(0, 0, bmpHost, asList(0), null));
+			Inet4Address bmpHost = InetFactory.getByName(names);
+			bmpNames = asList(
+					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
-		auto_detect_bmp = config.getboolean("Machine", "auto_detect_bmp");
+		autoDetectBMP = config.getboolean("Machine", "autoDetectBMP");
 		localport = PORT;
 		try (DatagramSocket s = new DatagramSocket()) {
 			s.connect(new InetSocketAddress(remotehost, PORT));
@@ -75,14 +74,14 @@ public class BoardTestConfiguration {
 		}
 	}
 
-	public void set_up_nonexistent_board() {
+	public void setUpNonexistentBoard() throws UnknownHostException {
 		localhost = null;
 		localport = PORT;
-		remotehost = NOHOST;
-		board_version = config.getint("Machine", "version");
+		remotehost = InetFactory.getByName(NOHOST);
+		boardVersion = config.getint("Machine", "version");
 	}
 
-	private static boolean host_is_reachable(String remotehost) {
+	private static boolean hostIsReachable(String remotehost) {
 		return ping(remotehost) == 0;
 	}
 }

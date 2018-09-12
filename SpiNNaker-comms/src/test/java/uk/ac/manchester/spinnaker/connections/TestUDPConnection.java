@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import java.net.Inet4Address;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
@@ -19,41 +18,40 @@ import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 public class TestUDPConnection {
-	static BoardTestConfiguration board_config;
+	static BoardTestConfiguration boardConfig;
 	static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 	static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
-		board_config = new BoardTestConfiguration();
+		boardConfig = new BoardTestConfiguration();
 	}
 
 	@Test
 	public void testSCPVersionWithBoard() throws Exception {
-		board_config.set_up_remote_board();
-		GetVersion scp_req = new GetVersion(ZERO_CORE);
+		boardConfig.setUpRemoteBoard();
+		GetVersion scpReq = new GetVersion(ZERO_CORE);
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_req);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
-		Response scp_response = result.parsePayload(scp_req);
+		Response scp_response = result.parsePayload(scpReq);
 		System.out.println(scp_response.versionInfo);
 		assertEquals(scp_response.result, RC_OK);
 	}
 
 	@Test
 	public void testSCPReadLinkWoard() throws Exception {
-		board_config.set_up_remote_board();
-		ReadLink scp_link = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		boardConfig.setUpRemoteBoard();
+		ReadLink scpLink = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_link);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpLink);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -61,23 +59,24 @@ public class TestUDPConnection {
 
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
-		board_config.set_up_remote_board();
-		ReadMemory scp_link = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		boardConfig.setUpRemoteBoard();
+		ReadMemory scpLink = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_link);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpLink);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
 	}
 
 	@Test
-	public void testSendSCPRequestToNonexistentHost() throws UnknownHostException {
-		board_config.set_up_nonexistent_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
+	public void testSendSCPRequestToNonexistentHost()
+			throws UnknownHostException {
+		boardConfig.setUpNonexistentBoard();
 		assertThrows(SocketTimeoutException.class, () -> {
-			try (SCPConnection connection = new SCPConnection(remoteHost)) {
+			try (SCPConnection connection =
+					new SCPConnection(boardConfig.remotehost)) {
 				ReadMemory scp = new ReadMemory(ZERO_CHIP, 0, 256);
 				scp.scpRequestHeader.issueSequenceNumber();
 				connection.sendSCPRequest(scp);
