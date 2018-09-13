@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
-import uk.ac.manchester.spinnaker.connections.model.Listenable.MessageReceiver;
 
 /**
  * Thread that listens to a connection and calls callbacks with new messages
@@ -50,6 +49,7 @@ public class ConnectionListener<MessageType> extends Thread
 	public ConnectionListener(Listenable<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
+
 	/**
 	 * Create a connection listener.
 	 *
@@ -76,10 +76,9 @@ public class ConnectionListener<MessageType> extends Thread
 	@Override
 	public final void run() {
 		try {
-			MessageReceiver<MessageType> handler = connection.getReceiver();
 			while (!done) {
 				try {
-					runStep(handler);
+					runStep();
 				} catch (Exception e) {
 					if (!done) {
 						log.warn("problem when dispatching message", e);
@@ -92,10 +91,10 @@ public class ConnectionListener<MessageType> extends Thread
 		}
 	}
 
-	private void runStep(MessageReceiver<MessageType> handler)
+	private void runStep()
 			throws IOException {
 		if (connection.isReadyToReceive(timeout)) {
-			final MessageType message = handler.receive();
+			final MessageType message = connection.receiveMessage();
 			for (final MessageHandler<MessageType> callback : callbacks) {
 				callbackPool.submit(() -> callback.handle(message));
 			}

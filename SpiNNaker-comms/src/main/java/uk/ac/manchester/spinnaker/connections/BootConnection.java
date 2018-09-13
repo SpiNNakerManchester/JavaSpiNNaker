@@ -69,7 +69,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	}
 
 	@Override
-	public BootMessage receiveBootMessage(Integer timeout) throws IOException {
+	public BootMessage receiveMessage(Integer timeout) throws IOException {
 		return new BootMessage(receive(timeout));
 	}
 
@@ -85,10 +85,5 @@ public class BootConnection extends UDPConnection<BootMessage>
 		} catch (InterruptedException e) {
 			throw new IOException("interrupted during anti-flood delay", e);
 		}
-	}
-
-	@Override
-	public MessageReceiver<BootMessage> getReceiver() {
-		return this::receiveBootMessage;
 	}
 }
