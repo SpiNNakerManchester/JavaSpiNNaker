@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 
 	@Override
 	public void sendBootMessage(BootMessage bootMessage) throws IOException {
-		ByteBuffer b = allocate(BOOT_MESSAGE_SIZE);
+		ByteBuffer b = allocate(BOOT_MESSAGE_SIZE).order(LITTLE_ENDIAN);
 		bootMessage.addToBuffer(b);
 		b.flip();
 		send(b);
