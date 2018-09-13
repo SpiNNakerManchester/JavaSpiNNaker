@@ -13,7 +13,10 @@ final class Constants {
 	/** Bytes per long/double-word. */
 	static final int LONG_SIZE = 8;
 
-	/** Data spec magic number. */
+	/**
+	 * Data spec magic number. This marks the start of a block of memory in
+	 * SpiNNaker's SDRAM that has been allocated by the Data Specification.
+	 */
 	static final int DSG_MAGIC_NUM = 0x5B7CA17E;
 
 	/** Application data magic number. */
