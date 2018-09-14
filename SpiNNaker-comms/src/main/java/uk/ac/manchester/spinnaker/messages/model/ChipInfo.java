@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
@@ -121,7 +122,7 @@ public class ChipInfo implements HasChipLocation {
 	 *            The data retrieved from SDRAM on the board.
 	 */
 	public ChipInfo(ByteBuffer systemData) {
-		this.systemData = systemData.asReadOnlyBuffer();
+		this.systemData = systemData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 
 		int links = read(links_available);
 		linksAvailable = BitSet.valueOf(new byte[] {
