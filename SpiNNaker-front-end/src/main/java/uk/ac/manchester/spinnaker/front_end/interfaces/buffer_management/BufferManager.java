@@ -29,9 +29,11 @@ import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifer;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIODataMessage;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOHeader;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
+import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix;
 import uk.ac.manchester.spinnaker.messages.eieio.EIEIOType;
 import uk.ac.manchester.spinnaker.messages.eieio.EventStopRequest;
+import uk.ac.manchester.spinnaker.messages.eieio.HostDataRead;
 import uk.ac.manchester.spinnaker.messages.eieio.PaddingRequest;
 import uk.ac.manchester.spinnaker.processes.Process;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -492,7 +494,7 @@ public class BufferManager {
             // if the core was expecting to see our last sent sequence,
             // it must not have received it
             if (coreNextSequenceNumber == seqNoLastAckPacket) {
-                processLastAck(placement, recordingRegionId, endState);
+                processLastAck(location, endState);
             }
 
             if (endState.currentRead < endState.currentWrite) {
@@ -572,13 +574,15 @@ public class BufferManager {
         return receiver.getData(transceiver, senderPlacement, address, length, fixedRoutes);
     }
 
-    private void processLastAck(Placement placement, int recordingRegionId, ChannelBufferState endState) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-/*      # if the last ACK packet has not been processed on the chip,
-        # process it now
-        last_sent_ack = self._received_data.last_sent_packet_to_core(
-            placement.x, placement.y, placement.p)
-        last_sent_ack = create_eieio_command.read_eieio_command_message(
+    private void processLastAck(RegionLocation location, ChannelBufferState endState) {
+        // if the last ACK packet has not been processed on the chip,
+        // process it now
+        // TODO python retreiuves the value and then overwrites it but WHY!
+        HostDataRead lastSentAck = receivedData.lastSentPacketToCore(location);
+        //EIEIOMessageFactory.readCommandMessage(lastSentAck.??);
+        throw new UnsupportedOperationException("Not supported yet."); 
+       /*
+        lastSentAck = create_eieio_command.read_eieio_command_message(
             last_sent_ack.data, 0)
         if not isinstance(last_sent_ack, HostDataRead):
             raise Exception(

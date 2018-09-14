@@ -10,6 +10,7 @@ import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
+import uk.ac.manchester.spinnaker.messages.eieio.HostDataRead;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -31,7 +32,7 @@ class BufferedReceivingData {
         //"_last_packet_received",
 
         //# dict of last packet sent by core
-        //"_last_packet_sent",
+    private final Map<CoreLocation, HostDataRead> lastPacketSent;
 
     //# dict of end buffer sequence number
     private final Map<CoreLocation, Integer> endBufferingSequenceNo;
@@ -48,7 +49,7 @@ class BufferedReceivingData {
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(0xFF);
         //self._last_packet_received = defaultdict(lambda: None)
-        //self._last_packet_sent = defaultdict(lambda: None)
+        lastPacketSent = new DefaultMap<>(null);
         endBufferingSequenceNo = new HashMap<>();
         endBufferingState = new HashMap<>();
     }
@@ -127,6 +128,12 @@ class BufferedReceivingData {
     }
     
     BufferedDataStorage getRegionDataPointer(RegionLocation location) {
+        missing = None
+        if (x, y, p, region) not in self._end_buffering_state:
+            missing = (x, y, p, region)
+        data = self._data[x, y, p, region].read_all()
+        return data, missing
+
        if (data.containsKey(location)) {
             return data.get(location);
        } else {
@@ -144,4 +151,11 @@ class BufferedReceivingData {
         setFlushed(location, true);
     }
 
+    public HostDataRead lastSentPacketToCore(CoreLocation location) {
+        return lastPacketSent.get(location);
+    }
+
+    public HostDataRead lastSentPacketToCore(HasCoreLocation location) {
+        return lastPacketSent.get(location.asCoreLocation());
+    }
  }
