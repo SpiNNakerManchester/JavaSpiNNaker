@@ -175,8 +175,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final ByteBuffer d = data == null ? null
-				: data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		final ByteBuffer d =
+				data == null ? null : data.duplicate().order(LITTLE_ENDIAN);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 

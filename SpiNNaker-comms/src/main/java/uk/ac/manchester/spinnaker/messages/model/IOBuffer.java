@@ -37,7 +37,7 @@ public class IOBuffer implements HasCoreLocation {
 	public IOBuffer(HasCoreLocation core, ByteBuffer contents) {
 		this.core = core;
 		iobuf = new byte[contents.remaining()];
-		contents.asReadOnlyBuffer().get(iobuf);
+		contents.asReadOnlyBuffer().order(LITTLE_ENDIAN).get(iobuf);
 	}
 
 	/**
