@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  *
  * @author Donal Fellows
  */
-public class Executor implements AutoCloseable {
+public class Executor implements Closeable {
 	private static final Logger log = getLogger(Executor.class);
 	private InputStream inputStream;
 	private final ByteBuffer input;
