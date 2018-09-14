@@ -109,7 +109,6 @@ public class SDPMessage extends SpinnakerRequest {
 		} else {
 			buffer = ByteBuffer.wrap(data, offset, length);
 		}
-		buffer.position(0);
 		return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 }
