@@ -431,6 +431,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
+	public boolean isClosed() {
+		return !channel.isOpen();
+	}
+
+	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (!channel.isOpen()) {
 			return false;
