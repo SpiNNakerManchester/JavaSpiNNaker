@@ -1,5 +1,9 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
+/*
+ * Disable style check for these imports; we use some extra imports here just
+ * to support Javadoc (cross-referencing the notification message classes).
+ */
 // CHECKSTYLE:OFF
 import java.io.IOException;
 import java.util.List;
