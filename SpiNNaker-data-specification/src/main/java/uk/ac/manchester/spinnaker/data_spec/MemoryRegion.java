@@ -39,8 +39,9 @@ public class MemoryRegion {
 	public MemoryRegion(int memoryPointer, boolean unfilled, int size) {
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
+		regionBaseAddress = 0;
 		this.unfilled = unfilled;
-		this.buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	public int getMemoryPointer() {

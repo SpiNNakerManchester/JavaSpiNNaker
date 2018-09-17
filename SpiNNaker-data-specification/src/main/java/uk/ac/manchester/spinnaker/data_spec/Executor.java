@@ -13,6 +13,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  *
  * @author Donal Fellows
  */
-public class Executor implements AutoCloseable {
+public class Executor implements Closeable {
 	private static final Logger log = getLogger(Executor.class);
 	private InputStream inputStream;
 	private final ByteBuffer input;
@@ -65,13 +66,8 @@ public class Executor implements AutoCloseable {
 	 */
 	public Executor(InputStream inputStream, int memorySpace)
 			throws IOException {
+		this(wrap(toByteArray(inputStream)), memorySpace);
 		this.inputStream = inputStream;
-		this.input = wrap(toByteArray(inputStream)).order(LITTLE_ENDIAN);
-		memRegions = new MemoryRegionCollection(MAX_MEM_REGIONS);
-		funcs = new Functions(input, memorySpace, memRegions);
-		if (log.isDebugEnabled()) {
-			logInput();
-		}
 	}
 
 	/**

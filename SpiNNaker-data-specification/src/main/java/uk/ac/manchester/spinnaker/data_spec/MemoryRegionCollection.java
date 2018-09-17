@@ -181,12 +181,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		for (MemoryRegion r : regions) {
-			if (!c.contains(r)) {
-				return false;
-			}
-		}
-		return true;
+		return stream().allMatch(c::contains);
 	}
 
 	/**
