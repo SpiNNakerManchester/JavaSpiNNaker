@@ -315,34 +315,36 @@ public interface SpallocAPI {
 			SpallocServerException;
 
 	/**
-	 * Ask to be notified of changes in job state.
+	 * Enable or disable notifications of changes in job state.
 	 *
 	 * @param jobID
-	 *            The job to request about, or <tt>null</tt> to be notified
-	 *            about all jobs.
+	 *            The job to request (or cancel requests) about, or
+	 *            <tt>null</tt> to be notified/not notified about all jobs.
+	 * @param enable
+	 *            True to enable notifications, false to disable them.
 	 * @see JobsChangedNotification
-	 * @see #noNotifyJob(Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default void notifyJob(Integer jobID)
+	default void notifyJob(Integer jobID, boolean enable)
 			throws IOException, SpallocServerException {
-		notifyJob(jobID, null);
+		notifyJob(jobID, enable, null);
 	}
 
 	/**
-	 * Ask to be notified of changes in job state.
+	 * Enable or disable notifications of changes in job state.
 	 *
 	 * @param jobID
-	 *            The job to request about, or <tt>null</tt> to be notified
-	 *            about all jobs.
+	 *            The job to request (or cancel requests) about, or
+	 *            <tt>null</tt> to be notified/not notified about all jobs.
+	 * @param enable
+	 *            True to enable notifications, false to disable them.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or <tt>null</tt> to wait forever.
 	 * @see JobsChangedNotification
-	 * @see #noNotifyJob(Integer,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -350,75 +352,43 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyJob(Integer jobID, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
+	void notifyJob(Integer jobID, boolean enable, Integer timeout)
+			throws IOException, SpallocProtocolTimeoutException,
+			SpallocServerException;
 
 	/**
-	 * Ask to not be notified of changes in job state.
-	 *
-	 * @param jobID
-	 *            The job to cancel requests about, or <tt>null</tt> to cancel
-	 *            being notified about all jobs.
-	 * @see #notifyJob(Integer)
-	 * @throws SpallocServerException
-	 *             if the server returns an exception response.
-	 * @throws IOException
-	 *             if network communications fail.
-	 */
-	default void noNotifyJob(Integer jobID)
-			throws IOException, SpallocServerException {
-		noNotifyJob(jobID, null);
-	}
-
-	/**
-	 * Ask to not be notified of changes in job state.
-	 *
-	 * @param jobID
-	 *            The job to cancel requests about, or <tt>null</tt> to cancel
-	 *            being notified about all jobs.
-	 * @param timeout
-	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @see #notifyJob(Integer,Integer)
-	 * @throws SpallocServerException
-	 *             if the server returns an exception response.
-	 * @throws SpallocProtocolTimeoutException
-	 *             if the request times out.
-	 * @throws IOException
-	 *             if network communications fail.
-	 */
-	void noNotifyJob(Integer jobID, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
-
-	/**
-	 * Ask to be notified of changes in machine state.
+	 * Enable or disable notifications of changes in machine state.
 	 *
 	 * @param machineName
-	 *            The machine to request about, or <tt>null</tt> to be notified
-	 *            about all machines (known to spalloc).
+	 *            The machine to request (or cancel requests) about, or
+	 *            <tt>null</tt> to be notified/not notified about all machines
+	 *            (known to spalloc).
+	 * @param enable
+	 *            True to enable notifications, false to disable them.
 	 * @see MachinesChangedNotification
-	 * @see #noNotifyMachine(String)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	default void notifyMachine(String machineName)
+	default void notifyMachine(String machineName, boolean enable)
 			throws IOException, SpallocServerException {
-		notifyMachine(machineName, null);
+		notifyMachine(machineName, enable, null);
 	}
 
 	/**
-	 * Ask to be notified of changes in machine state.
+	 * Enable or disable notifications of changes in machine state.
 	 *
 	 * @param machineName
-	 *            The machine to request about, or <tt>null</tt> to be notified
-	 *            about all machines (known to spalloc).
+	 *            The machine to request (or cancel requests) about, or
+	 *            <tt>null</tt> to be notified/not notified about all machines
+	 *            (known to spalloc).
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or <tt>null</tt> to wait forever.
+	 * @param enable
+	 *            True to enable notifications, false to disable them.
 	 * @see MachinesChangedNotification
-	 * @see #noNotifyMachine(String,Integer)
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -426,44 +396,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	void notifyMachine(String machineName, Integer timeout) throws IOException,
-			SpallocProtocolTimeoutException, SpallocServerException;
-
-	/**
-	 * Ask to not be notified of changes in machine state.
-	 *
-	 * @param machineName
-	 *            The machine to cancel requests about, or <tt>null</tt> to
-	 *            cancel being notified about all machines.
-	 * @see #notifyMachine(String)
-	 * @throws SpallocServerException
-	 *             if the server returns an exception response.
-	 * @throws IOException
-	 *             if network communications fail.
-	 */
-	default void noNotifyMachine(String machineName)
-			throws IOException, SpallocServerException {
-		noNotifyMachine(machineName, null);
-	}
-
-	/**
-	 * Ask to not be notified of changes in machine state.
-	 *
-	 * @param machineName
-	 *            The machine to cancel requests about, or <tt>null</tt> to
-	 *            cancel being notified about all machines.
-	 * @param timeout
-	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @see #notifyMachine(String,Integer)
-	 * @throws SpallocServerException
-	 *             if the server returns an exception response.
-	 * @throws SpallocProtocolTimeoutException
-	 *             if the request times out.
-	 * @throws IOException
-	 *             if network communications fail.
-	 */
-	void noNotifyMachine(String machineName, Integer timeout)
+	void notifyMachine(String machineName, boolean enable, Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
 			SpallocServerException;
 

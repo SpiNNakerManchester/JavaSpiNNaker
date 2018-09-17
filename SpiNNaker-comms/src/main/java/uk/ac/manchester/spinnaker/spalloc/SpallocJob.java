@@ -862,7 +862,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		while (!timedOut(finishTime)) {
 			try {
 				// Watch for changes in this SpallocJob's state
-				client.notifyJob(id);
+				client.notifyJob(id, true);
 
 				// Wait for job state to change
 				while (!timedOut(finishTime)) {

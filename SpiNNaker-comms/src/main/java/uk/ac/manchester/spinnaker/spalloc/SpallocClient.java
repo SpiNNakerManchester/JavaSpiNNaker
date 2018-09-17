@@ -527,43 +527,43 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	}
 
 	@Override
-	public void notifyJob(Integer jobID, Integer timeout)
+	public void notifyJob(Integer jobID, boolean enable, Integer timeout)
 			throws IOException, SpallocServerException {
-		if (jobID == null) {
-			call(new NotifyJobCommand(), timeout);
+		Command<?> c;
+		if (enable) {
+			if (jobID == null) {
+				c = new NotifyJobCommand();
+			} else {
+				c = new NotifyJobCommand(jobID);
+			}
 		} else {
-			call(new NotifyJobCommand(jobID), timeout);
+			if (jobID == null) {
+				c = new NoNotifyJobCommand();
+			} else {
+				c = new NoNotifyJobCommand(jobID);
+			}
 		}
+		call(c, timeout);
 	}
 
 	@Override
-	public void noNotifyJob(Integer jobID, Integer timeout)
-			throws IOException, SpallocServerException {
-		if (jobID == null) {
-			call(new NoNotifyJobCommand(), timeout);
+	public void notifyMachine(String machineName, boolean enable,
+			Integer timeout) throws IOException, SpallocServerException {
+		Command<?> c;
+		if (enable) {
+			if (machineName == null) {
+				c = new NotifyMachineCommand();
+			} else {
+				c = new NotifyMachineCommand(machineName);
+			}
 		} else {
-			call(new NoNotifyJobCommand(jobID), timeout);
+			if (machineName == null) {
+				c = new NoNotifyMachineCommand();
+			} else {
+				c = new NoNotifyMachineCommand(machineName);
+			}
 		}
-	}
-
-	@Override
-	public void notifyMachine(String machineName, Integer timeout)
-			throws IOException, SpallocServerException {
-		if (machineName == null) {
-			call(new NotifyMachineCommand(), timeout);
-		} else {
-			call(new NotifyMachineCommand(machineName), timeout);
-		}
-	}
-
-	@Override
-	public void noNotifyMachine(String machineName, Integer timeout)
-			throws IOException, SpallocServerException {
-		if (machineName == null) {
-			call(new NoNotifyMachineCommand(), timeout);
-		} else {
-			call(new NoNotifyMachineCommand(machineName), timeout);
-		}
+		call(c, timeout);
 	}
 
 	@Override
