@@ -322,7 +322,6 @@ public class Transceiver extends UDPTransceiver
 	 * @param maxSDRAMSize
 	 *            the max size each chip can say it has for SDRAM (mainly used
 	 *            in debugging purposes)
-	 * @return The created transceiver
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws Exception
@@ -414,7 +413,6 @@ public class Transceiver extends UDPTransceiver
 	 *            the type of SpiNNaker board used within the SpiNNaker machine
 	 *            being used. If a spinn-5 board, then the version will be 5,
 	 *            spinn-3 would equal 3 and so on.
-	 * @return The created transceiver
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws Exception
@@ -1899,7 +1897,8 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>>
+			getBMPConnection() {
 		return bmpSelectors;
 	}
 
