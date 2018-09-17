@@ -3,6 +3,14 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.Math.ceil;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.END_FLAG_SIZE_IN_BYTES;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.LAST_MESSAGE_FLAG_BIT_MASK;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.QUEUE_CAPACITY;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.SEQUENCE_NUMBER_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_PER_RECEIVE_IN_MILLISECONDS;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_PER_SENDING_IN_MILLISECONDS;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_RETRY_LIMIT;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.computeNumberOfPackets;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createFirst;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createNext;
@@ -27,21 +35,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 
+/**
+ * Implementation of the SpiNNaker Fast Data Download Protocol.
+ *
+ * @author Alan Stokes
+ * @author Donal Fellows
+ */
 public class HostDataReceiver extends Thread {
 	private static final Logger log = getLogger(HostDataReceiver.class);
-
-	private static final int QUEUE_CAPACITY = 1024;
-	// consts for data and converting between words and bytes
-	static final int DATA_PER_FULL_PACKET = 68;
-	static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
-			DATA_PER_FULL_PACKET - 1;
-	private static final int END_FLAG_SIZE_IN_BYTES = WORD_SIZE;
-	private static final int SEQUENCE_NUMBER_SIZE = WORD_SIZE;
-	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
-	// time out constants
-	public static final int TIMEOUT_RETRY_LIMIT = 20;
-	private static final int TIMEOUT_PER_SENDING_IN_MILLISECONDS = 10;
-	private static final int TIMEOUT_PER_RECEIVE_IN_MILLISECONDS = 250;
 
 	private final int portConnection;
 	private final HasCoreLocation placement;
@@ -214,12 +215,10 @@ public class HostDataReceiver extends Thread {
 		int trueDataLength = offset + data.limit() - SEQUENCE_NUMBER_SIZE;
 		if (trueDataLength > length) {
 			throw new IllegalStateException(
-					"Receiving more data than expected");
+					"received more data than expected");
 		}
 
-		if (isEndOfStream && data.limit() == END_FLAG_SIZE_IN_BYTES) {
-			// empty
-		} else {
+		if (!isEndOfStream || data.limit() != END_FLAG_SIZE_IN_BYTES) {
 			data.position(SEQUENCE_NUMBER_SIZE);
 			data.get(buffer, offset, trueDataLength - offset);
 		}
@@ -259,8 +258,8 @@ public class HostDataReceiver extends Thread {
 		return recvsize == maxSeqNum + 1;
 	}
 
-	public static final String TIMEOUT_MESSAGE = "Failed to hear from the "
-			+ "machine. Please try removing firewalls.";
+	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
+			+ "machine (please try removing firewalls)";
 
 	private class ProcessorThread extends Thread {
 		private final SCPConnection connection;

@@ -3,7 +3,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.download.HostDataReceiver.DATA_PER_FULL_PACKET;
+import static uk.ac.manchester.spinnaker.front_end.download.Constants.DATA_PER_FULL_PACKET;
 import static uk.ac.manchester.spinnaker.front_end.download.HostDataReceiver.ceildiv;
 import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.NEXT_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.START_MISSING_SEQS;
@@ -18,7 +18,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * A message used to describe what sequence numbers are missing from a fast data
  * transfer stream so that they can be retransmitted.
  */
-class MissingSequenceNumbersMessage extends ProtocolMessage {
+final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;
 	/** Number of words of overhead in a subsequent message. */
