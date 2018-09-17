@@ -13,8 +13,8 @@ abstract class SupportUtils {
 	}
 
 	static final void assertTimeout(long before, long after) {
-		assertTrue(after - before > 100 && after - before < 200,
-				"measured timeout must be between 0.1s and 0.2s (measured"
+		assertTrue(after - before > 100 && after - before < 400,
+				"measured timeout must be between 0.1s and 0.4s (measured"
 						+ (after - before) + "ms)");
 	}
 
