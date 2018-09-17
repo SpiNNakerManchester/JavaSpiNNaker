@@ -8,18 +8,18 @@ import static uk.ac.manchester.spinnaker.front_end.download.Constants.END_FLAG_S
 import static uk.ac.manchester.spinnaker.front_end.download.Constants.LAST_MESSAGE_FLAG_BIT_MASK;
 import static uk.ac.manchester.spinnaker.front_end.download.Constants.QUEUE_CAPACITY;
 import static uk.ac.manchester.spinnaker.front_end.download.Constants.SEQUENCE_NUMBER_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_PER_RECEIVE_IN_MILLISECONDS;
 import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_PER_SENDING_IN_MILLISECONDS;
 import static uk.ac.manchester.spinnaker.front_end.download.Constants.TIMEOUT_RETRY_LIMIT;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.computeNumberOfPackets;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createFirst;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createNext;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
+import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
@@ -46,7 +47,7 @@ public class HostDataReceiver extends Thread {
 
 	private final int portConnection;
 	private final HasCoreLocation placement;
-	private final InetAddress machineIP;
+	private final Inet4Address machineIP;
 	private final int length;
 	private final int address;
 	private final HasChipLocation chip;
@@ -58,6 +59,26 @@ public class HostDataReceiver extends Thread {
 	private int missCount;
 	private BitSet receivedSeqNums;
 
+	/**
+	 * Create an instance of the protocol implementation.
+	 *
+	 * @param portConnection
+	 *            What port we talk to.
+	 * @param placement
+	 *            What core on SpiNNaker do we download from.
+	 * @param hostname
+	 *            Where the SpiNNaker machine is.
+	 * @param lengthInBytes
+	 *            How many bytes to download.
+	 * @param memoryAddress
+	 *            Where in the SpiNNaker core's memory to download from
+	 * @param chip
+	 *            Used for reprogramming the IP tag.
+	 * @param iptag
+	 *            The ID of the IP tag.
+	 * @throws UnknownHostException
+	 *             If the hostname can't be resolved to an IPv4 address.
+	 */
 	public HostDataReceiver(int portConnection, HasCoreLocation placement,
 			String hostname, int lengthInBytes, int memoryAddress,
 			HasChipLocation chip, int iptag) throws UnknownHostException {
@@ -65,7 +86,7 @@ public class HostDataReceiver extends Thread {
 		this.placement = placement;
 		this.chip = chip;
 		this.iptag = iptag;
-		machineIP = InetAddress.getByName(hostname);
+		machineIP = InetFactory.getByName(hostname);
 		length = lengthInBytes;
 		address = memoryAddress;
 		// allocate queue for messages
@@ -78,19 +99,34 @@ public class HostDataReceiver extends Thread {
 	}
 
 	/**
-	 * Divide one integer by another with rounding up.
+	 * Divide one integer by another with rounding up. For example,
+	 * <tt>ceildiv(5,3) == 2</tt>
+	 *
+	 * @param numerator
+	 *            The value to be divided.
+	 * @param denominator
+	 *            The value to divide by.
+	 * @return The value got by dividing the two, and rounding any floating
+	 *         remainder <i>up</i>.
 	 */
 	static final int ceildiv(int numerator, int denominator) {
 		return (int) ceil((float) numerator / (float) denominator);
 	}
 
-	int timeout = TIMEOUT_PER_RECEIVE_IN_MILLISECONDS;
-
+	/**
+	 * Downloads the data from the configured location on a SpiNNaker system.
+	 *
+	 * @return The data.
+	 * @throws InterruptedException
+	 *             If the thread gets interrupted.
+	 * @throws IOException
+	 *             If any I/O fails.
+	 */
 	public byte[] getData() throws InterruptedException, IOException {
 		// create connection
 		SCPConnection sender = null;
 		try {
-			sender = new SCPConnection(placement, machineIP, 17893);
+			sender = new SCPConnection(placement, machineIP, SCP_SCAMP_PORT);
 		} catch (SocketException ex) {
 			log.error("failed to create UDP connection", ex);
 			return null;
@@ -210,12 +246,11 @@ public class HostDataReceiver extends Thread {
 		if (seqNum > maxSeqNum || seqNum < 0) {
 			throw new IllegalStateException("Got insane sequence number");
 		}
-		int offset = seqNum * DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM
-				* WORD_SIZE;
+		int offset =
+				seqNum * DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE;
 		int trueDataLength = offset + data.limit() - SEQUENCE_NUMBER_SIZE;
 		if (trueDataLength > length) {
-			throw new IllegalStateException(
-					"received more data than expected");
+			throw new IllegalStateException("received more data than expected");
 		}
 
 		if (!isEndOfStream || data.limit() != END_FLAG_SIZE_IN_BYTES) {
@@ -265,7 +300,7 @@ public class HostDataReceiver extends Thread {
 		private final SCPConnection connection;
 		private int timeoutcount = 0;
 
-		public ProcessorThread(SCPConnection connection) {
+		ProcessorThread(SCPConnection connection) {
 			super("ProcessorThread");
 			this.connection = connection;
 		}
@@ -317,7 +352,7 @@ public class HostDataReceiver extends Thread {
 	private class ReaderThread extends Thread {
 		private final SCPConnection connection;
 
-		public ReaderThread(SCPConnection connection) {
+		ReaderThread(SCPConnection connection) {
 			super("ReadThread");
 			this.connection = connection;
 		}
