@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.floorDiv;
 import static java.lang.String.format;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -42,7 +43,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	EIEIODataMessage(ByteBuffer data) {
 		this.header = new Header(data);
 		this.elements = null;
-		this.data = data.asReadOnlyBuffer();
+		this.data = data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -144,7 +145,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	/** @return The raw data of this message. */
 	public ByteBuffer getData() {
-		return data.asReadOnlyBuffer();
+		return data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -174,7 +175,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final ByteBuffer d = data == null ? null : data.duplicate();
+		final ByteBuffer d =
+				data == null ? null : data.duplicate().order(LITTLE_ENDIAN);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
