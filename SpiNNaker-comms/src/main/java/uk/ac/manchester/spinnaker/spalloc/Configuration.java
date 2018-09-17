@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.SubnodeConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.INIBuilderParameters;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -40,8 +41,10 @@ import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 
 /** A spalloc configuration loaded from a file. */
 public class Configuration {
-	private Map<String, Object> defaults;
-	private SubnodeConfiguration config;
+	private static final char LIST_SEPARATOR = ' ';
+	private static final String SECTION_NAME = "spalloc";
+	private Map<String, Object> configurationMap;
+	private SubnodeConfiguration section;
 
 	/**
 	 * Load the configuration from a file. The configuration loader searches
@@ -51,7 +54,7 @@ public class Configuration {
 	 *            The name of file to load from.
 	 */
 	public Configuration(String configFilename) {
-		defaults = initDefaultDefaults();
+		configurationMap = initDefaultValues();
 		try {
 			// TODO is this the right way to set this up?
 			/*
@@ -61,78 +64,85 @@ public class Configuration {
 			 * ``$HOME/.config/spalloc``) and finally the current working
 			 * directory (in a file named ``.spalloc``).
 			 */
-			config = new FileBasedConfigurationBuilder<>(INIConfiguration.class)
-					.configure(new Parameters().ini()
-							.setLocationStrategy(new CombinedLocationStrategy(
-									asList(new ProvidedURLLocationStrategy(),
-											new HomeDirectoryLocationStrategy(),
-											new ClasspathLocationStrategy())))
-							.setThrowExceptionOnMissing(true)
-							.setListDelimiterHandler(
-									new DefaultListDelimiterHandler(' '))
-							.setFileName(configFilename))
-					.getConfiguration().getSection("spalloc");
+			INIBuilderParameters params = new Parameters().ini()
+					.setLocationStrategy(new CombinedLocationStrategy(
+							asList(new ProvidedURLLocationStrategy(),
+									new HomeDirectoryLocationStrategy(),
+									new ClasspathLocationStrategy())))
+					.setListDelimiterHandler(
+							new DefaultListDelimiterHandler(LIST_SEPARATOR))
+					.setThrowExceptionOnMissing(true);
+			section =
+					new FileBasedConfigurationBuilder<>(INIConfiguration.class)
+							.configure(params.setFileName(configFilename))
+							.getConfiguration().getSection(SECTION_NAME);
 		} catch (ConfigurationException e) {
 			throw new RuntimeException(
 					"failed to load configuration from " + configFilename, e);
 		}
-		setDefaultsFromConfig(defaults);
+		setValuesFromConfig(configurationMap);
 	}
 
-	/** @return a clone of the map of defaults. */
+	/** @return a clone of the map of configurationMap. */
 	public Map<String, Object> getDefaults() {
-		return new HashMap<>(defaults);
+		return new HashMap<>(configurationMap);
 	}
 
 	public String getHost() {
-		return (String) defaults.get(HOSTNAME_PROPERTY);
+		return (String) configurationMap.get(HOSTNAME_PROPERTY);
 	}
 
 	public int getPort() {
-		return (Integer) defaults.get(PORT_PROPERTY);
+		return (Integer) configurationMap.get(PORT_PROPERTY);
 	}
 
 	public String getUser() {
-		return (String) defaults.get(USER_PROPERTY);
+		return (String) configurationMap.get(USER_PROPERTY);
 	}
 
 	public double getKeepalive() {
-		return (Double) defaults.get(KEEPALIVE_PROPERTY);
+		return (Double) configurationMap.get(KEEPALIVE_PROPERTY);
 	}
 
 	public double getReconnectDelay() {
-		return (Double) defaults.get(RECONNECT_DELAY_PROPERTY);
+		return (Double) configurationMap.get(RECONNECT_DELAY_PROPERTY);
 	}
 
 	public double getTimeout() {
-		return (Double) defaults.get(TIMEOUT_PROPERTY);
+		return (Double) configurationMap.get(TIMEOUT_PROPERTY);
 	}
 
 	public String getMachine() {
-		return (String) defaults.get(MACHINE_PROPERTY);
+		return (String) configurationMap.get(MACHINE_PROPERTY);
 	}
 
 	public String[] getTags() {
-		return (String[]) defaults.get(TAGS_PROPERTY);
+		return (String[]) configurationMap.get(TAGS_PROPERTY);
 	}
 
 	public double getMinRatio() {
-		return (Double) defaults.get(MIN_RATIO_PROPERTY);
+		return (Double) configurationMap.get(MIN_RATIO_PROPERTY);
 	}
 
 	public Integer getMaxDeadBoards() {
-		return (Integer) defaults.get(MAX_DEAD_BOARDS_PROPERTY);
+		return (Integer) configurationMap.get(MAX_DEAD_BOARDS_PROPERTY);
 	}
 
 	public Integer getMaxDeadLinks() {
-		return (Integer) defaults.get(MAX_DEAD_LINKS_PROPERTY);
+		return (Integer) configurationMap.get(MAX_DEAD_LINKS_PROPERTY);
 	}
 
 	public boolean getRequireTorus() {
-		return (Boolean) defaults.get(REQUIRE_TORUS_PROPERTY);
+		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
 	}
 
-	private static Map<String, Object> initDefaultDefaults() {
+	/**
+	 * Set up the default values in the map, so the configuration file doesn't
+	 * need to have everything listed in it.
+	 *
+	 * @return a map loaded with default configuration values.
+	 */
+	private static Map<String, Object> initDefaultValues() {
 		Map<String, Object> defaults = new HashMap<>();
 		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
 		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
@@ -150,7 +160,7 @@ public class Configuration {
 	private static final String NULL_MARKER = "None";
 
 	private Double readNoneOrFloat(String prop) {
-		String val = config.getString(prop);
+		String val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}
@@ -158,7 +168,7 @@ public class Configuration {
 	}
 
 	private Integer readNoneOrInt(String prop) {
-		String val = config.getString(prop);
+		String val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}
@@ -166,56 +176,56 @@ public class Configuration {
 	}
 
 	private String readNoneOrString(String prop) {
-		String val = config.getString(prop);
+		String val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}
 		return val;
 	}
 
-	private void setDefaultsFromConfig(Map<String, Object> defaults) {
+	private void setValuesFromConfig(Map<String, Object> defaults) {
 		defaults.put(HOSTNAME_PROPERTY,
-				config.getString(HOSTNAME_PROPERTY, null));
-		if (config.containsKey(USER_PROPERTY)) {
-			defaults.put(USER_PROPERTY, config.getString(USER_PROPERTY));
+				section.getString(HOSTNAME_PROPERTY, null));
+		if (section.containsKey(USER_PROPERTY)) {
+			defaults.put(USER_PROPERTY, section.getString(USER_PROPERTY));
 		}
-		if (config.containsKey(KEEPALIVE_PROPERTY)) {
+		if (section.containsKey(KEEPALIVE_PROPERTY)) {
 			defaults.put(KEEPALIVE_PROPERTY,
 					readNoneOrFloat(KEEPALIVE_PROPERTY));
 		}
-		if (config.containsKey(RECONNECT_DELAY_PROPERTY)) {
+		if (section.containsKey(RECONNECT_DELAY_PROPERTY)) {
 			defaults.put(RECONNECT_DELAY_PROPERTY,
-					config.getDouble(RECONNECT_DELAY_PROPERTY));
+					section.getDouble(RECONNECT_DELAY_PROPERTY));
 		}
-		if (config.containsKey(TIMEOUT_PROPERTY)) {
+		if (section.containsKey(TIMEOUT_PROPERTY)) {
 			defaults.put(TIMEOUT_PROPERTY, readNoneOrFloat(TIMEOUT_PROPERTY));
 		}
-		if (config.containsKey(MACHINE_PROPERTY)) {
+		if (section.containsKey(MACHINE_PROPERTY)) {
 			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
 		}
-		if (config.containsKey(TAGS_PROPERTY)) {
-			if (NULL_MARKER.equals(config.getString(TAGS_PROPERTY))) {
+		if (section.containsKey(TAGS_PROPERTY)) {
+			if (NULL_MARKER.equals(section.getString(TAGS_PROPERTY))) {
 				defaults.put(TAGS_PROPERTY, null);
 			} else {
 				defaults.put(TAGS_PROPERTY,
-						config.getArray(String.class, TAGS_PROPERTY));
+						section.getArray(String.class, TAGS_PROPERTY));
 			}
 		}
-		if (config.containsKey(MIN_RATIO_PROPERTY)) {
+		if (section.containsKey(MIN_RATIO_PROPERTY)) {
 			defaults.put(MIN_RATIO_PROPERTY,
 					readNoneOrFloat(MIN_RATIO_PROPERTY));
 		}
-		if (config.containsKey(MAX_DEAD_BOARDS_PROPERTY)) {
+		if (section.containsKey(MAX_DEAD_BOARDS_PROPERTY)) {
 			defaults.put(MAX_DEAD_BOARDS_PROPERTY,
 					readNoneOrInt(MAX_DEAD_BOARDS_PROPERTY));
 		}
-		if (config.containsKey(MAX_DEAD_LINKS_PROPERTY)) {
+		if (section.containsKey(MAX_DEAD_LINKS_PROPERTY)) {
 			defaults.put(MAX_DEAD_LINKS_PROPERTY,
 					readNoneOrInt(MAX_DEAD_LINKS_PROPERTY));
 		}
-		if (config.containsKey(REQUIRE_TORUS_PROPERTY)) {
+		if (section.containsKey(REQUIRE_TORUS_PROPERTY)) {
 			defaults.put(REQUIRE_TORUS_PROPERTY,
-					config.getBoolean(REQUIRE_TORUS_PROPERTY));
+					section.getBoolean(REQUIRE_TORUS_PROPERTY));
 		}
 	}
 }
