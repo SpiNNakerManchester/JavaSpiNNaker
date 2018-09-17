@@ -1,13 +1,13 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Math.ceil;
-import static java.lang.Math.min;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.computeNumberOfPackets;
+import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createFirst;
+import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createNext;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,24 +26,18 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
 public class HostDataReceiver extends Thread {
 	private static final Logger log = getLogger(HostDataReceiver.class);
 
 	private static final int QUEUE_CAPACITY = 1024;
 	// consts for data and converting between words and bytes
-	private static final int DATA_PER_FULL_PACKET = 68;
-	private static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
+	static final int DATA_PER_FULL_PACKET = 68;
+	static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
 			DATA_PER_FULL_PACKET - 1;
-	private static final int BYTES_PER_WORD = 4;
-	private static final int END_FLAG_SIZE_IN_BYTES = 4;
-	private static final int SEQUENCE_NUMBER_SIZE = 4;
+	private static final int END_FLAG_SIZE_IN_BYTES = WORD_SIZE;
+	private static final int SEQUENCE_NUMBER_SIZE = WORD_SIZE;
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
-	private static final int SDP_PACKET_START_SENDING_COMMAND_ID = 100;
-	private static final int SDP_PACKET_START_MISSING_SEQ_COMMAND_ID = 1000;
-	private static final int SDP_PACKET_MISSING_SEQ_COMMAND_ID = 1001;
 	// time out constants
 	public static final int TIMEOUT_RETRY_LIMIT = 20;
 	private static final int TIMEOUT_PER_SENDING_IN_MILLISECONDS = 10;
@@ -51,7 +45,7 @@ public class HostDataReceiver extends Thread {
 
 	private final int portConnection;
 	private final HasCoreLocation placement;
-	private final InetAddress hostname;
+	private final InetAddress machineIP;
 	private final int length;
 	private final int address;
 	private final HasChipLocation chip;
@@ -68,15 +62,15 @@ public class HostDataReceiver extends Thread {
 			HasChipLocation chip, int iptag) throws UnknownHostException {
 		this.portConnection = portConnection;
 		this.placement = placement;
-		this.hostname = InetAddress.getByName(hostname);
-		this.length = lengthInBytes;
-		this.address = memoryAddress;
 		this.chip = chip;
 		this.iptag = iptag;
+		machineIP = InetAddress.getByName(hostname);
+		length = lengthInBytes;
+		address = memoryAddress;
 		// allocate queue for messages
 		messQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-		buffer = new byte[lengthInBytes];
-		maxSeqNum = calculateMaxSeqNum(lengthInBytes);
+		buffer = new byte[length];
+		maxSeqNum = calculateMaxSeqNum(length);
 		receivedSeqNums = new BitSet(maxSeqNum);
 		finished = false;
 		missCount = 0;
@@ -85,7 +79,7 @@ public class HostDataReceiver extends Thread {
 	/**
 	 * Divide one integer by another with rounding up.
 	 */
-	private static final int ceildiv(int numerator, int denominator) {
+	static final int ceildiv(int numerator, int denominator) {
 		return (int) ceil((float) numerator / (float) denominator);
 	}
 
@@ -95,7 +89,7 @@ public class HostDataReceiver extends Thread {
 		// create connection
 		SCPConnection sender = null;
 		try {
-			sender = new SCPConnection(placement, hostname, 17893);
+			sender = new SCPConnection(placement, machineIP, 17893);
 		} catch (SocketException ex) {
 			log.error("failed to create UDP connection", ex);
 			return null;
@@ -113,98 +107,99 @@ public class HostDataReceiver extends Thread {
 		return buffer;
 	}
 
-	public void getDataThreadable(String filepath_read, String filepath_missing)
-			throws FileNotFoundException, IOException, InterruptedException {
-		try (FileOutputStream fp1 = new FileOutputStream(filepath_read);
-				PrintWriter fp2 = new PrintWriter(filepath_missing)) {
+	/**
+	 * Write the received data to a file.
+	 *
+	 * @param dataFile
+	 *            The file to write the data to.
+	 * @param missingReportFile
+	 *            The file to write a count of the number of misses to. This
+	 *            measures the quality of the retrieval process.
+	 * @throws IOException
+	 *             If the I/O operations on the files fail or if the actual
+	 *             reading of the data fails.
+	 * @throws InterruptedException
+	 *             If the process of doing the download is interrupted.
+	 */
+	public void writeData(String dataFile, String missingReportFile)
+			throws IOException, InterruptedException {
+		try (FileOutputStream fp1 = new FileOutputStream(dataFile);
+				PrintWriter fp2 = new PrintWriter(missingReportFile)) {
 			getData();
 			fp1.write(buffer);
 			fp2.println(missCount);
 		}
 	}
 
-	public boolean retransmitMissingSequences(SCPConnection sender,
+	/**
+	 * Write the received data to a file.
+	 *
+	 * @param dataFile
+	 *            The file to write the data to.
+	 * @throws IOException
+	 *             If the I/O operations on the file fail or if the actual
+	 *             reading of the data fails.
+	 * @throws InterruptedException
+	 *             If the process of doing the download is interrupted.
+	 */
+	public void writeData(String dataFile)
+			throws IOException, InterruptedException {
+		try (FileOutputStream fp1 = new FileOutputStream(dataFile)) {
+			getData();
+			fp1.write(buffer);
+		}
+	}
+
+	private boolean retransmitMissingSequences(SCPConnection sender,
 			BitSet receivedSeqNums) throws InterruptedException, IOException {
-		int wordsToSend;
 		int numPackets;
 		int i;
 		// Calculate number of missing sequences based on difference between
 		// expected and received
-		int missDim = maxSeqNum - receivedSeqNums.cardinality();
-		int[] missingSeqs = new int[missDim];
-		int j = 0;
+		IntBuffer missingSeqs =
+				IntBuffer.allocate(maxSeqNum - receivedSeqNums.cardinality());
 		// Calculate missing sequence numbers and add them to "missing"
 		log.debug("max seq num of " + maxSeqNum);
 		for (i = 0; i < maxSeqNum; i++) {
 			if (!receivedSeqNums.get(i)) {
-				missingSeqs[j++] = i;
+				missingSeqs.put(i);
 				missCount++;
 			}
 		}
+		missingSeqs.flip();
+
 		if (log.isDebugEnabled()) {
-			log.debug("missing" + missDim);
-			for (i = 0; i < missDim; i++) {
-				log.debug("missing seq " + missingSeqs[i]);
+			IntBuffer ib = missingSeqs.asReadOnlyBuffer();
+			log.debug("missing " + ib.limit());
+			while (ib.hasRemaining()) {
+				log.debug("missing seq " + ib.get());
 			}
 		}
-		// Set correct number of lost sequences
-		missDim = j;
-		// No missing sequences
-		if (missDim == 0) {
+
+		if (missingSeqs.limit() == 0) {
+			// No missing sequences; transfer is complete
 			return true;
 		}
-		numPackets = 1;
-		int lengthViaFormat2 = missDim - (DATA_PER_FULL_PACKET - 2);
-		if (lengthViaFormat2 > 0) {
-			numPackets += ceildiv(lengthViaFormat2, DATA_PER_FULL_PACKET - 1);
-		}
+		numPackets = computeNumberOfPackets(missingSeqs.limit());
 
 		// Transmit missing sequences as a new SDP Packet
-		int seqNumOffset = 0;
-		j = 0;
 		for (i = 0; i < numPackets; i++) {
-			ByteBuffer data = null;
-			int wordsLeftInPacket = DATA_PER_FULL_PACKET;
+			MissingSequenceNumbersMessage message;
 
 			// If first, add n packets to list; otherwise just add data
 			if (i == 0) {
-				// Get left over space / data size
-				wordsToSend =
-						min(wordsLeftInPacket - 2, missDim - seqNumOffset);
-				data = allocate((wordsToSend + 2) * BYTES_PER_WORD)
-						.order(LITTLE_ENDIAN);
-
-				// Pack flag and n packets
-				data.putInt(SDP_PACKET_START_MISSING_SEQ_COMMAND_ID);
-				data.putInt(numPackets);
-
-				// Update state
-				wordsLeftInPacket -= 2;
+				message = createFirst(placement, portConnection, missingSeqs,
+						numPackets);
 			} else {
-				// Get left over space / data size
-				wordsToSend = min(DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM,
-						missDim - seqNumOffset);
-				data = allocate((wordsToSend + 1) * BYTES_PER_WORD)
-						.order(LITTLE_ENDIAN);
-
-				// Pack flag
-				data.putInt(SDP_PACKET_MISSING_SEQ_COMMAND_ID);
-				wordsLeftInPacket -= 1;
+				message = createNext(placement, portConnection, missingSeqs);
 			}
-			for (int element = 0; element < wordsToSend; element++) {
-				data.putInt(missingSeqs[j++]);
-			}
-			seqNumOffset += wordsLeftInPacket;
-			sender.sendSDPMessage(new SDPMessage(
-					new SDPHeader(SDPHeader.Flag.REPLY_NOT_EXPECTED, placement,
-							portConnection),
-					data));
-			Thread.sleep(TIMEOUT_PER_SENDING_IN_MILLISECONDS);
+			sender.sendSDPMessage(message);
+			sleep(TIMEOUT_PER_SENDING_IN_MILLISECONDS);
 		}
 		return false;
 	}
 
-	public void processData(SCPConnection sender, ByteBuffer data)
+	private void processData(SCPConnection sender, ByteBuffer data)
 			throws Exception {
 		int firstPacketElement = data.getInt();
 		int seqNum = firstPacketElement & ~LAST_MESSAGE_FLAG_BIT_MASK;
@@ -215,7 +210,7 @@ public class HostDataReceiver extends Thread {
 			throw new IllegalStateException("Got insane sequence number");
 		}
 		int offset = seqNum * DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM
-				* BYTES_PER_WORD;
+				* WORD_SIZE;
 		int trueDataLength = offset + data.limit() - SEQUENCE_NUMBER_SIZE;
 		if (trueDataLength > length) {
 			throw new IllegalStateException(
@@ -238,24 +233,6 @@ public class HostDataReceiver extends Thread {
 		}
 	}
 
-	static class StartSending extends SDPMessage {
-		static StartSending create(HasCoreLocation destination, int destPort,
-				int address, int length) {
-			ByteBuffer payload = allocate(3 * 4).order(LITTLE_ENDIAN);
-			IntBuffer msgPayload = payload.asIntBuffer();
-			msgPayload.put(SDP_PACKET_START_SENDING_COMMAND_ID);
-			msgPayload.put(address);
-			msgPayload.put(length);
-			return new StartSending(destination, destPort, payload);
-		}
-
-		private StartSending(HasCoreLocation destination, int destPort,
-				ByteBuffer payload) {
-			super(new SDPHeader(SDPHeader.Flag.REPLY_NOT_EXPECTED, destination,
-					destPort), payload);
-		}
-	}
-
 	private void sendInitialCommand(SCPConnection sender,
 			SCPConnection receiver) throws IOException {
 		// Build an SCP request to set up the IP Tag associated to this socket
@@ -265,13 +242,13 @@ public class HostDataReceiver extends Thread {
 		sender.receiveSCPResponse(null);
 
 		// Create and send Data request SDP packet
-		sender.sendSDPMessage(StartSending.create(placement, portConnection,
-				address, length));
+		sender.sendSDPMessage(StartSendingMessage.create(placement,
+				portConnection, address, length));
 	}
 
 	private static int calculateMaxSeqNum(int length) {
 		return ceildiv(length,
-				DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * BYTES_PER_WORD);
+				DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
 	}
 
 	private boolean check() throws Exception {
