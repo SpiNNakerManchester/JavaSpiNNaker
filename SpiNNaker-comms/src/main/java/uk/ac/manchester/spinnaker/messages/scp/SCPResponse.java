@@ -33,7 +33,8 @@ public abstract class SCPResponse {
 	}
 
 	/**
-	 * Throw an exception if the response is not an {@linkplain #RC_OK OK}.
+	 * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
+	 * OK}.
 	 *
 	 * @param operation
 	 *            The overall operation that was being done.
