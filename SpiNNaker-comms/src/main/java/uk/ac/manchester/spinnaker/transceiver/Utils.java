@@ -84,6 +84,7 @@ public abstract class Utils {
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
+	@Deprecated
 	public static void sendPortTriggerMessage(UDPConnection<?> connection,
 			InetAddress host) throws IOException {
 		connection.sendPortTriggerMessage(host);

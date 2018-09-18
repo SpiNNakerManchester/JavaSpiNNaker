@@ -771,6 +771,7 @@ public class Machine implements Iterable<Chip> {
      * @return Locations of the new monitor processors and the failed chips.
      * @deprecated Will be removed if confirmed to never be called any more.
      */
+    @Deprecated
     public final CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
         maxUserProssorsOnAChip = 0;
         CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
@@ -817,6 +818,7 @@ public class Machine implements Iterable<Chip> {
      *      This method is purely to demonstrate/test the usage of
      *      forEach so can be remove at any moment,
      */
+    @Deprecated
     int totalAvailableUserCores1() {
         Counter count = new Counter();
         this.chips.forEach((location, chip) -> {
@@ -838,6 +840,7 @@ public class Machine implements Iterable<Chip> {
      *      This method is purely to demonstrate/test the usage of
      *      stream so can be remove at any moment,
      */
+    @Deprecated
     int totalAvailableUserCores2() {
         return chips.values().stream().map(Chip::nUserProcessors).
                 mapToInt(Integer::intValue).sum();

@@ -54,6 +54,7 @@ public enum SystemVariableDefinition {
 	 *
 	 * @deprecated UNTESTED part of SCAMP
 	 */
+	@Deprecated
 	ltpc_period(SHORT, 0x1a),
 	/** The time in seconds since midnight, 1st January 1970. */
 	unix_timestamp(INT, 0x1c),
