@@ -25,8 +25,6 @@ public class TestBar {
 
     @Test
     public void testBasic() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
         ProgressBar pb = new ProgressBar(5, null);
         for (int i = 0; i < 3 ; i++){
             pb.update();
@@ -50,7 +48,7 @@ public class TestBar {
         assertThrows(IllegalStateException.class, () -> {
             pb.update();
         });
-
+        pb.close();
     }
 
     @Test
@@ -103,6 +101,7 @@ public class TestBar {
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);
         assertEquals(DASHES, lines[2]);
+        pb.close();
     }
 
     @Test

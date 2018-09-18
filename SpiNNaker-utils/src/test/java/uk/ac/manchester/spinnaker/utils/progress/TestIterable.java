@@ -6,7 +6,6 @@ package uk.ac.manchester.spinnaker.utils.progress;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import uk.ac.manchester.spinnaker.utils.Counter;
@@ -36,6 +35,7 @@ public class TestIterable {
             sum += i;
         }
         assertEquals(1+2+3+4+5, sum);
+        pb.close();
     }
 
     @Test
@@ -55,6 +55,7 @@ public class TestIterable {
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);
         assertEquals(DASHES, lines[2]);
+        pb.close();
     }
 
     @Test
@@ -94,6 +95,7 @@ public class TestIterable {
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);
         assertEquals(DASHES, lines[2]);
+        pb.close();
     }
 
 }
