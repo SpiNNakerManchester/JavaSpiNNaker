@@ -1,9 +1,10 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
-import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 
 /**
@@ -13,14 +14,15 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 public class TestMockClient {
 
 	@Test
-        void testlistJobs() throws IOException, SpallocServerException, Exception {
-            SpallocClient client = new MockConnectedClient();
-            try (AutoCloseable c = client.withConnection()) {
-                List<JobDescription> jobs = client.listJobs();
-                for (JobDescription job:jobs) {
-                    System.out.println(job);
-                }
-            }
-
-        }
+	void testListJobs() throws Exception {
+		int[] expectedIDs = {
+				47224, 47444
+		};
+		try (SpallocClient client = new MockConnectedClient();
+				AutoCloseable c = client.withConnection()) {
+			List<JobDescription> jobs = client.listJobs();
+			assertArrayEquals(expectedIDs,
+					jobs.stream().mapToInt(j -> j.getJobID()).toArray());
+		}
+	}
 }
