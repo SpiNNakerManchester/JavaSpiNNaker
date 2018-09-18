@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
@@ -138,6 +139,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 		MAPPER.registerModule(module);
 		MAPPER.setPropertyNamingStrategy(SNAKE_CASE);
 		MAPPER.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+		MAPPER.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
 		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
 				MACHINE_PROPERTY, TAGS_PROPERTY, MIN_RATIO_PROPERTY,
