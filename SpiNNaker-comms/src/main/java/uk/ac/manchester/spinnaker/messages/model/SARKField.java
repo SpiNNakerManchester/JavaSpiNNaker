@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 public @interface SARKField {
 	/**
-	 * The name of the field in the equivalent structure.
+	 * @return The name of the field in the equivalent structure.
 	 */
 	String value();
 }

@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface SARKStruct {
 	/**
-	 * The name of the struct in SARK.
+	 * @return The name of the struct in SARK.
 	 */
 	String value();
 
 	/**
-	 * Which API contains the structure.
+	 * @return Which API contains the structure.
 	 */
 	API api() default API.SARK;
 
@@ -32,7 +32,14 @@ public @interface SARKStruct {
 	 *
 	 * @author Donal Fellows
 	 */
-	public enum API {
-		SARK, SCAMP, SPIN1API, BMP
+	enum API {
+		/** This identifies a structure defined by SARK. */
+		SARK,
+		/** This identifies a structure defined by SC&MP. */
+		SCAMP,
+		/** This identifies a structure defined by spin1_api. */
+		SPIN1API,
+		/** This identifies a structure defined by the BMP. */
+		BMP
 	}
 }
