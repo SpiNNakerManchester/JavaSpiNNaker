@@ -1,20 +1,26 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 /** An element of one of the heaps on SpiNNaker. */
+@SARKStruct("block")
 public class HeapElement {
 	/** The address of the block. */
 	public final int blockAddress;
 	/** A pointer to the next block, or 0 if none. */
+	@SARKField("next")
 	public final int nextAddress;
 	/** The usable size of this block (not including the header). */
 	public final int size;
+	// Note that multiple fields are encoded in the free field.
 	/** True if the block is free. */
+	@SARKField("free")
 	public final boolean isFree;
 	/** The tag of the block if allocated, or <tt>null</tt> if not. */
+	@SARKField("free")
 	public final Integer tag;
 	/**
 	 * The application ID of the block if allocated, or <tt>null</tt> if not.
 	 */
+	@SARKField("free")
 	public final Integer appID;
 
 	private static final int FREE_MASK = 0xFFFF0000;
