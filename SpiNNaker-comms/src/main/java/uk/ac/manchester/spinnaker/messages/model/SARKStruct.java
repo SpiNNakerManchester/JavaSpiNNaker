@@ -35,7 +35,7 @@ public @interface SARKStruct {
 	enum API {
 		/** This identifies a structure defined by SARK. */
 		SARK,
-		/** This identifies a structure defined by SC&MP. */
+		/** This identifies a structure defined by SC&amp;MP. */
 		SCAMP,
 		/** This identifies a structure defined by spin1_api. */
 		SPIN1API,
