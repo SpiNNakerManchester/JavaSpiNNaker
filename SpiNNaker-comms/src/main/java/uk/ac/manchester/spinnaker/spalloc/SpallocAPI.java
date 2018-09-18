@@ -408,7 +408,7 @@ public interface SpallocAPI {
 	 * List all jobs.
 	 *
 	 * @return A list of allocated/queued jobs in order of creation from oldest
-	 *         (first) to newest (last).
+	 *         (first) to newest (last). This is unmodifiable.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
@@ -426,7 +426,7 @@ public interface SpallocAPI {
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or <tt>null</tt> to wait forever.
 	 * @return A list of allocated/queued jobs in order of creation from oldest
-	 *         (first) to newest (last).
+	 *         (first) to newest (last). This is unmodifiable.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -441,7 +441,7 @@ public interface SpallocAPI {
 	 * List all known machines.
 	 *
 	 * @return The list of machines known to the system in order of priority
-	 *         from highest (first) to lowest (last).
+	 *         from highest (first) to lowest (last). This is unmodifiable.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
@@ -459,7 +459,7 @@ public interface SpallocAPI {
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or <tt>null</tt> to wait forever.
 	 * @return The list of machines known to the system in order of priority
-	 *         from highest (first) to lowest (last).
+	 *         from highest (first) to lowest (last). This is unmodifiable.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException

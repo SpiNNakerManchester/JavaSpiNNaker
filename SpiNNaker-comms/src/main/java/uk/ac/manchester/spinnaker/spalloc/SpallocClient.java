@@ -6,6 +6,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
@@ -65,9 +66,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListJobsCommand;
-import uk.ac.manchester.spinnaker.spalloc.messages.ListJobsResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListMachinesCommand;
-import uk.ac.manchester.spinnaker.spalloc.messages.ListMachinesResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.NoNotifyJobCommand;
@@ -568,18 +567,29 @@ public class SpallocClient implements Closeable, SpallocAPI {
 		call(c, timeout);
 	}
 
+	/**
+	 * Wrap an array into a read-only list.
+	 *
+	 * @param array
+	 *            The array to be wrapped.
+	 * @return An unmodifiable list that uses the array for its storage.
+	 */
+	private static <T> List<T> rolist(T[] array) {
+		return unmodifiableList(asList(array));
+	}
+
 	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(call(new ListJobsCommand(), timeout),
-				ListJobsResponse.class).getJobs();
+		return rolist(MAPPER.readValue(call(new ListJobsCommand(), timeout),
+				JobDescription[].class));
 	}
 
 	@Override
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(call(new ListMachinesCommand(), timeout),
-				ListMachinesResponse.class).getMachines();
+		return rolist(MAPPER.readValue(call(new ListMachinesCommand(), timeout),
+				Machine[].class));
 	}
 
 	@Override
