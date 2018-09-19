@@ -7,10 +7,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.GetJobMachineInfoCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.GetJobStateCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListJobsCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListMachinesCommand;
-import uk.ac.manchester.spinnaker.spalloc.messages.PowerOffJobBoardsCommand;
-import uk.ac.manchester.spinnaker.spalloc.messages.PowerOnJobBoardsCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsJobChipCommand;
-import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 
 /**
  *
@@ -73,6 +70,8 @@ public class MockConnectedClient extends SpallocClient {
             + "\"dead_boards\":[],"
             + "\"dead_links\":[]}"
         + "]";
+    
+    public static final int MOCK_ID = 9999;
     
     static final String JOB_MACHINE_INFO_R = 
             "{\"connections\":[[[0,0],\"10.11.223.33\"]],"
@@ -137,7 +136,7 @@ public class MockConnectedClient extends SpallocClient {
             return LIST_MACHINE_R;
         }
         if (command.getClass() == CreateJobCommand.class) {
-            return "99999";
+            return "" + MOCK_ID;
         }
         if (command.getClass() == GetJobMachineInfoCommand.class) {
             return JOB_MACHINE_INFO_R;
@@ -150,4 +149,12 @@ public class MockConnectedClient extends SpallocClient {
         }
         return null;
     }
+
+    /**
+     * @return the actual
+     */
+    public boolean isActual() {
+        return actual;
+    }
+
 }
