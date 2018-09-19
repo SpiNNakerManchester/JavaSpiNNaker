@@ -485,46 +485,46 @@ public class SpallocClient implements Closeable, SpallocAPI {
 					USER_PROPERTY + " must be specified for all jobs.");
 		}
 		kwargs.keySet().retainAll(ALLOWED_KWARGS);
-		return parseInt(call(new CreateJobCommand(args, kwargs), timeout));
+                String json = call(new CreateJobCommand(args, kwargs), timeout);
+		return parseInt(json);
 	}
 
 	@Override
 	public void jobKeepAlive(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		call(new JobKeepAliveCommand(jobID), timeout);
+            String json = call(new JobKeepAliveCommand(jobID), timeout);
 	}
 
 	@Override
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(call(new GetJobStateCommand(jobID), timeout),
-				JobState.class);
+            String json = call(new GetJobStateCommand(jobID), timeout);
+            return MAPPER.readValue(json, JobState.class);
 	}
 
 	@Override
 	public JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new GetJobMachineInfoCommand(jobID), timeout),
-				JobMachineInfo.class);
+            String json = call(new GetJobMachineInfoCommand(jobID), timeout);
+            return MAPPER.readValue(json, JobMachineInfo.class);
 	}
 
 	@Override
 	public void powerOnJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		call(new PowerOnJobBoardsCommand(jobID), timeout);
+            String json = call(new PowerOnJobBoardsCommand(jobID), timeout);
 	}
 
 	@Override
 	public void powerOffJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		call(new PowerOffJobBoardsCommand(jobID), timeout);
+            String json = call(new PowerOffJobBoardsCommand(jobID), timeout);
 	}
 
 	@Override
 	public void destroyJob(int jobID, String reason, Integer timeout)
 			throws IOException, SpallocServerException {
-		call(new DestroyJobCommand(jobID, reason), timeout);
+            String json = call(new DestroyJobCommand(jobID, reason), timeout);
 	}
 
 	@Override
@@ -581,15 +581,15 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
-		return rolist(MAPPER.readValue(call(new ListJobsCommand(), timeout),
-				JobDescription[].class));
+            String json = call(new ListJobsCommand(), timeout);
+            return rolist(MAPPER.readValue(json, JobDescription[].class));
 	}
 
 	@Override
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
-		return rolist(MAPPER.readValue(call(new ListMachinesCommand(), timeout),
-				Machine[].class));
+            String json = call(new ListMachinesCommand(), timeout);
+            return rolist(MAPPER.readValue(json, Machine[].class));
 	}
 
 	@Override
@@ -614,17 +614,15 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new WhereIsJobChipCommand(jobID, chip), timeout),
-				WhereIs.class);
+            String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
+            return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, HasChipLocation chip,
 			Integer timeout) throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new WhereIsMachineChipCommand(machine, chip), timeout),
-				WhereIs.class);
+            String json = call(new WhereIsMachineChipCommand(machine, chip), timeout);
+            return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override

@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
@@ -24,13 +27,16 @@ public class TestMockClient {
         int timeout = 1000;
         SpallocClient client = new MockConnectedClient(timeout);
         
-	@Test
         void testListJobs() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
                 List<JobDescription> jobs = client.listJobs(timeout);
                 assertNotNull(jobs);
+		int[] expectedIDs = {
+				47224, 47444
+		};
+                assertArrayEquals(expectedIDs, 
+                        jobs.stream().mapToInt(j -> j.getJobID()).toArray());
             }
-
         }
 
         @Test
@@ -61,4 +67,5 @@ public class TestMockClient {
                 client.destroyJob(jobId, "Test finished", timeout);
              }   
         }
-}
+
+ }

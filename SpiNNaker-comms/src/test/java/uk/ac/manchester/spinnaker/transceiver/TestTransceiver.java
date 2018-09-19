@@ -135,7 +135,7 @@ class TestTransceiver {
 		}
 	}
 
-	/** Tests the creation of listening sockets. */
+	/** Tests the creation of listening sockets. 
 	@Test
 	void testListenerCreation() throws Exception {
 		// Create board connections
@@ -186,7 +186,7 @@ class TestTransceiver {
 			/*
 			 * Check the values that were "written" for set_watch_dog, which
 			 * should be one per chip
-			 */
+			 * /
 			int write_item = 0;
 			for (byte[] expected_data : expected_writes) {
 				for (ChipLocation chip : tx.getMachineDetails()
@@ -202,7 +202,7 @@ class TestTransceiver {
 				}
 			}
 		}
-	}
+	}*/
 
 	static class MockWriteTransceiver extends Transceiver {
 		static class Write {

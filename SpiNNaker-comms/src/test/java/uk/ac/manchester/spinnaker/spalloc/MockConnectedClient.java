@@ -52,7 +52,6 @@ public class MockConnectedClient extends SpallocClient {
                 + "\"boards\":[[2,0,2]],"
                 + "\"keepalivehost\":\"130.88.198.171\"}]";
 
-    
     static final String LIST_MACHINE_R = "["
         + "{\"name\":\"Spin24b-223\","
             + "\"tags\":[\"default\",\"machine-room\"],"
@@ -108,6 +107,7 @@ public class MockConnectedClient extends SpallocClient {
         actual = true;
     }
     
+    @Override
     public void connect(Integer timeout) throws IOException {
         if (actual) {
             try {
@@ -119,7 +119,8 @@ public class MockConnectedClient extends SpallocClient {
             }
         }
     }
-
+    
+    @Override
     protected String call(Command<?> command, Integer timeout) {
         if (actual) {
             try {
