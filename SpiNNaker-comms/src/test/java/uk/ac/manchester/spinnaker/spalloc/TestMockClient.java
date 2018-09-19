@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
@@ -34,6 +35,7 @@ public class TestMockClient {
         static int timeout = 1000;
         static MockConnectedClient client = new MockConnectedClient(timeout);
         
+        @Test
         void testListJobs() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
                 List<JobDescription> jobs = client.listJobs(timeout);
@@ -114,4 +116,13 @@ public class TestMockClient {
              }   
         }
 
+        @Test
+        void testVersion() throws IOException, SpallocServerException, Exception {
+            try (AutoCloseable c = client.withConnection()) {
+                Version version = client.version(timeout);
+                if (client.isActual()) {
+                } else {
+                }
+            }
+        }
  }

@@ -57,12 +57,16 @@ public final class Version implements Comparable<Version> {
 	}
 
 	private static final Pattern VERSION_RE = Pattern.compile(
-			// A major version number
-			"^(?<major>\\d+)"
-					// An optional minor version number
-					+ "(?:\\.(?<minor>\\d+)"
-					// An optional revision number
-					+ "(?:\\.(?<revision>\\d+))?)?$");
+            // A optional quote
+            "^(\"?)"
+            // A major version number
+            +	"(?<major>\\d+)"
+            // An optional minor version number
+            + "(?:\\.(?<minor>\\d+)"
+            // An optional revision number
+            + "(?:\\.(?<revision>\\d+))?)?"
+            // Back reference to optiona quote
+            + "\\1$");
 
 	/**
 	 * Create a version number.
@@ -71,17 +75,25 @@ public final class Version implements Comparable<Version> {
 	 *            the version identifier, as X or X.Y or X.Y.Z
 	 */
 	public Version(String threePartVersion) {
-		Matcher m = VERSION_RE.matcher(threePartVersion);
-		if (!m.matches()) {
-			throw new IllegalArgumentException(
-					"bad version string: " + threePartVersion);
-		}
-		majorVersion = parseInt(m.group("major"));
-		minorVersion = (m.groupCount() > 1 ? parseInt(m.group("minor")) : 0);
-		revision = (m.groupCount() > 2 ? parseInt(m.group("revision")) : 0);
+            Matcher m = VERSION_RE.matcher(threePartVersion);
+            if (!m.matches()) {
+                throw new IllegalArgumentException(
+                    "bad version string: " + threePartVersion);
+            }
+            majorVersion = parseInt(m.group("major"));
+            minorVersion = parsePossibleInt(m.group("minor"));
+            revision = parsePossibleInt(m.group("revision"));
 	}
 
-	@Override
+        private int parsePossibleInt(String s) {
+            if (s == null) {
+                return 0;
+            } else {
+                return parseInt(s);
+            }
+        } 
+
+        @Override
 	public boolean equals(Object other) {
 		if (other == null || !(other instanceof Version)) {
 			return false;

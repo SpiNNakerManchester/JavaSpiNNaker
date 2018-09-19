@@ -473,7 +473,8 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public Version version(Integer timeout)
 			throws IOException, SpallocServerException {
-		return new Version(call(new VersionCommand(), timeout));
+            String json = call(new VersionCommand(), timeout);
+            return new Version(json);
 	}
 
 	@Override
