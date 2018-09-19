@@ -2,7 +2,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_BYTE_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
@@ -28,12 +28,22 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
  */
 public class HostExecuteDataSpecification {
 	private static final int DEFAULT_SDRAM_BYTES = 117 * 1024 * 1024;
+	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * INT_SIZE;
+	private Transceiver txrx;
+
+	/**
+	 * Create a high-level DSE interface.
+	 *
+	 * @param transceiver
+	 *            The transceiver used to do the communication.
+	 */
+	public HostExecuteDataSpecification(Transceiver transceiver) {
+		this.txrx = transceiver;
+	}
 
 	/**
 	 * Executes the host based data specification.
 	 *
-	 * @param txrx
-	 *            The transceiver used to do the communication.
 	 * @param machine
 	 *            The machine we're talking to.
 	 * @param appID
@@ -50,17 +60,15 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> load(Transceiver txrx,
-			Machine machine, int appID, Map<CoreLocation, File> dsgTargets)
+	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
+			Map<CoreLocation, File> dsgTargets)
 			throws IOException, Exception, DataSpecificationException {
-		return load(txrx, machine, appID, dsgTargets, null);
+		return load(machine, appID, dsgTargets, null);
 	}
 
 	/**
 	 * Executes the host based data specification.
 	 *
-	 * @param txrx
-	 *            The transceiver used to do the communication.
 	 * @param machine
 	 *            The machine we're talking to.
 	 * @param appID
@@ -80,8 +88,8 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> load(Transceiver txrx,
-			Machine machine, int appID, Map<CoreLocation, File> dsgTargets,
+	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
+			Map<CoreLocation, File> dsgTargets,
 			Map<CoreLocation, LocationInfo> info)
 			throws IOException, Exception, DataSpecificationException {
 		if (info == null) {
@@ -89,8 +97,7 @@ public class HostExecuteDataSpecification {
 		}
 		for (CoreLocation core : new ProgressIterable<>(dsgTargets.keySet(),
 				"Executing data specifications and loading data")) {
-			info.put(core,
-					load(txrx, machine, appID, core, dsgTargets.get(core)));
+			info.put(core, load(machine, appID, core, dsgTargets.get(core)));
 		}
 		return info;
 	}
@@ -98,8 +105,6 @@ public class HostExecuteDataSpecification {
 	/**
 	 * Executes the host based data specification on a specific core.
 	 *
-	 * @param txrx
-	 *            The transceiver used to do the communication.
 	 * @param machine
 	 *            The machine we're talking to.
 	 * @param appID
@@ -116,31 +121,20 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public LocationInfo load(Transceiver txrx, Machine machine, int appID,
-			HasCoreLocation core, File dataSpec)
+	public LocationInfo load(Machine machine, int appID, HasCoreLocation core,
+			File dataSpec)
 			throws IOException, Exception, DataSpecificationException {
 		try (Executor executor =
 				new Executor(dataSpec, machine.getChipAt(core).sdram)) {
 			executor.execute();
 			int bytesUsed = executor.getConstructedDataSize();
 			int startAddress = txrx.mallocSDRAM(core, bytesUsed, appID);
-
-			ByteBuffer b = allocate(bytesUsed).order(LITTLE_ENDIAN);
-			executor.addHeader(b);
-			executor.addPointerTable(b, startAddress);
-			b.flip();
-			txrx.writeMemory(core, startAddress, b);
-			int bytesWritten = b.remaining();
+			int bytesWritten = writeHeader(core, executor, startAddress);
 
 			for (MemoryRegion r : executor.regions()) {
-				if (isToBeIgnored(r)) {
-					continue;
+				if (!isToBeIgnored(r)) {
+					bytesWritten += writeRegion(core, r);
 				}
-
-				ByteBuffer data = r.getRegionData().duplicate();
-				data.flip();
-				txrx.writeMemory(core, r.getRegionBase(), data);
-				bytesWritten += data.remaining();
 			}
 
 			int user0 = txrx.getUser0RegisterAddress(core);
@@ -150,12 +144,84 @@ public class HostExecuteDataSpecification {
 	}
 
 	/**
+	 * Writes the header section.
+	 *
+	 * @param core
+	 *            Which core to write to.
+	 * @param executor
+	 *            The executor which generates the header.
+	 * @param startAddress
+	 *            Where to write the header.
+	 * @return How many bytes were actually written.
+	 * @throws IOException
+	 *             If anything goes wrong with I/O.
+	 * @throws Exception
+	 *             If SCAMP rejects the request.
+	 */
+	private int writeHeader(HasCoreLocation core, Executor executor,
+			int startAddress) throws IOException, Exception {
+		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
+				.order(LITTLE_ENDIAN);
+
+		executor.addHeader(b);
+		executor.addPointerTable(b, startAddress);
+
+		b.flip();
+		int written = b.remaining();
+		txrx.writeMemory(core, startAddress, b);
+		return written;
+	}
+
+	/**
+	 * Writes the contents of a region. Caller is responsible for ensuring this
+	 * method has work to do.
+	 *
+	 * @param core
+	 *            Which core to write to.
+	 * @param region
+	 *            The region to write.
+	 * @return How many bytes were actually written.
+	 * @throws IOException
+	 *             If anything goes wrong with I/O.
+	 * @throws Exception
+	 *             If SCAMP rejects the request.
+	 */
+	private int writeRegion(HasCoreLocation core, MemoryRegion region)
+			throws IOException, Exception {
+		return writeRegion(core, region, region.getRegionBase());
+	}
+
+	/**
+	 * Writes the contents of a region. Caller is responsible for ensuring this
+	 * method has work to do.
+	 *
+	 * @param core
+	 *            Which core to write to.
+	 * @param region
+	 *            The region to write.
+	 * @param baseAddress
+	 *            Where to write the region.
+	 * @return How many bytes were actually written.
+	 * @throws IOException
+	 *             If anything goes wrong with I/O.
+	 * @throws Exception
+	 *             If SCAMP rejects the request.
+	 */
+	private int writeRegion(HasCoreLocation core, MemoryRegion region,
+			int baseAddress) throws IOException, Exception {
+		ByteBuffer data = region.getRegionData().duplicate();
+
+		data.flip();
+		int written = data.remaining();
+		txrx.writeMemory(core, baseAddress, data);
+		return written;
+	}
+
+	/**
 	 * Executes the host based data specification on a specific core for the
 	 * purpose of reloading, using default assumptions about how much space was
 	 * allocated.
 	 *
-	 * @param txrx
-	 *            The transceiver used to do the communication.
 	 * @param core
 	 *            Which core of the machine to generate for and load onto.
 	 * @param dataSpec
@@ -167,29 +233,24 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public void reload(Transceiver txrx, HasCoreLocation core, File dataSpec)
+	public void reload(HasCoreLocation core, File dataSpec)
 			throws DataSpecificationException, IOException, Exception {
 		try (Executor executor = new Executor(dataSpec, DEFAULT_SDRAM_BYTES)) {
 			// execute the spec
 			executor.execute();
 
 			// Read the region table for the placement
-			int baseAddress = txrx.getCPUInformation(core).getUser()[0];
-			int startRegion = getRegionAddress(baseAddress, 0);
-			int tableSize = getRegionAddress(baseAddress, MAX_MEM_REGIONS)
-					- startRegion;
-			IntBuffer offsets =
-					txrx.readMemory(core, startRegion, tableSize).asIntBuffer();
+			int baseAddress = txrx.getCPUInformation(core).getUser(0);
+			IntBuffer offsets = txrx.readMemory(core.asChipLocation(),
+					baseAddress + APP_PTR_TABLE_HEADER_SIZE, REGION_TABLE_SIZE)
+					.asIntBuffer();
 
 			// Write the regions to the machine
 			for (MemoryRegion r : executor.regions()) {
 				int offset = offsets.get();
-				if (isToBeIgnored(r)) {
-					continue;
+				if (!isToBeIgnored(r)) {
+					writeRegion(core, r, offset);
 				}
-				ByteBuffer data = r.getRegionData().duplicate();
-				data.flip();
-				txrx.writeMemory(core, offset, data);
 			}
 		}
 	}
@@ -198,8 +259,6 @@ public class HostExecuteDataSpecification {
 	 * Executes the host based data specification on a specific core for the
 	 * purpose of reloading.
 	 *
-	 * @param txrx
-	 *            The transceiver used to do the communication.
 	 * @param core
 	 *            Which core of the machine to generate for and load onto.
 	 * @param info
@@ -214,40 +273,30 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public void reload(Transceiver txrx, HasCoreLocation core,
-			LocationInfo info, File dataSpec)
+	public void reload(HasCoreLocation core, LocationInfo info, File dataSpec)
 			throws DataSpecificationException, IOException, Exception {
 		try (Executor executor = new Executor(dataSpec, info.memoryUsed)) {
 			// execute the spec
 			executor.execute();
 
 			// Read the region table for the placement
-			int baseAddress = txrx.getCPUInformation(core).getUser()[0];
-			int startRegion = getRegionAddress(baseAddress, 0);
-			int tableSize = getRegionAddress(baseAddress, MAX_MEM_REGIONS)
-					- startRegion;
-			IntBuffer offsets =
-					txrx.readMemory(core, startRegion, tableSize).asIntBuffer();
+			int tableAddress = txrx.getCPUInformation(core).getUser(0);
+			IntBuffer offsets = txrx.readMemory(core.asChipLocation(),
+					tableAddress + APP_PTR_TABLE_HEADER_SIZE, REGION_TABLE_SIZE)
+					.asIntBuffer();
 
 			// Write the regions to the machine
 			for (MemoryRegion r : executor.regions()) {
 				int offset = offsets.get();
-				if (isToBeIgnored(r)) {
-					continue;
+				if (!isToBeIgnored(r)) {
+					writeRegion(core, r, offset);
 				}
-				ByteBuffer data = r.getRegionData().duplicate();
-				data.flip();
-				txrx.writeMemory(core, offset, data);
 			}
 		}
 	}
 
-	private boolean isToBeIgnored(MemoryRegion r) {
+	private static boolean isToBeIgnored(MemoryRegion r) {
 		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
-	}
-
-	private int getRegionAddress(int baseAddress, int region) {
-		return baseAddress + APP_PTR_TABLE_HEADER_BYTE_SIZE + region * INT_SIZE;
 	}
 
 	/**
