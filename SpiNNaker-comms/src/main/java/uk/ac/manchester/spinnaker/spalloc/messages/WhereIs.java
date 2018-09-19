@@ -1,15 +1,17 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+
 /**
  * The description of where some resource is on a SpiNNaker system.
  */
 public class WhereIs {
-	private Chip jobChip;
+	private ChipLocation jobChip;
 	private int jobId;
-	private Chip chip;
+	private ChipLocation chip;
 	private BoardCoordinates logical;
 	private String machine;
-	private Chip boardChip;
+	private ChipLocation boardChip;
 	private BoardPhysicalCoordinates physical;
 
 	/**
@@ -17,7 +19,7 @@ public class WhereIs {
 	 *
 	 * @return the job-relative chip location
 	 */
-	public Chip getJobChip() {
+	public ChipLocation getJobChip() {
 		return jobChip;
 	}
 
@@ -28,10 +30,10 @@ public class WhereIs {
 	 *            the job-relative chip location to set
 	 */
 	public void setJobChip(Chip jobChip) {
-		this.jobChip = jobChip;
+		this.jobChip = jobChip.asChipLocation();
 	}
 
-	/**
+       /**
 	 * Get the job id.
 	 *
 	 * @return the job id
@@ -55,7 +57,7 @@ public class WhereIs {
 	 *
 	 * @return the chip
 	 */
-	public Chip getChip() {
+	public ChipLocation getChip() {
 		return chip;
 	}
 
@@ -66,7 +68,7 @@ public class WhereIs {
 	 *            the chip to set
 	 */
 	public void setChip(Chip chip) {
-		this.chip = chip;
+		this.chip = chip.asChipLocation();
 	}
 
 	/**
@@ -112,7 +114,7 @@ public class WhereIs {
 	 *
 	 * @return the board chip location
 	 */
-	public Chip getBoardChip() {
+	public ChipLocation getBoardChip() {
 		return boardChip;
 	}
 
@@ -123,7 +125,7 @@ public class WhereIs {
 	 *            the board chip location to set
 	 */
 	public void setBoardChip(Chip boardChip) {
-		this.boardChip = boardChip;
+		this.boardChip = boardChip.asChipLocation();
 	}
 
 	/**

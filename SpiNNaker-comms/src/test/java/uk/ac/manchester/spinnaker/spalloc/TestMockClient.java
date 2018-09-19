@@ -24,7 +24,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
- *
+ * Tests the Spalloc Client ideally using an actual connection 
+ *      but with a backup of canned replies if the connection fails/ timesout.
+ * 
  * @author Christian
  */
 public class TestMockClient {
@@ -97,7 +99,7 @@ public class TestMockClient {
                 assertTrue(state.getPower());
                 ChipLocation chip = new ChipLocation(1,1);
                 WhereIs whereis = client.whereIs(jobId, chip, timeout);
-                assert(chip.onSameChipAs(whereis.getJobChip()));
+                assertEquals(chip, whereis.getJobChip());
                 assertEquals(jobId, whereis.getJobId());
                 if (client.isActual()) {
                     assertNotNull(whereis.getBoardChip());

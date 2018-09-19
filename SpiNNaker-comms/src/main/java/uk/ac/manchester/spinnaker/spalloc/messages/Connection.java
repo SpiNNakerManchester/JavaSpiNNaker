@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -15,14 +16,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 })
 @JsonFormat(shape = ARRAY)
 public final class Connection {
-	private Chip chip;
+	private ChipLocation chip;
 	private String hostname;
 
 	/**
 	 * Create with defaults.
 	 */
 	public Connection() {
-		chip = new Chip();
+		chip = null;
 		hostname = "";
 	}
 
@@ -34,7 +35,7 @@ public final class Connection {
 	 * @param hostname
 	 *            the host
 	 */
-	public Connection(Chip chip, String hostname) {
+	public Connection(ChipLocation chip, String hostname) {
 		this.chip = chip;
 		this.hostname = hostname;
 	}
@@ -48,16 +49,16 @@ public final class Connection {
 	 *            the host
 	 */
 	public Connection(HasChipLocation chip, String hostname) {
-		this.chip = new Chip(chip.getX(), chip.getY());
+		this.chip = chip.asChipLocation();
 		this.hostname = hostname;
 	}
 
-	public Chip getChip() {
+	public ChipLocation getChip() {
 		return chip;
 	}
 
 	public void setChip(Chip chip) {
-		this.chip = chip;
+		this.chip = chip.asChipLocation();
 	}
 
 	public String getHostname() {

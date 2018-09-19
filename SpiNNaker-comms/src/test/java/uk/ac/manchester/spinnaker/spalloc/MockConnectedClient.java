@@ -91,7 +91,7 @@ public class MockConnectedClient extends SpallocClient {
     
     static final String WHERE_IS_CHIP = 
             "{\"job_chip\":[1,1],"
-            + "\"job_id\":47894,"
+            + "\"job_id\":9999,"
             + "\"chip\":[5,9],"
             + "\"logical\":[0,0,2],"
             + "\"machine\":\"Spin24b-223\","
