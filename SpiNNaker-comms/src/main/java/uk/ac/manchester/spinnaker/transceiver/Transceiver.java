@@ -66,7 +66,6 @@ import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.BootSender;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.MulticastSender;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
@@ -231,11 +230,6 @@ public class Transceiver extends UDPTransceiver
 	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
 	/** A list of all connections that can be used to send SDP messages. */
 	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
-	/**
-	 * A list of all connections that can be used to send Multicast messages.
-	 */
-	private final List<MulticastSender> multicastSenderConnections =
-			new ArrayList<>();
 	/**
 	 * A map of IP address -> SCAMP connection. These are those that can be used
 	 * for setting up IP Tags.
@@ -540,11 +534,6 @@ public class Transceiver extends UDPTransceiver
 			// Locate any connections that can send SDP
 			if (conn instanceof SDPSender) {
 				sdpSenderConnections.add((SDPSender) conn);
-			}
-
-			// Locate any connections that can send Multicast
-			if (conn instanceof MulticastSender) {
-				multicastSenderConnections.add((MulticastSender) conn);
 			}
 
 			// Locate any connections that can send and receive SCP
