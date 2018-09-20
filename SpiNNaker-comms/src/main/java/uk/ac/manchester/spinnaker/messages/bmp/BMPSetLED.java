@@ -15,48 +15,6 @@ public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 	/**
 	 * Make a request.
 	 *
-	 * @param led
-	 *            What LED to alter
-	 * @param action
-	 *            What operation to apply to it
-	 * @param board
-	 *            The board to talk to
-	 */
-	public BMPSetLED(int led, LEDAction action, int board) {
-		super(board, CMD_LED, argument1(action, led), argument2(board), null);
-	}
-
-	/**
-	 * Make a request.
-	 *
-	 * @param leds
-	 *            What LEDs to alter
-	 * @param action
-	 *            What operation to apply to them
-	 * @param board
-	 *            The board to talk to
-	 */
-	public BMPSetLED(Collection<Integer> leds, LEDAction action, int board) {
-		super(board, CMD_LED, argument1(action, leds), argument2(board), null);
-	}
-
-	/**
-	 * Make a request.
-	 *
-	 * @param led
-	 *            What LED to alter
-	 * @param action
-	 *            What operation to apply to it
-	 * @param boards
-	 *            The boards to talk to
-	 */
-	public BMPSetLED(int led, LEDAction action, Collection<Integer> boards) {
-		super(boards, CMD_LED, argument1(action, led), argument2(boards), null);
-	}
-
-	/**
-	 * Make a request.
-	 *
 	 * @param leds
 	 *            What LEDs to alter
 	 * @param action
@@ -70,16 +28,8 @@ public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 				null);
 	}
 
-	private static int argument1(LEDAction action, int led) {
-		return action.value << (led * 2);
-	}
-
 	private static int argument1(LEDAction action, Collection<Integer> leds) {
 		return leds.stream().mapToInt(led -> action.value << (led * 2)).sum();
-	}
-
-	private static int argument2(int board) {
-		return 1 << board;
 	}
 
 	private static int argument2(Collection<Integer> boards) {

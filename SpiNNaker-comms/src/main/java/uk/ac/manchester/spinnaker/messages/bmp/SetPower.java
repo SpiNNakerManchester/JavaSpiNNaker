@@ -22,17 +22,6 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	/**
 	 * @param powerCommand
 	 *            The power command being sent
-	 * @param board
-	 *            The board on the backplane to power on or off
-	 */
-	public SetPower(PowerCommand powerCommand, int board) {
-		super(0, CMD_BMP_POWER, argument1(0.0, powerCommand), argument2(board),
-				null);
-	}
-
-	/**
-	 * @param powerCommand
-	 *            The power command being sent
 	 * @param boards
 	 *            The boards on the same backplane to power on or off
 	 * @param delay
@@ -45,46 +34,8 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 				argument2(boards), null);
 	}
 
-	/**
-	 * @param powerCommand
-	 *            The power command being sent
-	 * @param board
-	 *            The board on the backplane to power on or off
-	 * @param boardToSendTo
-	 *            The optional board to send the command to if this is to be
-	 *            sent to a frame of boards.
-	 */
-	@Deprecated
-	public SetPower(PowerCommand powerCommand, int board, int boardToSendTo) {
-		super(boardToSendTo, CMD_BMP_POWER, argument1(0.0, powerCommand),
-				argument2(board), null);
-	}
-
-	/**
-	 * @param powerCommand
-	 *            The power command being sent
-	 * @param boards
-	 *            The boards on the same backplane to power on or off
-	 * @param delay
-	 *            Number of seconds delay between power state changes of the
-	 *            different boards.
-	 * @param boardToSendTo
-	 *            The optional board to send the command to if this is to be
-	 *            sent to a frame of boards.
-	 */
-	@Deprecated
-	public SetPower(PowerCommand powerCommand, Collection<Integer> boards,
-			double delay, int boardToSendTo) {
-		super(boardToSendTo, CMD_BMP_POWER, argument1(delay, powerCommand),
-				argument2(boards), null);
-	}
-
 	private static int argument1(double delay, PowerCommand powerCommand) {
 		return ((int) (delay * MS_PER_S) << DELAY_SHIFT) | powerCommand.value;
-	}
-
-	private static int argument2(int board) {
-		return 1 << board;
 	}
 
 	private static int argument2(Collection<Integer> boards) {
