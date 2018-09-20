@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
@@ -270,7 +269,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 		this.argument2 = argument2;
 		this.argument3 = argument3;
 		this.data = null;
-		this.dataBuffer = data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.dataBuffer = data.duplicate();
 	}
 
 	@Override
@@ -283,8 +282,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 		if (data != null) {
 			buffer.put(data);
 		} else if (dataBuffer != null) {
-			buffer.put(dataBuffer.array(), dataBuffer.position(),
-					dataBuffer.remaining());
+			buffer.put(dataBuffer);
 		}
 	}
 

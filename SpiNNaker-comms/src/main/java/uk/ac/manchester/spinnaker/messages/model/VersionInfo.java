@@ -1,9 +1,9 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +33,6 @@ public final class VersionInfo {
 	/** The location of the core where the information was obtained. */
 	public final HasCoreLocation core;
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 	private static final Pattern VERSION_RE = Pattern
 			.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)$");
 
