@@ -3,15 +3,20 @@ package uk.ac.manchester.spinnaker.spalloc;
 import java.io.IOException;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.GetBoardAtPositionCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.GetBoardPositionCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.GetJobMachineInfoCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.GetJobStateCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListJobsCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListMachinesCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsJobChipCommand;
 
 /**
- *
- * @author micro
+ * A possibly Mock Client that if it can not create an actual connection
+ *      provides a number of canned replies.
+ * 
+ * @author Christian
  */
 public class MockConnectedClient extends SpallocClient {
 
@@ -97,12 +102,24 @@ public class MockConnectedClient extends SpallocClient {
             + "\"machine\":\"Spin24b-223\","
             + "\"board_chip\":[1,1],"
             + "\"physical\":[0,0,4]}";
+    
+    static final String POSITION_R = "[0,0,8]";
+    
+     static final String AT_R = "[0,0,1]";
             
+    /**
+     * The version as it comes from spalloc.
+     * 
+     * Note the quotes in the String are as being returned by spalloc.
+     */
+    static final String VERSION = "\"1.0.0\"";
+    
+    
     private boolean actual;
  
     public MockConnectedClient(int timeout) {
-        super("spinnaker.cs.man.ac.uk", 22244, timeout);
-        //super("127.0.0.0", 22244, timeout);
+        //super("spinnaker.cs.man.ac.uk", 22244, timeout);
+        super("127.0.0.0", 22244, timeout);
         actual = true;
     }
     
@@ -126,6 +143,7 @@ public class MockConnectedClient extends SpallocClient {
                 return super.call(command, timeout);
             } catch (Exception ex) {
                 actual = false;
+                ex.printStackTrace();
                 System.out.println("Call fail using mock");
             }
         }
@@ -147,11 +165,23 @@ public class MockConnectedClient extends SpallocClient {
         if (command.getClass() == WhereIsJobChipCommand.class) {
             return WHERE_IS_CHIP;
         }
+        if (command.getClass() == VersionCommand.class) {
+            return VERSION;
+        }
+        if (command.getClass() == GetBoardPositionCommand.class) {
+            return POSITION_R;
+        }
+        if (command.getClass() == GetBoardAtPositionCommand.class) {
+            return AT_R;
+        }
         return null;
     }
 
     /**
-     * @return the actual
+     * Specifies if an actual connection is being used.
+     * @return 
+     *      True if real replies are being obtained, 
+     *      False if canned replies are being used.
      */
     public boolean isActual() {
         return actual;

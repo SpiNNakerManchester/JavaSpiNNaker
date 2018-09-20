@@ -16,8 +16,9 @@ public class GetBoardAtPositionCommand extends Command<Integer> {
 			BoardPhysicalCoordinates coords) {
 		super("get_board_at_position");
 		addKwArg("machine_name", machine);
-		addKwArg("cabinet", coords.getCabinet());
-		addKwArg("frame", coords.getFrame());
-		addKwArg("board", coords.getBoard());
+                // The current spalloc server expects the param names x, y, z
+		addKwArg("x", coords.getCabinet());
+		addKwArg("y", coords.getFrame());
+		addKwArg("z", coords.getBoard());
 	}
 }

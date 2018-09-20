@@ -597,22 +597,21 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public BoardPhysicalCoordinates getBoardPosition(String machineName,
 			BoardCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new GetBoardPositionCommand(machineName, coords), timeout),
-				BoardPhysicalCoordinates.class);
+            String json = call(
+                    new GetBoardPositionCommand(machineName, coords), timeout);
+            return MAPPER.readValue(json, BoardPhysicalCoordinates.class);
 	}
 
 	@Override
 	public BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new GetBoardAtPositionCommand(machineName, coords),
-						timeout),
-				BoardCoordinates.class);
+            String json = call(new GetBoardAtPositionCommand(
+                    machineName, coords), timeout);
+            return MAPPER.readValue(json, BoardCoordinates.class);
 	}
-
-	@Override
+        
+        @Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
             String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);

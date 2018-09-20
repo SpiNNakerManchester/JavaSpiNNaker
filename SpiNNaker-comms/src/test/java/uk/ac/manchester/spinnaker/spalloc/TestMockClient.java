@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
@@ -57,14 +59,23 @@ public class TestMockClient {
                 if (client.isActual()) {
                     // Don't know the jobids currently on the machine if any
                     machines.forEach(m -> assertNotNull(m.getName()));
+                    machines.forEach(m -> System.out.println(m.getName()));
+                    
                 } else {
                     String[] expectedNames = { "Spin24b-223", "Spin24b-225", "Spin24b-226"};
                     List<String> foundNames = machines.stream().map(Machine::getName).collect(Collectors.toList());
                     assertArrayEquals(expectedNames, foundNames.toArray());
                 }
+                if (!machines.isEmpty()) {
+                    String machineName = machines.get(0).getName();
+                    BoardCoordinates coords = new BoardCoordinates(0,0,1);
+                    BoardPhysicalCoordinates physical = client.getBoardPosition(machineName, coords, timeout);
+                    BoardCoordinates coords2 = client.getBoardPosition(machineName, physical, timeout);
+                    assertEquals(coords, coords2);
+                }
             }
         }
-        
+
         @Test
         void testJob() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
@@ -125,4 +136,5 @@ public class TestMockClient {
                 }
             }
         }
+                
  }
