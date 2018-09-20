@@ -292,8 +292,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	/**
-	 * Send data down this connection. Caller must ensure that the datagram
-	 * packet does <i>not</i> have a destination set.
+	 * Send data down this connection.
 	 *
 	 * @param data
 	 *            The data to be sent
@@ -307,6 +306,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		if (!channel.isOpen()) {
 			throw new EOFException();
+		}
+		if (!data.hasRemaining()) {
+			throw new IllegalStateException(
+					"data buffer must have bytes to send");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("sending data of length {} to {}", data.remaining(),
@@ -403,6 +406,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
+		if (!data.hasRemaining()) {
+			throw new IllegalStateException(
+					"data buffer must have bytes to send");
+		}
 		channel.send(data, new InetSocketAddress(address, port));
 	}
 
@@ -479,6 +486,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
 		ByteBuffer b = newMessageBuffer();
 		triggerMessage.addToBuffer(b);
+		b.flip();
 		sendTo(b, host, SCP_SCAMP_PORT);
 	}
 
