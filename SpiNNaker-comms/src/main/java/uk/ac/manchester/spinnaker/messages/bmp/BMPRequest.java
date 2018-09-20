@@ -23,8 +23,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  */
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
-	private static final byte[] NO_DATA = null;
-
 	private static SDPHeader bmpHeader(int board) {
 		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board),
 				DEFAULT_PORT);
