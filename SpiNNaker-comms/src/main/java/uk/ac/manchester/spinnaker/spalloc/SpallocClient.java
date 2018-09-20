@@ -621,26 +621,26 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public WhereIs whereIs(String machine, HasChipLocation chip,
 			Integer timeout) throws IOException, SpallocServerException {
-            String json = call(new WhereIsMachineChipCommand(machine, chip), timeout);
-            return MAPPER.readValue(json, WhereIs.class);
+        String json = call(new WhereIsMachineChipCommand(machine, chip), timeout);
+        return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
-						timeout),
-				WhereIs.class);
+        String json = call(
+                new WhereIsMachineBoardPhysicalCommand(machine, coords),
+                timeout);
+        return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, BoardCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-		return MAPPER.readValue(
-				call(new WhereIsMachineBoardLogicalCommand(machine, coords),
-						timeout),
-				WhereIs.class);
+        String json = call(
+                new WhereIsMachineBoardLogicalCommand(machine, coords), 
+                timeout);
+        return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@SuppressWarnings("serial")

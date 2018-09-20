@@ -72,6 +72,16 @@ public class TestMockClient {
                     BoardPhysicalCoordinates physical = client.getBoardPosition(machineName, coords, timeout);
                     BoardCoordinates coords2 = client.getBoardPosition(machineName, physical, timeout);
                     assertEquals(coords, coords2);
+                    boolean previous = client.isActual();
+                    WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
+                    WhereIs whereis2 = client.whereIs(machineName, physical, timeout);
+                    ChipLocation chip = whereis1.getChip();
+                    WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
+                    // check only work if all real or all mock
+                    if (previous == client.isActual()) {
+                        assertEquals(whereis1, whereis2);
+                        assertEquals(whereis1, whereis2);
+                    }
                 }
             }
         }

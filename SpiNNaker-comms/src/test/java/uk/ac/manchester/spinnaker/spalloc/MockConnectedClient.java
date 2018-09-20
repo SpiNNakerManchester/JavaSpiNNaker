@@ -11,6 +11,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ListJobsCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ListMachinesCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsJobChipCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineBoardLogicalCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineBoardPhysicalCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 
 /**
  * A possibly Mock Client that if it can not create an actual connection
@@ -94,7 +97,7 @@ public class MockConnectedClient extends SpallocClient {
             + "\"keepalivehost\":\"86.82.216.229\"}";
             
     
-    static final String WHERE_IS_CHIP = 
+    static final String WHERE_IS_R = 
             "{\"job_chip\":[1,1],"
             + "\"job_id\":9999,"
             + "\"chip\":[5,9],"
@@ -162,8 +165,11 @@ public class MockConnectedClient extends SpallocClient {
         if (command.getClass() ==GetJobStateCommand.class) {
             return STATE_POWER_R;
         }
-        if (command.getClass() == WhereIsJobChipCommand.class) {
-            return WHERE_IS_CHIP;
+        if (command.getClass() == WhereIsJobChipCommand.class 
+                || command.getClass() == WhereIsMachineBoardLogicalCommand.class
+                || command.getClass() == WhereIsMachineBoardPhysicalCommand.class
+                || command.getClass() == WhereIsMachineChipCommand.class) {
+            return WHERE_IS_R;
         }
         if (command.getClass() == VersionCommand.class) {
             return VERSION;

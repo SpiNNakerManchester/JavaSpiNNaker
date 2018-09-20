@@ -146,4 +146,20 @@ public class WhereIs {
 	public void setPhysical(BoardPhysicalCoordinates physical) {
 		this.physical = physical;
 	}
+    
+    @Override
+	public boolean equals(Object o) {
+		if (o != null && o instanceof WhereIs) {
+			WhereIs other = (WhereIs) o;
+			return jobChip.equals(other.jobChip) 
+                    && jobId == other.jobId 
+                    && chip.equals(other.chip)
+                    && logical.equals(other.logical)
+                    && machine.equals(other.machine)
+                    && boardChip.equals(other.boardChip)
+                    && physical.equals(other.physical);
+		}
+		return false;
+	}
+
 }
