@@ -19,7 +19,7 @@ public class IPTagClear extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the tag to clear (0..7)
 	 */
 	public IPTagClear(HasChipLocation chip, int tag) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), null, null);
+		super(chip.getScampCore(), CMD_IPTAG, argument1(tag));
 	}
 
 	private static Integer argument1(int tag) {

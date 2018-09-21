@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * An SCP request for the BMP to power on or power off a rack of boards.
@@ -16,7 +15,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * respond to power commands not sent to BMP 0. Because of this, this message
  * should <i>always</i> be sent to BMP 0!
  */
-public class SetPower extends BMPRequest<SetPower.Response> {
+public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int DELAY_SHIFT = 16;
 
 	/**
@@ -31,7 +30,7 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	public SetPower(PowerCommand powerCommand, Collection<Integer> boards,
 			double delay) {
 		super(0, CMD_BMP_POWER, argument1(delay, powerCommand),
-				argument2(boards), null);
+				argument2(boards));
 	}
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
@@ -43,15 +42,7 @@ public class SetPower extends BMPRequest<SetPower.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
-
-	/** The response from the powering message. */
-	public final class Response extends BMPRequest.BMPResponse {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("powering request", CMD_BMP_POWER, buffer);
-		}
+	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new BMPResponse("powering request", CMD_BMP_POWER, buffer);
 	}
 }

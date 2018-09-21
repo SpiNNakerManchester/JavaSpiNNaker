@@ -20,7 +20,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	 */
 	public IPTagGetInfo(HasChipLocation chip) {
 		super(chip.getScampCore(), CMD_IPTAG, TTO.value << COMMAND_FIELD,
-				IPTAG_MAX, null);
+				IPTAG_MAX);
 	}
 
 	@Override

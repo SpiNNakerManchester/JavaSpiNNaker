@@ -30,7 +30,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 	 *            The tag to get the details of.
 	 */
 	public IPTagGet(HasChipLocation chip, int tag) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1, null);
+		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1);
 	}
 
 	@Override

@@ -6,12 +6,11 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
  * A request to alter the LEDs on a board.
  */
-public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
+public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.
 	 *
@@ -24,8 +23,7 @@ public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 	 */
 	public BMPSetLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> boards) {
-		super(boards, CMD_LED, argument1(action, leds), argument2(boards),
-				null);
+		super(boards, CMD_LED, argument1(action, leds), argument2(boards));
 	}
 
 	private static int argument1(LEDAction action, Collection<Integer> leds) {
@@ -37,17 +35,7 @@ public class BMPSetLED extends BMPRequest<BMPSetLED.Response> {
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
-
-	/**
-	 * The response to a Set LED request.
-	 */
-	public final class Response extends BMPRequest.BMPResponse {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Set the LEDs of a board", CMD_LED, buffer);
-		}
+	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new BMPResponse("Set the LEDs of a board", CMD_LED, buffer);
 	}
 }

@@ -88,6 +88,7 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
@@ -1350,6 +1351,18 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
+	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+			BMPRequest<T> request) throws IOException, Exception {
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame))
+				.execute(request);
+	}
+
+	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+			int timeout, BMPRequest<T> request) throws IOException, Exception {
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
+				timeout).execute(request);
+	}
+
 	@Override
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
@@ -1357,9 +1370,8 @@ public class Transceiver extends UDPTransceiver
 		int timeout = (int) (MS_PER_S
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		new SendSingleBMPCommandProcess<SetPower.Response>(
-				bmpConnection(cabinet, frame), timeout)
-						.execute(new SetPower(powerCommand, boards, 0.0));
+		bmpCall(cabinet, frame, timeout,
+				new SetPower(powerCommand, boards, 0.0));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on
@@ -1372,43 +1384,33 @@ public class Transceiver extends UDPTransceiver
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
 			throws IOException, Exception {
-		new SendSingleBMPCommandProcess<BMPSetLED.Response>(
-				bmpConnection(cabinet, frame))
-						.execute(new BMPSetLED(leds, action, board));
+		bmpCall(cabinet, frame, new BMPSetLED(leds, action, board));
 	}
 
 	@Override
 	public int readFPGARegister(int fpgaNumber, int register, int cabinet,
 			int frame, int board) throws IOException, Exception {
-		return new SendSingleBMPCommandProcess<ReadFPGARegister.Response>(
-				bmpConnection(cabinet, frame))
-						.execute(new ReadFPGARegister(fpgaNumber, register,
-								board)).fpgaRegister;
+		return bmpCall(cabinet, frame,
+				new ReadFPGARegister(fpgaNumber, register, board)).fpgaRegister;
 	}
 
 	@Override
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
 			int cabinet, int frame, int board) throws IOException, Exception {
-		new SendSingleBMPCommandProcess<WriteFPGARegister.Response>(
-				bmpConnection(cabinet, frame))
-						.execute(new WriteFPGARegister(fpgaNumber, register,
-								value, board));
+		bmpCall(cabinet, frame,
+				new WriteFPGARegister(fpgaNumber, register, value, board));
 	}
 
 	@Override
 	public ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, Exception {
-		return new SendSingleBMPCommandProcess<ReadADC.Response>(
-				bmpConnection(cabinet, frame))
-						.execute(new ReadADC(board)).adcInfo;
+		return bmpCall(cabinet, frame, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
 	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, Exception {
-		return new SendSingleBMPCommandProcess<GetBMPVersion.Response>(
-				bmpConnection(cabinet, frame))
-						.execute(new GetBMPVersion(board)).versionInfo;
+		return bmpCall(cabinet, frame, new GetBMPVersion(board)).versionInfo;
 	}
 
 	@Override

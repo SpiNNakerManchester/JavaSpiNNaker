@@ -1,8 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
-
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -26,12 +23,12 @@ public abstract class SCPRequest<T extends SCPResponse>
 	static final CoreLocation DEFAULT_MONITOR_CORE =
 			new CoreLocation(DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
 
-	/** The first argument, or <tt>null</tt> if no first argument. */
-	public final Integer argument1;
-	/** The second argument, or <tt>null</tt> if no second argument. */
-	public final Integer argument2;
-	/** The third argument, or <tt>null</tt> if no third argument. */
-	public final Integer argument3;
+	/** The first argument. */
+	public final int argument1;
+	/** The second argument. */
+	public final int argument2;
+	/** The third argument. */
+	public final int argument3;
 	/** The payload data as a buffer, or <tt>null</tt> if no payload data. */
 	public final ByteBuffer data;
 	/** The SCP request header of the message. */
@@ -52,8 +49,40 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The command ID.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
-				null, null, NO_DATA);
+		this(new SCPSDPHeader(core), command, 0, 0, 0, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			int argument1) {
+		this(new SCPSDPHeader(core), command, argument1, 0, 0, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			int argument1, int argument2) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, 0,
+				NO_DATA);
 	}
 
 	/**
@@ -71,9 +100,9 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The third argument.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
-				argument1, argument2, argument3, NO_DATA);
+			int argument1, int argument2, int argument3) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
+				NO_DATA);
 	}
 
 	/**
@@ -94,10 +123,9 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            the <i>limit</i>.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			ByteBuffer data) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
-				argument1, argument2, argument3, data);
+			int argument1, int argument2, int argument3, ByteBuffer data) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
+				data);
 	}
 
 	/**
@@ -117,9 +145,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The additional data. Starts at the <i>position</i> and goes to
 	 *            the <i>limit</i>.
 	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			ByteBuffer data) {
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, int argument1,
+			int argument2, int argument3, ByteBuffer data) {
 		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
@@ -132,9 +159,9 @@ public abstract class SCPRequest<T extends SCPResponse>
 	public void addToBuffer(ByteBuffer buffer) {
 		sdpHeader.addToBuffer(buffer);
 		scpRequestHeader.addToBuffer(buffer);
-		buffer.putInt(argument1 == null ? 0 : argument1);
-		buffer.putInt(argument2 == null ? 0 : argument2);
-		buffer.putInt(argument3 == null ? 0 : argument3);
+		buffer.putInt(argument1);
+		buffer.putInt(argument2);
+		buffer.putInt(argument3);
 		if (data != NO_DATA) {
 			buffer.put(data.duplicate());
 		}
