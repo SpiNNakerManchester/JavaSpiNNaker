@@ -224,9 +224,9 @@ public class SpallocClient implements Closeable, SpallocAPI {
 				connectNeeded = true;
 			}
 		}
+        sock.setSoTimeout(timeout != null ? timeout : 0);
 
 		if (connectNeeded) {
-			sock.setSoTimeout(timeout != null ? timeout : 0);
 			if (!doConnect(sock)) {
 				closeThreadConnection(key);
 				return null;
@@ -342,7 +342,9 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			if (line == null) {
 				throw new EOFException("Connection closed");
 			}
+            //System.out.println(line);
 			Response response = MAPPER.readValue(line, Response.class);
+            //System.out.println(response.getClass());
 			if (response == null) {
 				throw new SpallocProtocolException(
 						"unexpected response: " + line);
@@ -427,6 +429,8 @@ public class SpallocClient implements Closeable, SpallocAPI {
 					throw new SpallocServerException((ExceptionResponse) r);
 				} else if (r instanceof Notification) {
 					// Got a notification, keep trying...
+                    System.out.println("call notifaction " + r.getClass());
+                    Notification n = (Notification)r;
 					notifications.add((Notification) r);
 				} else {
 					throw new SpallocProtocolException(
@@ -445,12 +449,22 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
+//        if (notifications.isEmpty()) {
+//            try {        
+//                if (timeout < 0) {
+//                    call(new VersionCommand(), 1000);                
+//                } else {
+//                    call(new VersionCommand(), timeout);
+//                }
+//            } catch (SpallocServerException ex) {
+//                ex.printStackTrace();
+//            }
+//        }
 		// If we already have a notification, return it
 		Notification n = notifications.poll();
 		if (n != null) {
 			return n;
 		}
-
 		// Check for a duff timeout
 		if (timeout != null && timeout < 0) {
 			return null;
