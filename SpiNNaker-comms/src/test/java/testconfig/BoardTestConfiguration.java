@@ -72,7 +72,7 @@ public class BoardTestConfiguration {
 		board_version = config.getint(MCSEC, "version");
 		String names = config.get(MCSEC, "bmp_names");
 		Inet4Address bmpHost = InetFactory.getByName(names);
-		if (names == "None") {
+		if (names == null || "None".equals(names)) {
 			bmp_names = null;
 		} else {
 			bmp_names = asList(
