@@ -645,7 +645,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			}
 		}
 		// Snag the keepalive interval from the job
-		keepaliveTime = f2ms(jobState.getKeepAlive());
+		keepaliveTime = f2ms(jobState.getKeepalive());
 		log.info("resumed spalloc job with ID: {}", id);
 		launchKeepaliveDaemon();
 	}

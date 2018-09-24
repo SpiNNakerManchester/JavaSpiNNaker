@@ -27,11 +27,11 @@ public class JobState {
 		this.power = power;
 	}
 
-	public double getKeepAlive() {
+	public double getKeepalive() {
 		return keepAlive;
 	}
 
-	public void setKeepAlive(double keepAlive) {
+	public void setKeepalive(double keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
@@ -42,4 +42,8 @@ public class JobState {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+    
+    public String toString() {
+        return "State: " + state + " power: " + power + " keepalive " + keepAlive + " reason: " + reason;
+    }
 }

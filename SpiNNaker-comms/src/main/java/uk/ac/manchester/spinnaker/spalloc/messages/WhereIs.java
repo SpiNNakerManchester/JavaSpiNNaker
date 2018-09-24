@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
@@ -14,6 +15,24 @@ public class WhereIs {
 	private ChipLocation boardChip;
 	private BoardPhysicalCoordinates physical;
 
+    /**
+     * Default Constructor for unmarsheller
+     */
+    public WhereIs () {
+    }
+    
+    public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip, 
+            BoardCoordinates logical, String machine, ChipLocation boardChip, 
+            BoardPhysicalCoordinates physical) {
+        this.jobChip = jobChip;
+        this.jobId =  jobId;
+        this.chip = chip;
+        this.logical = logical;
+        this.machine = machine;
+        this.boardChip = boardChip;
+        this.physical = physical;
+    }
+    
 	/**
 	 * Get the chip location relative to the job's allocation.
 	 *
@@ -30,7 +49,11 @@ public class WhereIs {
 	 *            the job-relative chip location to set
 	 */
 	public void setJobChip(Chip jobChip) {
-		this.jobChip = jobChip.asChipLocation();
+        if (jobChip == null) {
+            this.jobChip = null;
+        } else {
+            this.jobChip = jobChip.asChipLocation();
+        }
 	}
 
        /**
@@ -68,7 +91,11 @@ public class WhereIs {
 	 *            the chip to set
 	 */
 	public void setChip(Chip chip) {
-		this.chip = chip.asChipLocation();
+        if (chip == null) {
+            this.chip = null;
+        } else {
+            this.chip = chip.asChipLocation();
+        }
 	}
 
 	/**
@@ -125,7 +152,11 @@ public class WhereIs {
 	 *            the board chip location to set
 	 */
 	public void setBoardChip(Chip boardChip) {
-		this.boardChip = boardChip.asChipLocation();
+        if (boardChip == null) {
+            this.boardChip = null;
+        } else {
+    		this.boardChip = boardChip.asChipLocation();
+        }
 	}
 
 	/**
@@ -151,15 +182,20 @@ public class WhereIs {
 	public boolean equals(Object o) {
 		if (o != null && o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
-			return jobChip.equals(other.jobChip) 
+			return Objects.equals(jobChip,other.jobChip) 
                     && jobId == other.jobId 
-                    && chip.equals(other.chip)
-                    && logical.equals(other.logical)
-                    && machine.equals(other.machine)
-                    && boardChip.equals(other.boardChip)
-                    && physical.equals(other.physical);
+                    && Objects.equals(chip, other.chip)
+                    && Objects.equals(logical, other.logical)
+                    && Objects.equals(machine, other.machine)
+                    && Objects.equals(boardChip, other.boardChip)
+                    && Objects.equals(physical, other.physical);
 		}
 		return false;
 	}
 
+    public String toString() {
+        return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
+                + " logical: " + logical + " machine: " + machine 
+                + " boardChip: " + boardChip + " physical: " + physical;
+    }
 }

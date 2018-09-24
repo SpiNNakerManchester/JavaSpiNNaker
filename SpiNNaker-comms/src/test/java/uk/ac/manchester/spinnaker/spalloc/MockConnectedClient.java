@@ -121,8 +121,8 @@ public class MockConnectedClient extends SpallocClient {
     private boolean actual;
  
     public MockConnectedClient(int timeout) {
-        //super("spinnaker.cs.man.ac.uk", 22244, timeout);
-        super("127.0.0.0", 22244, timeout);
+        super("spinnaker.cs.man.ac.uk", 22244, timeout);
+        //super("127.0.0.0", 22244, timeout);
         actual = true;
     }
     

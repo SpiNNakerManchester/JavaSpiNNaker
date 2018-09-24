@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 
 /**
  * A description of the state of a job.
@@ -125,4 +126,22 @@ public class JobDescription {
 	public void setKeepAliveHost(String keepAliveHost) {
 		this.keepAliveHost = keepAliveHost;
 	}
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder("Job: ").append(jobID);
+        builder.append(" owner: ").append(owner); 
+        builder.append(" startTime: ").append(new Date(startTime * 1000));
+        builder.append(" power: ").append(power);
+        builder.append(" reason: ").append(reason); 
+        builder.append( " machine: ").append(machine);
+        builder.append(" args: ").append(args); 
+        builder.append(" kwargs: ").append(kwargs);
+        if (boards.size() < 6) {
+            builder.append(" boards: ").append(boards);     
+        } else {
+            builder.append(" # boards: ").append(boards.size());                 
+        }
+        builder.append( " keepAliveHost ").append(keepAliveHost);
+        return builder.toString();
+    }
 }

@@ -22,7 +22,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
+import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
+import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
@@ -73,12 +75,15 @@ public class TestMockClient {
                     BoardCoordinates coords2 = client.getBoardPosition(machineName, physical, timeout);
                     assertEquals(coords, coords2);
                     boolean previous = client.isActual();
+                    System.out.println(previous);
                     WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
                     WhereIs whereis2 = client.whereIs(machineName, physical, timeout);
                     ChipLocation chip = whereis1.getChip();
                     WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
                     // check only work if all real or all mock
                     if (previous == client.isActual()) {
+                        System.out.println(whereis1);
+                        System.out.println(whereis2);
                         assertEquals(whereis1, whereis2);
                         assertEquals(whereis1, whereis2);
                     }
@@ -86,8 +91,13 @@ public class TestMockClient {
             }
         }
 
+        private void checkNotification(int jobId, String machineName) {
+            
+        }
+        
         @Test
         void testJob() throws IOException, SpallocServerException, Exception {
+            Notification notification = null;
             try (AutoCloseable c = client.withConnection()) {
                 List<Integer> args = new ArrayList<>();
                 Map<String, Object> kwargs = new HashMap<>();   
@@ -98,7 +108,14 @@ public class TestMockClient {
                 } else {
                     assertEquals(client.MOCK_ID, jobId);
                 }
+                client.notifyJob(jobId, true, timeout);
                 JobMachineInfo machineInfo = client.getJobMachineInfo(jobId, timeout);
+                String machineName = machineInfo.getMachineName();
+                if (client.isActual()) {
+                    assert(!machineName.isEmpty());
+                } else {
+                    assertEquals("Spin24b-223", machineName);
+                }          
                 List<Connection> connections = machineInfo.getConnections();
                 String hostName = connections.get(0).getHostname();
                 if (client.isActual()) {
@@ -109,9 +126,19 @@ public class TestMockClient {
                 JobState state = client.getJobState(jobId, timeout);
                 assertEquals(State.POWER, state.getState());
                 assertTrue(state.getPower());
-                client.jobKeepAlive(jobId, timeout);
-                client.powerOffJobBoards(jobId, timeout);
-                state = client.getJobState(jobId, timeout);
+                if (client.isActual()) {
+                    client.jobKeepAlive(jobId, timeout);
+                    client.powerOffJobBoards(jobId, timeout);
+                    notification = client.waitForNotification(1000);
+                    System.out.println("1" + notification);
+                    state = client.getJobState(jobId, timeout);
+                }
+                if (client.isActual()) {
+                    notification = client.waitForNotification(-1);
+                    System.out.println("2" + notification);
+                    //assert (notification.getClass() == JobsChangedNotification.class);
+                    JobsChangedNotification jcn = (JobsChangedNotification)notification;
+                }                
                 assertEquals(State.POWER, state.getState());
                 if (client.isActual()) {
                     assertFalse(state.getPower());

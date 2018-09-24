@@ -19,4 +19,8 @@ public class MachinesChangedNotification implements Notification {
 		this.machinesChanged = machinesChanged == null ? emptyList()
 				: unmodifiableList(machinesChanged);
 	}
+    
+    public String toString() {
+        return "Machine Changed " + machinesChanged;
+    }
 }

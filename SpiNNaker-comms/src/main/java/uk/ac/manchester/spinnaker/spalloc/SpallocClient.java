@@ -102,7 +102,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
 	public static final Integer DEFAULT_TIMEOUT = null;
-	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final ObjectMapper MAPPER = createMapper();
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
 
 	/**
@@ -133,13 +133,6 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			new ConcurrentLinkedQueue<>();
 
 	static {
-		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
-		MAPPER.registerModule(module);
-		MAPPER.setPropertyNamingStrategy(SNAKE_CASE);
-		MAPPER.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-		MAPPER.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
 		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
 				MACHINE_PROPERTY, TAGS_PROPERTY, MIN_RATIO_PROPERTY,
 				MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_LINKS_PROPERTY,
@@ -163,6 +156,24 @@ public class SpallocClient implements Closeable, SpallocAPI {
 		this.defaultTimeout = timeout;
 	}
 
+    /**
+     * Static method to create the object mapper.
+     * 
+     * This method makes sure that all json unmarshallers use the same Mapper 
+     *      set up the exact same way.
+     * @return The Object Mapper used by the Spalloc client,
+     */
+    public static ObjectMapper createMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule();
+		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
+		mapper.registerModule(module);
+		mapper.setPropertyNamingStrategy(SNAKE_CASE);
+		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        return mapper;
+    }
+    
 	/**
 	 * Context adapter. Allows this code to be used like this:
 	 *
@@ -499,8 +510,10 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			throw new SpallocServerException(
 					USER_PROPERTY + " must be specified for all jobs.");
 		}
+        // TODO Just nuking bad params is not the best solution.
+        // Throw exception or at least log.
 		kwargs.keySet().retainAll(ALLOWED_KWARGS);
-                String json = call(new CreateJobCommand(args, kwargs), timeout);
+        String json = call(new CreateJobCommand(args, kwargs), timeout);
 		return parseInt(json);
 	}
 
@@ -514,6 +527,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
             String json = call(new GetJobStateCommand(jobID), timeout);
+            System.out.println(json);
             return MAPPER.readValue(json, JobState.class);
 	}
 
@@ -654,6 +668,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
         String json = call(
                 new WhereIsMachineBoardLogicalCommand(machine, coords), 
                 timeout);
+        System.out.println(json);
         return MAPPER.readValue(json, WhereIs.class);
 	}
 
@@ -706,4 +721,8 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			return new TextSocket();
 		}
 	}
+    
+    public String toString() {
+        return addr + " dead: " + dead + "  " + defaultTimeout;
+    }
 }
