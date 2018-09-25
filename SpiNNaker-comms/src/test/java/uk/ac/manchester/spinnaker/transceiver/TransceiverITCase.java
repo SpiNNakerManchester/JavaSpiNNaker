@@ -35,6 +35,7 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.TestAbortedException;
 
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -67,7 +68,7 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
-class TransceiverITCase {
+public class TransceiverITCase {
 	static BoardTestConfiguration board_config;
 	private static SpallocJob job;
 
@@ -492,4 +493,18 @@ class TransceiverITCase {
 		}
 	}
 
+	public static void main(String... args) throws Exception {
+		try {
+			setUpBeforeClass();
+		} catch (TestAbortedException e) {
+			System.err.println("precondition violated: " + e.getMessage());
+			System.exit(1);
+		}
+		try {
+			TransceiverITCase test = new TransceiverITCase();
+			test.testTransceiver();
+		} finally {
+			tearDownAtTheEnd();
+		}
+	}
 }
