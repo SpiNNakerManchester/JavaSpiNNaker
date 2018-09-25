@@ -53,7 +53,7 @@ class BufferedReceivingData {
         endBufferingSequenceNo = new HashMap<>();
         endBufferingState = new HashMap<>();
     }
- 
+
     public void resume() {
         //self._end_buffering_state = dict()
         //self._is_flushed = defaultdict(lambda: False)
@@ -97,7 +97,7 @@ class BufferedReceivingData {
     private void setFlushed(RegionLocation location, Boolean newValue) {
         isFlushed.put(location, newValue);
     }
-    
+
     public boolean isEndBufferingStateRecovered(RegionLocation location) {
         return endBufferingState.containsKey(location);
     }
@@ -126,19 +126,20 @@ class BufferedReceivingData {
     private BufferedDataStorage getRegionBuffer(RegionLocation location) {
         return data.get(location);
     }
-    
+
     BufferedDataStorage getRegionDataPointer(RegionLocation location) {
+    	/*
         missing = None
         if (x, y, p, region) not in self._end_buffering_state:
             missing = (x, y, p, region)
         data = self._data[x, y, p, region].read_all()
         return data, missing
-
-       if (data.containsKey(location)) {
-            return data.get(location);
-       } else {
-            throw new IllegalArgumentException("no data know for " + location);
-       }
+    	 */
+    	if (data.containsKey(location)) {
+    		return data.get(location);
+    	} else {
+    		throw new IllegalArgumentException("no data know for " + location);
+    	}
     }
 
     public void storeDataInRegionBuffer(RegionLocation location, ByteBuffer data) {
