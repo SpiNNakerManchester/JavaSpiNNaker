@@ -193,6 +193,11 @@ public class WhereIs {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
+    
     public String toString() {
         return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
                 + " logical: " + logical + " machine: " + machine 

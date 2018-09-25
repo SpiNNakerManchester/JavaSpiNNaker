@@ -353,9 +353,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 			if (line == null) {
 				throw new EOFException("Connection closed");
 			}
-            //System.out.println(line);
 			Response response = MAPPER.readValue(line, Response.class);
-            //System.out.println(response.getClass());
 			if (response == null) {
 				throw new SpallocProtocolException(
 						"unexpected response: " + line);
@@ -440,8 +438,6 @@ public class SpallocClient implements Closeable, SpallocAPI {
 					throw new SpallocServerException((ExceptionResponse) r);
 				} else if (r instanceof Notification) {
 					// Got a notification, keep trying...
-                    System.out.println("call notifaction " + r.getClass());
-                    Notification n = (Notification)r;
 					notifications.add((Notification) r);
 				} else {
 					throw new SpallocProtocolException(
@@ -527,7 +523,6 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
             String json = call(new GetJobStateCommand(jobID), timeout);
-            System.out.println(json);
             return MAPPER.readValue(json, JobState.class);
 	}
 
@@ -535,6 +530,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
             String json = call(new GetJobMachineInfoCommand(jobID), timeout);
+            System.out.println(json);
             return MAPPER.readValue(json, JobMachineInfo.class);
 	}
 
@@ -618,6 +614,7 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
             String json = call(new ListMachinesCommand(), timeout);
+            System.out.println(json);
             return rolist(MAPPER.readValue(json, Machine[].class));
 	}
 
@@ -668,7 +665,6 @@ public class SpallocClient implements Closeable, SpallocAPI {
         String json = call(
                 new WhereIsMachineBoardLogicalCommand(machine, coords), 
                 timeout);
-        System.out.println(json);
         return MAPPER.readValue(json, WhereIs.class);
 	}
 

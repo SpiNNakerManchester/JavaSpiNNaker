@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Date;
 public class JobDescription {
 	private int jobID;
 	private String owner;
-	private long startTime;
+	private double startTime;
 	private State state;
 	private Boolean power;
 	private double keepAlive;
@@ -23,7 +24,7 @@ public class JobDescription {
 	private String machine;
 	private List<Integer> args;
 	private Map<String, Object> kwargs;
-	private List<BoardCoordinates> boards;
+	private List<BoardCoordinates> boards = Collections.emptyList();
 	private String keepAliveHost;
 
 	public State getState() {
@@ -77,11 +78,11 @@ public class JobDescription {
 	}
 
 	@JsonProperty("start_time")
-	public long getStartTime() {
+	public double getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(long startTime) {
+	public void setStartTime(double startTime) {
 		this.startTime = startTime;
 	}
 
@@ -130,7 +131,7 @@ public class JobDescription {
     public String toString() {
         StringBuilder builder = new StringBuilder("Job: ").append(jobID);
         builder.append(" owner: ").append(owner); 
-        builder.append(" startTime: ").append(new Date(startTime * 1000));
+        builder.append(" startTime: ").append(new Date((long)(startTime * 1000)));
         builder.append(" power: ").append(power);
         builder.append(" reason: ").append(reason); 
         builder.append( " machine: ").append(machine);

@@ -61,8 +61,6 @@ public class TestMockClient {
                 if (client.isActual()) {
                     // Don't know the jobids currently on the machine if any
                     machines.forEach(m -> assertNotNull(m.getName()));
-                    machines.forEach(m -> System.out.println(m.getName()));
-                    
                 } else {
                     String[] expectedNames = { "Spin24b-223", "Spin24b-225", "Spin24b-226"};
                     List<String> foundNames = machines.stream().map(Machine::getName).collect(Collectors.toList());
@@ -75,15 +73,12 @@ public class TestMockClient {
                     BoardCoordinates coords2 = client.getBoardPosition(machineName, physical, timeout);
                     assertEquals(coords, coords2);
                     boolean previous = client.isActual();
-                    System.out.println(previous);
                     WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
                     WhereIs whereis2 = client.whereIs(machineName, physical, timeout);
                     ChipLocation chip = whereis1.getChip();
                     WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
                     // check only work if all real or all mock
                     if (previous == client.isActual()) {
-                        System.out.println(whereis1);
-                        System.out.println(whereis2);
                         assertEquals(whereis1, whereis2);
                         assertEquals(whereis1, whereis2);
                     }
@@ -130,12 +125,10 @@ public class TestMockClient {
                     client.jobKeepAlive(jobId, timeout);
                     client.powerOffJobBoards(jobId, timeout);
                     notification = client.waitForNotification(1000);
-                    System.out.println("1" + notification);
                     state = client.getJobState(jobId, timeout);
                 }
                 if (client.isActual()) {
                     notification = client.waitForNotification(-1);
-                    System.out.println("2" + notification);
                     //assert (notification.getClass() == JobsChangedNotification.class);
                     JobsChangedNotification jcn = (JobsChangedNotification)notification;
                 }                

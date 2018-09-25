@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import java.util.Collections;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
@@ -12,9 +13,9 @@ import java.util.List;
 public class JobMachineInfo {
 	private int width;
 	private int height;
-	private List<Connection> connections;
+	private List<Connection> connections = Collections.emptyList();
 	private String machineName;
-	private List<BoardCoordinates> boards;
+	private List<BoardCoordinates> boards = Collections.emptyList();
 
 	public int getWidth() {
 		return width;
@@ -56,4 +57,18 @@ public class JobMachineInfo {
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("width: ").append(width);
+        builder.append(" height: ").append(height);
+        builder.append(" machineName: ").append(machineName );
+        if (connections.size() > 6 && boards.size() == connections.size()) {
+            builder.append (" # connections/boards: " + connections.size());
+        } else {
+            builder.append(" connections: ").append(connections);
+            builder.append(" boards: ").append(boards);
+        }
+        return builder.toString();
+    }
 }

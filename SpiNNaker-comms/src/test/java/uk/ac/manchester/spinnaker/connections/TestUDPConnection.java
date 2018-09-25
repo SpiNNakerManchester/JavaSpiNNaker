@@ -42,7 +42,6 @@ public class TestUDPConnection {
 			result = connection.receiveSCPResponse(null);
 		}
 		Response scp_response = result.parsePayload(scp_req);
-		System.out.println(scp_response.versionInfo);
 		assertEquals(scp_response.result, RC_OK);
 	}
 

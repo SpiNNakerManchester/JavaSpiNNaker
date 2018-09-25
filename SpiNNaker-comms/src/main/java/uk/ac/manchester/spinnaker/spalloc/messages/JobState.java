@@ -9,7 +9,9 @@ public class JobState {
 	private State state;
 	private Boolean power;
 	private double keepAlive;
+    private float startTime;
 	private String reason;
+    private String keepalivehost;
 
 	public State getState() {
 		return state;
@@ -43,6 +45,34 @@ public class JobState {
 		this.reason = reason;
 	}
     
+    /**
+     * @return the startTime
+     */
+    public float getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(float startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the keepalivehost
+     */
+    public String getKeepalivehost() {
+        return keepalivehost;
+    }
+
+    /**
+     * @param keepalivehost the keepalivehost to set
+     */
+    public void setKeepalivehost(String keepalivehost) {
+        this.keepalivehost = keepalivehost;
+    }
+
     public String toString() {
         return "State: " + state + " power: " + power + " keepalive " + keepAlive + " reason: " + reason;
     }

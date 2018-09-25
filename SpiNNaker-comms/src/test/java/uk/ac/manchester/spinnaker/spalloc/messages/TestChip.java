@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +9,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**
  *
- * @author micro
+ * @author Christian
  */
 public class TestChip {
     

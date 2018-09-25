@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -58,7 +59,11 @@ public final class Connection {
 	}
 
 	public void setChip(Chip chip) {
-		this.chip = chip.asChipLocation();
+        if (chip == null) {
+            this.chip = null;
+        } else {
+            this.chip = chip.asChipLocation();
+        }
 	}
 
 	public String getHostname() {
@@ -73,14 +78,22 @@ public final class Connection {
 	public boolean equals(Object other) {
 		if (other != null && other instanceof Connection) {
 			Connection c = (Connection) other;
-			return chip.equals(c.chip) && hostname.equals(c.hostname);
+			return Objects.equals(chip, c.chip) 
+                    && Objects.equals(hostname, c.hostname);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return 5 * hostname.hashCode() + 7 * chip.hashCode();
+        int hashcode = 0;
+        if (hostname != null) {
+            hashcode += 5 * hostname.hashCode();
+        }
+        if (chip != null) {
+            hashcode += 7 * chip.hashCode();
+        }
+        return hashcode;
 	}
 
 	@Override
