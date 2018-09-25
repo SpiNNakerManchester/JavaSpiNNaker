@@ -4,7 +4,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
-import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -16,29 +15,12 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
-import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
-import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
-import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 
@@ -96,41 +78,14 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  * interface to the server. For a higher-level interface built on top of this
  * client, see {@link SpallocJob}.
  */
-public class SpallocClient implements Closeable, SpallocAPI {
+public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
 	/** The default spalloc port. */
 	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
 	public static final Integer DEFAULT_TIMEOUT = null;
-	private static final ObjectMapper MAPPER = createMapper();
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
-
-	/**
-	 * The hostname and port of the spalloc server.
-	 */
-	private final InetSocketAddress addr;
-	private final Integer defaultTimeout;
-
-	/**
-	 * Whether this connection is in the dead state. Dead connections have no
-	 * underlying connections open.
-	 */
-	private boolean dead;
-
-	/**
-	 * Mapping from threads to sockets. Kept because we need to have way to shut
-	 * down all sockets at once.
-	 */
-	private final Map<Thread, TextSocket> socks = new HashMap<>();
-	/** Lock for access to {@link #socks}. */
-	private final Object socksLock = new Object();
-	/**
-	 * The thread-aware socket factory. Every thread gets exactly one socket.
-	 */
-	private final TextSocketFactory local = new TextSocketFactory();
-	/** A queue of unprocessed notifications. */
-	private final Queue<Notification> notifications =
-			new ConcurrentLinkedQueue<>();
+	private static final ObjectMapper MAPPER =  createMapper();
 
 	static {
 		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
@@ -140,20 +95,55 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	}
 
 	/**
+	 * Define a new connection using the default spalloc port. <b>NB:</b> Does
+	 * not connect to the server until {@link #connect()} is called.
+	 *
+	 * @param hostname
+	 *            The hostname of the server.
+	 */
+	public SpallocClient(String hostname) {
+		super(hostname, DEFAULT_PORT, DEFAULT_TIMEOUT);
+	}
+
+	/**
+	 * Define a new connection using the default spalloc port. <b>NB:</b> Does
+	 * not connect to the server until {@link #connect()} is called.
+	 *
+	 * @param hostname
+	 *            The hostname of the server.
+	 * @param timeout
+	 *            The default timeout.
+	 */
+	public SpallocClient(String hostname, Integer timeout) {
+		super(hostname, DEFAULT_PORT, timeout);
+	}
+
+	/**
 	 * Define a new connection. <b>NB:</b> Does not connect to the server until
 	 * {@link #connect()} is called.
 	 *
 	 * @param hostname
 	 *            The hostname of the server.
 	 * @param port
-	 *            The port to use (default: 22244).
+	 *            The port to use.
+	 */
+	public SpallocClient(String hostname, int port) {
+		super(hostname, port, DEFAULT_TIMEOUT);
+	}
+
+	/**
+	 * Define a new connection. <b>NB:</b> Does not connect to the server until
+	 * {@link #connect()} is called.
+	 *
+	 * @param hostname
+	 *            The hostname of the server.
+	 * @param port
+	 *            The port to use.
 	 * @param timeout
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, int port, Integer timeout) {
-		addr = new InetSocketAddress(hostname, port);
-		this.dead = true;
-		this.defaultTimeout = timeout;
+        super(hostname, port, timeout);
 	}
 
     /**
@@ -174,285 +164,6 @@ public class SpallocClient implements Closeable, SpallocAPI {
         return mapper;
     }
     
-	/**
-	 * Context adapter. Allows this code to be used like this:
-	 *
-	 * <pre>
-	 * try (AutoCloseable c = client.withConnection()) {
-	 *     ...
-	 * }
-	 * </pre>
-	 *
-	 * @return the auto-closeable context.
-	 * @throws IOException
-	 *             If the connect to the spalloc server fails.
-	 */
-	public AutoCloseable withConnection() throws IOException {
-		connect();
-		return this::close;
-	}
-
-	private TextSocket getConnection(Integer timeout) throws IOException {
-		TextSocket sock = null;
-		Thread key = currentThread();
-		/*
-		 * This loop will keep trying to connect until the socket exists and is
-		 * in a connected state. It's labelled just for clarity.
-		 */
-		while (sock == null) {
-			if (dead) {
-				throw new EOFException("not connected");
-			}
-			sock = getConnectedSocket(key, timeout);
-		}
-
-		if (timeout != null) {
-			sock.setSoTimeout(timeout);
-		}
-		return sock;
-	}
-
-	/**
-	 * Try to get a connected socket.
-	 *
-	 * @param key
-	 *            The thread that wants the connection (i.e., the current
-	 *            thread; cached for efficiency).
-	 * @param timeout
-	 *            The socket's timeout.
-	 * @return The socket, or <tt>null</tt> if the connection failed.
-	 * @throws IOException
-	 *             if something really bad goes wrong.
-	 */
-	private TextSocket getConnectedSocket(Thread key, Integer timeout)
-			throws IOException {
-		TextSocket sock;
-		boolean connectNeeded = false;
-		synchronized (socksLock) {
-			sock = local.get();
-			if (!socks.containsKey(key)) {
-				socks.put(key, sock);
-				connectNeeded = true;
-			}
-		}
-        sock.setSoTimeout(timeout != null ? timeout : 0);
-
-		if (connectNeeded) {
-			if (!doConnect(sock)) {
-				closeThreadConnection(key);
-				return null;
-			}
-		}
-		return sock;
-	}
-
-	private boolean doConnect(Socket sock) throws IOException {
-		boolean success = false;
-		try {
-			sock.connect(addr);
-			success = true;
-		} catch (IOException e) {
-			if (!e.getMessage().contains("EISCONN")) {
-				throw e;
-			}
-		}
-		return success;
-	}
-
-	/**
-	 * (Re)connect to the server.
-	 *
-	 * @throws IOException
-	 *             If a connection failure occurs.
-	 */
-	public void connect() throws IOException {
-		connect(defaultTimeout);
-	}
-
-	/**
-	 * (Re)connect to the server.
-	 *
-	 * @param timeout
-	 *            How long to spend (re)connecting.
-	 * @throws IOException
-	 *             If a connection failure occurs.
-	 */
-	public void connect(Integer timeout) throws IOException {
-		// Close any existing connection
-		Socket s = local.get();
-		if (s.isClosed()) {
-			closeThreadConnection(currentThread());
-		} else if (!s.isConnected()) {
-			closeThreadConnection(currentThread());
-		}
-		dead = false;
-		try {
-			getConnection(timeout);
-		} catch (IOException e) {
-			// Failure, try again...
-			closeThreadConnection(currentThread());
-			// Pass on the exception
-			throw e;
-		}
-	}
-
-	private void closeThreadConnection(Thread key) throws IOException {
-		Socket sock;
-		synchronized (socksLock) {
-			sock = socks.remove(key);
-		}
-		if (sock != null) {
-			// Mark the thread local so it will reinitialise
-			if (key == currentThread()) {
-				local.remove();
-			}
-			// Close the socket itself
-			sock.close();
-		}
-	}
-
-	/**
-	 * Disconnect from the server.
-	 *
-	 * @throws IOException
-	 *             if anything goes wrong
-	 */
-	@Override
-	public void close() throws IOException {
-		dead = true;
-		List<Thread> keys;
-		synchronized (socksLock) {
-			// Copy so we can safely remove asynchronously
-			keys = new ArrayList<>(socks.keySet());
-		}
-		for (Thread key : keys) {
-			closeThreadConnection(key);
-		}
-		local.remove();
-	}
-
-	/**
-	 * Receive a line of JSON from the server.
-	 *
-	 * @param timeout
-	 *            The number of milliseconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever.
-	 * @return The unpacked JSON line received.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws IOException
-	 *             If the socket is unusable or becomes disconnected.
-	 */
-	protected Response receiveResponse(Integer timeout)
-			throws SpallocProtocolTimeoutException, IOException {
-		TextSocket sock = getConnection(timeout);
-
-		// Wait for some data to arrive
-		try {
-			String line = sock.getReader().readLine();
-			if (line == null) {
-				throw new EOFException("Connection closed");
-			}
-			Response response = MAPPER.readValue(line, Response.class);
-			if (response == null) {
-				throw new SpallocProtocolException(
-						"unexpected response: " + line);
-			}
-			return response;
-		} catch (SocketTimeoutException e) {
-			throw new SpallocProtocolTimeoutException("recv timed out", e);
-		}
-	}
-
-	/**
-	 * Attempt to send a command as a line of JSON to the server.
-	 *
-	 * @param command
-	 *            The command to serialise.
-	 * @param timeout
-	 *            The number of milliseconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws IOException
-	 *             If the socket is unusable or becomes disconnected.
-	 */
-	protected void sendCommand(Command<?> command, Integer timeout)
-			throws SpallocProtocolTimeoutException, IOException {
-		log.debug("sending a {}", command.getClass());
-		TextSocket sock = getConnection(timeout);
-
-		// Send the line
-		String msg = MAPPER.writeValueAsString(command);
-		try {
-			PrintWriter pw = sock.getWriter();
-			pw.println(msg);
-			if (pw.checkError()) {
-				/*
-				 * Socket started giving errors; presume EOF since the
-				 * PrintWriter won't actually tell us why...
-				 */
-				throw new EOFException("command write failed");
-			}
-		} catch (SocketTimeoutException e) {
-			throw new SpallocProtocolTimeoutException("send timed out", e);
-		}
-	}
-
-	/**
-	 * Send a command to the server and return the reply.
-	 *
-	 * @param command
-	 *            The command to send.
-	 * @param timeout
-	 *            The number of milliseconds to wait before timing out or None
-	 *            if this function should wait forever.
-	 * @return The result string returned by the server.
-	 * @throws SpallocServerException
-	 *             If the server sends an error.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws SpallocProtocolException
-	 *             If the connection is unavailable or is closed.
-	 */
-	protected String call(Command<?> command, Integer timeout)
-			throws SpallocServerException, SpallocProtocolTimeoutException,
-			SpallocProtocolException {
-		try {
-			Long finishTime = makeTimeout(timeout);
-
-			// Construct and send the command message
-			sendCommand(command, timeout);
-
-			// Command sent! Attempt to receive the response...
-			while (!timedOut(finishTime)) {
-				Response r = receiveResponse(timeLeft(finishTime));
-				if (r == null) {
-					continue;
-				}
-				if (r instanceof ReturnResponse) {
-					// Success!
-					return ((ReturnResponse) r).getReturnValue();
-				} else if (r instanceof ExceptionResponse) {
-					// Server error!
-					throw new SpallocServerException((ExceptionResponse) r);
-				} else if (r instanceof Notification) {
-					// Got a notification, keep trying...
-					notifications.add((Notification) r);
-				} else {
-					throw new SpallocProtocolException(
-							"bad response: " + r.getClass());
-				}
-			}
-			throw new SpallocProtocolTimeoutException(
-					"timed out while calling " + command.getCommand());
-		} catch (SpallocProtocolTimeoutException e) {
-			throw e;
-		} catch (IOException e) {
-			throw new SpallocProtocolException(e);
-		}
-	}
-
 	@Override
 	public Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
@@ -494,8 +205,11 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public Version version(Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new VersionCommand(), timeout);
-            return new Version(json);
+		String json = call(new VersionCommand(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("version result: {}", json);
+		}
+		return new Version(json);
 	}
 
 	@Override
@@ -509,47 +223,67 @@ public class SpallocClient implements Closeable, SpallocAPI {
         // TODO Just nuking bad params is not the best solution.
         // Throw exception or at least log.
 		kwargs.keySet().retainAll(ALLOWED_KWARGS);
-        String json = call(new CreateJobCommand(args, kwargs), timeout);
+		String json = call(new CreateJobCommand(args, kwargs), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("create result: {}", json);
+		}
 		return parseInt(json);
 	}
 
 	@Override
 	public void jobKeepAlive(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new JobKeepAliveCommand(jobID), timeout);
+		String json = call(new JobKeepAliveCommand(jobID), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("keepalive result: {}", json);
+		}
 	}
 
 	@Override
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new GetJobStateCommand(jobID), timeout);
-            return MAPPER.readValue(json, JobState.class);
+		String json = call(new GetJobStateCommand(jobID), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("get-state result: {}", json);
+		}
+		return MAPPER.readValue(json, JobState.class);
 	}
 
 	@Override
 	public JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new GetJobMachineInfoCommand(jobID), timeout);
-            System.out.println(json);
-            return MAPPER.readValue(json, JobMachineInfo.class);
+		String json = call(new GetJobMachineInfoCommand(jobID), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("get-info result: {}", json);
+		}
+		return MAPPER.readValue(json, JobMachineInfo.class);
 	}
 
 	@Override
 	public void powerOnJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new PowerOnJobBoardsCommand(jobID), timeout);
+		String json = call(new PowerOnJobBoardsCommand(jobID), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("power-on result: {}", json);
+		}
 	}
 
 	@Override
 	public void powerOffJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new PowerOffJobBoardsCommand(jobID), timeout);
+		String json = call(new PowerOffJobBoardsCommand(jobID), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("power-off result: {}", json);
+		}
 	}
 
 	@Override
 	public void destroyJob(int jobID, String reason, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new DestroyJobCommand(jobID, reason), timeout);
+		String json = call(new DestroyJobCommand(jobID, reason), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("destroy result: {}", json);
+		}
 	}
 
 	@Override
@@ -569,7 +303,10 @@ public class SpallocClient implements Closeable, SpallocAPI {
 				c = new NoNotifyJobCommand(jobID);
 			}
 		}
-		call(c, timeout);
+		String json = call(c, timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("notify-job result: {}", json);
+		}
 	}
 
 	@Override
@@ -589,7 +326,10 @@ public class SpallocClient implements Closeable, SpallocAPI {
 				c = new NoNotifyMachineCommand(machineName);
 			}
 		}
-		call(c, timeout);
+		String json = call(c, timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("notify-machine result: {}", json);
+		}
 	}
 
 	/**
@@ -606,66 +346,90 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new ListJobsCommand(), timeout);
-            return rolist(MAPPER.readValue(json, JobDescription[].class));
+		String json = call(new ListJobsCommand(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("list-jobs result: {}", json);
+		}
+		return rolist(MAPPER.readValue(json, JobDescription[].class));
 	}
 
 	@Override
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new ListMachinesCommand(), timeout);
-            System.out.println(json);
-            return rolist(MAPPER.readValue(json, Machine[].class));
+		String json = call(new ListMachinesCommand(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("list-machines result: {}", json);
+		}
+		return rolist(MAPPER.readValue(json, Machine[].class));
 	}
 
 	@Override
 	public BoardPhysicalCoordinates getBoardPosition(String machineName,
 			BoardCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(
-                    new GetBoardPositionCommand(machineName, coords), timeout);
-            return MAPPER.readValue(json, BoardPhysicalCoordinates.class);
+		String json =
+				call(new GetBoardPositionCommand(machineName, coords), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("position result: {}", json);
+		}
+		return MAPPER.readValue(json, BoardPhysicalCoordinates.class);
 	}
 
 	@Override
 	public BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new GetBoardAtPositionCommand(
-                    machineName, coords), timeout);
-            return MAPPER.readValue(json, BoardCoordinates.class);
+		String json = call(new GetBoardAtPositionCommand(machineName, coords),
+				timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("position result: {}", json);
+		}
+		return MAPPER.readValue(json, BoardCoordinates.class);
 	}
         
         @Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
-            String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
-            return MAPPER.readValue(json, WhereIs.class);
+		String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("where-is result: {}", json);
+		}
+		return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, HasChipLocation chip,
 			Integer timeout) throws IOException, SpallocServerException {
-        String json = call(new WhereIsMachineChipCommand(machine, chip), timeout);
-        return MAPPER.readValue(json, WhereIs.class);
+		String json =
+				call(new WhereIsMachineChipCommand(machine, chip), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("where-is result: {}", json);
+		}
+		return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-        String json = call(
-                new WhereIsMachineBoardPhysicalCommand(machine, coords),
-                timeout);
-        return MAPPER.readValue(json, WhereIs.class);
+		String json =
+				call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
+						timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("where-is result: {}", json);
+		}
+		return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@Override
 	public WhereIs whereIs(String machine, BoardCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-        String json = call(
-                new WhereIsMachineBoardLogicalCommand(machine, coords), 
-                timeout);
-        return MAPPER.readValue(json, WhereIs.class);
+		String json =
+				call(new WhereIsMachineBoardLogicalCommand(machine, coords),
+						timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("where-is result: {}", json);
+		}
+		return MAPPER.readValue(json, WhereIs.class);
 	}
 
 	@SuppressWarnings("serial")
@@ -681,44 +445,21 @@ public class SpallocClient implements Closeable, SpallocAPI {
 	}
 
 	/**
-	 * Subclass of Socket to encapsulate reading and writing text by lines. This
-	 * handles all buffering internally, locking that close to the socket
-	 * itself.
+	 * Format a request as a line of newline-free JSON, suitable for sending to
+	 * the spalloc server.
 	 */
-	private static class TextSocket extends Socket {
-		private BufferedReader br;
-		private PrintWriter pw;
-		private static final Charset UTF8 = Charset.forName("UTF-8");
-
-		PrintWriter getWriter() throws IOException {
-			if (pw == null) {
-				pw = new PrintWriter(
-						new OutputStreamWriter(getOutputStream(), UTF8));
-			}
-			return pw;
-		}
-
-		BufferedReader getReader() throws IOException {
-			if (br == null) {
-				br = new BufferedReader(
-						new InputStreamReader(getInputStream(), UTF8));
-			}
-			return br;
-		}
+	@Override
+	protected String formatRequest(Command<?> command) throws IOException {
+		return MAPPER.writeValueAsString(command);
 	}
 
 	/**
-	 * Subclass of ThreadLocal to ensure that we get sane initialisation of our
-	 * state in each thread.
+	 * Parse a line of response from the spalloc server, which should be a
+	 * complete JSON object.
 	 */
-	private static class TextSocketFactory extends ThreadLocal<TextSocket> {
-		@Override
-		protected TextSocket initialValue() {
-			return new TextSocket();
-		}
+	@Override
+	protected Response parseResponse(String line) throws IOException {
+		return MAPPER.readValue(line, Response.class);
 	}
     
-    public String toString() {
-        return addr + " dead: " + dead + "  " + defaultTimeout;
-    }
 }

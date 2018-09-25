@@ -56,17 +56,14 @@ public final class Version implements Comparable<Version> {
 		revision = parseInt(rev);
 	}
 
+	// This RE is in Extended mode syntax, which COMMENTS enables
 	private static final Pattern VERSION_RE = Pattern.compile(
-            // A optional quote
-            "^(\"?)"
-            // A major version number
-            +	"(?<major>\\d+)"
-            // An optional minor version number
-            + "(?:\\.(?<minor>\\d+)"
-            // An optional revision number
-            + "(?:\\.(?<revision>\\d+))?)?"
-            // Back reference to optiona quote
-            + "\\1$");
+			"  ^(\"?)               # A optional quote\n"
+			+ "(?<major>\\d+)       # A major version number\n"
+			+ "(?:\\.(?<minor>\\d+) # An optional minor version number\n"
+			+ "(?:\\.(?<revision>\\d+))? # An optional revision number\n"
+			+ ")?\\1$               # Back reference to optional quote\n",
+			Pattern.COMMENTS);
 
 	/**
 	 * Create a version number.
@@ -75,25 +72,24 @@ public final class Version implements Comparable<Version> {
 	 *            the version identifier, as X or X.Y or X.Y.Z
 	 */
 	public Version(String threePartVersion) {
-            Matcher m = VERSION_RE.matcher(threePartVersion);
-            if (!m.matches()) {
-                throw new IllegalArgumentException(
-                    "bad version string: " + threePartVersion);
-            }
-            majorVersion = parseInt(m.group("major"));
-            minorVersion = parsePossibleInt(m.group("minor"));
-            revision = parsePossibleInt(m.group("revision"));
+		Matcher m = VERSION_RE.matcher(threePartVersion);
+		if (!m.matches()) {
+			throw new IllegalArgumentException(
+					"bad version string: " + threePartVersion);
+		}
+		majorVersion = parseInt(m.group("major"));
+		minorVersion = parsePossibleInt(m.group("minor"));
+		revision = parsePossibleInt(m.group("revision"));
 	}
 
-        private int parsePossibleInt(String s) {
-            if (s == null) {
-                return 0;
-            } else {
-                return parseInt(s);
-            }
-        } 
+	private static int parsePossibleInt(String s) {
+		if (s == null) {
+			return 0;
+		}
+		return parseInt(s);
+	}
 
-        @Override
+	@Override
 	public boolean equals(Object other) {
 		if (other == null || !(other instanceof Version)) {
 			return false;
