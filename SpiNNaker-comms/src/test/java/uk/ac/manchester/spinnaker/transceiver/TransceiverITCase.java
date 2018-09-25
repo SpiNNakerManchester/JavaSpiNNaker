@@ -25,7 +25,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +58,7 @@ import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegiste
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
@@ -68,16 +69,18 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  */
 class TransceiverITCase {
 	static BoardTestConfiguration board_config;
+	private static SpallocJob job;
 
 	static int n_cores = 20;
 	static List<ChipLocation> down_chips;
 	static CoreSubsets core_subsets;
 	static Map<ChipLocation, Collection<Integer>> down_cores;
 
+
 	@BeforeAll
-	public static void setUpBeforeClass() throws Exception {
+	static void setUpBeforeClass() throws Exception {
 		board_config = new BoardTestConfiguration();
-		board_config.set_up_remote_board();
+		job = board_config.set_up_spalloced_board();
 		core_subsets = new CoreSubsets();
 		core_subsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		core_subsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
@@ -87,6 +90,12 @@ class TransceiverITCase {
 
 		down_chips = new ArrayList<>();
 		down_chips.add(new ChipLocation(0, 1));
+	}
+
+	@AfterAll
+	static void tearDownAtTheEnd() throws Exception {
+		job.destroy();
+		job.close();
 	}
 
 	void printEnums(String name, Collection<? extends Enum<?>> enum_list) {
@@ -399,7 +408,7 @@ class TransceiverITCase {
 	}
 
 	@Test
-	void testTransceiver() throws Exception {
+	public void testTransceiver() throws Exception {
         InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (Transceiver transceiver = Transceiver.createTransceiver(
 				remoteHost, board_config.board_version,

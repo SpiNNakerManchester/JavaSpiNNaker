@@ -120,6 +120,9 @@ public class BoardTestConfiguration {
 			job.close();
 			throw e;
 		}
+		board_version = 5; // ASSUME FOR SPALLOC!
+		bmp_names = null; // NO ACCESS TO BMP
+		auto_detect_bmp = false;
 		return job;
 	}
 
