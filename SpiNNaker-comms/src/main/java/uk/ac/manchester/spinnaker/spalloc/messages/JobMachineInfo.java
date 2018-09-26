@@ -61,7 +61,7 @@ public class JobMachineInfo {
 	}
 
     @Override
-    public String toString() {
+	public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("width: ").append(width);
         builder.append(" height: ").append(height);

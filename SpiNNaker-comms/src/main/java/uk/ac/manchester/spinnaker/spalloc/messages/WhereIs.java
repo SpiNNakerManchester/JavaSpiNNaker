@@ -59,14 +59,14 @@ public class WhereIs {
 	 *            the job-relative chip location to set
 	 */
 	public void setJobChip(Chip jobChip) {
-        if (jobChip == null) {
-            this.jobChip = null;
-        } else {
-            this.jobChip = jobChip.asChipLocation();
-        }
+		if (jobChip == null) {
+			this.jobChip = null;
+		} else {
+			this.jobChip = jobChip.asChipLocation();
+		}
 	}
 
-       /**
+	/**
 	 * Get the job id.
 	 *
 	 * @return the job id
@@ -101,11 +101,11 @@ public class WhereIs {
 	 *            the chip to set
 	 */
 	public void setChip(Chip chip) {
-        if (chip == null) {
-            this.chip = null;
-        } else {
-            this.chip = chip.asChipLocation();
-        }
+		if (chip == null) {
+			this.chip = null;
+		} else {
+			this.chip = chip.asChipLocation();
+		}
 	}
 
 	/**
@@ -162,11 +162,11 @@ public class WhereIs {
 	 *            the board chip location to set
 	 */
 	public void setBoardChip(Chip boardChip) {
-        if (boardChip == null) {
-            this.boardChip = null;
-        } else {
-    		this.boardChip = boardChip.asChipLocation();
-        }
+		if (boardChip == null) {
+			this.boardChip = null;
+		} else {
+			this.boardChip = boardChip.asChipLocation();
+		}
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class WhereIs {
 		this.physical = physical;
 	}
 
-    @Override
+	@Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
@@ -208,10 +208,10 @@ public class WhereIs {
 		throw new UnsupportedOperationException();
 	}
 
-    @Override
-    public String toString() {
-        return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
-                + " logical: " + logical + " machine: " + machine
-                + " boardChip: " + boardChip + " physical: " + physical;
-    }
+	@Override
+	public String toString() {
+		return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
+				+ " logical: " + logical + " machine: " + machine
+				+ " boardChip: " + boardChip + " physical: " + physical;
+	}
 }

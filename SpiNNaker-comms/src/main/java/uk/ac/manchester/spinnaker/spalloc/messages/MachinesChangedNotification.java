@@ -20,7 +20,8 @@ public class MachinesChangedNotification implements Notification {
 				: unmodifiableList(machinesChanged);
 	}
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "Machine Changed " + machinesChanged;
     }
 }

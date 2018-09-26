@@ -430,8 +430,8 @@ public abstract class SpallocConnection implements Closeable {
 		}
 	}
 
-    public String toString() {
+    @Override
+	public String toString() {
         return addr + " dead: " + dead + "  " + defaultTimeout;
     }
-
 }
