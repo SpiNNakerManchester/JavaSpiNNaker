@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * A description of the state of a job.
