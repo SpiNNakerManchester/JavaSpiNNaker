@@ -16,6 +16,8 @@ public class JobMachineInfo {
 	private List<Connection> connections = Collections.emptyList();
 	private String machineName;
 	private List<BoardCoordinates> boards = Collections.emptyList();
+    /** Number of boards/Connections to list individually in the toString. */
+    private static final int BOARD_TO_LIST = 6;
 
 	public int getWidth() {
 		return width;
@@ -57,14 +59,16 @@ public class JobMachineInfo {
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
-    
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("width: ").append(width);
         builder.append(" height: ").append(height);
-        builder.append(" machineName: ").append(machineName );
-        if (connections.size() > 6 && boards.size() == connections.size()) {
-            builder.append (" # connections/boards: " + connections.size());
+        builder.append(" machineName: ").append(machineName);
+        if (connections.size() > BOARD_TO_LIST
+                && boards.size() == connections.size()) {
+            builder.append(" # connections/boards: " + connections.size());
         } else {
             builder.append(" connections: ").append(connections);
             builder.append(" boards: ").append(boards);

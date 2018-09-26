@@ -58,6 +58,11 @@ public final class Connection {
 		return chip;
 	}
 
+    /**
+     * Setter for Chip used by unmarshaller..
+     *
+     * @param chip Location as a bean Object.
+     */
 	public void setChip(Chip chip) {
         if (chip == null) {
             this.chip = null;
@@ -78,7 +83,7 @@ public final class Connection {
 	public boolean equals(Object other) {
 		if (other != null && other instanceof Connection) {
 			Connection c = (Connection) other;
-			return Objects.equals(chip, c.chip) 
+			return Objects.equals(chip, c.chip)
                     && Objects.equals(hostname, c.hostname);
 		}
 		return false;

@@ -16,13 +16,23 @@ public class WhereIs {
 	private BoardPhysicalCoordinates physical;
 
     /**
-     * Default Constructor for unmarsheller
+     * Default Constructor for unmarsheller.
      */
-    public WhereIs () {
+    public WhereIs() {
     }
-    
-    public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip, 
-            BoardCoordinates logical, String machine, ChipLocation boardChip, 
+
+    /**
+     * Constructor that sets all parameters.
+     * @param jobChip the chip location relative to the job's allocation
+     * @param jobId The ID of the job
+     * @param chip The Chip
+     * @param logical the logical board coordinates.
+     * @param machine The name of the Machine where this chip is
+     * @param boardChip The chip location relative to the board.
+     * @param physical The physical board coordinates.
+     */
+    public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
+            BoardCoordinates logical, String machine, ChipLocation boardChip,
             BoardPhysicalCoordinates physical) {
         this.jobChip = jobChip;
         this.jobId =  jobId;
@@ -32,7 +42,7 @@ public class WhereIs {
         this.boardChip = boardChip;
         this.physical = physical;
     }
-    
+
 	/**
 	 * Get the chip location relative to the job's allocation.
 	 *
@@ -177,13 +187,13 @@ public class WhereIs {
 	public void setPhysical(BoardPhysicalCoordinates physical) {
 		this.physical = physical;
 	}
-    
+
     @Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
-			return Objects.equals(jobChip,other.jobChip) 
-                    && jobId == other.jobId 
+			return Objects.equals(jobChip, other.jobChip)
+                    && jobId == other.jobId
                     && Objects.equals(chip, other.chip)
                     && Objects.equals(logical, other.logical)
                     && Objects.equals(machine, other.machine)
@@ -197,10 +207,11 @@ public class WhereIs {
 	public int hashCode() {
 		throw new UnsupportedOperationException();
 	}
-    
+
+    @Override
     public String toString() {
         return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
-                + " logical: " + logical + " machine: " + machine 
+                + " logical: " + logical + " machine: " + machine
                 + " boardChip: " + boardChip + " physical: " + physical;
     }
 }

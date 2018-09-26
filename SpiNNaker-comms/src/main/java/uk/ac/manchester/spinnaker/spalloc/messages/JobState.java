@@ -44,7 +44,7 @@ public class JobState {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-    
+
     /**
      * @return the startTime
      */
@@ -73,7 +73,9 @@ public class JobState {
         this.keepalivehost = keepalivehost;
     }
 
+    @Override
     public String toString() {
-        return "State: " + state + " power: " + power + " keepalive " + keepAlive + " reason: " + reason;
+        return "State: " + state + " power: " + power
+                + " keepalive " + keepAlive + " reason: " + reason;
     }
 }

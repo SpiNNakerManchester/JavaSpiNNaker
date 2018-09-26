@@ -9,6 +9,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.Date;
+import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * A description of the state of a job.
@@ -26,6 +27,9 @@ public class JobDescription {
 	private Map<String, Object> kwargs;
 	private List<BoardCoordinates> boards = Collections.emptyList();
 	private String keepAliveHost;
+
+    /** Number of boards to list individually in the toString. */
+    private static final int BOARD_TO_LIST = 6;
 
 	public State getState() {
 		return state;
@@ -127,22 +131,24 @@ public class JobDescription {
 	public void setKeepAliveHost(String keepAliveHost) {
 		this.keepAliveHost = keepAliveHost;
 	}
-    
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("Job: ").append(jobID);
-        builder.append(" owner: ").append(owner); 
-        builder.append(" startTime: ").append(new Date((long)(startTime * 1000)));
+        builder.append(" owner: ").append(owner);
+        builder.append(" startTime: ");
+        builder.append(new Date((long) (startTime * UnitConstants.MS_PER_S)));
         builder.append(" power: ").append(power);
-        builder.append(" reason: ").append(reason); 
-        builder.append( " machine: ").append(machine);
-        builder.append(" args: ").append(args); 
+        builder.append(" reason: ").append(reason);
+        builder.append(" machine: ").append(machine);
+        builder.append(" args: ").append(args);
         builder.append(" kwargs: ").append(kwargs);
-        if (boards.size() < 6) {
-            builder.append(" boards: ").append(boards);     
+        if (boards.size() < BOARD_TO_LIST) {
+            builder.append(" boards: ").append(boards);
         } else {
-            builder.append(" # boards: ").append(boards.size());                 
+            builder.append(" # boards: ").append(boards.size());
         }
-        builder.append( " keepAliveHost ").append(keepAliveHost);
+        builder.append(" keepAliveHost ").append(keepAliveHost);
         return builder.toString();
     }
 }
