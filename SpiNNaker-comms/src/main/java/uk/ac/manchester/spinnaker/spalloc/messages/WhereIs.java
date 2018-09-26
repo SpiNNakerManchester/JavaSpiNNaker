@@ -15,33 +15,41 @@ public class WhereIs {
 	private ChipLocation boardChip;
 	private BoardPhysicalCoordinates physical;
 
+	/**
+	 * Default constructor for unmarshaller use only.
+	 */
+	public WhereIs() {
+	}
+ 
     /**
-     * Default Constructor for unmarsheller.
-     */
-    public WhereIs() {
-    }
-
-    /**
-     * Constructor that sets all parameters.
-     * @param jobChip the chip location relative to the job's allocation
-     * @param jobId The ID of the job
-     * @param chip The Chip
-     * @param logical the logical board coordinates.
-     * @param machine The name of the Machine where this chip is
-     * @param boardChip The chip location relative to the board.
-     * @param physical The physical board coordinates.
-     */
-    public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
-            BoardCoordinates logical, String machine, ChipLocation boardChip,
-            BoardPhysicalCoordinates physical) {
-        this.jobChip = jobChip;
-        this.jobId =  jobId;
-        this.chip = chip;
-        this.logical = logical;
-        this.machine = machine;
-        this.boardChip = boardChip;
-        this.physical = physical;
-    }
+	 * Create.
+	 *
+	 * @param jobChip
+	 *            the chip location relative to the job's allocation.
+	 * @param jobId
+	 *            the job id.
+	 * @param chip
+	 *            the absolute chip location.
+	 * @param logical
+	 *            the logical coordinates of the board
+	 * @param machine
+	 *            the name of the machine
+	 * @param boardChip
+	 *            the chip location relative to its board
+	 * @param physical
+	 *            the physical coordinates of the board
+	 */
+	public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
+			BoardCoordinates logical, String machine, ChipLocation boardChip,
+			BoardPhysicalCoordinates physical) {
+		this.jobChip = jobChip;
+		this.jobId = jobId;
+		this.chip = chip;
+		this.logical = logical;
+		this.machine = machine;
+		this.boardChip = boardChip;
+		this.physical = physical;
+	}
 
 	/**
 	 * Get the chip location relative to the job's allocation.

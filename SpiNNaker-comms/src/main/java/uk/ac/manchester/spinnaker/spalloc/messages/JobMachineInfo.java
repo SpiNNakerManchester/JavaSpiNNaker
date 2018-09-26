@@ -17,7 +17,7 @@ public class JobMachineInfo {
 	private String machineName;
 	private List<BoardCoordinates> boards = Collections.emptyList();
     /** Number of boards/Connections to list individually in the toString. */
-    private static final int BOARD_TO_LIST = 6;
+	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
 	public int getWidth() {
 		return width;
@@ -60,19 +60,19 @@ public class JobMachineInfo {
 		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
 
-    @Override
+	@Override
 	public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("width: ").append(width);
-        builder.append(" height: ").append(height);
-        builder.append(" machineName: ").append(machineName);
-        if (connections.size() > BOARD_TO_LIST
-                && boards.size() == connections.size()) {
-            builder.append(" # connections/boards: " + connections.size());
-        } else {
-            builder.append(" connections: ").append(connections);
-            builder.append(" boards: ").append(boards);
-        }
-        return builder.toString();
-    }
+		StringBuilder builder = new StringBuilder();
+		builder.append("width: ").append(width);
+		builder.append(" height: ").append(height);
+		builder.append(" machineName: ").append(machineName);
+		if (connections.size() > PRINT_CONNECTIONS_THRESHOLD
+				&& boards.size() == connections.size()) {
+			builder.append(" # connections/boards: " + connections.size());
+		} else {
+			builder.append(" connections: ").append(connections);
+			builder.append(" boards: ").append(boards);
+		}
+		return builder.toString();
+	}
 }
