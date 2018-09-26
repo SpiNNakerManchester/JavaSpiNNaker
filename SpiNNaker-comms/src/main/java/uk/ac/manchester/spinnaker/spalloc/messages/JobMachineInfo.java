@@ -58,18 +58,21 @@ public class JobMachineInfo {
 		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
 
-    @Override
+	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
+
+	@Override
 	public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("width: ").append(width);
-        builder.append(" height: ").append(height);
-        builder.append(" machineName: ").append(machineName );
-        if (connections.size() > 6 && boards.size() == connections.size()) {
-            builder.append (" # connections/boards: " + connections.size());
-        } else {
-            builder.append(" connections: ").append(connections);
-            builder.append(" boards: ").append(boards);
-        }
-        return builder.toString();
-    }
+		StringBuilder builder = new StringBuilder();
+		builder.append("width: ").append(width);
+		builder.append(" height: ").append(height);
+		builder.append(" machineName: ").append(machineName);
+		if (connections.size() > PRINT_CONNECTIONS_THRESHOLD
+				&& boards.size() == connections.size()) {
+			builder.append(" # connections/boards: " + connections.size());
+		} else {
+			builder.append(" connections: ").append(connections);
+			builder.append(" boards: ").append(boards);
+		}
+		return builder.toString();
+	}
 }

@@ -16,11 +16,29 @@ public class WhereIs {
 	private BoardPhysicalCoordinates physical;
 
 	/**
-	 * Default constructor for unmarshaller
+	 * Default constructor for unmarshaller use only.
 	 */
 	public WhereIs() {
 	}
 
+	/**
+	 * Create.
+	 *
+	 * @param jobChip
+	 *            the chip location relative to the job's allocation.
+	 * @param jobId
+	 *            the job id.
+	 * @param chip
+	 *            the absolute chip location.
+	 * @param logical
+	 *            the logical coordinates of the board
+	 * @param machine
+	 *            the name of the machine
+	 * @param boardChip
+	 *            the chip location relative to its board
+	 * @param physical
+	 *            the physical coordinates of the board
+	 */
 	public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
 			BoardCoordinates logical, String machine, ChipLocation boardChip,
 			BoardPhysicalCoordinates physical) {
