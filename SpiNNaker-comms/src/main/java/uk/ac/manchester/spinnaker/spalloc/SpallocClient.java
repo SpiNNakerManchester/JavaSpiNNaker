@@ -142,8 +142,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @param timeout
 	 *            The default timeout.
 	 */
-	public SpallocClient(String hostname, int port, Integer timeout) {
-        super(hostname, port, timeout);
+	public SpallocClient(String hostname, Integer port, Integer timeout) {
+        super(hostname, (port == null) ? DEFAULT_PORT : port, timeout);
 	}
 
     /**

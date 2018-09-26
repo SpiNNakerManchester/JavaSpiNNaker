@@ -436,7 +436,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
-	public SpallocJob(String hostname, int port, Integer timeout,
+	public SpallocJob(String hostname, Integer port, Integer timeout,
 			List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
 		this.client = new SpallocClient(hostname, port, timeout);
