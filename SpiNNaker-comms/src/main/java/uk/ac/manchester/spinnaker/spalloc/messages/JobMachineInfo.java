@@ -57,8 +57,9 @@ public class JobMachineInfo {
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
 	}
-    
-    public String toString() {
+
+    @Override
+	public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("width: ").append(width);
         builder.append(" height: ").append(height);

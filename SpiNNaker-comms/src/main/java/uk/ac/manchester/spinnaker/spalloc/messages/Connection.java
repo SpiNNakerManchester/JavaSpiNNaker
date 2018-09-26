@@ -58,12 +58,18 @@ public final class Connection {
 		return chip;
 	}
 
+	/**
+	 * Set the chip for the connection.
+	 *
+	 * @param chip
+	 *            The chip to set.
+	 */
 	public void setChip(Chip chip) {
-        if (chip == null) {
-            this.chip = null;
-        } else {
-            this.chip = chip.asChipLocation();
-        }
+		if (chip == null) {
+			this.chip = null;
+		} else {
+			this.chip = chip.asChipLocation();
+		}
 	}
 
 	public String getHostname() {
@@ -78,22 +84,22 @@ public final class Connection {
 	public boolean equals(Object other) {
 		if (other != null && other instanceof Connection) {
 			Connection c = (Connection) other;
-			return Objects.equals(chip, c.chip) 
-                    && Objects.equals(hostname, c.hostname);
+			return Objects.equals(chip, c.chip)
+					&& Objects.equals(hostname, c.hostname);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-        int hashcode = 0;
-        if (hostname != null) {
-            hashcode += 5 * hostname.hashCode();
-        }
-        if (chip != null) {
-            hashcode += 7 * chip.hashCode();
-        }
-        return hashcode;
+		int hashcode = 0;
+		if (hostname != null) {
+			hashcode += 5 * hostname.hashCode();
+		}
+		if (chip != null) {
+			hashcode += 7 * chip.hashCode();
+		}
+		return hashcode;
 	}
 
 	@Override

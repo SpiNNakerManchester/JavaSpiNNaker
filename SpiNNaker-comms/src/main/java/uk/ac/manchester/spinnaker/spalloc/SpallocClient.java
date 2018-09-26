@@ -148,8 +148,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 
     /**
      * Static method to create the object mapper.
-     * 
-     * This method makes sure that all json unmarshallers use the same Mapper 
+     *
+     * This method makes sure that all json unmarshallers use the same Mapper
      *      set up the exact same way.
      * @return The Object Mapper used by the Spalloc client,
      */
@@ -163,14 +163,14 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         return mapper;
     }
-    
+
 	@Override
 	public Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
 //        if (notifications.isEmpty()) {
-//            try {        
+//            try {
 //                if (timeout < 0) {
-//                    call(new VersionCommand(), 1000);                
+//                    call(new VersionCommand(), 1000);
 //                } else {
 //                    call(new VersionCommand(), timeout);
 //                }
@@ -386,7 +386,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		}
 		return MAPPER.readValue(json, BoardCoordinates.class);
 	}
-        
+
         @Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
@@ -461,5 +461,5 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	protected Response parseResponse(String line) throws IOException {
 		return MAPPER.readValue(line, Response.class);
 	}
-    
+
 }

@@ -10,12 +10,12 @@ import java.util.List;
  * Describes a machine by its name, tags, width and height.
  */
 public class Machine {
-    
+
 	private String name;
 	private List<String> tags = emptyList();
 	private int width;
 	private int height;
-    private List<BoardCoordinates> deadBoards = Collections.emptyList();
+	private List<BoardCoordinates> deadBoards = Collections.emptyList();
 
 	public String getName() {
 		return name;
@@ -49,17 +49,18 @@ public class Machine {
 		this.height = height;
 	}
 
-    /**
-     * @return the deadBoards
-     */
-    public List<BoardCoordinates> getDeadBoards() {
-        return deadBoards;
-    }
+	/**
+	 * @return the deadBoards
+	 */
+	public List<BoardCoordinates> getDeadBoards() {
+		return deadBoards;
+	}
 
-    /**
-     * @param deadBoards the deadBoards to set
-     */
-    public void setDeadBoards(List<BoardCoordinates> deadBoards) {
-        this.deadBoards = deadBoards;
-    }
+	/**
+	 * @param deadBoards
+	 *            the deadBoards to set
+	 */
+	public void setDeadBoards(List<BoardCoordinates> deadBoards) {
+		this.deadBoards = deadBoards;
+	}
 }

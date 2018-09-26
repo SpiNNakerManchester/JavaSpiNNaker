@@ -2,13 +2,14 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
+import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Collections;
-import java.util.Date;
 
 /**
  * A description of the state of a job.
@@ -127,22 +128,26 @@ public class JobDescription {
 	public void setKeepAliveHost(String keepAliveHost) {
 		this.keepAliveHost = keepAliveHost;
 	}
-    
-    public String toString() {
-        StringBuilder builder = new StringBuilder("Job: ").append(jobID);
-        builder.append(" owner: ").append(owner); 
-        builder.append(" startTime: ").append(new Date((long)(startTime * 1000)));
-        builder.append(" power: ").append(power);
-        builder.append(" reason: ").append(reason); 
-        builder.append( " machine: ").append(machine);
-        builder.append(" args: ").append(args); 
-        builder.append(" kwargs: ").append(kwargs);
-        if (boards.size() < 6) {
-            builder.append(" boards: ").append(boards);     
-        } else {
-            builder.append(" # boards: ").append(boards.size());                 
-        }
-        builder.append( " keepAliveHost ").append(keepAliveHost);
-        return builder.toString();
-    }
+
+	private static final int PRINT_EXACT_BOARDS_THRESHOLD = 6;
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
+		builder.append(" owner: ").append(owner);
+		builder.append(" startTime: ")
+				.append(new Date((long) (startTime * MS_PER_S)));
+		builder.append(" power: ").append(power);
+		builder.append(" reason: ").append(reason);
+		builder.append(" machine: ").append(machine);
+		builder.append(" args: ").append(args);
+		builder.append(" kwargs: ").append(kwargs);
+		if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
+			builder.append(" boards: ").append(boards);
+		} else {
+			builder.append(" # boards: ").append(boards.size());
+		}
+		builder.append(" keepAliveHost ").append(keepAliveHost);
+		return builder.toString();
+	}
 }

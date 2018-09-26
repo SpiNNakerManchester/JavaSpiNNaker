@@ -429,9 +429,9 @@ public abstract class SpallocConnection implements Closeable {
 			return new TextSocket();
 		}
 	}
-    
-    public String toString() {
+
+    @Override
+	public String toString() {
         return addr + " dead: " + dead + "  " + defaultTimeout;
     }
-
 }

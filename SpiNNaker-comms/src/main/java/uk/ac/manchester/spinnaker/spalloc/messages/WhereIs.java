@@ -15,24 +15,24 @@ public class WhereIs {
 	private ChipLocation boardChip;
 	private BoardPhysicalCoordinates physical;
 
-    /**
-     * Default Constructor for unmarsheller
-     */
-    public WhereIs () {
-    }
-    
-    public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip, 
-            BoardCoordinates logical, String machine, ChipLocation boardChip, 
-            BoardPhysicalCoordinates physical) {
-        this.jobChip = jobChip;
-        this.jobId =  jobId;
-        this.chip = chip;
-        this.logical = logical;
-        this.machine = machine;
-        this.boardChip = boardChip;
-        this.physical = physical;
-    }
-    
+	/**
+	 * Default constructor for unmarshaller
+	 */
+	public WhereIs() {
+	}
+
+	public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
+			BoardCoordinates logical, String machine, ChipLocation boardChip,
+			BoardPhysicalCoordinates physical) {
+		this.jobChip = jobChip;
+		this.jobId = jobId;
+		this.chip = chip;
+		this.logical = logical;
+		this.machine = machine;
+		this.boardChip = boardChip;
+		this.physical = physical;
+	}
+
 	/**
 	 * Get the chip location relative to the job's allocation.
 	 *
@@ -49,14 +49,14 @@ public class WhereIs {
 	 *            the job-relative chip location to set
 	 */
 	public void setJobChip(Chip jobChip) {
-        if (jobChip == null) {
-            this.jobChip = null;
-        } else {
-            this.jobChip = jobChip.asChipLocation();
-        }
+		if (jobChip == null) {
+			this.jobChip = null;
+		} else {
+			this.jobChip = jobChip.asChipLocation();
+		}
 	}
 
-       /**
+	/**
 	 * Get the job id.
 	 *
 	 * @return the job id
@@ -91,11 +91,11 @@ public class WhereIs {
 	 *            the chip to set
 	 */
 	public void setChip(Chip chip) {
-        if (chip == null) {
-            this.chip = null;
-        } else {
-            this.chip = chip.asChipLocation();
-        }
+		if (chip == null) {
+			this.chip = null;
+		} else {
+			this.chip = chip.asChipLocation();
+		}
 	}
 
 	/**
@@ -152,11 +152,11 @@ public class WhereIs {
 	 *            the board chip location to set
 	 */
 	public void setBoardChip(Chip boardChip) {
-        if (boardChip == null) {
-            this.boardChip = null;
-        } else {
-    		this.boardChip = boardChip.asChipLocation();
-        }
+		if (boardChip == null) {
+			this.boardChip = null;
+		} else {
+			this.boardChip = boardChip.asChipLocation();
+		}
 	}
 
 	/**
@@ -177,18 +177,17 @@ public class WhereIs {
 	public void setPhysical(BoardPhysicalCoordinates physical) {
 		this.physical = physical;
 	}
-    
-    @Override
+
+	@Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
-			return Objects.equals(jobChip,other.jobChip) 
-                    && jobId == other.jobId 
-                    && Objects.equals(chip, other.chip)
-                    && Objects.equals(logical, other.logical)
-                    && Objects.equals(machine, other.machine)
-                    && Objects.equals(boardChip, other.boardChip)
-                    && Objects.equals(physical, other.physical);
+			return Objects.equals(jobChip, other.jobChip)
+					&& jobId == other.jobId && Objects.equals(chip, other.chip)
+					&& Objects.equals(logical, other.logical)
+					&& Objects.equals(machine, other.machine)
+					&& Objects.equals(boardChip, other.boardChip)
+					&& Objects.equals(physical, other.physical);
 		}
 		return false;
 	}
@@ -197,10 +196,11 @@ public class WhereIs {
 	public int hashCode() {
 		throw new UnsupportedOperationException();
 	}
-    
-    public String toString() {
-        return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
-                + " logical: " + logical + " machine: " + machine 
-                + " boardChip: " + boardChip + " physical: " + physical;
-    }
+
+	@Override
+	public String toString() {
+		return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
+				+ " logical: " + logical + " machine: " + machine
+				+ " boardChip: " + boardChip + " physical: " + physical;
+	}
 }
