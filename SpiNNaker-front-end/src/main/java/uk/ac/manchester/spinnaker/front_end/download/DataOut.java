@@ -103,6 +103,7 @@ public class DataOut implements Callable<Boolean> {
 	/** The P coord of the CPU to read from. */
 	@Bind(Argument.PLACEMENT_P)
 	int p;
+	/** The port number. */
 	@Bind(Argument.PORT_NUMBER)
 	int portConnection;
 	/** How many bytes to read. */
