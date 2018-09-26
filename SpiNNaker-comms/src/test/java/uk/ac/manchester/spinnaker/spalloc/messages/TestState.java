@@ -33,18 +33,17 @@ public class TestState {
         assertEquals("86.82.216.229", fromJson.getKeepalivehost());        
         assertNotNull(fromJson.toString());
     }
-    
-    /*
+
     @Test
     void testNullJson() throws IOException {
         String json = "{\"reason\":null}";
         ObjectMapper mapper = SpallocClient.createMapper();
         JobState fromJson = mapper.readValue(json, JobState.class);
         assertNull(fromJson.getState());
-        assertFalse(fromJson.getPower());
+        assertNull(fromJson.getPower());
         assertNull(fromJson.getReason());
-        assertNull(fromJson.getStartTime());
+        assertEquals(0.0, fromJson.getStartTime());
         assertNull(fromJson.getKeepalivehost());
         assertNotNull(fromJson.toString());
-    }*/
+    }
 }

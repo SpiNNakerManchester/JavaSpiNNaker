@@ -16,7 +16,8 @@ public class Machine {
 	private int width;
 	private int height;
 	private List<BoardCoordinates> deadBoards = Collections.emptyList();
-
+    // TODO dead_links but currently unsure of exact format or meaning
+    
 	public String getName() {
 		return name;
 	}
