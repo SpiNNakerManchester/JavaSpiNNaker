@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -36,13 +38,13 @@ public class DataOut implements Callable<Boolean> {
 	@Documented
 	@Retention(RUNTIME)
 	@Target(FIELD)
-	public @interface Field {
+	public @interface Bind {
 		/**
-		 * Which position this field is bound to.
+		 * Which position/optional argument this field is bound to.
 		 *
 		 * @return The position indicator.
 		 */
-		Arg value();
+		Argument value();
 	}
 
 	private static final boolean USE_NAMED_OPTIONS = false;
@@ -53,75 +55,88 @@ public class DataOut implements Callable<Boolean> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public enum Arg {
-		/** The hostname */
-		HOSTNAME(0),
-		/** The port number */
-		PORT_NUMBER(1),
-		/** The X coord of the CPU to read from */
-		PLACEMENT_X(2),
-		/** The Y coord of the CPU to read from */
-		PLACEMENT_Y(3),
-		/** The P coord of the CPU to read from */
-		PLACEMENT_P(4),
-		/** Where to write data to */
-		DATA_FILE(5),
-		/** Where to report missing sequence numbers */
-		MISSING_SEQS_FILE(6),
-		/** How many bytes to read */
-		LENGTH_IN_BYTES(7),
-		/** Where to read from */
-		MEMORY_ADDRESS(8),
-		/** X coord for IPtag setting */
-		CHIP_X(9),
-		/** Y coord for IPtag setting */
-		CHIP_Y(10),
-		/** The ID of the IPtag */
-		IPTAG(11);
-		private final int value;
+	public enum Argument {
+		/** The hostname. */
+		HOSTNAME("H"),
+		/** The port number. */
+		PORT_NUMBER("P"),
+		/** The X coord of the CPU to read from. */
+		PLACEMENT_X("p", 0),
+		/** The Y coord of the CPU to read from. */
+		PLACEMENT_Y("p", 1),
+		/** The P coord of the CPU to read from. */
+		PLACEMENT_P("p", 2),
+		/** Where to write data to. */
+		DATA_FILE("D"),
+		/** Where to report missing sequence numbers. */
+		MISSING_SEQS_FILE("S"),
+		/** How many bytes to read. */
+		LENGTH_IN_BYTES("l"),
+		/** Where to read from. */
+		MEMORY_ADDRESS("a"),
+		/** X coord for IPtag setting. */
+		CHIP_X("C", 0),
+		/** Y coord for IPtag setting. */
+		CHIP_Y("C", 1),
+		/** The ID of the IPtag. */
+		IPTAG("T");
+		private String name;
+		private int position;
 
-		Arg(int value) {
-			this.value = value;
+		Argument(String name) {
+			this.name = name;
+			position = 0;
 		}
 
-		/**
-		 * Get the position of the argument in the positional arguments.
-		 *
-		 * @return The position.
-		 */
-		public int position() {
-			return this.value;
+		Argument(String name, int position) {
+			this.name = name;
+			this.position = position;
 		}
 	}
 
-	@Field(Arg.PLACEMENT_X)
-	int placement_x;
-	@Field(Arg.PLACEMENT_Y)
-	int placement_y;
-	@Field(Arg.PLACEMENT_P)
-	int placement_p;
-	@Field(Arg.PORT_NUMBER)
-	int port_connection;
-	@Field(Arg.LENGTH_IN_BYTES)
-	int length_in_bytes;
-	@Field(Arg.MEMORY_ADDRESS)
-	int memory_address;
-	@Field(Arg.HOSTNAME)
+	/** The X coord of the CPU to read from. */
+	@Bind(Argument.PLACEMENT_X)
+	int x;
+	/** The Y coord of the CPU to read from. */
+	@Bind(Argument.PLACEMENT_Y)
+	int y;
+	/** The P coord of the CPU to read from. */
+	@Bind(Argument.PLACEMENT_P)
+	int p;
+	@Bind(Argument.PORT_NUMBER)
+	int portConnection;
+	/** How many bytes to read. */
+	@Bind(Argument.LENGTH_IN_BYTES)
+	int length;
+	/** Where to read from. */
+	@Bind(Argument.MEMORY_ADDRESS)
+	int address;
+	/** The hostname. */
+	@Bind(Argument.HOSTNAME)
 	String hostname;
-	@Field(Arg.DATA_FILE)
-	String file_pathr;
-	@Field(Arg.MISSING_SEQS_FILE)
-	String file_pathm;
-	@Field(Arg.CHIP_X)
-	int chip_x;
-	@Field(Arg.CHIP_Y)
-	int chip_y;
-	@Field(Arg.IPTAG)
+	/** Where to write data to. */
+	@Bind(Argument.DATA_FILE)
+	String dataFile;
+	/** Where to report missing sequence numbers. */
+	@Bind(Argument.MISSING_SEQS_FILE)
+	String missingFile;
+	/** X coord for IPtag setting. */
+	@Bind(Argument.CHIP_X)
+	int chipX;
+	/** Y coord for IPtag setting. */
+	@Bind(Argument.CHIP_Y)
+	int chipY;
+	/** The ID of the IPtag. */
+	@Bind(Argument.IPTAG)
 	int iptag;
+
+	private static final int NUM_CHIP_ARGS = 2;
+	private static final int NUM_CORE_ARGS = 3;
 
 	private static CommandLine parse(String[] args) throws ParseException {
 		Options options = new Options();
 		if (USE_NAMED_OPTIONS) {
+			// Options for building the transceiver
 			options.addOption(Option.builder("H").longOpt("hostname")
 					.desc("the SpiNNaker host name/IP address").hasArg()
 					.build());
@@ -129,17 +144,10 @@ public class DataOut implements Callable<Boolean> {
 					.desc("the SpiNNaker port number").hasArg()
 					.type(Number.class).build());
 
+			// What are we retrieving from
 			options.addOption(Option.builder("p").longOpt("placement")
 					.desc("the coordinates (X, Y, P) of the placement")
-					.numberOfArgs(3).build());
-
-			options.addOption(Option.builder("D").longOpt("datafile")
-					.desc("the file to write the downloaded data into").hasArg()
-					.type(File.class).build());
-			options.addOption(Option.builder("S").longOpt("seqsfile").desc(
-					"the file to write the sequence number information into")
-					.hasArg().type(File.class).build());
-
+					.numberOfArgs(NUM_CORE_ARGS).build());
 			options.addOption(Option.builder("l").longOpt("length")
 					.desc("the number of bytes to download").hasArg()
 					.type(Number.class).build());
@@ -147,9 +155,18 @@ public class DataOut implements Callable<Boolean> {
 					.desc("the address to download from").hasArg()
 					.type(Number.class).build());
 
+			// Where will we write
+			options.addOption(Option.builder("D").longOpt("datafile")
+					.desc("the file to write the downloaded data into").hasArg()
+					.type(File.class).build());
+			options.addOption(Option.builder("S").longOpt("seqsfile").desc(
+					"the file to write the sequence number information into")
+					.hasArg().type(File.class).build());
+
+			// How do we configure the iptag
 			options.addOption(Option.builder("C").longOpt("chip").desc(
 					"the coordinates (X, Y) of the chip for IPtag setting")
-					.numberOfArgs(2).build());
+					.numberOfArgs(NUM_CHIP_ARGS).build());
 			options.addOption(Option.builder("T").longOpt("iptag")
 					.desc("the IPtag ID number").hasArg().type(Number.class)
 					.build());
@@ -180,47 +197,65 @@ public class DataOut implements Callable<Boolean> {
 	public static void main(String... args) throws Exception {
 		CommandLine cl = parse(args);
 		List<String> positionals = cl.getArgList();
-		if (positionals.size() != Arg.values().length) {
-			System.err.println("wrong # args: should be \""
-					+ System.getProperty("java.home") + "/bin/java "
-					+ DataOut.class + " " + join(Arg.values()) + "\"");
-			System.exit(1);
-		}
 		DataOut operation = new DataOut();
-		setFieldsFromArguments(positionals, operation);
+		if (USE_NAMED_OPTIONS) {
+			if (!positionals.isEmpty()) {
+				System.err.println("not all arguments supplied as options");
+				System.exit(1);
+			}
+			setFields(a -> cl.getOptionValues(a.name)[a.position], operation);
+		} else {
+			if (positionals.size() != Argument.values().length) {
+				System.err.println("wrong # args: should be \""
+						+ System.getProperty("java.home") + "/bin/java "
+						+ DataOut.class + " " + join(Argument.values()) + "\"");
+				System.exit(1);
+			}
+			setFields(a -> positionals.get(a.ordinal()), operation);
+		}
 		operation.call();
 	}
 
-	private static void setFieldsFromArguments(List<String> positionals,
-			DataOut operation) throws IllegalAccessException {
-		for (Arg a : Arg.values()) {
-			String s = positionals.get(a.position());
-			for (java.lang.reflect.Field f : operation.getClass()
-					.getDeclaredFields()) {
-				if (!f.isAnnotationPresent(Field.class)) {
-					continue;
-				}
-				if (f.getAnnotation(Field.class).value() != a) {
-					continue;
-				}
-				f.setAccessible(true);
-				if (f.getType() == Integer.TYPE) {
-					f.set(operation, Integer.parseInt(s));
-				} else {
-					f.set(operation, s);
-				}
-				break;
+	/**
+	 * Describes how to get the value of an argument. This varies according to
+	 * whether an argument is by option or by position.
+	 *
+	 * @author Donal Fellows
+	 */
+	private interface ArgumentGetter {
+		String getValue(Argument argument);
+	}
+
+	private static void setFields(ArgumentGetter argGetter, DataOut operation)
+			throws IllegalAccessException {
+		// Build map of annotated fields
+		HashMap<Argument, Field> map = new HashMap<>();
+		for (Field f : operation.getClass().getDeclaredFields()) {
+			Bind b = f.getAnnotation(Bind.class);
+			if (b != null) {
+				map.put(b.value(), f);
+			}
+		}
+
+		// Use the map to set the fields
+		for (Argument a : map.keySet()) {
+			String s = argGetter.getValue(a);
+			Field f = map.get(a);
+			f.setAccessible(true);
+			if (f.getType() == Integer.TYPE) {
+				f.set(operation, Integer.parseInt(s));
+			} else {
+				f.set(operation, s);
 			}
 		}
 	}
 
 	@Override
 	public Boolean call() throws IOException, InterruptedException {
-		HostDataReceiver r = new HostDataReceiver(port_connection,
-				new CoreLocation(placement_x, placement_y, placement_p),
-				hostname, length_in_bytes, memory_address,
-				new ChipLocation(chip_x, chip_y), iptag);
-		r.writeData(file_pathr, file_pathm);
+		HostDataReceiver r = new HostDataReceiver(portConnection,
+				new CoreLocation(x, y, p), hostname, length, address,
+				new ChipLocation(chipX, chipY), iptag);
+		r.writeData(dataFile, missingFile);
 		return r.isAlive();
 	}
 }
