@@ -16,8 +16,8 @@ public class Machine {
 	private int width;
 	private int height;
 	private List<BoardCoordinates> deadBoards = Collections.emptyList();
-    // TODO dead_links but currently unsure of exact format or meaning
-    
+    private List<BoardLink> deadLinks = Collections.emptyList();
+
 	public String getName() {
 		return name;
 	}
@@ -64,4 +64,18 @@ public class Machine {
 	public void setDeadBoards(List<BoardCoordinates> deadBoards) {
 		this.deadBoards = deadBoards;
 	}
+
+    /**
+     * @return the deadLinks
+     */
+    public List<BoardLink> getDeadLinks() {
+        return deadLinks;
+    }
+
+    /**
+     * @param deadLinks the deadLinks to set
+     */
+    public void setDeadLinks(List<BoardLink> deadLinks) {
+        this.deadLinks = deadLinks;
+    }
 }
