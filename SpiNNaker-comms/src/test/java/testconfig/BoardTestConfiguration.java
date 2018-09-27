@@ -1,17 +1,28 @@
 package testconfig;
 
+import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.opentest4j.TestAbortedException;
 
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
@@ -28,6 +39,8 @@ public class BoardTestConfiguration {
 	public static final int PORT = 54321;
 	private static RawConfigParser config = new RawConfigParser(
 			BoardTestConfiguration.class.getResource("test.cfg"));
+	private static final String MCSEC = "Machine";
+	private static final String SPSEC = "Spalloc";
 
 	public String localhost;
 	public Integer localport;
@@ -49,24 +62,24 @@ public class BoardTestConfiguration {
 		localhost = LOCALHOST;
 		localport = PORT;
 		remotehost = InetFactory.getByName(LOCALHOST);
-		boardVersion = config.getint("Machine", "version");
+		boardVersion = config.getint(MCSEC, "version");
 	}
 
 	public void setUpRemoteBoard()
 			throws SocketException, UnknownHostException {
-		remotehost = InetFactory.getByName(config.get("Machine", "machineName"));
+		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
 				() -> "test board (" + remotehost + ") appears to be down");
-		boardVersion = config.getint("Machine", "version");
-		String names = config.get("Machine", "bmpNames");
-		if (names == "None") {
+		boardVersion = config.getint(MCSEC, "version");
+		String names = config.get(MCSEC, "bmp_names");
+		if (names == null || "None".equals(names)) {
 			bmpNames = null;
 		} else {
 			Inet4Address bmpHost = InetFactory.getByName(names);
 			bmpNames = asList(
 					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
-		autoDetectBMP = config.getboolean("Machine", "autoDetectBMP");
+		autoDetectBMP = config.getboolean(MCSEC, "auto_detect_bmp");
 		localport = PORT;
 		try (DatagramSocket s = new DatagramSocket()) {
 			s.connect(new InetSocketAddress(remotehost, PORT));
@@ -74,14 +87,58 @@ public class BoardTestConfiguration {
 		}
 	}
 
+	public SpallocJob set_up_spalloced_board()
+			throws IOException, SpallocServerException, JobDestroyedException,
+			SpallocStateChangeTimeoutException, InterruptedException {
+		String spalloc = config.get(SPSEC, "hostname");
+		assumeTrue(spalloc != null, "no spalloc server defined");
+		assumeTrue(hostIsReachable(spalloc),
+				() -> "spalloc server (" + spalloc + ") appears to be down");
+		Integer port = config.getint(SPSEC, "port");
+		Integer timeout = config.getint(SPSEC, "timeout");
+		String tag = config.get(SPSEC, "tag");
+		Map<String, Object> kwargs = new HashMap<>();
+		kwargs.put("owner", "java test harness");
+		kwargs.put("keepalive", 60);
+		if (tag != null) {
+			tag = "default";
+		}
+		kwargs.put("tags", new String[] {
+				tag
+		});
+		SpallocJob job =
+				new SpallocJob(spalloc, port, timeout, asList(1), kwargs);
+		sleep(1200);
+		job.setPower(true);
+		job.waitUntilReady(null);
+		try {
+			remotehost = InetFactory.getByName(job.getHostname());
+			assumeTrue(hostIsReachable(remotehost),
+					() -> "spalloc server (" + spalloc
+							+ ") gave unreachable board (" + remotehost + ")");
+		} catch (UnknownHostException | TestAbortedException e) {
+			job.destroy("cannot use board from here");
+			job.close();
+			throw e;
+		}
+		boardVersion = 5; // ASSUME FOR SPALLOC!
+		bmpNames = null; // NO ACCESS TO BMP
+		autoDetectBMP = false;
+		return job;
+	}
+
 	public void setUpNonexistentBoard() throws UnknownHostException {
 		localhost = null;
 		localport = PORT;
 		remotehost = InetFactory.getByName(NOHOST);
-		boardVersion = config.getint("Machine", "version");
+		boardVersion = config.getint(MCSEC, "version");
 	}
 
 	private static boolean hostIsReachable(String remotehost) {
+		return ping(remotehost) == 0;
+	}
+
+	private static boolean hostIsReachable(InetAddress remotehost) {
 		return ping(remotehost) == 0;
 	}
 }

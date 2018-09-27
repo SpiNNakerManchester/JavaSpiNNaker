@@ -38,8 +38,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.TestAbortedException;
 
 import testconfig.BoardTestConfiguration;
 import testconfig.Utils.Field;
@@ -63,6 +65,7 @@ import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegiste
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 
 /**
  * Communications integration test.
@@ -70,18 +73,20 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
-class TransceiverITCase {
+public class TransceiverITCase {
 	static BoardTestConfiguration boardConfig;
+	private static SpallocJob job;
 
 	static int numCores = 20;
 	static List<ChipLocation> downChips;
 	static CoreSubsets coreSubsets;
 	static Map<ChipLocation, Collection<Integer>> downCores;
 
+
 	@BeforeAll
-	public static void setUpBeforeClass() throws Exception {
+	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
-		boardConfig.setUpRemoteBoard();
+		job = boardConfig.set_up_spalloced_board();
 		coreSubsets = new CoreSubsets();
 		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
@@ -91,6 +96,12 @@ class TransceiverITCase {
 
 		downChips = new ArrayList<>();
 		downChips.add(new ChipLocation(0, 1));
+	}
+
+	@AfterAll
+	static void tearDownAtTheEnd() throws Exception {
+		job.destroy();
+		job.close();
 	}
 
 	private static final Field[] FILTER_FIELDS = new Field[] {
@@ -332,7 +343,7 @@ class TransceiverITCase {
 	}
 
 	@Test
-	void testTransceiver() throws Exception {
+	public void testTransceiver() throws Exception {
 		try (Transceiver txrx =
 				new Transceiver(boardConfig.remotehost, boardConfig.boardVersion,
 						boardConfig.bmpNames, null, downChips, downCores, null,
@@ -403,4 +414,18 @@ class TransceiverITCase {
 		}
 	}
 
+	public static void main(String... args) throws Exception {
+		try {
+			setUpBeforeClass();
+		} catch (TestAbortedException e) {
+			System.err.println("precondition violated: " + e.getMessage());
+			System.exit(1);
+		}
+		try {
+			TransceiverITCase test = new TransceiverITCase();
+			test.testTransceiver();
+		} finally {
+			tearDownAtTheEnd();
+		}
+	}
 }

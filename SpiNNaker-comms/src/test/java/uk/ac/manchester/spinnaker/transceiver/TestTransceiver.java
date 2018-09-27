@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -131,6 +132,7 @@ class TestTransceiver {
 
 	/** Tests the creation of listening sockets. */
 	@Test
+	@Ignore("CB commented out")
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
@@ -157,6 +159,7 @@ class TestTransceiver {
 	}
 
 	@Test
+	@Ignore("CB commented out")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
@@ -182,7 +185,7 @@ class TestTransceiver {
 			 * should be one per chip
 			 */
 			int writeItem = 0;
-			for (byte[] expected_data : expectedWrites) {
+			for (byte[] expectedData : expectedWrites) {
 				for (ChipLocation chip : txrx.getMachineDetails()
 						.chipCoordinates()) {
 					MockWriteTransceiver.Write write =
@@ -192,7 +195,7 @@ class TestTransceiver {
 							SYSTEM_VARIABLE_BASE_ADDRESS
 									+ software_watchdog_count.offset,
 							write.address);
-					assertArrayEquals(expected_data, write.data);
+					assertArrayEquals(expectedData, write.data);
 				}
 			}
 		}

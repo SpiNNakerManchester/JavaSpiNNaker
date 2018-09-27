@@ -16,4 +16,8 @@ script:
   - mvn javadoc:javadoc --settings .travis/travis-settings.xml
 after_success:
   - mvn coveralls:report --settings .travis/travis-settings.xml
-  
+  - mvn coveralls:report
+before_cache:
+  # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
+  # will always rebuild internal snapshots.
+  - mvn dependency:purge-local-repository --settings .travis/travis-settings.xml -DsnapshotsOnly=true -DreResolve=false
