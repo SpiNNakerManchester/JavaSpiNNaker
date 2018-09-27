@@ -68,6 +68,31 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>2.9.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-configuration2</artifactId>
+				<version>2.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20141113</version>
+			</dependency>
+			<dependency>
+				<groupId>org.skyscreamer</groupId>
+				<artifactId>jsonassert</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.3</version>
+			</dependency>
+			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.6</version>
@@ -209,7 +234,7 @@
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
-		<module>SpiNNaker-spalloc-client</module>
+
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
