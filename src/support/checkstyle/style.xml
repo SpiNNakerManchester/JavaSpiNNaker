@@ -15,6 +15,7 @@
 		<property name="message" value="Line has trailing spaces." />
 	</module>
 	<module name="SuppressWarningsFilter" />
+	<module name="SuppressWithPlainTextCommentFilter"/>
 	<module name="TreeWalker">
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
