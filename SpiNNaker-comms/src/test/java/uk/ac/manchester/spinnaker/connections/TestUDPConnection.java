@@ -42,7 +42,6 @@ public class TestUDPConnection {
 			result = connection.receiveSCPResponse(null);
 		}
 		Response scp_response = result.parsePayload(scp_req);
-		System.out.println(scp_response.versionInfo);
 		assertEquals(scp_response.result, RC_OK);
 	}
 
@@ -76,7 +75,7 @@ public class TestUDPConnection {
 	public void testSendSCPRequestToNonexistentHost() throws UnknownHostException {
 		board_config.set_up_nonexistent_board();
         Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		assertThrows(SocketTimeoutException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			try (SCPConnection connection = new SCPConnection(remoteHost)) {
 				ReadMemory scp = new ReadMemory(ZERO_CHIP, 0, 256);
 				scp.scpRequestHeader.issueSequenceNumber();
