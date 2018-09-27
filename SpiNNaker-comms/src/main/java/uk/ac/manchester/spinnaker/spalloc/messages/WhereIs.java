@@ -66,7 +66,7 @@ public class WhereIs {
 	 * @param jobChip
 	 *            the job-relative chip location to set
 	 */
-	public void setJobChip(Chip jobChip) {
+	public void setJobChip(ChipLocationBean jobChip) {
 		if (jobChip == null) {
 			this.jobChip = null;
 		} else {
@@ -108,7 +108,7 @@ public class WhereIs {
 	 * @param chip
 	 *            the chip to set
 	 */
-	public void setChip(Chip chip) {
+	public void setChip(ChipLocationBean chip) {
 		if (chip == null) {
 			this.chip = null;
 		} else {
@@ -169,7 +169,7 @@ public class WhereIs {
 	 * @param boardChip
 	 *            the board chip location to set
 	 */
-	public void setBoardChip(Chip boardChip) {
+	public void setBoardChip(ChipLocationBean boardChip) {
 		if (boardChip == null) {
 			this.boardChip = null;
 		} else {

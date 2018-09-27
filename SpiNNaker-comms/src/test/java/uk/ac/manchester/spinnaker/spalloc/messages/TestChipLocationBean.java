@@ -11,17 +11,17 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  *
  * @author Christian
  */
-public class TestChip {
+public class TestChipLocationBean {
     
     @Test
     void testFromJson() throws IOException {
         String json = "[2, 4]";
         ObjectMapper mapper = SpallocClient.createMapper();
-        Chip fromJson = mapper.readValue(json, Chip.class);
+        ChipLocationBean fromJson = mapper.readValue(json, ChipLocationBean.class);
         assertEquals(2, fromJson.getX());
         assertEquals(4, fromJson.getY());
         
-        Chip direct = new Chip(2, 4);
+        ChipLocationBean direct = new ChipLocationBean(2, 4);
         assertEquals(direct, fromJson);
         assertEquals(direct.hashCode(), fromJson.hashCode());
         assertEquals(direct.toString(), fromJson.toString());
@@ -31,7 +31,7 @@ public class TestChip {
     void testNullJson() throws IOException {
         String json = "null";
         ObjectMapper mapper = SpallocClient.createMapper();
-        Chip fromJson = mapper.readValue(json, Chip.class);
+        ChipLocationBean fromJson = mapper.readValue(json, ChipLocationBean.class);
         assertNull(fromJson);
     }
 }

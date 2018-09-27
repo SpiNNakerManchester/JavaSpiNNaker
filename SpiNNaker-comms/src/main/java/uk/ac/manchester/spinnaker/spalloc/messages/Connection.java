@@ -64,7 +64,7 @@ public final class Connection {
 	 * @param chip
 	 *            The chip to set.
 	 */
-	public void setChip(Chip chip) {
+	public void setChip(ChipLocationBean chip) {
 		if (chip == null) {
 			this.chip = null;
 		} else {

@@ -14,14 +14,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 		"x", "y"
 })
 @JsonFormat(shape = ARRAY)
-public final class Chip implements HasChipLocation {
+public final class ChipLocationBean implements HasChipLocation {
 	private int x;
 	private int y;
 
 	/**
 	 * Create with default coordinates.
 	 */
-	public Chip() {
+	public ChipLocationBean() {
 	}
 
 	/**
@@ -32,7 +32,7 @@ public final class Chip implements HasChipLocation {
 	 * @param y
 	 *            the Y coordinate
 	 */
-	public Chip(int x, int y) {
+	public ChipLocationBean(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -57,8 +57,8 @@ public final class Chip implements HasChipLocation {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other != null && other instanceof Chip) {
-			Chip c = (Chip) other;
+		if (other != null && other instanceof ChipLocationBean) {
+			ChipLocationBean c = (ChipLocationBean) other;
 			return x == c.x && y == c.y;
 		}
 		return false;
