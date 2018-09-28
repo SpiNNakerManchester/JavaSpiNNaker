@@ -423,10 +423,11 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get the address of user<sub>0</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>0</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
 	default int getUser0RegisterAddress(HasCoreLocation core) {
@@ -434,11 +435,24 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Get the address of user<sub>0</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>0</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	default int getUser0RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_0_START_ADDRESS;
+	}
+
+	/**
 	 * Get the address of user<sub>1</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>1</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
 	default int getUser1RegisterAddress(HasCoreLocation core) {
@@ -446,15 +460,40 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Get the address of user<sub>1</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>1</sub> address for
+	 * @return The address for user<sub>1</sub> register for this processor
+	 */
+	default int getUser1RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_1_START_ADDRESS;
+	}
+
+	/**
 	 * Get the address of user<sub>2</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>2</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>2</sub> register for this processor
 	 */
 	default int getUser2RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_2_START_ADDRESS;
+	}
+
+	/**
+	 * Get the address of user<sub>2</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>2</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	default int getUser2RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_2_START_ADDRESS;
 	}
 
 	/**
