@@ -2,13 +2,12 @@ package uk.ac.manchester.spinnaker.processes;
 
 import java.io.IOException;
 
-import javax.xml.ws.Holder;
-
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** A process for reading the diagnostic data block from a SpiNNaker router. */
 public class ReadRouterDiagnosticsProcess
@@ -41,8 +40,8 @@ public class ReadRouterDiagnosticsProcess
 	 */
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, Exception {
-		Holder<Integer> cr = new Holder<>();
-		Holder<Integer> es = new Holder<>();
+		ValueHolder<Integer> cr = new ValueHolder<>();
+		ValueHolder<Integer> es = new ValueHolder<>();
 		int[] reg = new int[NUM_REGISTERS];
 
 		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),

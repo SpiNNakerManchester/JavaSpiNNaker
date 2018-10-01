@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.xml.ws.Holder;
-
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
@@ -33,6 +31,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * A process for handling communicating with the BMP.
@@ -94,7 +93,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *             If the other side responds with a failure code
 	 */
 	public R execute(BMPRequest<R> request) throws IOException, Exception {
-		Holder<R> holder = new Holder<>();
+		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
