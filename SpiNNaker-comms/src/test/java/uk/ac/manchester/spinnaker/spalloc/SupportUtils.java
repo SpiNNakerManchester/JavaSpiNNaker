@@ -30,7 +30,7 @@ abstract class SupportUtils {
 				started.fire();
 				s.connect();
 			} catch (Exception e) {
-				problem.value = e;
+				problem.setValue(e);
 				main.interrupt();
 			}
 		});
@@ -38,8 +38,8 @@ abstract class SupportUtils {
 		try {
 			started.await();
 		} catch (InterruptedException e) {
-			if (problem.value != null) {
-				throw problem.value;
+			if (problem.getValue() != null) {
+				throw problem.getValue();
 			}
 			throw e;
 		}

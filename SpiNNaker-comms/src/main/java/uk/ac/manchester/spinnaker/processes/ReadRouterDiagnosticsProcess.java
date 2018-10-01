@@ -45,9 +45,9 @@ public class ReadRouterDiagnosticsProcess
 		int[] reg = new int[NUM_REGISTERS];
 
 		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),
-				response -> cr.value = response.data.getInt());
+				response -> cr.setValue(response.data.getInt()));
 		sendRequest(new ReadMemory(chip, ROUTER_ERROR_STATUS, REGISTER),
-				response -> es.value = response.data.getInt());
+				response -> es.setValue(response.data.getInt()));
 		sendRequest(
 				new ReadMemory(chip, ROUTER_REGISTERS,
 						NUM_REGISTERS * REGISTER),
@@ -55,6 +55,6 @@ public class ReadRouterDiagnosticsProcess
 
 		finish();
 		checkForError();
-		return new RouterDiagnostics(cr.value, es.value, reg);
+		return new RouterDiagnostics(cr.getValue(), es.getValue(), reg);
 	}
 }

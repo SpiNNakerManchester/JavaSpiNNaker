@@ -9,10 +9,7 @@ package uk.ac.manchester.spinnaker.utils;
  *            The type of value to hold.
  */
 public class ValueHolder<T> {
-	/**
-	 * The value held.
-	 */
-	public T value;
+	private T value;
 
 	/**
 	 * Create an instance. The initial value held is <tt>null</tt>.
@@ -27,6 +24,25 @@ public class ValueHolder<T> {
 	 *            The initial value to hold.
 	 */
 	public ValueHolder(T value) {
+		this.value = value;
+	}
+
+	/**
+	 * Get the value held.
+	 *
+	 * @return The value held.
+	 */
+	public T getValue() {
+		return value;
+	}
+
+	/**
+	 * Set the value to hold.
+	 *
+	 * @param value
+	 *            The new value to hold.
+	 */
+	public void setValue(T value) {
 		this.value = value;
 	}
 }

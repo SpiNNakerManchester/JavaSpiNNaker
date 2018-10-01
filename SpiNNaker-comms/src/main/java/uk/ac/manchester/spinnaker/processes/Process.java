@@ -134,11 +134,10 @@ public abstract class Process {
 			SCPRequest<T> request, SCPErrorHandler errorCallback)
 			throws IOException, Exception {
 		ValueHolder<T> holder = new ValueHolder<>();
-		sendRequest(request, response -> holder.value = response,
-				errorCallback);
+		sendRequest(request, holder::setValue, errorCallback);
 		finish();
 		checkForError();
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**
@@ -158,11 +157,10 @@ public abstract class Process {
 	protected final <T extends SCPResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, Exception {
 		ValueHolder<T> holder = new ValueHolder<>();
-		sendRequest(request, response -> holder.value = response,
-				this::receiveError);
+		sendRequest(request, holder::setValue, this::receiveError);
 		finish();
 		checkForError();
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**

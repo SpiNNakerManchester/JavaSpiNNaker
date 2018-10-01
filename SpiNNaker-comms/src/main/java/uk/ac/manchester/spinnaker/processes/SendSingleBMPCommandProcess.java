@@ -100,14 +100,13 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest(request,
-				response -> holder.value = response);
+		requestPipeline.sendRequest(request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw new Exception(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**
