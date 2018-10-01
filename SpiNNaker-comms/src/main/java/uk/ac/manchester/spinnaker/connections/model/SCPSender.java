@@ -35,10 +35,10 @@ public interface SCPSender extends Connection {
 	 * <p>
 	 * Messages must have the following properties:
 	 * <ul>
-	 * <li><i>sourcePort</i> is <tt>null</tt> or 7
-	 * <li><i>sourceCpu</i> is <tt>null</tt> or 31
-	 * <li><i>sourceChipX</i> is <tt>null</tt> or 0
-	 * <li><i>sourceChipY</i> is <tt>null</tt> or 0
+	 * <li><i>sourcePort</i> is {@code null} or 7
+	 * <li><i>sourceCpu</i> is {@code null} or 31
+	 * <li><i>sourceChipX</i> is {@code null} or 0
+	 * <li><i>sourceChipY</i> is {@code null} or 0
 	 * </ul>
 	 * <i>tag</i> in the message is optional; if not set, the default set in the
 	 * constructor will be used.

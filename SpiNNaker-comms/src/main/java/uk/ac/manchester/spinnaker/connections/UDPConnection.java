@@ -91,7 +91,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *            and will throw and exception if used for sending.
 	 * @param remotePort
 	 *            The remote port to send packets to. If remoteHost is
-	 *            <tt>null</tt>, this is ignored. If remoteHost is specified,
+	 *            {@code null}, this is ignored. If remoteHost is specified,
 	 *            this must also be specified as non-zero for the connection to
 	 *            allow sending.
 	 * @throws IOException
@@ -171,7 +171,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/**
 	 * @return The remote IP address to which the connection is connected, or
-	 *         <tt>null</tt> if it is not connected.
+	 *         {@code null} if it is not connected.
 	 */
 	@Override
 	public InetAddress getRemoteIPAddress() {

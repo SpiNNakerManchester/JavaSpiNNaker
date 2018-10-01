@@ -207,10 +207,10 @@ public class SCPRequestPipeline {
 	 *            The connection over which the communication is to take place
 	 * @param numChannels
 	 *            The number of requests to send before checking for responses.
-	 *            (If <tt>null</tt>, this will be determined automatically.)
+	 *            (If {@code null}, this will be determined automatically.)
 	 * @param intermediateChannelWaits
 	 *            The number of outstanding responses to wait for before
-	 *            continuing sending requests. (If <tt>null</tt>, this will be
+	 *            continuing sending requests. (If {@code null}, this will be
 	 *            determined automatically.)
 	 * @param numRetries
 	 *            The number of times to resend any packet for any reason before
@@ -252,7 +252,7 @@ public class SCPRequestPipeline {
 	 * @param callback
 	 *            A callback function to call when the response has been
 	 *            received; takes an SCPResponse as a parameter, or a
-	 *            <tt>null</tt> if the response doesn't need to be processed.
+	 *            {@code null} if the response doesn't need to be processed.
 	 * @param errorCallback
 	 *            A callback function to call when an error is found when
 	 *            processing the message; takes the original SCPRequest, and the

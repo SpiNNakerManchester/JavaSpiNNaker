@@ -212,8 +212,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 * @param callback
 		 *            A callback function to call when the response has been
 		 *            received; takes an SCPResponse as a parameter, or a
-		 *            <tt>null</tt> if the response doesn't need to be
-		 *            processed.
+		 *            {@code null} if the response doesn't need to be processed.
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */

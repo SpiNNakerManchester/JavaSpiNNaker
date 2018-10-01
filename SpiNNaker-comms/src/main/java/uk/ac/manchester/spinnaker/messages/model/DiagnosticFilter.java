@@ -238,7 +238,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static DefaultRoutingStatus get(int value) {
 			return MAP.get(value);
@@ -289,7 +289,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value, without the shift.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static Destination get(int value) {
 			return MAP.get(value);
@@ -339,7 +339,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value, without the shift.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static EmergencyRoutingStatus get(int value) {
 			return MAP.get(value);
@@ -380,7 +380,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value, without the shift.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static PacketType get(int value) {
 			return MAP.get(value);
@@ -417,7 +417,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value, without the shift.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static PayloadStatus get(int value) {
 			return MAP.get(value);
@@ -454,7 +454,7 @@ public class DiagnosticFilter {
 		/**
 		 * @param value
 		 *            The encoded value, without the shift.
-		 * @return The decoded value, or <tt>null</tt> if the decoding failed.
+		 * @return The decoded value, or {@code null} if the decoding failed.
 		 */
 		static Source get(int value) {
 			return MAP.get(value);

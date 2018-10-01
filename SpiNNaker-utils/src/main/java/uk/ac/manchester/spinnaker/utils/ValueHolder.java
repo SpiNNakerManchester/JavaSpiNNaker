@@ -12,7 +12,7 @@ public class ValueHolder<T> {
 	private T value;
 
 	/**
-	 * Create an instance. The initial value held is <tt>null</tt>.
+	 * Create an instance. The initial value held is {@code null}.
 	 */
 	public ValueHolder() {
 	}

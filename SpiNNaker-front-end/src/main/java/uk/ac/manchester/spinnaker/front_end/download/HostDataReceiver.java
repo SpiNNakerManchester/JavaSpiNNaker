@@ -100,7 +100,7 @@ public class HostDataReceiver extends Thread {
 
 	/**
 	 * Divide one integer by another with rounding up. For example,
-	 * <tt>ceildiv(5,3) == 2</tt>
+	 * {@code ceildiv(5,3) == 2}
 	 *
 	 * @param numerator
 	 *            The value to be divided.

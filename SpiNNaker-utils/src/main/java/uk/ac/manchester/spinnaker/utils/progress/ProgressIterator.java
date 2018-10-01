@@ -85,7 +85,7 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	/**
 	 * Closes the underlying {@link ProgressBar}.
 	 * <p>
-	 * Note: As <tt>hasNext() == false</tt> automatically calls close there is
+	 * Note: As {@code hasNext() == false} automatically calls close there is
 	 * no need to call this method unless you break out of the iterator early.
 	 * <p>
 	 * If the bar is already closed then invoking this method has no effect.

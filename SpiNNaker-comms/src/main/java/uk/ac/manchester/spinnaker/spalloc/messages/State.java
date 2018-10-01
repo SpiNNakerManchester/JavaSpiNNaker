@@ -20,6 +20,6 @@ public enum State {
 	POWER,
 	/** SpallocJob is running (or at least ready to run). */
 	READY,
-	/** SpallocJob has terminated, see the <tt>reason</tt> property for why. */
+	/** SpallocJob has terminated, see the {@code reason} property for why. */
 	DESTROYED;
 }

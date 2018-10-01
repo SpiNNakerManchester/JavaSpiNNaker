@@ -43,10 +43,10 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	 *            that is connected to the Ethernet connector on the SpiNNaker
 	 *            board, or even on the same board.
 	 * @param localHost
-	 *            The local host address to bind to, or <tt>null</tt> to bind to
+	 *            The local host address to bind to, or {@code null} to bind to
 	 *            all relevant local addresses.
 	 * @param localPort
-	 *            The local port to bind to, or <tt>null</tt> to pick a random
+	 *            The local port to bind to, or {@code null} to pick a random
 	 *            free port.
 	 * @param remoteHost
 	 *            The address of the SpiNNaker board to route UDP packets to.

@@ -57,7 +57,7 @@ public final class IPTag extends Tag {
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
      *            The port to which the SDP packets with the tag will be sent,
-     *            or <tt>null</tt> if not yet assigned.
+     *            or {@code null} if not yet assigned.
      */
     public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
             InetAddress targetAddress, Integer port) {
@@ -94,7 +94,7 @@ public final class IPTag extends Tag {
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
      *            The port to which the SDP packets with the tag will be sent,
-     *            or <tt>null</tt> if not yet assigned.
+     *            or {@code null} if not yet assigned.
      * @param stripSDP
      *            Indicates whether the SDP header should be removed
      */
@@ -115,7 +115,7 @@ public final class IPTag extends Tag {
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
      *            The port to which the SDP packets with the tag will be sent,
-     *            or <tt>null</tt> if not yet assigned.
+     *            or {@code null} if not yet assigned.
      * @param stripSDP
      *            Indicates whether the SDP header should be removed
      * @param trafficIdentifier
