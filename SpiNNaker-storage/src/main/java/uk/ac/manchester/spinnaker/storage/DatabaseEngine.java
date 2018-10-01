@@ -66,42 +66,76 @@ public class DatabaseEngine {
 	}
 
 	private static final String STORE =
-			"INSERT INTO storage(x, y, processor, region, content) "
+			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?)";
 	private static final String FETCH = "SELECT content FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
 	private static final String DELETE = "DELETE FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
 
+	private static final int FIRST = 1;
+	private static final int SECOND = 2;
+	private static final int THIRD = 3;
+	private static final int FOURTH = 4;
+	private static final int FIFTH = 5;
+
+	/**
+	 * Stores some bytes in the database. The bytes represent the contents of a
+	 * region of a particular SpiNNaker core.
+	 *
+	 * @param core
+	 *            The core that has the memory region.
+	 * @param region
+	 *            The region ID.
+	 * @param contents
+	 *            The contents to store.
+	 * @return The row ID. (Not currently used elsewhere.)
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public int storeRegionContents(HasCoreLocation core, int region,
 			byte[] contents) throws SQLException {
 		try (Connection conn = getConnection();
 				PreparedStatement s =
 						conn.prepareStatement(STORE, RETURN_GENERATED_KEYS)) {
-			s.setInt(1, core.getX());
-			s.setInt(2, core.getY());
-			s.setInt(3, core.getP());
-			s.setInt(4, region);
-			s.setBytes(5, contents);
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			s.setInt(FOURTH, region);
+			s.setBytes(FIFTH, contents);
 			s.executeUpdate();
 			try (ResultSet keys = s.getGeneratedKeys()) {
 				keys.next();
-				return keys.getInt(1);
+				return keys.getInt(FIRST);
 			}
 		}
 	}
 
+	/**
+	 * Retrieves some bytes from the database. The bytes represent the contents
+	 * of a region of a particular SpiNNaker core.
+	 *
+	 * @param core
+	 *            The core that has the memory region.
+	 * @param region
+	 *            The region ID.
+	 * @return The region contents.
+	 * @throws IllegalArgumentException
+	 *             If there's no such saved region.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public byte[] getRegionContents(HasCoreLocation core, int region)
 			throws SQLException {
 		try (Connection conn = getConnection();
 				PreparedStatement s = conn.prepareStatement(FETCH)) {
-			s.setInt(1, core.getX());
-			s.setInt(2, core.getY());
-			s.setInt(3, core.getP());
-			s.setInt(4, region);
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			s.setInt(FOURTH, region);
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getBytes(1);
+					return rs.getBytes(FIRST);
 				}
 				throw new IllegalArgumentException(
 						"core " + core + " has no data for region " + region);
@@ -109,14 +143,25 @@ public class DatabaseEngine {
 		}
 	}
 
+	/**
+	 * Removes some bytes from the database. The bytes represent the contents of
+	 * a region of a particular SpiNNaker core.
+	 *
+	 * @param core
+	 *            The core that has the memory region.
+	 * @param region
+	 *            The region ID.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public void deleteRegionContents(HasCoreLocation core, int region)
 			throws SQLException {
 		try (Connection conn = getConnection();
 				PreparedStatement s = conn.prepareStatement(DELETE)) {
-			s.setInt(1, core.getX());
-			s.setInt(2, core.getY());
-			s.setInt(3, core.getP());
-			s.setInt(4, region);
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			s.setInt(FOURTH, region);
 			s.executeUpdate();
 		}
 	}
