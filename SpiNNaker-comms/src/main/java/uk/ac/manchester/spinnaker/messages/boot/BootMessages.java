@@ -124,7 +124,9 @@ public class BootMessages {
 	 *            The version of the board to be booted
 	 */
 	public BootMessages(int boardVersion) {
-		this(SystemVariableBootValues.get(boardVersion), null);
+        // Need a modifiable copy
+		this(new SystemVariableBootValues(
+                SystemVariableBootValues.get(boardVersion)), null);
 	}
 
 	/**
@@ -148,7 +150,8 @@ public class BootMessages {
 	 */
 	public BootMessages(int boardVersion,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
-		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
+		this(new SystemVariableBootValues(
+                SystemVariableBootValues.get(boardVersion)), extraBootValues);
 	}
 
 	private BootMessage getBootMessage(int blockID) {
