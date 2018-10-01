@@ -209,9 +209,16 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			throw new SpallocServerException(
 					USER_PROPERTY + " must be specified for all jobs.");
 		}
-        // TODO Just nuking bad params is not the best solution.
-        // Throw exception or at least log.
-		kwargs.keySet().retainAll(ALLOWED_KWARGS);
+
+		// Test for bad kwargs and log them as a problem if present
+		Set<String> unwanted = new HashSet<>(kwargs.keySet());
+		unwanted.removeAll(ALLOWED_KWARGS);
+		if (!unwanted.isEmpty()) {
+			kwargs.keySet().removeAll(unwanted);
+			log.warn("removing unsupported keyword arguments ({}) to createJob",
+					unwanted);
+		}
+
 		String json = call(new CreateJobCommand(args, kwargs), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("create result: {}", json);
