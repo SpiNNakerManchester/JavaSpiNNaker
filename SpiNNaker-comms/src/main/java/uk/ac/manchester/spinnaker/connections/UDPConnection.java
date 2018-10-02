@@ -67,7 +67,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private boolean receivable;
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
-
 	/**
      * Main constructor any of which could null.
      * <p>
@@ -231,6 +230,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (addr == null) {
 			throw new SocketTimeoutException();
 		}
+		buffer.flip();
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
