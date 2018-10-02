@@ -18,6 +18,7 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 
 class TestVersion {
+	private static final short PADDING = 0;
 
 	@Test
 	void testNewVersionRequest() {
@@ -51,7 +52,7 @@ class TestVersion {
 		byte src_x = 0x7;
 		byte src_y = 0x0;
 
-		ByteBuffer data = allocate(39).order(LITTLE_ENDIAN);
+		ByteBuffer data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags).put(tag).put(dest_port_cpu).put(src_port_cpu);
 		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
 		data.putShort(rc).putShort(seq).putShort(p2p_addr);
