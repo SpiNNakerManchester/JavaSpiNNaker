@@ -68,18 +68,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
 	/**
-     * Main constructor any of which could null.
-     * <p>
-     * No default constructors are provided as it would not be possible to
-     *      disambiguate between
-     *      ones with only a local host/port like IPAddressConnection
-     *      and ones with only remote host/port like BMPConnection
-     *
+	 * Main constructor any of which could null.
+	 * <p>
+	 * No default constructors are provided as it would not be possible to
+	 * disambiguate between ones with only a local host/port like
+	 * IPAddressConnection and ones with only remote host/port like
+	 * BMPConnection
+	 *
 	 * @param localHost
-	 *            The local host to bind to. If not
-	 *            specified, it defaults to binding to all interfaces, unless
-	 *            remoteHost is specified, in which case binding is done to the
-	 *            IP address that will be used to send packets.
+	 *            The local host to bind to. If not specified, it defaults to
+	 *            binding to all interfaces, unless remoteHost is specified, in
+	 *            which case binding is done to the IP address that will be used
+	 *            to send packets.
 	 * @param localPort
 	 *            The local port to bind to, 0 or between 1025 and 65535.
 	 * @param remoteHost
@@ -95,7 +95,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error setting up the communication channel
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
-            InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort) throws IOException {
 		channel = DatagramChannel.open();
 		channel.bind(createLocalAddress(localHost, localPort));
 		channel.configureBlocking(false);
@@ -221,14 +221,21 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+		if (timeout == null) {
+			/*
+			 * "Infinity" is nearly 25 days, which is a very long time to wait
+			 * for any message from SpiNNaker.
+			 */
+			timeout = Integer.MAX_VALUE;
+		}
+		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
-		Object addr = channel.receive(buffer);
+		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
 		if (addr == null) {
-			throw new SocketTimeoutException();
+			throw new SocketTimeoutException("no packet available");
 		}
 		buffer.flip();
 		return buffer.order(LITTLE_ENDIAN);
@@ -266,7 +273,14 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!channel.isOpen()) {
 			throw new EOFException();
 		}
-		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+		if (timeout == null) {
+			/*
+			 * "Infinity" is nearly 25 days, which is a very long time to wait
+			 * for any message from SpiNNaker.
+			 */
+			timeout = Integer.MAX_VALUE;
+		}
+		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
