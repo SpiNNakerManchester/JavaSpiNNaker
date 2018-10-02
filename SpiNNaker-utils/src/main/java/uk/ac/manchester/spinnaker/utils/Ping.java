@@ -10,20 +10,20 @@ import java.net.InetAddress;
  * @author Donal Fellows
  */
 public abstract class Ping {
+	private static final int PING_DELAY = 500;
+	private static final int PING_COUNT = 10;
+
 	private Ping() {
 	}
 
 	/**
-	 * Pings to detect if a host or IP address is reachable. May wait for up to
-	 * about a second. Technically, it only detects if a host is reachable by
-	 * ICMP ECHO requests.
+	 * Core ping operation.
 	 *
 	 * @param address
-	 *            Where should be pinged.
-	 * @return 0 on success, other values on failure (reflecting the result of
-	 *         the OS subprocess).
+	 *            Where to ping
+	 * @return Return code, or -1 on total failure
 	 */
-	public static int ping(String address) {
+	private static int ping1(String address) {
 		ProcessBuilder cmd;
 		if (System.getProperty("os.name").toLowerCase().contains("win")) {
 			cmd = new ProcessBuilder("ping", "-n", "1", "-w", "1", address);
@@ -42,8 +42,35 @@ public abstract class Ping {
 
 	/**
 	 * Pings to detect if a host or IP address is reachable. May wait for up to
-	 * about a second. Technically, it only detects if a host is reachable by
-	 * ICMP ECHO requests.
+	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
+	 * detects if a host is reachable by ICMP ECHO requests.
+	 *
+	 * @param address
+	 *            Where should be pinged.
+	 * @return 0 on success, other values on failure (reflecting the result of
+	 *         the OS subprocess).
+	 */
+	public static int ping(String address) {
+		int result = -1;
+		int i = 0;
+		while (true) {
+			result = ping1(address);
+			if (result == 0 || ++i >= PING_COUNT) {
+				break;
+			}
+			try {
+				Thread.sleep(PING_DELAY);
+			} catch (InterruptedException e) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Pings to detect if a host or IP address is reachable. May wait for up to
+	 * about five seconds (or longer <i>in extremis</i>). Technically, it only
+	 * detects if a host is reachable by ICMP ECHO requests.
 	 *
 	 * @param address
 	 *            Where should be pinged.
