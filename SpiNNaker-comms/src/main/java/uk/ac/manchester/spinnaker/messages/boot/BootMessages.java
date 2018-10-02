@@ -156,7 +156,7 @@ public class BootMessages {
 		buffer.position(blockID * BOOT_MESSAGE_DATA_BYTES);
 		buffer.limit(buffer.position()
 				+ min(buffer.remaining(), BOOT_MESSAGE_DATA_BYTES));
-		assert buffer.hasRemaining();
+		assert buffer.hasRemaining() : "buffer must have space left";
 		return new BootMessage(FLOOD_FILL_BLOCK, 1, 0, 0, buffer);
 	}
 

@@ -92,7 +92,7 @@ public class SDPHeader implements SerializableMessage {
 	 */
 	public SDPHeader(ByteBuffer buffer) {
 		// Caller MUST have stripped the leading padding
-		assert buffer.position() == 2;
+		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
 		tag = Byte.toUnsignedInt(buffer.get());
 		int dpc = toUnsignedInt(buffer.get());
