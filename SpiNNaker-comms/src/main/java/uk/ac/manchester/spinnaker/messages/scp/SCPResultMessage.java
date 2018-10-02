@@ -12,6 +12,8 @@ import java.util.Set;
 
 /** The low-level format of SCP result message. */
 public class SCPResultMessage {
+	private static final int SDP_HEADER_LENGTH = 8;
+	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
 	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
 	static {
 		RETRY_CODES.add(RC_TIMEOUT);
@@ -33,6 +35,8 @@ public class SCPResultMessage {
 	 *            without header stripped.
 	 */
 	public SCPResultMessage(ByteBuffer response) {
+		// Skip the padding bytes and the SDP header
+		response.get(new byte[SKIP_HEADER_BYTES]);
 		result = SCPResult.get(response.getShort());
 		sequenceNumber = response.getShort();
 		responseData = response;
