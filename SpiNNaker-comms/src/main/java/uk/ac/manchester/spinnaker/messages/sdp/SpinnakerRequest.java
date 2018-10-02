@@ -72,7 +72,8 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 
 		/** Source for one-way sending. */
 		SDPSource() {
-			x = y = 0;
+			x = 0;
+			y = 0;
 		}
 
 		/** Source for nominated location sending, needed for replies. */
