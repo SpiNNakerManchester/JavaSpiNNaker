@@ -12,7 +12,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.EOFException;
@@ -35,7 +34,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -460,8 +458,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return r;
 	}
 
-	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
-
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
@@ -482,10 +478,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		SDPMessage triggerMessage =
 				new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
 						new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
-		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
-		ByteBuffer b = newMessageBuffer();
-		triggerMessage.addToBuffer(b);
-		sendTo(b, host, SCP_SCAMP_PORT);
+		sendTo(triggerMessage.getMessageData(null), host, SCP_SCAMP_PORT);
 	}
 
 	@Override
