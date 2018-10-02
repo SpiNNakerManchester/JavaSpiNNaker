@@ -26,7 +26,7 @@ public interface SCPSender extends Connection {
 			scpRequest.updateSDPHeaderForUDPSend(getChip());
 		}
 		// First two bytes must be zero for SCP send
-		buffer.position(2);
+		buffer.putShort((short) 0);
 		scpRequest.addToBuffer(buffer);
 		buffer.flip();
 		return buffer;
