@@ -25,6 +25,7 @@ public abstract class SCPResponse {
 	protected SCPResponse(ByteBuffer buffer) {
 		assert buffer.position() == 0;
 		assert buffer.order() == LITTLE_ENDIAN;
+		buffer.getShort(); // SKIP TWO PADDING BYTES
 		sdpHeader = new SDPHeader(buffer);
 		result = SCPResult.get(buffer.getShort());
 		sequence = buffer.getShort();
