@@ -5,7 +5,6 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -18,7 +17,6 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * @author Donal Fellows
  */
 public abstract class SpinnakerRequest implements SerializableMessage {
-	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
 	private static final int SDP_SOURCE_PORT = 7;
 	private static final int SDP_SOURCE_CPU = 31;
 	private static final byte SDP_TAG = (byte) 0xFF;
@@ -30,37 +28,33 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	}
 
 	/**
-	 * Prepares this message to be actually sent. This involves setting the tag
-	 * and source of the header to special marker values.
-	 *
-	 * @param chip
-	 *            The notional originating chip location.
-	 */
-	public final void updateSDPHeaderForUDPSend(HasChipLocation chip) {
-		if (sdpHeader.getSource() != null) {
-			throw new IllegalStateException(
-					"can only prepare request for sending once");
-		}
-		sdpHeader.setTag(SDP_TAG);
-		sdpHeader.setSourcePort(SDP_SOURCE_PORT);
-		sdpHeader.setSource(new SDPSource(chip));
-	}
-
-	/**
-	 * Get a buffer holding the actual bytes of the message, ready to send.
+	 * Get a buffer holding the actual bytes of the message, ready to send. This
+	 * also prepares this message to be actually sent, which involves setting
+	 * the tag and source of the header to special marker values. <em>This can
+	 * only be called once per connection!</em>
 	 *
 	 * @param originatingChip
 	 *            Where the message notionally originates from.
 	 * @return The byte buffer.
 	 */
 	public final ByteBuffer getMessageData(HasChipLocation originatingChip) {
-		ByteBuffer buffer = newMessageBuffer();
-		if (sdpHeader.getFlags() == REPLY_EXPECTED) {
-			updateSDPHeaderForUDPSend(originatingChip);
-		} else {
-			updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
+		if (sdpHeader.getSource() != null) {
+			throw new IllegalStateException(
+					"can only prepare request for sending once");
 		}
-		// First two bytes must be zero for SCP send
+
+		// Set ready for sending
+		sdpHeader.setTag(SDP_TAG);
+		sdpHeader.setSourcePort(SDP_SOURCE_PORT);
+		if (sdpHeader.getFlags() == REPLY_EXPECTED) {
+			sdpHeader.setSource(new SDPSource(originatingChip));
+		} else {
+			sdpHeader.setSource(new SDPSource());
+		}
+
+		// Serialize
+		ByteBuffer buffer = newMessageBuffer();
+		// First two bytes must be zero for SDP or SCP send
 		buffer.putShort((short) 0);
 		addToBuffer(buffer);
 		buffer.flip();
@@ -74,20 +68,27 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	 * @author Donal Fellows
 	 */
 	private static class SDPSource implements HasCoreLocation {
-		private final HasChipLocation chip;
+		private final int x, y;
 
+		/** Source for one-way sending. */
+		SDPSource() {
+			x = y = 0;
+		}
+
+		/** Source for nominated location sending, needed for replies. */
 		SDPSource(HasChipLocation chip) {
-			this.chip = chip;
+			this.x = chip.getX();
+			this.y = chip.getY();
 		}
 
 		@Override
 		public int getX() {
-			return chip.getX();
+			return x;
 		}
 
 		@Override
 		public int getY() {
-			return chip.getY();
+			return y;
 		}
 
 		@Override
