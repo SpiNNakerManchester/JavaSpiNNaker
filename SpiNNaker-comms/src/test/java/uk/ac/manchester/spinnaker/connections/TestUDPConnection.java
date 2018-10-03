@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -35,6 +34,7 @@ public class TestUDPConnection {
 	public void testSCPVersionWithBoard() throws Exception {
 		board_config.set_up_remote_board();
 		GetVersion scp_req = new GetVersion(ZERO_CORE);
+		scp_req.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
         Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (SCPConnection connection = new SCPConnection(remoteHost)) {
@@ -48,11 +48,12 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadLinkWoard() throws Exception {
 		board_config.set_up_remote_board();
-		ReadLink scp_link = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		ReadLink scp_req = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		scp_req.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
         Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_link);
+			connection.sendSCPRequest(scp_req);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -61,11 +62,12 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		board_config.set_up_remote_board();
-		ReadMemory scp_link = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		ReadMemory scp_req = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		scp_req.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
         Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_link);
+			connection.sendSCPRequest(scp_req);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);

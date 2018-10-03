@@ -9,8 +9,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -24,7 +22,6 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
@@ -123,22 +120,11 @@ public class SCPRequestPipeline {
 		Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
-			this.requestData = getSCPData(request, connection.getChip());
+			this.requestData = request.getMessageData(connection.getChip());
 			this.callback = callback;
 			this.errorCallback = errorCallback;
 			retryReason = new ArrayList<>();
 			retries = numRetries;
-		}
-
-		private ByteBuffer getSCPData(SCPRequest<T> scpRequest,
-				ChipLocation chip) {
-			ByteBuffer buffer = newMessageBuffer();
-			if (scpRequest.sdpHeader.getFlags() == REPLY_EXPECTED) {
-				scpRequest.updateSDPHeaderForUDPSend(chip);
-			}
-			scpRequest.addToBuffer(buffer);
-			buffer.flip();
-			return buffer;
 		}
 
 		private void send() throws IOException {
