@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Christian
  */
 public class TestOneShotEvent {
-    
+
 
     public TestOneShotEvent() {
     }
@@ -25,7 +25,7 @@ public class TestOneShotEvent {
             }
         }
     };
-        
+
     Runnable inOrder = new Runnable() {
         @Override
         public void run() {
@@ -38,7 +38,7 @@ public class TestOneShotEvent {
             }
         }
     };
-        
+
     Runnable firer = new Runnable() {
         @Override
         public void run() {
@@ -76,37 +76,33 @@ public class TestOneShotEvent {
             }
         }
     };
-            
-    @Test
-    public void testMultiple() {
-        Thread thanger = new Thread(hanger);
-        thanger.start();
-        Thread tinOrder = new Thread(inOrder);
-        tinOrder.start();
-        Thread tfirer = new Thread(firer);
-        tfirer.start();
-        Thread tmultiple = new Thread(multiple);
-        tmultiple.start();
-        Thread twaiter = new Thread(waiter);
-        twaiter.start();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            System.out.println("pop");
-        }
-        assert (thanger.isAlive());
-        thanger.interrupt();
-        assert (!tinOrder.isAlive());
-        assert (!tfirer.isAlive());
-        assert (!tmultiple.isAlive());
-        assert (twaiter.isAlive());
-        event1.fire();
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException ex) {
-            System.out.println("pop2");
-        }
-        assert (!twaiter.isAlive());
-    }
+
+	@Test
+	public void testMultiple() throws InterruptedException {
+		Thread thanger = new Thread(hanger);
+		thanger.start();
+		Thread tinOrder = new Thread(inOrder);
+		tinOrder.start();
+		Thread tfirer = new Thread(firer);
+		tfirer.start();
+		Thread tmultiple = new Thread(multiple);
+		tmultiple.start();
+		Thread twaiter = new Thread(waiter);
+		twaiter.start();
+
+		Thread.sleep(500);
+
+		assertTrue(thanger.isAlive());
+		thanger.interrupt();
+		assertTrue(!tinOrder.isAlive());
+		assertTrue(!tfirer.isAlive());
+		assertTrue(!tmultiple.isAlive());
+		assertTrue(twaiter.isAlive());
+		event1.fire();
+
+		Thread.sleep(50);
+
+		assertTrue(!twaiter.isAlive());
+	}
 
 }

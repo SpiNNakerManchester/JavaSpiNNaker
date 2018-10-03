@@ -25,12 +25,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
  * @author micro
  */
 public class IntegrationTests {
+	// TODO Convert to test (that doesn't print to System.out)
     public static void main(String[] callargs) throws IOException, SpallocServerException, JobDestroyedException {
         String hostname = "spinnaker.cs.man.ac.uk";
         int port = 22244;
         Integer timeout = 1000;
         List<Integer> args = new ArrayList<>();
-        args.add(1);    
+        args.add(1);
         args.add(1);
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("owner", "Christian testing ok to kill");
@@ -69,7 +70,7 @@ public class IntegrationTests {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+
 //        System.out.println(aJob.getHostname());
 //        System.out.println(aJob.getID());
         //System.out.println(test.getMachineName());

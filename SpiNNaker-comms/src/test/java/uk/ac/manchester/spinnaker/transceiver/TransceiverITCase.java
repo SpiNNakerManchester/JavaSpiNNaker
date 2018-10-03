@@ -69,6 +69,7 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * @author Donal Fellows
  */
 public class TransceiverITCase {
+	// TODO Stop printing to System.out
 	static BoardTestConfiguration board_config;
 	private static SpallocJob job;
 
