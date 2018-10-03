@@ -14,7 +14,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 		"x", "y"
 })
 @JsonFormat(shape = ARRAY)
-public final class ChipLocationBean implements HasChipLocation {
+public class ChipLocationBean implements HasChipLocation {
 	private int x;
 	private int y;
 
