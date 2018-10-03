@@ -125,7 +125,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
-		// Get the chip information for each chip
+        // Get the chip information for each chip
 		for (ChipLocation chip : p2pTable.getChips()) {
 			sendRequest(new GetChipInfo(chip),
 					response -> chipInfo.put(chip, response.chipInfo));

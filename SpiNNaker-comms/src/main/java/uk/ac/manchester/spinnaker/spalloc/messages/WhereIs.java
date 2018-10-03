@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import uk.ac.manchester.spinnaker.machine.bean.ChipLocationBean;
 import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 

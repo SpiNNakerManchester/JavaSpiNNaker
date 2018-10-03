@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import uk.ac.manchester.spinnaker.machine.bean.ChipLocationBean;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

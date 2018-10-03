@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import uk.ac.manchester.spinnaker.machine.bean.ChipLocationBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;

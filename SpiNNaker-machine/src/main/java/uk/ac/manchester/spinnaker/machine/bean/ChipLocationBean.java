@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.spalloc.messages;
+package uk.ac.manchester.spinnaker.machine.bean;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
