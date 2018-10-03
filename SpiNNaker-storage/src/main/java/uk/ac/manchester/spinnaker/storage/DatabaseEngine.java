@@ -115,8 +115,8 @@ public class DatabaseEngine {
 	}
 
 	/**
-	 * Appends some bytes to some already in the database. The bytes represent the contents of a
-	 * region of a particular SpiNNaker core.
+	 * Appends some bytes to some already in the database. The bytes represent
+	 * the contents of a region of a particular SpiNNaker core.
 	 *
 	 * @param core
 	 *            The core that has the memory region.
