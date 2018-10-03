@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
@@ -12,6 +13,8 @@ import java.util.Set;
 
 /** The low-level format of SCP result message. */
 public class SCPResultMessage {
+	private static final int SDP_HEADER_LENGTH = 8;
+	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
 	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
 	static {
 		RETRY_CODES.add(RC_TIMEOUT);
@@ -33,8 +36,11 @@ public class SCPResultMessage {
 	 *            without header stripped.
 	 */
 	public SCPResultMessage(ByteBuffer response) {
-		result = SCPResult.get(response.getShort());
-		sequenceNumber = response.getShort();
+		ByteBuffer peek = response.duplicate().order(LITTLE_ENDIAN);
+		// Skip the padding bytes and the SDP header
+		peek.position(SKIP_HEADER_BYTES);
+		result = SCPResult.get(peek.getShort());
+		sequenceNumber = peek.getShort();
 		responseData = response;
 	}
 

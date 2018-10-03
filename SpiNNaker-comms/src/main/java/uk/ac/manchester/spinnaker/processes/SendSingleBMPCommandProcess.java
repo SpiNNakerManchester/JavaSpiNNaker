@@ -7,8 +7,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -24,7 +22,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
@@ -148,18 +145,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 			private Request(BMPRequest<R> request, Consumer<R> callback) {
 				this.request = request;
-				this.requestData = getData(connection.getChip());
+				this.requestData = request.getMessageData(connection.getChip());
 				this.callback = callback;
-			}
-
-			private ByteBuffer getData(ChipLocation chip) {
-				ByteBuffer buffer = newMessageBuffer();
-				if (request.sdpHeader.getFlags() == REPLY_EXPECTED) {
-					request.updateSDPHeaderForUDPSend(chip);
-				}
-				request.addToBuffer(buffer);
-				buffer.flip();
-				return buffer;
 			}
 
 			private void send() throws IOException {
