@@ -46,7 +46,8 @@ public class BootMessages {
 	private static SystemVariableBootValues initFlags(
 			SystemVariableBootValues bootVars) {
 		SystemVariableBootValues specific =
-				new SystemVariableBootValues(bootVars);
+				bootVars == null ? new SystemVariableBootValues()
+						: new SystemVariableBootValues(bootVars);
 		int currentTime = (int) (System.currentTimeMillis() / MS_PER_S);
 		specific.setValue(unix_timestamp, currentTime);
 		specific.setValue(boot_signature, currentTime);
@@ -118,7 +119,7 @@ public class BootMessages {
 
 	/** Builds the boot messages needed to boot the SpiNNaker machine. */
 	public BootMessages() {
-		this(new SystemVariableBootValues(), null);
+		this(null, null);
 	}
 
 	/**
@@ -128,9 +129,7 @@ public class BootMessages {
 	 *            The version of the board to be booted
 	 */
 	public BootMessages(int boardVersion) {
-        // Need a modifiable copy
-		this(new SystemVariableBootValues(
-                SystemVariableBootValues.get(boardVersion)), null);
+		this(SystemVariableBootValues.get(boardVersion), null);
 	}
 
 	/**
@@ -140,7 +139,7 @@ public class BootMessages {
 	 *            Any additional values to be set during boot
 	 */
 	public BootMessages(Map<SystemVariableDefinition, Object> extraBootValues) {
-		this(new SystemVariableBootValues(), extraBootValues);
+		this(null, extraBootValues);
 	}
 
 	/**
@@ -153,8 +152,7 @@ public class BootMessages {
 	 */
 	public BootMessages(int boardVersion,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
-		this(new SystemVariableBootValues(
-                SystemVariableBootValues.get(boardVersion)), extraBootValues);
+		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
 	}
 
 	private BootMessage getBootMessage(int blockID) {
