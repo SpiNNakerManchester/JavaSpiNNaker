@@ -1,7 +1,9 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.String.join;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
@@ -40,7 +42,7 @@ class TestVersion {
 		short version = 234;
 		short buffer = 250;
 		int build_date = 103117;
-		byte[] ver_string = "sark/spinnaker".getBytes("ASCII");
+		byte[] ver_string = "sark/spinnaker".getBytes(US_ASCII);
 
 		// SDP stuff
 		byte flags = REPLY_NOT_EXPECTED.value;
@@ -79,7 +81,8 @@ class TestVersion {
 		short version = -1;
 		short buffer = 250;
 		int build_date = 103117;
-		byte[] ver_string = "SC&MP/SpiNNaker\u00003.2.0".getBytes("ASCII");
+		byte[] ver_string = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
+				.getBytes(US_ASCII);
 
 		// SDP stuff
 		byte flags = REPLY_NOT_EXPECTED.value;
