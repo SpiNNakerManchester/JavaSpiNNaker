@@ -218,7 +218,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		if (timeout == null) {
@@ -270,7 +270,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		if (timeout == null) {
@@ -318,7 +318,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
 		}
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		if (log.isDebugEnabled()) {
@@ -413,7 +413,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IOException("Remote host address or port not set; "
 					+ "data cannot be sent with this connection");
 		}
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		channel.send(data, new InetSocketAddress(address, port));
@@ -449,12 +449,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
-			return false;
+			// Key is stale; try to remake it
+			selectionKeyFactory.remove();
+			key = selectionKeyFactory.get();
+			if (!key.isValid()) {
+				throw new IllegalStateException(
+						"newly manufactured selection key is invalid");
+			}
 		}
 		log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
 				getLocalAddress(), getRemoteAddress(), timeout,
@@ -467,7 +473,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		log.debug("wait:{}:{}:{}", result, key.isValid(),
 				key.isValid() && key.isReadable());
-		boolean r = result > 0 && key.isValid() && key.isReadable();
+		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;
 	}
