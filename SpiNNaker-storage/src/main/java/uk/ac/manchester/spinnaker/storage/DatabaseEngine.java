@@ -68,6 +68,9 @@ public class DatabaseEngine {
 	private static final String STORE =
 			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?)";
+	private static final String APPEND =
+			"UPDATE storage SET content = content || ? WHERE "
+					+ "x = ? AND y = ? AND processor = ? AND region = ?";
 	private static final String FETCH = "SELECT content FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
 	private static final String DELETE = "DELETE FROM storage WHERE "
@@ -108,6 +111,32 @@ public class DatabaseEngine {
 				keys.next();
 				return keys.getInt(FIRST);
 			}
+		}
+	}
+
+	/**
+	 * Appends some bytes to some already in the database. The bytes represent the contents of a
+	 * region of a particular SpiNNaker core.
+	 *
+	 * @param core
+	 *            The core that has the memory region.
+	 * @param region
+	 *            The region ID.
+	 * @param contents
+	 *            The contents to store.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public void appendRegionContents(HasCoreLocation core, int region,
+			byte[] contents) throws SQLException {
+		try (Connection conn = getConnection();
+				PreparedStatement s = conn.prepareStatement(APPEND)) {
+			s.setBytes(FIRST, contents);
+			s.setInt(SECOND, core.getX());
+			s.setInt(THIRD, core.getY());
+			s.setInt(FOURTH, core.getP());
+			s.setInt(FIFTH, region);
+			s.executeUpdate();
 		}
 	}
 
