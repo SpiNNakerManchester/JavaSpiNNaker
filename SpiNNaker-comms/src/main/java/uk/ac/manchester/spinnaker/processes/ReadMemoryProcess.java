@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.processes;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -30,6 +31,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class Accumulator {
 		private final ByteBuffer buffer;
 		private boolean done = false;
+		private int maxpos = 0;
 
 		Accumulator(int size) {
 			buffer = allocate(size).order(LITTLE_ENDIAN);
@@ -47,11 +49,12 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			ByteBuffer b = buffer.duplicate();
 			b.position(position);
 			b.put(otherBuffer);
+			maxpos = max(maxpos, b.position());
 		}
 
 		synchronized ByteBuffer finish() {
 			done = true;
-			buffer.flip();
+			buffer.position(maxpos).flip();
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}
 	}
