@@ -57,7 +57,7 @@ public final class VersionInfo {
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
 		core = new CoreLocation(x, y, p);
-		buffer.getShort(); // Ignore 2 byes
+		buffer.getShort(); // Ignore 2 bytes
 		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
@@ -68,12 +68,12 @@ public final class VersionInfo {
 			versionString = decoded;
 			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
-			String[] bits = decoded.split("\\|0", NBITS);
+			String[] bits = decoded.split("\0", NBITS);
 			if (bits.length != NBITS) {
 				throw new IllegalArgumentException(
 						"incorrect version format: " + original);
 			}
-			decoded = bits[0].replaceFirst("[|0]+$", "");
+			decoded = bits[0].replaceFirst("[\0]+$", "");
 			versionString = bits[1];
 			versionNumber = parseVersionString(versionString);
 		}
