@@ -33,8 +33,8 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 /** Represents a set of boot messages to be sent to boot the board. */
 public class BootMessages {
 	private static final int BOOT_MESSAGE_DATA_WORDS = 256;
-	private static final int BOOT_MESSAGE_DATA_BYTES = BOOT_MESSAGE_DATA_WORDS
-			* 4;
+	private static final int BOOT_MESSAGE_DATA_BYTES =
+			BOOT_MESSAGE_DATA_WORDS * 4;
 	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
@@ -43,16 +43,20 @@ public class BootMessages {
 	private final ByteBuffer bootData;
 	private final int numDataPackets;
 
-	private static void initFlags(SystemVariableBootValues bootVars) {
+	private static SystemVariableBootValues initFlags(
+			SystemVariableBootValues bootVars) {
+		SystemVariableBootValues specific =
+				new SystemVariableBootValues(bootVars);
 		int currentTime = (int) (System.currentTimeMillis() / MS_PER_S);
-		bootVars.setValue(unix_timestamp, currentTime);
-		bootVars.setValue(boot_signature, currentTime);
-		bootVars.setValue(is_root_chip, 1);
+		specific.setValue(unix_timestamp, currentTime);
+		specific.setValue(boot_signature, currentTime);
+		specific.setValue(is_root_chip, 1);
+		return specific;
 	}
 
 	private BootMessages(SystemVariableBootValues bootVariables,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
-		initFlags(bootVariables);
+		bootVariables = initFlags(bootVariables);
 		if (extraBootValues != null) {
 			for (Entry<SystemVariableDefinition, Object> entry : extraBootValues
 					.entrySet()) {
@@ -65,16 +69,16 @@ public class BootMessages {
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		arraycopy(buffer.array(), 0, bootData.array(),
 				BOOT_STRUCT_REPLACE_OFFSET, BOOT_STRUCT_REPLACE_LENGTH);
-		numDataPackets = (int) ceil(
-				bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
+		numDataPackets =
+				(int) ceil(bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
 	}
 
 	private static final int WORD_SIZE = 4;
+
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
-		ByteBuffer buffer = allocate(BOOT_IMAGE_MAX_BYTES + WORD_SIZE)
-				.order(BIG_ENDIAN);
-		buffer.position(0);
+		ByteBuffer buffer =
+				allocate(BOOT_IMAGE_MAX_BYTES + WORD_SIZE).order(BIG_ENDIAN);
 
 		try (DataInputStream is = new DataInputStream(bootImage.openStream())) {
 			while (true) {
@@ -133,8 +137,7 @@ public class BootMessages {
 	 * @param extraBootValues
 	 *            Any additional values to be set during boot
 	 */
-	public BootMessages(
-			Map<SystemVariableDefinition, Object> extraBootValues) {
+	public BootMessages(Map<SystemVariableDefinition, Object> extraBootValues) {
 		this(new SystemVariableBootValues(), extraBootValues);
 	}
 
@@ -156,18 +159,20 @@ public class BootMessages {
 		buffer.position(blockID * BOOT_MESSAGE_DATA_BYTES);
 		buffer.limit(buffer.position()
 				+ min(buffer.remaining(), BOOT_MESSAGE_DATA_BYTES));
-		assert buffer.hasRemaining();
+		assert buffer.hasRemaining() : "buffer must have space left";
 		return new BootMessage(FLOOD_FILL_BLOCK, 1, 0, 0, buffer);
 	}
 
 	/** @return a stream of message to be sent. */
 	public Stream<BootMessage> getMessages() {
-		Stream<BootMessage> first = singleton(new BootMessage(
-				FLOOD_FILL_START, 0, 0, numDataPackets - 1)).stream();
+		Stream<BootMessage> first = singleton(
+				new BootMessage(FLOOD_FILL_START, 0, 0, numDataPackets - 1))
+						.stream();
 		Stream<BootMessage> mid =
 				range(0, numDataPackets).mapToObj(this::getBootMessage);
-		Stream<BootMessage> last = singleton(
-				new BootMessage(FLOOD_FILL_CONTROL, 1, 0, 0)).stream();
+		Stream<BootMessage> last =
+				singleton(new BootMessage(FLOOD_FILL_CONTROL, 1, 0, 0))
+						.stream();
 		return concat(first, concat(mid, last));
 	}
 }

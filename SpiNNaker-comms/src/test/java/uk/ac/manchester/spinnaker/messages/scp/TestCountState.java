@@ -1,10 +1,11 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +16,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag;
 
 class TestCountState {
+	private static final short PADDING = 0;
 
 	@Test
 	void testNewStateRequest() {
@@ -39,7 +41,7 @@ class TestCountState {
         int src_x = 0x7;
         int src_y = 0x0;
 
-        ByteBuffer data = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer data = allocate(18).order(LITTLE_ENDIAN).putShort(PADDING);
         data.put(flags.value);
         data.put((byte) tag);
         data.put((byte) dest_port_cpu);
@@ -80,7 +82,7 @@ class TestCountState {
 		byte src_x = 0x7;
 		byte src_y = 0x0;
 
-		ByteBuffer data = ByteBuffer.allocate(39).order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags.value).put(tag).put(dest_port_cpu).put(src_port_cpu);
 		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
 		data.putShort(rc.value).putShort(seq).putShort(p2p_addr);
