@@ -12,7 +12,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.EOFException;
@@ -35,7 +34,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.Listenable;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -220,18 +218,26 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
-		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+		if (timeout == null) {
+			/*
+			 * "Infinity" is nearly 25 days, which is a very long time to wait
+			 * for any message from SpiNNaker.
+			 */
+			timeout = Integer.MAX_VALUE;
+		}
+		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
-		Object addr = channel.receive(buffer);
+		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
 		if (addr == null) {
-			throw new SocketTimeoutException();
+			throw new SocketTimeoutException("no packet available");
 		}
+		buffer.flip();
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
@@ -264,10 +270,17 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
-		if (!receivable && timeout != null && !isReadyToReceive(timeout)) {
+		if (timeout == null) {
+			/*
+			 * "Infinity" is nearly 25 days, which is a very long time to wait
+			 * for any message from SpiNNaker.
+			 */
+			timeout = Integer.MAX_VALUE;
+		}
+		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
@@ -304,7 +317,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
 		}
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		if (!data.hasRemaining()) {
@@ -403,7 +416,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IOException("Remote host address or port not set; "
 					+ "data cannot be sent with this connection");
 		}
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			throw new EOFException();
 		}
 		if (!data.hasRemaining()) {
@@ -443,12 +456,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
-		if (!channel.isOpen()) {
+		if (isClosed()) {
 			return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
-			return false;
+			// Key is stale; try to remake it
+			selectionKeyFactory.remove();
+			key = selectionKeyFactory.get();
+			if (!key.isValid()) {
+				throw new IllegalStateException(
+						"newly manufactured selection key is invalid");
+			}
 		}
 		log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
 				getLocalAddress(), getRemoteAddress(), timeout,
@@ -461,12 +480,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		log.debug("wait:{}:{}:{}", result, key.isValid(),
 				key.isValid() && key.isReadable());
-		boolean r = result > 0 && key.isValid() && key.isReadable();
+		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;
 	}
-
-	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
 
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
@@ -488,11 +505,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		SDPMessage triggerMessage =
 				new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
 						new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
-		triggerMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
-		ByteBuffer b = newMessageBuffer();
-		triggerMessage.addToBuffer(b);
-		b.flip();
-		sendTo(b, host, SCP_SCAMP_PORT);
+		sendTo(triggerMessage.getMessageData(null), host, SCP_SCAMP_PORT);
 	}
 
 	@Override

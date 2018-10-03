@@ -33,6 +33,7 @@ public class TestUDPConnection {
 	public void testSCPVersionWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		GetVersion scpReq = new GetVersion(ZERO_CORE);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
@@ -47,11 +48,12 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadLinkWoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadLink scpLink = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		ReadLink scpReq = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
-			connection.sendSCPRequest(scpLink);
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -60,11 +62,12 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadMemory scpLink = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		ReadMemory scpReq = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
-			connection.sendSCPRequest(scpLink);
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);

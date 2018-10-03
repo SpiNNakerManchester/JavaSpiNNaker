@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 class TestOKResponse {
+	private static final short PADDING = 0;
+
 	private short encodeAddrTuple(int destPort, int destCPU, int srcPort,
 			int srcCPU) {
 		return (short) (destPort << 13 | destCPU << 8 | srcPort << 5 | srcCPU);
@@ -45,7 +47,7 @@ class TestOKResponse {
 		short srcXYShort = (short) (srcX << 8 | srcY);
 
 		short seq = 103;
-		ByteBuffer bytes = allocate(12).order(LITTLE_ENDIAN);
+		ByteBuffer bytes = allocate(14).order(LITTLE_ENDIAN).putShort(PADDING);
 		bytes.putShort(flagTagShort).putShort(destSourceShort);
 		bytes.putShort(destXYShort).putShort(srcXYShort);
 		bytes.putShort(result).putShort(seq).flip();
@@ -78,7 +80,7 @@ class TestOKResponse {
 		short srcXYShort = (short) (srcX << 8 | srcY);
 
 		short seq = 103;
-		ByteBuffer bytes = allocate(12).order(LITTLE_ENDIAN);
+		ByteBuffer bytes = allocate(14).order(LITTLE_ENDIAN).putShort(PADDING);
 		bytes.putShort(flagTagShort).putShort(destSourceShort);
 		bytes.putShort(destXYShort).putShort(srcXYShort);
 		bytes.putShort(result).putShort(seq).flip();

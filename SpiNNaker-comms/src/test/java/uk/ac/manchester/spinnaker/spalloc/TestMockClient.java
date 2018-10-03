@@ -29,16 +29,16 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
- * Tests the Spalloc Client ideally using an actual connection 
+ * Tests the Spalloc Client ideally using an actual connection
  *      but with a backup of canned replies if the connection fails/ timesout.
- * 
+ *
  * @author Christian
  */
 public class TestMockClient {
 
         static int timeout = 1000;
         static MockConnectedClient client = new MockConnectedClient(timeout);
-        
+
         @Test
         void testListJobs() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
@@ -48,7 +48,7 @@ public class TestMockClient {
                     jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(), greaterThan(0)));
                 } else {
                     int[] expectedIDs = { 47224, 47444};
-                    assertArrayEquals(expectedIDs, 
+                    assertArrayEquals(expectedIDs,
                             jobs.stream().mapToInt(j -> j.getJobID()).toArray());
                 }
             }
@@ -87,15 +87,15 @@ public class TestMockClient {
         }
 
         private void checkNotification(int jobId, String machineName) {
-            
+
         }
-        
+
         @Test
         void testJob() throws IOException, SpallocServerException, Exception {
             Notification notification = null;
             try (AutoCloseable c = client.withConnection()) {
                 List<Integer> args = new ArrayList<>();
-                Map<String, Object> kwargs = new HashMap<>();   
+                Map<String, Object> kwargs = new HashMap<>();
                 kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
                 int jobId = client.createJob(args, kwargs, timeout);
                 if (client.isActual()) {
@@ -107,10 +107,10 @@ public class TestMockClient {
                 JobMachineInfo machineInfo = client.getJobMachineInfo(jobId, timeout);
                 String machineName = machineInfo.getMachineName();
                 if (client.isActual()) {
-                    assert(!machineName.isEmpty());
+                    assert !machineName.isEmpty() : "must have a machine name";
                 } else {
                     assertEquals("Spin24b-223", machineName);
-                }          
+                }
                 List<Connection> connections = machineInfo.getConnections();
                 String hostName = connections.get(0).getHostname();
                 if (client.isActual()) {
@@ -129,9 +129,8 @@ public class TestMockClient {
                 }
                 if (client.isActual()) {
                     notification = client.waitForNotification(-1);
-                    //assert (notification.getClass() == JobsChangedNotification.class);
-                    JobsChangedNotification jcn = (JobsChangedNotification)notification;
-                }                
+                    JobsChangedNotification.class.cast(notification);
+                }
                 assertEquals(State.POWER, state.getState());
                 if (client.isActual()) {
                     assertFalse(state.getPower());
@@ -154,7 +153,7 @@ public class TestMockClient {
                 if (client.isActual()) {
                    assertEquals(State.DESTROYED, state.getState());
                 }
-             }   
+             }
         }
 
         @Test
@@ -166,5 +165,5 @@ public class TestMockClient {
                 }
             }
         }
-                
+
  }

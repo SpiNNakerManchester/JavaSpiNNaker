@@ -9,8 +9,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -24,7 +22,6 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -129,38 +126,15 @@ public class SCPRequestPipeline {
 		Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
+			this.requestData = request.getMessageData(connection.getChip());
 			this.callback = callback;
 			this.errorCallback = errorCallback;
 			retryReason = new ArrayList<>();
 			retries = numRetries;
-			requestData = getSCPData(connection.getChip());
 		}
 
-		/**
-		 * Prepare the request for sending to a particular chip.
-		 *
-		 * @param chip
-		 *            The chip that the request is being sent to.
-		 * @return The buffer containing the serialized request.
-		 */
-		private ByteBuffer getSCPData(ChipLocation chip) {
-			ByteBuffer buffer = newMessageBuffer();
-			if (request.sdpHeader.getFlags() == REPLY_EXPECTED) {
-				request.updateSDPHeaderForUDPSend(chip);
-			}
-			request.addToBuffer(buffer);
-			buffer.flip();
-			return buffer;
-		}
-
-		/**
-		 * Do the actual sending of the request.
-		 *
-		 * @throws IOException
-		 *             If the connection throws.
-		 */
-		void send() throws IOException {
-			connection.send(requestData);
+		private void send() throws IOException {
+			connection.send(requestData.asReadOnlyBuffer());
 		}
 
 		/**

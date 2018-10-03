@@ -25,8 +25,10 @@ public abstract class SCPResponse {
 	 *            the buffer to deserialise from
 	 */
 	protected SCPResponse(ByteBuffer buffer) {
-		assert buffer.position() == 0;
-		assert buffer.order() == LITTLE_ENDIAN;
+		assert buffer.position() == 0 : "buffer.position=" + buffer.position();
+		assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
+				+ buffer.order();
+		buffer.getShort(); // SKIP TWO PADDING BYTES
 		sdpHeader = new SDPHeader(buffer);
 		result = SCPResult.get(buffer.getShort());
 		sequence = buffer.getShort();

@@ -34,7 +34,8 @@ public final class VersionInfo {
 	public final HasCoreLocation core;
 
 	private static final Pattern VERSION_RE = Pattern
-			.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)$");
+			.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)");
+	private static final String NUL = "\u0000";
 
 	private static Version parseVersionString(String versionString) {
 		Matcher m = VERSION_RE.matcher(versionString);
@@ -56,7 +57,7 @@ public final class VersionInfo {
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
 		core = new CoreLocation(x, y, p);
-		buffer.getShort(); // Ignore 2 byes
+		buffer.getShort(); // Ignore 2 bytes
 		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
@@ -67,18 +68,18 @@ public final class VersionInfo {
 			versionString = decoded;
 			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
-			String[] bits = decoded.split("\\|0", NBITS);
-			if (bits.length != NBITS) {
+			String[] bits = decoded.split(NUL, FULL_BITS);
+			if (bits.length < NAME_BITS || bits.length > FULL_BITS) {
 				throw new IllegalArgumentException(
 						"incorrect version format: " + original);
 			}
-			decoded = bits[0].replaceFirst("[|0]+$", "");
+			decoded = bits[0];
 			versionString = bits[1];
 			versionNumber = parseVersionString(versionString);
 		}
 
-		String[] bits = decoded.split("/", NBITS);
-		if (bits.length != NBITS) {
+		String[] bits = decoded.split("/", NAME_BITS);
+		if (bits.length != NAME_BITS) {
 			throw new IllegalArgumentException(
 					"incorrect version format: " + original);
 		}
@@ -87,6 +88,7 @@ public final class VersionInfo {
 	}
 
 	private static final int H = 100;
-	private static final int NBITS = 2;
+	private static final int FULL_BITS = 3;
+	private static final int NAME_BITS = 2;
 	private static final int MAGIC_VERSION = 0xFFFF;
 }

@@ -31,7 +31,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class Accumulator {
 		private final ByteBuffer buffer;
 		private boolean done = false;
-		private int maxWritePosition = 0;
+		private int maxpos = 0;
 
 		Accumulator(int size) {
 			buffer = allocate(size);
@@ -50,13 +50,13 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			b.position(position);
 			int after = position + otherBuffer.remaining();
 			b.put(otherBuffer);
-			maxWritePosition = max(maxWritePosition, after);
+			maxpos = max(maxpos, after);
 		}
 
 		synchronized ByteBuffer finish() {
 			if (!done) {
 				done = true;
-				buffer.limit(maxWritePosition);
+				buffer.limit(maxpos);
 			}
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		}

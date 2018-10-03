@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +16,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag;
 
 class TestCountState {
+	private static final short PADDING = 0;
 
 	@Test
 	void testNewStateRequest() {
@@ -39,7 +41,7 @@ class TestCountState {
         int srcX = 0x7;
         int srcY = 0x0;
 
-        ByteBuffer data = ByteBuffer.allocate(16).order(LITTLE_ENDIAN);
+        ByteBuffer data = allocate(18).order(LITTLE_ENDIAN).putShort(PADDING);
         data.put(flags.value);
         data.put((byte) tag);
         data.put((byte) destPortCPU);
@@ -80,7 +82,7 @@ class TestCountState {
 		byte srcX = 0x7;
 		byte srcY = 0x0;
 
-		ByteBuffer data = ByteBuffer.allocate(39).order(LITTLE_ENDIAN);
+		ByteBuffer data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags.value).put(tag).put(destPortCPU).put(srcPortCPU);
 		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc.value).putShort(seq).putShort(p2pAddr);

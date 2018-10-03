@@ -1,8 +1,5 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -17,7 +14,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 /** A UDP socket connection that talks SDP to SpiNNaker. */
 public class SDPConnection extends UDPConnection<SDPMessage>
 		implements SDPReceiver, SDPSender {
-	private static final ChipLocation ONE_WAY_SOURCE = new ChipLocation(0, 0);
 	private ChipLocation chip;
 
 	/**
@@ -65,22 +61,15 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 
 	@Override
 	public void sendSDPMessage(SDPMessage sdpMessage) throws IOException {
-		if (sdpMessage.sdpHeader.getFlags() == REPLY_EXPECTED) {
-			sdpMessage.updateSDPHeaderForUDPSend(chip);
-		} else {
-			sdpMessage.updateSDPHeaderForUDPSend(ONE_WAY_SOURCE);
-		}
-		ByteBuffer buffer = newMessageBuffer();
-		buffer.putShort((short) 0);
-		sdpMessage.addToBuffer(buffer);
-		buffer.flip();
-		send(buffer);
+		send(sdpMessage.getMessageData(chip));
 	}
 
 	@Override
 	public SDPMessage receiveMessage(Integer timeout)
 			throws IOException, InterruptedIOException {
-		return new SDPMessage(receive());
+		ByteBuffer buffer = receive();
+		buffer.getShort(); // SKIP TWO PADDING BYTES
+		return new SDPMessage(buffer);
 	}
 
 	/**
