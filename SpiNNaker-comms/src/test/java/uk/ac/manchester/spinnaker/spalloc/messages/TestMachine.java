@@ -36,7 +36,7 @@ public class TestMachine {
         assertEquals(0, fromJson.getDeadLinks().size());
         assertNotNull(fromJson.toString());
     }
-    
+
     @Test
     void testAssumedDeadLinks() throws IOException {
         String json = "{\"name\":\"power-monitor\","
@@ -58,17 +58,17 @@ public class TestMachine {
         assertNotNull(fromJson.toString());
     }
 
-    @Test
-    void testNullJson() throws IOException {
-        String json = "{\"name\":null}";
-        ObjectMapper mapper = SpallocClient.createMapper();
-        Machine fromJson = mapper.readValue(json, Machine.class);
-        assertNull(fromJson.getName());
-        assert(fromJson.getTags().isEmpty());
-        assertEquals(0, fromJson.getWidth());
-        assertEquals(0, fromJson.getHeight());
-        assert(fromJson.getDeadBoards().isEmpty());
-        assert(fromJson.getDeadLinks().isEmpty());
-        assertNotNull(fromJson.toString());
-    }
+	@Test
+	void testNullJson() throws IOException {
+		String json = "{\"name\":null}";
+		ObjectMapper mapper = SpallocClient.createMapper();
+		Machine fromJson = mapper.readValue(json, Machine.class);
+		assertNull(fromJson.getName());
+		assert fromJson.getTags().isEmpty() : "must have no tags";
+		assertEquals(0, fromJson.getWidth());
+		assertEquals(0, fromJson.getHeight());
+		assert fromJson.getDeadBoards().isEmpty() : "must have no dead boards";
+		assert fromJson.getDeadLinks().isEmpty() : "must have no dead links";
+		assertNotNull(fromJson.toString());
+	}
 }
