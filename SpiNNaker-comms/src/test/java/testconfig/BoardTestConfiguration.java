@@ -71,10 +71,10 @@ public class BoardTestConfiguration {
 				() -> "test board (" + remotehost + ") appears to be down");
 		board_version = config.getint(MCSEC, "version");
 		String names = config.get(MCSEC, "bmp_names");
-		Inet4Address bmpHost = InetFactory.getByName(names);
 		if (names == null || "None".equals(names)) {
 			bmp_names = null;
 		} else {
+			Inet4Address bmpHost = InetFactory.getByName(names);
 			bmp_names = asList(
 					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
