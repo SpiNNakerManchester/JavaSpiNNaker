@@ -15,7 +15,7 @@ public class TestMachineBean {
 
     @Test
     public void testFromJson() throws IOException {
-        URL url = TestMachineBean.class.getResource("/spinn-4.json");
+        URL url = TestMachineBean.class.getResource("/spinn4.json");
         System.out.println(url);
         //String json = "[2, 4]";
         ObjectMapper mapper = MapperFactory.createMapper();

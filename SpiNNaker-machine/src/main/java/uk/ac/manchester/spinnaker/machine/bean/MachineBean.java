@@ -25,10 +25,11 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class MachineBean {
 
     private final MachineDimensions dimensions;
-    private List<ChipLocation> deadChips  = emptyList();
+    private List<ChipLocation> deadChips = emptyList();
     private Map<ChipLocation, ChipResources> chipResourceExceptions  = emptyMap();
     private ChipResources chipResources = null;
     private Map<ChipLocation, Collection<Direction>> ignoreLinks = emptyMap();
+    private List<ChipIPAddress> ipAddresses = emptyList();
 
     public MachineBean(@JsonProperty(value = "height", required=true) int height,
             @JsonProperty(value = "width", required=true) int width) {
@@ -107,11 +108,27 @@ public class MachineBean {
                         add(bean.getDirection()));
     }
 
+   /**
+     * @return the ipAddresses
+     */
+    public List<ChipIPAddress> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    /**
+     * @param ipAddresses the ipAddresses to set
+     */
+    public void setIpAddresses(List<ChipIPAddress> ipAddresses) {
+        this.ipAddresses = ipAddresses;
+    }
+
     public String toString() {
         return dimensions
                 + "\nchip_resources: " + chipResources
                 + "\nchip_resource_exceptions: " + chipResourceExceptions
                 + "\ndead_chips: " + deadChips
+                + "\nipAddresses:" + ipAddresses
                 + "\nignoreLinks:" + ignoreLinks;
     }
-}
+
+ }
