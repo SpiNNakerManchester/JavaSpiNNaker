@@ -3,16 +3,28 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+
 /**
  *
  * @author Christian-B
  */
 public class ChipResources {
+
+    public static final int NOT_SET = -1;
     private int cores;
     private int sdram;
     private int tags;
     private int router_entries;
     private int sram;
+
+    public ChipResources() {
+        cores = NOT_SET;
+        sdram = NOT_SET;
+        tags = NOT_SET;
+        router_entries = NOT_SET;
+        sram = NOT_SET;
+    }
 
     /**
      * @return the cores
@@ -86,20 +98,20 @@ public class ChipResources {
 
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
-        if (cores > 0) {
+        if (cores != NOT_SET) {
             builder.append("cores: ").append(cores).append(", ");
         }
-        if (sdram > 0) {
+        if (sdram != NOT_SET) {
             builder.append("sdram: ").append(sdram).append(", ");
         }
-        if (sdram > 0) {
+        if (sdram != NOT_SET) {
             builder.append("tags: ").append(tags).append(", ");
         }
-        if (sdram > 0) {
+        if (sdram != NOT_SET) {
             builder.append("router_entries: ").append(router_entries)
                     .append(", ");
         }
-        if (sdram > 0) {
+        if (sdram != NOT_SET) {
             builder.append("sram: ").append(sram).append(", ");
         }
         builder.setLength(builder.length() - 2);

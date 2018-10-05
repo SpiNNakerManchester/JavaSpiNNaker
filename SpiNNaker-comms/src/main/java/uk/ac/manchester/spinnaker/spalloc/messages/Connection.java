@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import uk.ac.manchester.spinnaker.machine.bean.ChipLocationBean;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -65,12 +64,8 @@ public final class Connection {
 	 * @param chip
 	 *            The chip to set.
 	 */
-	public void setChip(ChipLocationBean chip) {
-		if (chip == null) {
-			this.chip = null;
-		} else {
-			this.chip = chip.asChipLocation();
-		}
+	public void setChip(ChipLocation chip) {
+        this.chip = chip;
 	}
 
 	public String getHostname() {

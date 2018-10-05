@@ -9,53 +9,42 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Direction;
 
 /**
  *
  * @author Christian-B
  */
 @JsonPropertyOrder({
-		"x", "y", "exceptions"
+		"x", "y", "direction"
 })
 @JsonFormat(shape = ARRAY)
-
-public class ChipResourceException {
+public class DeadLink {
 	public final ChipLocation location;
-    public final ChipResources exceptions;
+    public final Direction direction;
 
-   /**
-     * Create the location of a chip on a SpiNNaker machine.
-     *
-     * @param x The X coordinate
-     * @param y The Y coordinate
-     * @param exceptions The Exceptions for this Chip.
-     * @throws IllegalArgumentException
-     *      Thrown is either x or y is negative or too big.
-     */
     @JsonCreator
-    public ChipResourceException(
+    public DeadLink(
             @JsonProperty(value = "x", required=true) int x,
             @JsonProperty(value = "y", required=true) int y,
-            @JsonProperty(value = "exceptions", required=true)
-                    ChipResources exceptions) {
+            @JsonProperty(value = "direction", required=true)
+                    String direction) {
         location = new ChipLocation(x, y);
-        this.exceptions = exceptions;
-    }
-
-    /**
-     * @return the exceptions
-     */
-    public ChipResources getExceptions() {
-        return exceptions;
+        this.direction = Direction.byLabel(direction);
     }
 
     public ChipLocation getLocation() {
         return location;
     }
 
-    @Override
-	public String toString() {
-		return location+  ": " + exceptions;
-	}
+    /**
+     * @return the direction
+     */
+    public Direction getDirection() {
+        return direction;
+    }
 
+    public String toString() {
+		return location + ", " + direction;
+    }
 }

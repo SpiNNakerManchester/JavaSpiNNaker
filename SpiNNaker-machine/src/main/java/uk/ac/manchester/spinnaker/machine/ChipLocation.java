@@ -3,6 +3,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 /**
  * The location of a Chip as an X and Y tuple.
@@ -12,6 +18,10 @@ package uk.ac.manchester.spinnaker.machine;
  * @author alan
  * @author dkf
  */
+@JsonPropertyOrder({
+		"x", "y"
+})
+@JsonFormat(shape = ARRAY)
 public final class ChipLocation implements
         HasChipLocation, Comparable<ChipLocation> {
     private final int x;
@@ -39,7 +49,9 @@ public final class ChipLocation implements
      * @throws IllegalArgumentException
      *      Thrown is either x or y is negative or too big.
      */
-    public ChipLocation(int x, int y) {
+    @JsonCreator
+    public ChipLocation(@JsonProperty(value = "x", required=true) int x,
+            @JsonProperty(value = "y", required=true) int y) {
         MachineDefaults.validateChipLocation(x, y);
         this.x = x;
         this.y = y;
