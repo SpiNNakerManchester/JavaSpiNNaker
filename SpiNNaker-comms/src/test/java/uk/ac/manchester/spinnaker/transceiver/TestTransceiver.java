@@ -200,48 +200,47 @@ class TestTransceiver {
 			}
 		}
 	}
+}
 
-	static class MockWriteTransceiver extends Transceiver {
-		static class Write {
-			final CoreLocation core;
-			final byte[] data;
-			final int address;
-			final int offset;
-			final int numBytes;
+class MockWriteTransceiver extends Transceiver {
+	static class Write {
+		final CoreLocation core;
+		final byte[] data;
+		final int address;
+		final int offset;
+		final int numBytes;
 
-			Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
-				this.core = core.asCoreLocation();
-				this.address = baseAddress;
-				this.data = data.array().clone();
-				this.offset = data.position();
-				this.numBytes = data.remaining();
-			}
+		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
+			this.core = core.asCoreLocation();
+			this.address = baseAddress;
+			this.data = data.array().clone();
+			this.offset = data.position();
+			this.numBytes = data.remaining();
 		}
+	}
 
-		List<Write> writtenMemory = new ArrayList<>();
+	List<Write> writtenMemory = new ArrayList<>();
 
-		public MockWriteTransceiver(int version,
-				Collection<Connection> connections)
-				throws IOException, SpinnmanException,
-				uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception {
-			super(version, connections, null, null, null, null, null, null);
-		}
+	public MockWriteTransceiver(int version, Collection<Connection> connections)
+			throws IOException, SpinnmanException,
+			uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception {
+		super(version, connections, null, null, null, null, null, null);
+	}
 
-		@Override
-		public Machine getMachineDetails() {
-			return new VirtualMachine(new MachineDimensions(2, 2));
-		}
+	@Override
+	public Machine getMachineDetails() {
+		return new VirtualMachine(new MachineDimensions(2, 2));
+	}
 
-		@Override
-		void updateMachine() {
-			this.machine = getMachineDetails();
-		}
+	@Override
+	void updateMachine() {
+		this.machine = getMachineDetails();
+	}
 
-		@Override
-		public void writeMemory(HasCoreLocation core, int baseAddress,
-				ByteBuffer data) {
-			writtenMemory.add(new Write(core, baseAddress, data));
-		}
+	@Override
+	public void writeMemory(HasCoreLocation core, int baseAddress,
+			ByteBuffer data) {
+		writtenMemory.add(new Write(core, baseAddress, data));
 	}
 }
 
