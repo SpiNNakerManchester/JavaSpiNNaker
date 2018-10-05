@@ -5,6 +5,7 @@ package uk.ac.manchester.spinnaker.machine.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +30,7 @@ public class MachineBean {
     private Map<ChipLocation, ChipResources> chipResourceExceptions  = emptyMap();
     private ChipResources chipResources = null;
     private Map<ChipLocation, Collection<Direction>> ignoreLinks = emptyMap();
-    private List<ChipIPAddress> ipAddresses = emptyList();
+    private Map<ChipLocation, InetAddress>  ipAddresses = emptyMap();
 
     public MachineBean(@JsonProperty(value = "height", required=true) int height,
             @JsonProperty(value = "width", required=true) int width) {
@@ -111,7 +112,8 @@ public class MachineBean {
    /**
      * @return the ipAddresses
      */
-    public List<ChipIPAddress> getIpAddresses() {
+    @JsonIgnore
+    public Map<ChipLocation, InetAddress> getIpAddressMap() {
         return ipAddresses;
     }
 
@@ -119,7 +121,11 @@ public class MachineBean {
      * @param ipAddresses the ipAddresses to set
      */
     public void setIpAddresses(List<ChipIPAddress> ipAddresses) {
-        this.ipAddresses = ipAddresses;
+        this.ipAddresses =
+                new HashMap<ChipLocation, InetAddress>();
+        ipAddresses.stream().forEach(
+                bean -> this.ipAddresses.put(
+                        bean.location, bean.ipAddress));
     }
 
     public String toString() {
