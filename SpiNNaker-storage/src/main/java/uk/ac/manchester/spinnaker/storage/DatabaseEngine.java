@@ -30,7 +30,15 @@ public class DatabaseEngine implements ConnectionProvider {
 		}
 	}
 
-	private File dbFile;
+	private String dbConnectionUrl;
+
+	/**
+	 * Create an engine interface for an in-memory database.
+	 */
+	public DatabaseEngine() {
+		this.dbConnectionUrl = "jdbc:sqlite::memory:";
+		log.info("will manage database in memory");
+	}
 
 	/**
 	 * Create an engine interface for a particular database.
@@ -39,15 +47,14 @@ public class DatabaseEngine implements ConnectionProvider {
 	 *            The file containing the database.
 	 */
 	public DatabaseEngine(File dbFile) {
-		this.dbFile = dbFile;
+		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 		log.info("will manage database at " + dbFile.getAbsolutePath());
 	}
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		String url = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-		log.debug("opening database connection {}", url);
-		Connection conn = DriverManager.getConnection(url);
+		log.debug("opening database connection {}", dbConnectionUrl);
+		Connection conn = DriverManager.getConnection(dbConnectionUrl);
 		try (Statement statement = conn.createStatement()) {
 			statement.executeUpdate(sqlDDL);
 		}
