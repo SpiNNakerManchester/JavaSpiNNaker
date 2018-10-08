@@ -135,9 +135,7 @@ public class VirtualMachine extends Machine {
             HashMap<ChipLocation, ChipLocation> allChips) {
         ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
-            ChipLocation destination = normalizedLocation(
-                    location.getX() + direction.xChange,
-                    location.getY() + direction.yChange);
+            ChipLocation destination = noralizedMove(location, direction);
             if (allChips.containsKey(destination)) {
                 links.add(new Link(location, direction, destination));
             }
@@ -151,9 +149,7 @@ public class VirtualMachine extends Machine {
         ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
             if (!ignoreLinks.contains(direction)) {
-                ChipLocation destination = normalizedLocation(
-                        location.getX() + direction.xChange,
-                        location.getY() + direction.yChange);
+                ChipLocation destination = noralizedMove(location, direction);
                 if (allChips.containsKey(destination)) {
                     links.add(new Link(location, direction, destination));
                 }

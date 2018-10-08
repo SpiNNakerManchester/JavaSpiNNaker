@@ -326,7 +326,7 @@ public class TestMachine {
                 new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
         assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 24));
         assertEquals(new ChipLocation(24, 0),
-                instance.normalizedLocation(new ChipLocation(24, 24)));
+                instance.normalizedLocation(24, 24));
     }
 
     @Test
@@ -335,7 +335,7 @@ public class TestMachine {
                 new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
         assertEquals(new ChipLocation(24, 24), instance.normalizedLocation(24, 24));
         assertEquals(new ChipLocation(24, 24),
-                instance.normalizedLocation(new ChipLocation(24, 24)));
+                instance.normalizedLocation(24, 24));
     }
 
     @Test

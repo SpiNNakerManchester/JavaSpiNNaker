@@ -29,7 +29,8 @@ public class MachineBean {
     private List<ChipLocation> deadChips = emptyList();
     private Map<ChipLocation, ChipResources> chipResourceExceptions  = emptyMap();
     private ChipResources chipResources = null;
-    private Map<ChipLocation, Collection<Direction>> ignoreLinks = emptyMap();
+    private Map<ChipLocation, Collection<Direction>> ignoreLinks =
+            new DefaultMap<>(HashSet<Direction>::new);
     private Map<ChipLocation, InetAddress>  ipAddresses = emptyMap();
 
     public MachineBean(@JsonProperty(value = "height", required=true) int height,
@@ -75,8 +76,23 @@ public class MachineBean {
      */
     @JsonIgnore
     public Map<ChipLocation, ChipResources>  getChipResourceExceptionsMap() {
-        return null;
-        //return chipResourceExceptions;
+        return chipResourceExceptions;
+    }
+
+    /**
+     * Obtain the ChipRescoure exceptions for a single chip
+     * @param location The x, y coordinates of a chip
+     * @return The resources for this chip either because they have been
+     *      specified or because they come from the general ones.
+     */
+    @JsonIgnore
+    public ChipResources getChipResources(ChipLocation location) {
+        ChipResources specific = chipResourceExceptions.get(location);
+        if (specific == null) {
+            return chipResources;
+        }
+        specific.merge(chipResources);
+        return specific;
     }
 
     /**
@@ -100,10 +116,19 @@ public class MachineBean {
     }
 
     /**
+     * Obtain the deadlinks if any for this location
+     * @param location The x, y coordinates of a chip
+     * @return A collection of directions to ignore which may be empty.
+     */
+    public Collection<Direction> getIgnoreLinks(ChipLocation location) {
+        return ignoreLinks.get(location);
+    }
+
+    /**
      * @param deadLinks the deadLinks to set
      */
     public void setDeadLinks(List<DeadLink> deadLinks) {
-        ignoreLinks = new DefaultMap<>(HashSet<Direction>::new);
+        ignoreLinks.clear();
         deadLinks.stream().forEach(
                 bean -> this.ignoreLinks.get(bean.getLocation()).
                         add(bean.getDirection()));
@@ -115,6 +140,17 @@ public class MachineBean {
     @JsonIgnore
     public Map<ChipLocation, InetAddress> getIpAddressMap() {
         return ipAddresses;
+    }
+
+    /**
+     * Obtain the Ipaddress for this chip if any.
+     *
+     * @param location The x, y coordinates of a chip
+     * @return The ip_address if it is known or null if not.
+     */
+    @JsonIgnore
+    public InetAddress getIpAddress(ChipLocation location) {
+        return ipAddresses.get(location);
     }
 
     /**

@@ -16,18 +16,31 @@ public class ChipResources {
     private int sdram;
     private int tags;
     private int router_entries;
-    private int sram;
 
     public ChipResources() {
         cores = NOT_SET;
         sdram = NOT_SET;
         tags = NOT_SET;
         router_entries = NOT_SET;
-        sram = NOT_SET;
+    }
+
+    public void merge(ChipResources general) {
+        if (cores == NOT_SET) {
+            cores = general.cores;
+        };
+        if (sdram == NOT_SET) {
+            sdram = general.sdram;
+        };
+        if (tags == NOT_SET) {
+            tags = general.tags;
+        };
+        if (router_entries == NOT_SET) {
+            router_entries = general.router_entries;
+        };
     }
 
     /**
-     * @return the cores
+     * @return the number of cores.
      */
     public int getCores() {
         return cores;
@@ -82,20 +95,6 @@ public class ChipResources {
         this.router_entries = router_entries;
     }
 
-    /**
-     * @return the sram
-     */
-    public int getSram() {
-        return sram;
-    }
-
-    /**
-     * @param sram the sram to set
-     */
-    public void setSram(int sram) {
-        this.sram = sram;
-    }
-
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
         if (cores != NOT_SET) {
@@ -110,9 +109,6 @@ public class ChipResources {
         if (sdram != NOT_SET) {
             builder.append("router_entries: ").append(router_entries)
                     .append(", ");
-        }
-        if (sdram != NOT_SET) {
-            builder.append("sram: ").append(sram).append(", ");
         }
         builder.setLength(builder.length() - 2);
         builder.append("]");

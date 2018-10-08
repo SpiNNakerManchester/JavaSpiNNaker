@@ -575,14 +575,21 @@ public class Machine implements Iterable<Chip> {
      * @param x X coordinate
      * @param y Y coordinate
      * @return A ChipLocation based on X and Y with possible wrap around,
-     *  or null if either coordinate is less than zero.
+     *  or null if either coordinate is less than zero
+     *       or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(int x, int y) {
         if (version.wrapAround) {
             x = (x + machineDimensions.width) % machineDimensions.width;
+        } else {
+            if (x < 0 || x >=  this.machineDimensions.width) {
+                return null;
+            }
+        }
+        if (version.wrapAround) {
             y = (y + machineDimensions.height) % machineDimensions.height;
         } else {
-            if (x < 0 || y < 0) {
+            if (y < 0 || y >= this.machineDimensions.width) {
                 return null;
             }
         }
@@ -590,24 +597,24 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Adjust the location is required.
+     * Returns the location you would get to from the source if you move in
+     *      this direction.
      *
      * If required (and applicable) adjusting for wrap around.
      * <p>
      * No check is done to see if there is actually a chip at that location.
      *
-     * @param location X and Y coordinates
-     * @return A ChipLocation based on X and Y with possible wrap around,
-     *  or null if either coordinate is null.
+     * @param source the original x and y coordinates.
+     * @param direction which way to move.
+     * @return A ChipLocation based on a move in this direction
+     *  with possible wrap around,
+     *  or null if either coordinate is less than zero
+     *       or greater than the dimensions of the machine.
      */
-    public final ChipLocation normalizedLocation(HasChipLocation location) {
-        if (version.wrapAround) {
-             return new ChipLocation(
-                     location.getX() % machineDimensions.width,
-                     location.getY() % machineDimensions.height);
-        } else {
-            return location.asChipLocation();
-        }
+    public final ChipLocation noralizedMove(
+            HasChipLocation source, Direction direction) {
+        return normalizedLocation(source.getX() + direction.xChange,
+                source.getY() + direction.yChange);
     }
 
     /**

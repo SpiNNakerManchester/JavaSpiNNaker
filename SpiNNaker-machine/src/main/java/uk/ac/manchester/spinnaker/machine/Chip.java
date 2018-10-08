@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
+import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -216,6 +218,30 @@ public class Chip implements HasChipLocation {
 
         this.nearestEthernet = chip.nearestEthernet;
     }
+
+    public Chip(ChipLocation location, MachineBean bean, Machine machine) {
+        ChipResources resources = bean.getChipResources(location);
+
+        int cores = resources.getCores();
+        this.location = location;
+        this.monitorProcessors =  DEFAULT_MONITOR_PROCESSORS;
+        cores -= this.monitorProcessors.size();
+        this.userProcessors = new TreeMap<>();
+        for (int i = 1; i < cores ; i++) {
+           this.userProcessors.put(i, Processor.factory(i, false));
+        }
+
+        this.router = new Router(location, resources.getRouter_entries(),
+            bean.getIgnoreLinks(location), machine);
+
+        this.sdram = resources.getSdram();
+        this.ipAddress = bean.getIpAddress(location);
+        this.virtual = false;
+        this.nTagIds = resources.getTags();
+
+        this.nearestEthernet = null; //chip.nearestEthernet;
+    }
+
 
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
