@@ -6,3 +6,6 @@ CREATE TABLE IF NOT EXISTS storage(
 	processor INTEGER NOT NULL,
 	region INTEGER NOT NULL,
 	content BLOB);
+-- Every processor's regions have a unique ID
+CREATE UNIQUE INDEX IF NOT EXISTS sanity ON storage(
+	x ASC, y ASC, processor ASC, region ASC);
