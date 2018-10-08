@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.storage;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteConfig.SynchronousMode.OFF;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.slf4j.Logger;
+import org.sqlite.SQLiteConfig;
 
 /**
  * The database engine interface. Based on SQLite.
@@ -54,7 +56,11 @@ public class DatabaseEngine implements ConnectionProvider {
 	@Override
 	public Connection getConnection() throws SQLException {
 		log.debug("opening database connection {}", dbConnectionUrl);
-		Connection conn = DriverManager.getConnection(dbConnectionUrl);
+		SQLiteConfig config = new SQLiteConfig();
+		config.enforceForeignKeys(true);
+		config.setSynchronous(OFF);
+		Connection conn = DriverManager.getConnection(dbConnectionUrl,
+				config.toProperties());
 		try (Statement statement = conn.createStatement()) {
 			statement.executeUpdate(sqlDDL);
 		}
