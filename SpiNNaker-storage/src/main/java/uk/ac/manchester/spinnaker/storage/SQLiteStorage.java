@@ -24,8 +24,10 @@ public class SQLiteStorage implements Storage {
 			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?)";
 	private static final String APPEND =
-			"UPDATE storage SET content = content || ? WHERE "
-					+ "x = ? AND y = ? AND processor = ? AND region = ?";
+			"INSERT INTO storage(x, y, processor, region, content) "
+					+ "VALUES(?, ?, ?, ?, ?) "
+					+ "ON CONFLICT(x, y, processor, region) DO "
+					+ "UPDATE SET content = storage.content || excluded.content";
 	private static final String FETCH = "SELECT content FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
 	private static final String DELETE = "DELETE FROM storage WHERE "
@@ -80,11 +82,11 @@ public class SQLiteStorage implements Storage {
 			byte[] contents) throws StorageException {
 		try (Connection conn = connProvider.getConnection();
 				PreparedStatement s = conn.prepareStatement(APPEND)) {
-			s.setBytes(FIRST, contents);
-			s.setInt(SECOND, core.getX());
-			s.setInt(THIRD, core.getY());
-			s.setInt(FOURTH, core.getP());
-			s.setInt(FIFTH, region);
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			s.setInt(FOURTH, region);
+			s.setBytes(FIFTH, contents);
 			s.executeUpdate();
 		} catch (SQLException e) {
 			throw new StorageException("while appending to a region", e);
