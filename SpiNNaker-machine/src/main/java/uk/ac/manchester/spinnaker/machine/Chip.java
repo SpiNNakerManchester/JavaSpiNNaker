@@ -10,8 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
+import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
-import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -219,27 +220,23 @@ public class Chip implements HasChipLocation {
         this.nearestEthernet = chip.nearestEthernet;
     }
 
-    public Chip(ChipLocation location, MachineBean bean, Machine machine) {
-        ChipResources resources = bean.getChipResources(location);
+    Chip(ChipBean bean, Machine machine) {
+        ChipDetails details = bean.getDetails();
+        ChipResources resources = bean.getResources();
 
-        int cores = resources.getCores();
-        this.location = location;
-        this.monitorProcessors =  DEFAULT_MONITOR_PROCESSORS;
-        cores -= this.monitorProcessors.size();
-        this.userProcessors = new TreeMap<>();
-        for (int i = 1; i < cores ; i++) {
-           this.userProcessors.put(i, Processor.factory(i, false));
-        }
+        this.location = bean.getLocation();
+        this.monitorProcessors =  provideMonitors(resources.getMonitors());
+        this.userProcessors = provideUserProcesses(resources.getMonitors(), details.cores);
 
-        this.router = new Router(location, resources.getRouter_entries(),
-            bean.getIgnoreLinks(location), machine);
+        this.router = new Router(location, resources.getRouterClockSpeed(),
+            resources.getRouterEntries(), details.getDeadDirections(), machine);
 
         this.sdram = resources.getSdram();
-        this.ipAddress = bean.getIpAddress(location);
-        this.virtual = false;
+        this.ipAddress = details.getIpAddress();
+        this.virtual = resources.getVirtual();
         this.nTagIds = resources.getTags();
 
-        this.nearestEthernet = null; //chip.nearestEthernet;
+        this.nearestEthernet = details.getEthernet(); //chip.nearestEthernet;
     }
 
 
@@ -254,6 +251,23 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         processors.put(0, Processor.factory(0, true));
+        return processors;
+    }
+
+    private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = 0; i < monitors; i++) {
+           processors.put(i, Processor.factory(i, true));
+        }
+        return processors;
+    }
+
+    private TreeMap<Integer, Processor> provideUserProcesses(
+            int monitors, int cores) {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = monitors; i < cores; i++) {
+           processors.put(i, Processor.factory(i, false));
+        }
         return processors;
     }
 

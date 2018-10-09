@@ -6,6 +6,7 @@ import java.net.URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
+import uk.ac.manchester.spinnaker.machine.Machine;
 
 /**
  *
@@ -14,17 +15,23 @@ import org.junit.jupiter.api.Test;
 public class TestMachineBean {
 
     @Test
-    public void testFromJson() throws IOException {
+    public void testSpinn4() throws IOException {
         URL url = TestMachineBean.class.getResource("/spinn4.json");
-        System.out.println(url);
-        //String json = "[2, 4]";
         ObjectMapper mapper = MapperFactory.createMapper();
         MachineBean fromJson = mapper.readValue(url, MachineBean.class);
-        System.out.println(fromJson);
-        //assertEquals(2, fromJson.getX());
-        //assertEquals(4, fromJson.getY());
+
+        Machine machine = new Machine(fromJson);
 
     }
 
+    @Test
+    public void testSpinn4Fiddle() throws IOException {
+        URL url = TestMachineBean.class.getResource("/spinn4_fiddle.json");
+        ObjectMapper mapper = MapperFactory.createMapper();
+        MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+
+        Machine machine = new Machine(fromJson);
+
+    }
 
 }

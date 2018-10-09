@@ -17,6 +17,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
+import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
+import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
+import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
@@ -113,6 +116,15 @@ public class Machine implements Iterable<Chip> {
             HasChipLocation boot) {
         this(machineDimensions, boot);
         addChips(chips);
+    }
+
+    public Machine(MachineBean bean) {
+        this(bean.getMachineDimensions(), bean.getRoot());
+        ChipResources defaults = bean.getChipResources();
+        for (ChipBean chipBean: bean.getChips()) {
+            chipBean.addDefaults(defaults);
+            addChip(new Chip(chipBean, this));
+        }
     }
 
     /**

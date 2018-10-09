@@ -142,17 +142,18 @@ public final class Router implements Iterable<Link> {
      * @param source Chip which links are coming from
      * @param nAvailableMulticastEntries
      *      The number of entries available in the routing table.
-     * @param ignoreLinks Directions not to create links for.
+     * @param ignoreDirections Directions not to create links for.
      * @param machine The Machine this chip will go on. Used for calculating
      *      wrap arounds
      * @throws NullPointerException if a none valid direction is not in
      *      ignoredLinks
      */
-    public Router(HasChipLocation source, int nAvailableMulticastEntries,
-            Collection<Direction> ignoreLinks, Machine machine) {
+    public Router(HasChipLocation source, int clockSpeed,
+            int nAvailableMulticastEntries,
+            Collection<Direction> ignoreDirections, Machine machine) {
         this(MachineDefaults.ROUTER_CLOCK_SPEED, nAvailableMulticastEntries);
         for (Direction direction: Direction.values()) {
-            if (!ignoreLinks.contains(direction)) {
+            if (!ignoreDirections.contains(direction)) {
                 ChipLocation destination = machine.normalizedLocation(
                         source.getX() + direction.xChange,
                         source.getY()+ direction.yChange);

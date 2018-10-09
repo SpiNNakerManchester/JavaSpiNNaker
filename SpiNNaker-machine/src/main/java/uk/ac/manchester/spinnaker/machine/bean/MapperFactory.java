@@ -6,7 +6,7 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
+import static com.fasterxml.jackson.databind.PropertyNamingStrategy.LOWER_CAMEL_CASE;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
@@ -25,8 +25,8 @@ public class MapperFactory {
         ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 		mapper.registerModule(module);
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.setPropertyNamingStrategy(LOWER_CAMEL_CASE);
+		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, true);
 		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         return mapper;
     }

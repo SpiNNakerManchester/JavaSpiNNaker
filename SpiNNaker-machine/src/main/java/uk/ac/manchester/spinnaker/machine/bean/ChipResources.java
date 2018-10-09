@@ -3,6 +3,10 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
@@ -13,30 +17,45 @@ public class ChipResources {
 
     public static final int NOT_SET = -1;
     private int cores;
+    private int monitors;
     private int sdram;
     private int tags;
-    private int router_entries;
+    private int routerEntries;
+    private int routerClockSpeed;
+    private Boolean virtual;
 
     public ChipResources() {
         cores = NOT_SET;
+        monitors = NOT_SET;
         sdram = NOT_SET;
         tags = NOT_SET;
-        router_entries = NOT_SET;
+        routerClockSpeed = NOT_SET;
+        routerEntries = NOT_SET;
     }
 
-    public void merge(ChipResources general) {
+    @JsonIgnore
+    public void addDefaults(ChipResources defaults) {
         if (cores == NOT_SET) {
-            cores = general.cores;
+            cores = defaults.cores;
+        };
+        if (monitors== NOT_SET) {
+            monitors = defaults.monitors;
         };
         if (sdram == NOT_SET) {
-            sdram = general.sdram;
+            sdram = defaults.sdram;
         };
         if (tags == NOT_SET) {
-            tags = general.tags;
+            tags = defaults.tags;
         };
-        if (router_entries == NOT_SET) {
-            router_entries = general.router_entries;
+        if (getRouterClockSpeed() == NOT_SET) {
+            setRouterClockSpeed(defaults.getRouterClockSpeed());
         };
+        if (routerEntries == NOT_SET) {
+            routerEntries = defaults.routerEntries;
+        };
+        if(virtual == null) {
+            virtual = defaults.getVirtual();
+        }
     }
 
     /**
@@ -51,6 +70,20 @@ public class ChipResources {
      */
     public void setCores(int cores) {
         this.cores = cores;
+    }
+
+    /**
+     * @return the monitors
+     */
+    public int getMonitors() {
+        return monitors;
+    }
+
+    /**
+     * @param monitors the monitors to set
+     */
+    public void setMonitors(int monitors) {
+        this.monitors = monitors;
     }
 
     /**
@@ -82,17 +115,45 @@ public class ChipResources {
     }
 
     /**
+     * @return the routerClockSpeed
+     */
+    public int getRouterClockSpeed() {
+        return routerClockSpeed;
+    }
+
+    /**
+     * @param routerClockSpeed the routerClockSpeed to set
+     */
+    public void setRouterClockSpeed(int routerClockSpeed) {
+        this.routerClockSpeed = routerClockSpeed;
+    }
+
+    /**
      * @return the router_entries
      */
-    public int getRouter_entries() {
-        return router_entries;
+    public int getRouterEntries() {
+        return routerEntries;
     }
 
     /**
      * @param router_entries the router_entries to set
      */
-    public void setRouter_entries(int router_entries) {
-        this.router_entries = router_entries;
+    public void setRouterEntries(int router_entries) {
+        this.routerEntries = router_entries;
+    }
+
+    /**
+     * @return the virtual
+     */
+    public Boolean getVirtual() {
+        return virtual;
+    }
+
+    /**
+     * @param virtual the virtual to set
+     */
+    public void setVirtual(Boolean virtual) {
+        this.virtual = virtual;
     }
 
     public String toString() {
@@ -100,15 +161,25 @@ public class ChipResources {
         if (cores != NOT_SET) {
             builder.append("cores: ").append(cores).append(", ");
         }
+        if (monitors != NOT_SET) {
+            builder.append("monitors: ").append(monitors).append(", ");
+        }
         if (sdram != NOT_SET) {
             builder.append("sdram: ").append(sdram).append(", ");
         }
-        if (sdram != NOT_SET) {
+        if (tags != NOT_SET) {
             builder.append("tags: ").append(tags).append(", ");
         }
-        if (sdram != NOT_SET) {
-            builder.append("router_entries: ").append(router_entries)
+        if (getRouterClockSpeed() != NOT_SET) {
+            builder.append("routerClockSpeed: ").append(getRouterClockSpeed())
                     .append(", ");
+        }
+        if (routerEntries != NOT_SET) {
+            builder.append("router_entries: ").append(routerEntries)
+                    .append(", ");
+        }
+        if (builder.length() < 2) {
+            builder.append("EMPTY");
         }
         builder.setLength(builder.length() - 2);
         builder.append("]");
