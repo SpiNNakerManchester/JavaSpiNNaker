@@ -26,8 +26,8 @@ public class SQLiteStorage implements Storage {
 	private static final String APPEND =
 			"INSERT INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?) "
-					+ "ON CONFLICT(x, y, processor, region) DO "
-					+ "UPDATE SET content = storage.content || excluded.content";
+					+ "ON CONFLICT(x, y, processor, region) DO UPDATE "
+					+ "SET content = storage.content || excluded.content";
 	private static final String FETCH = "SELECT content FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
 	private static final String DELETE = "DELETE FROM storage WHERE "
