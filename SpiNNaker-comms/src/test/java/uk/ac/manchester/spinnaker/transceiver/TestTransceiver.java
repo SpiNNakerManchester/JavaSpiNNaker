@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -204,6 +206,32 @@ class TestTransceiver {
 					assertArrayEquals(expected_data, write.data);
 				}
 			}
+		}
+	}
+
+	private static Set<ChipLocation> chips(Machine machine) {
+		return machine.chips().stream().map(chip -> chip.asChipLocation())
+				.collect(toSet());
+	}
+
+	@Test
+	void testReliableMachine() throws Exception {
+		board_config.set_up_remote_board();
+        Inet4Address host = InetFactory.getByName(board_config.remotehost);
+
+        ArrayList<Machine> l = new ArrayList<>();
+        for (int i = 0 ; i < 10 ; i++) {
+        	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
+        		txrx.ensureBoardIsReady();
+        		txrx.getMachineDimensions();
+        		txrx.getScampVersion();
+				l.add(txrx.getMachineDetails());
+			}
+		}
+		Set<ChipLocation> m = chips(l.remove(0));
+		System.out.println(m);
+		for (Machine m2 : l) {
+			assertEquals(m, chips(m2));
 		}
 	}
 }
