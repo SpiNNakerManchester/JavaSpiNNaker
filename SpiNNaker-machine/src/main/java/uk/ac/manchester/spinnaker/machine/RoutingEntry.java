@@ -124,7 +124,7 @@ public class RoutingEntry {
      * Removes a processor ID if it existed.
      *
      * @param oldValue The Id of the processor to remove.
-     * @return <tt>true</tt> If this entry contained the specified processor.
+     * @return {@code true} If this entry contained the specified processor.
      */
     public boolean removeProcessorID(Integer oldValue) {
         return processorIDs.remove(oldValue);
@@ -174,7 +174,7 @@ public class RoutingEntry {
      * Removes a link ID/Direction if it existed.
      *
      * @param oldValue The Id of the processor to remove.
-     * @return <tt>true</tt> If this entry contained the specified
+     * @return {@code true} If this entry contained the specified
      *      link/direction.
      */
     public boolean removeLinkID(Direction oldValue) {

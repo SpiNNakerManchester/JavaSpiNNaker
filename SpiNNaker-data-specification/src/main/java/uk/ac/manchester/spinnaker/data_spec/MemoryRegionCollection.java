@@ -50,7 +50,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *
 	 * @param regionID
 	 *            The region ID to retrieve.
-	 * @return The memory region, or <tt>null</tt> if that region is empty.
+	 * @return The memory region, or {@code null} if that region is empty.
 	 */
 	public MemoryRegion get(int regionID) {
 		return regions[regionID];
@@ -60,7 +60,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * Set the region with the given ID.
 	 *
 	 * @param regionID
-	 *            The region ID to set. Must not be <tt>null</tt>.
+	 *            The region ID to set. Must not be {@code null}.
 	 * @param region
 	 *            The region to store.
 	 * @throws RegionInUseException

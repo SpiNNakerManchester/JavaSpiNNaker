@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
@@ -135,8 +136,9 @@ class TestTransceiver {
 		}
 	}
 
-	/** Tests the creation of listening sockets. 
+	/** Tests the creation of listening sockets. */
 	@Test
+	@Disabled
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
@@ -163,6 +165,7 @@ class TestTransceiver {
 	}
 
 	@Test
+	@Disabled
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expected_writes = asList(new byte[] {
@@ -186,7 +189,7 @@ class TestTransceiver {
 			/*
 			 * Check the values that were "written" for set_watch_dog, which
 			 * should be one per chip
-			 * /
+			 */
 			int write_item = 0;
 			for (byte[] expected_data : expected_writes) {
 				for (ChipLocation chip : tx.getMachineDetails()
@@ -202,49 +205,48 @@ class TestTransceiver {
 				}
 			}
 		}
-	}*/
+	}
+}
 
-	static class MockWriteTransceiver extends Transceiver {
-		static class Write {
-			final CoreLocation core;
-			final byte[] data;
-			final int address;
-			final int offset;
-			final int n_bytes;
+class MockWriteTransceiver extends Transceiver {
+	static class Write {
+		final CoreLocation core;
+		final byte[] data;
+		final int address;
+		final int offset;
+		final int n_bytes;
 
-			Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
-				this.core = core.asCoreLocation();
-				this.address = baseAddress;
-				this.data = data.array().clone();
-				this.offset = data.position();
-				this.n_bytes = data.remaining();
-			}
+		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
+			this.core = core.asCoreLocation();
+			this.address = baseAddress;
+			this.data = data.array().clone();
+			this.offset = data.position();
+			this.n_bytes = data.remaining();
 		}
+	}
 
-		List<Write> written_memory = new ArrayList<>();
+	List<Write> written_memory = new ArrayList<>();
 
-		public MockWriteTransceiver(int version,
-				Collection<Connection> connections)
-				throws IOException, SpinnmanException,
-				uk.ac.manchester.spinnaker.processes.Process.Exception {
-			super(version, connections, null, null, null, null, null, null);
-		}
+	public MockWriteTransceiver(int version, Collection<Connection> connections)
+			throws IOException, SpinnmanException,
+			uk.ac.manchester.spinnaker.processes.Process.Exception {
+		super(version, connections, null, null, null, null, null, null);
+	}
 
-		@Override
-		public Machine getMachineDetails() {
-			return new VirtualMachine(new MachineDimensions(2, 2));
-		}
+	@Override
+	public Machine getMachineDetails() {
+		return new VirtualMachine(new MachineDimensions(2, 2));
+	}
 
-		@Override
-		void updateMachine() {
-			this.machine = getMachineDetails();
-		}
+	@Override
+	void updateMachine() {
+		this.machine = getMachineDetails();
+	}
 
-		@Override
-		public void writeMemory(HasCoreLocation core, int baseAddress,
-				ByteBuffer data) {
-			written_memory.add(new Write(core, baseAddress, data));
-		}
+	@Override
+	public void writeMemory(HasCoreLocation core, int baseAddress,
+			ByteBuffer data) {
+		written_memory.add(new Write(core, baseAddress, data));
 	}
 }
 

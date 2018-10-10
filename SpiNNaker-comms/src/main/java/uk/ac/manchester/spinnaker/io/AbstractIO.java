@@ -216,7 +216,7 @@ public interface AbstractIO extends AutoCloseable {
 	 *            The value to repeat
 	 * @param size
 	 *            Number of bytes to fill from current position, or
-	 *            <tt>null</tt> to fill to the end
+	 *            {@code null} to fill to the end
 	 * @param type
 	 *            The type of the repeat value
 	 * @throws Exception

@@ -50,7 +50,7 @@ public interface SpallocAPI {
 	 *
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return the server's version.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -71,8 +71,7 @@ public interface SpallocAPI {
 	 *            location (three args).
 	 * @param kwargs
 	 *            Additional arguments required. Must include the key
-	 *            <tt>owner</tt>. Values can be boxed primitive types or
-	 *            strings.
+	 *            {@code owner}. Values can be boxed primitive types or strings.
 	 * @return the ID of the created job.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -93,11 +92,10 @@ public interface SpallocAPI {
 	 *            location (three args).
 	 * @param kwargs
 	 *            Additional arguments required. Must include the key
-	 *            <tt>owner</tt>. Values can be boxed primitive types or
-	 *            strings.
+	 *            {@code owner}. Values can be boxed primitive types or strings.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return the ID of the created job.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -132,7 +130,7 @@ public interface SpallocAPI {
 	 *            The job to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -166,7 +164,7 @@ public interface SpallocAPI {
 	 *            The job to get the state of.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return a description of the job's state.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -201,7 +199,7 @@ public interface SpallocAPI {
 	 *            The job whose machine you want to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return a description of the machine.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -236,7 +234,7 @@ public interface SpallocAPI {
 	 *            The job to request about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -269,7 +267,7 @@ public interface SpallocAPI {
 	 *            The job to request about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -306,7 +304,7 @@ public interface SpallocAPI {
 	 *            Why the job is to be destroyed.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -322,8 +320,8 @@ public interface SpallocAPI {
 	 * Enable or disable notifications of changes in job state.
 	 *
 	 * @param jobID
-	 *            The job to request (or cancel requests) about, or
-	 *            <tt>null</tt> to be notified/not notified about all jobs.
+	 *            The job to request (or cancel requests) about, or {@code null}
+	 *            to be notified/not notified about all jobs.
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
 	 * @see JobsChangedNotification
@@ -341,13 +339,13 @@ public interface SpallocAPI {
 	 * Enable or disable notifications of changes in job state.
 	 *
 	 * @param jobID
-	 *            The job to request (or cancel requests) about, or
-	 *            <tt>null</tt> to be notified/not notified about all jobs.
+	 *            The job to request (or cancel requests) about, or {@code null}
+	 *            to be notified/not notified about all jobs.
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @see JobsChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -365,7 +363,7 @@ public interface SpallocAPI {
 	 *
 	 * @param machineName
 	 *            The machine to request (or cancel requests) about, or
-	 *            <tt>null</tt> to be notified/not notified about all machines
+	 *            {@code null} to be notified/not notified about all machines
 	 *            (known to spalloc).
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
@@ -385,11 +383,11 @@ public interface SpallocAPI {
 	 *
 	 * @param machineName
 	 *            The machine to request (or cancel requests) about, or
-	 *            <tt>null</tt> to be notified/not notified about all machines
+	 *            {@code null} to be notified/not notified about all machines
 	 *            (known to spalloc).
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
 	 * @see MachinesChangedNotification
@@ -424,7 +422,7 @@ public interface SpallocAPI {
 	 *
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return A list of allocated/queued jobs in order of creation from oldest
 	 *         (first) to newest (last). This is unmodifiable.
 	 * @throws SpallocServerException
@@ -457,7 +455,7 @@ public interface SpallocAPI {
 	 *
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
+	 *            or {@code null} to wait forever.
 	 * @return The list of machines known to the system in order of priority
 	 *         from highest (first) to lowest (last). This is unmodifiable.
 	 * @throws SpallocServerException
@@ -477,7 +475,7 @@ public interface SpallocAPI {
 	 *            the name of the machine containing the board.
 	 * @param coords
 	 *            the logical location of the board.
-	 * @return the physical location, or <tt>null</tt> if the logical location
+	 * @return the physical location, or {@code null} if the logical location
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -499,8 +497,8 @@ public interface SpallocAPI {
 	 *            the logical location of the board.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return the physical location, or <tt>null</tt> if the logical location
+	 *            or {@code null} to wait forever.
+	 * @return the physical location, or {@code null} if the logical location
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -520,7 +518,7 @@ public interface SpallocAPI {
 	 *            the name of the machine containing the board.
 	 * @param coords
 	 *            the physical location of the board.
-	 * @return the logical location, or <tt>null</tt> if the physical location
+	 * @return the logical location, or {@code null} if the physical location
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -542,8 +540,8 @@ public interface SpallocAPI {
 	 *            the physical location of the board.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return the logical location, or <tt>null</tt> if the physical location
+	 *            or {@code null} to wait forever.
+	 * @return the logical location, or {@code null} if the physical location
 	 *         doesn't map to a real board.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -564,8 +562,8 @@ public interface SpallocAPI {
 	 *            The job to ask about.
 	 * @param chip
 	 *            The coordinates of the chip to ask about.
-	 * @return A description of the chip's location, or <tt>null</tt> if it
-	 *         can't be found.
+	 * @return A description of the chip's location, or {@code null} if it can't
+	 *         be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
@@ -585,9 +583,9 @@ public interface SpallocAPI {
 	 *            The coordinates of the chip to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return A description of the chip's location, or <tt>null</tt> if it
-	 *         can't be found.
+	 *            or {@code null} to wait forever.
+	 * @return A description of the chip's location, or {@code null} if it can't
+	 *         be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -606,8 +604,8 @@ public interface SpallocAPI {
 	 *            The machine to ask about.
 	 * @param chip
 	 *            The coordinates of the chip to ask about.
-	 * @return A description of the chip's location, or <tt>null</tt> if it
-	 *         can't be found.
+	 * @return A description of the chip's location, or {@code null} if it can't
+	 *         be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
@@ -627,9 +625,9 @@ public interface SpallocAPI {
 	 *            The coordinates of the chip to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return A description of the chip's location, or <tt>null</tt> if it
-	 *         can't be found.
+	 *            or {@code null} to wait forever.
+	 * @return A description of the chip's location, or {@code null} if it can't
+	 *         be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -648,7 +646,7 @@ public interface SpallocAPI {
 	 *            The machine to ask about.
 	 * @param coords
 	 *            The physical coordinates of the board to ask about.
-	 * @return A description of the board's location, or <tt>null</tt> if it
+	 * @return A description of the board's location, or {@code null} if it
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -669,8 +667,8 @@ public interface SpallocAPI {
 	 *            The physical coordinates of the board to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return A description of the board's location, or <tt>null</tt> if it
+	 *            or {@code null} to wait forever.
+	 * @return A description of the board's location, or {@code null} if it
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -690,7 +688,7 @@ public interface SpallocAPI {
 	 *            The machine to ask about.
 	 * @param coords
 	 *            The logical coordinates of the board to ask about.
-	 * @return A description of the board's location, or <tt>null</tt> if it
+	 * @return A description of the board's location, or {@code null} if it
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -711,8 +709,8 @@ public interface SpallocAPI {
 	 *            The logical coordinates of the board to ask about.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
-	 *            or <tt>null</tt> to wait forever.
-	 * @return A description of the board's location, or <tt>null</tt> if it
+	 *            or {@code null} to wait forever.
+	 * @return A description of the board's location, or {@code null} if it
 	 *         can't be found.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
@@ -747,11 +745,10 @@ public interface SpallocAPI {
 	 *
 	 * @param timeout
 	 *            The number of seconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever. If
+	 *            {@code null} if this function should try again forever. If
 	 *            negative, only responses already-received will be returned; if
 	 *            no responses are available, in this case the function does not
-	 *            raise a ProtocolTimeoutError but returns <tt>null</tt>
-	 *            instead.
+	 *            raise a ProtocolTimeoutError but returns {@code null} instead.
 	 * @return The notification sent by the server.
 	 * @see JobsChangedNotification
 	 * @see MachinesChangedNotification
