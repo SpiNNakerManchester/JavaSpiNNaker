@@ -37,7 +37,7 @@ public class SCPConnection extends SDPConnection
 	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
-	 *            <tt>null</tt>, the default remote port is used.
+	 *            {@code null}, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
@@ -51,10 +51,10 @@ public class SCPConnection extends SDPConnection
 	 *
 	 * @param localHost
 	 *            The optional host of the local interface to
-	 *            listen on; use <tt>null</tt> to listen on all local
+	 *            listen on; use {@code null} to listen on all local
 	 *            interfaces.
 	 * @param localPort
-	 *            The optional local port to listen on; use <tt>null</tt> to
+	 *            The optional local port to listen on; use {@code null} to
 	 *            pick a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
@@ -71,16 +71,16 @@ public class SCPConnection extends SDPConnection
 	 *
 	 * @param localHost
 	 *            The optional host of the local interface to
-	 *            listen on; use <tt>null</tt> to listen on all local
+	 *            listen on; use {@code null} to listen on all local
 	 *            interfaces.
 	 * @param localPort
-	 *            The optional local port to listen on; use <tt>null</tt> to
+	 *            The optional local port to listen on; use {@code null} to
 	 *            pick a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
-	 *            <tt>null</tt>, the default remote port is used.
+	 *            {@code null}, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
@@ -113,7 +113,7 @@ public class SCPConnection extends SDPConnection
 	 *            The remote host nto send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
-	 *            <tt>null</tt>, the default remote port is used.
+	 *            {@code null}, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */
@@ -129,10 +129,10 @@ public class SCPConnection extends SDPConnection
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
 	 *            The optional host name of the local interface to
-	 *            listen on; use <tt>null</tt> to listen on all local
+	 *            listen on; use {@code null} to listen on all local
 	 *            interfaces.
 	 * @param localPort
-	 *            The optional local port to listen on; use <tt>null</tt> to
+	 *            The optional local port to listen on; use {@code null} to
 	 *            pick a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
@@ -151,16 +151,16 @@ public class SCPConnection extends SDPConnection
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
 	 *            The optional host of the local interface to
-	 *            listen on; use <tt>null</tt> to listen on all local
+	 *            listen on; use {@code null} to listen on all local
 	 *            interfaces.
 	 * @param localPort
-	 *            The optional local port to listen on; use <tt>null</tt> to
+	 *            The optional local port to listen on; use {@code null} to
 	 *            pick a random port.
 	 * @param remoteHost
 	 *            The remote host to send messages to.
 	 * @param remotePort
 	 *            The optional remote port number to send messages to. If
-	 *            <tt>null</tt>, the default remote port is used.
+	 *            {@code null}, the default remote port is used.
 	 * @throws IOException
 	 *             If anything goes wrong with socket setup.
 	 */

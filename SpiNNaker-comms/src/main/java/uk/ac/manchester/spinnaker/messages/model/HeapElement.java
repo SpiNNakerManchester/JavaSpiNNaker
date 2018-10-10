@@ -10,10 +10,10 @@ public class HeapElement {
 	public final int size;
 	/** True if the block is free. */
 	public final boolean isFree;
-	/** The tag of the block if allocated, or <tt>null</tt> if not. */
+	/** The tag of the block if allocated, or {@code null} if not. */
 	public final Integer tag;
 	/**
-	 * The application ID of the block if allocated, or <tt>null</tt> if not.
+	 * The application ID of the block if allocated, or {@code null} if not.
 	 */
 	public final Integer appID;
 

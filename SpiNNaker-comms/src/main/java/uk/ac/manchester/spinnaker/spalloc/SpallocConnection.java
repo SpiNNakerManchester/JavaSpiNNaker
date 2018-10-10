@@ -135,7 +135,7 @@ public abstract class SpallocConnection implements Closeable {
 	 *            thread; cached for efficiency).
 	 * @param timeout
 	 *            The socket's timeout.
-	 * @return The socket, or <tt>null</tt> if the connection failed.
+	 * @return The socket, or {@code null} if the connection failed.
 	 * @throws IOException
 	 *             if something really bad goes wrong.
 	 */
@@ -251,7 +251,7 @@ public abstract class SpallocConnection implements Closeable {
 	 *
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever.
+	 *            {@code null} if this function should try again forever.
 	 * @return The unpacked response from the line received.
 	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
@@ -286,7 +286,7 @@ public abstract class SpallocConnection implements Closeable {
 	 *            The command to serialise.
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out or
-	 *            <tt>null</tt> if this function should try again forever.
+	 *            {@code null} if this function should try again forever.
 	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
 	 * @throws IOException
@@ -318,7 +318,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * Format a request to be ready to go to the server.
 	 *
 	 * @param command
-	 *            The request to format for sending. Not <tt>null</tt>.
+	 *            The request to format for sending. Not {@code null}.
 	 * @return The text to send to the server. Will have a newline added.
 	 * @throws IOException
 	 *             If formatting goes wrong.
@@ -330,9 +330,9 @@ public abstract class SpallocConnection implements Closeable {
 	 * Parse a response line from the server.
 	 *
 	 * @param line
-	 *            The line to parse. Not <tt>null</tt>. Has the terminating
+	 *            The line to parse. Not {@code null}. Has the terminating
 	 *            newline removed.
-	 * @return The parsed response, or <tt>null</tt> for a generic "that's
+	 * @return The parsed response, or {@code null} for a generic "that's
 	 *         unexpected".
 	 * @throws IOException
 	 *             If parsing completely fails.
@@ -346,7 +346,7 @@ public abstract class SpallocConnection implements Closeable {
 	 *            The command to send.
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out or
-	 *            <tt>null</tt> if this function should wait forever.
+	 *            {@code null} if this function should wait forever.
 	 * @return The result string returned by the server.
 	 * @throws SpallocServerException
 	 *             If the server sends an error.
@@ -430,8 +430,8 @@ public abstract class SpallocConnection implements Closeable {
 		}
 	}
 
-    @Override
+	@Override
 	public String toString() {
-        return addr + " dead: " + dead + "  " + defaultTimeout;
-    }
+		return addr + " dead: " + dead + "  " + defaultTimeout;
+	}
 }

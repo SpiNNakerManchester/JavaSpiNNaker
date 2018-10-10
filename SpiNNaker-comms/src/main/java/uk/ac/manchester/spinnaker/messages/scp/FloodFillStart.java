@@ -46,7 +46,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	 *            The number of blocks of data that will be sent, between 0 and
 	 *            255
 	 * @param chip
-	 *            The chip to load the data on to, or <tt>null</tt> to load data
+	 *            The chip to load the data on to, or {@code null} to load data
 	 *            onto all chips.
 	 */
 	public FloodFillStart(byte nearestNeighbourID, int numBlocks,

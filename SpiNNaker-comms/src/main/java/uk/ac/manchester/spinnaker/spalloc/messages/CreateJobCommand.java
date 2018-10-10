@@ -30,8 +30,7 @@ public class CreateJobCommand extends Command<Integer> {
 	 *            location (three args).
 	 * @param kwargs
 	 *            Additional arguments required. Must include the key
-	 *            <tt>owner</tt>. Values can be boxed primitive types or
-	 *            strings.
+	 *            {@code owner}. Values can be boxed primitive types or strings.
 	 */
 	public CreateJobCommand(List<Integer> args, Map<String, Object> kwargs) {
 		super("create_job");

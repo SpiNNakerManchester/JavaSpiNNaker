@@ -16,7 +16,7 @@ interface Callable {
 	 *
 	 * @param cmd
 	 *            The encoded command word.
-	 * @return Usually <tt>0</tt>. Sometimes a marker to indicate special
+	 * @return Usually {@code 0}. Sometimes a marker to indicate special
 	 *         states (currently just for end-of-specification).
 	 * @throws DataSpecificationException
 	 *             If anything goes wrong in the data specification.

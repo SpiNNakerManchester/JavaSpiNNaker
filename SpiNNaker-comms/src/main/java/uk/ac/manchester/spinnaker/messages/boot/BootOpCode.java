@@ -31,7 +31,7 @@ public enum BootOpCode {
 	/**
 	 * @param opcode
 	 *            The opcode to convert.
-	 * @return The converted opcode, or <tt>null</tt> if it was unrecognised.
+	 * @return The converted opcode, or {@code null} if it was unrecognised.
 	 */
 	public static BootOpCode get(int opcode) {
 		return MAP.get(opcode);

@@ -5,13 +5,12 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import javax.xml.ws.Holder;
-
 import uk.ac.manchester.spinnaker.connections.SCPErrorHandler;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
 public abstract class Process {
@@ -134,12 +133,11 @@ public abstract class Process {
 	protected final <T extends SCPResponse> T synchronousCall(
 			SCPRequest<T> request, SCPErrorHandler errorCallback)
 			throws IOException, Exception {
-		Holder<T> holder = new Holder<>();
-		sendRequest(request, response -> holder.value = response,
-				errorCallback);
+		ValueHolder<T> holder = new ValueHolder<>();
+		sendRequest(request, holder::setValue, errorCallback);
 		finish();
 		checkForError();
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**
@@ -158,12 +156,11 @@ public abstract class Process {
 	 */
 	protected final <T extends SCPResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, Exception {
-		Holder<T> holder = new Holder<>();
-		sendRequest(request, response -> holder.value = response,
-				this::receiveError);
+		ValueHolder<T> holder = new ValueHolder<>();
+		sendRequest(request, holder::setValue, this::receiveError);
 		finish();
 		checkForError();
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**
