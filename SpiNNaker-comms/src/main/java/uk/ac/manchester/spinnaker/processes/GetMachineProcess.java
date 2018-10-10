@@ -62,6 +62,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
+	private static final int THROTTLED = 3;
+
 	/**
 	 * @param connectionSelector
 	 *            How to talk to the machine.
@@ -86,7 +88,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
             Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
             Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
             Integer maxCoreID, Integer maxSDRAMSize) {
-        super(connectionSelector);
+		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+				THROTTLED, THROTTLED - 1);
         this.ignoreChips = def(ignoreChips);
         this.ignoreCoresMap = def(ignoreCoresMap);
         this.ignoreLinksMap = def(ignoreLinksMap);
@@ -120,9 +123,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
-			// TODO: Work out why sending these too fast causes a bug
-			finish();
 		}
+		finish();
 		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
