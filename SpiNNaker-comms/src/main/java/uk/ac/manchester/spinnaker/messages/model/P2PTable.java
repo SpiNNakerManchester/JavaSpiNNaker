@@ -62,7 +62,7 @@ public class P2PTable {
 	private void extractRoutes(int chipX, int chipYBase, int word) {
 		range(0, min(ROUTE_CHUNK, height - chipYBase)).forEach(y -> {
 			P2PTableRoute route =
-					P2PTableRoute.get((word >> (ROUTE_MASK * y)) & ROUTE_MASK);
+					P2PTableRoute.get((word >> (ROUTE_BITS * y)) & ROUTE_MASK);
 			if (route != null && route != NONE) {
 				routes.put(new ChipLocation(chipX, chipYBase + y), route);
 			}
