@@ -53,7 +53,7 @@ public enum EIEIOCommandID implements EIEIOCommand {
 	 *
 	 * @param command
 	 *            the encoded command
-	 * @return the ID, or <tt>null</tt> if the encoded form was unrecognised.
+	 * @return the ID, or {@code null} if the encoded form was unrecognised.
 	 */
 	public static EIEIOCommand get(int command) {
 		EIEIOCommandID id = MAP.get(command);

@@ -11,7 +11,7 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 public class BootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
 	private static final int BOOT_PACKET_SIZE = 256 * WORD_SIZE;
-	/** The payload data (or <tt>null</tt> if there is none). */
+	/** The payload data (or {@code null} if there is none). */
 	public final ByteBuffer data;
 	/** The operation of this packet. */
 	public final BootOpCode opcode;

@@ -24,20 +24,20 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 * Creates a boot connection.
 	 *
 	 * @param localHost
-	 *            The local host to bind to. If <tt>null</tt> defaults to bind
-	 *            to all interfaces, unless remoteHost is specified, in which
-	 *            case binding is done to the IP address that will be used to
-	 *            send packets.
+	 *            The local host to bind to. If {@code null} defaults to bind to
+	 *            all interfaces, unless remoteHost is specified, in which case
+	 *            binding is done to the IP address that will be used to send
+	 *            packets.
 	 * @param localPort
 	 *            The local port to bind to, between 1025 and 32767. If
-	 *            <tt>null</tt>, defaults to a random unused local port
+	 *            {@code null}, defaults to a random unused local port
 	 * @param remoteHost
-	 *            The remote host to send packets to. If <tt>null</tt>, the
+	 *            The remote host to send packets to. If {@code null}, the
 	 *            socket will be available for listening only, and will throw
 	 *            and exception if used for sending
 	 * @param remotePort
-	 *            The remote port to send packets to. If <tt>null</tt>, a
-	 *            default value is used.
+	 *            The remote port to send packets to. If {@code null}, a default
+	 *            value is used.
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
@@ -53,11 +53,11 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 * arbitrary port from the range 1025 to 32767.
 	 *
 	 * @param remoteHost
-	 *            The remote host to send packets to. If <tt>null</tt>, the
+	 *            The remote host to send packets to. If {@code null}, the
 	 *            socket will be available for listening only, and will throw
 	 *            and exception if used for sending
 	 * @param remotePort
-	 *            The remote port to send packets to. If <tt>null</tt>, a
+	 *            The remote port to send packets to. If {@code null}, a
 	 *            default value is used.
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel

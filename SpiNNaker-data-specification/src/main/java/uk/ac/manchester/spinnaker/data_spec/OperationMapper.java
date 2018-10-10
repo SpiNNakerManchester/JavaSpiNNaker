@@ -40,7 +40,7 @@ abstract class OperationMapper {
 	 *            The object containing the method implementations.
 	 * @param opcode
 	 *            The opcode that we want to invoke.
-	 * @return How to invoke that operation, or <tt>null</tt> if that operation
+	 * @return How to invoke that operation, or {@code null} if that operation
 	 *         has no registered implementation.
 	 */
 	static Callable getOperationImpl(FunctionAPI funcs, Commands opcode) {

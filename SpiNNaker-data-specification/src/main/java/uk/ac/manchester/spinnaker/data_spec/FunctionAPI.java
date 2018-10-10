@@ -31,7 +31,7 @@ public interface FunctionAPI {
 	 * @param index
 	 *            The location in the data specification data stream where the
 	 *            command was read from, for reporting errors to the user.
-	 * @return The operation implementation. Never <tt>null</tt>.
+	 * @return The operation implementation. Never {@code null}.
 	 * @throws UnimplementedDSECommandException
 	 *             If the opcode used is not implemented.
 	 */

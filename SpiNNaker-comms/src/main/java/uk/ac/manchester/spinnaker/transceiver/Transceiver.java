@@ -282,7 +282,7 @@ public class Transceiver extends UDPTransceiver
 	 * @param host
 	 *            The host IP address of the board
 	 * @param numberOfBoards
-	 *            a number of boards expected to be supported, or <tt>null</tt>,
+	 *            a number of boards expected to be supported, or {@code null},
 	 *            which defaults to a single board
 	 * @param ignoreChips
 	 *            An optional set of chips to ignore in the machine. Requests
@@ -453,11 +453,11 @@ public class Transceiver extends UDPTransceiver
 	 * @param ignoreLinks
 	 *            Blacklisted links.
 	 * @param maxCoreID
-	 *            If not <tt>null</tt>, the maximum core ID to allow.
+	 *            If not {@code null}, the maximum core ID to allow.
 	 * @param scampConnections
 	 *            Descriptions of SCP connections to create.
 	 * @param maxSDRAMSize
-	 *            If not <tt>null</tt>, the maximum SDRAM size to allow.
+	 *            If not {@code null}, the maximum SDRAM size to allow.
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws Exception
@@ -563,9 +563,9 @@ public class Transceiver extends UDPTransceiver
 	 * Get the connections for talking to a board.
 	 *
 	 * @param connection
-	 *            directly gives the connection to use. May be <tt>null</tt>
+	 *            directly gives the connection to use. May be {@code null}
 	 * @param boardAddress
-	 *            the address of the board to talk to. May be <tt>null</tt>
+	 *            the address of the board to talk to. May be {@code null}
 	 * @return List of length 1 or 0 (the latter only if the search for the
 	 *         given board address fails).
 	 */
@@ -898,7 +898,7 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param chip
 	 *            The coordinates of the chip
-	 * @return connection or <tt>null</tt> if there is no such connection
+	 * @return connection or {@code null} if there is no such connection
 	 */
 	private SCPConnection searchForProxies(HasChipLocation chip) {
 		for (SCPConnection connection : scampConnections) {
@@ -1899,7 +1899,7 @@ public class Transceiver extends UDPTransceiver
 	public static final class ConnectionDescriptor {
 		/** What host to talk to. */
 		private InetAddress hostname;
-		/** What port to talk to, or <tt>null</tt> for default. */
+		/** What port to talk to, or {@code null} for default. */
 		private Integer portNumber;
 		/** What chip to talk to. */
 		private ChipLocation chip;

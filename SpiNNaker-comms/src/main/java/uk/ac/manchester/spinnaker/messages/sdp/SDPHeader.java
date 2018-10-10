@@ -248,7 +248,7 @@ public class SDPHeader implements SerializableMessage {
 		this.tag = tag;
 	}
 
-	/** Possible values of the <tt>flags</tt> field. */
+	/** Possible values of the {@code flags} field. */
 	public enum Flag {
 		/** Indicates that a reply is not expected. */
 		REPLY_NOT_EXPECTED(0x07),

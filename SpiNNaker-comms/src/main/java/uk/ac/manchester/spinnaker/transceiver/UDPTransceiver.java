@@ -30,7 +30,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private static final Logger log = getLogger(UDPTransceiver.class);
 	/**
 	 * A map of port -> map of IP address -> (connection, listener) for UDP
-	 * connections. Note listener might be <tt>null</tt> if the connection has
+	 * connections. Note listener might be {@code null} if the connection has
 	 * not been listened to before.
 	 * <p>
 	 * Used to keep track of what connection is listening on what port to ensure
@@ -40,7 +40,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			new DefaultMap<>(HashMap::new);
 	/**
 	 * A map of class -> list of (connection, listener) for UDP connections that
-	 * are listenable. Note that listener might be <tt>null</tt> if the
+	 * are listenable. Note that listener might be {@code null} if the
 	 * connection has not be listened to before.
 	 */
 	private final Map<Class<?>, List<Pair<?>>> connectionsByClass =

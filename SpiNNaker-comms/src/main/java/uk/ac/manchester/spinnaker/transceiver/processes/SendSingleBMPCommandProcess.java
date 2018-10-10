@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.xml.ws.Holder;
-
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
@@ -30,6 +28,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * A process for handling communicating with the BMP.
@@ -93,21 +92,20 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *             If the other side responds with a failure code
 	 */
 	public R execute(BMPRequest<R> request) throws IOException, Exception {
-		Holder<R> holder = new Holder<>();
+		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest(request,
-				response -> holder.value = response);
+		requestPipeline.sendRequest(request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw new Exception(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return holder.value;
+		return holder.getValue();
 	}
 
 	/**
@@ -203,8 +201,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		 * @param callback
 		 *            A callback function to call when the response has been
 		 *            received; takes an SCPResponse as a parameter, or a
-		 *            <tt>null</tt> if the response doesn't need to be
-		 *            processed.
+		 *            {@code null} if the response doesn't need to be processed.
 		 * @throws IOException
 		 *             If things go really wrong.
 		 */

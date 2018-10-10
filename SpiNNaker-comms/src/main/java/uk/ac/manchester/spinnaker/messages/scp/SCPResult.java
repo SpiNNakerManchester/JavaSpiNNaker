@@ -57,7 +57,7 @@ public enum SCPResult {
 	 *
 	 * @param value
 	 *            The value to decode
-	 * @return The decoded value, or <tt>null</tt> if unrecognised.
+	 * @return The decoded value, or {@code null} if unrecognised.
 	 */
 	public static SCPResult get(short value) {
 		return MAP.get(value);

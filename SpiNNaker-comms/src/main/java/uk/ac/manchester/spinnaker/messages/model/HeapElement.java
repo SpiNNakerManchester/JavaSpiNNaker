@@ -14,11 +14,11 @@ public class HeapElement {
 	/** True if the block is free. */
 	@SARKField("free")
 	public final boolean isFree;
-	/** The tag of the block if allocated, or <tt>null</tt> if not. */
+	/** The tag of the block if allocated, or {@code null} if not. */
 	@SARKField("free")
 	public final Integer tag;
 	/**
-	 * The application ID of the block if allocated, or <tt>null</tt> if not.
+	 * The application ID of the block if allocated, or {@code null} if not.
 	 */
 	@SARKField("free")
 	public final Integer appID;

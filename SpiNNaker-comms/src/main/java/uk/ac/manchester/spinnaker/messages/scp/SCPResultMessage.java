@@ -60,7 +60,7 @@ public class SCPResultMessage {
 	 *            The type of requests.
 	 * @param requestStore
 	 *            The store of requests.
-	 * @return The correlated request, or <tt>null</tt> if no correlation
+	 * @return The correlated request, or {@code null} if no correlation
 	 *         exists.
 	 */
 	public <T> T pickRequest(Map<Integer, T> requestStore) {

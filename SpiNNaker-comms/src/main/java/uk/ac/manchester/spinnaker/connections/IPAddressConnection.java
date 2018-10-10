@@ -31,9 +31,17 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 	}
 
 	/**
+	 * @return The IP address, or {@code null} if none was forthcoming.
+	 */
+	@Override
+	public final InetAddress receiveMessage() {
+		return receiveMessage(null);
+	}
+
+	/**
 	 * @param timeout
-	 *            How long to wait for an IP address; <tt>null</tt> for forever.
-	 * @return The IP address, or <tt>null</tt> if none was forthcoming.
+	 *            How long to wait for an IP address; {@code null} for forever.
+	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
 	@Override
 	public InetAddress receiveMessage(Integer timeout) {

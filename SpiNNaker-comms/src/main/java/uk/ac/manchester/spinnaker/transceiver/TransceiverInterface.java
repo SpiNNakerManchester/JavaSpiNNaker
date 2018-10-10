@@ -192,7 +192,7 @@ public interface TransceiverInterface {
 	 * Determines if the board can be contacted.
 	 *
 	 * @param connection
-	 *            The connection which is to be tested. If <tt>null</tt>, all
+	 *            The connection which is to be tested. If {@code null}, all
 	 *            connections will be tested, and the board will be considered
 	 *            to be connected if any one connection works.
 	 * @return True if the board can be contacted, False otherwise
@@ -409,10 +409,10 @@ public interface TransceiverInterface {
 	 *
 	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the information. If
-	 *            <tt>null</tt>, the information from all of the cores on all of
+	 *            {@code null}, the information from all of the cores on all of
 	 *            the chips on the board are obtained.
 	 * @return An iterable of the CPU information for the selected cores, or all
-	 *         cores if <tt>coreSubsets</tt> is <tt>null</tt>.
+	 *         cores if {@code coreSubsets} is {@code null}.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
@@ -533,7 +533,7 @@ public interface TransceiverInterface {
 	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the buffers.
 	 * @return An iterable of the buffers, which may not be in the order of
-	 *         <tt>coreSubsets</tt>
+	 *         {@code coreSubsets}
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws Exception
@@ -1087,7 +1087,7 @@ public interface TransceiverInterface {
 	/**
 	 * Execute a set of binaries that make up a complete application on
 	 * specified cores, wait for them to be ready and then start all of the
-	 * binaries. Note this will get the binaries into <tt>c_main()</tt> but will
+	 * binaries. Note this will get the binaries into {@code c_main()} but will
 	 * not signal the barrier.
 	 *
 	 * @param executableTargets
@@ -2319,7 +2319,7 @@ public interface TransceiverInterface {
 	 *            is when each application is in one of these states
 	 * @param timeout
 	 *            The amount of time to wait in milliseconds for the cores to
-	 *            reach one of the states, or <tt>null</tt> to wait for an
+	 *            reach one of the states, or {@code null} to wait for an
 	 *            unbounded amount of time.
 	 * @param timeBetweenPolls
 	 *            Time between checking the state, in milliseconds
@@ -2485,7 +2485,7 @@ public interface TransceiverInterface {
 	 *
 	 * @param boardAddress
 	 *            The IP address of the Ethernet connection on the board
-	 * @return A connection for the given IP address, or <tt>null</tt> if no
+	 * @return A connection for the given IP address, or {@code null} if no
 	 *         such connection exists
 	 */
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
@@ -2495,7 +2495,7 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag to set up; note its board address can be
-	 *            <tt>null</tt>, in which case, the tag will be assigned to all
+	 *            {@code null}, in which case, the tag will be assigned to all
 	 *            boards
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -2509,7 +2509,7 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The reverse tag to set up; note its board address can be
-	 *            <tt>null</tt>, in which case, the tag will be assigned to all
+	 *            {@code null}, in which case, the tag will be assigned to all
 	 *            boards
 	 * @throws IOException
 	 *             If anything goes wrong with networking.

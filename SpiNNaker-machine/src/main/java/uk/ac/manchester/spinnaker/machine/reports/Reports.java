@@ -37,7 +37,7 @@ public abstract class Reports {
      *            the machine object
      * @param connections
      *            the list of connections to the machine; the elements in the
-     *            list <i>should</i> have <tt>toString()</tt> methods that
+     *            list <i>should</i> have {@code toString()} methods that
      *            produce human-readable output.
      * @throws IOException
      *             when a file cannot be opened for some reason

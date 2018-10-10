@@ -45,7 +45,7 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * blocking. <i>This method</i> may block until the timeout given.
 	 *
 	 * @param timeout
-	 *            How long to wait, in milliseconds; if zero or <tt>null</tt>, a
+	 *            How long to wait, in milliseconds; if zero or {@code null}, a
 	 *            non-blocking poll is performed.
 	 * @return true when there is a message waiting to be received
 	 * @throws IOException

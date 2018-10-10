@@ -1,4 +1,11 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package uk.ac.manchester.spinnaker.spalloc;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
@@ -18,6 +27,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
  * @author micro
  */
 public class SpallocITCase {
+	private static final Logger log = getLogger(SpallocITCase.class);
+
 	String hostname = "spinnaker.cs.man.ac.uk";
 	int port = 22244;
 	Integer timeout = 1000;
@@ -27,61 +38,53 @@ public class SpallocITCase {
 		List<Integer> args = new ArrayList<>();
 		args.add(1);
 		args.add(1);
-
 		Map<String, Object> kwargs = new HashMap<>();
 		kwargs.put("owner", "Christian testing ok to kill");
 		kwargs.put("keepalive", "10");
 		kwargs.put("max_dead_boards", "2");
-
-		SpallocClient client = new SpallocClient(hostname, port, timeout);
-		System.out.println(client);
-
-		try (AutoCloseable c = client.withConnection()) {
-			System.out.println(client);
-
-			int id = client.createJob(args, kwargs, timeout);
-			System.out.println("New job: " + id);
-
-			List<JobDescription> jobs = client.listJobs(timeout);
-			for (JobDescription job : jobs) {
-				System.out.println(job);
+		try (SpallocClient client =
+				new SpallocClient(hostname, port, timeout)) {
+			log.info(client.toString());
+			try (AutoCloseable c = client.withConnection()) {
+				log.info(client.toString());
+				int id = client.createJob(args, kwargs, timeout);
+				log.info("New job: " + id);
+				List<JobDescription> jobs = client.listJobs(timeout);
+				for (JobDescription job : jobs) {
+					log.info(job.toString());
+				}
+				List<Machine> machines = client.listMachines(timeout);
+				for (Machine machine : machines) {
+					log.info(machine.toString());
+				}
+				JobState state = client.getJobState(id);
+				log.info(state.toString());
+				JobMachineInfo machineInfo = client.getJobMachineInfo(id, null);
+				log.info(machineInfo.toString());
+				client.notifyMachine(machineInfo.getMachineName(), true, null);
+				client.notifyJob(id, true, timeout);
+				Notification notification = client.waitForNotification(50000);
+				log.info("notify:" + notification);
+				state = client.getJobState(id);
+				log.info(state.toString());
+				notification = client.waitForNotification(15000);
+				log.info("notify:" + notification);
+				notification = client.waitForNotification(15000);
+				log.info("notify:" + notification);
+				state = client.getJobState(id);
+				log.info(state.toString());
+			} catch (Exception ex) {
+				log.error("problem in testing", ex);
 			}
 
-			List<Machine> machines = client.listMachines(timeout);
-			for (Machine machine : machines) {
-				System.out.println(machine);
-			}
-
-			JobState state = client.getJobState(id);
-			System.out.println(state);
-
-			JobMachineInfo machineInfo = client.getJobMachineInfo(id, null);
-			System.out.println(machineInfo);
-
-			client.notifyMachine(machineInfo.getMachineName(), true, null);
-			client.notifyJob(id, true, timeout);
-			Notification notification = client.waitForNotification(50000);
-			System.out.println(notification);
-
-			state = client.getJobState(id);
-			System.out.println(state);
-
-			notification = client.waitForNotification(15000);
-			System.out.println(notification);
-
-			notification = client.waitForNotification(15000);
-			System.out.println(notification);
-
-			state = client.getJobState(id);
-			System.out.println(state);
+			// log.info(aJob.getHostname());
+			// log.info(aJob.getID());
+			// log.info(test.getMachineName());
+			// log.info(test.getPower());
+			// log.info(test.getState());
+			// log.info(test.getDimensions());
+			// log.info(test.getDestroyReason());
 		}
-		// System.out.println(aJob.getHostname());
-		// System.out.println(aJob.getID());
-		// System.out.println(test.getMachineName());
-		// System.out.println(test.getPower());
-		// System.out.println(test.getState());
-		// System.out.println(test.getDimensions());
-		// System.out.println(test.getDestroyReason());
 	}
 
 	public static void main(String[] callargs) throws Exception {

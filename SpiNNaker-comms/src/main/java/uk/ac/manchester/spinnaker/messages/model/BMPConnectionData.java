@@ -24,7 +24,7 @@ public class BMPConnectionData {
 	/** The IP address of the BMP. */
 	public final InetAddress ipAddress;
 	/**
-	 * The port number associated with the BMP connection, or <tt>null</tt> for
+	 * The port number associated with the BMP connection, or {@code null} for
 	 * the default.
 	 */
 	public final Integer portNumber;

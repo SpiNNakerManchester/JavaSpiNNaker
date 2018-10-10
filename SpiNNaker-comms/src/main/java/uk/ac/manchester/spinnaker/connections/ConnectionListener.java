@@ -59,7 +59,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The maximum number of threads to use to do the listening.
 	 * @param timeout
 	 *            How long to wait in the OS for a message to arrive; if
-	 *            <tt>null</tt>, wait indefinitely.
+	 *            {@code null}, wait indefinitely.
 	 */
 	public ConnectionListener(Listenable<MessageType> connection,
 			int numProcesses, Integer timeout) {

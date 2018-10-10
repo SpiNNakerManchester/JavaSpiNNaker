@@ -20,7 +20,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 public final class ChipSummaryInfo {
     /** The state of the cores on the chip (list of one per core). */
     public final List<CPUState> coreStates;
-    /** The IP address of the Ethernet if up, or <tt>null</tt> if not. */
+    /** The IP address of the Ethernet if up, or {@code null} if not. */
     public final InetAddress ethernetIPAddress;
     /** Determines if the Ethernet connection is available on this chip. */
     public final boolean isEthernetAvailable;

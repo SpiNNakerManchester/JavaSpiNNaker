@@ -12,6 +12,7 @@ import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.TestAbortedException;
+import org.slf4j.Logger;
 
 import testconfig.BoardTestConfiguration;
 import testconfig.Utils.Field;
@@ -74,6 +76,8 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
  * @author Donal Fellows
  */
 public class TransceiverITCase {
+	private static final Logger log = getLogger(TransceiverITCase.class);
+	// TODO Stop printing to System.out
 	static BoardTestConfiguration boardConfig;
 	private static SpallocJob job;
 
@@ -418,7 +422,7 @@ public class TransceiverITCase {
 		try {
 			setUpBeforeClass();
 		} catch (TestAbortedException e) {
-			System.err.println("precondition violated: " + e.getMessage());
+			log.error("precondition violated", e);
 			System.exit(1);
 		}
 		try {

@@ -58,7 +58,7 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 *
 	 * @param elementNames
 	 *            The element names available to us.
-	 * @return The class, or <tt>null</tt> if nothing matches (i.e., if we've
+	 * @return The class, or {@code null} if nothing matches (i.e., if we've
 	 *         gone through the iterator and had no matches).
 	 */
 	private Class<? extends T> getTargetClass(Iterator<String> elementNames) {
@@ -80,7 +80,7 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 *            The parser to get the JSON object from.
 	 * @param context
 	 *            ignored
-	 * @return A Java object (probably a POJO), or <tt>null</tt> if the
+	 * @return A Java object (probably a POJO), or {@code null} if the
 	 *         properties of the JSON object don't identify which Java class we
 	 *         should use for deserialization.
 	 * @throws IOException
