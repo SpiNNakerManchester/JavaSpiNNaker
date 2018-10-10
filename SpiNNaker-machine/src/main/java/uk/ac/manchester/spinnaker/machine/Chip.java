@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
@@ -523,6 +524,61 @@ public class Chip implements HasChipLocation {
                 + ", users=" + userProcessors.keySet()
                 + ", nearest_ethernet="
                 + this.nearestEthernet + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException(
+                "hashCode not supported as equals implemented.");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Chip)) {
+            System.out.println("type");
+            return false;
+        }
+        Chip that = (Chip) obj;
+        if (! location.equals(that.location)) {
+            System.out.println("location");
+            return false;
+        }
+        if (! monitorProcessors.equals(that.monitorProcessors)) {
+            System.out.println("monitorProcessors");
+            return false;
+        }
+        if (! userProcessors.equals(that.userProcessors)) {
+            System.out.println("userProcessors");
+            return false;
+        }
+        if (! router.equals(that.router)) {
+            System.out.println("router");
+            return false;
+        }
+        if (sdram != that.sdram) {
+            System.out.println("sdram");
+            return false;
+        }
+        if (!Objects.equals(ipAddress, that.ipAddress)) {
+            System.out.println("ipAddress");
+            return false;
+        }
+        if (virtual != that.virtual) {
+            System.out.println("virtual");
+            return false;
+        }
+        //if (nTagIds != that.nTagIds) {
+        //    System.out.println("nTagIds " + nTagIds + " != " + that.nTagIds);
+        //    return false;
+        //}
+        if (! nearestEthernet.equals(that.nearestEthernet)) {
+            System.out.println("router");
+            return false;
+        }
+        return true;
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -948,6 +949,63 @@ public class Machine implements Iterable<Chip> {
             }
         }
         return abnormalCores;
+    }
+
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException(
+                "hashCode not supported as equals implemented.");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Machine)) {
+            return false;
+        }
+        Machine that = (Machine) obj;
+        if (! machineDimensions.equals(that.machineDimensions)) {
+            System.out.println("machineDimensions");
+            return false;
+        }
+        if (maxUserProssorsOnAChip != that.maxUserProssorsOnAChip) {
+            System.out.println("maxUserProssorsOnAChip");
+            return false;
+        }
+        if (ethernetConnectedChips.size() != that.ethernetConnectedChips.size()) {
+            System.out.println("ethernetConnectedChips.size()");
+            return false;
+        }
+        //private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
+        // private final HashMap<InetAddress,
+        //        Map<FpgaId, Map<Integer, FPGALinkData>>> fpgaLinks;
+        if (! boot.equals(that.boot)) {
+            System.out.println("boot");
+            return false;
+        }
+        if (! bootEthernetAddress.equals(that.bootEthernetAddress)) {
+            System.out.println("bootEthernetAddress " + bootEthernetAddress + " != " + that.bootEthernetAddress);
+            return false;
+        }
+        if (chips.size() != that.chips.size()) {
+            System.out.println("chips: " + chips.size() +" != " + that.chips.size());
+            return false;
+        }
+        for (ChipLocation loc: chips.keySet()) {
+            Chip c1 = chips.get(loc);
+            Chip c2 = that.chips.get(loc);
+            if (! c1.equals(c2)) {
+                System.out.println("Chip: " + c1 + " != " + c2);
+                return false;
+            }
+        }
+        if (! version.equals(that.version)) {
+            System.out.println("version");
+            return false;
+        }
+        return true;
     }
 
     private class ChipOnBoardIterator implements Iterator<Chip> {

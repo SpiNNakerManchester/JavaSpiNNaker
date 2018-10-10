@@ -290,4 +290,25 @@ public final class Router implements Iterable<Link> {
         return links.values().iterator();
     }
 
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException(
+                "hashCode not supported as equals implemented.");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Router)) {
+            System.out.println("type");
+            return false;
+        }
+        Router that = (Router) obj;
+
+
+        return true;
+    }
+
 }
