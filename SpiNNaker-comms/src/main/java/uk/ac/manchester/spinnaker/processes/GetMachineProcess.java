@@ -74,10 +74,10 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param ignoreLinksMap
 	 *            The link blacklist.
 	 * @param maxCoreID
-	 *            The maximum core ID, or <tt>null</tt> for the system's
+	 *            The maximum core ID, or {@code null} for the system's
 	 *            standard limit. For debugging.
 	 * @param maxSDRAMSize
-	 *            The maximum SDRAM size, or <tt>null</tt> for the system's
+	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
 	 */
     public GetMachineProcess(

@@ -28,7 +28,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	}
 
 	/**
-	 * @return The IP address, or <tt>null</tt> if none was forthcoming.
+	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
 	public final InetAddress receiveIPAddress() {
 		return receiveIPAddress(null);
@@ -36,8 +36,8 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 
 	/**
 	 * @param timeout
-	 *            How long to wait for an IP address; <tt>null</tt> for forever.
-	 * @return The IP address, or <tt>null</tt> if none was forthcoming.
+	 *            How long to wait for an IP address; {@code null} for forever.
+	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
 	public InetAddress receiveIPAddress(Integer timeout) {
 		try {

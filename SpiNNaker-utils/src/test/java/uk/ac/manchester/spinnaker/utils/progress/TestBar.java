@@ -25,9 +25,8 @@ public class TestBar {
 
     @Test
     public void testBasic() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        ProgressBar pb = new ProgressBar(5, null);
+		ProgressBar pb = new ProgressBar(5, null,
+				new PrintStream(new ByteArrayOutputStream()));
         for (int i = 0; i < 3 ; i++){
             pb.update();
         }
@@ -43,7 +42,9 @@ public class TestBar {
     @Test
     public void testToMany() {
         String description = "tooMany";
-        ProgressBar pb = new ProgressBar(5, description);
+        @SuppressWarnings("resource")
+		ProgressBar pb = new ProgressBar(5, description,
+				new PrintStream(new ByteArrayOutputStream()));
         for (int i = 0; i < 5 ; i++){
             pb.update();
         }
@@ -56,9 +57,8 @@ public class TestBar {
     @Test
     public void testSimple() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
         String description = "Easiest";
-        ProgressBar pb = new ProgressBar(5, description, ps);
+		ProgressBar pb = new ProgressBar(5, description, new PrintStream(baos));
         for (int i = 0; i < 5 ; i++){
             pb.update();
         }
@@ -73,9 +73,9 @@ public class TestBar {
     @Test
     public void testNoDivSmall() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
         String description = "Thirteen";
-        try (ProgressBar pb = new ProgressBar(13, description, ps);) {
+		try (ProgressBar pb =
+				new ProgressBar(13, description, new PrintStream(baos))) {
             for (int i = 0; i < 13 ; i++){
                 pb.update();
             }
@@ -91,9 +91,10 @@ public class TestBar {
     @Test
     public void testNoDivBig() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
         String description = "Big";
-        ProgressBar pb = new ProgressBar(133, description, ps);
+        @SuppressWarnings("resource")
+		ProgressBar pb =
+				new ProgressBar(133, description, new PrintStream(baos));
         for (int i = 0; i < 133 ; i++){
             pb.update();
         }
@@ -108,9 +109,9 @@ public class TestBar {
     @Test
     public void testStopEarly() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
         String description = "Early";
-        ProgressBar pb = new ProgressBar(10, description, ps);
+		ProgressBar pb =
+				new ProgressBar(10, description, new PrintStream(baos));
         for (int i = 0; i < 3 ; i++){
             pb.update();
         }

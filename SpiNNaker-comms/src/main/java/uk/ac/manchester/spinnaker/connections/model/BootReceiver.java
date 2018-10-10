@@ -26,7 +26,7 @@ public interface BootReceiver extends SocketHolder {
 	 *
 	 * @param timeout
 	 *            The time in seconds to wait for the message to arrive; if
-	 *            <tt>null</tt>, will wait forever, or until the connection is
+	 *            {@code null}, will wait forever, or until the connection is
 	 *            closed.
 	 * @return the received packet
 	 * @throws IOException

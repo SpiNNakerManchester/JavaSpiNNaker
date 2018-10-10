@@ -184,11 +184,11 @@ public class RawConfigParser {
 	}
 
 	/**
-	 * How to decide if a value is to be treated as <tt>null</tt>.
+	 * How to decide if a value is to be treated as {@code null}.
 	 *
 	 * @param value
 	 *            The value to examine
-	 * @return True iff the value is a <tt>null</tt>-equivalent.
+	 * @return True iff the value is a {@code null}-equivalent.
 	 */
 	protected boolean isNone(String value) {
 		return value == null || "None".equalsIgnoreCase(value);
@@ -201,7 +201,7 @@ public class RawConfigParser {
 	 *            The section to look in.
 	 * @param option
 	 *            The option to look at.
-	 * @return The option value, or <tt>null</tt> if it is absent.
+	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public Integer getint(String section, String option) {
 		String value = get(section, option);
@@ -218,7 +218,7 @@ public class RawConfigParser {
 	 *            The section to look in.
 	 * @param option
 	 *            The option to look at.
-	 * @return The option value, or <tt>null</tt> if it is absent.
+	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public Boolean getboolean(String section, String option) {
 		String value = get(section, option);
@@ -235,7 +235,7 @@ public class RawConfigParser {
 	 *            The section to look in.
 	 * @param option
 	 *            The option to look at.
-	 * @return The option value, or <tt>null</tt> if it is absent.
+	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public String get(String section, String option) {
 		Map<String, String> sect = map.get(normaliseSectionName(section));

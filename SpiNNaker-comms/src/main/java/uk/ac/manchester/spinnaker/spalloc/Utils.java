@@ -16,10 +16,10 @@ abstract class Utils {
 	 * Convert a timestamp into how long to wait for it.
 	 *
 	 * @param timestamp
-	 *            the time of expiry, or <tt>null</tt> for a timestamp that is
+	 *            the time of expiry, or {@code null} for a timestamp that is
 	 *            never expired.
 	 * @return the number of milliseconds remaining to wait for the timestamp to
-	 *         expire, or <tt>null</tt> for "wait indefinitely".
+	 *         expire, or {@code null} for "wait indefinitely".
 	 */
 	static Integer timeLeft(Long timestamp) {
 		if (timestamp == null) {
@@ -32,7 +32,7 @@ abstract class Utils {
 	 * Check if a timestamp has been reached.
 	 *
 	 * @param timestamp
-	 *            the time of expiry, or <tt>null</tt> for a timestamp that is
+	 *            the time of expiry, or {@code null} for a timestamp that is
 	 *            never expired.
 	 * @return true if the timestamp has been passed.
 	 */
@@ -44,9 +44,9 @@ abstract class Utils {
 	 * Convert a delay (in milliseconds) into a timestamp.
 	 *
 	 * @param delay
-	 *            how long the timeout is, in milliseconds, or <tt>null</tt> for
+	 *            how long the timeout is, in milliseconds, or {@code null} for
 	 *            infinite.
-	 * @return when the timeout expires, or <tt>null</tt> for "never".
+	 * @return when the timeout expires, or {@code null} for "never".
 	 */
 	static Long makeTimeout(Integer delay) {
 		if (delay == null) {

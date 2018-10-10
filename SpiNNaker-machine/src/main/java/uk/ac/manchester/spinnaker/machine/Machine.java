@@ -283,16 +283,16 @@ public class Machine implements Iterable<Chip> {
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
      *
-     * @return An <tt>Iterator</tt> over the Chips in this Machine.
+     * @return An iterator over the Chips in this Machine.
      */
     public final Iterator<Chip> iterator() {
         return this.chips.values().iterator();
     }
 
     /**
-     * The number of Chips om this Machine.
+     * The number of Chips on this Machine.
      *
-     * @return The number of Chips om this Machine.
+     * @return The number of Chips on this Machine.
      */
     public final int nChips() {
         return chips.size();
