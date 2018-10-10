@@ -120,8 +120,9 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
+            // TODO: Work out why sending thses too fast causes a bug
+    		finish();
 		}
-		finish();
 		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
