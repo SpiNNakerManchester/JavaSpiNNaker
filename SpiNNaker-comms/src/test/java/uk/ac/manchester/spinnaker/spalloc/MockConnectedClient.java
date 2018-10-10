@@ -1,6 +1,11 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
+
+import org.slf4j.Logger;
+
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.GetBoardAtPositionCommand;
@@ -22,6 +27,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  * @author Christian
  */
 public class MockConnectedClient extends SpallocClient {
+	private static final Logger log = getLogger(MockConnectedClient.class);
 
     static final String LIST_JOBS_R = "["
             + "{\"job_id\":47224,"
@@ -134,7 +140,7 @@ public class MockConnectedClient extends SpallocClient {
                 actual = true;
             } catch (Exception ex) {
                 actual = false;
-                throw new RuntimeException("Connect fail using mock", ex);
+                log.warn("Connect fail using mock", ex);
             }
         }
     }
@@ -146,7 +152,7 @@ public class MockConnectedClient extends SpallocClient {
                 return super.call(command, timeout);
             } catch (Exception ex) {
                 actual = false;
-                throw new RuntimeException("Call fail using mock", ex);
+                log.warn("Call fail using mock", ex);
             }
         }
         if (command.getClass() == ListJobsCommand.class) {

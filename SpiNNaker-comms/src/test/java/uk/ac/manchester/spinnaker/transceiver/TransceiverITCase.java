@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_0;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_1;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_2;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.TestAbortedException;
+import org.slf4j.Logger;
 
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -69,7 +71,8 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * @author Donal Fellows
  */
 public class TransceiverITCase {
-	// TODO Stop printing to System.out
+	private static final Logger log = getLogger(TransceiverITCase.class);
+ 	// TODO Stop printing to System.out
 	static BoardTestConfiguration board_config;
 	private static SpallocJob job;
 
@@ -498,7 +501,7 @@ public class TransceiverITCase {
 		try {
 			setUpBeforeClass();
 		} catch (TestAbortedException e) {
-			System.err.println("precondition violated: " + e.getMessage());
+			log.error("precondition violated", e);
 			System.exit(1);
 		}
 		try {

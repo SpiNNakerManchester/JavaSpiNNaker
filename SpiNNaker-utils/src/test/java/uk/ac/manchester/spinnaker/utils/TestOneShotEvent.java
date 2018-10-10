@@ -8,7 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Christian
  */
 public class TestOneShotEvent {
-
+	private static void sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			System.err.println("unexpected wake from sleep");
+		}
+	}
 
     public TestOneShotEvent() {
     }
@@ -90,7 +96,7 @@ public class TestOneShotEvent {
 		Thread twaiter = new Thread(waiter);
 		twaiter.start();
 
-		Thread.sleep(500);
+		sleep(500);
 
 		assertTrue(thanger.isAlive());
 		thanger.interrupt();
@@ -100,7 +106,7 @@ public class TestOneShotEvent {
 		assertTrue(twaiter.isAlive());
 		event1.fire();
 
-		Thread.sleep(50);
+		sleep(50);
 
 		assertTrue(!twaiter.isAlive());
 	}
