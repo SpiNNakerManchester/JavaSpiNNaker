@@ -325,8 +325,26 @@ public class TestMachine {
         Machine instance = new Machine(new MachineDimensions(48, 24),
                 new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
         assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 24));
+        assertEquals(new ChipLocation(24, 1), instance.normalizedLocation(24, 25));
         assertEquals(new ChipLocation(24, 0),
                 instance.normalizedLocation(new ChipLocation(24, 24)));
+    }
+
+    @Test
+    public void testNormalizeWithWrapVertical() {
+        Machine instance = new Machine(new MachineDimensions(40, 24),
+                new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
+        assertEquals(MachineVersion.TRIAD_WITH_VERTICAL_WRAP, instance.version);
+        assertEquals(new ChipLocation(24, 0), instance.normalizedLocation(24, 24));
+        assertEquals(new ChipLocation(24, 1), instance.normalizedLocation(24, 25));
+    }
+
+    @Test
+    public void testNormalizeWithWrapHorizontal() {
+        Machine instance = new Machine(new MachineDimensions(48, 16),
+                new ArrayList<Chip>(), ChipLocation.ZERO_ZERO);
+        assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP, instance.version);
+        assertEquals(new ChipLocation(4, 14), instance.normalizedLocation(52, 14));
     }
 
     @Test
