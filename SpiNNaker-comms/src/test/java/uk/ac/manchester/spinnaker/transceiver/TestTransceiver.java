@@ -232,8 +232,8 @@ class TestTransceiver {
 		 */
 		assertTrue(m.contains(new ChipLocation(6, 2)),
 				() -> "(6,2) must be present in " + m);
-		assertFalse(m.contains(new ChipLocation(7, 3)),
-				() -> "(7,3) must not be present in " + m);
+		assertFalse(m.contains(new ChipLocation(7, 2)),
+				() -> "(7,2) must not be present in " + m);
 		assertEquals(48, m.size());
 		for (Machine m2 : l) {
 			assertEquals(m, chips(m2));
