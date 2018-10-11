@@ -86,7 +86,7 @@ public class BoardTestConfiguration {
 		}
 	}
 
-	public SpallocJob set_up_spalloced_board()
+	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
 			SpallocStateChangeTimeoutException, InterruptedException {
 		String spalloc = config.get(SPSEC, "hostname");

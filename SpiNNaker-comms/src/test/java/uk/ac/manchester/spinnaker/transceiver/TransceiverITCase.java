@@ -90,7 +90,7 @@ public class TransceiverITCase {
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
-		job = boardConfig.set_up_spalloced_board();
+		job = boardConfig.setUpSpallocedBoard();
 		coreSubsets = new CoreSubsets();
 		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
