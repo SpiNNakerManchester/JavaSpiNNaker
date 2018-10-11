@@ -155,6 +155,7 @@ public class Executor implements Closeable {
 	 *            The buffer to write into.
 	 */
 	public void addHeader(ByteBuffer buffer) {
+		assert buffer.order() == LITTLE_ENDIAN;
 		buffer.putInt(APPDATA_MAGIC_NUM);
 		buffer.putInt(DSE_VERSION);
 	}
@@ -168,6 +169,7 @@ public class Executor implements Closeable {
 	 *            Where in memory the memory block is being written.
 	 */
 	public void addPointerTable(ByteBuffer buffer, int startAddress) {
+		assert buffer.order() == LITTLE_ENDIAN;
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (MemoryRegion r : memRegions) {
 			if (r != null) {

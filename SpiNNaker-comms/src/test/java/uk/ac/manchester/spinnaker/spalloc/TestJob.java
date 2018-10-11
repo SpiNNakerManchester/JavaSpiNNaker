@@ -118,14 +118,14 @@ class TestJob {
 		assertTrue(send.isEmpty(), "must have sent all expected responses");
 
 		// Check the number of keepalives
-		JSONAssert.assertEquals(
-				"{\"command\": \"job_keepalive\", "
-						+ "\"args\": [123], \"kwargs\": {}}",
-				keepalives.peek(), true);
-		// Number of keepalive requests
 		assertEquals(3, keepalives.size());
 		// All should have the same message sent
 		JSONObject first = keepalives.take();
+		assertNotNull(first, "null in keepalive queue!");
+		JSONAssert.assertEquals(
+				"{\"command\": \"job_keepalive\", "
+						+ "\"args\": [123], \"kwargs\": {}}",
+				first, true);
 		while (!keepalives.isEmpty()) {
 			JSONAssert.assertEquals(first, keepalives.take(), true);
 		}
