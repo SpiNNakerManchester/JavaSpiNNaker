@@ -117,11 +117,14 @@ public enum MachineVersion {
      *      Indicates if this machine has exactly 4 chips is a 2 by 2 layout.
      * @param isFourtyeightChip
      *      Indicates if this machine has exactly one 48 chip board.
-     * @param wrapAround
+     * @param horizontalWrap
+     *      Indicates if this machine is expected to have wrap arounds.
+     * @param verticalWrap
      *      Indicates if this machine is expected to have wrap arounds.
      * @param isTriad
      *      Indicates if this board is made up of triads,
      */
+    @SuppressWarnings("checkstyle:ParameterNumber")
     MachineVersion(Integer id, MachineDimensions dimensions,
             boolean isFourChip, boolean isFourtyeightChip,
             boolean horizontalWrap, boolean verticalWrap, boolean isTriad) {
@@ -163,6 +166,7 @@ public enum MachineVersion {
      * @param isTriad
      *      Indicates if this board is made up of triads,
      */
+    @SuppressWarnings("checkstyle:ParameterNumber")
     MachineVersion(Integer id, int width, int height,
             boolean isFourChip, boolean isFourtyeightChip,
             boolean horizontalWrap, boolean verticalWrap, boolean isTriad) {
