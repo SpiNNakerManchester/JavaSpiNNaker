@@ -35,6 +35,10 @@ public class GetMulticastRoutesProcess
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public GetMulticastRoutesProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,

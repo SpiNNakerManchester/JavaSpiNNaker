@@ -82,6 +82,10 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param maxSDRAMSize
 	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public GetMachineProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,

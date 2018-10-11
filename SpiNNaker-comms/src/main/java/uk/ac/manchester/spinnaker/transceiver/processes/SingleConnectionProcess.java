@@ -28,6 +28,10 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
 			RetryTracker retryTracker) {
@@ -39,6 +43,10 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 	 *            How to select how to communicate.
 	 * @param timeout
 	 *            How long to take sending the message, in milliseconds.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int timeout, RetryTracker retryTracker) {

@@ -220,6 +220,10 @@ public class SCPRequestPipeline {
 	 *
 	 * @param connection
 	 *            The connection over which the communication is to take place.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SCPRequestPipeline(SCPConnection connection,
 			RetryTracker retryTracker) {
@@ -236,6 +240,10 @@ public class SCPRequestPipeline {
 	 * @param packetTimeout
 	 *            The number of elapsed milliseconds after sending a packet
 	 *            before it is considered a timeout.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
 			RetryTracker retryTracker) {
@@ -263,6 +271,9 @@ public class SCPRequestPipeline {
 	 *            The number of elapsed milliseconds after sending a packet
 	 *            before it is considered a timeout.
 	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SCPRequestPipeline(SCPConnection connection, Integer numChannels,
 			Integer intermediateChannelWaits, int numRetries, int packetTimeout,

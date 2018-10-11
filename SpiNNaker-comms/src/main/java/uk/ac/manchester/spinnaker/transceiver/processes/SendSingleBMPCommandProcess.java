@@ -63,6 +63,10 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector,
@@ -75,6 +79,10 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            How to select how to communicate.
 	 * @param timeout
 	 *            The timeout on the connection, in milliseconds.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector, int timeout,

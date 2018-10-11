@@ -24,6 +24,10 @@ public class WriteMemoryFloodProcess
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
@@ -42,6 +46,10 @@ public class WriteMemoryFloodProcess
 	 *            The number of parallel communications to support
 	 * @param intermediateChannelWaits
 	 *            How many parallel communications to launch at once. (??)
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,

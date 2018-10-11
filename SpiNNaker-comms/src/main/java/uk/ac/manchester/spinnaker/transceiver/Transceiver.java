@@ -1898,7 +1898,8 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> getBMPConnection() {
+	public Map<BMPCoords, ConnectionSelector<BMPConnection>> // force newline
+			getBMPConnection() {
 		return bmpSelectors;
 	}
 

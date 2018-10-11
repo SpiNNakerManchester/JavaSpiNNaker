@@ -19,10 +19,16 @@ public class SendSingleSCPCommandProcess
 	/**
 	 * @param connectionSelector
 	 *            How to select which connection to use for communication.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector, RetryTracker retryTracker) {
-		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT, retryTracker);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+				retryTracker);
 	}
 
 	/**
@@ -32,6 +38,10 @@ public class SendSingleSCPCommandProcess
 	 *            The number of retries to use.
 	 * @param timeout
 	 *            The timeout on the communications, in milliseconds.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public SendSingleSCPCommandProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,

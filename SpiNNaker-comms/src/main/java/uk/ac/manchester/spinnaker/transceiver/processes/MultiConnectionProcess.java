@@ -45,6 +45,10 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			RetryTracker retryTracker) {
@@ -65,6 +69,9 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	 * @param intermediateChannelWaits
 	 *            How many parallel communications to launch at once. (??)
 	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int numRetries, int timeout, int numChannels,

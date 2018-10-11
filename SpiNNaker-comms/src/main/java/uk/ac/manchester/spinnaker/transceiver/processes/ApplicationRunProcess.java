@@ -17,6 +17,10 @@ public class ApplicationRunProcess
 	 *
 	 * @param connectionSelector
 	 *            How to choose where to send messages.
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public ApplicationRunProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
@@ -39,6 +43,10 @@ public class ApplicationRunProcess
 	 *            The number of parallel channels to use.
 	 * @param intermediateChannelWaits
 	 *            ???
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
 	 */
 	public ApplicationRunProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
