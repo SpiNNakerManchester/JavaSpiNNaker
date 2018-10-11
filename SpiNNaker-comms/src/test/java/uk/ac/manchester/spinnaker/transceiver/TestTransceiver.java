@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -198,6 +200,41 @@ class TestTransceiver {
 					assertArrayEquals(expectedData, write.data);
 				}
 			}
+		}
+	}
+
+	private static Set<ChipLocation> chips(Machine machine) {
+		return machine.chips().stream().map(chip -> chip.asChipLocation())
+				.collect(toSet());
+	}
+
+	private static final int REPETITIONS = 10;
+
+	@Test
+	void testReliableMachine() throws Exception {
+		boardConfig.setUpRemoteBoard();
+        ArrayList<Machine> l = new ArrayList<>();
+
+        for (int i = 0 ; i < REPETITIONS ; i++) {
+			try (Transceiver txrx =
+					new Transceiver(boardConfig.remotehost, 5)) {
+        		txrx.ensureBoardIsReady();
+        		txrx.getMachineDimensions();
+        		txrx.getScampVersion();
+				l.add(txrx.getMachineDetails());
+			}
+		}
+
+        Set<ChipLocation> m = chips(l.remove(0));
+		/*
+		 * These look like weird assertions, but they're what ends up sometimes
+		 * missing! Weird indeed...
+		 */
+		assertTrue(m.contains(new ChipLocation(6, 2)), "(6,2) must be present");
+		assertTrue(m.contains(new ChipLocation(7, 2)), "(7,2) must be present");
+		assertEquals(48, m.size());
+		for (Machine m2 : l) {
+			assertEquals(m, chips(m2));
 		}
 	}
 }

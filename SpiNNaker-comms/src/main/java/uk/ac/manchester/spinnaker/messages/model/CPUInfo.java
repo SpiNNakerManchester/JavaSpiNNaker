@@ -252,6 +252,16 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
+	 * @param index
+	 *            Which index in the user array to read. Must be in range 0 to 3
+	 *            (inclusive).
+	 * @return The current user value (user<sub>index</sub>).
+	 */
+	public int getUser(int index) {
+		return user[index];
+	}
+
+	/**
 	 * @return A description of the state.
 	 */
 	public String getStatusDescription() {
