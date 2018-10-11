@@ -412,7 +412,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testTransceiver() throws Exception {
         InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
 		try (Transceiver transceiver = Transceiver.createTransceiver(

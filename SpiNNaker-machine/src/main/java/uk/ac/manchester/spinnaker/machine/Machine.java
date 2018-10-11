@@ -591,19 +591,22 @@ public class Machine implements Iterable<Chip> {
      *       or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(int x, int y) {
-        if (version.wrapAround) {
+        if (version.horizontalWrap) {
             x = (x + machineDimensions.width) % machineDimensions.width;
         } else {
             if (x < 0 || x >=  this.machineDimensions.width) {
                 return null;
             }
         }
-        if (version.wrapAround) {
+        if (version.verticalWrap) {
             y = (y + machineDimensions.height) % machineDimensions.height;
         } else {
             if (y < 0 || y >= this.machineDimensions.width) {
                 return null;
             }
+        }
+        if (x < 0 || y < 0) {
+            return null;
         }
         return new ChipLocation(x, y);
     }
@@ -627,6 +630,28 @@ public class Machine implements Iterable<Chip> {
             HasChipLocation source, Direction direction) {
         return normalizedLocation(source.getX() + direction.xChange,
                 source.getY() + direction.yChange);
+    }
+
+    public final ChipLocation normalizedLocation(HasChipLocation location) {
+        if (version.horizontalWrap) {
+            if (version.verticalWrap) {
+                return new ChipLocation(
+                         location.getX() % machineDimensions.width,
+                         location.getY() % machineDimensions.height);
+            } else {
+                return new ChipLocation(
+                         location.getX() % machineDimensions.width,
+                         location.getY());
+            }
+        } else {
+            if (version.verticalWrap) {
+                return new ChipLocation(
+                         location.getX(),
+                         location.getY() % machineDimensions.height);
+            } else {
+                return location.asChipLocation();
+            }
+        }
     }
 
     /**
