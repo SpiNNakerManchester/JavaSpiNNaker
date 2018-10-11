@@ -108,31 +108,6 @@ public class SCPConnection extends SDPConnection
 	 * @param chip
 	 *            The location of the chip on the board with this remoteHost
 	 * @param localHost
-<<<<<<< HEAD
-=======
-	 *            The optional host name of the local interface to
-	 *            listen on; use {@code null} to listen on all local
-	 *            interfaces.
-	 * @param localPort
-	 *            The optional local port to listen on; use {@code null} to
-	 *            pick a random port.
-	 * @param remoteHost
-	 *            The remote host to send messages to.
-	 * @throws IOException
-	 *             If anything goes wrong with socket setup.
-	 */
-	public SCPConnection(HasChipLocation chip, InetAddress localHost,
-			Integer localPort, InetAddress remoteHost) throws IOException {
-		this(chip, localHost, localPort, remoteHost, SCP_SCAMP_PORT);
-	}
-
-	/**
-	 * Create a connection to a particular instance of SCAMP.
-	 *
-	 * @param chip
-	 *            The location of the chip on the board with this remoteHost
-	 * @param localHost
->>>>>>> refs/heads/master
 	 *            The optional host of the local interface to
 	 *            listen on; use {@code null} to listen on all local
 	 *            interfaces.

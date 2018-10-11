@@ -230,8 +230,10 @@ class TestTransceiver {
 		 * These look like weird assertions, but they're what ends up sometimes
 		 * missing! Weird indeed...
 		 */
-		assertTrue(m.contains(new ChipLocation(6, 2)), "(6,2) must be present");
-		assertTrue(m.contains(new ChipLocation(7, 2)), "(7,2) must be present");
+		assertTrue(m.contains(new ChipLocation(6, 2)),
+				() -> "(6,2) must be present in " + m);
+		assertTrue(m.contains(new ChipLocation(7, 2)),
+				() -> "(7,2) must be present in " + m);
 		assertEquals(48, m.size());
 		for (Machine m2 : l) {
 			assertEquals(m, chips(m2));
