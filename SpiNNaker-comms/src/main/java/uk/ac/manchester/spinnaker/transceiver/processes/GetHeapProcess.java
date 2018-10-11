@@ -14,6 +14,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Get a description of the heap.
@@ -26,9 +27,9 @@ public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 */
-	public GetHeapProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+	public GetHeapProcess(ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

@@ -6,6 +6,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Deallocate space in the SDRAM. */
 public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
@@ -14,8 +15,9 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public DeallocSDRAMProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

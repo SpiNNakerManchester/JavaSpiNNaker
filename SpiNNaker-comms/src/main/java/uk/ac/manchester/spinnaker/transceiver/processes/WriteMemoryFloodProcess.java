@@ -16,6 +16,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 public class WriteMemoryFloodProcess
@@ -25,8 +26,9 @@ public class WriteMemoryFloodProcess
 	 *            How to select how to communicate.
 	 */
 	public WriteMemoryFloodProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**
@@ -44,9 +46,9 @@ public class WriteMemoryFloodProcess
 	public WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits) {
+			int intermediateChannelWaits, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits);
+				intermediateChannelWaits, retryTracker);
 	}
 
 	private static final float BPW = 4.0F;

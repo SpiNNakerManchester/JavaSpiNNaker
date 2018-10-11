@@ -15,6 +15,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Get the CPU information structure for a set of processors.
@@ -25,8 +26,9 @@ public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public GetCPUInfoProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

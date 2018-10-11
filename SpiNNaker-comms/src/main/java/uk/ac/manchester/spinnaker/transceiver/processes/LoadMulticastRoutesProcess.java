@@ -13,17 +13,22 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for loading the multicast routing table on a SpiNNaker chip. */
 public class LoadMulticastRoutesProcess
 		extends MultiConnectionProcess<SCPConnection> {
+	private RetryTracker retryTracker;
+
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 */
 	public LoadMulticastRoutesProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
+		this.retryTracker = retryTracker;
 	}
 
 	private static final int UNIT_SIZE = 16;
@@ -67,8 +72,8 @@ public class LoadMulticastRoutesProcess
 		 * Create the routing data. 16 bytes per entry plus one for the end
 		 * entry
 		 */
-		ByteBuffer buffer = allocate(UNIT_SIZE * (routes.size() + 1))
-				.order(LITTLE_ENDIAN);
+		ByteBuffer buffer =
+				allocate(UNIT_SIZE * (routes.size() + 1)).order(LITTLE_ENDIAN);
 		short index = 0;
 		for (MulticastRoutingEntry route : routes) {
 			writeEntry(buffer, index++, route);
@@ -79,8 +84,8 @@ public class LoadMulticastRoutesProcess
 		buffer.flip();
 
 		// Upload the data (delegate to another process)
-		new WriteMemoryProcess(selector).writeMemory(chip.getScampCore(),
-				ROUTING_TABLE_ADDRESS, buffer);
+		new WriteMemoryProcess(selector, retryTracker).writeMemory(
+				chip.getScampCore(), ROUTING_TABLE_ADDRESS, buffer);
 
 		// Allocate space in the router table
 		int baseAddress = synchronousCall(

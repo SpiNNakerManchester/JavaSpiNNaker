@@ -18,6 +18,7 @@ import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Write to memory on SpiNNaker.
@@ -28,8 +29,8 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public WriteMemoryProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector, RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**
@@ -47,9 +48,9 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	public WriteMemoryProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits) {
+			int intermediateChannelWaits, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits);
+				intermediateChannelWaits, retryTracker);
 	}
 
 	/**

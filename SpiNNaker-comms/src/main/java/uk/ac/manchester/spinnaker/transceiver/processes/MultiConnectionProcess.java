@@ -12,6 +12,7 @@ import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses multiple connections in communication.
@@ -39,14 +40,17 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	final ConnectionSelector<T> selector;
 	private final Map<T, SCPRequestPipeline> requestPipelines;
 	private final int timeout;
+	private final RetryTracker retryTracker;
 
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 */
-	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector) {
+	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
+			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
-				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
+				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
+				retryTracker);
 	}
 
 	/**
@@ -60,16 +64,18 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	 *            The number of parallel communications to support
 	 * @param intermediateChannelWaits
 	 *            How many parallel communications to launch at once. (??)
+	 * @param retryTracker
 	 */
 	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits) {
+			int intermediateChannelWaits, RetryTracker retryTracker) {
 		this.requestPipelines = new HashMap<>();
 		this.numRetries = numRetries;
 		this.timeout = timeout;
 		this.numChannels = numChannels;
 		this.numWaits = intermediateChannelWaits;
 		this.selector = connectionSelector;
+		this.retryTracker = retryTracker;
 	}
 
 	@Override
@@ -78,7 +84,7 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 		T connection = selector.getNextConnection(request);
 		if (!requestPipelines.containsKey(connection)) {
 			SCPRequestPipeline pipeline = new SCPRequestPipeline(connection,
-					numChannels, numWaits, numRetries, timeout);
+					numChannels, numWaits, numRetries, timeout, retryTracker);
 			requestPipelines.put(connection, pipeline);
 		}
 		requestPipelines.get(connection).sendRequest(request, callback,

@@ -22,6 +22,7 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -42,8 +43,9 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public ReadIOBufProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	private static int chunk(int overall) {

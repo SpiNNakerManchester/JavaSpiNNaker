@@ -7,6 +7,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Launch an application. */
 public class ApplicationRunProcess
@@ -18,9 +19,11 @@ public class ApplicationRunProcess
 	 *            How to choose where to send messages.
 	 */
 	public ApplicationRunProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
-				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
+				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
+				retryTracker);
 	}
 
 	/**
@@ -40,9 +43,9 @@ public class ApplicationRunProcess
 	public ApplicationRunProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits) {
+			int intermediateChannelWaits, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits);
+				intermediateChannelWaits, retryTracker);
 	}
 
 	/**

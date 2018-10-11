@@ -6,6 +6,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for allocating a block of SDRAM on a SpiNNaker chip. */
 public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
@@ -14,8 +15,9 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public MallocSDRAMProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

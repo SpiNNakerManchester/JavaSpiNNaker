@@ -17,6 +17,7 @@ import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Gets IP tags and reverse IP tags. */
 public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
@@ -24,9 +25,9 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 */
-	public GetTagsProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+	public GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

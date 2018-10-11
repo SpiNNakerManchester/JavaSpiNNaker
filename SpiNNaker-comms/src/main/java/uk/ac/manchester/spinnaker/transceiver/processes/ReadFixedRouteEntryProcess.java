@@ -7,6 +7,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for reading a chip's fixed route routing entry. */
 public class ReadFixedRouteEntryProcess
@@ -16,8 +17,9 @@ public class ReadFixedRouteEntryProcess
 	 *            How to select how to communicate.
 	 */
 	public ReadFixedRouteEntryProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

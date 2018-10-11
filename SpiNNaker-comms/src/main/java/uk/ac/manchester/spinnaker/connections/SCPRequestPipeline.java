@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Allows a set of SCP requests to be grouped together in a communication across
@@ -92,6 +93,11 @@ public class SCPRequestPipeline {
 
 	/** A dictionary of sequence number -> requests in progress. */
 	private final Map<Integer, Request<?>> requests;
+	/**
+	 * An object used to track how many retries have been done, or {@code null}
+	 * if no such tracking is required.
+	 */
+	private final RetryTracker retryTracker;
 
 	/**
 	 * Per message record.
@@ -148,6 +154,9 @@ public class SCPRequestPipeline {
 		void resend(Object reason) throws IOException {
 			retries--;
 			retryReason.add(reason.toString());
+			if (retryTracker != null) {
+				retryTracker.retryNeeded();
+			}
 			send();
 		}
 
@@ -212,10 +221,11 @@ public class SCPRequestPipeline {
 	 * @param connection
 	 *            The connection over which the communication is to take place.
 	 */
-	public SCPRequestPipeline(SCPConnection connection) {
+	public SCPRequestPipeline(SCPConnection connection,
+			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, DEFAULT_RETRIES,
-				SCP_TIMEOUT);
+				SCP_TIMEOUT, retryTracker);
 	}
 
 	/**
@@ -227,10 +237,11 @@ public class SCPRequestPipeline {
 	 *            The number of elapsed milliseconds after sending a packet
 	 *            before it is considered a timeout.
 	 */
-	public SCPRequestPipeline(SCPConnection connection, int packetTimeout) {
+	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
+			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, DEFAULT_RETRIES,
-				packetTimeout);
+				packetTimeout, retryTracker);
 	}
 
 	/**
@@ -251,10 +262,11 @@ public class SCPRequestPipeline {
 	 * @param packetTimeout
 	 *            The number of elapsed milliseconds after sending a packet
 	 *            before it is considered a timeout.
+	 * @param retryTracker
 	 */
 	public SCPRequestPipeline(SCPConnection connection, Integer numChannels,
-			Integer intermediateChannelWaits, int numRetries,
-			int packetTimeout) {
+			Integer intermediateChannelWaits, int numRetries, int packetTimeout,
+			RetryTracker retryTracker) {
 		if (numChannels != null && intermediateChannelWaits == null) {
 			intermediateChannelWaits = numChannels - HEADROOM;
 			if (intermediateChannelWaits < 0) {
@@ -267,6 +279,7 @@ public class SCPRequestPipeline {
 		this.intermediateChannelWaits = intermediateChannelWaits;
 		this.numRetries = numRetries;
 		this.packetTimeout = packetTimeout;
+		this.retryTracker = retryTracker;
 
 		requests = synchronizedMap(new HashMap<>());
 		inProgress = 0;

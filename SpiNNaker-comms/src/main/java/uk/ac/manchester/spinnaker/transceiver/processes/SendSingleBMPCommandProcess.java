@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -55,6 +56,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
+	private final RetryTracker retryTracker;
 	private BMPRequest<?> errorRequest;
 	private Throwable exception;
 
@@ -63,8 +65,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            How to select how to communicate.
 	 */
 	public SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector) {
-		this(connectionSelector, DEFAULT_TIMEOUT);
+			ConnectionSelector<BMPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		this(connectionSelector, DEFAULT_TIMEOUT, retryTracker);
 	}
 
 	/**
@@ -74,9 +77,11 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            The timeout on the connection, in milliseconds.
 	 */
 	public SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector, int timeout) {
+			ConnectionSelector<BMPConnection> connectionSelector, int timeout,
+			RetryTracker retryTracker) {
 		this.timeout = timeout;
 		this.connectionSelector = connectionSelector;
+		this.retryTracker = retryTracker;
 	}
 
 	/**
@@ -158,6 +163,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			private void resend(String reason) throws IOException {
 				retries--;
 				retryReason.add(reason);
+				if (retryTracker != null) {
+					retryTracker.retryNeeded();
+				}
 				send();
 			}
 

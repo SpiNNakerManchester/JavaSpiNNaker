@@ -7,6 +7,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for getting the version of the machine. */
 public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
@@ -15,8 +16,9 @@ public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
 	 *            How to select how to communicate.
 	 */
 	public GetVersionProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+			ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**

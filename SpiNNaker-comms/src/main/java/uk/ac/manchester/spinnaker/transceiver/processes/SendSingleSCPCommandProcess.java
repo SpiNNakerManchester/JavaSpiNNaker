@@ -6,6 +6,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 // TODO refactor this to have the functionality exposed higher up
 /**
@@ -20,8 +21,8 @@ public class SendSingleSCPCommandProcess
 	 *            How to select which connection to use for communication.
 	 */
 	public SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector) {
-		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT);
+			ConnectionSelector<SCPConnection> connectionSelector, RetryTracker retryTracker) {
+		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT, retryTracker);
 	}
 
 	/**
@@ -34,9 +35,9 @@ public class SendSingleSCPCommandProcess
 	 */
 	public SendSingleSCPCommandProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
-			int numRetries, int timeout) {
+			int numRetries, int timeout, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_CHANNEL_WAITS);
+				DEFAULT_INTERMEDIATE_CHANNEL_WAITS, retryTracker);
 	}
 
 	/**

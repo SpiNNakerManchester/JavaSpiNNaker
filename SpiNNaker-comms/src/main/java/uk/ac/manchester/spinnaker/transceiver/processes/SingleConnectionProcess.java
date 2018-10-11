@@ -10,6 +10,7 @@ import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses a single connection in communication.
@@ -22,14 +23,15 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 	private final ConnectionSelector<T> connectionSelector;
 	private SCPRequestPipeline requestPipeline;
 	private final int timeout;
+	private final RetryTracker retryTracker;
 
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 */
-	protected SingleConnectionProcess(
-			ConnectionSelector<T> connectionSelector) {
-		this(connectionSelector, SCP_TIMEOUT);
+	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
+			RetryTracker retryTracker) {
+		this(connectionSelector, SCP_TIMEOUT, retryTracker);
 	}
 
 	/**
@@ -39,10 +41,11 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 	 *            How long to take sending the message, in milliseconds.
 	 */
 	protected SingleConnectionProcess(ConnectionSelector<T> connectionSelector,
-			int timeout) {
+			int timeout, RetryTracker retryTracker) {
 		this.requestPipeline = null;
 		this.timeout = timeout;
 		this.connectionSelector = connectionSelector;
+		this.retryTracker = retryTracker;
 	}
 
 	@Override
@@ -54,7 +57,8 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 		 */
 		if (requestPipeline == null) {
 			requestPipeline = new SCPRequestPipeline(
-					connectionSelector.getNextConnection(request), timeout);
+					connectionSelector.getNextConnection(request), timeout,
+					retryTracker);
 		}
 		requestPipeline.sendRequest(request, callback, this::receiveError);
 	}

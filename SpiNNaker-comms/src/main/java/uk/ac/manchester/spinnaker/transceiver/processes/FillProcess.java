@@ -16,6 +16,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for filling memory. */
 public class FillProcess extends MultiConnectionProcess<SCPConnection> {
@@ -29,8 +30,9 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param connectionSelector
 	 *            How to choose where to send messages.
 	 */
-	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector) {
-		super(connectionSelector);
+	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
+			RetryTracker retryTracker) {
+		super(connectionSelector, retryTracker);
 	}
 
 	/**
@@ -49,9 +51,9 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits) {
+			int intermediateChannelWaits, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits);
+				intermediateChannelWaits, retryTracker);
 	}
 
 	/**

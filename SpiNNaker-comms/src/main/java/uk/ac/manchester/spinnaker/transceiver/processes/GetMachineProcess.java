@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
@@ -76,27 +77,28 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param ignoreLinksMap
 	 *            The link blacklist.
 	 * @param maxCoreID
-	 *            The maximum core ID, or {@code null} for the system's
-	 *            standard limit. For debugging.
+	 *            The maximum core ID, or {@code null} for the system's standard
+	 *            limit. For debugging.
 	 * @param maxSDRAMSize
 	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
 	 */
-    public GetMachineProcess(
-            ConnectionSelector<SCPConnection> connectionSelector,
-            Collection<ChipLocation> ignoreChips,
-            Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
-            Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
-            Integer maxCoreID, Integer maxSDRAMSize) {
+	public GetMachineProcess(
+			ConnectionSelector<SCPConnection> connectionSelector,
+			Collection<ChipLocation> ignoreChips,
+			Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
+			Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
+			Integer maxCoreID, Integer maxSDRAMSize,
+			RetryTracker retryTracker) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
-				THROTTLED, THROTTLED - 1);
-        this.ignoreChips = def(ignoreChips);
-        this.ignoreCoresMap = def(ignoreCoresMap);
-        this.ignoreLinksMap = def(ignoreLinksMap);
-        this.maxCoreID = maxCoreID;
-        this.maxSDRAMSize = maxSDRAMSize;
-        this.chipInfo = new HashMap<>();
-    }
+				THROTTLED, THROTTLED - 1, retryTracker);
+		this.ignoreChips = def(ignoreChips);
+		this.ignoreCoresMap = def(ignoreCoresMap);
+		this.ignoreLinksMap = def(ignoreLinksMap);
+		this.maxCoreID = maxCoreID;
+		this.maxSDRAMSize = maxSDRAMSize;
+		this.chipInfo = new HashMap<>();
+	}
 
 	/**
 	 * Get a full, booted machine, populated with information directly from the
