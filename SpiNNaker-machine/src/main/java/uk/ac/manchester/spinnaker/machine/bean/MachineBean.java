@@ -22,18 +22,21 @@ public class MachineBean {
 
     private final MachineDimensions dimensions;
     private final ChipLocation root;
-    private final ChipResources chipResources;
+    private final ChipResources ethernetResources;
+    private final ChipResources standardResources;
     private final List<ChipBean> chips;
 
     public MachineBean(@JsonProperty(value = "height", required=true) int height,
             @JsonProperty(value = "width", required=true) int width,
             @JsonProperty(value = "root", required=true) ChipLocation root,
-            @JsonProperty(value = "chipResources", required=true) ChipResources chipResources,
+            @JsonProperty(value = "ethernetResources", required=true) ChipResources ethernetResources,
+            @JsonProperty(value = "standardResources", required=true) ChipResources standardResources,
             @JsonProperty(value = "chips", required=true) List<ChipBean> chips) {
         dimensions = new MachineDimensions(height, width);
         this.root = root;
         this.chips = chips;
-        this.chipResources = chipResources;
+        this.ethernetResources = ethernetResources;
+        this.standardResources = standardResources;
     }
 
     @JsonIgnore
@@ -46,10 +49,17 @@ public class MachineBean {
     }
 
     /**
-     * @return the chip_resources
+     * @return the default ethernet resources
      */
-    public ChipResources getChipResources() {
-        return chipResources;
+    public ChipResources getEthernetResources() {
+        return ethernetResources;
+    }
+
+    /**
+     * @return the default none ethernet resources
+     */
+    public ChipResources getStandardResources() {
+        return standardResources;
     }
 
    /**
@@ -60,7 +70,7 @@ public class MachineBean {
     }
 
     public String toString() {
-        return dimensions + " root: " + root + " " + chipResources
+        return dimensions + " root: " + root
                 + "# Chips: " + chips.size();
     }
 
@@ -68,7 +78,8 @@ public class MachineBean {
         StringBuilder builder = new StringBuilder();
         builder.append(dimensions);
         builder.append("\nroot: ").append(root);
-        builder.append("\nchip_resources: ").append(chipResources);
+        builder.append("\nethernet_resources: ").append(ethernetResources);
+        builder.append("\nstandard_resources: ").append(standardResources);
         for (ChipBean bean: chips) {
             builder.append("\n" + bean);
         }

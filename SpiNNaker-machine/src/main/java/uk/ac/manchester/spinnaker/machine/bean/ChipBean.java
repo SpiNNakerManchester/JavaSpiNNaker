@@ -62,7 +62,13 @@ public class ChipBean {
         }
     }
 
-    public void addDefaults(ChipResources defaults) {
+    public void addDefaults(MachineBean bean) {
+        ChipResources defaults;
+        if (details.getIpAddress() == null) {
+            defaults = bean.getStandardResources();
+        } else {
+            defaults = bean.getEthernetResources();
+        }
         if (resources == null) {
             resources = defaults;
         }

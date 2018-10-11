@@ -6,6 +6,7 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -19,7 +20,7 @@ public class ChipResources {
     private int cores;
     private int monitors;
     private int sdram;
-    private int tags;
+    private List<Integer> tags;
     private int routerEntries;
     private int routerClockSpeed;
     private Boolean virtual;
@@ -28,7 +29,6 @@ public class ChipResources {
         cores = NOT_SET;
         monitors = NOT_SET;
         sdram = NOT_SET;
-        tags = NOT_SET;
         routerClockSpeed = NOT_SET;
         routerEntries = NOT_SET;
     }
@@ -44,7 +44,7 @@ public class ChipResources {
         if (sdram == NOT_SET) {
             sdram = defaults.sdram;
         };
-        if (tags == NOT_SET) {
+        if (tags == null) {
             tags = defaults.tags;
         };
         if (getRouterClockSpeed() == NOT_SET) {
@@ -103,14 +103,14 @@ public class ChipResources {
     /**
      * @return the tags
      */
-    public int getTags() {
+    public List<Integer> getTags() {
         return tags;
     }
 
     /**
      * @param tags the tags to set
      */
-    public void setTags(int tags) {
+    public void setTags(List<Integer> tags) {
         this.tags = tags;
     }
 
@@ -167,7 +167,7 @@ public class ChipResources {
         if (sdram != NOT_SET) {
             builder.append("sdram: ").append(sdram).append(", ");
         }
-        if (tags != NOT_SET) {
+        if (tags != null) {
             builder.append("tags: ").append(tags).append(", ");
         }
         if (getRouterClockSpeed() != NOT_SET) {

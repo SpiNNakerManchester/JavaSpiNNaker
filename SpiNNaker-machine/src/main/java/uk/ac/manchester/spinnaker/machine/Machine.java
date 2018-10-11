@@ -121,9 +121,8 @@ public class Machine implements Iterable<Chip> {
 
     public Machine(MachineBean bean) {
         this(bean.getMachineDimensions(), bean.getRoot());
-        ChipResources defaults = bean.getChipResources();
         for (ChipBean chipBean: bean.getChips()) {
-            chipBean.addDefaults(defaults);
+            chipBean.addDefaults(bean);
             addChip(new Chip(chipBean, this));
         }
     }
