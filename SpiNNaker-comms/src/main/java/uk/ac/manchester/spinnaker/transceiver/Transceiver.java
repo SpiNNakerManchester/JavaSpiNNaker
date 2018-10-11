@@ -1158,7 +1158,9 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 		if (versionInfo != null) {
-			log.info("Found board with version {}", versionInfo);
+			log.info("Found board with hardware {} firmware {} version {}",
+					versionInfo.hardware, versionInfo.name,
+					versionInfo.versionNumber);
 		}
 		return versionInfo;
 	}
