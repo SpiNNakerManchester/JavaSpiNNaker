@@ -125,6 +125,8 @@ public class Machine implements Iterable<Chip> {
             chipBean.addDefaults(bean);
             addChip(new Chip(chipBean, this));
         }
+		addSpinnakerLinks();
+		addFpgaLinks();
     }
 
     /**
@@ -552,6 +554,7 @@ public class Machine implements Iterable<Chip> {
      *      spinnaker link is not added.
      */
     public final void addSpinnakerLinks() {
+        System.out.println("addSpinnakerLinks");
         if (version.isFourChip) {
             Chip chip00 = getChipAt(new ChipLocation(0, 0));
             if (!chip00.router.hasLink(Direction.WEST)) {
@@ -998,13 +1001,18 @@ public class Machine implements Iterable<Chip> {
             System.out.println("maxUserProssorsOnAChip");
             return false;
         }
-        if (ethernetConnectedChips.size() != that.ethernetConnectedChips.size()) {
-            System.out.println("ethernetConnectedChips.size()");
+        if (!ethernetConnectedChips.equals(that.ethernetConnectedChips)) {
+            System.out.println("ethernetConnectedChips");
+           return false;
+        }
+        if (!spinnakerLinks.equals(that.spinnakerLinks)) {
+            System.out.println("spinnakerLinks");
             return false;
         }
-        //private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
-        // private final HashMap<InetAddress,
-        //        Map<FpgaId, Map<Integer, FPGALinkData>>> fpgaLinks;
+        if (!fpgaLinks.equals(that.fpgaLinks)) {
+            System.out.println("fpgaLinks");
+            return false;
+        }
         if (! boot.equals(that.boot)) {
             System.out.println("boot");
             return false;

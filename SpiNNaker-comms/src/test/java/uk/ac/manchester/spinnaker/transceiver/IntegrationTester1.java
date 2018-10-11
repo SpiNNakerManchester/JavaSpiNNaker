@@ -29,13 +29,16 @@ public class IntegrationTester1 {
         InetAddress remoteHost = InetFactory.getByName("spinn-4.cs.man.ac.uk");
 
             URL url = IntegrationTester1.class.getResource("/spinn4.json");
+            System.out.println(url);
             ObjectMapper mapper = MapperFactory.createMapper();
             MachineBean fromJson = mapper.readValue(url, MachineBean.class);
             System.out.println(fromJson);
 
             Machine machine2 = new Machine(fromJson);
+            System.out.println("fromJson" + machine2);
 
-        for (int i = 0; i < 1; i++) {
+
+        for (int i = 0; i < 5000; i++) {
     		try (Transceiver trans = Transceiver.createTransceiver(remoteHost, 5)) {
         		// self.assertFalse(trans.is_connected())
             	trans.ensureBoardIsReady();
@@ -47,7 +50,7 @@ public class IntegrationTester1 {
                 System.out.println(machine);
 
                 if (! machine.equals(machine2)) {
-                    throw new Exception ("POP");
+                    throw new Exception ("NOT EQUAL");
                 }
             }
 		}

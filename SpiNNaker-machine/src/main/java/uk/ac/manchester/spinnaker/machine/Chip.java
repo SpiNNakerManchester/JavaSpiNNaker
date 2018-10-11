@@ -594,10 +594,10 @@ public class Chip implements HasChipLocation {
             System.out.println("virtual");
             return false;
         }
-        //if (nTagIds != that.nTagIds) {
-        //    System.out.println("nTagIds " + nTagIds + " != " + that.nTagIds);
-        //    return false;
-        //}
+        if (!tagIds.equals(that.tagIds)) {
+            System.out.println("tagIds " + tagIds + " != " + that.tagIds);
+            return false;
+        }
         if (! nearestEthernet.equals(that.nearestEthernet)) {
             System.out.println("router");
             return false;
