@@ -5,8 +5,10 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import static java.util.Collections.emptyList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
@@ -44,9 +46,8 @@ public class Chip implements HasChipLocation {
     /** boolean which defines if this chip is a virtual one. */
     public final boolean virtual;
 
-    // Changed from a list of tags to just the number of tags at agr suggestion
-    /** Number of SDP identifers available. */
-    public final int nTagIds;
+    /** List of SDP identifers available. */
+    private final List<Integer> tagIds;
 
     /** The nearest Ethernet coordinates or null if none known. */
     public final HasChipLocation nearestEthernet;
@@ -56,6 +57,9 @@ public class Chip implements HasChipLocation {
 
     private static final TreeMap<Integer, Processor>
             DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
+
+    private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
+           new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
 
     // Note: emergency_routing_enabled not implemented as not used
     // TODO convert_routing_table_entry_to_spinnaker_route
@@ -77,8 +81,10 @@ public class Chip implements HasChipLocation {
      *            The IP address of the chip or None if no Ethernet attached.
      * @param virtual
      *            boolean which defines if this chip is a virtual one
-     * @param nTagIds
-     *            Number of SDP identifers available.
+     * @param tagIds
+     *            List of SDP identifers available. Can be empty to force empty.
+     *            If null will use the default list for Ethernet Chips
+     *            and empty for none Ethernet Chips
      * @param nearestEthernet
      *            The nearest Ethernet coordinates or null if none known.
      * @throws IllegalArgumentException
@@ -87,7 +93,7 @@ public class Chip implements HasChipLocation {
     @SuppressWarnings("checkstyle:parameternumber")
     public Chip(ChipLocation location, Iterable<Processor> processors,
             Router router, int sdram, InetAddress ipAddress, boolean virtual,
-            int nTagIds, HasChipLocation nearestEthernet) {
+            List<Integer> tagIds, HasChipLocation nearestEthernet) {
         this.location = location;
         this.monitorProcessors = new TreeMap<>();
         this.userProcessors =  new TreeMap<>();
@@ -108,7 +114,15 @@ public class Chip implements HasChipLocation {
         this.sdram = sdram;
         this.ipAddress = ipAddress;
         this.virtual = virtual;
-        this.nTagIds = nTagIds;
+        if (tagIds == null) {
+            if (ipAddress == null) {
+                this.tagIds = emptyList();
+            } else {
+                this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
+            }
+        } else {
+            this.tagIds = tagIds;
+        }
 
         // previous Router stuff
         this.nearestEthernet = nearestEthernet;
@@ -138,7 +152,7 @@ public class Chip implements HasChipLocation {
             Router router, int sdram, InetAddress ipAddress,
             HasChipLocation nearestEthernet) {
         this(location, processors, router, sdram, ipAddress, false,
-                MachineDefaults.N_IPTAGS_PER_CHIP, nearestEthernet);
+                null, nearestEthernet);
     }
 
    /**
@@ -164,8 +178,7 @@ public class Chip implements HasChipLocation {
              Router router, InetAddress ipAddress,
              HasChipLocation nearestEthernet) {
         this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
-                ipAddress, false, MachineDefaults.N_IPTAGS_PER_CHIP,
-                nearestEthernet);
+                ipAddress, false, null, nearestEthernet);
     }
 
     /**
@@ -197,7 +210,11 @@ public class Chip implements HasChipLocation {
         this.ipAddress = ipAddress;
 
         this.virtual = false;
-        this.nTagIds = MachineDefaults.N_IPTAGS_PER_CHIP;
+            if (ipAddress == null) {
+                this.tagIds = emptyList();
+            } else {
+                this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
+            }
 
         this.nearestEthernet = nearestEthernet;
     }
@@ -212,7 +229,7 @@ public class Chip implements HasChipLocation {
         this.ipAddress = chip.ipAddress;
 
         this.virtual = chip.virtual;
-        this.nTagIds = chip.nTagIds;
+        this.tagIds = chip.tagIds;
 
         this.nearestEthernet = chip.nearestEthernet;
     }
@@ -491,6 +508,13 @@ public class Chip implements HasChipLocation {
                 + ", users=" + userProcessors.keySet()
                 + ", nearest_ethernet="
                 + this.nearestEthernet + "]";
+    }
+
+    /**
+     * @return the tagIds
+     */
+    public List<Integer> getTagIds() {
+        return Collections.unmodifiableList(tagIds);
     }
 
 }
