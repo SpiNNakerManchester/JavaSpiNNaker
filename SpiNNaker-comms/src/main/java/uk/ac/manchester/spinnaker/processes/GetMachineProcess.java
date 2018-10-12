@@ -62,7 +62,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
-	private static final int THROTTLED = 3;
+	private static final int THROTTLED = 8;
 
 	/**
 	 * @param connectionSelector
@@ -89,7 +89,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
             Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
             Integer maxCoreID, Integer maxSDRAMSize) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
-				THROTTLED, THROTTLED - 1);
+				THROTTLED, THROTTLED / 2);
         this.ignoreChips = def(ignoreChips);
         this.ignoreCoresMap = def(ignoreCoresMap);
         this.ignoreLinksMap = def(ignoreLinksMap);

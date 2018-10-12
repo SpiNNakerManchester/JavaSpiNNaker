@@ -28,13 +28,15 @@ class ReliabilityITCase {
 				.collect(toSet());
 	}
 
+	private static final int REPETITIONS = 50;
+
 	@Test
 	void testReliableMachine() throws Exception {
 		board_config.set_up_remote_board();
         Inet4Address host = InetFactory.getByName(board_config.remotehost);
 
         ArrayList<Machine> l = new ArrayList<>();
-        for (int i = 0 ; i < 10 ; i++) {
+        for (int i = 0 ; i < REPETITIONS ; i++) {
         	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
