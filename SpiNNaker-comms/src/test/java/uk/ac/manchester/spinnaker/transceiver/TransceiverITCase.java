@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.Router
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
 
 import java.io.File;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -495,32 +494,6 @@ public class TransceiverITCase {
 			});
 
 			section("Get Heap", () -> heap(transceiver));
-		}
-	}
-
-	private static Set<ChipLocation> chips(Machine machine) {
-		return machine.chips().stream().map(chip -> chip.asChipLocation())
-				.collect(toSet());
-	}
-
-	@Test
-	void testReliableMachine() throws Exception {
-		board_config.set_up_remote_board();
-        Inet4Address host = InetFactory.getByName(board_config.remotehost);
-
-        ArrayList<Machine> l = new ArrayList<>();
-        for (int i = 0 ; i < 10 ; i++) {
-        	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
-        		txrx.ensureBoardIsReady();
-        		txrx.getMachineDimensions();
-        		txrx.getScampVersion();
-				l.add(txrx.getMachineDetails());
-			}
-		}
-		Set<ChipLocation> m = chips(l.remove(0));
-		System.out.println(m);
-		for (Machine m2 : l) {
-			assertEquals(m, chips(m2));
 		}
 	}
 
