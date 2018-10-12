@@ -6,7 +6,6 @@ package uk.ac.manchester.spinnaker.machine;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ public class TestCoreSubsets {
         instance.addCore(0, 0, 1);
         assertEquals(1, instance.size());
 
-        ArrayList<Integer> processors = new ArrayList();
+        ArrayList<Integer> processors = new ArrayList<>();
         processors.add(1);
         instance.addCores(0, 0, processors);
         assertEquals(1, instance.size());
@@ -56,6 +55,7 @@ public class TestCoreSubsets {
         CoreSubsets instance = new CoreSubsets();
         instance.addCore(new CoreLocation(0,0,1));
         //get hashcode to make subset immutable
+        @SuppressWarnings("unused")
         int hash = instance.hashCode();
         assertThrows(IllegalStateException.class, () -> {
             instance.addCore(new CoreLocation(0,0,2));
@@ -69,7 +69,7 @@ public class TestCoreSubsets {
     }
 
     public void testMultiple() {
-        ArrayList<CoreLocation> locations = new ArrayList();
+        ArrayList<CoreLocation> locations = new ArrayList<>();
         locations.add(new CoreLocation(0, 0, 1));
         locations.add(new CoreLocation(0, 0, 2));
         locations.add(new CoreLocation(0, 0, 3));
@@ -85,7 +85,7 @@ public class TestCoreSubsets {
         locations.add(new CoreLocation(0, 0, 4));
         CoreSubsets css = new CoreSubsets(locations);
 
-        ArrayList<CoreLocation> locations2 = new ArrayList();
+        ArrayList<CoreLocation> locations2 = new ArrayList<>();
         locations2.add(new CoreLocation(0, 0, 4));
         locations2.add(new CoreLocation(0, 0, 5));
         locations2.add(new CoreLocation(0, 0, 6));
@@ -196,7 +196,7 @@ public class TestCoreSubsets {
     public void testBadIterator() {
         CoreSubsets css1 = new CoreSubsets();
         int count = 0;
-        for (CoreLocation coreLocation:css1) {
+        for (@SuppressWarnings("unused") CoreLocation coreLocation:css1) {
             count += 1;
         }
         assertEquals(0, count);

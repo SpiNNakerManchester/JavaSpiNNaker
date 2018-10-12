@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
+@SuppressWarnings("unused")
 public class TestReaderLineIterable {
 
     public TestReaderLineIterable() {
@@ -43,7 +44,7 @@ public class TestReaderLineIterable {
         }
     }
 
-    @Test
+	@Test
     public void testStream() {
         InputStream inputStream = new ByteArrayInputStream("First\nSecond\nThird".getBytes());
         ReaderLineIterable iterable = new ReaderLineIterable(inputStream);

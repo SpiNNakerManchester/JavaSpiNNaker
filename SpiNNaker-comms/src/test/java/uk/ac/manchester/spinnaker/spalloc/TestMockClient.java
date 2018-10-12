@@ -76,6 +76,7 @@ public class TestMockClient {
                     WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
                     WhereIs whereis2 = client.whereIs(machineName, physical, timeout);
                     ChipLocation chip = whereis1.getChip();
+                    @SuppressWarnings("unused")
                     WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
                     // check only work if all real or all mock
                     if (previous == client.isActual()) {
@@ -86,6 +87,7 @@ public class TestMockClient {
             }
         }
 
+        @SuppressWarnings("unused")
         private void checkNotification(int jobId, String machineName) {
 
         }
@@ -101,7 +103,7 @@ public class TestMockClient {
                 if (client.isActual()) {
                     assertThat("Jobid > 0", jobId, greaterThan(0));
                 } else {
-                    assertEquals(client.MOCK_ID, jobId);
+                    assertEquals(MockConnectedClient.MOCK_ID, jobId);
                 }
                 client.notifyJob(jobId, true, timeout);
                 JobMachineInfo machineInfo = client.getJobMachineInfo(jobId, timeout);
@@ -159,6 +161,7 @@ public class TestMockClient {
         @Test
         void testVersion() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
+                @SuppressWarnings("unused")
                 Version version = client.version(timeout);
                 if (client.isActual()) {
                 } else {

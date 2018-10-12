@@ -1,15 +1,17 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.util.Map;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+
 import org.hamcrest.collection.IsMapContaining;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**
@@ -17,7 +19,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  * @author Christian
  */
 public class TestJobDescription {
-    
+
     @Test
     void testOneArg() throws IOException {
         String json = "{\"job_id\":12345,"
@@ -36,7 +38,7 @@ public class TestJobDescription {
                 + "\"allocated_machine_name\":\"Spin24b-223\","
                 + "\"boards\":[[1,1,2]],"
                 + "\"keepalivehost\":\"130.88.198.171\"}";
-        
+
         ObjectMapper mapper = SpallocClient.createMapper();
         JobDescription fromJson = mapper.readValue(json, JobDescription.class);
         assertEquals(12345, fromJson.getJobID());
@@ -57,11 +59,11 @@ public class TestJobDescription {
         assertThat(fromJson.getBoards(), contains(new BoardCoordinates(1,1,2)));
         assertEquals("130.88.198.171", fromJson.getKeepAliveHost());
     }
-    
+
     @Test
     void testNulls() throws IOException {
         String json = "{\"job_id\":null}";
-        
+
         ObjectMapper mapper = SpallocClient.createMapper();
         JobDescription fromJson = mapper.readValue(json, JobDescription.class);
         assertEquals(0, fromJson.getJobID());

@@ -79,6 +79,7 @@ public class TestSpinnakerLinkData {
     }
 
     @Test
+    @SuppressWarnings("unused")
     public void testBad() throws UnknownHostException {
         assertThrows(IllegalArgumentException.class, () -> {
             SpinnakerLinkData link1 = new SpinnakerLinkData(34, null,

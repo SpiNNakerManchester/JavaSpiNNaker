@@ -20,6 +20,7 @@ public class TestPing {
     @Test
     public void testTravis() throws UnknownHostException {
         InetAddress travis = InetAddress.getByName("travis-ci.org");
-        Ping.ping(travis);
+        // *REALLY* should be able to reach Travis...
+        assertEquals(0, Ping.ping(travis));
     }
 }

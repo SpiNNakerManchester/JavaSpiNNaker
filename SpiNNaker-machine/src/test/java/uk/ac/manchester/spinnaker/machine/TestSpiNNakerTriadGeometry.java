@@ -3,9 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
