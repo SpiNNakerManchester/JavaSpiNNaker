@@ -90,10 +90,10 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable {
 	 * Closes all created Iterators and their ProgressBar(s).
 	 * <p>
 	 * This method allows the Iterable to be used in a
-	 * <tt>try</tt>-with-resources statement, which guarantees the ProgressBar
+	 * {@code try}-with-resources statement, which guarantees the ProgressBar
 	 * is closed.
 	 * <p>
-	 * Note: As <tt>hasNext() == false</tt> automatically calls close there is
+	 * Note: As {@code hasNext() == false} automatically calls close there is
 	 * no need to call this method unless you break out of the iterator early.
 	 * <p>
 	 * If the bar is already closed, invoking this method has no effect.

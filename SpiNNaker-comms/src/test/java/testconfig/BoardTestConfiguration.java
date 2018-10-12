@@ -1,6 +1,5 @@
 package testconfig;
 
-import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -107,8 +106,6 @@ public class BoardTestConfiguration {
 		});
 		SpallocJob job =
 				new SpallocJob(spalloc, port, timeout, asList(1), kwargs);
-		sleep(1200);
-		job.setPower(true);
 		job.waitUntilReady(null);
 		remotehost = job.getHostname();
 		try {

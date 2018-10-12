@@ -270,16 +270,16 @@ public class Machine implements Iterable<Chip> {
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
      *
-     * @return An <tt>Iterator</tt> over the Chips in this Machine.
+     * @return An iterator over the Chips in this Machine.
      */
     public final Iterator<Chip> iterator() {
         return this.chips.values().iterator();
     }
 
     /**
-     * The number of Chips om this Machine.
+     * The number of Chips on this Machine.
      *
-     * @return The number of Chips om this Machine.
+     * @return The number of Chips on this Machine.
      */
     public final int nChips() {
         return chips.size();
@@ -578,13 +578,14 @@ public class Machine implements Iterable<Chip> {
      *  or null if either coordinate is less than zero.
      */
     public final ChipLocation normalizedLocation(int x, int y) {
-        if (version.wrapAround) {
+        if (version.horizontalWrap) {
             x = (x + machineDimensions.width) % machineDimensions.width;
+        }
+        if (version.verticalWrap) {
             y = (y + machineDimensions.height) % machineDimensions.height;
-        } else {
-            if (x < 0 || y < 0) {
-                return null;
-            }
+        }
+        if (x < 0 || y < 0) {
+            return null;
         }
         return new ChipLocation(x, y);
     }
@@ -601,12 +602,24 @@ public class Machine implements Iterable<Chip> {
      *  or null if either coordinate is null.
      */
     public final ChipLocation normalizedLocation(HasChipLocation location) {
-        if (version.wrapAround) {
-             return new ChipLocation(
-                     location.getX() % machineDimensions.width,
-                     location.getY() % machineDimensions.height);
+        if (version.horizontalWrap) {
+            if (version.verticalWrap) {
+                return new ChipLocation(
+                         location.getX() % machineDimensions.width,
+                         location.getY() % machineDimensions.height);
+            } else {
+                return new ChipLocation(
+                         location.getX() % machineDimensions.width,
+                         location.getY());
+            }
         } else {
-            return location.asChipLocation();
+            if (version.verticalWrap) {
+                return new ChipLocation(
+                         location.getX(),
+                         location.getY() % machineDimensions.height);
+            } else {
+                return location.asChipLocation();
+            }
         }
     }
 

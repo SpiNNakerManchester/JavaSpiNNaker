@@ -4,9 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
 
-import javax.xml.ws.Holder;
-
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 abstract class SupportUtils {
 	private SupportUtils() {
@@ -24,14 +23,14 @@ abstract class SupportUtils {
 	static Thread backgroundAccept(MockServer s) throws Exception {
 		OneShotEvent started = new OneShotEvent();
 		Thread main = Thread.currentThread();
-		Holder<Exception> problem = new Holder<>();
+		ValueHolder<Exception> problem = new ValueHolder<>();
 		Thread t = new Thread(() -> {
 			try {
 				s.listen();
 				started.fire();
 				s.connect();
 			} catch (Exception e) {
-				problem.value = e;
+				problem.setValue(e);
 				main.interrupt();
 			}
 		});
@@ -39,8 +38,8 @@ abstract class SupportUtils {
 		try {
 			started.await();
 		} catch (InterruptedException e) {
-			if (problem.value != null) {
-				throw problem.value;
+			if (problem.getValue() != null) {
+				throw problem.getValue();
 			}
 			throw e;
 		}

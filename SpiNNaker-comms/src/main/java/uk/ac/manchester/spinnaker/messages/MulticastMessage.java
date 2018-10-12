@@ -8,7 +8,7 @@ public class MulticastMessage {
 	/** The key of the packet. */
 	public final int key;
 	/**
-	 * The payload of the packet if there is one, or <tt>null</tt> otherwise.
+	 * The payload of the packet if there is one, or {@code null} otherwise.
 	 */
 	public final Integer payload;
 

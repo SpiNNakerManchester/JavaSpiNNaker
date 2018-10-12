@@ -62,6 +62,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
+	private static final int THROTTLED = 3;
+
 	/**
 	 * @param connectionSelector
 	 *            How to talk to the machine.
@@ -74,10 +76,10 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param ignoreLinksMap
 	 *            The link blacklist.
 	 * @param maxCoreID
-	 *            The maximum core ID, or <tt>null</tt> for the system's
+	 *            The maximum core ID, or {@code null} for the system's
 	 *            standard limit. For debugging.
 	 * @param maxSDRAMSize
-	 *            The maximum SDRAM size, or <tt>null</tt> for the system's
+	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
 	 */
     public GetMachineProcess(
@@ -86,7 +88,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
             Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
             Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
             Integer maxCoreID, Integer maxSDRAMSize) {
-        super(connectionSelector);
+		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+				THROTTLED, THROTTLED - 1);
         this.ignoreChips = def(ignoreChips);
         this.ignoreCoresMap = def(ignoreCoresMap);
         this.ignoreLinksMap = def(ignoreLinksMap);

@@ -242,7 +242,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		public final EIEIOType eieioType;
 		/** The tag on the message. */
 		public final byte tag;
-		/** The prefix on the message, or <tt>null</tt> for no prefix. */
+		/** The prefix on the message, or {@code null} for no prefix. */
 		public final Short prefix;
 		/** How to apply the prefix. */
 		public final EIEIOPrefix prefixType;

@@ -51,7 +51,7 @@ public interface SpallocJobAPI {
 	 * @param powerOn
 	 *            true to power on the boards, false to power off. If the boards
 	 *            are already turned on, setting power to true will reset them.
-	 *            If <tt>null</tt>, this method does nothing.
+	 *            If {@code null}, this method does nothing.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -98,7 +98,7 @@ public interface SpallocJobAPI {
 	Boolean getPower() throws IOException, SpallocServerException;
 
 	/**
-	 * @return The reason for destruction of the job, or <tt>null</tt> if there
+	 * @return The reason for destruction of the job, or {@code null} if there
 	 *         is no reason (perhaps because the job isn't destroyed). Note that
 	 *         you should use {@link #getState()} to determine if the job is
 	 *         destroyed, not this method.

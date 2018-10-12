@@ -48,7 +48,7 @@ public abstract class Utils {
 	}
 
 	/**
-	 * Get the address of the <tt>vcpu_t</tt> structure for the given core.
+	 * Get the address of the {@code vcpu_t} structure for the given core.
 	 *
 	 * @param p
 	 *            The core number
@@ -59,7 +59,7 @@ public abstract class Utils {
 	}
 
 	/**
-	 * Get the address of the <tt>vcpu_t</tt> structure for the given core.
+	 * Get the address of the {@code vcpu_t} structure for the given core.
 	 *
 	 * @param core
 	 *            The core

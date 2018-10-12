@@ -27,15 +27,15 @@ public abstract class SCPRequest<T extends SCPResponse>
 	static final CoreLocation DEFAULT_MONITOR_CORE =
 			new CoreLocation(DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
 
-	/** The first argument, or <tt>null</tt> if no first argument. */
+	/** The first argument, or {@code null} if no first argument. */
 	public final Integer argument1;
-	/** The second argument, or <tt>null</tt> if no second argument. */
+	/** The second argument, or {@code null} if no second argument. */
 	public final Integer argument2;
-	/** The third argument, or <tt>null</tt> if no third argument. */
+	/** The third argument, or {@code null} if no third argument. */
 	public final Integer argument3;
-	/** The data, or <tt>null</tt> if no data this way. */
+	/** The data, or {@code null} if no data this way. */
 	public final byte[] data;
-	/** The data as a buffer, or <tt>null</tt> if no data this way. */
+	/** The data as a buffer, or {@code null} if no data this way. */
 	public final ByteBuffer dataBuffer;
 	/** The SCP request header of the message. */
 	public final SCPRequestHeader scpRequestHeader;

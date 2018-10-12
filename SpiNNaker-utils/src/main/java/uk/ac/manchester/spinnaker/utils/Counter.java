@@ -4,7 +4,7 @@
 package uk.ac.manchester.spinnaker.utils;
 
 /**
- * Thin wrapper around an <tt>int</tt> for counting.
+ * Thin wrapper around an {@code int} for counting.
  * <p>
  * This allows the object to be final and therefore passed into inner classes.
  * <p>

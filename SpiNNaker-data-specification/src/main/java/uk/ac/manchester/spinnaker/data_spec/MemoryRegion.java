@@ -104,7 +104,8 @@ public class MemoryRegion {
 	public int getRegionBase() {
 		return regionBaseAddress;
 	}
- 	/**
+
+	/**
 	 * Set the address of the first byte in the region.
 	 *
 	 * @param address
