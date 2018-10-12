@@ -36,7 +36,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
@@ -505,7 +504,6 @@ public class TransceiverITCase {
 	}
 
 	@Test
-	@Disabled("known bug: JavaSpiNNaker#43")
 	void testReliableMachine() throws Exception {
 		board_config.set_up_remote_board();
         Inet4Address host = InetFactory.getByName(board_config.remotehost);
