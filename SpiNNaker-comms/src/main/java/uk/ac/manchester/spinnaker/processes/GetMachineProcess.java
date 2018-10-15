@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.processes;
 
 import static java.lang.Math.min;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
@@ -89,7 +90,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
             Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
             Integer maxCoreID, Integer maxSDRAMSize) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
-				THROTTLED, THROTTLED - 1);
+				THROTTLED, THROTTLED / 2);
         this.ignoreChips = def(ignoreChips);
         this.ignoreCoresMap = def(ignoreCoresMap);
         this.ignoreLinksMap = def(ignoreLinksMap);
@@ -115,18 +116,19 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	public Machine getMachineDetails(HasChipLocation bootChip,
 			MachineDimensions size) throws IOException, Exception {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		List<ByteBuffer> p2pColumnData = new ArrayList<>();
+		ByteBuffer[] p2pColumnData = new ByteBuffer[size.width];
+		int columnChunkSize = getNumColumnBytes(size.height);
 		for (int column = 0; column < size.width; column++) {
+			int col = column;
 			sendRequest(
 					new ReadMemory(bootChip,
-							ROUTER_REGISTER_P2P_ADDRESS
-									+ getColumnOffset(column),
-							getNumColumnBytes(size.height)),
-					response -> p2pColumnData.add(response.data));
+							ROUTER_REGISTER_P2P_ADDRESS + getColumnOffset(col),
+							columnChunkSize),
+					response -> p2pColumnData[col] = response.data);
 		}
 		finish();
 		checkForError();
-		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
+		P2PTable p2pTable = new P2PTable(size, asList(p2pColumnData));
 
 		// Get the chip information for each chip
 		for (ChipLocation chip : p2pTable.getChips()) {
