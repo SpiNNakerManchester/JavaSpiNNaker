@@ -76,7 +76,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public MessageReceiver<SDPMessage> getReceiver() {
-		return () -> new SDPMessage(receive());
+	public SDPMessage receiveMessage(Integer timeout) throws IOException {
+		return new SDPMessage(receive(timeout));
 	}
 }

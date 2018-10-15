@@ -170,7 +170,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		header.addToBuffer(buffer);
-		buffer.put(elements.array(), 0, elements.position());
+		ByteBuffer b = elements.duplicate();
+		b.flip();
+		buffer.put(b);
 	}
 
 	@Override

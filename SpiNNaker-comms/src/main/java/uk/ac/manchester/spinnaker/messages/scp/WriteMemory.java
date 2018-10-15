@@ -16,32 +16,6 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 * @param baseAddress
 	 *            The positive base address to start the read from
 	 * @param data
-	 *            Between 1 and 256 bytes to write
-	 */
-	public WriteMemory(HasCoreLocation core, int baseAddress, byte[] data) {
-		super(core, CMD_WRITE, baseAddress, data.length,
-				efficientTransferUnit(baseAddress, data.length).value, data);
-	}
-
-	/**
-	 * @param chip
-	 *            the chip to write via
-	 * @param baseAddress
-	 *            The positive base address to start the read from
-	 * @param data
-	 *            Between 1 and 256 bytes to write
-	 */
-	public WriteMemory(HasChipLocation chip, int baseAddress, byte[] data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress, data.length,
-				efficientTransferUnit(baseAddress, data.length).value, data);
-	}
-
-	/**
-	 * @param core
-	 *            the core to write via
-	 * @param baseAddress
-	 *            The positive base address to start the read from
-	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts.
 	 */

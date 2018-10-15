@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
+
 /**
  * A connection that detects any UDP packet that is transmitted by SpiNNaker
  * boards prior to boot.
  */
-public class IPAddressConnection extends UDPConnection<InetAddress> {
+public class IPAddressConnection extends UDPConnection<InetAddress>
+		implements MessageReceiver<InetAddress> {
 	/** Matches SPINN_PORT in spinnaker_bootROM. */
 	private static final int BOOTROM_SPINN_PORT = 54321;
 
@@ -30,8 +33,9 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	/**
 	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
-	public final InetAddress receiveIPAddress() {
-		return receiveIPAddress(null);
+	@Override
+	public final InetAddress receiveMessage() {
+		return receiveMessage(null);
 	}
 
 	/**
@@ -39,7 +43,8 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	 *            How long to wait for an IP address; {@code null} for forever.
 	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
-	public InetAddress receiveIPAddress(Integer timeout) {
+	@Override
+	public InetAddress receiveMessage(Integer timeout) {
 		try {
 			DatagramPacket packet = receiveWithAddress(timeout);
 			if (packet.getPort() == BOOTROM_SPINN_PORT) {
@@ -49,10 +54,5 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 			// Do nothing
 		}
 		return null;
-	}
-
-	@Override
-	public MessageReceiver<InetAddress> getReceiver() {
-		return this::receiveIPAddress;
 	}
 }
