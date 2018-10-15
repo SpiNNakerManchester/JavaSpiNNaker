@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -106,6 +108,20 @@ public class TestMockClient {
                     assertEquals(MockConnectedClient.MOCK_ID, jobId);
                 }
                 client.notifyJob(jobId, true, timeout);
+                JobState state = client.getJobState(jobId, timeout);
+                int retries = 0;
+                while (client.isActual() && state.getState() == State.QUEUED ) {
+                    retries += 1;
+                    if (retries > 0) {
+                        client.destroyJob(jobId, "Too long to wait in unittests");
+                        assumeTrue(false,
+                            () -> "Spalloc busy ski[ping test");
+                    }
+                    sleep(1000);
+                    state = client.getJobState(jobId, timeout);
+                }
+                assertEquals(State.POWER, state.getState());
+                assertTrue(state.getPower());
                 JobMachineInfo machineInfo = client.getJobMachineInfo(jobId, timeout);
                 String machineName = machineInfo.getMachineName();
                 if (client.isActual()) {
@@ -120,9 +136,6 @@ public class TestMockClient {
                 } else {
                     assertEquals("10.11.223.33", hostName);
                 }
-                JobState state = client.getJobState(jobId, timeout);
-                assertEquals(State.POWER, state.getState());
-                assertTrue(state.getPower());
                 if (client.isActual()) {
                     client.jobKeepAlive(jobId, timeout);
                     client.powerOffJobBoards(jobId, timeout);
