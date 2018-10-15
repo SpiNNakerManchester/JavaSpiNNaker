@@ -63,7 +63,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		return min(value, limit);
 	}
 
-	private static final int THROTTLED = 8;
+	private static final int THROTTLED = 3;
 
 	/**
 	 * @param connectionSelector
