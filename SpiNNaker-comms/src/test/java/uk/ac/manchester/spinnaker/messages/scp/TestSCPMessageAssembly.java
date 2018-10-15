@@ -20,27 +20,27 @@ class TestSCPMessageAssembly {
 	@Test
 	void testCreateNewVerSCPPacket() {
         GetVersion scp = new GetVersion(ZERO_CORE);
-        assertNull(scp.argument1);
-        assertNull(scp.argument2);
-        assertNull(scp.argument3);
+        assertEquals(0, scp.argument1);
+        assertEquals(0, scp.argument2);
+        assertEquals(0, scp.argument3);
         assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewLinkSCPPacket() {
         ReadLink scp = new ReadLink(ZERO_CORE, 0, 0, 252);
-        assertEquals(0, (int) scp.argument1);
-        assertEquals(252, (int) scp.argument2);
-        assertEquals(0, (int) scp.argument3);
+        assertEquals(0, scp.argument1);
+        assertEquals(252, scp.argument2);
+        assertEquals(0, scp.argument3);
         assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewMemorySCPPacket() {
         ReadMemory scp = new ReadMemory(ZERO_CORE, 0, 252);
-        assertEquals(0, (int) scp.argument1);
-        assertEquals(252, (int) scp.argument2);
-        assertEquals(2, (int) scp.argument3);
+        assertEquals(0, scp.argument1);
+        assertEquals(252, scp.argument2);
+        assertEquals(2, scp.argument3);
         assertNull(scp.data);
 	}
 }

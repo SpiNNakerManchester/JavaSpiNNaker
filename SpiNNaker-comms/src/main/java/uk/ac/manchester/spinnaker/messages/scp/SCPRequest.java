@@ -1,9 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
-
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -27,20 +23,22 @@ public abstract class SCPRequest<T extends SCPResponse>
 	static final CoreLocation DEFAULT_MONITOR_CORE =
 			new CoreLocation(DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
 
-	/** The first argument, or {@code null} if no first argument. */
-	public final Integer argument1;
-	/** The second argument, or {@code null} if no second argument. */
-	public final Integer argument2;
-	/** The third argument, or {@code null} if no third argument. */
-	public final Integer argument3;
-	/** The data, or {@code null} if no data this way. */
-	public final byte[] data;
-	/** The data as a buffer, or {@code null} if no data this way. */
-	public final ByteBuffer dataBuffer;
+	/** The first argument. */
+	public final int argument1;
+	/** The second argument. */
+	public final int argument2;
+	/** The third argument. */
+	public final int argument3;
+	/** The payload data as a buffer, or {@code null} if no payload data. */
+	public final ByteBuffer data;
 	/** The SCP request header of the message. */
 	public final SCPRequestHeader scpRequestHeader;
 
-	private static final byte[] NO_DATA = null;
+	/**
+	 * The constant value used to indicate that no payload data is in the
+	 * message.
+	 */
+	protected static final ByteBuffer NO_DATA = null;
 
 	/**
 	 * Create a new request that goes to the default port and needs a reply.
@@ -51,8 +49,40 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The command ID.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
-				null, null, NO_DATA);
+		this(new SCPSDPHeader(core), command, 0, 0, 0, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			int argument1) {
+		this(new SCPSDPHeader(core), command, argument1, 0, 0, NO_DATA);
+	}
+
+	/**
+	 * Create a new request that goes to the default port and needs a reply.
+	 *
+	 * @param core
+	 *            The core to send the request to.
+	 * @param command
+	 *            The command ID.
+	 * @param argument1
+	 *            The first argument.
+	 * @param argument2
+	 *            The second argument.
+	 */
+	protected SCPRequest(HasCoreLocation core, SCPCommand command,
+			int argument1, int argument2) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, 0,
+				NO_DATA);
 	}
 
 	/**
@@ -70,65 +100,9 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The third argument.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
-				argument1, argument2, argument3, NO_DATA);
-	}
-
-	/**
-	 * Create a new request that goes to the default port and needs a reply.
-	 *
-	 * @param core
-	 *            The core to send the request to.
-	 * @param command
-	 *            The command ID.
-	 * @param data
-	 *            The additional data.
-	 */
-	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			byte[] data) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
-				null, null, data);
-	}
-
-	/**
-	 * Create a new request that goes to the default port and needs a reply.
-	 *
-	 * @param core
-	 *            The core to send the request to.
-	 * @param command
-	 *            The command ID.
-	 * @param data
-	 *            The additional data. Starts at the <i>position</i> and goes to
-	 *            the <i>limit</i>.
-	 */
-	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			ByteBuffer data) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command, null,
-				null, null, data);
-	}
-
-	/**
-	 * Create a new request that goes to the default port and needs a reply.
-	 *
-	 * @param core
-	 *            The core to send the request to.
-	 * @param command
-	 *            The command ID.
-	 * @param argument1
-	 *            The first argument.
-	 * @param argument2
-	 *            The second argument.
-	 * @param argument3
-	 *            The third argument.
-	 * @param data
-	 *            The additional data.
-	 */
-	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			byte[] data) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
-				argument1, argument2, argument3, data);
+			int argument1, int argument2, int argument3) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
+				NO_DATA);
 	}
 
 	/**
@@ -149,22 +123,9 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            the <i>limit</i>.
 	 */
 	protected SCPRequest(HasCoreLocation core, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			ByteBuffer data) {
-		this(new SDPHeader(REPLY_EXPECTED, core, DEFAULT_PORT), command,
-				argument1, argument2, argument3, data);
-	}
-
-	/**
-	 * Create a new request.
-	 *
-	 * @param sdpHeader
-	 *            The header.
-	 * @param command
-	 *            The command ID.
-	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command) {
-		this(sdpHeader, command, null, null, null, NO_DATA);
+			int argument1, int argument2, int argument3, ByteBuffer data) {
+		this(new SCPSDPHeader(core), command, argument1, argument2, argument3,
+				data);
 	}
 
 	/**
@@ -180,111 +141,29 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The second argument.
 	 * @param argument3
 	 *            The third argument.
-	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3) {
-		this(sdpHeader, command, argument1, argument2, argument3, NO_DATA);
-	}
-
-	/**
-	 * Create a new request.
-	 *
-	 * @param sdpHeader
-	 *            The header.
-	 * @param command
-	 *            The command ID.
-	 * @param data
-	 *            The additional data.
-	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, byte[] data) {
-		this(sdpHeader, command, null, null, null, data);
-	}
-
-	/**
-	 * Create a new request.
-	 *
-	 * @param sdpHeader
-	 *            The header.
-	 * @param command
-	 *            The command ID.
 	 * @param data
 	 *            The additional data. Starts at the <i>position</i> and goes to
 	 *            the <i>limit</i>.
 	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
-			ByteBuffer data) {
-		this(sdpHeader, command, null, null, null, data);
-	}
-
-	/**
-	 * Create a new request.
-	 *
-	 * @param sdpHeader
-	 *            The header.
-	 * @param command
-	 *            The command ID.
-	 * @param argument1
-	 *            The first argument.
-	 * @param argument2
-	 *            The second argument.
-	 * @param argument3
-	 *            The third argument.
-	 * @param data
-	 *            The additional data.
-	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			byte[] data) {
+	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, int argument1,
+			int argument2, int argument3, ByteBuffer data) {
 		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;
 		this.argument2 = argument2;
 		this.argument3 = argument3;
-		this.data = (data == NO_DATA || data.length == 0) ? null : data;
-		this.dataBuffer = null;
-	}
-
-	/**
-	 * Create a new request.
-	 *
-	 * @param sdpHeader
-	 *            The header.
-	 * @param command
-	 *            The command ID.
-	 * @param argument1
-	 *            The first argument.
-	 * @param argument2
-	 *            The second argument.
-	 * @param argument3
-	 *            The third argument.
-	 * @param data
-	 *            The additional data. Starts at the <i>position</i> and goes to
-	 *            the <i>limit</i>.
-	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command,
-			Integer argument1, Integer argument2, Integer argument3,
-			ByteBuffer data) {
-		super(sdpHeader);
-		this.scpRequestHeader = new SCPRequestHeader(command);
-		this.argument1 = argument1;
-		this.argument2 = argument2;
-		this.argument3 = argument3;
-		this.data = null;
-		this.dataBuffer = data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.data = data;
 	}
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		sdpHeader.addToBuffer(buffer);
 		scpRequestHeader.addToBuffer(buffer);
-		buffer.putInt(argument1 == null ? 0 : argument1);
-		buffer.putInt(argument2 == null ? 0 : argument2);
-		buffer.putInt(argument3 == null ? 0 : argument3);
-		if (data != null) {
-			buffer.put(data);
-		} else if (dataBuffer != null) {
-			buffer.put(dataBuffer.array(), dataBuffer.position(),
-					dataBuffer.remaining());
+		buffer.putInt(argument1);
+		buffer.putInt(argument2);
+		buffer.putInt(argument3);
+		if (data != NO_DATA) {
+			buffer.put(data.duplicate());
 		}
 	}
 

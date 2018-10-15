@@ -28,7 +28,7 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	 *            Whether the size should be included in the response
 	 */
 	public GetChipInfo(HasChipLocation chip, boolean withSize) {
-		super(chip.getScampCore(), CMD_INFO, argument1(withSize), null, null);
+		super(chip.getScampCore(), CMD_INFO, argument1(withSize));
 	}
 
 	private static int argument1(boolean withSize) {

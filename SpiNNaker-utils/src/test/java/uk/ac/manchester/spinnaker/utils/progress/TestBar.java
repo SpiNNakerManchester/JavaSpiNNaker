@@ -51,7 +51,7 @@ public class TestBar {
         assertThrows(IllegalStateException.class, () -> {
             pb.update();
         });
-
+        pb.close();
     }
 
     @Test
@@ -104,6 +104,7 @@ public class TestBar {
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);
         assertEquals(DASHES, lines[2]);
+        pb.close();
     }
 
     @Test

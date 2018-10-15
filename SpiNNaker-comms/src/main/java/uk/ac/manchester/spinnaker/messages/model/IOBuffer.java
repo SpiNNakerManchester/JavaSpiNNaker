@@ -50,7 +50,7 @@ public class IOBuffer implements HasCoreLocation {
 		this.core = core;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (ByteBuffer b : contents) {
-			baos.write(b.array(), 0, b.limit());
+			baos.write(b.array(), 0, b.limit()); // FIXME
 		}
 		iobuf = baos.toByteArray();
 	}

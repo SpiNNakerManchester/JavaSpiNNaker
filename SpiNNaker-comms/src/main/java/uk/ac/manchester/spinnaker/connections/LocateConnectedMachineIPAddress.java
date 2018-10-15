@@ -33,7 +33,7 @@ public abstract class LocateConnectedMachineIPAddress {
 		try (IPAddressConnection connection = new IPAddressConnection()) {
 			Set<InetAddress> seenBoards = new HashSet<>();
 			while (true) {
-				InetAddress ipAddress = connection.receiveIPAddress();
+				InetAddress ipAddress = connection.receiveMessage();
 				Calendar now = Calendar.getInstance();
 				if (ipAddress != null && !seenBoards.contains(ipAddress)) {
 					seenBoards.add(ipAddress);

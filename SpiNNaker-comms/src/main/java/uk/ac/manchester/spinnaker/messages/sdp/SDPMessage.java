@@ -6,9 +6,7 @@ import java.nio.ByteBuffer;
 
 /** Wraps up an SDP message with a header and optional data. */
 public class SDPMessage extends SpinnakerRequest {
-	private byte[] data;
-	private int offset;
-	private int length;
+	private final ByteBuffer databuf;
 
 	/**
 	 * Create an SDP message with no payload.
@@ -60,9 +58,11 @@ public class SDPMessage extends SpinnakerRequest {
 	 */
 	public SDPMessage(SDPHeader header, byte[] data, int offset, int length) {
 		super(header);
-		this.data = data;
-		this.offset = offset;
-		this.length = length;
+		if (data == null) {
+			databuf = null;
+		} else {
+			databuf = ByteBuffer.wrap(data, offset, length);
+		}
 	}
 
 	/**
@@ -75,7 +75,12 @@ public class SDPMessage extends SpinnakerRequest {
 	 *            the <i>limit</i>.
 	 */
 	public SDPMessage(SDPHeader header, ByteBuffer data) {
-		this(header, data.array(), data.position(), data.remaining());
+		super(header);
+		if (data == null) {
+			databuf = null;
+		} else {
+			databuf = data.duplicate();
+		}
 	}
 
 	/**
@@ -86,16 +91,14 @@ public class SDPMessage extends SpinnakerRequest {
 	 */
 	public SDPMessage(ByteBuffer buffer) {
 		super(new SDPHeader(buffer));
-		data = buffer.array();
-		offset = buffer.position();
-		length = buffer.remaining();
+		databuf = buffer.duplicate();
 	}
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		sdpHeader.addToBuffer(buffer);
-		if (data != null) {
-			buffer.put(data, offset, length);
+		if (databuf != null) {
+			buffer.put(databuf);
 		}
 	}
 
@@ -104,12 +107,11 @@ public class SDPMessage extends SpinnakerRequest {
 	 */
 	public final ByteBuffer getData() {
 		ByteBuffer buffer;
-		if (data == null) {
-			buffer = ByteBuffer.allocate(0);
+		if (databuf != null) {
+			buffer = databuf;
 		} else {
-			buffer = ByteBuffer.wrap(data, offset, length);
+			buffer = ByteBuffer.allocate(0);
 		}
-		buffer.position(0);
 		return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 }

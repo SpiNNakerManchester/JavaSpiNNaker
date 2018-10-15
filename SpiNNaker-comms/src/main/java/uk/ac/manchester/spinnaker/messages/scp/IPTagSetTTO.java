@@ -20,7 +20,7 @@ public class IPTagSetTTO extends SCPRequest<IPTagGetInfo.Response> {
 	 */
 	public IPTagSetTTO(HasChipLocation chip, IPTagTimeOutWaitTime tagTimeout) {
 		super(chip.getScampCore(), CMD_IPTAG, TTO.value << COMMAND_FIELD,
-				tagTimeout.value, null);
+				tagTimeout.value);
 	}
 
 	@Override

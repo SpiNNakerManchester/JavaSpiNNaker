@@ -32,12 +32,12 @@ class ReliabilityITCase {
 
 	@Test
 	void testReliableMachine() throws Exception {
-		board_config.set_up_remote_board();
-        Inet4Address host = InetFactory.getByName(board_config.remotehost);
+		board_config.setUpRemoteBoard();
+        Inet4Address host = board_config.remotehost;
 
         ArrayList<Machine> l = new ArrayList<>();
         for (int i = 0 ; i < REPETITIONS ; i++) {
-        	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
+        	try (Transceiver txrx = new Transceiver(host, 5)) {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
         		txrx.getScampVersion();
