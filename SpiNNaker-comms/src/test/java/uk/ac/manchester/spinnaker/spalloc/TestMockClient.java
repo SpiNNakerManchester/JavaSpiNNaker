@@ -14,6 +14,8 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -38,8 +40,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  */
 public class TestMockClient {
 
-        static int timeout = 1000;
-        static MockConnectedClient client = new MockConnectedClient(timeout);
+    static int timeout = 1000;
+    static MockConnectedClient client = new MockConnectedClient(timeout);
+    private static final Logger log = getLogger(TestMockClient.class);
 
         @Test
         void testListJobs() throws IOException, SpallocServerException, Exception {
@@ -48,6 +51,7 @@ public class TestMockClient {
                 if (client.isActual()) {
                     // Don't know the jobids currently on the machine if any
                     jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(), greaterThan(0)));
+                    jobs.forEach(j -> System.out.println(j));
                 } else {
                     int[] expectedIDs = { 47224, 47444};
                     assertArrayEquals(expectedIDs,
@@ -56,7 +60,6 @@ public class TestMockClient {
             }
         }
 
-        @Test
         void testListMachines() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
                 List<Machine> machines = client.listMachines(timeout);
@@ -112,10 +115,11 @@ public class TestMockClient {
                 int retries = 0;
                 while (client.isActual() && state.getState() == State.QUEUED ) {
                     retries += 1;
-                    if (retries > 0) {
+                    if (retries > 2) {
+                        log.warn("Test Aborted as Spalloc busy");
                         client.destroyJob(jobId, "Too long to wait in unittests");
                         assumeTrue(false,
-                            () -> "Spalloc busy ski[ping test");
+                            () -> "Spalloc busy skipping test");
                     }
                     sleep(1000);
                     state = client.getJobState(jobId, timeout);
@@ -157,10 +161,11 @@ public class TestMockClient {
                 ChipLocation chip = new ChipLocation(1,1);
                 WhereIs whereis = client.whereIs(jobId, chip, timeout);
                 assertEquals(chip, whereis.getJobChip());
-                assertEquals(jobId, whereis.getJobId());
-                if (client.isActual()) {
-                    assertNotNull(whereis.getBoardChip());
+                    assertEquals(jobId, whereis.getJobId());
+                 if (client.isActual()) {
+                   assertNotNull(whereis.getBoardChip());
                 } else {
+                    assertEquals(MockConnectedClient.MOCK_ID, whereis.getJobId());
                     assertEquals(chip, whereis.getBoardChip());
                 }
                 client.destroyJob(jobId, "Test finished", timeout);
@@ -168,7 +173,7 @@ public class TestMockClient {
                 if (client.isActual()) {
                    assertEquals(State.DESTROYED, state.getState());
                 }
-             }
+            }
         }
 
         @Test
