@@ -60,6 +60,7 @@ public class TestMachineVersion {
         assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP,  MachineVersion.bySize(
                 new MachineDimensions(48, 16)));
         assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
             MachineVersion v  = MachineVersion.bySize(new MachineDimensions(13, 16));
         });
         assertThrows(IllegalArgumentException.class, () -> {

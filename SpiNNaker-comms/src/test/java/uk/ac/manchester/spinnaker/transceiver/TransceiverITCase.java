@@ -11,9 +11,16 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
+import static testconfig.Utils.printEnumCollection;
+import static testconfig.Utils.printWordAsBinary;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.FINISHED;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_0;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_1;
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destination.LINK_2;
@@ -21,32 +28,29 @@ import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.Destina
 import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.PacketType.POINT_TO_POINT;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.EXT_PP;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
+import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
 
 import java.io.File;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
 import testconfig.BoardTestConfiguration;
+import testconfig.Utils.Field;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -64,7 +68,6 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
  * Communications integration test.
@@ -74,100 +77,35 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  */
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);
- 	// TODO Stop printing to System.out
-	static BoardTestConfiguration board_config;
+	// TODO Stop printing to System.out
+	static BoardTestConfiguration boardConfig;
 	private static SpallocJob job;
 
-	static int n_cores = 20;
-	static List<ChipLocation> down_chips;
-	static CoreSubsets core_subsets;
-	static Map<ChipLocation, Collection<Integer>> down_cores;
+	static int numCores = 20;
+	static List<ChipLocation> downChips;
+	static CoreSubsets coreSubsets;
+	static Map<ChipLocation, Collection<Integer>> downCores;
 
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		board_config = new BoardTestConfiguration();
-		job = board_config.set_up_spalloced_board();
-		core_subsets = new CoreSubsets();
-		core_subsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
-		core_subsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
+		boardConfig = new BoardTestConfiguration();
+		job = boardConfig.setUpSpallocedBoard();
+		coreSubsets = new CoreSubsets();
+		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
+		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
-		down_cores = new HashMap<>();
-		down_cores.put(new ChipLocation(0, 0), singletonList(5));
+		downCores = new HashMap<>();
+		downCores.put(new ChipLocation(0, 0), singletonList(5));
 
-		down_chips = new ArrayList<>();
-		down_chips.add(new ChipLocation(0, 1));
+		downChips = new ArrayList<>();
+		downChips.add(new ChipLocation(0, 1));
 	}
 
 	@AfterAll
 	static void tearDownAtTheEnd() throws Exception {
 		job.destroy();
 		job.close();
-	}
-
-	void printEnums(String name, Collection<? extends Enum<?>> enum_list) {
-		StringBuilder sb = new StringBuilder(name).append(" ");
-		for (Enum<?> enum_value : enum_list) {
-			sb.append(enum_value.name()).append("; ");
-		}
-		System.out.println(sb.toString());
-	}
-
-	void printWordAsBinary(String name, int word, Field[] fields) {
-		int start = 0;
-		int end = 32;
-
-		Set<Integer> start_fields = new HashSet<>();
-		Set<Integer> end_fields = new HashSet<>();
-		for (Field field : fields) {
-			start_fields.add(field.from);
-			end_fields.add(field.to);
-		}
-
-		StringBuilder prefix = new StringBuilder(" ");
-		name.chars().forEachOrdered(c -> prefix.append(" "));
-		StringBuilder header1 = new StringBuilder(prefix);
-		StringBuilder header2 = new StringBuilder(prefix);
-		StringBuilder header3 = new StringBuilder(prefix);
-		StringBuilder mainline = new StringBuilder(name).append(" ");
-		boolean sep = false;
-		for (int i = start; i < end; i++) {
-			if (!sep && start_fields.contains(i)) {
-				header1.append("|");
-				header2.append("|");
-				header3.append("|");
-				mainline.append("|");
-			}
-			header1.append(i % 10 == 0 ? i / 10 : " ");
-			header2.append(i % 10);
-			header3.append("=");
-			mainline.append((word >>> i) & 0x1);
-			sep = end_fields.contains(i);
-			if (sep) {
-				header1.append("|");
-				header2.append("|");
-				header3.append("|");
-				mainline.append("|");
-			}
-		}
-		;
-		System.out.println(header1);
-		System.out.println(header2);
-		System.out.println(header3);
-		System.out.println(mainline);
-	}
-
-	private static class Field {
-		private int from, to;
-
-		Field(int value) {
-			from = to = value;
-		}
-
-		Field(int from, int to) {
-			this.from = from;
-			this.to = to;
-		}
 	}
 
 	private static final Field[] FILTER_FIELDS = new Field[] {
@@ -184,12 +122,14 @@ public class TransceiverITCase {
 				+ filter.getEnableInterruptOnCounterEvent());
 		System.out.println("Emergency Routing Status on Incoming: "
 				+ filter.getMatchEmergencyRoutingStatusToIncomingPacket());
-		printEnums("Destinations:", filter.getDestinations());
-		printEnums("Sources:", filter.getSources());
-		printEnums("Payloads:", filter.getPayloadStatuses());
-		printEnums("Default Routing:", filter.getDefaultRoutingStatuses());
-		printEnums("Emergency Routing:", filter.getEmergencyRoutingStatuses());
-		printEnums("Packet Types:", filter.getPacketTypes());
+		printEnumCollection("Destinations:", filter.getDestinations());
+		printEnumCollection("Sources:", filter.getSources());
+		printEnumCollection("Payloads:", filter.getPayloadStatuses());
+		printEnumCollection("Default Routing:",
+				filter.getDefaultRoutingStatuses());
+		printEnumCollection("Emergency Routing:",
+				filter.getEmergencyRoutingStatuses());
+		printEnumCollection("Packet Types:", filter.getPacketTypes());
 	}
 
 	private static class Section implements AutoCloseable {
@@ -218,160 +158,152 @@ public class TransceiverITCase {
 		}
 	}
 
-	private static final ChipLocation SCAMP = new ChipLocation(0, 0);
+	private static final ChipLocation SCAMP = ZERO_ZERO;
 	/** Where we like to read and write when testing. */
 	private static final int MEM = 0x70000000;
 
-	private void boardReady(Transceiver transceiver) throws Exception {
-		VersionInfo version_info = transceiver.ensureBoardIsReady();
-		System.out.println(version_info);
+	private void boardReady(Transceiver txrx) throws Exception {
+		VersionInfo versionInfo = txrx.ensureBoardIsReady();
+		System.out.println(versionInfo);
 	}
 
-	private void findConnections(Transceiver transceiver) throws Exception {
-		List<SCPConnection> connections =
-				transceiver.discoverScampConnections();
+	private void findConnections(Transceiver txrx) throws Exception {
+		List<SCPConnection> connections = txrx.discoverScampConnections();
 		System.out.println(connections);
 	}
 
-	private void retrieveDetails(Transceiver transceiver) throws Exception {
-		Machine machine = transceiver.getMachineDetails();
+	private void retrieveDetails(Transceiver txrx) throws Exception {
+		Machine machine = txrx.getMachineDetails();
 		System.out.println(machine);
 		System.out.println(machine.bootChip());
 	}
 
-	private void readWrite(Transceiver transceiver) throws Exception {
-		ByteBuffer write_data = allocate(1000);
-		while (write_data.hasRemaining()) {
-			write_data.put((byte) (random() * 256));
+	private void readWrite(Transceiver txrx) throws Exception {
+		ByteBuffer writeData = allocate(1000);
+		while (writeData.hasRemaining()) {
+			writeData.put((byte) (random() * 256));
 		}
-		write_data.flip();
-		transceiver.writeMemory(SCAMP, MEM, write_data);
-		ByteBuffer read_data = transceiver.readMemory(SCAMP, MEM, 1000);
-		assertArrayEquals(write_data.array(), read_data.array());
+		writeData.flip();
+		txrx.writeMemory(SCAMP, MEM, writeData);
+		ByteBuffer readData = txrx.readMemory(SCAMP, MEM, 1000);
+		assertArrayEquals(writeData.array(), readData.array());
 	}
 
-	private void floodWrite(Transceiver transceiver) throws Exception {
-		transceiver.writeMemoryFlood(MEM, 0x04050607);
-		ByteBuffer read_data =
-				transceiver.readMemory(new ChipLocation(1, 1), MEM, 4);
-		System.out.printf("%x\n", read_data.getInt());
+	private void floodWrite(Transceiver txrx) throws Exception {
+		txrx.writeMemoryFlood(MEM, 0x04050607);
+		ByteBuffer readData = txrx.readMemory(new ChipLocation(1, 1), MEM, 4);
+		System.out.printf("%x\n", readData.getInt());
 	}
 
-	private void execFlood(Transceiver transceiver, int app_id)
-			throws Exception {
-		transceiver.executeFlood(core_subsets, new File("hello.aplx"), app_id);
+	private void execFlood(Transceiver txrx, int appID) throws Exception {
+		txrx.executeFlood(coreSubsets, new File("hello.aplx"), appID);
 		int count = 0;
 		while (count < 20) {
-			count = transceiver.getCoreStateCount(app_id, CPUState.SYNC0);
+			count = txrx.getCoreStateCount(appID, CPUState.SYNC0);
 			System.out.printf("Cores in state SYNC0=%d\n", count);
 			sleep(100);
 		}
 	}
 
-	private static List<CPUInfo> getCPUInfo(Transceiver transceiver,
-			CoreSubsets cores) throws Exception {
-		List<CPUInfo> cpu_infos = new ArrayList<>();
-		transceiver.getCPUInformation(cores).forEach(cpu_infos::add);
-		sort(cpu_infos,
+	private static List<CPUInfo> getCPUInfo(Transceiver txrx, CoreSubsets cores)
+			throws Exception {
+		List<CPUInfo> cpuInfos = new ArrayList<>();
+		txrx.getCPUInformation(cores).forEach(cpuInfos::add);
+		sort(cpuInfos,
 				(o1, o2) -> o1.asCoreLocation().compareTo(o2.asCoreLocation()));
-		return cpu_infos;
+		return cpuInfos;
 	}
 
-	private void cpuInfo(Transceiver transceiver) throws Exception {
-		List<CPUInfo> cpu_infos = getCPUInfo(transceiver, core_subsets);
-		System.out.printf("%d CPUs\n", cpu_infos.size());
-		for (CPUInfo cpu_info : cpu_infos) {
-			System.out.println(cpu_info);
+	private void cpuInfo(Transceiver txrx) throws Exception {
+		List<CPUInfo> cpuInfos = getCPUInfo(txrx, coreSubsets);
+		System.out.printf("%d CPUs\n", cpuInfos.size());
+		for (CPUInfo cpuInfo : cpuInfos) {
+			System.out.println(cpuInfo.getStatusDescription());
 		}
 	}
 
-	private void sync(Transceiver transceiver, int app_id) throws Exception {
-		transceiver.sendSignal(app_id, Signal.SYNC0);
+	private void sync(Transceiver txrx, int appID) throws Exception {
+		txrx.sendSignal(appID, Signal.SYNC0);
 		int count = 0;
 		while (count < 20) {
-			count = transceiver.getCoreStateCount(app_id, CPUState.FINISHED);
+			count = txrx.getCoreStateCount(appID, FINISHED);
 			System.out.printf("Cores in state FINISHED=%d\n", count);
 			sleep(100);
 		}
 	}
 
-	private void iobufs(Transceiver transceiver) throws Exception {
-		for (IOBuffer iobuf : transceiver.getIobuf(core_subsets)) {
-			System.out.println(iobuf);
+	private void iobufs(Transceiver txrx) throws Exception {
+		for (IOBuffer iobuf : txrx.getIobuf(coreSubsets)) {
+			System.out.println(iobuf.getContentsString());
 		}
 	}
 
-	private void stop(Transceiver transceiver, int app_id) throws Exception {
-		transceiver.sendSignal(app_id, Signal.STOP);
+	private void stop(Transceiver txrx, int appID) throws Exception {
+		txrx.sendSignal(appID, STOP);
 		sleep(500);
-		List<CPUInfo> cpu_infos = getCPUInfo(transceiver, core_subsets);
-		System.out.printf("%d CPUs\n", cpu_infos.size());
-		for (CPUInfo cpu_info : cpu_infos) {
-			System.out.println(cpu_info);
+		List<CPUInfo> cpuInfos = getCPUInfo(txrx, coreSubsets);
+		System.out.printf("%d CPUs\n", cpuInfos.size());
+		for (CPUInfo cpuInfo : cpuInfos) {
+			System.out.println(cpuInfo);
 		}
 	}
 
-	private void iptags(Transceiver transceiver) throws Exception {
+	private void iptags(Transceiver txrx) throws Exception {
 		InetAddress localhost = getLocalHost();
 
-		transceiver.setIPTag(new IPTag(null, SCAMP, 1, localhost, 50000));
-		transceiver.setIPTag(new IPTag(null, SCAMP, 2, localhost, 60000, true));
-		transceiver.setReverseIPTag(
+		txrx.setIPTag(new IPTag(null, SCAMP, 1, localhost, 50000));
+		txrx.setIPTag(new IPTag(null, SCAMP, 2, localhost, 60000, true));
+		txrx.setReverseIPTag(
 				new ReverseIPTag(null, 3, 40000, new CoreLocation(0, 1, 2)));
-		for (Tag tag : transceiver.getTags()) {
+		for (Tag tag : txrx.getTags()) {
 			System.out.println(tag);
 		}
 
-		transceiver.clearIPTag(1);
-		transceiver.clearIPTag(2);
-		transceiver.clearIPTag(3);
-		for (Tag tag : transceiver.getTags()) {
+		txrx.clearIPTag(1);
+		txrx.clearIPTag(2);
+		txrx.clearIPTag(3);
+		for (Tag tag : txrx.getTags()) {
 			System.out.println(tag);
 		}
 	}
 
-	private void routes(Transceiver transceiver, int app_id) throws Exception {
+	private void routes(Transceiver txrx, int appID) throws Exception {
 		List<MulticastRoutingEntry> routes;
 
 		routes = singletonList(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
-				asList(1, 2, 3, 4, 5),
-                asList(Direction.EAST, Direction.NORTHEAST, Direction.NORTH),
-                false));
-		transceiver.loadMulticastRoutes(new ChipLocation(0, 0), routes, app_id);
+				asList(1, 2, 3, 4, 5), asList(EAST, NORTHEAST, NORTH), false));
+		txrx.loadMulticastRoutes(SCAMP, routes, appID);
 
-		routes = transceiver.getMulticastRoutes(new ChipLocation(0, 0), app_id);
+		routes = txrx.getMulticastRoutes(SCAMP, appID);
 		for (MulticastRoutingEntry route : routes) {
 			System.out.printf("Key=%x, Mask=%x, processors=%s, links=%s\n",
-					route.getKey(), route.getMask(),
-					route.getProcessorIDs(),
+					route.getKey(), route.getMask(), route.getProcessorIDs(),
 					route.getLinkIDs());
 		}
 
-		transceiver.clearMulticastRoutes(new ChipLocation(0, 0));
-		routes = transceiver.getMulticastRoutes(new ChipLocation(0, 0));
+		txrx.clearMulticastRoutes(SCAMP);
+		routes = txrx.getMulticastRoutes(SCAMP);
 		for (MulticastRoutingEntry route : routes) {
 			System.out.printf("Key=%x, Mask=%x, processors=%s, links=%s\n",
-					route.getKey(), route.getMask(),
-					route.getProcessorIDs(),
+					route.getKey(), route.getMask(), route.getProcessorIDs(),
 					route.getLinkIDs());
 		}
 	}
 
-	private void diagnostics(Transceiver transceiver) throws Exception {
+	private void diagnostics(Transceiver txrx) throws Exception {
 		// Set Router Diagnostic Filter
 		List<Destination> destinations = asList(LINK_0, LINK_1, LINK_2, LINK_5);
 		for (int i = 0; i < destinations.size(); i++) {
-			DiagnosticFilter current_filter = new DiagnosticFilter(false, true,
+			DiagnosticFilter filter = new DiagnosticFilter(false, true,
 					singletonList(destinations.get(i)), null, null, emptyList(),
 					emptyList(), singletonList(POINT_TO_POINT));
-			transceiver.setRouterDiagnosticFilter(SCAMP, i + 12,
-					current_filter);
+			txrx.setRouterDiagnosticFilter(SCAMP, i + 12, filter);
 		}
 
 		// Clear Router Diagnostics
-		transceiver.clearRouterDiagnosticCounters(SCAMP,
+		txrx.clearRouterDiagnosticCounters(SCAMP,
 				asList(LOC_PP.ordinal(), EXT_PP.ordinal()));
-		RouterDiagnostics diagnostics = transceiver.getRouterDiagnostics(SCAMP);
+		RouterDiagnostics diagnostics = txrx.getRouterDiagnostics(SCAMP);
 		for (RouterRegister register : RouterDiagnostics.RouterRegister
 				.values()) {
 			System.out.printf("%s: %x\n", register.name(),
@@ -379,21 +311,21 @@ public class TransceiverITCase {
 		}
 
 		// Send read requests
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(1, 0), MEM, 4), null);
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(1, 1), MEM, 4), null);
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(1, 1), MEM, 4), null);
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(0, 1), MEM, 4), null);
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(0, 1), MEM, 4), null);
-		transceiver.sendSCPMessage(
-				new ReadMemory(new ChipLocation(0, 1), MEM, 4), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(1, 0), MEM, WORD_SIZE), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(1, 1), MEM, WORD_SIZE), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(1, 1), MEM, WORD_SIZE), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(0, 1), MEM, WORD_SIZE), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(0, 1), MEM, WORD_SIZE), null);
+		txrx.sendSCPMessage(
+				new ReadMemory(new ChipLocation(0, 1), MEM, WORD_SIZE), null);
 
 		// Get Router Diagnostics
-		diagnostics = transceiver.getRouterDiagnostics(SCAMP);
+		diagnostics = txrx.getRouterDiagnostics(SCAMP);
 		for (RouterRegister register : RouterDiagnostics.RouterRegister
 				.values()) {
 			System.out.printf("%s: %x\n", register.name(),
@@ -403,54 +335,42 @@ public class TransceiverITCase {
 		// Get Router Diagnostic Filters
 		for (int i = 0; i < 16; i++) {
 			System.out.println("Filter " + i + ":");
-			printFilter(transceiver.getRouterDiagnosticFilter(SCAMP, i));
+			printFilter(txrx.getRouterDiagnosticFilter(SCAMP, i));
 			System.out.println();
 		}
 	}
 
-	private void heap(Transceiver transceiver) throws Exception {
-		for (HeapElement heap_element : transceiver.getHeap(SCAMP)) {
-			System.out.println(heap_element);
+	private void heap(Transceiver txrx) throws Exception {
+		for (HeapElement heapElement : txrx.getHeap(SCAMP)) {
+			System.out.println(heapElement);
 		}
 	}
 
 	//@Test
 	public void testTransceiver() throws Exception {
-        InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (Transceiver transceiver = Transceiver.createTransceiver(
-				remoteHost, board_config.board_version,
-				board_config.bmp_names, null, down_chips, down_cores, null,
-				null, board_config.auto_detect_bmp, null, null, null)) {
+		try (Transceiver txrx =
+				new Transceiver(boardConfig.remotehost, boardConfig.boardVersion,
+						boardConfig.bmpNames, null, downChips, downCores, null,
+						null, boardConfig.autoDetectBMP, null, null, null)) {
 
-			section("Version Information", () -> boardReady(transceiver));
+			section("Version Information", () -> boardReady(txrx));
 
-			int app_id = transceiver.getAppIdTracker().allocateNewID();
+			int appID = txrx.getAppIdTracker().allocateNewID();
 
 			section("Discovering other connections to the machine",
-					() -> findConnections(transceiver));
-
-			section("Machine Details", () -> retrieveDetails(transceiver));
-
-			section("Memory Write and Read", () -> readWrite(transceiver));
-
-			section("Flood Memory Write", () -> floodWrite(transceiver));
-
-			section("Execute Flood", () -> execFlood(transceiver, app_id));
-
-			section("CPU Information", () -> cpuInfo(transceiver));
-
-			section("Send SYNC0", () -> sync(transceiver, app_id));
-
-			section("Get IOBufs", () -> iobufs(transceiver));
-
-			section("Stop Application", () -> stop(transceiver, app_id));
-
-			section("Create and Clear IP Tags", () -> iptags(transceiver));
-
-			section("Load and Clear Routes", () -> routes(transceiver, app_id));
-
+					() -> findConnections(txrx));
+			section("Machine Details", () -> retrieveDetails(txrx));
+			section("Memory Write and Read", () -> readWrite(txrx));
+			section("Flood Memory Write", () -> floodWrite(txrx));
+			section("Execute Flood", () -> execFlood(txrx, appID));
+			section("CPU Information", () -> cpuInfo(txrx));
+			section("Send SYNC0", () -> sync(txrx, appID));
+			section("Get IOBufs", () -> iobufs(txrx));
+			section("Stop Application", () -> stop(txrx, appID));
+			section("Create and Clear IP Tags", () -> iptags(txrx));
+			section("Load and Clear Routes", () -> routes(txrx, appID));
 			section("Router Diagnostic Filter Testing",
-					() -> diagnostics(transceiver));
+					() -> diagnostics(txrx));
 
 			/*
 			 * 8-byte numbers have to be converted into bytebuffers to be
@@ -462,67 +382,39 @@ public class TransceiverITCase {
 			longData.putLong(longVal).flip();
 
 			section("Test reading/writing blobs", () -> {
-				transceiver.writeMemory(SCAMP, MEM, longData);
-				assertEquals(longVal,
-						transceiver.readMemory(SCAMP, MEM, 8).getLong());
-				transceiver.writeMemory(SCAMP, MEM, intVal);
+				txrx.writeMemory(SCAMP, MEM, longData);
+				assertEquals(longVal, txrx.readMemory(SCAMP, MEM, 8).getLong());
+				txrx.writeMemory(SCAMP, MEM, intVal);
 				assertEquals(intVal,
-						transceiver.readMemory(SCAMP, MEM, 4).getInt());
+						txrx.readMemory(SCAMP, MEM, WORD_SIZE).getInt());
 			});
 
 			section("Test reading/writing blobs to neighbours", () -> {
-				transceiver.writeNeighbourMemory(SCAMP, 0, MEM, longData);
-				assertEquals(longVal, transceiver
-						.readNeighbourMemory(SCAMP, 0, MEM, 8).getLong());
-				transceiver.writeNeighbourMemory(SCAMP, 0, MEM, intVal);
-				assertEquals(intVal, transceiver
-						.readNeighbourMemory(SCAMP, 0, MEM, 4).getInt());
+				txrx.writeNeighbourMemory(SCAMP, 0, MEM, longData);
+				assertEquals(longVal,
+						txrx.readNeighbourMemory(SCAMP, 0, MEM, 8).getLong());
+				txrx.writeNeighbourMemory(SCAMP, 0, MEM, intVal);
+				assertEquals(intVal,
+						txrx.readNeighbourMemory(SCAMP, 0, MEM, WORD_SIZE)
+								.getInt());
 			});
 
 			ChipLocation neighbour = new ChipLocation(1, 1);
 
 			section("Test writing blobs by flood", () -> {
-				transceiver.writeMemoryFlood(MEM, longData);
+				txrx.writeMemoryFlood(MEM, longData);
+				assertEquals(longVal, txrx.readMemory(SCAMP, MEM, 8).getLong());
 				assertEquals(longVal,
-						transceiver.readMemory(SCAMP, MEM, 8).getLong());
-				assertEquals(longVal,
-						transceiver.readMemory(neighbour, MEM, 8).getLong());
+						txrx.readMemory(neighbour, MEM, 8).getLong());
 
-				transceiver.writeMemoryFlood(MEM, intVal);
+				txrx.writeMemoryFlood(MEM, intVal);
 				assertEquals(intVal,
-						transceiver.readMemory(SCAMP, MEM, 4).getInt());
+						txrx.readMemory(SCAMP, MEM, WORD_SIZE).getInt());
 				assertEquals(intVal,
-						transceiver.readMemory(neighbour, MEM, 4).getInt());
+						txrx.readMemory(neighbour, MEM, WORD_SIZE).getInt());
 			});
 
-			section("Get Heap", () -> heap(transceiver));
-		}
-	}
-
-	private static Set<ChipLocation> chips(Machine machine) {
-		return machine.chips().stream().map(chip -> chip.asChipLocation())
-				.collect(toSet());
-	}
-
-	@Test
-	@Disabled("known bug: JavaSpiNNaker#43")
-	void testReliableMachine() throws Exception {
-		board_config.set_up_remote_board();
-        Inet4Address host = InetFactory.getByName(board_config.remotehost);
-
-        ArrayList<Machine> l = new ArrayList<>();
-        for (int i = 0 ; i < 10 ; i++) {
-        	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
-        		txrx.ensureBoardIsReady();
-        		txrx.getMachineDimensions();
-        		txrx.getScampVersion();
-				l.add(txrx.getMachineDetails());
-			}
-		}
-		Set<ChipLocation> m = chips(l.remove(0));
-		System.out.println(m);
-		for (Machine m2 : l) {
-			assertEquals(m, chips(m2));
+			section("Get Heap", () -> heap(txrx));
 		}
 	}
 

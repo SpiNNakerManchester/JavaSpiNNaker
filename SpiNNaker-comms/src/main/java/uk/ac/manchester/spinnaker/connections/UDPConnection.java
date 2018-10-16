@@ -72,8 +72,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * <p>
 	 * No default constructors are provided as it would not be possible to
 	 * disambiguate between ones with only a local host/port like
-	 * IPAddressConnection and ones with only remote host/port like
-	 * BMPConnection
+	 * {@link IPAddressConnection} and ones with only remote host/port like
+	 * {@link BMPConnection}.
 	 *
 	 * @param localHost
 	 *            The local host to bind to. If not specified, it defaults to
@@ -305,8 +305,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	/**
-	 * Send data down this connection. Caller must ensure that the datagram
-	 * packet does <i>not</i> have a destination set.
+	 * Send data down this connection.
 	 *
 	 * @param data
 	 *            The data to be sent
@@ -320,6 +319,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		if (isClosed()) {
 			throw new EOFException();
+		}
+		if (!data.hasRemaining()) {
+			throw new IllegalStateException(
+					"data buffer must have bytes to send");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("sending data of length {} to {}", data.remaining(),
@@ -415,6 +418,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		if (isClosed()) {
 			throw new EOFException();
+		}
+		if (!data.hasRemaining()) {
+			throw new IllegalStateException(
+					"data buffer must have bytes to send");
 		}
 		channel.send(data, new InetSocketAddress(address, port));
 	}

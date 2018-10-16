@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 class TestBootConnection {
 
 	@Test
-	void testSomething() throws IOException {
-		BootConnection udp_connect = new BootConnection(null, null, null, null);
+	void testCreateConnection() throws IOException {
+		BootConnection udpConnect = new BootConnection(null, null, null, null);
 		// this is a very stupid test!
-		assertNotNull(udp_connect);
+		assertNotNull(udpConnect);
 	}
 
 }

@@ -16,9 +16,9 @@ import java.util.WeakHashMap;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.processes.FillProcess;
-import uk.ac.manchester.spinnaker.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 
 /** A file-like object for the memory of a chip. */
 final class ChipMemoryIO {

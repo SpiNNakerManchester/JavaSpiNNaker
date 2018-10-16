@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +35,7 @@ public class TestRouter {
     public void testRouterBasicUse() {
         ArrayList<Link> links = new ArrayList<>();
         links.add(link00_01);
+        @SuppressWarnings("unused")
         Router router = new Router(links);
     }
 
@@ -100,6 +100,7 @@ public class TestRouter {
         links.add(link00_01);
         links.add(link00_01a);
         assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
             Router router = new Router(links);
         });
     }

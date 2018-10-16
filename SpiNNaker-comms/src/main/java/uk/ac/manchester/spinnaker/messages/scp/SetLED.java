@@ -18,7 +18,7 @@ public class SetLED extends SCPRequest<CheckOKResponse> {
 	 *            A mapping of BMPSetLED index to operation to apply.
 	 */
 	public SetLED(HasCoreLocation core, Map<Integer, LEDAction> ledStates) {
-		super(core, CMD_LED, argument1(ledStates), null, null);
+		super(core, CMD_LED, argument1(ledStates));
 	}
 
 	private static Integer argument1(Map<Integer, LEDAction> ledStates) {

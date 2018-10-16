@@ -7,8 +7,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-
 /**
  * A request for writing data to a FPGA register.
  *
@@ -17,7 +15,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */
-public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
+public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int MASK = 0b00000011;
 
 	/**
@@ -37,19 +35,13 @@ public class WriteFPGARegister extends BMPRequest<WriteFPGARegister.Response> {
 	}
 
 	private static ByteBuffer data(int value) {
-		return allocate(WORD_SIZE).order(LITTLE_ENDIAN).putInt(value);
+		return (ByteBuffer) allocate(WORD_SIZE).order(LITTLE_ENDIAN)
+				.putInt(value).flip();
 	}
 
 	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
-
-	/** An SCP response to a request to write an FPGA register. */
-	public final class Response extends BMPRequest.BMPResponse {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Send FPGA register write", CMD_LINK_WRITE, buffer);
-		}
+	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new BMPResponse("Send FPGA register write", CMD_LINK_WRITE,
+				buffer);
 	}
 }

@@ -1,16 +1,15 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**

@@ -316,6 +316,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public boolean hasAnyProcessor(int processorId) {
         return this.userProcessors.containsKey(processorId)
                 || this.monitorProcessors.containsKey(processorId);
@@ -348,6 +349,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public boolean hasMonitorProcessor(int processorId) {
         return this.monitorProcessors.containsKey(processorId);
     }
@@ -364,6 +366,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public Processor getAnyProcessor(int processorId) {
         if (this.userProcessors.containsKey(processorId)) {
             return this.userProcessors.get(processorId);
@@ -400,6 +403,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public Processor getMonitorProcessor(int processorId) {
         return this.monitorProcessors.get(processorId);
     }
@@ -421,6 +425,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public List<Processor> allProcessors() {
         ArrayList<Processor> all =
                 new ArrayList<>(this.monitorProcessors.values());
@@ -458,6 +463,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public Collection<Processor> monitorProcessors() {
         return Collections.unmodifiableCollection(
                 this.monitorProcessors.values());
@@ -471,6 +477,7 @@ public class Chip implements HasChipLocation {
      *            Keeping track of the Monitor(s) processors may be removed
      *            unless a use case can be found.
      */
+    @Deprecated
     public int nProcessors() {
         return this.userProcessors.size() + this.monitorProcessors.size();
     }
@@ -512,6 +519,7 @@ public class Chip implements HasChipLocation {
      * @return ID of the processor converted to a monitor or -1 to report a
      *         failure
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     int reserveASystemProcessor() throws IllegalStateException {
         if (this.monitorProcessors == DEFAULT_MONITOR_PROCESSORS) {

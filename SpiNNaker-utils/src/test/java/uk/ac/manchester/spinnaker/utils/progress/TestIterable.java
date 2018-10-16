@@ -25,9 +25,8 @@ public class TestIterable {
 	}
 
 	@Test
-	public void testbasic() {
+	public void testBasic() {
 		String description = "Easiest";
-		@SuppressWarnings("resource")
 		ProgressIterable<Integer> pb = new ProgressIterable<>(
 				Arrays.asList(1, 2, 3, 4, 5), description,
 				new PrintStream(new ByteArrayOutputStream()));
@@ -36,6 +35,7 @@ public class TestIterable {
 			sum += i;
 		}
 		assertEquals(1 + 2 + 3 + 4 + 5, sum);
+		pb.close();
 	}
 
 	@Test
@@ -56,6 +56,7 @@ public class TestIterable {
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
 		assertEquals(DASHES, lines[2]);
+		pb.close();
 	}
 
 	@Test
@@ -82,7 +83,6 @@ public class TestIterable {
 	public void testForEachRemaining() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String description = "Easiest";
-		@SuppressWarnings("resource")
 		ProgressIterable<Integer> pb =
 				new ProgressIterable<>(Arrays.asList(1, 2, 3, 4, 5),
 						description, new PrintStream(baos));
@@ -94,6 +94,6 @@ public class TestIterable {
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
 		assertEquals(DASHES, lines[2]);
+		pb.close();
 	}
-
 }

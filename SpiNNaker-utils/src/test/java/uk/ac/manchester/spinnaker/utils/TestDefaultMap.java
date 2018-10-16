@@ -17,7 +17,10 @@ public class TestDefaultMap {
     public TestDefaultMap() {
     }
 
-    @Test
+    @SuppressWarnings({
+			"unchecked", "rawtypes"
+	})
+	@Test
     public void testUntyped() {
         DefaultMap instance = new DefaultMap(ArrayList::new);
         Object foo = instance.get("foo");
@@ -30,7 +33,7 @@ public class TestDefaultMap {
     @Test
     public void testTyped() {
         DefaultMap<String, List<Integer>> instance =
-                new DefaultMap(ArrayList<Integer>::new);
+                new DefaultMap<>(ArrayList<Integer>::new);
         List<Integer> foo = instance.get("foo");
         assertTrue(foo instanceof ArrayList);
         //foo.add("a");
@@ -44,7 +47,7 @@ public class TestDefaultMap {
     @Test
     public void testBad() {
         DefaultMap<String, List<Integer>> instance =
-                new DefaultMap(new ArrayList<Integer>());
+                new DefaultMap<>(new ArrayList<Integer>());
         List<Integer> foo = instance.get("one");
         foo.add(11);
         List<Integer> bar = instance.get("two");

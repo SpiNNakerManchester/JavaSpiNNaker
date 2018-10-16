@@ -4,7 +4,6 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import uk.ac.manchester.spinnaker.utils.InetFactory.Inet6NotSupportedException;
