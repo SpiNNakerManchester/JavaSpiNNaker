@@ -143,7 +143,9 @@ public class JobDescription {
 		builder.append(" machine: ").append(machine);
 		builder.append(" args: ").append(args);
 		builder.append(" kwargs: ").append(kwargs);
-		if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
+        if (boards == null) {
+			builder.append(" NO boards! ");
+        } else if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
 			builder.append(" boards: ").append(boards);
 		} else {
 			builder.append(" # boards: ").append(boards.size());

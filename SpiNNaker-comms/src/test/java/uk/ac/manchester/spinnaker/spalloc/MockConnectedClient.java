@@ -114,7 +114,7 @@ public class MockConnectedClient extends SpallocClient {
 
     static final String POSITION_R = "[0,0,8]";
 
-     static final String AT_R = "[0,0,1]";
+    static final String AT_R = "[0,0,1]";
 
     /**
      * The version as it comes from spalloc.
@@ -127,8 +127,12 @@ public class MockConnectedClient extends SpallocClient {
     private boolean actual;
 
     public MockConnectedClient(int timeout) {
-        super("spinnaker.cs.man.ac.uk", 22244, timeout);
-        //super("127.0.0.0", 22244, timeout);
+        // Main
+        //super("spinnaker.cs.man.ac.uk", 22244, timeout);
+        // Spin2
+        super("spinnaker.cs.man.ac.uk", 22245, timeout);
+        // Bad
+        // super("127.0.0.0", 22244, timeout);
         actual = true;
     }
 

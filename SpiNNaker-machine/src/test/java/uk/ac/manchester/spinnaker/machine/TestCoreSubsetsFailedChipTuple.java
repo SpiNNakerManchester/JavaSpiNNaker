@@ -51,7 +51,7 @@ public class TestCoreSubsetsFailedChipTuple {
         instance.addCore(0, 0, 1);
         assertEquals(1, instance.size());
 
-        ArrayList<Integer> processors = new ArrayList();
+        ArrayList<Integer> processors = new ArrayList<>();
         processors.add(1);
         instance.addCores(0, 0, processors);
         assertEquals(1, instance.size());
@@ -63,6 +63,4 @@ public class TestCoreSubsetsFailedChipTuple {
 
         assertEquals(1, instance.failedChips.size());
     }
-
-
 }

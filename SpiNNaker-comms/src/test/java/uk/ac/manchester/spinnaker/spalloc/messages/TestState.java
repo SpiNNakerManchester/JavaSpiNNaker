@@ -1,12 +1,13 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**
@@ -14,7 +15,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  * @author Christian
  */
 public class TestState {
-    
+
     @Test
     void testFromJson() throws IOException {
         String json = "{\"state\":2,"
@@ -30,7 +31,7 @@ public class TestState {
         assertEquals(1537284307.847865f, fromJson.getStartTime());
         assertEquals(60, fromJson.getKeepalive());
         assertNull(fromJson.getReason());
-        assertEquals("86.82.216.229", fromJson.getKeepalivehost());        
+        assertEquals("86.82.216.229", fromJson.getKeepalivehost());
         assertNotNull(fromJson.toString());
     }
 

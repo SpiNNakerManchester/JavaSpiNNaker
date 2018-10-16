@@ -112,6 +112,7 @@ public class TestProcessor {
     }
 
     @Test
+    @SuppressWarnings("unused")
     public void testBad() {
         assertThrows(IllegalArgumentException.class, () -> {
             Processor bad = Processor.factory(

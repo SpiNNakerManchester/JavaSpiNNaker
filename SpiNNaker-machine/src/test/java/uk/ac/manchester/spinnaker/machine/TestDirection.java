@@ -50,6 +50,7 @@ public class TestDirection {
     /**
      * Test of typicalMove method, of class Direction.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTypicalMove() {
         HasChipLocation source = new ChipLocation(0,0);

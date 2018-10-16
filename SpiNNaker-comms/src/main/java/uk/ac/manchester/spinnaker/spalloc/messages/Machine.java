@@ -78,4 +78,11 @@ public class Machine {
     public void setDeadLinks(List<BoardLink> deadLinks) {
         this.deadLinks = deadLinks;
     }
+
+    @Override
+    public String toString() {
+        return name + " " + width + "," + height + " # tags: " + tags.size()
+                + " deadBoards: " + deadBoards.size()
+                + " deadLinks: " + deadLinks.size();
+    }
 }
