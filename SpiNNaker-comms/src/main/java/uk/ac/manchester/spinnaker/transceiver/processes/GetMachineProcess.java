@@ -129,8 +129,9 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
+            // TODO work out why mutiple calls is a problem
+    		finish();
 		}
-		finish();
 		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
