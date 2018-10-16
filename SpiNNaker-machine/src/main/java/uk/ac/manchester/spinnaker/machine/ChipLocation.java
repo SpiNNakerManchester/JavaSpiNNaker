@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
@@ -18,9 +17,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author alan
  * @author dkf
  */
-@JsonPropertyOrder({
-		"x", "y"
-})
 @JsonFormat(shape = ARRAY)
 public final class ChipLocation implements
         HasChipLocation, Comparable<ChipLocation> {
@@ -50,8 +46,8 @@ public final class ChipLocation implements
      *      Thrown is either x or y is negative or too big.
      */
     @JsonCreator
-    public ChipLocation(@JsonProperty(value = "x", required=true) int x,
-            @JsonProperty(value = "y", required=true) int y) {
+    public ChipLocation(@JsonProperty(value = "x", required = true) int x,
+            @JsonProperty(value = "y", required = true) int y) {
         MachineDefaults.validateChipLocation(x, y);
         this.x = x;
         this.y = y;

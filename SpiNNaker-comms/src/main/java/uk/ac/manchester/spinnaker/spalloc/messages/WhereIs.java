@@ -67,7 +67,7 @@ public class WhereIs {
 	 *            the job-relative chip location to set
 	 */
 	public void setJobChip(ChipLocation jobChip) {
-		this.jobChip= jobChip;
+		this.jobChip = jobChip;
 	}
 
 	/**

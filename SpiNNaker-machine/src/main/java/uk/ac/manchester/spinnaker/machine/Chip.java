@@ -244,7 +244,8 @@ public class Chip implements HasChipLocation {
 
         this.location = bean.getLocation();
         this.monitorProcessors =  provideMonitors(resources.getMonitors());
-        this.userProcessors = provideUserProcesses(resources.getMonitors(), details.cores);
+        this.userProcessors = provideUserProcesses(
+                resources.getMonitors(), details.cores);
 
         this.router = new Router(location, resources.getRouterClockSpeed(),
             resources.getRouterEntries(), details.getDeadDirections(), machine);
@@ -574,19 +575,19 @@ public class Chip implements HasChipLocation {
             return false;
         }
         Chip that = (Chip) obj;
-        if (! location.equals(that.location)) {
+        if (!location.equals(that.location)) {
             System.out.println("location");
             return false;
         }
-        if (! monitorProcessors.equals(that.monitorProcessors)) {
+        if (!monitorProcessors.equals(that.monitorProcessors)) {
             System.out.println("monitorProcessors");
             return false;
         }
-        if (! userProcessors.equals(that.userProcessors)) {
+        if (!userProcessors.equals(that.userProcessors)) {
             System.out.println("userProcessors");
             return false;
         }
-        if (! router.equals(that.router)) {
+        if (!router.equals(that.router)) {
             System.out.println("router");
             return false;
         }
@@ -606,7 +607,7 @@ public class Chip implements HasChipLocation {
             System.out.println("tagIds " + tagIds + " != " + that.tagIds);
             return false;
         }
-        if (! nearestEthernet.equals(that.nearestEthernet)) {
+        if (!nearestEthernet.equals(that.nearestEthernet)) {
             System.out.println("router");
             return false;
         }

@@ -6,11 +6,6 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import static java.util.Collections.emptyMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 
@@ -26,12 +21,29 @@ public class MachineBean {
     private final ChipResources standardResources;
     private final List<ChipBean> chips;
 
-    public MachineBean(@JsonProperty(value = "height", required=true) int height,
-            @JsonProperty(value = "width", required=true) int width,
-            @JsonProperty(value = "root", required=true) ChipLocation root,
-            @JsonProperty(value = "ethernetResources", required=true) ChipResources ethernetResources,
-            @JsonProperty(value = "standardResources", required=true) ChipResources standardResources,
-            @JsonProperty(value = "chips", required=true) List<ChipBean> chips) {
+    /**
+     * Main Constructor that sets all values.
+     *
+     * @param height The height of the Machine in Chips
+     * @param width The width of the Machine in Chips
+     * @param root The Root Chip. (Typically 0,0)
+     * @param ethernetResources The resource values shared by all chips
+     *  that have an ip_address, expect when overwritten by the Chip itself.
+     * @param standardResources The resource values shared by all chips
+     *  that do not have an ip_address,
+     *  expect when overwritten by the Chip itself.
+     * @param chips Beans for each Chips on the machine.
+     */
+    public MachineBean(
+            @JsonProperty(value = "height", required = true) int height,
+            @JsonProperty(value = "width", required = true) int width,
+            @JsonProperty(value = "root", required = true) ChipLocation root,
+            @JsonProperty(value = "ethernetResources", required = true)
+                    ChipResources ethernetResources,
+            @JsonProperty(value = "standardResources", required = true)
+                    ChipResources standardResources,
+            @JsonProperty(value = "chips", required = true)
+                    List<ChipBean> chips) {
         dimensions = new MachineDimensions(height, width);
         this.root = root;
         this.chips = chips;
@@ -69,11 +81,17 @@ public class MachineBean {
         return chips;
     }
 
+    @Override
     public String toString() {
         return dimensions + " root: " + root
                 + "# Chips: " + chips.size();
     }
 
+    /**
+     * Longer String representation over several lines.
+     *
+     * @return A description of the machine and its details.
+     */
     public String describe() {
         StringBuilder builder = new StringBuilder();
         builder.append(dimensions);

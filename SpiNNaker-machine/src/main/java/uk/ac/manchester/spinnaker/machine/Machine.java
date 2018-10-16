@@ -12,14 +12,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
-import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
@@ -119,6 +117,11 @@ public class Machine implements Iterable<Chip> {
         addChips(chips);
     }
 
+    /**
+     * Creates a Machine from a Bean.
+     *
+     * @param bean Bean holding the Values to set.
+     */
     public Machine(MachineBean bean) {
         this(bean.getMachineDimensions(), bean.getRoot());
         for (ChipBean chipBean: bean.getChips()) {
@@ -635,26 +638,23 @@ public class Machine implements Iterable<Chip> {
                 source.getY() + direction.yChange);
     }
 
+
+    /**
+     * Returns this location adjusted for wrap arounds.
+     *
+     * <p>
+     * No check is done to see if there is actually a chip at that location.
+     *
+     * @param location
+     *     A location which may need to be corrected for wrap arounds.
+     * @return
+     *     A ChipLocation based on a move in this direction
+     *         with possible wrap around,
+     *         or null if either coordinate is less than zero
+     *         or greater than the dimensions of the machine.
+     */
     public final ChipLocation normalizedLocation(HasChipLocation location) {
-        if (version.horizontalWrap) {
-            if (version.verticalWrap) {
-                return new ChipLocation(
-                         location.getX() % machineDimensions.width,
-                         location.getY() % machineDimensions.height);
-            } else {
-                return new ChipLocation(
-                         location.getX() % machineDimensions.width,
-                         location.getY());
-            }
-        } else {
-            if (version.verticalWrap) {
-                return new ChipLocation(
-                         location.getX(),
-                         location.getY() % machineDimensions.height);
-            } else {
-                return location.asChipLocation();
-            }
-        }
+        return normalizedLocation(location.getX(), location.getY());
     }
 
     /**
@@ -996,7 +996,7 @@ public class Machine implements Iterable<Chip> {
             return false;
         }
         Machine that = (Machine) obj;
-        if (! machineDimensions.equals(that.machineDimensions)) {
+        if (!machineDimensions.equals(that.machineDimensions)) {
             System.out.println("machineDimensions");
             return false;
         }
@@ -1005,39 +1005,31 @@ public class Machine implements Iterable<Chip> {
             return false;
         }
         if (!ethernetConnectedChips.equals(that.ethernetConnectedChips)) {
-            System.out.println("ethernetConnectedChips");
            return false;
         }
         if (!spinnakerLinks.equals(that.spinnakerLinks)) {
-            System.out.println("spinnakerLinks");
             return false;
         }
         if (!fpgaLinks.equals(that.fpgaLinks)) {
-            System.out.println("fpgaLinks");
             return false;
         }
-        if (! boot.equals(that.boot)) {
-            System.out.println("boot");
+        if (!boot.equals(that.boot)) {
             return false;
         }
-        if (! bootEthernetAddress.equals(that.bootEthernetAddress)) {
-            System.out.println("bootEthernetAddress " + bootEthernetAddress + " != " + that.bootEthernetAddress);
+        if (!bootEthernetAddress.equals(that.bootEthernetAddress)) {
             return false;
         }
         if (chips.size() != that.chips.size()) {
-            System.out.println("chips: " + chips.size() +" != " + that.chips.size());
             return false;
         }
         for (ChipLocation loc: chips.keySet()) {
             Chip c1 = chips.get(loc);
             Chip c2 = that.chips.get(loc);
-            if (! c1.equals(c2)) {
-                System.out.println("Chip: " + c1 + " != " + c2);
+            if (!c1.equals(c2)) {
                 return false;
             }
         }
-        if (! version.equals(that.version)) {
-            System.out.println("version");
+        if (!version.equals(that.version)) {
             return false;
         }
         return true;

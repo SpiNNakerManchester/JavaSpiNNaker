@@ -98,7 +98,8 @@ public enum Direction {
                 return direction;
             }
         }
-        throw new IllegalArgumentException("No direction found for \"" + label + "\"");
+        throw new IllegalArgumentException(
+                "No direction found for \"" + label + "\"");
     }
 
     /**

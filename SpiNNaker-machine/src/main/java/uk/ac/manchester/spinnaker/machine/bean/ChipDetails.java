@@ -12,7 +12,6 @@ import static java.util.Collections.emptyList;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  *
@@ -20,13 +19,24 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  */
 public class ChipDetails {
 
+    /** Total number of working core on this Chip. */
     public final int cores;
+    /** Location of the nearest Ethernet Chip. */
     public final ChipLocation ethernet;
     private InetAddress ipAddress;
     private List<Direction> deadDirections = emptyList();
 
-    public ChipDetails(@JsonProperty(value = "cores", required=true) int cores,
-            @JsonProperty(value = "ethernet", required=true) ChipLocation ethernet) {
+    /**
+     * Creates a Chip Details bean with the required fields
+     *  leaving optional ones form setters.
+     *
+     * @param cores Total number of cores working cores including monitors.
+     * @param ethernet Location of the nearest Ethernet Chip.
+     */
+    public ChipDetails(
+            @JsonProperty(value = "cores", required = true) int cores,
+            @JsonProperty(value = "ethernet", required = true)
+                    ChipLocation ethernet) {
         this.cores = cores;
         this.ethernet = ethernet;
     }
@@ -54,6 +64,8 @@ public class ChipDetails {
 
     /**
      * @param ipAddress the ipAddress to set
+     * @throws UnknownHostException If the ipAddress can not be converted
+     *      to an InetAddress
      */
     public void setIpAddress(String ipAddress) throws UnknownHostException {
         this.ipAddress = InetAddress.getByName(ipAddress);
@@ -77,6 +89,7 @@ public class ChipDetails {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
         builder.append("ethernet: ").append(ethernet).append(", ");

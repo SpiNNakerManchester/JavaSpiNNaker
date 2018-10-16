@@ -4,18 +4,19 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
+ * Bean to represent values on a Chip that are typically the same on all Chips.
  *
  * @author Christian-B
  */
 public class ChipResources {
 
+    /** Symbolic value to specify no specific value has been set.
+     *
+     *  This allows the value 0 to be declared as specifically set.
+     */
     public static final int NOT_SET = -1;
     private int cores;
     private int monitors;
@@ -25,6 +26,9 @@ public class ChipResources {
     private int routerClockSpeed;
     private Boolean virtual;
 
+    /**
+     * Default constructor which sets all values to not set.
+     */
     public ChipResources() {
         cores = NOT_SET;
         monitors = NOT_SET;
@@ -33,27 +37,37 @@ public class ChipResources {
         routerEntries = NOT_SET;
     }
 
+    /**
+     * Adds the default values
+     *    if and only if no value had been specifically set.
+     *
+     * If a value is not set in both this and the defaults
+     *      it will remain as not set. No Exception is thrown.
+     *
+     * @param defaults Another resources whose values should replace those
+     *    which have not been set.
+     */
     @JsonIgnore
     public void addDefaults(ChipResources defaults) {
         if (cores == NOT_SET) {
             cores = defaults.cores;
-        };
-        if (monitors== NOT_SET) {
+        }
+        if (monitors == NOT_SET) {
             monitors = defaults.monitors;
-        };
+        }
         if (sdram == NOT_SET) {
             sdram = defaults.sdram;
-        };
+        }
         if (tags == null) {
             tags = defaults.tags;
-        };
+        }
         if (getRouterClockSpeed() == NOT_SET) {
             setRouterClockSpeed(defaults.getRouterClockSpeed());
-        };
+        }
         if (routerEntries == NOT_SET) {
             routerEntries = defaults.routerEntries;
-        };
-        if(virtual == null) {
+        }
+        if (virtual == null) {
             virtual = defaults.getVirtual();
         }
     }
@@ -136,10 +150,10 @@ public class ChipResources {
     }
 
     /**
-     * @param router_entries the router_entries to set
+     * @param routerEntries the router_entries to set
      */
-    public void setRouterEntries(int router_entries) {
-        this.routerEntries = router_entries;
+    public void setRouterEntries(int routerEntries) {
+        this.routerEntries = routerEntries;
     }
 
     /**
@@ -156,6 +170,7 @@ public class ChipResources {
         this.virtual = virtual;
     }
 
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
         if (cores != NOT_SET) {

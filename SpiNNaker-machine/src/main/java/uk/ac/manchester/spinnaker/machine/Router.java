@@ -140,6 +140,7 @@ public final class Router implements Iterable<Link> {
      * Creates a new Router from this source with links in all but the missing
      *      directions.
      * @param source Chip which links are coming from
+     * @param clockSpeed The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
      *      The number of entries available in the routing table.
      * @param ignoreDirections Directions not to create links for.
@@ -151,12 +152,12 @@ public final class Router implements Iterable<Link> {
     public Router(HasChipLocation source, int clockSpeed,
             int nAvailableMulticastEntries,
             Collection<Direction> ignoreDirections, Machine machine) {
-        this(MachineDefaults.ROUTER_CLOCK_SPEED, nAvailableMulticastEntries);
+        this(clockSpeed, nAvailableMulticastEntries);
         for (Direction direction: Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
                 ChipLocation destination = machine.normalizedLocation(
                         source.getX() + direction.xChange,
-                        source.getY()+ direction.yChange);
+                        source.getY() + direction.yChange);
                 addLink(new Link(source, direction, destination));
             }
         }

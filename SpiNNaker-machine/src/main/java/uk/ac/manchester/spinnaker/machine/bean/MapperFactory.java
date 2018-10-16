@@ -13,7 +13,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  *
  * @author Christian-B
  */
-public class MapperFactory {
+public final class MapperFactory {
+
+    /**
+     * No Reason to instantiate.
+     */
+    private MapperFactory() {
+    }
     /**
      * Static method to create the object mapper.
      *
