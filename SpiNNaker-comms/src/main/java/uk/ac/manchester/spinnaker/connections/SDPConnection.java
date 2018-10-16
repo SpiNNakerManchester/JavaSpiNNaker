@@ -60,17 +60,12 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public MessageReceiver<SDPMessage> getReceiver() {
-		return this::receiveSDPMessage;
-	}
-
-	@Override
 	public void sendSDPMessage(SDPMessage sdpMessage) throws IOException {
 		send(sdpMessage.getMessageData(chip));
 	}
 
 	@Override
-	public SDPMessage receiveSDPMessage(Integer timeout)
+	public SDPMessage receiveMessage(Integer timeout)
 			throws IOException, InterruptedIOException {
 		ByteBuffer buffer = receive();
 		buffer.getShort(); // SKIP TWO PADDING BYTES

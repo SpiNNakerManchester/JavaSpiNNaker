@@ -1,10 +1,10 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import java.net.Inet4Address;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -18,42 +18,42 @@ import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 public class TestUDPConnection {
-	static BoardTestConfiguration board_config;
+	static BoardTestConfiguration boardConfig;
 	static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 	static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
-		board_config = new BoardTestConfiguration();
+		boardConfig = new BoardTestConfiguration();
 	}
 
 	@Test
 	public void testSCPVersionWithBoard() throws Exception {
-		board_config.set_up_remote_board();
-		GetVersion scp_req = new GetVersion(ZERO_CORE);
-		scp_req.scpRequestHeader.issueSequenceNumber();
+		boardConfig.setUpRemoteBoard();
+		GetVersion scpReq = new GetVersion(ZERO_CORE);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_req);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
-		Response scp_response = result.parsePayload(scp_req);
+		Response scp_response = result.parsePayload(scpReq);
+		System.out.println(scp_response.versionInfo);
 		assertEquals(scp_response.result, RC_OK);
 	}
 
 	@Test
 	public void testSCPReadLinkWoard() throws Exception {
-		board_config.set_up_remote_board();
-		ReadLink scp_req = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
-		scp_req.scpRequestHeader.issueSequenceNumber();
+		boardConfig.setUpRemoteBoard();
+		ReadLink scpReq = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_req);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -61,24 +61,25 @@ public class TestUDPConnection {
 
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
-		board_config.set_up_remote_board();
-		ReadMemory scp_req = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
-		scp_req.scpRequestHeader.issueSequenceNumber();
+		boardConfig.setUpRemoteBoard();
+		ReadMemory scpReq = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		scpReq.scpRequestHeader.issueSequenceNumber();
 		SCPResultMessage result;
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		try (SCPConnection connection = new SCPConnection(remoteHost)) {
-			connection.sendSCPRequest(scp_req);
+		try (SCPConnection connection =
+				new SCPConnection(boardConfig.remotehost)) {
+			connection.sendSCPRequest(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
 	}
 
 	@Test
-	public void testSendSCPRequestToNonexistentHost() throws UnknownHostException {
-		board_config.set_up_nonexistent_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		assertThrows(Exception.class, () -> {
-			try (SCPConnection connection = new SCPConnection(remoteHost)) {
+	public void testSendSCPRequestToNonexistentHost()
+			throws UnknownHostException {
+		boardConfig.setUpNonexistentBoard();
+		assertThrows(SocketTimeoutException.class, () -> {
+			try (SCPConnection connection =
+					new SCPConnection(boardConfig.remotehost)) {
 				ReadMemory scp = new ReadMemory(ZERO_CHIP, 0, 256);
 				scp.scpRequestHeader.issueSequenceNumber();
 				connection.sendSCPRequest(scp);

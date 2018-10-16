@@ -13,7 +13,7 @@ before_install:
 install:
   - mvn install --settings .travis/travis-settings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dmaven.compiler.showDeprecation=true
 script:
-  - mvn test --settings .travis/travis-settings.xml -B -Dmaven.javadoc.skip=true jacoco:report
+  - mvn verify --settings .travis/travis-settings.xml -B -Dmaven.javadoc.skip=true jacoco:report
   - mvn checkstyle:check --settings .travis/travis-settings.xml -Dmaven.javadoc.skip=true
   - mvn javadoc:javadoc --settings .travis/travis-settings.xml
 after_success:

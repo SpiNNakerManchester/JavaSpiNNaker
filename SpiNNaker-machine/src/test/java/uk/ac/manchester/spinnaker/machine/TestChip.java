@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Christian-B
  */
+@SuppressWarnings("deprecation")
 public class TestChip {
 
     ChipLocation location00 = new ChipLocation(0,0);
@@ -39,6 +40,7 @@ public class TestChip {
         return new Router(links);
     }
 
+    @SuppressWarnings("unused")
     private ArrayList<Link> createLinks() {
         ArrayList<Link> links = new ArrayList<>();
         links.add(link00_10);
@@ -128,6 +130,7 @@ public class TestChip {
         assertEquals(4, chip.reserveASystemProcessor());
         assertEquals(0, chip.nUserProcessors());
         assertThrows(Exception.class, () -> {
+            @SuppressWarnings("unused")
             Processor bad = chip.getFirstUserProcessor();
         });
         assertEquals(-1, chip.reserveASystemProcessor());
@@ -152,6 +155,7 @@ public class TestChip {
         ArrayList<Processor> processors = getProcessors();
         processors.add(Processor.factory(2, false));
         assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
             Chip chip = new Chip(
                     ChipLocation.ZERO_ZERO, processors, createRouter(), 100,
                     createInetAddress(), location11);
@@ -163,6 +167,7 @@ public class TestChip {
         ArrayList<Processor> processors = getProcessors();
         processors.add(Processor.factory(4, true));
         assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
             Chip chip = new Chip(
                     ChipLocation.ZERO_ZERO, processors, createRouter(), 100,
                     createInetAddress(), location11);

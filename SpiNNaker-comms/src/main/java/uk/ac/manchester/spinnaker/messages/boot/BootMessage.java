@@ -1,7 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.nio.ByteBuffer;
 
@@ -10,7 +10,7 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 /** A message used for booting the board. */
 public class BootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
-	private static final int BOOT_PACKET_SIZE = 256 * 4;
+	private static final int BOOT_PACKET_SIZE = 256 * WORD_SIZE;
 	/** The payload data (or {@code null} if there is none). */
 	public final ByteBuffer data;
 	/** The operation of this packet. */
@@ -34,8 +34,8 @@ public class BootMessage implements SerializableMessage {
 	 * @param operand3
 	 *            The third arg
 	 */
-	public BootMessage(BootOpCode opcode, int operand1,
-			int operand2, int operand3) {
+	public BootMessage(BootOpCode opcode, int operand1, int operand2,
+			int operand3) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
 		this.operand2 = operand2;
@@ -57,8 +57,8 @@ public class BootMessage implements SerializableMessage {
 	 * @param buffer
 	 *            The payload
 	 */
-	public BootMessage(BootOpCode opcode, int operand1,
-			int operand2, int operand3, ByteBuffer buffer) {
+	public BootMessage(BootOpCode opcode, int operand1, int operand2,
+			int operand3, ByteBuffer buffer) {
 		this.opcode = opcode;
 		this.operand1 = operand1;
 		this.operand2 = operand2;
@@ -83,8 +83,7 @@ public class BootMessage implements SerializableMessage {
 		operand2 = buffer.getInt();
 		operand3 = buffer.getInt();
 		if (buffer.hasRemaining()) {
-			data = wrap(buffer.array(), buffer.position(), buffer.remaining())
-					.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 		} else {
 			data = null;
 		}

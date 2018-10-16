@@ -1,7 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
-
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -23,9 +21,6 @@ public class CheckOKResponse extends SCPResponse {
 	public CheckOKResponse(String operation, SCPCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		if (result != RC_OK) {
-			throw new UnexpectedResponseCodeException(operation, command,
-					result);
-		}
+		this.throwIfNotOK(operation, command);
 	}
 }

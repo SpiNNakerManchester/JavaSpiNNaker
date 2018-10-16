@@ -22,7 +22,7 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public FixedRouteInitialise(HasChipLocation chip, int entry, int appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry, null);
+		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
 	}
 
 	@Override

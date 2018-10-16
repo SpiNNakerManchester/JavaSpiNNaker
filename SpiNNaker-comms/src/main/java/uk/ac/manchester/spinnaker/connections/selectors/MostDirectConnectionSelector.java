@@ -35,14 +35,11 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		this.machine = machine;
 		this.connections = new HashMap<>();
 		C firstConnection = null;
-		for (C connection : connections) {
-			if (connection.getChip().equals(ROOT)) {
-				firstConnection = connection;
+		for (C conn : connections) {
+			if (firstConnection == null || conn.getChip().equals(ROOT)) {
+				firstConnection = conn;
 			}
-			this.connections.put(connection.getChip(), connection);
-		}
-		if (firstConnection == null) {
-			firstConnection = connections.iterator().next();
+			this.connections.put(conn.getChip(), conn);
 		}
 		this.defaultConnection = firstConnection;
 	}

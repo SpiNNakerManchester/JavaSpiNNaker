@@ -62,6 +62,7 @@ public class TestReverseIPTag {
     }
 
     @Test
+    @SuppressWarnings("unused")
     public void testEquals() throws UnknownHostException {
         InetAddress boardAddress = createInetAddress((byte)45);
         int tagID = 10;

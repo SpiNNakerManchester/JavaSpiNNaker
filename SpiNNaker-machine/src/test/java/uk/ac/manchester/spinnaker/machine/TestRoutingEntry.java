@@ -89,6 +89,7 @@ public class TestRoutingEntry {
         List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
         List<Integer> ids = Arrays.asList(4, -66, 8);
         assertThrows(Exception.class, () -> {
+            @SuppressWarnings("unused")
             RoutingEntry instance = new RoutingEntry(ids, directions);
         });
     }
@@ -98,6 +99,7 @@ public class TestRoutingEntry {
         List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
         List<Integer> ids = Arrays.asList(4, 60, 8);
         assertThrows(Exception.class, () -> {
+            @SuppressWarnings("unused")
             RoutingEntry instance = new RoutingEntry(ids, directions);
         });
     }

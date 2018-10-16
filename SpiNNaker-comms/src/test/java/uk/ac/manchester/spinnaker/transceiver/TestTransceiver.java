@@ -2,7 +2,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
@@ -17,10 +16,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
@@ -37,25 +37,24 @@ import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 class TestTransceiver {
-	static BoardTestConfiguration board_config;
+	static BoardTestConfiguration boardConfig;
 	static final int ver = 5; // Guess?
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
-		board_config = new BoardTestConfiguration();
+		boardConfig = new BoardTestConfiguration();
 	}
 
 	@Test
 	void testCreateNewTransceiverToBoard() throws Exception {
 		List<Connection> connections = new ArrayList<>();
 
-		board_config.set_up_remote_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		connections.add(new SCPConnection(remoteHost));
+		boardConfig.setUpRemoteBoard();
+		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver trans = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
-			assertEquals(1, trans.getConnections().size());
+			assertEquals(1, txrx.getConnections().size());
 		}
 	}
 
@@ -63,13 +62,12 @@ class TestTransceiver {
 	void testCreateNewTransceiverOneConnection() throws Exception {
 		List<Connection> connections = new ArrayList<>();
 
-		board_config.set_up_remote_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		connections.add(new SCPConnection(remoteHost));
+		boardConfig.setUpRemoteBoard();
+		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver trans = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
-			assertEquals(new HashSet<>(connections), trans.getConnections());
+			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
 	}
 
@@ -77,19 +75,18 @@ class TestTransceiver {
 	void testCreateNewTransceiverFromListConnections() throws Exception {
 		List<Connection> connections = new ArrayList<>();
 
-		board_config.set_up_remote_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		connections.add(new SCPConnection(remoteHost));
+		boardConfig.setUpRemoteBoard();
+		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		board_config.set_up_local_virtual_board();
-		connections.add(new SCPConnection(remoteHost));
+		boardConfig.setUpLocalVirtualBoard();
+		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver trans = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
-			for (Connection c : trans.getConnections()) {
+			for (Connection c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
 			}
-			assertEquals(new HashSet<>(connections), trans.getConnections());
+			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
 	}
 
@@ -97,80 +94,77 @@ class TestTransceiver {
 	void testRetrievingMachineDetails() throws Exception {
 		List<Connection> connections = new ArrayList<>();
 
-		board_config.set_up_remote_board();
-        Inet4Address remoteHost = InetFactory.getByName(board_config.remotehost);
-		connections.add(new SCPConnection(remoteHost));
+		boardConfig.setUpRemoteBoard();
+		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		board_config.set_up_local_virtual_board();
+		boardConfig.setUpLocalVirtualBoard();
 		connections.add(
-				new BootConnection(null, null, remoteHost, null));
+				new BootConnection(null, null, boardConfig.remotehost, null));
 
-		try (Transceiver trans = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
 				null, null, null, null)) {
-			if (board_config.board_version == 3
-					|| board_config.board_version == 2) {
-				assertEquals(2, trans.getMachineDimensions().width);
-				assertEquals(2, trans.getMachineDimensions().height);
-			} else if (board_config.board_version == 5
-					|| board_config.board_version == 4) {
-				assertEquals(8, trans.getMachineDimensions().width);
-				assertEquals(8, trans.getMachineDimensions().height);
+			if (boardConfig.boardVersion == 3
+					|| boardConfig.boardVersion == 2) {
+				assertEquals(2, txrx.getMachineDimensions().width);
+				assertEquals(2, txrx.getMachineDimensions().height);
+			} else if (boardConfig.boardVersion == 5
+					|| boardConfig.boardVersion == 4) {
+				assertEquals(8, txrx.getMachineDimensions().width);
+				assertEquals(8, txrx.getMachineDimensions().height);
 			} else {
-				MachineDimensions size = trans.getMachineDimensions();
+				MachineDimensions size = txrx.getMachineDimensions();
 				fail(format("Unknown board with size %dx%d", size.width,
 						size.height));
 			}
-			assertTrue(trans.isConnected());
-			assertNotNull(trans.getScampVersion());
-			assertNotNull(trans.getCPUInformation());
+			assertTrue(txrx.isConnected());
+			assertNotNull(txrx.getScampVersion());
+			assertNotNull(txrx.getCPUInformation());
 		}
 	}
 
 	@Test
 	void testBootBoard() throws Exception {
-		board_config.set_up_remote_board();
-        InetAddress remoteHost = InetFactory.getByName(board_config.remotehost);
-
-		try (Transceiver trans = Transceiver.createTransceiver(
-				remoteHost, board_config.board_version)) {
+		boardConfig.setUpRemoteBoard();
+		try (Transceiver txrx = new Transceiver(boardConfig.remotehost,
+				boardConfig.boardVersion)) {
 			// self.assertFalse(trans.is_connected())
-			trans.bootBoard();
+			txrx.bootBoard();
 		}
 	}
 
 	/** Tests the creation of listening sockets. */
 	@Test
-	@Disabled
+	@Disabled("CB commented out")
 	void testListenerCreation() throws Exception {
 		// Create board connections
 		List<Connection> connections = new ArrayList<>();
-        Inet4Address noHost = InetFactory.getByName(NOHOST);
+		Inet4Address noHost = InetFactory.getByName(NOHOST);
 		connections.add(new SCPConnection(null, (Integer) null, noHost, null));
 		EIEIOConnection orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
 
 		// Create transceiver
-		try (Transceiver trnx = new Transceiver(5, connections, null, null,
+		try (Transceiver txrx = new Transceiver(5, connections, null, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
 			// Register a UDP listeners
-			Connection c1 = trnx.registerUDPListener(null, cf);
+			Connection c1 = txrx.registerUDPListener(null, cf);
 			assertTrue(c1 == orig, "first connection must be original");
-			Connection c2 = trnx.registerUDPListener(null, cf);
+			Connection c2 = txrx.registerUDPListener(null, cf);
 			assertTrue(c2 == orig, "second connection must be original");
-			Connection c3 = trnx.registerUDPListener(null, cf, port);
+			Connection c3 = txrx.registerUDPListener(null, cf, port);
 			assertTrue(c3 == orig, "third connection must be original");
-			Connection c4 = trnx.registerUDPListener(null, cf, port + 1);
+			Connection c4 = txrx.registerUDPListener(null, cf, port + 1);
 			assertFalse(c4 == orig, "fourth connection must not be original");
 		}
 	}
 
 	@Test
-	@Disabled
+	@Disabled("CB commented out")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
-		List<byte[]> expected_writes = asList(new byte[] {
+		List<byte[]> expectedWrites = asList(new byte[] {
 				((Number) software_watchdog_count.getDefault()).byteValue()
 		}, new byte[] {
 				0
@@ -179,31 +173,31 @@ class TestTransceiver {
 		});
 
 		List<Connection> connections = new ArrayList<>();
-        Inet4Address noHost = InetFactory.getByName(NOHOST);
+		Inet4Address noHost = InetFactory.getByName(NOHOST);
 		connections.add(new SCPConnection(noHost));
-		try (MockWriteTransceiver tx =
+		try (MockWriteTransceiver txrx =
 				new MockWriteTransceiver(5, connections)) {
 			// All chips
-			tx.enableWatchDogTimer(true);
-			tx.enableWatchDogTimer(false);
-			tx.setWatchDogTimeout(5);
+			txrx.enableWatchDogTimer(true);
+			txrx.enableWatchDogTimer(false);
+			txrx.setWatchDogTimeout(5);
 
 			/*
 			 * Check the values that were "written" for set_watch_dog, which
 			 * should be one per chip
 			 */
-			int write_item = 0;
-			for (byte[] expected_data : expected_writes) {
-				for (ChipLocation chip : tx.getMachineDetails()
+			int writeItem = 0;
+			for (byte[] expectedData : expectedWrites) {
+				for (ChipLocation chip : txrx.getMachineDetails()
 						.chipCoordinates()) {
 					MockWriteTransceiver.Write write =
-							tx.written_memory.get(write_item++);
+							txrx.writtenMemory.get(writeItem++);
 					assertEquals(chip.getScampCore(), write.core);
 					assertEquals(
 							SYSTEM_VARIABLE_BASE_ADDRESS
 									+ software_watchdog_count.offset,
 							write.address);
-					assertArrayEquals(expected_data, write.data);
+					assertArrayEquals(expectedData, write.data);
 				}
 			}
 		}
@@ -214,22 +208,33 @@ class TestTransceiver {
 				.collect(toSet());
 	}
 
+	private static final int REPETITIONS = 10;
+
 	@Test
 	void testReliableMachine() throws Exception {
-		board_config.set_up_remote_board();
-        Inet4Address host = InetFactory.getByName(board_config.remotehost);
-
+		boardConfig.setUpRemoteBoard();
         ArrayList<Machine> l = new ArrayList<>();
-        for (int i = 0 ; i < 10 ; i++) {
-        	try (Transceiver txrx = Transceiver.createTransceiver(host, 5)) {
+
+        for (int i = 0 ; i < REPETITIONS ; i++) {
+			try (Transceiver txrx =
+					new Transceiver(boardConfig.remotehost, 5)) {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
         		txrx.getScampVersion();
 				l.add(txrx.getMachineDetails());
 			}
 		}
-		Set<ChipLocation> m = chips(l.remove(0));
-		System.out.println(m);
+
+        Set<ChipLocation> m = chips(l.remove(0));
+		/*
+		 * These look like weird assertions, but they're what ends up sometimes
+		 * missing! Weird indeed...
+		 */
+		assertTrue(m.contains(new ChipLocation(6, 2)),
+				() -> "(6,2) must be present in " + m);
+		assertFalse(m.contains(new ChipLocation(7, 2)),
+				() -> "(7,2) must not be present in " + m);
+		assertEquals(48, m.size());
 		for (Machine m2 : l) {
 			assertEquals(m, chips(m2));
 		}
@@ -242,22 +247,22 @@ class MockWriteTransceiver extends Transceiver {
 		final byte[] data;
 		final int address;
 		final int offset;
-		final int n_bytes;
+		final int numBytes;
 
 		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
 			this.core = core.asCoreLocation();
 			this.address = baseAddress;
 			this.data = data.array().clone();
 			this.offset = data.position();
-			this.n_bytes = data.remaining();
+			this.numBytes = data.remaining();
 		}
 	}
 
-	List<Write> written_memory = new ArrayList<>();
+	List<Write> writtenMemory = new ArrayList<>();
 
 	public MockWriteTransceiver(int version, Collection<Connection> connections)
 			throws IOException, SpinnmanException,
-			uk.ac.manchester.spinnaker.processes.Process.Exception {
+			uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception {
 		super(version, connections, null, null, null, null, null, null);
 	}
 
@@ -274,7 +279,7 @@ class MockWriteTransceiver extends Transceiver {
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) {
-		written_memory.add(new Write(core, baseAddress, data));
+		writtenMemory.add(new Write(core, baseAddress, data));
 	}
 }
 

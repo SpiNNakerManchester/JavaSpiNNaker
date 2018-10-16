@@ -22,8 +22,8 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
-import static uk.ac.manchester.spinnaker.processes.FillProcess.DataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
+import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,8 +68,8 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -423,10 +423,11 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get the address of user<sub>0</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>0</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
 	default int getUser0RegisterAddress(HasCoreLocation core) {
@@ -434,11 +435,24 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Get the address of user<sub>0</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>0</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	default int getUser0RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_0_START_ADDRESS;
+	}
+
+	/**
 	 * Get the address of user<sub>1</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>1</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
 	default int getUser1RegisterAddress(HasCoreLocation core) {
@@ -446,15 +460,40 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Get the address of user<sub>1</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>1</sub> address for
+	 * @return The address for user<sub>1</sub> register for this processor
+	 */
+	default int getUser1RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_1_START_ADDRESS;
+	}
+
+	/**
 	 * Get the address of user<sub>2</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
 	 *
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>2</sub>
-	 *            address from
+	 *            address for
 	 * @return The address for user<sub>2</sub> register for this processor
 	 */
 	default int getUser2RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_2_START_ADDRESS;
+	}
+
+	/**
+	 * Get the address of user<sub>2</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param p
+	 *            the processor ID to get the user<sub>2</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	default int getUser2RegisterAddress(int p) {
+		return getVcpuAddress(p) + CPU_USER_2_START_ADDRESS;
 	}
 
 	/**
