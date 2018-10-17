@@ -1053,7 +1053,7 @@ public class Machine implements Iterable<Chip> {
         }
         if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
            return "ethernetConnectedChips " + ethernetConnectedChips
-                   + " != " + other.ethernetConnectedChips ;
+                   + " != " + other.ethernetConnectedChips;
         }
         if (!spinnakerLinks.equals(other.spinnakerLinks)) {
             return " spinnakerLinks " + spinnakerLinks
