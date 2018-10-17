@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  *
@@ -475,7 +476,6 @@ public class TestMachine {
         Machine rebuilt2 = rebuilt.rebuild();
      }
 
-    /*
     @Test
     public void testUnreachableIncomingChips() {
         Map<ChipLocation, Collection<Direction>> ignoreLinks =
@@ -491,8 +491,29 @@ public class TestMachine {
                 null, null, ignoreLinks);
         Map<ChipLocation, Collection<Direction>> abnormal =
                 instance.findAbnormalLinks();
-        System.out.print(abnormal);
         assertEquals(1, abnormal.size());
-    }*/
+    }
 
+    @Test
+    public void testEquals() throws UnknownHostException {
+        ArrayList<Processor> processors = createProcessors();
+        ArrayList<Chip> chips = createdChips(processors);
+        InetAddress address = InetAddress.getByAddress(bytes);
+
+        Machine instance1 = new Machine(
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
+
+        Machine instance2 = new Machine(
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
+
+        assertEquals(instance1, instance2);
+
+        chips.remove(3);
+
+        Machine missingChip = new Machine(
+                new MachineDimensions(8, 8), chips, BOOT_CHIP);
+
+        assertNotEquals(instance1, missingChip);
+        assertNotNull(instance1.difference(missingChip));
+   }
 }

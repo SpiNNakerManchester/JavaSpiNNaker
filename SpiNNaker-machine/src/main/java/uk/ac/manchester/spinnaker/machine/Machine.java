@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -987,6 +988,7 @@ public class Machine implements Iterable<Chip> {
                 "hashCode not supported as equals implemented.");
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -995,44 +997,110 @@ public class Machine implements Iterable<Chip> {
         if (!(obj instanceof Machine)) {
             return false;
         }
-        Machine that = (Machine) obj;
-        if (!machineDimensions.equals(that.machineDimensions)) {
-            System.out.println("machineDimensions");
-            return false;
+        return difference((Machine) obj) == null;
+    }
+
+    /**
+     * Describes one difference found between this machine and another machine.
+     *
+     * This method will always return null if no difference is found between
+     *      the two machines.
+     * So semantically is the same as Equals except that this works if other
+     *      is a super class of machine
+     *      in which case only the share variables are compared.
+     *
+     * This method returns as soon as it has found a difference so there may
+     *      be other not specified differences.
+     *
+     * Warning This method could change over time,
+     *     so there is no implied guarantee
+     *     to the order that variables are checked
+     *     or to the message that is returned.
+     *
+     * The only guarantee is that null is returned if no difference is detected.
+     *
+     * @param other Another machine to check if it has the same variables.
+     * @return null if no difference is detected otherwise a string.
+     */
+    public String difference(Machine other) {
+        if (!machineDimensions.equals(other.machineDimensions)) {
+             return "machineDimensions " + machineDimensions
+                     + " != " + other.machineDimensions;
         }
-        if (maxUserProssorsOnAChip != that.maxUserProssorsOnAChip) {
-            System.out.println("maxUserProssorsOnAChip");
-            return false;
+        if (!chips.keySet().equals(other.chips.keySet())) {
+            return chipLocationDifference(other);
         }
-        if (!ethernetConnectedChips.equals(that.ethernetConnectedChips)) {
-           return false;
+        if (!version.equals(other.version)) {
+            return "version " + version + " != " + version;
         }
-        if (!spinnakerLinks.equals(that.spinnakerLinks)) {
-            return false;
+        if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
+            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+                    + " != " + other.maxUserProssorsOnAChip;
         }
-        if (!fpgaLinks.equals(that.fpgaLinks)) {
-            return false;
+        if (!boot.equals(other.boot)) {
+            return "boot " + boot + " != " + other.boot;
         }
-        if (!boot.equals(that.boot)) {
-            return false;
-        }
-        if (!bootEthernetAddress.equals(that.bootEthernetAddress)) {
-            return false;
-        }
-        if (chips.size() != that.chips.size()) {
-            return false;
+        if (!bootEthernetAddress.equals(other.bootEthernetAddress)) {
+            return "bootEthernetAddress " + bootEthernetAddress
+                    + " != " + other.bootEthernetAddress;
         }
         for (ChipLocation loc: chips.keySet()) {
             Chip c1 = chips.get(loc);
-            Chip c2 = that.chips.get(loc);
+            Chip c2 = other.chips.get(loc);
             if (!c1.equals(c2)) {
-                return false;
+                return c1 + " != " + c2;
             }
         }
-        if (!version.equals(that.version)) {
-            return false;
+        if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
+           return "ethernetConnectedChips " + ethernetConnectedChips
+                   + " != " + other.ethernetConnectedChips ;
         }
-        return true;
+        if (!spinnakerLinks.equals(other.spinnakerLinks)) {
+            return " spinnakerLinks " + spinnakerLinks
+                    + " != " + other.spinnakerLinks;
+        }
+        if (!fpgaLinks.equals(other.fpgaLinks)) {
+            return "fpgaLinks "  + fpgaLinks + " != " + fpgaLinks;
+        }
+        return null;
+    }
+
+    /**
+     * Describes the difference between chip location between two machines.
+     *
+     * This method is expected to only be called then there is a detected
+     *      or expected difference between the two chip locations
+     *      so will always return a message
+     *
+     * Warning: As this method is mainly a support method for
+     *      {@link difference} the returned result can be changed at any time.
+     *
+     * @param that Another machine with suspected difference in the location of
+     *      Chips.
+     * @return Some useful human readable information.
+     */
+    public String chipLocationDifference(Machine that) {
+        Set<ChipLocation> setThis = chips.keySet();
+        Set<ChipLocation> setThat = that.chips.keySet();
+        if (setThis.size() < setThat.size()) {
+            Set<ChipLocation> temp = new HashSet(setThat);
+            temp.removeAll(setThis);
+            return "other has extra Chips at " + temp;
+        } else if (setThis.size() > setThat.size()) {
+            Set<ChipLocation> temp = new HashSet(setThis);
+            temp.removeAll(setThat);
+            return "other has missing Chips at " + temp;
+        } else {
+            Set<ChipLocation> temp1 = new HashSet(setThis);
+            temp1.removeAll(setThat);
+            if (temp1.isEmpty()) {
+                return "No difference between chip ketsets found.";
+            }
+            Set<ChipLocation> temp2 = new HashSet(setThat);
+            temp2.removeAll(setThis);
+            return "other has missing Chips at " + temp1
+                    + "and extra Chips at " + temp2;
+        }
     }
 
     private class ChipOnBoardIterator implements Iterator<Chip> {
