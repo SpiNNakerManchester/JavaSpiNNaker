@@ -282,6 +282,15 @@ public class Machine implements Iterable<Chip> {
         return Collections.unmodifiableCollection(this.chips.values());
     }
 
+    /**
+     * The locations of each chip in the machine.
+     *
+     * @return An unmodifiable
+     */
+    public final Set<ChipLocation> ChipLocations() {
+        return Collections.unmodifiableSet(this.chips.keySet());
+    }
+
     @Override
    /**
      * Returns an iterator over the Chips in this Machine.
