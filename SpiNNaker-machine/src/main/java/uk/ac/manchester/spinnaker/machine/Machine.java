@@ -287,7 +287,7 @@ public class Machine implements Iterable<Chip> {
      *
      * @return An unmodifiable
      */
-    public final Set<ChipLocation> ChipLocations() {
+    public final Set<ChipLocation> chipLocations() {
         return Collections.unmodifiableSet(this.chips.keySet());
     }
 
