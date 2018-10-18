@@ -567,7 +567,6 @@ public class Machine implements Iterable<Chip> {
      *      spinnaker link is not added.
      */
     public final void addSpinnakerLinks() {
-        System.out.println("addSpinnakerLinks");
         if (version.isFourChip) {
             Chip chip00 = getChipAt(new ChipLocation(0, 0));
             if (!chip00.router.hasLink(Direction.WEST)) {
