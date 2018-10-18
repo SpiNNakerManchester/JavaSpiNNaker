@@ -12,6 +12,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -32,6 +33,7 @@ class SpallocMachineTest {
 	}
 
 	@Test
+    @Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/53")
 	void testSpallocMachine() throws Exception {
         assumeTrue(ping("spinnaker.cs.man.ac.uk") == 0);
 
