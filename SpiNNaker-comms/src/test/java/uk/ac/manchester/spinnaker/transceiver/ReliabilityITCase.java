@@ -1,25 +1,18 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Set;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import testconfig.BoardTestConfiguration;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 class ReliabilityITCase {
