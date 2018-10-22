@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +12,10 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -36,8 +40,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  */
 public class TestMockClient {
 
-        static int timeout = 1000;
-        static MockConnectedClient client = new MockConnectedClient(timeout);
+    static int timeout = 1000;
+    static MockConnectedClient client = new MockConnectedClient(timeout);
+    private static final Logger log = getLogger(TestMockClient.class);
 
         @Test
         void testListJobs() throws IOException, SpallocServerException, Exception {
@@ -46,6 +51,7 @@ public class TestMockClient {
                 if (client.isActual()) {
                     // Don't know the jobids currently on the machine if any
                     jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(), greaterThan(0)));
+                    jobs.forEach(j -> System.out.println(j));
                 } else {
                     int[] expectedIDs = { 47224, 47444};
                     assertArrayEquals(expectedIDs,
@@ -54,7 +60,6 @@ public class TestMockClient {
             }
         }
 
-        @Test
         void testListMachines() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
                 List<Machine> machines = client.listMachines(timeout);
@@ -76,6 +81,7 @@ public class TestMockClient {
                     WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
                     WhereIs whereis2 = client.whereIs(machineName, physical, timeout);
                     ChipLocation chip = whereis1.getChip();
+                    @SuppressWarnings("unused")
                     WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
                     // check only work if all real or all mock
                     if (previous == client.isActual()) {
@@ -86,6 +92,7 @@ public class TestMockClient {
             }
         }
 
+        @SuppressWarnings("unused")
         private void checkNotification(int jobId, String machineName) {
 
         }
@@ -101,9 +108,24 @@ public class TestMockClient {
                 if (client.isActual()) {
                     assertThat("Jobid > 0", jobId, greaterThan(0));
                 } else {
-                    assertEquals(client.MOCK_ID, jobId);
+                    assertEquals(MockConnectedClient.MOCK_ID, jobId);
                 }
                 client.notifyJob(jobId, true, timeout);
+                JobState state = client.getJobState(jobId, timeout);
+                int retries = 0;
+                while (client.isActual() && state.getState() == State.QUEUED ) {
+                    retries += 1;
+                    if (retries > 2) {
+                        log.warn("Test Aborted as Spalloc busy");
+                        client.destroyJob(jobId, "Too long to wait in unittests");
+                        assumeTrue(false,
+                            () -> "Spalloc busy skipping test");
+                    }
+                    sleep(1000);
+                    state = client.getJobState(jobId, timeout);
+                }
+                assertEquals(State.POWER, state.getState());
+                assertTrue(state.getPower());
                 JobMachineInfo machineInfo = client.getJobMachineInfo(jobId, timeout);
                 String machineName = machineInfo.getMachineName();
                 if (client.isActual()) {
@@ -118,9 +140,6 @@ public class TestMockClient {
                 } else {
                     assertEquals("10.11.223.33", hostName);
                 }
-                JobState state = client.getJobState(jobId, timeout);
-                assertEquals(State.POWER, state.getState());
-                assertTrue(state.getPower());
                 if (client.isActual()) {
                     client.jobKeepAlive(jobId, timeout);
                     client.powerOffJobBoards(jobId, timeout);
@@ -142,10 +161,11 @@ public class TestMockClient {
                 ChipLocation chip = new ChipLocation(1,1);
                 WhereIs whereis = client.whereIs(jobId, chip, timeout);
                 assertEquals(chip, whereis.getJobChip());
-                assertEquals(jobId, whereis.getJobId());
-                if (client.isActual()) {
-                    assertNotNull(whereis.getBoardChip());
+                    assertEquals(jobId, whereis.getJobId());
+                 if (client.isActual()) {
+                   assertNotNull(whereis.getBoardChip());
                 } else {
+                    assertEquals(MockConnectedClient.MOCK_ID, whereis.getJobId());
                     assertEquals(chip, whereis.getBoardChip());
                 }
                 client.destroyJob(jobId, "Test finished", timeout);
@@ -153,12 +173,13 @@ public class TestMockClient {
                 if (client.isActual()) {
                    assertEquals(State.DESTROYED, state.getState());
                 }
-             }
+            }
         }
 
         @Test
         void testVersion() throws IOException, SpallocServerException, Exception {
             try (AutoCloseable c = client.withConnection()) {
+                @SuppressWarnings("unused")
                 Version version = client.version(timeout);
                 if (client.isActual()) {
                 } else {

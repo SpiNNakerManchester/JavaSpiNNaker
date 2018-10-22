@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 
@@ -32,7 +30,7 @@ public class TestMachineDefaults {
     @Test
     public void testFoutChipDownLinks() {
         //Misuses of CoreLocation!
-        ArrayList<CoreLocation> fromPython = new ArrayList();
+        ArrayList<CoreLocation> fromPython = new ArrayList<>();
         fromPython.add(new CoreLocation(0, 0, 3));
         fromPython.add(new CoreLocation(0, 0, 4));
         fromPython.add(new CoreLocation(0, 1, 3));
@@ -42,7 +40,7 @@ public class TestMachineDefaults {
         fromPython.add(new CoreLocation(1, 1, 0));
         fromPython.add(new CoreLocation(1, 1, 1));
 
-        ArrayList<CoreLocation> fromDefaults = new ArrayList();
+        ArrayList<CoreLocation> fromDefaults = new ArrayList<>();
         Map<ChipLocation, Set<Direction>> map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;
         for (Entry<ChipLocation, Set<Direction>> entry: map.entrySet()) {
             assertNotNull(entry.getKey());

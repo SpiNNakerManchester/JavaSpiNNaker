@@ -11,35 +11,44 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
-@SuppressWarnings({
-		"checkstyle:MemberName", "checkstyle:LocalVariableName"
-})
-// Member names match field names in BMP; do not change!
+@SARKStruct(value = "board_stat_t", api = SARKStruct.API.BMP)
 public final class ADCInfo {
 	/** fan<sub>0</sub> rotation rate. */
-	public final Double fan_0;
+	@SARKField("fan_0")
+	public final Double fan0;
 	/** fan<sub>1</sub> rotation rate. */
-	public final Double fan_1;
+	@SARKField("fan_1")
+	public final Double fan1;
 	/** temperature bottom. */
-	public final double temp_btm;
+	@SARKField("temp_btm")
+	public final double tempBottom;
 	/** temperature external<sub>0</sub>. */
-	public final Double temp_ext_0;
+	@SARKField("temp_ext_0")
+	public final Double tempExt0;
 	/** temperature external<sub>1</sub>. */
-	public final Double temp_ext_1;
+	@SARKField("temp_ext_1")
+	public final Double tempExt1;
 	/** temperature top. */
-	public final double temp_top;
+	@SARKField("temp_top")
+	public final double tempTop;
 	/** Actual voltage of the 1.2V<sub>a</sub> supply rail. */
-	public final double voltage_1_2a;
+	@SARKField("voltage_1_2a")
+	public final double voltage12a;
 	/** Actual voltage of the 1.2V<sub>b</sub> supply rail. */
-	public final double voltage_1_2b;
+	@SARKField("voltage_1_2b")
+	public final double voltage12b;
 	/** Actual voltage of the 1.2V<sub>c</sub> supply rail. */
-	public final double voltage_1_2c;
+	@SARKField("voltage_1_2c")
+	public final double voltage12c;
 	/** Actual voltage of the 1.8V supply rail. */
-	public final double voltage_1_8;
+	@SARKField("voltage_1_8")
+	public final double voltage18;
 	/** Actual voltage of the 3.3V supply rail. */
-	public final double voltage_3_3;
+	@SARKField("voltage_3_3")
+	public final double voltage33;
 	/** Actual voltage of the main power supply (nominally 12V?). */
-	public final double voltage_supply;
+	@SARKField("voltage_supply")
+	public final double voltageSupply;
 
 	// Sizes of arrays
 	private static final int ADC_SIZE = 8;
@@ -67,27 +76,27 @@ public final class ADCInfo {
 	 */
 	public ADCInfo(ByteBuffer buffer) {
 		short[] adc = new short[ADC_SIZE];
-		short[] t_int = new short[T_INT_SIZE];
-		short[] t_ext = new short[T_EXT_SIZE];
+		short[] tInt = new short[T_INT_SIZE];
+		short[] tExt = new short[T_EXT_SIZE];
 		short[] fan = new short[FAN_SIZE];
 		ShortBuffer sb = buffer.asShortBuffer().asReadOnlyBuffer();
 		sb.get(adc);
-		sb.get(t_int);
-		sb.get(t_ext);
+		sb.get(tInt);
+		sb.get(tExt);
 		sb.get(fan);
 
-		voltage_1_2c = adc[V_1_2C] * BMP_V_SCALE_2_5;
-		voltage_1_2b = adc[V_1_2B] * BMP_V_SCALE_2_5;
-		voltage_1_2a = adc[V_1_2A] * BMP_V_SCALE_2_5;
-		voltage_1_8 = adc[V_1_8] * BMP_V_SCALE_2_5;
-		voltage_3_3 = adc[V_3_3] * BMP_V_SCALE_3_3;
-		voltage_supply = adc[VS] * BMP_V_SCALE_12;
-		temp_top = tempScale(t_int[T_TOP]);
-		temp_btm = tempScale(t_int[T_BTM]);
-		temp_ext_0 = tempScale(t_ext[T_X0]);
-		temp_ext_1 = tempScale(t_ext[T_X1]);
-		fan_0 = fanScale(fan[FAN0]);
-		fan_1 = fanScale(fan[FAN1]);
+		voltage12c = adc[V_1_2C] * BMP_V_SCALE_2_5;
+		voltage12b = adc[V_1_2B] * BMP_V_SCALE_2_5;
+		voltage12a = adc[V_1_2A] * BMP_V_SCALE_2_5;
+		voltage18 = adc[V_1_8] * BMP_V_SCALE_2_5;
+		voltage33 = adc[V_3_3] * BMP_V_SCALE_3_3;
+		voltageSupply = adc[VS] * BMP_V_SCALE_12;
+		tempTop = tempScale(tInt[T_TOP]);
+		tempBottom = tempScale(tInt[T_BTM]);
+		tempExt0 = tempScale(tExt[T_X0]);
+		tempExt1 = tempScale(tExt[T_X1]);
+		fan0 = fanScale(fan[FAN0]);
+		fan1 = fanScale(fan[FAN1]);
 	}
 
 	private static Double tempScale(int rawValue) {

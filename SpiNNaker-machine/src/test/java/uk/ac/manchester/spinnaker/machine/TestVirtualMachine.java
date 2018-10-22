@@ -30,6 +30,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testSmallBoardsMini() {
+        @SuppressWarnings("unused")
         Machine instance = new VirtualMachine(new MachineDimensions(2, 2));
     }
 
@@ -56,7 +57,7 @@ public class TestVirtualMachine {
         assertNotNull(address00);
 
         instance.addFpgaLinks();
-        ArrayList<FPGALinkData> fpgalinks = new ArrayList();
+        ArrayList<FPGALinkData> fpgalinks = new ArrayList<>();
         instance.getFpgaLinks().forEach(fpgalinks::add);
         assertEquals(0, fpgalinks.size());
 
@@ -74,6 +75,7 @@ public class TestVirtualMachine {
     @Test
     public void testBad() {
         assertThrows(Exception.class, () -> {
+            @SuppressWarnings("unused")
             Machine instance = new VirtualMachine(
                 new MachineDimensions(121, 120));
         });
@@ -96,11 +98,12 @@ public class TestVirtualMachine {
         assertEquals(FpgaId.BOTTOM, link.fpgaId);
         assertEquals(3, link.fpgaLinkId);
 
-        ArrayList<FPGALinkData> links = new ArrayList();
+        ArrayList<FPGALinkData> links = new ArrayList<>();
         instance.getFpgaLinks().forEach(links::add);
         assertEquals(3 * 16, links.size());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void test3Boards() {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
@@ -110,7 +113,7 @@ public class TestVirtualMachine {
         assertEquals(3 * 48 * 16, instance.totalAvailableUserCores());
 
         instance.addFpgaLinks();
-        ArrayList<FPGALinkData> links = new ArrayList();
+        ArrayList<FPGALinkData> links = new ArrayList<>();
         instance.getFpgaLinks().forEach(links::add);
         assertEquals(0, links.size());
     }
@@ -126,7 +129,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testSpinnakerLinks() {
-        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap();
+        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap<>();
         ignoreLinks.put(new ChipLocation(0, 0), Arrays.asList(Direction.SOUTHWEST));
         ignoreLinks.put(new ChipLocation(8, 4), Arrays.asList(Direction.SOUTHWEST));
         ignoreLinks.put(new ChipLocation(4, 8), Arrays.asList(Direction.SOUTHWEST));
@@ -164,7 +167,7 @@ public class TestVirtualMachine {
 
     @Test
     public void test3BoardWrappedWithFPGALinks() {
-        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap();
+        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap<>();
         //Make room for fpga links with two none fpga ignores as well
         //South is a fpg NE is not
         ignoreLinks.put(new ChipLocation(0, 0),
@@ -180,7 +183,7 @@ public class TestVirtualMachine {
         assertEquals("2592 cores and 429.5 links", instance.coresAndLinkOutputString());
         assertFalse(instance.hasLinkAt(new ChipLocation(7, 2), Direction.NORTH));
         instance.addFpgaLinks();
-        ArrayList<FPGALinkData> links = new ArrayList();
+        ArrayList<FPGALinkData> links = new ArrayList<>();
         instance.getFpgaLinks().forEach(links::add);
         assertEquals(3, links.size());
 
@@ -188,14 +191,14 @@ public class TestVirtualMachine {
 
     @Test
     public void test3BoardNoWrap() throws UnknownHostException {
-        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap();
+        Map<ChipLocation, Collection<Direction>> ignoreLinks = new HashMap<>();
 
         Machine instance = new VirtualMachine(new MachineDimensions(16, 16),
                 null, null, ignoreLinks);
         assertEquals(3 * 48, instance.chips().size());
 
         instance.addFpgaLinks();
-        ArrayList<FPGALinkData> links = new ArrayList();
+        ArrayList<FPGALinkData> links = new ArrayList<>();
         instance.getFpgaLinks().forEach(links::add);
         // 16 links per fpga
         // each board has 2 fpga open (one connected to other board)
@@ -223,7 +226,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testIgnoreCores() {
-        Map<ChipLocation, Collection<Integer>> ignoreCores = new HashMap();
+        Map<ChipLocation, Collection<Integer>> ignoreCores = new HashMap<>();
         ignoreCores.put(new ChipLocation(7, 7), Arrays.asList(3, 5, 7));
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, ignoreCores, null);
@@ -235,7 +238,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testIgnoreChips() {
-        Set<ChipLocation> ignoreChips = new HashSet();
+        Set<ChipLocation> ignoreChips = new HashSet<>();
         ignoreChips.add(new ChipLocation(4,4));
         ignoreChips.add(new ChipLocation(9,10));
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
@@ -245,7 +248,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testIgnoreRootChips() {
-        Set<ChipLocation> ignoreChips = new HashSet();
+        Set<ChipLocation> ignoreChips = new HashSet<>();
         ignoreChips.add(new ChipLocation(8, 4));
         // Note future Machine may disallow a null ethernet chip
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),

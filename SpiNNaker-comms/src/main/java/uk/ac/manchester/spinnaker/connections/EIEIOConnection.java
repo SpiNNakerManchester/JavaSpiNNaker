@@ -21,7 +21,7 @@ public class EIEIOConnection
 		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>>
 		implements EIEIOReceiver, EIEIOSender {
 
-    /**
+	/**
 	 * Create an EIEIO connection only available for listening, using default
 	 * local port.
 	 *
@@ -37,7 +37,7 @@ public class EIEIOConnection
 		super(localHost, null, null, null);
 	}
 
-    /**
+	/**
 	 * Create an EIEIO connection only available for listening.
 	 *
 	 * @param localHost
@@ -51,11 +51,11 @@ public class EIEIOConnection
 	 *             If there is an error setting up the communication channel
 	 */
 	public EIEIOConnection(InetAddress localHost, Integer localPort)
-            throws IOException {
+			throws IOException {
 		super(localHost, localPort, null, null);
 	}
 
-    /**
+	/**
 	 * Create an EIEIO connection.
 	 *
 	 * @param localHost
@@ -140,7 +140,7 @@ public class EIEIOConnection
 	 *             If receiving fails.
 	 */
 	protected EIEIOCommand receiveCommand() throws IOException {
-		EIEIOMessage<?> msg = receiveEIEIOMessage();
+		EIEIOMessage<?> msg = receiveMessage();
 		if (msg instanceof EIEIOCommandMessage) {
 			return ((EIEIOCommandMessage) msg).getHeader().command;
 		}
@@ -172,7 +172,7 @@ public class EIEIOConnection
 	private static final int FLAG = 0x4000;
 
 	@Override
-	public EIEIOMessage<?> receiveEIEIOMessage(Integer timeout)
+	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(Integer timeout)
 			throws IOException {
 		ByteBuffer b = receive();
 		short header = b.getShort();
@@ -181,10 +181,5 @@ public class EIEIOConnection
 		} else {
 			return readDataMessage(b);
 		}
-	}
-
-	@Override
-	public MessageReceiver<EIEIOMessage<? extends EIEIOHeader>> getReceiver() {
-		return this::receiveEIEIOMessage;
 	}
 }

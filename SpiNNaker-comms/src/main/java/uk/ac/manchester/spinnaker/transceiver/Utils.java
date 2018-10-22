@@ -40,9 +40,8 @@ public abstract class Utils {
 	 * @throws UnknownHostException
 	 *             If the IP address computations fail.
 	 */
-	public static BMPConnectionData workOutBMPFromMachineDetails(
-			InetAddress host, Integer numberOfBoards)
-			throws UnknownHostException {
+	public static BMPConnectionData defaultBMPforMachine(InetAddress host,
+			Integer numberOfBoards) throws UnknownHostException {
 		return new BMPConnectionData(host,
 				numberOfBoards == null ? 0 : numberOfBoards);
 	}
@@ -85,6 +84,7 @@ public abstract class Utils {
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
+	@Deprecated
 	public static void sendPortTriggerMessage(UDPConnection<?> connection,
 			InetAddress host) throws IOException {
 		connection.sendPortTriggerMessage(host);

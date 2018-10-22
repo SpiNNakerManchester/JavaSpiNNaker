@@ -24,10 +24,10 @@ class TestVersion {
 
 	@Test
 	void testNewVersionRequest() {
-		GetVersion ver_request = new GetVersion(new CoreLocation(0, 1, 2));
-		assertEquals(CMD_VER, ver_request.scpRequestHeader.command);
+		GetVersion verRequest = new GetVersion(new CoreLocation(0, 1, 2));
+		assertEquals(CMD_VER, verRequest.scpRequestHeader.command);
 		assertEquals(new CoreLocation(0, 1, 2),
-				ver_request.sdpHeader.getDestination());
+				verRequest.sdpHeader.getDestination());
 	}
 
 	@Test
@@ -36,30 +36,30 @@ class TestVersion {
 		// SCP Stuff
 		short rc = RC_OK.value;
 		short seq = 105;
-		short p2p_addr = 1024;
-		byte phys_cpu = 31;
-		byte virt_cpu = 14;
+		short p2pAddr = 1024;
+		byte physCPU = 31;
+		byte virtCPU = 14;
 		short version = 234;
 		short buffer = 250;
-		int build_date = 103117;
-		byte[] ver_string = "sark/spinnaker".getBytes(US_ASCII);
+		int buildDate = 103117;
+		byte[] verString = "sark/spinnaker".getBytes(US_ASCII);
 
 		// SDP stuff
 		byte flags = REPLY_NOT_EXPECTED.value;
 		byte tag = 5;
-		byte dest_port_cpu = 0x4f;
-		byte src_port_cpu = 0x6a;
-		byte dest_x = 0x11;
-		byte dest_y = (byte) 0xab;
-		byte src_x = 0x7;
-		byte src_y = 0x0;
+		byte destPortCPU = 0x4f;
+		byte srcPortCPU = 0x6a;
+		byte destX = 0x11;
+		byte destY = (byte) 0xab;
+		byte srcX = 0x7;
+		byte srcY = 0x0;
 
 		ByteBuffer data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
-		data.put(flags).put(tag).put(dest_port_cpu).put(src_port_cpu);
-		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
-		data.putShort(rc).putShort(seq).putShort(p2p_addr);
-		data.put(phys_cpu).put(virt_cpu).putShort(buffer).putShort(version);
-		data.putInt(build_date).put(ver_string);
+		data.put(flags).put(tag).put(destPortCPU).put(srcPortCPU);
+		data.put(destY).put(destX).put(srcY).put(srcX);
+		data.putShort(rc).putShort(seq).putShort(p2pAddr);
+		data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
+		data.putInt(buildDate).put(verString);
 		data.flip();
 
 		Response response = new GetVersion.Response(data);
@@ -75,13 +75,13 @@ class TestVersion {
 		// SCP Stuff
 		short rc = RC_OK.value;
 		short seq = 105;
-		short p2p_addr = 1024;
-		byte phys_cpu = 31;
-		byte virt_cpu = 14;
+		short p2pAddr = 1024;
+		byte physCPU = 31;
+		byte virtCPU = 14;
 		short version = -1;
 		short buffer = 250;
-		int build_date = 103117;
-		byte[] ver_string = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
+		int buildDate = 103117;
+		byte[] verString = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
 				.getBytes(US_ASCII);
 
 		// SDP stuff
@@ -97,9 +97,9 @@ class TestVersion {
 		ByteBuffer data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags).put(tag).put(dest_port_cpu).put(src_port_cpu);
 		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
-		data.putShort(rc).putShort(seq).putShort(p2p_addr);
-		data.put(phys_cpu).put(virt_cpu).putShort(buffer).putShort(version);
-		data.putInt(build_date).put(ver_string);
+		data.putShort(rc).putShort(seq).putShort(p2pAddr);
+		data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
+		data.putInt(buildDate).put(verString);
 		data.flip();
 
 		Response response = new GetVersion.Response(data);
