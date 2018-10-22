@@ -3,6 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,11 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.messages.eieio.HostDataRead;
+import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -20,7 +26,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 class BufferedReceivingData {
 
         // # the data to store
-    private final Map<RegionLocation, BufferedDataStorage> data;
+    private final Storage storage;
 
         //# dict of booleans indicating if a region on a core has been flushed
     private final Map<RegionLocation, Boolean> isFlushed;
@@ -40,8 +46,10 @@ class BufferedReceivingData {
         //# dict of end state by core
     private final Map<RegionLocation, ChannelBufferState> endBufferingState;
 
-    public BufferedReceivingData(boolean storeToFile) {
-        data = new DefaultMap<>(BufferedDataStorage::new);
+    public BufferedReceivingData(String databasePath) {
+        File databaseFile = new File(databasePath);
+		ConnectionProvider engine = new DatabaseEngine(databaseFile);
+		storage = new SQLiteStorage(engine);
         //if store_to_file:
         //    self._data = defaultdict(BufferedTempfileDataStorage)
         //else:
@@ -123,31 +131,11 @@ class BufferedReceivingData {
         return this.sequenceNo.get(location.asCoreLocation());
     }
 
-    private BufferedDataStorage getRegionBuffer(RegionLocation location) {
-        return data.get(location);
+    public void storeDataInRegionBuffer(RegionLocation location, ByteBuffer data) throws StorageException {
+        storage.appendRegionContents(location.asCoreLocation(), location.region, data.array());
     }
 
-    BufferedDataStorage getRegionDataPointer(RegionLocation location) {
-    	/*
-        missing = None
-        if (x, y, p, region) not in self._end_buffering_state:
-            missing = (x, y, p, region)
-        data = self._data[x, y, p, region].read_all()
-        return data, missing
-    	 */
-    	if (data.containsKey(location)) {
-    		return data.get(location);
-    	} else {
-    		throw new IllegalArgumentException("no data know for " + location);
-    	}
-    }
-
-    public void storeDataInRegionBuffer(RegionLocation location, ByteBuffer data) {
-        BufferedDataStorage store = getRegionBuffer(location);
-        store.write(data);
-    }
-
-    public void flushingDataFromRegion(RegionLocation location, ByteBuffer data) {
+    public void flushingDataFromRegion(RegionLocation location, ByteBuffer data) throws StorageException {
         storeDataInRegionBuffer(location, data);
         setFlushed(location, true);
     }
@@ -158,5 +146,9 @@ class BufferedReceivingData {
 
     public HostDataRead lastSentPacketToCore(HasCoreLocation location) {
         return lastPacketSent.get(location.asCoreLocation());
+    }
+
+    BufferedDataStorage getRegionDataPointer(RegionLocation location) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
  }

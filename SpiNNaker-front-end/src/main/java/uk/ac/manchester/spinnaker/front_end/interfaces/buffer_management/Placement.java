@@ -11,23 +11,36 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 class Placement implements HasCoreLocation {
 
-    @Override
-    public int getP() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    final int x;
+    final int y;
+    final int p;
+    final Vertex vertex;
+
+    public Placement(int x, int y, int p, Vertex vertex) {
+        this.x = x;
+        this.y = y;
+        this.p = p;
+        this.vertex = vertex;
     }
+
 
     @Override
     public int getX() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return x;
     }
 
     @Override
     public int getY() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return y;
+    }
+
+    @Override
+    public int getP() {
+        return p;
     }
 
     Vertex getVertex() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return vertex;
     }
 
 }

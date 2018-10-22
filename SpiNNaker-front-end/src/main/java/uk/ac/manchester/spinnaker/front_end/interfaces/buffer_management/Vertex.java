@@ -11,41 +11,64 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 public class Vertex {
 
-    Iterable<Integer> getRegions() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    final int recordingRegionBaseAddress;
+    //No reason this can not be a list but int is required
+    final int[] recordedRegionIds;
+
+    public Vertex(int recordingRegionBaseAddress, int[] recordedRegionIds) {
+        this.recordingRegionBaseAddress = recordingRegionBaseAddress;
+        this.recordedRegionIds = recordedRegionIds;
     }
+
+//    Iterable<Integer> getRegions() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
     //hashcode
 
-    int getRegionBufferSize(Integer region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    int getRegionBufferSize(Integer region) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    boolean isEmpty(Integer region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    boolean isEmpty(Integer region) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    boolean isNextTimestamp(Integer region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    boolean isNextTimestamp(Integer region) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    Integer getNextTimestamp(Integer region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    Integer getNextTimestamp(Integer region) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    boolean isNextKey(Integer region, Integer nextTimestamp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    boolean isNextKey(Integer region, Integer nextTimestamp) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    int getNextKey(Integer region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    int getNextKey(Integer region) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
+    // AbstractReceiveBuffersToHost.get_recorded_region_ids
+    /**
+     * Get the recording region IDs that have been recorded using buffering.
+     *
+     * @return The region numbers that have active recording
+     */
     int[] getRecordedRegionIds() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return recordedRegionIds;
     }
 
-    int getRecordingRegionBaseAddress(Transceiver transceiver, Placement placement) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    // AbstractReceiveBuffersToHost.get_recording_region_base_address
+    /**
+     * Get the recording region base address.
+     *
+     * @param transceiver  the SpiNNMan instance
+     * @param placement the placement object of the core to find the address of
+     * @return the base address of the recording region
+     */
+    int getRecordingRegionBaseAddress() {
+        return recordingRegionBaseAddress;
     }
 }

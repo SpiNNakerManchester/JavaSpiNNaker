@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOType;
 import uk.ac.manchester.spinnaker.messages.eieio.EventStopRequest;
 import uk.ac.manchester.spinnaker.messages.eieio.HostDataRead;
 import uk.ac.manchester.spinnaker.messages.eieio.PaddingRequest;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver;
@@ -52,11 +53,11 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 public class BufferManager {
 
     //Found in DataSpecification/data_specification/constants.py
-    private static final int APP_PTR_TABLE_HEADER_BYTE_SIZE = 8;
+//    private static final int APP_PTR_TABLE_HEADER_BYTE_SIZE = 8;
 
     //2 bytes of generic EIEIO header, 4 bytes of key (for 32 bits)
     //and 0 bytes of payload (as it is KEY_32_BIT, not KEY_PAYLOAD_32_BIT).
-    private static final int MIN_MESSAGE_SIZE = 6;
+//    private static final int MIN_MESSAGE_SIZE = 6;
 
     // found in SpiNNFrontEndCommon/spinn_front_end_common/interface/buffer_management/recording_utilities.py
     // The offset of the last sequence number field in bytes
@@ -67,11 +68,11 @@ public class BufferManager {
     private static final int FIRST_REGION_ADDRESS_OFFSET = 4 * 7;
 
     private final Placements placements;
-    private final Tags tags;
+//    private final Tags tags;
     private final Transceiver transceiver;
-    private final DefaultMap<InetAddress, HashSet> seenTags = new DefaultMap<>(HashSet::new);
-    private final HashSet<Vertex> senderVertices;
-    private final HashMap<Vertex,BuffersSentDeque> sentMessages;
+//    private final DefaultMap<InetAddress, HashSet> seenTags = new DefaultMap<>(HashSet::new);
+//    private final HashSet<Vertex> senderVertices;
+//    private final HashMap<Vertex,BuffersSentDeque> sentMessages;
     private final BufferedReceivingData receivedData;
         //# Lock to avoid multiple messages being processed at the same time
         //"_thread_lock_buffer_out",
@@ -79,9 +80,9 @@ public class BufferManager {
         //# Lock to avoid multiple messages being processed at the same time
         //"_thread_lock_buffer_in",
 
-    volatile boolean finished;
+//    volatile boolean finished;
 
-    private Integer listenerPort;  //may be null
+//    private Integer listenerPort;  //may be null
 
         //# Store to file flag
         //"_store_to_file",
@@ -91,7 +92,7 @@ public class BufferManager {
 
     // TODO do we need this or can we not just do extraMonitorCoresByChip.values()
     // # the extra monitor cores which support faster data extraction
-    private final List<ExtraMonitorSupportMachineVertex> extraMonitorCores;
+//    private final List<ExtraMonitorSupportMachineVertex> extraMonitorCores;
 
     //# the extra_monitor to Ethernet connection map
     private final Map<ChipLocation, DataSpeedUpPacketGatherMachineVertex> extraMonitorCoresToEthernetConnectionMap;
@@ -118,11 +119,11 @@ public class BufferManager {
             Map<ChipLocation, DataSpeedUpPacketGatherMachineVertex> extraMonitorCoresToEthernetConnectionMap,
             Map<ChipLocation, ExtraMonitorSupportMachineVertex> extraMonitorCoresByChip,
             Machine machine, Map<CoreLocation, FixedRouteEntry> fixedRoutes,
-            boolean usesAdvancedMonitors, boolean storeToFile) {
+            boolean usesAdvancedMonitors, String databasePath) {
         this.placements = placements;
-        this.tags = tags;
+//        this.tags = tags;
         this.transceiver = tranceiver;
-        this.extraMonitorCores = extraMonitorCores;
+//        this.extraMonitorCores = extraMonitorCores;
         this.extraMonitorCoresToEthernetConnectionMap = extraMonitorCoresToEthernetConnectionMap;
         this.extraMonitorCoresByChip = extraMonitorCoresByChip;
         this.fixedRoutes = fixedRoutes;
@@ -133,14 +134,13 @@ public class BufferManager {
         // self._seen_tags = set()
 
         // Set of vertices with buffers to be sent
-        senderVertices = new HashSet<>();
+//        senderVertices = new HashSet<>();
 
         // Dictionary of sender vertex -> buffers sent
-        sentMessages = new HashMap<>();
+//        sentMessages = new HashMap<>();
 
         // storage area for received data from cores
-        receivedData = new BufferedReceivingData(storeToFile);
-
+        receivedData = new BufferedReceivingData(databasePath);
         //self._store_to_file = store_to_file
 
         //# Lock to avoid multiple messages being processed at the same time
@@ -148,8 +148,8 @@ public class BufferManager {
         //self._thread_lock_buffer_in = threading.RLock()
         //self._buffering_out_thread_pool = ThreadPool(processes=1)
 
-        finished = false;
-        listenerPort = null;
+//        finished = false;
+//        listenerPort = null;
     }
 
     //def __init__(self, placements, tags, transceiver, extra_monitor_cores,
@@ -157,7 +157,7 @@ public class BufferManager {
     //             extra_monitor_to_chip_mapping, machine, fixed_routes,
     //             uses_advanced_monitors, store_to_file=False)
 
-    public void addReceivingVertex(Vertex vertex) throws IOException {
+/*    public void addReceivingVertex(Vertex vertex) throws IOException {
         addBufferListeners(vertex);
     }
 
@@ -340,19 +340,19 @@ public class BufferManager {
         //Python version used lock_buffer_in and thread_lock_buffer_out
         finished = true;
     }
-
-    public void getDataForVertices(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception{
+*/
+    public void getDataForVertices(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception, StorageException{
         // TODO  with self._thread_lock_buffer_out:
         getDataForVerticesLocked(vertices, progress);
     }
 
     //TODO Object type
-    private Object getDataForVertex(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
+    private Object getDataForVertex(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
         // TODO with self._thread_lock_buffer_out:
         return getDataForVertexLocked(placement, recordingRegionId);
     }
 
-    //found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
+/*    //found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
     private int locateMemoryRegionForPlacement(Placement placement, Integer region, Transceiver tranceiver) throws IOException, Process.Exception {
         int regionsBaseAddress = tranceiver.getCPUInformation(placement).getUser()[0];
         int regionOffset = getRegionBaseAddressOffset(regionsBaseAddress, region);
@@ -399,13 +399,15 @@ public class BufferManager {
 
         return message;
     }
+*/
+    private void getDataForVerticesLocked(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception, StorageException {
 
-    private void getDataForVerticesLocked(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception {
         LinkedHashSet<DataSpeedUpPacketGatherMachineVertex> receivers = new LinkedHashSet<>();
 
         if (usesAdvancedMonitors) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
-            // locate receivers
+/*            // locate receivers
             for (Vertex vertex : vertices) {
                 Placement placement = placements.getPlacementOfVertex(vertex);
                 receivers.add(locateExtraMonitorMcReceiver(placement));
@@ -416,7 +418,7 @@ public class BufferManager {
                 receiver.setCoresForDataExtraction(transceiver, placements, extraMonitorCores);
             }
 
-        }
+*/        }
 
         // get data
         for (Vertex vertex: vertices) {
@@ -429,13 +431,14 @@ public class BufferManager {
             }
         }
 
-//        # revert time out
-//        if self._uses_advanced_monitors:
-//            for receiver in receivers:
-//                receiver.unset_cores_for_data_extraction(
-//                    transceiver=self._transceiver, placements=self._placements,
-//                    extra_monitor_cores_for_router_timeout=(
-//                        self._extra_monitor_cores))
+        // revert time out
+/*        if (usesAdvancedMonitors) {
+            for (DataSpeedUpPacketGatherMachineVertex receiver:receivers) {
+                receiver.unset_cores_for_data_extraction(
+                    transceiver, placements, extraMonitorCores);
+            }
+        }
+*/
     }
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/utilities/helpful_functions.py
@@ -446,17 +449,18 @@ public class BufferManager {
     }
 
     private void readSomeData(RegionLocation location, int address, int length)
-            throws IOException, Process.Exception {
+            throws IOException, Process.Exception, StorageException {
         log.debug("< Reading " + length + " bytes from "
             + location + " at " + address);
         ByteBuffer data = requestData(location, address, length);
         receivedData.flushingDataFromRegion(location, data);
     }
 
-    private BufferedDataStorage getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
+    private BufferedDataStorage getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
 
         Vertex vertex = placement.getVertex();
-        int recordingDataAddress = vertex.getRecordingRegionBaseAddress(transceiver, placement);
+        int recordingDataAddress = vertex.getRecordingRegionBaseAddress();
+        // Combine placement.x, placement.y, placement.p,  recording_region_id
         RegionLocation location = new RegionLocation(placement, recordingRegionId);
 
         // TODO Just because we have A sequence number can we assume it is the last one?
@@ -467,7 +471,7 @@ public class BufferManager {
         }
 
         // Read the data if not already received
-        if (receivedData.isDataFromRegionFlushed(location)) {
+        if (!receivedData.isDataFromRegionFlushed(location)) {
 
             // Read the end state of the recording for this region
             ChannelBufferState endState;
@@ -610,6 +614,6 @@ public class BufferManager {
                         "reading beyond the region area")
         end_state.update_read_pointer(read_ptr)
         end_state.set_update_completed()
-*/
+        */
     }
 }

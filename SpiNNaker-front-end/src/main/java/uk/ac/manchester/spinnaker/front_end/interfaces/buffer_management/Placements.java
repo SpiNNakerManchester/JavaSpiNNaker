@@ -11,8 +11,8 @@ import java.util.LinkedHashMap;
  */
 public class Placements {
 
-        private final LinkedHashMap<Vertex, Placement> machineVertices =
-            new LinkedHashMap<>();
+    private final LinkedHashMap<Vertex, Placement> machineVertices =
+        new LinkedHashMap<>();
 
     Placement getPlacementOfVertex (Vertex vertex) {
         if (machineVertices.containsKey(vertex)) {
