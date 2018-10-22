@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOType;
 import uk.ac.manchester.spinnaker.messages.eieio.EventStopRequest;
 import uk.ac.manchester.spinnaker.messages.eieio.HostDataRead;
 import uk.ac.manchester.spinnaker.messages.eieio.PaddingRequest;
-import uk.ac.manchester.spinnaker.processes.Process;
+import uk.ac.manchester.spinnaker.transceiver.processes.Process;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -445,20 +445,20 @@ public class BufferManager {
         return extraMonitorCoresToEthernetConnectionMap.get(ethernet);
     }
 
-    private void readSomeData(RegionLocation location, int address, int length) 
+    private void readSomeData(RegionLocation location, int address, int length)
             throws IOException, Process.Exception {
         log.debug("< Reading " + length + " bytes from "
             + location + " at " + address);
         ByteBuffer data = requestData(location, address, length);
         receivedData.flushingDataFromRegion(location, data);
     }
-    
+
     private BufferedDataStorage getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception {
 
         Vertex vertex = placement.getVertex();
         int recordingDataAddress = vertex.getRecordingRegionBaseAddress(transceiver, placement);
         RegionLocation location = new RegionLocation(placement, recordingRegionId);
-        
+
         // TODO Just because we have A sequence number can we assume it is the last one?
         // Ensure the last sequence number sent has been retrieved
         if (!receivedData.isEndBufferingSequenceNumberStored(placement)) {
@@ -499,16 +499,16 @@ public class BufferManager {
 
             if (endState.currentRead < endState.currentWrite) {
                 int length = endState.currentWrite - endState.currentRead;
-                readSomeData(location, endState.currentRead, length); 
-            } else if (endState.currentRead > endState.currentWrite || 
+                readSomeData(location, endState.currentRead, length);
+            } else if (endState.currentRead > endState.currentWrite ||
                     endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
                 int length = endState.endAddress - endState.currentRead;
                 if (length < 0) {
                     throw new IOException ("The amount of data to read is negative!");
-                }        
-                readSomeData(location, endState.currentRead, length); 
+                }
+                readSomeData(location, endState.currentRead, length);
                 length = endState.endAddress - endState.startAddress;
-                readSomeData(location, endState.startAddress, length); 
+                readSomeData(location, endState.startAddress, length);
             } else {
                ByteBuffer data = ByteBuffer.allocate(0);
                receivedData.flushingDataFromRegion(location, data);
@@ -580,7 +580,7 @@ public class BufferManager {
         // TODO python retreiuves the value and then overwrites it but WHY!
         HostDataRead lastSentAck = receivedData.lastSentPacketToCore(location);
         //EIEIOMessageFactory.readCommandMessage(lastSentAck.??);
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
        /*
         lastSentAck = create_eieio_command.read_eieio_command_message(
             last_sent_ack.data, 0)
