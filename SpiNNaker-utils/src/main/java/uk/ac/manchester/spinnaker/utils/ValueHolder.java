@@ -8,7 +8,7 @@ package uk.ac.manchester.spinnaker.utils;
  * @param <T>
  *            The type of value to hold.
  */
-public class ValueHolder<T> {
+public final class ValueHolder<T> {
 	private T value;
 
 	/**

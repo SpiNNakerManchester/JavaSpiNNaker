@@ -341,20 +341,25 @@ public class HostDataReceiver extends Thread {
 	private class ProcessorThread extends Thread {
 		private final SCPConnection connection;
 		private int timeoutcount = 0;
+		/**
+		 * Whether a packet has been processed since the last retransmission
+		 * request was sent.
+		 */
+		private boolean received = false;
 
 		ProcessorThread(SCPConnection connection) {
 			super("ProcessorThread");
 			this.connection = connection;
 		}
 
-		private void processOnePacket(boolean reiceved) throws Exception {
+		private void processOnePacket() throws Exception {
 			ByteBuffer p = messQueue.poll(1, SECONDS);
 			if (p != null && p.hasRemaining()) {
 				processData(connection, p);
-				reiceved = true;
+				received = true;
 			} else {
 				timeoutcount++;
-				if (timeoutcount > TIMEOUT_RETRY_LIMIT && !reiceved) {
+				if (timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 					log.error(TIMEOUT_MESSAGE);
 					return;
 				}
@@ -363,6 +368,7 @@ public class HostDataReceiver extends Thread {
 					log.debug("doing reinjection");
 					finished = retransmitMissingSequences(connection,
 							receivedSeqNums);
+					received = false;
 				}
 			}
 		}
@@ -370,9 +376,8 @@ public class HostDataReceiver extends Thread {
 		@Override
 		public void run() {
 			try {
-				boolean reiceved = false;
 				while (!finished) {
-					processOnePacket(reiceved);
+					processOnePacket();
 				}
 			} catch (InterruptedException e) {
 				// Do nothing
