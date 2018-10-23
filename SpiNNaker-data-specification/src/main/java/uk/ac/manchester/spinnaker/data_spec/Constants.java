@@ -4,12 +4,12 @@ package uk.ac.manchester.spinnaker.data_spec;
  * Constants used by the Data Structure Generator (DSG) and the Specification
  * Executor.
  */
-final class Constants {
+public final class Constants {
 	private Constants() {
 	}
 
 	/** Bytes per int/word. */
-	static final int INT_SIZE = 4;
+	public static final int INT_SIZE = 4;
 	/** Bytes per long/double-word. */
 	static final int LONG_SIZE = 8;
 
@@ -29,7 +29,7 @@ final class Constants {
 	/** The number of registers in the DSE model. */
 	static final int MAX_REGISTERS = 16;
 	/** The number of memory regions in the DSE model. */
-	static final int MAX_MEM_REGIONS = 16;
+	public static final int MAX_MEM_REGIONS = 16;
 	/** The number of structures in the DSE model. */
 	static final int MAX_STRUCT_SLOTS = 16;
 	/** The max number of elements in structures in the DSE model. */
@@ -48,7 +48,7 @@ final class Constants {
 	/**
 	 * The size of the Data Specification table header, in bytes.
 	 */
-	static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
+	public static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
 	/**
 	 * The size of the Data Specification table, in bytes.
 	 */

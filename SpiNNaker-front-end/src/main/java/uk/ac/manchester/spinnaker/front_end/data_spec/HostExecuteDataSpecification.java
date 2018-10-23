@@ -1,4 +1,4 @@
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.front_end.data_spec;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -13,6 +13,8 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.data_spec.Executor;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
