@@ -34,6 +34,8 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
@@ -185,6 +187,46 @@ public class HostDataReceiver extends Thread {
 			getData();
 			fp1.write(buffer);
 		}
+	}
+
+	/**
+	 * Write the received data to storage.
+	 *
+	 * @param storage
+	 *            The database to write the data to.
+	 * @param regionID
+	 *            What region is the memory block associated with.
+	 * @throws IOException
+	 *             If the I/O operations on the file fail or if the actual
+	 *             reading of the data fails.
+	 * @throws InterruptedException
+	 *             If the process of doing the download is interrupted.
+	 * @throws StorageException
+	 *             If the database access fails.
+	 */
+	public void writeData(Storage storage, int regionID)
+			throws InterruptedException, IOException, StorageException {
+		storage.storeRegionContents(placement, regionID, getData());
+	}
+
+	/**
+	 * Append the received data to storage for a region.
+	 *
+	 * @param storage
+	 *            The database to write the data to.
+	 * @param regionID
+	 *            What region is the memory block associated with.
+	 * @throws IOException
+	 *             If the I/O operations on the file fail or if the actual
+	 *             reading of the data fails.
+	 * @throws InterruptedException
+	 *             If the process of doing the download is interrupted.
+	 * @throws StorageException
+	 *             If the database access fails.
+	 */
+	public void appendData(Storage storage, int regionID)
+			throws InterruptedException, IOException, StorageException {
+		storage.appendRegionContents(placement, regionID, getData());
 	}
 
 	private boolean retransmitMissingSequences(SCPConnection sender,
