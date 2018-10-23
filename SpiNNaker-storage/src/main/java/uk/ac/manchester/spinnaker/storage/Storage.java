@@ -97,4 +97,32 @@ public interface Storage {
 	 */
 	List<Integer> getRegionsWithStorage(HasCoreLocation core)
 			throws StorageException;
+
+	/**
+	 * Store in the database the fact that a core has the given defined regions.
+	 *
+	 * @param core
+	 *            The core that has the memory regions.
+	 * @param regions
+	 *            The description <i>in order</i> of those memory regions that
+	 *            the core has.
+	 */
+	void rememberLocations(CoreLocation core, List<RegionDescriptor> regions)
+			throws StorageException;
+
+
+	/**
+	 * Fetch the location of a region on a core.
+	 *
+	 * @param core
+	 *            The core that has the memory regions.
+	 * @param region
+	 *            The ID region to get the location of.
+	 * @return Where the region is and what size it is, or {@code null} if there
+	 *         is no information for such a region.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	RegionDescriptor getRegionLocation(CoreLocation core, int region)
+			throws StorageException;
 }

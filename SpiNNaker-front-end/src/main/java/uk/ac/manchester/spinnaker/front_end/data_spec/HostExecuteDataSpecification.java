@@ -2,6 +2,8 @@ package uk.ac.manchester.spinnaker.front_end.data_spec;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
@@ -10,7 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.data_spec.Executor;
@@ -19,6 +23,9 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.storage.RegionDescriptor;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
@@ -65,7 +72,44 @@ public class HostExecuteDataSpecification {
 	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
 			Map<CoreLocation, File> dsgTargets)
 			throws IOException, Exception, DataSpecificationException {
-		return load(machine, appID, dsgTargets, null);
+		Map<CoreLocation, LocationInfo> info = new HashMap<>();
+		return load(machine, appID, dsgTargets, info);
+	}
+
+	/**
+	 * Executes the host based data specification.
+	 *
+	 * @param machine
+	 *            The machine we're talking to.
+	 * @param appID
+	 *            The application we're loading.
+	 * @param dsgTargets
+	 *            Where to find a file for each core to write that holds the
+	 *            data specification for that core.
+	 * @param info
+	 *            The map to update with information about what writes have
+	 *            happened on what core. {@code null} to allocate a new map.
+	 * @return Information about what was written on each core where a write
+	 *         happened.
+	 * @throws IOException
+	 *             if communication or disk IO fail
+	 * @throws Exception
+	 *             if SCAMP rejects a message
+	 * @throws DataSpecificationException
+	 *             if there's a bug in a data spec file
+	 */
+	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
+			Map<CoreLocation, File> dsgTargets,
+			Map<CoreLocation, LocationInfo> info)
+			throws IOException, Exception, DataSpecificationException {
+		if (info == null) {
+			info = new HashMap<>();
+		}
+		for (CoreLocation core : new ProgressIterable<>(dsgTargets.keySet(),
+				"Executing data specifications and loading data")) {
+			info.put(core, load(machine, appID, core, dsgTargets.get(core)));
+		}
+		return info;
 	}
 
 	/**
@@ -89,19 +133,19 @@ public class HostExecuteDataSpecification {
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
+	 * @throws StorageException
+	 *             If the database rejects the information.
 	 */
-	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
-			Map<CoreLocation, File> dsgTargets,
-			Map<CoreLocation, LocationInfo> info)
-			throws IOException, Exception, DataSpecificationException {
-		if (info == null) {
-			info = new HashMap<>();
-		}
+	public void load(Machine machine, int appID,
+			Map<CoreLocation, File> dsgTargets, Storage storage)
+			throws IOException, Exception, DataSpecificationException,
+			StorageException {
 		for (CoreLocation core : new ProgressIterable<>(dsgTargets.keySet(),
 				"Executing data specifications and loading data")) {
-			info.put(core, load(machine, appID, core, dsgTargets.get(core)));
+			LocationInfo info =
+					load(machine, appID, core, dsgTargets.get(core));
+			storage.rememberLocations(core, info.memoryRegions);
 		}
-		return info;
 	}
 
 	/**
@@ -141,7 +185,8 @@ public class HostExecuteDataSpecification {
 
 			int user0 = txrx.getUser0RegisterAddress(core);
 			txrx.writeMemory(core, user0, startAddress);
-			return new LocationInfo(startAddress, bytesUsed, bytesWritten);
+			return new LocationInfo(startAddress, bytesUsed, bytesWritten,
+					executor.regions());
 		}
 	}
 
@@ -313,11 +358,18 @@ public class HostExecuteDataSpecification {
 		public final int memoryUsed;
 		/** How much memory was written. No more than the space allocated. */
 		public final int bytesWrittenBySpec;
+		/** Where the writes were really done. */
+		public final List<RegionDescriptor> memoryRegions;
 
-		LocationInfo(int startAddress, int memoryUsed, int bytesWrittenBySpec) {
+		LocationInfo(int startAddress, int memoryUsed, int bytesWrittenBySpec,
+				Collection<MemoryRegion> regions) {
 			this.startAddress = startAddress;
 			this.memoryUsed = memoryUsed;
 			this.bytesWrittenBySpec = bytesWrittenBySpec;
+			this.memoryRegions = unmodifiableList(regions.stream()
+					.map(r -> new RegionDescriptor(r.getRegionBase(),
+							r.getAllocatedSize()))
+					.collect(toList()));
 		}
 	}
 }
