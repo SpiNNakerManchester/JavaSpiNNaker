@@ -76,8 +76,7 @@ public class SQLiteStorage implements Storage {
 					+ "FROM region_locations AS loc JOIN regions AS r "
 					+ "ON loc.region_id = r.global_region_id "
 					+ "WHERE r.x = ? AND r.y = ? "
-					+ "AND r.processor = ? AND r.region = ? "
-					+ "LIMIT 1";
+					+ "AND r.processor = ? AND r.region = ? LIMIT 1";
 
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
@@ -312,7 +311,7 @@ public class SQLiteStorage implements Storage {
 		return result;
 	}
 
-	private void storeLocations(CoreLocation core,
+	private void storeLocations(HasCoreLocation core,
 			List<RegionDescriptor> regions, Connection conn)
 			throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(REMEMBER_REGION_DEF)) {
@@ -328,7 +327,7 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public void rememberLocations(CoreLocation core,
+	public void rememberLocations(HasCoreLocation core,
 			List<RegionDescriptor> regions) throws StorageException {
 		try (Connection conn = connProvider.getConnection();) {
 			conn.setAutoCommit(false);
@@ -348,7 +347,7 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public RegionDescriptor getRegionLocation(CoreLocation core, int region)
+	public RegionDescriptor getRegionLocation(HasCoreLocation core, int region)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection();
 				PreparedStatement s = conn.prepareStatement(FETCH_REGION_DEF)) {

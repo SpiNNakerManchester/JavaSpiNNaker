@@ -29,7 +29,7 @@ class TestSQLiteStorage {
 	}
 
 	@Test
-	void testBasicOps() throws StorageException {
+	void testBasicStorageOps() throws StorageException {
 		ConnectionProvider engine = new DatabaseEngine(db);
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
@@ -54,7 +54,7 @@ class TestSQLiteStorage {
 	}
 
 	@Test
-	void testWithExisting() throws StorageException {
+	void testWithExistingStorage() throws StorageException {
 		ConnectionProvider engine = new DatabaseEngine(db);
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
@@ -72,4 +72,20 @@ class TestSQLiteStorage {
 				new String(storage.getRegionContents(core, 1), UTF_8));
 	}
 
+	@Test
+	void testBasicLocationOps() throws StorageException {
+		ConnectionProvider engine = new DatabaseEngine(db);
+		Storage storage = new SQLiteStorage(engine);
+		HasCoreLocation core = new CoreLocation(0, 0, 0);
+
+		storage.rememberLocations(core,
+				Arrays.asList(new RegionDescriptor(123, 456),
+						new RegionDescriptor(234, 567)));
+		assertEquals(Arrays.asList(core), storage.getCores());
+		assertEquals(Arrays.asList(0, 1), storage.getRegions(core));
+		assertEquals(new RegionDescriptor(123, 456),
+				storage.getRegionLocation(core, 0));
+		assertEquals(new RegionDescriptor(234, 567),
+				storage.getRegionLocation(core, 1));
+	}
 }

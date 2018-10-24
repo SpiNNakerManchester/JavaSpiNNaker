@@ -128,7 +128,7 @@ public interface Storage {
 	 *            The description <i>in order</i> of those memory regions that
 	 *            the core has.
 	 */
-	void rememberLocations(CoreLocation core, List<RegionDescriptor> regions)
+	void rememberLocations(HasCoreLocation core, List<RegionDescriptor> regions)
 			throws StorageException;
 
 	/**
@@ -143,6 +143,6 @@ public interface Storage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	RegionDescriptor getRegionLocation(CoreLocation core, int region)
+	RegionDescriptor getRegionLocation(HasCoreLocation core, int region)
 			throws StorageException;
 }
