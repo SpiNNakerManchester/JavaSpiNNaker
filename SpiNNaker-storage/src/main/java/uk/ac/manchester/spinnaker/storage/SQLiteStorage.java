@@ -19,6 +19,12 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class SQLiteStorage implements Storage {
 	private final ConnectionProvider connProvider;
+	/*
+	 * Note on patterns: private methods with the same name as public methods
+	 * that take an additional Connection parameter are the implementations of
+	 * code that runs inside a transaction context. The outer public method
+	 * manages the transaction for the inner method.
+	 */
 
 	private static final String GET_REGION =
 			"SELECT global_region_id FROM regions "
@@ -89,6 +95,21 @@ public class SQLiteStorage implements Storage {
 		this.connProvider = connectionProvider;
 	}
 
+	/**
+	 * Get the database ID for a particular region.
+	 *
+	 * @param core
+	 *            The core with the region.
+	 * @param region
+	 *            The on-core region ID.
+	 * @param conn
+	 *            The connection to the database, which must have a transaction
+	 *            open.
+	 * @return The database ID for the region, which is unique to a particular
+	 *         region described in the DB.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	private int getRegionID(HasCoreLocation core, int region, Connection conn)
 			throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(MAKE_REGION)) {
@@ -118,18 +139,9 @@ public class SQLiteStorage implements Storage {
 		try (Connection conn = connProvider.getConnection()) {
 			conn.setAutoCommit(false);
 			try {
-				int regionID = getRegionID(core, region, conn);
-				try (PreparedStatement s =
-						conn.prepareStatement(STORE, RETURN_GENERATED_KEYS)) {
-					s.setInt(FIRST, regionID);
-					s.setBytes(SECOND, contents);
-					s.executeUpdate();
-					try (ResultSet keys = s.getGeneratedKeys()) {
-						keys.next();
-						conn.commit();
-						return keys.getInt(FIRST);
-					}
-				}
+				int id = storeRegionContents(core, region, contents, conn);
+				conn.commit();
+				return id;
 			} catch (Throwable t) {
 				conn.rollback();
 				throw t;
@@ -141,19 +153,29 @@ public class SQLiteStorage implements Storage {
 		}
 	}
 
+	private int storeRegionContents(HasCoreLocation core, int region,
+			byte[] contents, Connection conn) throws SQLException {
+		int regionID = getRegionID(core, region, conn);
+		try (PreparedStatement s =
+				conn.prepareStatement(STORE, RETURN_GENERATED_KEYS)) {
+			s.setInt(FIRST, regionID);
+			s.setBytes(SECOND, contents);
+			s.executeUpdate();
+			try (ResultSet keys = s.getGeneratedKeys()) {
+				keys.next();
+				return keys.getInt(FIRST);
+			}
+		}
+	}
+
 	@Override
 	public void appendRegionContents(HasCoreLocation core, int region,
 			byte[] contents) throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
 			conn.setAutoCommit(false);
 			try {
-				int regionID = getRegionID(core, region, conn);
-				try (PreparedStatement s = conn.prepareStatement(APPEND)) {
-					s.setInt(FIRST, regionID);
-					s.setBytes(SECOND, contents);
-					s.executeUpdate();
-					conn.commit();
-				}
+				appendRegionContents(core, region, contents, conn);
+				conn.commit();
 			} catch (Throwable t) {
 				conn.rollback();
 				throw t;
@@ -162,6 +184,16 @@ public class SQLiteStorage implements Storage {
 			}
 		} catch (SQLException e) {
 			throw new StorageException("while appending to a region", e);
+		}
+	}
+
+	private void appendRegionContents(HasCoreLocation core, int region,
+			byte[] contents, Connection conn) throws SQLException {
+		int regionID = getRegionID(core, region, conn);
+		try (PreparedStatement s = conn.prepareStatement(APPEND)) {
+			s.setInt(FIRST, regionID);
+			s.setBytes(SECOND, contents);
+			s.executeUpdate();
 		}
 	}
 
