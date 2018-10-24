@@ -76,18 +76,39 @@ public interface Storage {
 			throws StorageException;
 
 	/**
-	 * Get a list of all cores that have data stored in the database.
-	 * <i>Warning: this is a potentially expensive operation!</i>
+	 * Get a list of all cores known to the database. <i>Warning: this is a
+	 * potentially expensive operation!</i>
 	 *
-	 * @return A list of cores for which something is stored.
+	 * @return A list of known cores.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	List<CoreLocation> getCoresWithStorage() throws StorageException;
+	List<CoreLocation> getCores() throws StorageException;
 
 	/**
-	 * Get a list of all regions for a particular core that have data stored in
-	 * the database.
+	 * Get a list of all cores known to the database that have stored data.
+	 * <i>Warning: this is a potentially expensive operation!</i>
+	 *
+	 * @return A list of known cores with stored region data.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	List<CoreLocation> getCoresWithData() throws StorageException;
+
+	/**
+	 * Get a list of all known regions for a particular core.
+	 *
+	 * @param core
+	 *            The core that has the memory regions.
+	 * @return A list of region IDs for which either something is stored or for
+	 *         which we know where in memory they are mapped.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	List<Integer> getRegions(HasCoreLocation core) throws StorageException;
+
+	/**
+	 * Get a list of all known regions with stored data for a particular core.
 	 *
 	 * @param core
 	 *            The core that has the memory regions.
@@ -95,7 +116,7 @@ public interface Storage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	List<Integer> getRegionsWithStorage(HasCoreLocation core)
+	List<Integer> getRegionsWithData(HasCoreLocation core)
 			throws StorageException;
 
 	/**
@@ -109,7 +130,6 @@ public interface Storage {
 	 */
 	void rememberLocations(CoreLocation core, List<RegionDescriptor> regions)
 			throws StorageException;
-
 
 	/**
 	 * Fetch the location of a region on a core.

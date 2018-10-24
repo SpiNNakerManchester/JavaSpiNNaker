@@ -34,19 +34,23 @@ class TestSQLiteStorage {
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
+		assertEquals(Collections.emptyList(), storage.getCores());
 
 		storage.storeRegionContents(core, 0, "abc".getBytes(UTF_8));
 		storage.appendRegionContents(core, 0, "def".getBytes(UTF_8));
 
 		assertArrayEquals("abcdef".getBytes(UTF_8),
 				storage.getRegionContents(core, 0));
-		assertEquals(Arrays.asList(core), storage.getCoresWithStorage());
-		assertEquals(Arrays.asList(0), storage.getRegionsWithStorage(core));
+		assertEquals(Arrays.asList(core), storage.getCores());
+		assertEquals(Arrays.asList(core), storage.getCoresWithData());
+		assertEquals(Arrays.asList(0), storage.getRegions(core));
 
 		storage.deleteRegionContents(core, 0);
 
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
+		assertEquals(Arrays.asList(core), storage.getCores());
+		assertEquals(Collections.emptyList(), storage.getCoresWithData());
+		assertEquals(Arrays.asList(0), storage.getRegions(core));
+		assertEquals(Collections.emptyList(), storage.getRegionsWithData(core));
 	}
 
 	@Test

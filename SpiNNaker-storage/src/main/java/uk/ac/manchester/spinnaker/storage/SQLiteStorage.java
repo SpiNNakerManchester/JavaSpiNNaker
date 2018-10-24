@@ -20,39 +20,63 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public class SQLiteStorage implements Storage {
 	private final ConnectionProvider connProvider;
 
+	private static final String GET_REGION =
+			"SELECT global_region_id FROM regions "
+					+ "WHERE x = ? AND y = ? AND processor = ? AND region = ? "
+					+ "LIMIT 1";
+	private static final String MAKE_REGION =
+			"INSERT OR IGNORE INTO regions(x, y, processor, region) "
+					+ "VALUES(?, ?, ?, ?)";
+
 	private static final String STORE =
-			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
-					+ "VALUES(?, ?, ?, ?, ?)";
+			"INSERT OR REPLACE INTO storage(region_id, content) "
+					+ "VALUES(?, ?)";
 	private static final String APPEND =
-			"INSERT INTO storage(x, y, processor, region, content) "
-					+ "VALUES(?, ?, ?, ?, ?) "
-					+ "ON CONFLICT(x, y, processor, region) DO UPDATE "
+			"INSERT INTO storage(region_id, content) VALUES(?, ?) "
+					+ "ON CONFLICT(region_id) DO UPDATE "
 					+ "SET content = storage.content || excluded.content";
-	private static final String FETCH = "SELECT content FROM storage WHERE "
-			+ "x = ? AND y = ? AND processor = ? AND region = ? LIMIT 1";
-	private static final String DELETE = "DELETE FROM storage WHERE "
-			+ "x = ? AND y = ? AND processor = ? AND region = ?";
+	private static final String FETCH =
+			"SELECT s.content FROM storage AS s JOIN regions AS r "
+					+ "ON s.region_id = r.global_region_id "
+					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
+					+ "AND r.region = ? " + "LIMIT 1";
+	private static final String DELETE =
+			"DELETE FROM storage WHERE region_id IN ("
+					+ "SELECT global_region_id FROM regions WHERE "
+					+ "x = ? AND y = ? AND processor = ? AND region = ?)";
 	private static final String CORES =
-			"SELECT DISTINCT x, y, processor FROM storage "
+			"SELECT DISTINCT x, y, processor FROM regions "
 					+ "ORDER BY x, y, processor";
+	private static final String CORES_WITH_DATA =
+			"SELECT DISTINCT r.x, r.y, r.processor "
+					+ "FROM regions AS r JOIN storage AS s "
+					+ "ON s.region_id = r.global_region_id "
+					+ "WHERE length(s.content) > 0 "
+					+ "ORDER BY r.x, r.y, r.processor";
 	private static final String REGIONS =
-			"SELECT DISTINCT region FROM storage WHERE "
+			"SELECT DISTINCT region FROM regions WHERE "
 					+ "x = ? AND y = ? AND processor = ? ORDER BY region";
+	private static final String REGIONS_WITH_DATA =
+			"SELECT DISTINCT r.region FROM regions AS r JOIN storage "
+					+ "ON storage.region_id = r.global_region_id "
+					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
+					+ "AND length(storage.content) > 0 ORDER BY r.region";
 
 	private static final String REMEMBER_REGION_DEF =
-			"INSERT INTO regions(x, y, processor, region, address, size) "
-					+ "VALUES(?, ?, ?, ?, ?, ?)";
+			"INSERT INTO region_locations(region_id, address, size) "
+					+ "VALUES(?, ?, ?)";
 	private static final String FETCH_REGION_DEF =
-			"SELECT address, sizee FROM regions WHERE "
-					+ "x = ? AND y = ? AND processor = ? AND region = ? "
+			"SELECT loc.address, loc.size "
+					+ "FROM region_locations AS loc JOIN regions AS r "
+					+ "ON loc.region_id = r.global_region_id "
+					+ "WHERE r.x = ? AND r.y = ? "
+					+ "AND r.processor = ? AND r.region = ? "
 					+ "LIMIT 1";
 
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
-	private static final int FIFTH = 5;
-	private static final int SIXTH = 6;
 
 	/**
 	 * Create an instance.
@@ -65,21 +89,52 @@ public class SQLiteStorage implements Storage {
 		this.connProvider = connectionProvider;
 	}
 
-	@Override
-	public int storeRegionContents(HasCoreLocation core, int region,
-			byte[] contents) throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s =
-						conn.prepareStatement(STORE, RETURN_GENERATED_KEYS)) {
+	private int getRegionID(HasCoreLocation core, int region, Connection conn)
+			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(MAKE_REGION)) {
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());
 			s.setInt(FOURTH, region);
-			s.setBytes(FIFTH, contents);
 			s.executeUpdate();
-			try (ResultSet keys = s.getGeneratedKeys()) {
-				keys.next();
-				return keys.getInt(FIRST);
+		}
+		try (PreparedStatement s = conn.prepareStatement(GET_REGION)) {
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			s.setInt(FOURTH, region);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt(FIRST);
+				}
+			}
+		}
+		throw new IllegalStateException("cannot look up or create region ID");
+	}
+
+	@Override
+	public int storeRegionContents(HasCoreLocation core, int region,
+			byte[] contents) throws StorageException {
+		try (Connection conn = connProvider.getConnection()) {
+			conn.setAutoCommit(false);
+			try {
+				int regionID = getRegionID(core, region, conn);
+				try (PreparedStatement s =
+						conn.prepareStatement(STORE, RETURN_GENERATED_KEYS)) {
+					s.setInt(FIRST, regionID);
+					s.setBytes(SECOND, contents);
+					s.executeUpdate();
+					try (ResultSet keys = s.getGeneratedKeys()) {
+						keys.next();
+						conn.commit();
+						return keys.getInt(FIRST);
+					}
+				}
+			} catch (Throwable t) {
+				conn.rollback();
+				throw t;
+			} finally {
+				conn.setAutoCommit(true);
 			}
 		} catch (SQLException e) {
 			throw new StorageException("while creating a region", e);
@@ -89,14 +144,22 @@ public class SQLiteStorage implements Storage {
 	@Override
 	public void appendRegionContents(HasCoreLocation core, int region,
 			byte[] contents) throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(APPEND)) {
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
-			s.setInt(FOURTH, region);
-			s.setBytes(FIFTH, contents);
-			s.executeUpdate();
+		try (Connection conn = connProvider.getConnection()) {
+			conn.setAutoCommit(false);
+			try {
+				int regionID = getRegionID(core, region, conn);
+				try (PreparedStatement s = conn.prepareStatement(APPEND)) {
+					s.setInt(FIRST, regionID);
+					s.setBytes(SECOND, contents);
+					s.executeUpdate();
+					conn.commit();
+				}
+			} catch (Throwable t) {
+				conn.rollback();
+				throw t;
+			} finally {
+				conn.setAutoCommit(true);
+			}
 		} catch (SQLException e) {
 			throw new StorageException("while appending to a region", e);
 		}
@@ -139,7 +202,7 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public List<CoreLocation> getCoresWithStorage() throws StorageException {
+	public List<CoreLocation> getCores() throws StorageException {
 		ArrayList<CoreLocation> result = new ArrayList<>();
 		try (Connection conn = connProvider.getConnection();
 				PreparedStatement s = conn.prepareStatement(CORES);
@@ -157,11 +220,51 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public List<Integer> getRegionsWithStorage(HasCoreLocation core)
+	public List<CoreLocation> getCoresWithData() throws StorageException {
+		ArrayList<CoreLocation> result = new ArrayList<>();
+		try (Connection conn = connProvider.getConnection();
+				PreparedStatement s = conn.prepareStatement(CORES_WITH_DATA);
+				ResultSet rs = s.executeQuery()) {
+			while (rs.next()) {
+				int x = rs.getInt(FIRST);
+				int y = rs.getInt(SECOND);
+				int p = rs.getInt(THIRD);
+				result.add(new CoreLocation(x, y, p));
+			}
+		} catch (SQLException e) {
+			throw new StorageException("while listing cores", e);
+		}
+		return result;
+	}
+
+	@Override
+	public List<Integer> getRegions(HasCoreLocation core)
 			throws StorageException {
 		ArrayList<Integer> result = new ArrayList<>();
 		try (Connection conn = connProvider.getConnection();
 				PreparedStatement s = conn.prepareStatement(REGIONS)) {
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					int r = rs.getInt(FIRST);
+					result.add(r);
+				}
+			}
+		} catch (SQLException e) {
+			throw new StorageException("while listing regions for a core", e);
+		}
+		return result;
+	}
+
+	@Override
+	public List<Integer> getRegionsWithData(HasCoreLocation core)
+			throws StorageException {
+		ArrayList<Integer> result = new ArrayList<>();
+		try (Connection conn = connProvider.getConnection();
+				PreparedStatement s =
+						conn.prepareStatement(REGIONS_WITH_DATA)) {
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());
@@ -183,12 +286,10 @@ public class SQLiteStorage implements Storage {
 		try (PreparedStatement s = conn.prepareStatement(REMEMBER_REGION_DEF)) {
 			int rid = 0;
 			for (RegionDescriptor d : regions) {
-				s.setInt(FIRST, core.getX());
-				s.setInt(SECOND, core.getY());
-				s.setInt(THIRD, core.getP());
-				s.setInt(FOURTH, rid++);
-				s.setInt(FIFTH, d.baseAddress);
-				s.setInt(SIXTH, d.size);
+				int regionID = getRegionID(core, rid++, conn);
+				s.setInt(FIRST, regionID);
+				s.setInt(SECOND, d.baseAddress);
+				s.setInt(THIRD, d.size);
 				s.executeUpdate();
 			}
 		}
@@ -205,6 +306,8 @@ public class SQLiteStorage implements Storage {
 			} catch (Throwable t) {
 				conn.rollback();
 				throw t;
+			} finally {
+				conn.setAutoCommit(true);
 			}
 		} catch (SQLException e) {
 			throw new StorageException(
