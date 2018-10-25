@@ -14,8 +14,9 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 class ExtraMonitorSupportMachineVertex extends Vertex {
 
-    public ExtraMonitorSupportMachineVertex(int recordingRegionBaseAddress, int[] recordedRegionIds){
-        super(recordingRegionBaseAddress, recordedRegionIds);
+    public ExtraMonitorSupportMachineVertex(String label,
+            int recordingRegionBaseAddress, int[] recordedRegionIds){
+        super(label, recordingRegionBaseAddress, recordedRegionIds);
     }
 
     Object getReinjectionStatus(Placements placements, Transceiver transceiver) {

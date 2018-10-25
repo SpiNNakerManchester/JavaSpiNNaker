@@ -3,19 +3,29 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /**
  *
  * @author Christian-B
  */
+@JsonFormat(shape = ARRAY)
 public class Vertex {
 
+    final String label;
     final int recordingRegionBaseAddress;
     //No reason this can not be a list but int is required
     final int[] recordedRegionIds;
 
-    public Vertex(int recordingRegionBaseAddress, int[] recordedRegionIds) {
+    public Vertex(@JsonProperty(value = "label", required = true) String label,
+            @JsonProperty(value = "recordingRegionBaseAddress", required = true)
+                    int recordingRegionBaseAddress,
+            @JsonProperty(value = "recordedRegionIds", required = true)
+                    int[] recordedRegionIds) {
+        this.label = label;
         this.recordingRegionBaseAddress = recordingRegionBaseAddress;
         this.recordedRegionIds = recordedRegionIds;
     }
