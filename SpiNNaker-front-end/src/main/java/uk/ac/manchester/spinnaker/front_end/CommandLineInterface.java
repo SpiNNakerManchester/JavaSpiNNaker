@@ -9,7 +9,15 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.download.DataOut;
 
+/**
+ * The main command line interface.
+ *
+ * @author Donal Fellows
+ */
 public class CommandLineInterface {
+	private CommandLineInterface() {
+	}
+
 	private static final Logger log = getLogger(CommandLineInterface.class);
 	private static final String JAR_FILE;
 	@SuppressWarnings("unused")
@@ -30,6 +38,13 @@ public class CommandLineInterface {
 		VERSION = prop.getProperty("version");
 	}
 
+	/**
+	 * The main command line interface. Dispatches to other classes based on the
+	 * first argument, which is a command word.
+	 *
+	 * @param args
+	 *            The command line arguments.
+	 */
 	public static void main(String... args) {
 		if (args.length < 1) {
 			System.err.printf(
