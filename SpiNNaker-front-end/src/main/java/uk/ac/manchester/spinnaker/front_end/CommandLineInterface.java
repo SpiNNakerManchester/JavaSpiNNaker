@@ -11,7 +11,10 @@ import uk.ac.manchester.spinnaker.front_end.download.DataOut;
 
 public class CommandLineInterface {
 	private static final Logger log = getLogger(CommandLineInterface.class);
-	private static final String JARFILE;
+	private static final String JAR_FILE;
+	@SuppressWarnings("unused")
+	private static final String MAIN_CLASS;
+	private static final String VERSION;
 
 	static {
 		Properties prop = new Properties();
@@ -22,14 +25,16 @@ public class CommandLineInterface {
 			log.error("failed to read properties", e);
 			System.exit(2);
 		}
-		JARFILE = prop.getProperty("jar");
+		JAR_FILE = prop.getProperty("jar");
+		MAIN_CLASS = prop.getProperty("mainClass");
+		VERSION = prop.getProperty("version");
 	}
 
 	public static void main(String... args) {
 		if (args.length < 1) {
 			System.err.printf(
 					"wrong # args: must be \"java -jar %s <command> ...\"\n",
-					JARFILE);
+					JAR_FILE);
 			System.exit(1);
 		}
 		try {
@@ -37,9 +42,12 @@ public class CommandLineInterface {
 			case "download":
 				download(args);
 				System.exit(0);
+			case "version":
+				System.out.println(VERSION);
+				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], "download");
+						args[0], "download, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
