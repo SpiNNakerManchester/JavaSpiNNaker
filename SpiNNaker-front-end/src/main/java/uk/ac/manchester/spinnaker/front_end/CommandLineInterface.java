@@ -14,7 +14,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataOut;
  *
  * @author Donal Fellows
  */
-public class CommandLineInterface {
+public final class CommandLineInterface {
 	private CommandLineInterface() {
 	}
 
