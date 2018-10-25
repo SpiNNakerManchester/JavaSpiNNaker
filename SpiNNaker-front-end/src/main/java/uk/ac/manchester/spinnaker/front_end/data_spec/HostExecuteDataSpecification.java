@@ -122,11 +122,9 @@ public class HostExecuteDataSpecification {
 	 * @param dsgTargets
 	 *            Where to find a file for each core to write that holds the
 	 *            data specification for that core.
-	 * @param info
-	 *            The map to update with information about what writes have
-	 *            happened on what core.
-	 * @return Information about what was written on each core where a write
-	 *         happened.
+	 * @param storage
+	 *            Where to record information about the layout of the regions on
+	 *            the core.
 	 * @throws IOException
 	 *             if communication or disk IO fail
 	 * @throws Exception

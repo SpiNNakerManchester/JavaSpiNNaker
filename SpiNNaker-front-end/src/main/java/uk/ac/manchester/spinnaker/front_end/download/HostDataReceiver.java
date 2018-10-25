@@ -24,7 +24,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -34,8 +38,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 /**
@@ -60,6 +62,7 @@ public class HostDataReceiver extends Thread {
 	private boolean finished;
 	private int missCount;
 	private BitSet receivedSeqNums;
+	private List<Integer> missLog;
 
 	/**
 	 * Create an instance of the protocol implementation.
@@ -98,6 +101,7 @@ public class HostDataReceiver extends Thread {
 		receivedSeqNums = new BitSet(maxSeqNum);
 		finished = false;
 		missCount = 0;
+		missLog = new ArrayList<>();
 	}
 
 	/**
@@ -125,6 +129,9 @@ public class HostDataReceiver extends Thread {
 	 *             If any I/O fails.
 	 */
 	public byte[] getData() throws InterruptedException, IOException {
+		if (finished) {
+			throw new IllegalStateException("operation already completed");
+		}
 		// create connection
 		SCPConnection sender = null;
 		try {
@@ -190,43 +197,31 @@ public class HostDataReceiver extends Thread {
 	}
 
 	/**
-	 * Write the received data to storage.
+	 * Get a description of what sequence numbers were missed at various stages
+	 * of processing of the download. <em>Do not call until after
+	 * {@link #getData()} returns.</em>
 	 *
-	 * @param storage
-	 *            The database to write the data to.
-	 * @param regionID
-	 *            What region is the memory block associated with.
-	 * @throws IOException
-	 *             If the I/O operations on the file fail or if the actual
-	 *             reading of the data fails.
-	 * @throws InterruptedException
-	 *             If the process of doing the download is interrupted.
-	 * @throws StorageException
-	 *             If the database access fails.
+	 * @return A list of sets of missing sequence numbers. The first element of
+	 *         the list is the set missing in the first download phase, the
+	 *         second element is the set missing in the second download phase,
+	 *         and so on. The final download phase will be an empty set.
 	 */
-	public void writeData(Storage storage, int regionID)
-			throws InterruptedException, IOException, StorageException {
-		storage.storeRegionContents(placement, regionID, getData());
-	}
-
-	/**
-	 * Append the received data to storage for a region.
-	 *
-	 * @param storage
-	 *            The database to write the data to.
-	 * @param regionID
-	 *            What region is the memory block associated with.
-	 * @throws IOException
-	 *             If the I/O operations on the file fail or if the actual
-	 *             reading of the data fails.
-	 * @throws InterruptedException
-	 *             If the process of doing the download is interrupted.
-	 * @throws StorageException
-	 *             If the database access fails.
-	 */
-	public void appendData(Storage storage, int regionID)
-			throws InterruptedException, IOException, StorageException {
-		storage.appendRegionContents(placement, regionID, getData());
+	public List<Set<Integer>> getMissingSequenceDescriptor() {
+		if (!finished) {
+			throw new IllegalStateException("operation not yet safe to use");
+		}
+		List<Set<Integer>> result = new ArrayList<>();
+		Set<Integer> missing = new HashSet<>();
+		for (Integer m : missLog) {
+			if  (m == null) {
+				result.add(missing);
+				missing = new HashSet<>();
+			} else {
+				missing.add(m);
+			}
+		}
+		result.add(missing);
+		return result;
 	}
 
 	private boolean retransmitMissingSequences(SCPConnection sender,
@@ -243,6 +238,7 @@ public class HostDataReceiver extends Thread {
 			if (!receivedSeqNums.get(i)) {
 				missingSeqs.put(i);
 				missCount++;
+				missLog.add(i);
 			}
 		}
 		missingSeqs.flip();
@@ -259,6 +255,7 @@ public class HostDataReceiver extends Thread {
 			// No missing sequences; transfer is complete
 			return true;
 		}
+		missLog.add(null); // Special marker
 		numPackets = computeNumberOfPackets(missingSeqs.limit());
 
 		// Transmit missing sequences as a new SDP Packet
