@@ -6,9 +6,23 @@ package uk.ac.manchester.spinnaker.storage;
  * @author Donal Fellows
  */
 public class RegionDescriptor {
+	/**
+	 * The address of the first byte in the memory region.
+	 */
 	public final int baseAddress;
+	/**
+	 * The number of (contiguous) bytes in the memory region.
+	 */
 	public final int size;
 
+	/**
+	 * Create a memory region descriptor.
+	 *
+	 * @param baseAddress
+	 *            Where does the region start?
+	 * @param size
+	 *            How big is the region?
+	 */
 	public RegionDescriptor(int baseAddress, int size) {
 		this.baseAddress = baseAddress;
 		this.size = size;
@@ -16,9 +30,9 @@ public class RegionDescriptor {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o!=null&&o instanceof RegionDescriptor) {
+		if (o != null && o instanceof RegionDescriptor) {
 			RegionDescriptor d = (RegionDescriptor) o;
-			return d.baseAddress == baseAddress && d.size==size;
+			return d.baseAddress == baseAddress && d.size == size;
 		}
 		return false;
 	}
