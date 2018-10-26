@@ -16,7 +16,7 @@ class BootDataBlock extends BootMessage {
 	private static final int BOOT_DATA_OPERAND_1 =
 			(BOOT_MESSAGE_DATA_WORDS - 1) << BYTE_SIZE;
 
-	private static final boolean inByteRange(int value) {
+	private static boolean inByteRange(int value) {
 		return (value & BYTE_MASK) == value;
 	}
 
