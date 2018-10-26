@@ -33,10 +33,11 @@ class TestJob {
 		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
 	}
 
-    // TODO test need fixing as calls to cliente are time dependant
-    // so this test sometimes failes.
-    // For example j.getState() may or may not call the client
-    // depending on when the previous state was requested.
+	/*
+	 * TODO test need fixing as calls to client are time dependent so this test
+	 * sometimes fails. For example j.getState() may or may not call the client
+	 * depending on when the previous state was requested.
+	 */
 	// @Test
 	void testCoreJobFlow() throws Exception {
 		LinkedBlockingDeque<String> send = new LinkedBlockingDeque<>();
