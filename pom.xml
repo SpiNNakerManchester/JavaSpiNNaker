@@ -336,5 +336,26 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>SupportJDK9AndLater</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<configuration>
+								<additionalOptions>
+									<additionalOption>-html5</additionalOption>
+								</additionalOptions>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
 	</profiles>
 </project>
