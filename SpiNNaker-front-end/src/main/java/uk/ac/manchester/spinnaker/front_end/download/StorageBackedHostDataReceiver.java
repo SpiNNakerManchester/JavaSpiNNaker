@@ -54,6 +54,7 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 				portConnection, hostname, chip, iptag);
 	}
 
+	@SuppressWarnings("checkstyle:ParameterNumber")
 	private StorageBackedHostDataReceiver(Storage storage,
 			HasCoreLocation placement, int region, RegionDescriptor d,
 			int portConnection, String hostname, HasChipLocation chip,
