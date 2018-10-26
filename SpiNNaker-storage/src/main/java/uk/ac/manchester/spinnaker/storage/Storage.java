@@ -127,6 +127,8 @@ public interface Storage {
 	 * @param regions
 	 *            The description <i>in order</i> of those memory regions that
 	 *            the core has.
+	 * @throws StorageException
+	 *             If anything goes wrong.
 	 */
 	void rememberLocations(HasCoreLocation core, List<RegionDescriptor> regions)
 			throws StorageException;
