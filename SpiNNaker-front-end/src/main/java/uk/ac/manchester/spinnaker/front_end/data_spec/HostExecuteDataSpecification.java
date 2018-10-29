@@ -10,12 +10,15 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
@@ -23,9 +26,12 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.RegionDescriptor;
+import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.Storage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
@@ -342,6 +348,35 @@ public class HostExecuteDataSpecification {
 
 	private static boolean isToBeIgnored(MemoryRegion r) {
 		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
+	}
+
+	private static final String FNRE = "^(\\d+)_(\\d+)_(\\d+)\\.spec$";
+
+	public static void main(String... args)
+			throws IOException, SpinnmanException, Exception,
+			DataSpecificationException, StorageException {
+		InetAddress host = InetAddress.getByName(args[0]);
+		int version = Integer.parseInt(args[1]);
+		int appID = Integer.parseInt(args[2]);
+		File db = new File(args[3]);
+		File dsgDir = new File(args[4]);
+
+		Map<CoreLocation, File> dsgTargets = new HashMap<>();
+		Pattern pat = Pattern.compile(FNRE);
+		for (File f : dsgDir.listFiles((f, n) -> n.matches(FNRE))) {
+			Matcher m = pat.matcher(f.getName());
+			if (m.matches()) {
+				int x = Integer.parseInt(m.group(1));
+				int y = Integer.parseInt(m.group(2));
+				int p = Integer.parseInt(m.group(3));
+				dsgTargets.put(new CoreLocation(x, y, p), f);
+			}
+		}
+
+		Storage storage = new SQLiteStorage(new DatabaseEngine(db));
+		Transceiver t = new Transceiver(host, version);
+		HostExecuteDataSpecification dse = new HostExecuteDataSpecification(t);
+		dse.load(t.getMachineDetails(), appID, dsgTargets, storage);
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.front_end.data_spec.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.download.DataOut;
 
 /**
@@ -52,29 +53,28 @@ public final class CommandLineInterface {
 					JAR_FILE);
 			System.exit(1);
 		}
+		String cmd = args[0];
+		String[] real = new String[args.length - 1];
+		System.arraycopy(args, 1, real, 0, real.length);
 		try {
-			switch (args[0]) {
+			switch (cmd) {
+			case "dse":
+				HostExecuteDataSpecification.main(real);
+				System.exit(0);
 			case "download":
-				download(args);
+				DataOut.main(real);
 				System.exit(0);
 			case "version":
 				System.out.println(VERSION);
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], "download, or version");
+						cmd, "download, dse, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace(System.err);
 			System.exit(2);
 		}
-	}
-
-	private static void download(String[] args) throws Exception {
-		// Shim
-		String[] real = new String[args.length - 1];
-		System.arraycopy(args, 1, real, 0, real.length);
-		DataOut.main(real);
 	}
 }
