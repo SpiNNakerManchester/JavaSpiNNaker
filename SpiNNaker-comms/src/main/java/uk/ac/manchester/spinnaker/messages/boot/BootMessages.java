@@ -4,9 +4,9 @@ import static java.lang.Integer.reverseBytes;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static java.lang.System.arraycopy;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
@@ -39,6 +39,7 @@ public class BootMessages {
 	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
+	private static final int WORD_SIZE = 4;
 	private static final String BOOT_IMAGE = "scamp.boot";
 
 	private final ByteBuffer bootData;
@@ -65,17 +66,23 @@ public class BootMessages {
 				bootVariables.setValue(entry.getKey(), entry.getValue());
 			}
 		}
-		// NB: This data is BIG endian!
-		ByteBuffer buffer = allocate(BOOT_VARIABLE_SIZE).order(BIG_ENDIAN);
-		bootVariables.addToBuffer(buffer);
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
-		arraycopy(buffer.array(), 0, bootData.array(),
-				BOOT_STRUCT_REPLACE_OFFSET, BOOT_STRUCT_REPLACE_LENGTH);
+		injectBootVariableBlock(bootVariables);
 		numDataPackets =
 				(int) ceil(bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
 	}
 
-	private static final int WORD_SIZE = 4;
+	private void injectBootVariableBlock(
+			SystemVariableBootValues bootVariables) {
+		// NB: Endian shenanigans!
+		ByteBuffer buffer = allocate(BOOT_VARIABLE_SIZE).order(LITTLE_ENDIAN);
+		bootVariables.addToBuffer(buffer);
+		buffer.position(0);
+		for (int i = 0; i < BOOT_STRUCT_REPLACE_LENGTH / WORD_SIZE; i++) {
+			bootData.putInt(BOOT_STRUCT_REPLACE_OFFSET + i * WORD_SIZE,
+					buffer.getInt());
+		}
+	}
 
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
