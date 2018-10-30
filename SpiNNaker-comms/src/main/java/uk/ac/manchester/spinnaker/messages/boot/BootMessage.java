@@ -1,13 +1,15 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
-/** A message used for booting the board. */
+/**
+ * A message used for booting the board. Note that boot messages are big endian,
+ * unlike the rest of SpiNNaker.
+ */
 public class BootMessage implements SerializableMessage {
 	private static final short BOOT_MESSAGE_VERSION = 1;
 	private static final int BOOT_PACKET_SIZE = 256 * WORD_SIZE;
@@ -63,7 +65,7 @@ public class BootMessage implements SerializableMessage {
 		this.operand1 = operand1;
 		this.operand2 = operand2;
 		this.operand3 = operand3;
-		this.data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.data = buffer.asReadOnlyBuffer();
 		if (data.remaining() > BOOT_PACKET_SIZE) {
 			throw new IllegalArgumentException(
 					"A boot packet can contain at most 256 words of data");
@@ -83,12 +85,20 @@ public class BootMessage implements SerializableMessage {
 		operand2 = buffer.getInt();
 		operand3 = buffer.getInt();
 		if (buffer.hasRemaining()) {
-			data = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			data = buffer.asReadOnlyBuffer();
 		} else {
 			data = null;
 		}
 	}
 
+	/**
+	 * Writes this message into the given buffer as a contiguous range of bytes.
+	 * This is so that a message can be sent. Implementors may assume that the
+	 * buffer has been configured to be <strong>big</strong>-endian and that its
+	 * position is at the point where they should begin writing. Once it has
+	 * finished, the position should be immediately after the last byte written
+	 * by this method.
+	 */
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		buffer.putShort(BOOT_MESSAGE_VERSION);

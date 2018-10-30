@@ -4,16 +4,13 @@ import static java.lang.Integer.reverseBytes;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static java.lang.System.arraycopy;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
 import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
-import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_BLOCK;
-import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_CONTROL;
-import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_START;
 import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.BOOT_VARIABLE_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
@@ -28,16 +25,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
 /** Represents a set of boot messages to be sent to boot the board. */
 public class BootMessages {
-	private static final int BOOT_MESSAGE_DATA_WORDS = 256;
+	/**
+	 * The (maximum) number of data words in an individual boot data message.
+	 */
+	static final int BOOT_MESSAGE_DATA_WORDS = 256;
 	private static final int BOOT_MESSAGE_DATA_BYTES =
-			BOOT_MESSAGE_DATA_WORDS * 4;
+			BOOT_MESSAGE_DATA_WORDS * Constants.WORD_SIZE;
 	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
+	private static final int WORD_SIZE = 4;
 	private static final String BOOT_IMAGE = "scamp.boot";
 
 	private final ByteBuffer bootData;
@@ -64,17 +66,23 @@ public class BootMessages {
 				bootVariables.setValue(entry.getKey(), entry.getValue());
 			}
 		}
-		// NB: This data is BIG endian!
-		ByteBuffer buffer = allocate(BOOT_VARIABLE_SIZE).order(BIG_ENDIAN);
-		bootVariables.addToBuffer(buffer);
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
-		arraycopy(buffer.array(), 0, bootData.array(),
-				BOOT_STRUCT_REPLACE_OFFSET, BOOT_STRUCT_REPLACE_LENGTH);
+		injectBootVariableBlock(bootVariables);
 		numDataPackets =
 				(int) ceil(bootData.limit() / (float) BOOT_MESSAGE_DATA_BYTES);
 	}
 
-	private static final int WORD_SIZE = 4;
+	private void injectBootVariableBlock(
+			SystemVariableBootValues bootVariables) {
+		// NB: Endian shenanigans!
+		ByteBuffer buffer = allocate(BOOT_VARIABLE_SIZE).order(LITTLE_ENDIAN);
+		bootVariables.addToBuffer(buffer);
+		buffer.position(0);
+		for (int i = 0; i < BOOT_STRUCT_REPLACE_LENGTH / WORD_SIZE; i++) {
+			bootData.putInt(BOOT_STRUCT_REPLACE_OFFSET + i * WORD_SIZE,
+					buffer.getInt());
+		}
+	}
 
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
@@ -156,24 +164,30 @@ public class BootMessages {
 	}
 
 	private BootMessage getBootMessage(int blockID) {
+		/*
+		 * Compute the data in the payload; note that this is a pure byte
+		 * sequence right now so endianness checks are moot.
+		 */
 		ByteBuffer buffer = bootData.duplicate();
 		buffer.position(blockID * BOOT_MESSAGE_DATA_BYTES);
 		buffer.limit(buffer.position()
 				+ min(buffer.remaining(), BOOT_MESSAGE_DATA_BYTES));
-		assert buffer.hasRemaining() : "buffer must have space left";
-		return new BootMessage(FLOOD_FILL_BLOCK, 1, 0, 0, buffer);
+
+		// Make the message
+		return new BootDataBlock(blockID, buffer);
 	}
 
-	/** @return a stream of message to be sent. */
+	/** @return a stream of messages to be sent. */
 	public Stream<BootMessage> getMessages() {
-		Stream<BootMessage> first = singleton(
-				new BootMessage(FLOOD_FILL_START, 0, 0, numDataPackets - 1))
-						.stream();
+		// The bookending control messages
+		BootMessage start = new StartOfBootMessages(numDataPackets);
+		BootMessage finish = new EndOfBootMessages();
+
+		// Concatenate everything in the right order
+		Stream<BootMessage> first = singleton(start).stream();
 		Stream<BootMessage> mid =
 				range(0, numDataPackets).mapToObj(this::getBootMessage);
-		Stream<BootMessage> last =
-				singleton(new BootMessage(FLOOD_FILL_CONTROL, 1, 0, 0))
-						.stream();
+		Stream<BootMessage> last = singleton(finish).stream();
 		return concat(first, concat(mid, last));
 	}
 }
