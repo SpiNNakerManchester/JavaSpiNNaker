@@ -64,12 +64,8 @@ public final class Connection {
 	 * @param chip
 	 *            The chip to set.
 	 */
-	public void setChip(ChipLocationBean chip) {
-		if (chip == null) {
-			this.chip = null;
-		} else {
-			this.chip = chip.asChipLocation();
-		}
+	public void setChip(ChipLocation chip) {
+        this.chip = chip;
 	}
 
 	public String getHostname() {

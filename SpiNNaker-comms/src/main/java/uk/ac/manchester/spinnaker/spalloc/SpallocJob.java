@@ -792,13 +792,27 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private void retrieveMachineInfo()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, IllegalStateException {
+		/*
+		 * Check the job is still not QUEUED as then machine info is all nulls
+		 * getJobMachineInfo works if the Job is in State.POWER
+		 */
+		// TODO what about state UNKNOWN and State.DESTROYED
+		if (getState() == State.QUEUED) {
+			// Double check very latest state.
+			purgeStatus();
+			if (getState() == State.QUEUED) {
+				throw new IllegalStateException(
+						"Job not Ready. Call waitUntilReady first.");
+			}
+		}
+
 		machineInfoCache = client.getJobMachineInfo(id, timeout);
 	}
 
 	@Override
 	public List<Connection> getConnections()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, IllegalStateException {
 		if (machineInfoCache == null
 				|| machineInfoCache.getConnections() == null) {
 			retrieveMachineInfo();
@@ -818,7 +832,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public MachineDimensions getDimensions()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, IllegalStateException {
 		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
 			retrieveMachineInfo();
 		}
@@ -830,7 +844,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	@Override
-	public String getMachineName() throws IOException, SpallocServerException {
+	public String getMachineName()
+            throws IOException, SpallocServerException, IllegalStateException {
 		if (machineInfoCache == null
 				|| machineInfoCache.getMachineName() == null) {
 			retrieveMachineInfo();
@@ -843,7 +858,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public List<BoardCoordinates> getBoards()
-			throws IOException, SpallocServerException {
+			throws IOException, SpallocServerException, IllegalStateException {
 		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
 			retrieveMachineInfo();
 		}

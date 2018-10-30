@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.messages.boot;
 
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.hardware_version;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.variables;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -95,7 +96,9 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
-		for (SystemVariableDefinition svd : SystemVariableDefinition.values()) {
+		int base = buffer.position();
+		for (SystemVariableDefinition svd : variables()) {
+			buffer.position(base + svd.offset);
 			svd.addToBuffer(values.get(svd), buffer);
 		}
 	}

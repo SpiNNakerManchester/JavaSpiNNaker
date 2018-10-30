@@ -144,12 +144,14 @@ public class JobDescription {
 		builder.append(" args: ").append(args);
 		builder.append(" kwargs: ").append(kwargs);
         if (boards == null) {
-			builder.append(" NO boards! ");
-        } else if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
-			builder.append(" boards: ").append(boards);
-		} else {
-			builder.append(" # boards: ").append(boards.size());
-		}
+            builder.append("No Boards");
+        } else {
+            if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
+                builder.append(" boards: ").append(boards);
+            } else {
+                builder.append(" # boards: ").append(boards.size());
+            }
+        }
 		builder.append(" keepAliveHost ").append(keepAliveHost);
 		return builder.toString();
 	}
