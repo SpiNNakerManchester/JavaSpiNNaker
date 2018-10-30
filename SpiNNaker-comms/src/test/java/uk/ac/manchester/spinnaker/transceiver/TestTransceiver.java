@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import static java.util.stream.Collectors.toSet;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -161,7 +159,7 @@ class TestTransceiver {
 	}
 
 	@Test
-	@Disabled("CB commented out")
+	//@Disabled("CB commented out")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
@@ -203,17 +201,12 @@ class TestTransceiver {
 		}
 	}
 
-	private static Set<ChipLocation> chips(Machine machine) {
-		return machine.chips().stream().map(chip -> chip.asChipLocation())
-				.collect(toSet());
-	}
-
 	private static final int REPETITIONS = 10;
 
 	@Test
 	void testReliableMachine() throws Exception {
 		boardConfig.setUpRemoteBoard();
-        ArrayList<Machine> l = new ArrayList<>();
+        Machine first = null;
 
         for (int i = 0 ; i < REPETITIONS ; i++) {
 			try (Transceiver txrx =
@@ -221,22 +214,12 @@ class TestTransceiver {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
         		txrx.getScampVersion();
-				l.add(txrx.getMachineDetails());
+                if (first == null) {
+                    first = txrx.getMachineDetails();
+                } else {
+                    assertNull(first.difference(txrx.getMachineDetails()));
+                }
 			}
-		}
-
-        Set<ChipLocation> m = chips(l.remove(0));
-		/*
-		 * These look like weird assertions, but they're what ends up sometimes
-		 * missing! Weird indeed...
-		 */
-		assertTrue(m.contains(new ChipLocation(6, 2)),
-				() -> "(6,2) must be present in " + m);
-		assertFalse(m.contains(new ChipLocation(7, 2)),
-				() -> "(7,2) must not be present in " + m);
-		assertEquals(48, m.size());
-		for (Machine m2 : l) {
-			assertEquals(m, chips(m2));
 		}
 	}
 }
