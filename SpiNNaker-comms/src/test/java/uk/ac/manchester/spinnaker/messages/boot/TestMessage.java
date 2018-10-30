@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.boot;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,5 +51,16 @@ class TestMessage {
 				0, 51, 4, 4 // 12-15
 		};
 		assertArrayEquals(expected, got);
+	}
+
+	@Test
+	void testBootMessagesSerialize() {
+		BootMessages bm = new BootMessages(5);
+		for (BootMessage b : bm.getMessages().collect(Collectors.toList())) {
+			ByteBuffer buf = ByteBuffer.allocate(1500);
+			b.addToBuffer(buf);
+			buf.flip();
+			assertTrue(Arrays.asList(18, 1042, 430).contains(buf.remaining()));
+		}
 	}
 }
