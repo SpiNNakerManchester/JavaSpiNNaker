@@ -116,9 +116,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+     * @throws IllegalStateException
+     *             If the spalloc job is not Ready.
 	 */
 	List<Connection> getConnections()
-			throws IOException, SpallocServerException;
+			throws IOException, SpallocServerException, IllegalStateException;
 
 	/**
 	 * @return The name of the host that is the root chip of the whole
@@ -136,9 +138,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+     * @throws IllegalStateException
+     *             If the spalloc job is not Ready.
 	 */
 	MachineDimensions getDimensions()
-			throws IOException, SpallocServerException;
+			throws IOException, SpallocServerException, IllegalStateException;
 
 	/**
 	 * @return The name of the machine the job is allocated on.
@@ -146,8 +150,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+     * @throws IllegalStateException
+     *             If the spalloc job is not Ready.
 	 */
-	String getMachineName() throws IOException, SpallocServerException;
+	String getMachineName() throws IOException, SpallocServerException,
+            IllegalStateException;
 
 	/**
 	 * @return All the boards allocated to the job.
@@ -155,9 +162,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+     * @throws IllegalStateException
+     *             If the spalloc job is not Ready.
 	 */
 	List<BoardCoordinates> getBoards()
-			throws IOException, SpallocServerException;
+			throws IOException, SpallocServerException, IllegalStateException;
 
 	/**
 	 * Block until the job's state changes from the supplied state.

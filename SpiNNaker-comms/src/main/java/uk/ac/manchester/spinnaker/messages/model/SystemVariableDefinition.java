@@ -9,6 +9,9 @@ import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.IP_ADDR_WID
 import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.PER_CORE_WIDTH;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** Defines the system variables available. */
 public enum SystemVariableDefinition {
@@ -243,6 +246,18 @@ public enum SystemVariableDefinition {
 	 */
 	public void addToBuffer(Object value, ByteBuffer buffer) {
 		type.addToBuffer(value, buffer);
+	}
+
+	/**
+	 * Get the list of all variables <i>in order</i>.
+	 *
+	 * @return The list of all variables.
+	 */
+	public static List<SystemVariableDefinition> variables() {
+		SystemVariableDefinition[] vals =
+				SystemVariableDefinition.values().clone();
+		Arrays.sort(vals, (a, b) -> Integer.compare(a.offset, b.offset));
+		return Collections.unmodifiableList(Arrays.asList(vals));
 	}
 }
 

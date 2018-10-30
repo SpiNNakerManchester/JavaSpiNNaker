@@ -74,4 +74,15 @@ public class TestDirection {
         assertEquals(Direction.values().length, inverses.size());
     }
 
+    /**
+     * Test that json labels can be converted to direction
+     */
+    @Test
+    public void testByLabel() {
+        assertEquals(Direction.NORTHEAST, Direction.byLabel("north_east"));
+        assertEquals(Direction.WEST, Direction.byLabel("west"));
+        assertThrows(Exception.class, () -> {
+            Direction.byLabel("foo");
+        });
+    }
 }

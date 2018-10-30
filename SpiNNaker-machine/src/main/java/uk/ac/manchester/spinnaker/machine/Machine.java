@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
+import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
+import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
@@ -113,6 +116,21 @@ public class Machine implements Iterable<Chip> {
             HasChipLocation boot) {
         this(machineDimensions, boot);
         addChips(chips);
+    }
+
+    /**
+     * Creates a Machine from a Bean.
+     *
+     * @param bean Bean holding the Values to set.
+     */
+    public Machine(MachineBean bean) {
+        this(bean.getMachineDimensions(), bean.getRoot());
+        for (ChipBean chipBean: bean.getChips()) {
+            chipBean.addDefaults(bean);
+            addChip(new Chip(chipBean, this));
+        }
+		addSpinnakerLinks();
+		addFpgaLinks();
     }
 
     /**
@@ -262,6 +280,15 @@ public class Machine implements Iterable<Chip> {
      */
     public final Collection<Chip> chips() {
         return Collections.unmodifiableCollection(this.chips.values());
+    }
+
+    /**
+     * The locations of each chip in the machine.
+     *
+     * @return An unmodifiable
+     */
+    public final Set<ChipLocation> chipLocations() {
+        return Collections.unmodifiableSet(this.chips.keySet());
     }
 
     @Override
@@ -575,14 +602,23 @@ public class Machine implements Iterable<Chip> {
      * @param x X coordinate
      * @param y Y coordinate
      * @return A ChipLocation based on X and Y with possible wrap around,
-     *  or null if either coordinate is less than zero.
+     *  or null if either coordinate is less than zero
+     *       or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(int x, int y) {
         if (version.horizontalWrap) {
             x = (x + machineDimensions.width) % machineDimensions.width;
+        } else {
+            if (x < 0 || x >=  this.machineDimensions.width) {
+                return null;
+            }
         }
         if (version.verticalWrap) {
             y = (y + machineDimensions.height) % machineDimensions.height;
+        } else {
+            if (y < 0 || y >= this.machineDimensions.width) {
+                return null;
+            }
         }
         if (x < 0 || y < 0) {
             return null;
@@ -591,36 +627,43 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Adjust the location is required.
+     * Returns the location you would get to from the source if you move in
+     *      this direction.
      *
      * If required (and applicable) adjusting for wrap around.
      * <p>
      * No check is done to see if there is actually a chip at that location.
      *
-     * @param location X and Y coordinates
-     * @return A ChipLocation based on X and Y with possible wrap around,
-     *  or null if either coordinate is null.
+     * @param source the original x and y coordinates.
+     * @param direction which way to move.
+     * @return A ChipLocation based on a move in this direction
+     *  with possible wrap around,
+     *  or null if either coordinate is less than zero
+     *       or greater than the dimensions of the machine.
+     */
+    public final ChipLocation normalizedMove(
+            HasChipLocation source, Direction direction) {
+        return normalizedLocation(source.getX() + direction.xChange,
+                source.getY() + direction.yChange);
+    }
+
+
+    /**
+     * Returns this location adjusted for wrap arounds.
+     *
+     * <p>
+     * No check is done to see if there is actually a chip at that location.
+     *
+     * @param location
+     *     A location which may need to be corrected for wrap arounds.
+     * @return
+     *     A ChipLocation based on a move in this direction
+     *         with possible wrap around,
+     *         or null if either coordinate is less than zero
+     *         or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(HasChipLocation location) {
-        if (version.horizontalWrap) {
-            if (version.verticalWrap) {
-                return new ChipLocation(
-                         location.getX() % machineDimensions.width,
-                         location.getY() % machineDimensions.height);
-            } else {
-                return new ChipLocation(
-                         location.getX() % machineDimensions.width,
-                         location.getY());
-            }
-        } else {
-            if (version.verticalWrap) {
-                return new ChipLocation(
-                         location.getX(),
-                         location.getY() % machineDimensions.height);
-            } else {
-                return location.asChipLocation();
-            }
-        }
+        return normalizedLocation(location.getX(), location.getY());
     }
 
     /**
@@ -945,6 +988,127 @@ public class Machine implements Iterable<Chip> {
             }
         }
         return abnormalCores;
+    }
+
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException(
+                "hashCode not supported as equals implemented.");
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Machine)) {
+            return false;
+        }
+        return difference((Machine) obj) == null;
+    }
+
+    /**
+     * Describes one difference found between this machine and another machine.
+     *
+     * This method will always return null if no difference is found between
+     *      the two machines.
+     * So semantically is the same as Equals except that this works if other
+     *      is a super class of machine
+     *      in which case only the share variables are compared.
+     *
+     * This method returns as soon as it has found a difference so there may
+     *      be other not specified differences.
+     *
+     * Warning This method could change over time,
+     *     so there is no implied guarantee
+     *     to the order that variables are checked
+     *     or to the message that is returned.
+     *
+     * The only guarantee is that null is returned if no difference is detected.
+     *
+     * @param other Another machine to check if it has the same variables.
+     * @return null if no difference is detected otherwise a string.
+     */
+    public String difference(Machine other) {
+        if (!machineDimensions.equals(other.machineDimensions)) {
+             return "machineDimensions " + machineDimensions
+                     + " != " + other.machineDimensions;
+        }
+        if (!chips.keySet().equals(other.chips.keySet())) {
+            return chipLocationDifference(other);
+        }
+        if (!version.equals(other.version)) {
+            return "version " + version + " != " + version;
+        }
+        if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
+            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+                    + " != " + other.maxUserProssorsOnAChip;
+        }
+        if (!boot.equals(other.boot)) {
+            return "boot " + boot + " != " + other.boot;
+        }
+        if (!bootEthernetAddress.equals(other.bootEthernetAddress)) {
+            return "bootEthernetAddress " + bootEthernetAddress
+                    + " != " + other.bootEthernetAddress;
+        }
+        for (ChipLocation loc: chips.keySet()) {
+            Chip c1 = chips.get(loc);
+            Chip c2 = other.chips.get(loc);
+            if (!c1.equals(c2)) {
+                return c1 + " != " + c2;
+            }
+        }
+        if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
+           return "ethernetConnectedChips " + ethernetConnectedChips
+                   + " != " + other.ethernetConnectedChips;
+        }
+        if (!spinnakerLinks.equals(other.spinnakerLinks)) {
+            return " spinnakerLinks " + spinnakerLinks
+                    + " != " + other.spinnakerLinks;
+        }
+        if (!fpgaLinks.equals(other.fpgaLinks)) {
+            return "fpgaLinks "  + fpgaLinks + " != " + fpgaLinks;
+        }
+        return null;
+    }
+
+    /**
+     * Describes the difference between chip location between two machines.
+     *
+     * This method is expected to only be called then there is a detected
+     *      or expected difference between the two chip locations
+     *      so will always return a message
+     *
+     * Warning: As this method is mainly a support method for
+     *      {@link difference} the returned result can be changed at any time.
+     *
+     * @param that Another machine with suspected difference in the location of
+     *      Chips.
+     * @return Some useful human readable information.
+     */
+    public String chipLocationDifference(Machine that) {
+        Set<ChipLocation> setThis = chips.keySet();
+        Set<ChipLocation> setThat = that.chips.keySet();
+        if (setThis.size() < setThat.size()) {
+            Set<ChipLocation> temp = new HashSet<>(setThat);
+            temp.removeAll(setThis);
+            return "other has extra Chips at " + temp;
+        } else if (setThis.size() > setThat.size()) {
+            Set<ChipLocation> temp = new HashSet<>(setThis);
+            temp.removeAll(setThat);
+            return "other has missing Chips at " + temp;
+        } else {
+            Set<ChipLocation> temp1 = new HashSet<>(setThis);
+            temp1.removeAll(setThat);
+            if (temp1.isEmpty()) {
+                return "No difference between chip ketsets found.";
+            }
+            Set<ChipLocation> temp2 = new HashSet<>(setThat);
+            temp2.removeAll(setThis);
+            return "other has missing Chips at " + temp1
+                    + "and extra Chips at " + temp2;
+        }
     }
 
     private class ChipOnBoardIterator implements Iterator<Chip> {

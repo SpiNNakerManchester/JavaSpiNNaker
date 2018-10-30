@@ -279,8 +279,7 @@ public enum MachineVersion {
     }
 
     private static boolean isTriad(int width, int height) {
-        return ((width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (height % MachineDefaults.TRIAD_WIDTH == 0))
+        return hasWrapArounds(width, height)
             || (((width - MachineDefaults.HALF_SIZE)
                 % MachineDefaults.TRIAD_HEIGHT == 0)
                 && ((height - MachineDefaults.HALF_SIZE)
