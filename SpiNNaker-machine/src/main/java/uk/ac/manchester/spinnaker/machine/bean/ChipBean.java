@@ -37,8 +37,10 @@ public class ChipBean {
     @JsonCreator
     public ChipBean(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "details", required = true) ChipDetails details,
-            @JsonProperty(value = "resources", required = false) ChipResources resources) {
+            @JsonProperty(value = "details", required = true)
+            ChipDetails details,
+            @JsonProperty(value = "resources", required = false)
+            ChipResources resources) {
         location = new ChipLocation(x, y);
         this.details = details;
         this.resources = resources;

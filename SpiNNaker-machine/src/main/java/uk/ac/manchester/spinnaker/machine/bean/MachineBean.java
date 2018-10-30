@@ -43,9 +43,12 @@ public class MachineBean {
             @JsonProperty(value = "height", required = true) int height,
             @JsonProperty(value = "width", required = true) int width,
             @JsonProperty(value = "root", required = true) ChipLocation root,
-            @JsonProperty(value = "ethernetResources", required = true) ChipResources ethernetResources,
-            @JsonProperty(value = "standardResources", required = true) ChipResources standardResources,
-            @JsonProperty(value = "chips", required = true) List<ChipBean> chips) {
+            @JsonProperty(value = "ethernetResources", required = true)
+            ChipResources ethernetResources,
+            @JsonProperty(value = "standardResources", required = true)
+            ChipResources standardResources,
+            @JsonProperty(value = "chips", required = true)
+            List<ChipBean> chips) {
         dimensions = new MachineDimensions(height, width);
         this.root = root;
         this.chips = chips;
