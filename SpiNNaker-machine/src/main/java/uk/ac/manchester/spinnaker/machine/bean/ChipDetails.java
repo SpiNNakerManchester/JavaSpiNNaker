@@ -27,16 +27,17 @@ public class ChipDetails {
     private List<Direction> deadDirections = emptyList();
 
     /**
-     * Creates a Chip Details bean with the required fields
-     *  leaving optional ones form setters.
+     * Creates a Chip Details bean with the required fields leaving optional
+     * ones form setters.
      *
-     * @param cores Total number of cores working cores including monitors.
-     * @param ethernet Location of the nearest Ethernet Chip.
+     * @param cores
+     *            Total number of cores working cores including monitors.
+     * @param ethernet
+     *            Location of the nearest Ethernet Chip.
      */
     public ChipDetails(
             @JsonProperty(value = "cores", required = true) int cores,
-            @JsonProperty(value = "ethernet", required = true)
-                    ChipLocation ethernet) {
+            @JsonProperty(value = "ethernet", required = true) ChipLocation ethernet) {
         this.cores = cores;
         this.ethernet = ethernet;
     }
@@ -63,9 +64,10 @@ public class ChipDetails {
     }
 
     /**
-     * @param ipAddress the ipAddress to set
-     * @throws UnknownHostException If the ipAddress can not be converted
-     *      to an InetAddress
+     * @param ipAddress
+     *            the ipAddress to set
+     * @throws UnknownHostException
+     *             If the ipAddress can not be converted to an InetAddress
      */
     public void setIpAddress(String ipAddress) throws UnknownHostException {
         this.ipAddress = InetAddress.getByName(ipAddress);
@@ -80,11 +82,12 @@ public class ChipDetails {
     }
 
     /**
-     * @param deadLinks the deadLinks to set
+     * @param deadLinks
+     *            the deadLinks to set
      */
     public void setDeadLinks(List<Integer> deadLinks) {
         deadDirections = new ArrayList<>();
-        for (Integer deadLink: deadLinks) {
+        for (Integer deadLink : deadLinks) {
             deadDirections.add(Direction.byId(deadLink));
         }
     }
@@ -104,7 +107,4 @@ public class ChipDetails {
         builder.append("]");
         return builder.toString();
     }
-
-
-
 }

@@ -641,7 +641,7 @@ public class Machine implements Iterable<Chip> {
      *  or null if either coordinate is less than zero
      *       or greater than the dimensions of the machine.
      */
-    public final ChipLocation noralizedMove(
+    public final ChipLocation normalizedMove(
             HasChipLocation source, Direction direction) {
         return normalizedLocation(source.getX() + direction.xChange,
                 source.getY() + direction.yChange);

@@ -63,7 +63,7 @@ public class VirtualMachine extends Machine {
             ignoreLinks = new HashMap<>();
         }
 
-        addVerionIgnores(ignoreLinks);
+        addVersionIgnores(ignoreLinks);
 
         SpiNNakerTriadGeometry geometry =
                 SpiNNakerTriadGeometry.getSpinn5Geometry();
@@ -112,7 +112,7 @@ public class VirtualMachine extends Machine {
         this(version.machineDimensions, null, null, null);
     }
 
-    private void addVerionIgnores(
+    private void addVersionIgnores(
             Map<ChipLocation, Collection<Direction>> ignoreLinks) {
         if (version.isFourChip) {
             ignoreLinks.putAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
@@ -135,7 +135,7 @@ public class VirtualMachine extends Machine {
             HashMap<ChipLocation, ChipLocation> allChips) {
         ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
-            ChipLocation destination = noralizedMove(location, direction);
+            ChipLocation destination = normalizedMove(location, direction);
             if (allChips.containsKey(destination)) {
                 links.add(new Link(location, direction, destination));
             }
@@ -149,7 +149,7 @@ public class VirtualMachine extends Machine {
         ArrayList<Link> links = new ArrayList<>();
         for (Direction direction: Direction.values()) {
             if (!ignoreLinks.contains(direction)) {
-                ChipLocation destination = noralizedMove(location, direction);
+                ChipLocation destination = normalizedMove(location, direction);
                 if (allChips.containsKey(destination)) {
                     links.add(new Link(location, direction, destination));
                 }

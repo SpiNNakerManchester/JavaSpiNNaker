@@ -13,9 +13,10 @@ import java.util.List;
  */
 public class ChipResources {
 
-    /** Symbolic value to specify no specific value has been set.
+    /**
+     * Symbolic value to specify no specific value has been set.
      *
-     *  This allows the value 0 to be declared as specifically set.
+     * This allows the value 0 to be declared as specifically set.
      */
     public static final int NOT_SET = -1;
     private int cores;
@@ -38,14 +39,13 @@ public class ChipResources {
     }
 
     /**
-     * Adds the default values
-     *    if and only if no value had been specifically set.
+     * Adds the default values if and only if no value had been specifically
+     * set. If a value is not set in both this and the defaults it will remain
+     * as not set. No Exception is thrown.
      *
-     * If a value is not set in both this and the defaults
-     *      it will remain as not set. No Exception is thrown.
-     *
-     * @param defaults Another resources whose values should replace those
-     *    which have not been set.
+     * @param defaults
+     *            Another resources whose values should replace those which have
+     *            not been set.
      */
     @JsonIgnore
     public void addDefaults(ChipResources defaults) {
@@ -80,7 +80,8 @@ public class ChipResources {
     }
 
     /**
-     * @param cores the cores to set
+     * @param cores
+     *            the cores to set
      */
     public void setCores(int cores) {
         this.cores = cores;
@@ -94,7 +95,8 @@ public class ChipResources {
     }
 
     /**
-     * @param monitors the monitors to set
+     * @param monitors
+     *            the monitors to set
      */
     public void setMonitors(int monitors) {
         this.monitors = monitors;
@@ -108,7 +110,8 @@ public class ChipResources {
     }
 
     /**
-     * @param sdram the sdram to set
+     * @param sdram
+     *            the sdram to set
      */
     public void setSdram(int sdram) {
         this.sdram = sdram;
@@ -122,7 +125,8 @@ public class ChipResources {
     }
 
     /**
-     * @param tags the tags to set
+     * @param tags
+     *            the tags to set
      */
     public void setTags(List<Integer> tags) {
         this.tags = tags;
@@ -136,7 +140,8 @@ public class ChipResources {
     }
 
     /**
-     * @param routerClockSpeed the routerClockSpeed to set
+     * @param routerClockSpeed
+     *            the routerClockSpeed to set
      */
     public void setRouterClockSpeed(int routerClockSpeed) {
         this.routerClockSpeed = routerClockSpeed;
@@ -150,7 +155,8 @@ public class ChipResources {
     }
 
     /**
-     * @param routerEntries the router_entries to set
+     * @param routerEntries
+     *            the router_entries to set
      */
     public void setRouterEntries(int routerEntries) {
         this.routerEntries = routerEntries;
@@ -164,7 +170,8 @@ public class ChipResources {
     }
 
     /**
-     * @param virtual the virtual to set
+     * @param virtual
+     *            the virtual to set
      */
     public void setVirtual(Boolean virtual) {
         this.virtual = virtual;
@@ -200,6 +207,4 @@ public class ChipResources {
         builder.append("]");
         return builder.toString();
     }
-
-
 }
