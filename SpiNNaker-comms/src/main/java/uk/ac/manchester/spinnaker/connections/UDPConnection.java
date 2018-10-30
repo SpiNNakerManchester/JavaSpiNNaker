@@ -96,8 +96,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
+		SocketAddress local = createLocalAddress(localHost, localPort);
 		channel = DatagramChannel.open();
-		channel.bind(createLocalAddress(localHost, localPort));
+		channel.bind(local);
 		channel.configureBlocking(false);
 		channel.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
 		channel.setOption(SO_SNDBUF, ETHERNET_MTU);
@@ -115,6 +116,28 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
 			channel.connect(remoteAddress);
 			canSend = true;
+		}
+		if (log.isDebugEnabled()) {
+			InetSocketAddress us = null;
+			try {
+				us = getLocalAddress();
+			} catch (Exception e) {
+				// ignore
+			}
+			if (us == null) {
+				us = new InetSocketAddress((InetAddress) null, 0);
+			}
+			InetSocketAddress them = null;
+			try {
+				them = getRemoteAddress();
+			} catch (Exception e) {
+				// ignore
+			}
+			if (them == null) {
+				them = new InetSocketAddress((InetAddress) null, 0);
+			}
+			log.debug("{} socket created ({} <--> {})", getClass().getName(),
+					us, them);
 		}
 	}
 
@@ -469,17 +492,21 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 						"newly manufactured selection key is invalid");
 			}
 		}
-		log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
-				getLocalAddress(), getRemoteAddress(), timeout,
-				key.interestOps());
+		if (log.isDebugEnabled()) {
+			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
+					getLocalAddress(), getRemoteAddress(), timeout,
+					key.interestOps());
+		}
 		int result;
 		if (timeout == null || timeout == 0) {
 			result = key.selector().selectNow();
 		} else {
 			result = key.selector().select(timeout);
 		}
-		log.debug("wait:{}:{}:{}", result, key.isValid(),
-				key.isValid() && key.isReadable());
+		if (log.isDebugEnabled()) {
+			log.debug("wait:{}:{}:{}", result, key.isValid(),
+					key.isValid() && key.isReadable());
+		}
 		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;
