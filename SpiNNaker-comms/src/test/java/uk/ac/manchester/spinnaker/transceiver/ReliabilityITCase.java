@@ -33,7 +33,6 @@ class ReliabilityITCase {
         InetAddress host = InetAddress.getByName("spinn-4.cs.man.ac.uk");
         assumeTrue(ping(host) == 0);
 
-
         for (int i = 0 ; i < REPETITIONS ; i++) {
         	try (Transceiver txrx = new Transceiver(host, 5)) {
         		txrx.ensureBoardIsReady();
