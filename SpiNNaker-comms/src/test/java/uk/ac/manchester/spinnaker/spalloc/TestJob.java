@@ -16,6 +16,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -38,7 +39,8 @@ class TestJob {
 	 * sometimes fails. For example j.getState() may or may not call the client
 	 * depending on when the previous state was requested.
 	 */
-	// @Test
+	@Test
+	@Disabled("unreliable: depends on timing")
 	void testCoreJobFlow() throws Exception {
 		LinkedBlockingDeque<String> send = new LinkedBlockingDeque<>();
 		LinkedBlockingDeque<JSONObject> received = new LinkedBlockingDeque<>();

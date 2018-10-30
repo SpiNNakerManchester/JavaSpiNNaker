@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 class ReliabilityITCase {
 	static BoardTestConfiguration board_config;
