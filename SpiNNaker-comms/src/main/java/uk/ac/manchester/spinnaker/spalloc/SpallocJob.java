@@ -791,20 +791,21 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		return getStatus().getReason();
 	}
 
-
 	private void retrieveMachineInfo()
 			throws IOException, SpallocServerException, IllegalStateException {
-        // Check the job is still not QUEUED as then machine info is all nulls
-        // getJobMachineInfo works if the Job is in State.POWER
-        // TODO what about state UNKNOWN and State.DESTROYED
-        if (getState() == State.QUEUED) {
-            // Double check very latest state.
-            purgeStatus();
-            if (getState() == State.QUEUED) {
-                throw new IllegalStateException(
-                        "Job not Ready. Call waitUntilReady first.");
-            }
-        }
+		/*
+		 * Check the job is still not QUEUED as then machine info is all nulls
+		 * getJobMachineInfo works if the Job is in State.POWER
+		 */
+		// TODO what about state UNKNOWN and State.DESTROYED
+		if (getState() == State.QUEUED) {
+			// Double check very latest state.
+			purgeStatus();
+			if (getState() == State.QUEUED) {
+				throw new IllegalStateException(
+						"Job not Ready. Call waitUntilReady first.");
+			}
+		}
 
 		machineInfoCache = client.getJobMachineInfo(id, timeout);
 	}
