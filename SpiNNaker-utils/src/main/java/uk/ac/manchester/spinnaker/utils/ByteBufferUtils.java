@@ -41,6 +41,8 @@ public class ByteBufferUtils {
         StringBuilder sb = new StringBuilder();
         for(byte b: ba)
             sb.append(String.format("%02x,", b));
+        // remove the last comma
+        sb.setLength(sb.length() - 1);
         return sb.toString();
     }
 
