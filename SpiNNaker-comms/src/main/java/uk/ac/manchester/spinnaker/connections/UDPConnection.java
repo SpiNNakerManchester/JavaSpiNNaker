@@ -136,8 +136,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (them == null) {
 				them = new InetSocketAddress((InetAddress) null, 0);
 			}
-			log.debug("{} socket created ({} <--> {})", getClass().getName(), us,
-					them);
+			log.debug("{} socket created ({} <--> {})", getClass().getName(),
+					us, them);
 		}
 	}
 
