@@ -1,11 +1,14 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.net.URL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.machine.Machine;
 
 /**
@@ -21,7 +24,7 @@ public class TestMachineBean {
         MachineBean fromJson = mapper.readValue(url, MachineBean.class);
 
         Machine machine = new Machine(fromJson);
-
+        assertNotNull(machine);
     }
 
     @Test
@@ -31,7 +34,7 @@ public class TestMachineBean {
         MachineBean fromJson = mapper.readValue(url, MachineBean.class);
 
         Machine machine = new Machine(fromJson);
-
+        assertNotNull(machine);
     }
 
 }

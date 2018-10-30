@@ -498,7 +498,7 @@ public class TestMachine {
     public void testEquals() throws UnknownHostException {
         ArrayList<Processor> processors = createProcessors();
         ArrayList<Chip> chips = createdChips(processors);
-        InetAddress address = InetAddress.getByAddress(bytes);
+        /* InetAddress address =*/ InetAddress.getByAddress(bytes);
 
         Machine instance1 = new Machine(
                 new MachineDimensions(8, 8), chips, BOOT_CHIP);

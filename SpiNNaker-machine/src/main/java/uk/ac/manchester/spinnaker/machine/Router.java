@@ -307,7 +307,7 @@ public final class Router implements Iterable<Link> {
             return false;
         }
         Router that = (Router) obj;
-
+        // TODO compare this and that
 
         return true;
     }

@@ -3,12 +3,9 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.io.IOException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.Processor;
 
 /**
  *
@@ -43,7 +40,7 @@ public class TestChipLocationBean {
         String json = "[2]";
         ObjectMapper mapper = MapperFactory.createMapper();
         assertThrows(MismatchedInputException.class, () -> {
-            ChipLocation fromJson = mapper.readValue(json, ChipLocation.class);
+            mapper.readValue(json, ChipLocation.class);
         });
     }
 

@@ -1091,20 +1091,20 @@ public class Machine implements Iterable<Chip> {
         Set<ChipLocation> setThis = chips.keySet();
         Set<ChipLocation> setThat = that.chips.keySet();
         if (setThis.size() < setThat.size()) {
-            Set<ChipLocation> temp = new HashSet(setThat);
+            Set<ChipLocation> temp = new HashSet<>(setThat);
             temp.removeAll(setThis);
             return "other has extra Chips at " + temp;
         } else if (setThis.size() > setThat.size()) {
-            Set<ChipLocation> temp = new HashSet(setThis);
+            Set<ChipLocation> temp = new HashSet<>(setThis);
             temp.removeAll(setThat);
             return "other has missing Chips at " + temp;
         } else {
-            Set<ChipLocation> temp1 = new HashSet(setThis);
+            Set<ChipLocation> temp1 = new HashSet<>(setThis);
             temp1.removeAll(setThat);
             if (temp1.isEmpty()) {
                 return "No difference between chip ketsets found.";
             }
-            Set<ChipLocation> temp2 = new HashSet(setThat);
+            Set<ChipLocation> temp2 = new HashSet<>(setThat);
             temp2.removeAll(setThis);
             return "other has missing Chips at " + temp1
                     + "and extra Chips at " + temp2;
