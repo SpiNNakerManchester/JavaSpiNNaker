@@ -11,7 +11,11 @@ import java.util.Collections;
 import static java.util.Collections.emptyList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.TreeMap;
+import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
+import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
+import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -234,6 +238,27 @@ public class Chip implements HasChipLocation {
         this.nearestEthernet = chip.nearestEthernet;
     }
 
+    Chip(ChipBean bean, Machine machine) {
+        ChipDetails details = bean.getDetails();
+        ChipResources resources = bean.getResources();
+
+        this.location = bean.getLocation();
+        this.monitorProcessors =  provideMonitors(resources.getMonitors());
+        this.userProcessors = provideUserProcesses(
+                resources.getMonitors(), details.cores);
+
+        this.router = new Router(location, resources.getRouterClockSpeed(),
+            resources.getRouterEntries(), details.getDeadDirections(), machine);
+
+        this.sdram = resources.getSdram();
+        this.ipAddress = details.getIpAddress();
+        this.virtual = resources.getVirtual();
+        this.tagIds = resources.getTags();
+
+        this.nearestEthernet = details.getEthernet(); //chip.nearestEthernet;
+    }
+
+
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
@@ -245,6 +270,23 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         processors.put(0, Processor.factory(0, true));
+        return processors;
+    }
+
+    private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = 0; i < monitors; i++) {
+           processors.put(i, Processor.factory(i, true));
+        }
+        return processors;
+    }
+
+    private TreeMap<Integer, Processor> provideUserProcesses(
+            int monitors, int cores) {
+        TreeMap<Integer, Processor> processors = new TreeMap<>();
+        for (int i = monitors; i < cores; i++) {
+           processors.put(i, Processor.factory(i, false));
+        }
         return processors;
     }
 
@@ -500,6 +542,13 @@ public class Chip implements HasChipLocation {
         return mover.processorId;
     }
 
+    /**
+     * @return the tagIds
+     */
+    public List<Integer> getTagIds() {
+        return Collections.unmodifiableList(tagIds);
+    }
+
     @Override
     public String toString() {
         return "[Chip: x=" + getX() + ", y=" + getY() + ", sdram=" + sdram
@@ -510,11 +559,59 @@ public class Chip implements HasChipLocation {
                 + this.nearestEthernet + "]";
     }
 
-    /**
-     * @return the tagIds
-     */
-    public List<Integer> getTagIds() {
-        return Collections.unmodifiableList(tagIds);
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException(
+                "hashCode not supported as equals implemented.");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Chip)) {
+            System.out.println("type");
+            return false;
+        }
+        Chip that = (Chip) obj;
+        if (!location.equals(that.location)) {
+            System.out.println("location");
+            return false;
+        }
+        if (!monitorProcessors.equals(that.monitorProcessors)) {
+            System.out.println("monitorProcessors");
+            return false;
+        }
+        if (!userProcessors.equals(that.userProcessors)) {
+            System.out.println("userProcessors");
+            return false;
+        }
+        if (!router.equals(that.router)) {
+            System.out.println("router");
+            return false;
+        }
+        if (sdram != that.sdram) {
+            System.out.println("sdram");
+            return false;
+        }
+        if (!Objects.equals(ipAddress, that.ipAddress)) {
+            System.out.println("ipAddress");
+            return false;
+        }
+        if (virtual != that.virtual) {
+            System.out.println("virtual");
+            return false;
+        }
+        if (!tagIds.equals(that.tagIds)) {
+            System.out.println("tagIds " + tagIds + " != " + that.tagIds);
+            return false;
+        }
+        if (!nearestEthernet.equals(that.nearestEthernet)) {
+            System.out.println("router");
+            return false;
+        }
+        return true;
     }
 
 }
