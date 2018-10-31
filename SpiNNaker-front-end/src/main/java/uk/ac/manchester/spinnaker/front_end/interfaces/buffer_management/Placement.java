@@ -4,7 +4,7 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
@@ -12,7 +12,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  *
  * @author Christian-B
  */
-@JsonFormat(shape = ARRAY)
+@JsonFormat(shape = OBJECT)
 class Placement implements HasCoreLocation {
 
     final int x;
