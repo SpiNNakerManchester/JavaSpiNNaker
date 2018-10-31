@@ -59,7 +59,7 @@ public final class CommandLineInterface {
 		try {
 			switch (cmd) {
 			case "dse":
-				HostExecuteDataSpecification.main(real);
+				HostExecuteDataSpecification.Main.main(real);
 				System.exit(0);
 			case "download":
 				DataOut.main(real);

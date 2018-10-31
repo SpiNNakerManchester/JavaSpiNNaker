@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -350,33 +351,86 @@ public class HostExecuteDataSpecification {
 		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
 	}
 
-	private static final String FNRE = "^(\\d+)_(\\d+)_(\\d+)\\.spec$";
+	/**
+	 * The command line interface code.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class Main {
+		private static final String FNRE =
+				"^(?<x>\\d+)_(?<y>\\d+)_(?<p>\\d+)\\.spec$";
 
-	public static void main(String... args)
-			throws IOException, SpinnmanException, Exception,
-			DataSpecificationException, StorageException {
-		InetAddress host = InetAddress.getByName(args[0]);
-		int version = Integer.parseInt(args[1]);
-		int appID = Integer.parseInt(args[2]);
-		File db = new File(args[3]);
-		File dsgDir = new File(args[4]);
-
-		Map<CoreLocation, File> dsgTargets = new HashMap<>();
-		Pattern pat = Pattern.compile(FNRE);
-		for (File f : dsgDir.listFiles((f, n) -> n.matches(FNRE))) {
-			Matcher m = pat.matcher(f.getName());
-			if (m.matches()) {
-				int x = Integer.parseInt(m.group(1));
-				int y = Integer.parseInt(m.group(2));
-				int p = Integer.parseInt(m.group(3));
-				dsgTargets.put(new CoreLocation(x, y, p), f);
-			}
+		private Main() {
 		}
 
-		Storage storage = new SQLiteStorage(new DatabaseEngine(db));
-		Transceiver t = new Transceiver(host, version);
-		HostExecuteDataSpecification dse = new HostExecuteDataSpecification(t);
-		dse.load(t.getMachineDetails(), appID, dsgTargets, storage);
+		private enum Arg {
+			HOST, VERSION, APP, DBFILE, DSGDIR
+		}
+
+		/**
+		 * Command line interface to {@link HostExecuteDataSpecification}.
+		 * Arguments are: <blockquote> {@code HOST VERSION APP DBFILE DSGDIR}
+		 * </blockquote> These are defined as:
+		 * <dl>
+		 * <dt>HOST
+		 * <dd>The hostname/IP address of the SpiNNaker board.
+		 * <dt>VERSION
+		 * <dd>The version of the SpiNNaker board (i.e., 2, 3, 4 or 5).
+		 * <dt>APP
+		 * <dd>The application ID that we are loading.
+		 * <dt>DBFILE
+		 * <dd>The file with the system state database. This will be created if
+		 * necessary.
+		 * <dt>DSGDIR
+		 * <dd>The directory of data specification files, where each is named as
+		 * {@code x_y_p.spec} to indicate which core to load it on (e.g.,
+		 * {@code 0_0_3.spec} gets loaded on core (0,0,3)).
+		 * </dl>
+		 *
+		 * @param args
+		 *            The arguments
+		 * @throws IOException
+		 *             If the filesystem access fails.
+		 * @throws SpinnmanException
+		 *             If communications fail.
+		 * @throws Exception
+		 *             If the SpiNNaker board rejects comms.
+		 * @throws DataSpecificationException
+		 *             If a data spec is malformed.
+		 * @throws StorageException
+		 *             If the database has a problem.
+		 */
+		public static void main(String... args)
+				throws IOException, SpinnmanException, Exception,
+				DataSpecificationException, StorageException {
+			if (args.length != Arg.values().length) {
+				throw new RuntimeException(
+						"wrong args: should be " + Arrays.asList(Arg.values()));
+			}
+			InetAddress host = InetAddress.getByName(args[Arg.HOST.ordinal()]);
+			int version = Integer.parseInt(args[Arg.VERSION.ordinal()]);
+			int appID = Integer.parseInt(args[Arg.APP.ordinal()]);
+			File db = new File(args[Arg.DBFILE.ordinal()]);
+			File dsgDir = new File(args[Arg.DSGDIR.ordinal()]);
+
+			Map<CoreLocation, File> dsgTargets = new HashMap<>();
+			Pattern pat = Pattern.compile(FNRE);
+			for (File f : dsgDir.listFiles()) {
+				Matcher m = pat.matcher(f.getName());
+				if (m.matches()) {
+					int x = Integer.parseInt(m.group("x"));
+					int y = Integer.parseInt(m.group("y"));
+					int p = Integer.parseInt(m.group("p"));
+					dsgTargets.put(new CoreLocation(x, y, p), f);
+				}
+			}
+
+			Storage storage = new SQLiteStorage(new DatabaseEngine(db));
+			Transceiver t = new Transceiver(host, version);
+			HostExecuteDataSpecification dse =
+					new HostExecuteDataSpecification(t);
+			dse.load(t.getMachineDetails(), appID, dsgTargets, storage);
+		}
 	}
 
 	/**
