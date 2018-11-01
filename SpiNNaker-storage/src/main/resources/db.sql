@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS storage(
 	storage_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	global_region_id INTEGER UNIQUE NOT NULL,
 	content BLOB,
+    run INTEGER NOT NULL DEFAULT 1,
 	FOREIGN KEY(global_region_id) REFERENCES regions(global_region_id));
 
 -- A table describing the regions of every core.
@@ -22,4 +23,5 @@ CREATE TABLE IF NOT EXISTS region_locations(
 	global_region_id INTEGER UNIQUE NOT NULL,
     address INTEGER NOT NULL,
     size INTEGER NOT NULL,
+    run INTEGER NOT NULL DEFAULT 1,
 	FOREIGN KEY(global_region_id) REFERENCES regions(global_region_id));
