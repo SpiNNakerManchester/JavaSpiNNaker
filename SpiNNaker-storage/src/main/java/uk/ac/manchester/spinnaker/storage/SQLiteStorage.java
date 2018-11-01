@@ -42,8 +42,7 @@ public class SQLiteStorage implements Storage {
 					+ "ON CONFLICT(global_region_id) DO UPDATE "
 					+ "SET content = storage.content || excluded.content";
 	private static final String FETCH =
-			"SELECT s.content FROM storage AS s INNER JOIN regions AS r "
-					+ "USING(global_region_id) "
+			"SELECT s.content FROM storage AS s NATURAL JOIN regions AS r "
 					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
 					+ "AND r.region = ? " + "LIMIT 1";
 	private static final String DELETE =
@@ -55,16 +54,14 @@ public class SQLiteStorage implements Storage {
 					+ "ORDER BY x, y, processor";
 	private static final String CORES_WITH_DATA =
 			"SELECT DISTINCT r.x, r.y, r.processor "
-					+ "FROM regions AS r JOIN storage AS s "
-					+ "USING(global_region_id) "
+					+ "FROM regions AS r NATURAL JOIN storage AS s "
 					+ "WHERE length(s.content) > 0 "
 					+ "ORDER BY r.x, r.y, r.processor";
 	private static final String REGIONS =
 			"SELECT DISTINCT region FROM regions WHERE "
 					+ "x = ? AND y = ? AND processor = ? ORDER BY region";
 	private static final String REGIONS_WITH_DATA =
-			"SELECT DISTINCT r.region FROM regions AS r JOIN storage "
-					+ "USING(global_region_id) "
+			"SELECT DISTINCT r.region FROM regions AS r NATURAL JOIN storage "
 					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
 					+ "AND length(storage.content) > 0 ORDER BY r.region";
 
@@ -73,8 +70,7 @@ public class SQLiteStorage implements Storage {
 					+ "VALUES(?, ?, ?)";
 	private static final String FETCH_REGION_DEF =
 			"SELECT loc.address, loc.size "
-					+ "FROM region_locations AS loc JOIN regions AS r "
-					+ "USING(global_region_id) "
+					+ "FROM region_locations AS loc NATURAL JOIN regions AS r "
 					+ "WHERE r.x = ? AND r.y = ? "
 					+ "AND r.processor = ? AND r.region = ? LIMIT 1";
 
