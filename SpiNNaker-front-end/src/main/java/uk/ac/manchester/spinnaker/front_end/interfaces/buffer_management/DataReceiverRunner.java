@@ -5,6 +5,7 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -24,13 +25,19 @@ public class DataReceiverRunner {
 	public static void main(String... args) throws IOException, SpinnmanException, Process.Exception, StorageException {
         //args 0 = instruction to run this
         ObjectMapper mapper = MapperFactory.createMapper();
-        List<Placement> placements = mapper.readValue(args[1], new TypeReference<List<Placement>>(){});
-        int error = 1/0;
-        MachineBean fromJson = mapper.readValue(args[2], MachineBean.class);
+        FileReader placement_reader = new FileReader(args[1]);
+
+        List<Placement> placements = mapper.readValue(
+                placement_reader, new TypeReference<List<Placement>>(){});
+        FileReader machine_reader = new FileReader(args[2]);
+
+        MachineBean fromJson = mapper.readValue(
+                machine_reader, MachineBean.class);
         Machine machine = new Machine(fromJson);
         Transceiver trans = new Transceiver(machine.getBootEthernetAddress(), 3);
+        System.out.println(args[3]);
         DataReceiver receiver = new  DataReceiver(trans, args[3]);
-        //receiver.getDataForPlacements(placements, null);
+        receiver.getDataForPlacements(placements, null);
         System.out.println("Done");
     }
 }

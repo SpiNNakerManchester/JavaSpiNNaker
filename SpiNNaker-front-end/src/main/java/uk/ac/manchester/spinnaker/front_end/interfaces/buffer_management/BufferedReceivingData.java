@@ -57,7 +57,7 @@ class BufferedReceivingData {
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(0xFF);
         //self._last_packet_received = defaultdict(lambda: None)
-        lastPacketSent = new DefaultMap<>(null);
+        lastPacketSent = new HashMap<>();
         endBufferingSequenceNo = new HashMap<>();
         endBufferingState = new HashMap<>();
     }
