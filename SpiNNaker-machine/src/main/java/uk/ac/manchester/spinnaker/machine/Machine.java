@@ -1111,6 +1111,10 @@ public class Machine implements Iterable<Chip> {
         }
     }
 
+    public InetAddress getBootEthernetAddress(){
+        return bootEthernetAddress;
+    }
+
     private class ChipOnBoardIterator implements Iterator<Chip> {
 
         private HasChipLocation root;
