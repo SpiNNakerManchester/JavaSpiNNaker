@@ -35,19 +35,19 @@ public class SQLiteStorage implements Storage {
 					+ "VALUES(?, ?, ?, ?)";
 
 	private static final String STORE =
-			"INSERT OR REPLACE INTO storage(region_id, content) "
+			"INSERT OR REPLACE INTO storage(global_region_id, content) "
 					+ "VALUES(?, ?)";
 	private static final String APPEND =
-			"INSERT INTO storage(region_id, content) VALUES(?, ?) "
-					+ "ON CONFLICT(region_id) DO UPDATE "
+			"INSERT INTO storage(global_region_id, content) VALUES(?, ?) "
+					+ "ON CONFLICT(global_region_id) DO UPDATE "
 					+ "SET content = storage.content || excluded.content";
 	private static final String FETCH =
 			"SELECT s.content FROM storage AS s JOIN regions AS r "
-					+ "ON s.region_id = r.global_region_id "
+					+ "ON s.global_region_id = r.global_region_id "
 					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
 					+ "AND r.region = ? " + "LIMIT 1";
 	private static final String DELETE =
-			"DELETE FROM storage WHERE region_id IN ("
+			"DELETE FROM storage WHERE global_region_id IN ("
 					+ "SELECT global_region_id FROM regions WHERE "
 					+ "x = ? AND y = ? AND processor = ? AND region = ?)";
 	private static final String CORES =
@@ -56,7 +56,7 @@ public class SQLiteStorage implements Storage {
 	private static final String CORES_WITH_DATA =
 			"SELECT DISTINCT r.x, r.y, r.processor "
 					+ "FROM regions AS r JOIN storage AS s "
-					+ "ON s.region_id = r.global_region_id "
+					+ "ON s.global_region_id = r.global_region_id "
 					+ "WHERE length(s.content) > 0 "
 					+ "ORDER BY r.x, r.y, r.processor";
 	private static final String REGIONS =
@@ -64,17 +64,17 @@ public class SQLiteStorage implements Storage {
 					+ "x = ? AND y = ? AND processor = ? ORDER BY region";
 	private static final String REGIONS_WITH_DATA =
 			"SELECT DISTINCT r.region FROM regions AS r JOIN storage "
-					+ "ON storage.region_id = r.global_region_id "
+					+ "ON storage.global_region_id = r.global_region_id "
 					+ "WHERE r.x = ? AND r.y = ? AND r.processor = ? "
 					+ "AND length(storage.content) > 0 ORDER BY r.region";
 
 	private static final String REMEMBER_REGION_DEF =
-			"INSERT INTO region_locations(region_id, address, size) "
+			"INSERT INTO region_locations(global_region_id, address, size) "
 					+ "VALUES(?, ?, ?)";
 	private static final String FETCH_REGION_DEF =
 			"SELECT loc.address, loc.size "
 					+ "FROM region_locations AS loc JOIN regions AS r "
-					+ "ON loc.region_id = r.global_region_id "
+					+ "ON loc.global_region_id = r.global_region_id "
 					+ "WHERE r.x = ? AND r.y = ? "
 					+ "AND r.processor = ? AND r.region = ? LIMIT 1";
 

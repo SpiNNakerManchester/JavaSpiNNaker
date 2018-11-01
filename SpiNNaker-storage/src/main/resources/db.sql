@@ -12,14 +12,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS regionSanity ON regions(
 -- A table mapping unique names to blobs of data. It's trivial!
 CREATE TABLE IF NOT EXISTS storage(
 	storage_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	region_id INTEGER UNIQUE NOT NULL,
+	global_region_id INTEGER UNIQUE NOT NULL,
 	content BLOB,
-	FOREIGN KEY(region_id) REFERENCES regions(global_region_id));
+	FOREIGN KEY(global_region_id) REFERENCES regions(global_region_id));
 
 -- A table describing the regions of every core.
 CREATE TABLE IF NOT EXISTS region_locations(
     location_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	region_id INTEGER UNIQUE NOT NULL,
+	global_region_id INTEGER UNIQUE NOT NULL,
     address INTEGER NOT NULL,
     size INTEGER NOT NULL,
-	FOREIGN KEY(region_id) REFERENCES regions(global_region_id));
+	FOREIGN KEY(global_region_id) REFERENCES regions(global_region_id));
