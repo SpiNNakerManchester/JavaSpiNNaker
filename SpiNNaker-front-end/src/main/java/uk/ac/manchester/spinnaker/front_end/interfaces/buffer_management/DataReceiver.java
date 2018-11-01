@@ -37,48 +37,36 @@ public class DataReceiver {
     // The offset of the memory addresses in bytes
     private static final int FIRST_REGION_ADDRESS_OFFSET = 4 * 7;
 
-    private final Placements placements;
     private final Transceiver transceiver;
     private final BufferedReceivingData receivedData;
 
-    //# machine object
-    private final Machine machine;
+    private static final Logger log = getLogger(DataReceiver.class);
 
-	private static final Logger log = getLogger(DataReceiver.class);
+    public DataReceiver(Transceiver tranceiver, String databasePath) throws IOException, SpinnmanException, Process.Exception {
 
-    public DataReceiver(Placements placements, Transceiver tranceiver,
-            Machine machine, String databasePath) throws IOException, SpinnmanException, Process.Exception {
-        this.placements = placements;
-
-        //this.transceiver = new Transceiver(machine.getBootEthernetAddress(), machine.version.id);
         this.transceiver = tranceiver;
-        this.machine = machine;
-
         // storage area for received data from cores
         receivedData = new BufferedReceivingData(databasePath);
 
     }
 
-    public void getDataForVertices(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception, StorageException{
+    public void getDataForPlacements(List<Placement> placements, ProgressBar progress) throws IOException, Process.Exception, StorageException{
         // TODO  with self._thread_lock_buffer_out:
-        getDataForVerticesLocked(vertices, progress);
+        getDataForPlacementsLocked(placements, progress);
     }
 
     //TODO Object type
-    private void getDataForVertex(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
+    private void getDataForPlacement(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
         // TODO with self._thread_lock_buffer_out:
-        getDataForVertexLocked(placement, recordingRegionId);
+        getDataForPlacementLocked(placement, recordingRegionId);
     }
 
-    private void getDataForVerticesLocked(List<Vertex> vertices, ProgressBar progress) throws IOException, Process.Exception, StorageException {
-
-        LinkedHashSet<DataSpeedUpPacketGatherMachineVertex> receivers = new LinkedHashSet<>();
+    private void getDataForPlacementsLocked(List<Placement> placements, ProgressBar progress) throws IOException, Process.Exception, StorageException {
 
         // get data
-        for (Vertex vertex: vertices) {
-            Placement placement = placements.getPlacementOfVertex(vertex);
-            for (int recordingRegionId : vertex.getRecordedRegionIds()) {
-                getDataForVertex(placement, recordingRegionId);
+        for (Placement placement:  placements) {
+            for (int recordingRegionId : placement.vertex.getRecordedRegionIds()) {
+                getDataForPlacement(placement, recordingRegionId);
                 if (progress != null) {
                     progress.update();
                 }
@@ -94,7 +82,7 @@ public class DataReceiver {
         receivedData.flushingDataFromRegion(location, data);
     }
 
-    private void getDataForVertexLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
+    private void getDataForPlacementLocked(Placement placement, int recordingRegionId) throws IOException, Process.Exception, StorageException {
 
         Vertex vertex = placement.getVertex();
         int recordingDataAddress = vertex.getRecordingRegionBaseAddress();

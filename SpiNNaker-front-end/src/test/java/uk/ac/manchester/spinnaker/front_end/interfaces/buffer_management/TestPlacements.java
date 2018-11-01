@@ -43,4 +43,11 @@ public class TestPlacements {
         assertEquals(2, fromJson.size());
     }
 
+    //@Test
+    public void estTempJson() throws IOException {
+        String f = "/home/brenninc/spinnaker/my_spinnaker/reports/2018-10-31-16-48-53-241949/run_1/json_files/placements.json";
+        ObjectMapper mapper = MapperFactory.createMapper();
+        List<Placement> fromJson = mapper.readValue(f, new TypeReference<List<Placement>>(){});
+        assertEquals(2, fromJson.size());
+    }
 }
