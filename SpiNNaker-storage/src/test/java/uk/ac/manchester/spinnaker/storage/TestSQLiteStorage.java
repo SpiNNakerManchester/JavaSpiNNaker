@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,6 +29,10 @@ class TestSQLiteStorage {
 		db.delete();
 	}
 
+	private static ByteBuffer bytes(String str) {
+		return ByteBuffer.wrap(str.getBytes(UTF_8));
+	}
+
 	@Test
 	void testBasicOps() throws StorageException {
 		ConnectionProvider engine = new DatabaseEngine(db);
@@ -36,8 +41,8 @@ class TestSQLiteStorage {
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 
-		storage.storeRegionContents(core, 0, "abc".getBytes(UTF_8));
-		storage.appendRegionContents(core, 0, "def".getBytes(UTF_8));
+		storage.storeRegionContents(core, 0, bytes("abc"));
+		storage.appendRegionContents(core, 0, bytes("def"));
 
 		assertArrayEquals("abcdef".getBytes(UTF_8),
 				storage.getRegionContents(core, 0));
@@ -56,14 +61,14 @@ class TestSQLiteStorage {
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// store overwrites
-		storage.storeRegionContents(core, 0, "abc".getBytes(UTF_8));
-		storage.storeRegionContents(core, 0, "def".getBytes(UTF_8));
+		storage.storeRegionContents(core, 0, bytes("abc"));
+		storage.storeRegionContents(core, 0, bytes("def"));
 		assertEquals("def",
 				new String(storage.getRegionContents(core, 0), UTF_8));
 
 		// append creates
-		storage.appendRegionContents(core, 1, "abc".getBytes(UTF_8));
-		storage.appendRegionContents(core, 1, "def".getBytes(UTF_8));
+		storage.appendRegionContents(core, 1, bytes("abc"));
+		storage.appendRegionContents(core, 1, bytes("def"));
 		assertEquals("abcdef",
 				new String(storage.getRegionContents(core, 1), UTF_8));
 	}
