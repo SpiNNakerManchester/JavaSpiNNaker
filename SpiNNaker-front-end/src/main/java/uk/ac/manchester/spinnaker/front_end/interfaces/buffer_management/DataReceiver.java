@@ -131,25 +131,24 @@ public class DataReceiver {
             // now state is updated, read back values for read pointer and
             // last operation performed
             BufferingOperation lastOperation = endState.getLastBufferOperation();
-            int start_ptr = endState.startAddress;
-            int end_ptr = endState.endAddress;
-            int write_ptr = endState.currentWrite;
-            int read_ptr = endState.currentRead;
+            //int start_ptr = endState.startAddress;
+            //int end_ptr = endState.endAddress;
+            //int write_ptr = endState.currentWrite;
+            //int read_ptr = endState.currentRead;
 
 
-            if (read_ptr < write_ptr) {
-                int length = write_ptr - read_ptr;
-                readSomeData(location, read_ptr, length);
-            } else if (read_ptr > write_ptr ||
+            if (endState.currentRead <  endState.currentWrite) {
+                int length =  endState.currentWrite - endState.currentRead;
+                readSomeData(location, endState.currentRead, length);
+            } else if (endState.currentRead >  endState.currentWrite ||
                     endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
-                int length = end_ptr - read_ptr;
+                int length = endState.endAddress - endState.currentRead;
                 if (length < 0) {
                     throw new IOException ("The amount of data to read is negative!");
                 }
-                readSomeData(location, read_ptr, length);
-                read_ptr = start_ptr;
-                length = write_ptr - read_ptr;
-                readSomeData(location, read_ptr, length);
+                readSomeData(location, endState.currentRead, length);
+                length = endState.currentWrite - endState.startAddress;
+                readSomeData(location, endState.startAddress, length);
             } else {
                ByteBuffer data = ByteBuffer.allocate(0);
                receivedData.flushingDataFromRegion(location, data);
