@@ -17,14 +17,6 @@ public class ByteBufferUtils {
         return "(" + bb.position() + ")" + asHex(bb);
     }
 
-    public static String asString(ByteBuffer bb, int from) {
-        return asString(bb, from, bb.position());
-    }
-
-    public static String asString(ByteBuffer bb, int from, int to) {
-        return "(" + bb.position() + ")" + asHex(bb, from, to);
-    }
-
     public static String asHex(ByteBuffer bb) {
         ByteBuffer duplicate = bb.duplicate();
         if (duplicate.position() > 0) {
@@ -39,14 +31,6 @@ public class ByteBufferUtils {
             sb.setLength(sb.length() - 1);
         }
         return sb.toString();
-    }
-
-    public static String byteArrayToHex(ByteBuffer bb, int start) {
-        return asHex(bb, 0, start);
-    }
-
-    public static String asHex(ByteBuffer bb, int from, int to) {
-        return asHex(Arrays.copyOfRange(bb.array(), from, to));
     }
 
     public static String asHex(byte[] ba) {
