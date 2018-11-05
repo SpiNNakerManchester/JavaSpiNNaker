@@ -30,8 +30,6 @@ public class ByteBufferUtils {
         if (duplicate.position() > 0) {
             duplicate.flip();
         }
-        System.out.println("original " + bb);
-        System.out.println("duplicate " + duplicate);
         StringBuilder sb = new StringBuilder();
         while (duplicate.hasRemaining()){
             sb.append(String.format("%02x,", duplicate.get()));
