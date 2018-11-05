@@ -26,18 +26,17 @@ public class DataReceiverRunner {
         //args 0 = instruction to run this
         ObjectMapper mapper = MapperFactory.createMapper();
         FileReader placement_reader = new FileReader(args[1]);
-
         List<Placement> placements = mapper.readValue(
                 placement_reader, new TypeReference<List<Placement>>(){});
-        FileReader machine_reader = new FileReader(args[2]);
 
+        FileReader machine_reader = new FileReader(args[2]);
         MachineBean fromJson = mapper.readValue(
                 machine_reader, MachineBean.class);
         Machine machine = new Machine(fromJson);
+
         Transceiver trans = new Transceiver(machine.getBootEthernetAddress(), 3);
-        System.out.println(args[3]);
+
         DataReceiver receiver = new  DataReceiver(trans, args[3]);
         receiver.getDataForPlacements(placements, null);
-        System.out.println("Done");
     }
 }

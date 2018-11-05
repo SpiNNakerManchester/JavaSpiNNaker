@@ -128,18 +128,28 @@ public class DataReceiver {
                 //processLastAck(location, endState);
             }
 
-            if (endState.currentRead < endState.currentWrite) {
-                int length = endState.currentWrite - endState.currentRead;
-                readSomeData(location, endState.currentRead, length);
-            } else if (endState.currentRead > endState.currentWrite ||
+            // now state is updated, read back values for read pointer and
+            // last operation performed
+            BufferingOperation lastOperation = endState.getLastBufferOperation();
+            int start_ptr = endState.startAddress;
+            int end_ptr = endState.endAddress;
+            int write_ptr = endState.currentWrite;
+            int read_ptr = endState.currentRead;
+
+
+            if (read_ptr < write_ptr) {
+                int length = write_ptr - read_ptr;
+                readSomeData(location, read_ptr, length);
+            } else if (read_ptr > write_ptr ||
                     endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
-                int length = endState.endAddress - endState.currentRead;
+                int length = end_ptr - read_ptr;
                 if (length < 0) {
                     throw new IOException ("The amount of data to read is negative!");
                 }
-                readSomeData(location, endState.currentRead, length);
-                length = endState.endAddress - endState.startAddress;
-                readSomeData(location, endState.startAddress, length);
+                readSomeData(location, read_ptr, length);
+                read_ptr = start_ptr;
+                length = write_ptr - read_ptr;
+                readSomeData(location, read_ptr, length);
             } else {
                ByteBuffer data = ByteBuffer.allocate(0);
                receivedData.flushingDataFromRegion(location, data);
@@ -149,8 +159,9 @@ public class DataReceiver {
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/buffer_management/recording_utilities.py
     private int getLastSequenceNumber(Placement placement, int recordingDataAddress) throws IOException, Process.Exception {
-        ByteBuffer data = transceiver.readMemory(placement, recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, 4);
-        return data.getInt(0);
+        ByteBuffer data = transceiver.readMemory(placement.getScampCore(), recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, 4);
+        int num =  data.getInt(0);
+        return num;
     }
 
     //Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/buffer_management/recording_utilities.py
@@ -165,7 +176,7 @@ public class DataReceiver {
      * @return
      */
     private int getRegionPointer(Placement placement, int recordingDataAddress, int region) throws IOException, Process.Exception {
-        ByteBuffer data = transceiver.readMemory(placement, recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET, (region * 4));
+        ByteBuffer data = transceiver.readMemory(placement.getScampCore(), recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET + (region * 4), 4);
         return data.getInt(0);
     }
 
@@ -190,7 +201,7 @@ public class DataReceiver {
      *      data as a byte array
      */
     private ByteBuffer requestData(HasCoreLocation location, int address, int length) throws IOException, Process.Exception {
-        return transceiver.readMemory(location, address, length);
+        return transceiver.readMemory(location.getScampCore(), address, length);
     }
 
 /*    private void processLastAck(RegionLocation location, ChannelBufferState endState) {

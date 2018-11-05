@@ -132,7 +132,7 @@ class BufferedReceivingData {
     }
 
     public void storeDataInRegionBuffer(RegionLocation location, ByteBuffer data) throws StorageException {
-        storage.appendRegionContents(location.asCoreLocation(), location.region, data.array());
+        storage.appendRegionContents(location.asCoreLocation(), location.region, data);
     }
 
     public void flushingDataFromRegion(RegionLocation location, ByteBuffer data) throws StorageException {
