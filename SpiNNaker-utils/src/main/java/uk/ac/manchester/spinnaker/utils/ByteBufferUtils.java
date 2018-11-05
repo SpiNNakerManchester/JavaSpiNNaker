@@ -14,7 +14,7 @@ public class ByteBufferUtils {
 
 
     public static String asString(ByteBuffer bb) {
-        return asString(bb, 0, bb.position());
+        return "(" + bb.position() + ")" + asHex(bb);
     }
 
     public static String asString(ByteBuffer bb, int from) {
@@ -25,8 +25,22 @@ public class ByteBufferUtils {
         return "(" + bb.position() + ")" + asHex(bb, from, to);
     }
 
-    public static String byteArrayToHex(ByteBuffer bb) {
-        return asHex(bb, 0, bb.position());
+    public static String asHex(ByteBuffer bb) {
+        ByteBuffer duplicate = bb.duplicate();
+        if (duplicate.position() > 0) {
+            duplicate.flip();
+        }
+        System.out.println("original " + bb);
+        System.out.println("duplicate " + duplicate);
+        StringBuilder sb = new StringBuilder();
+        while (duplicate.hasRemaining()){
+            sb.append(String.format("%02x,", duplicate.get()));
+        }
+        if (sb.length() > 1) {
+            // remove the last comma
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
     }
 
     public static String byteArrayToHex(ByteBuffer bb, int start) {
