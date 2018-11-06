@@ -21,7 +21,7 @@ public class TestByteBufferUtils {
         for (byte b: "helloworld".getBytes()) {
             bb.put(b);
         }
-        assertEquals("68,65,6c,6c,6f,77,6f,72,6c,64", ByteBufferUtils.asHex(bb));
+        assertEquals("(10, 15) 68,65,6c,6c,6f,77,6f,72,6c,64", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class TestByteBufferUtils {
             bb.put(b);
         }
         bb.flip();
-        assertEquals("68,65,6c,6c,6f,77,6f,72,6c,64", ByteBufferUtils.asHex(bb));
+        assertEquals("(0, 10) 68,65,6c,6c,6f,77,6f,72,6c,64", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class TestByteBufferUtils {
         }
         bb.flip();
         bb.flip();
-        assertEquals("", ByteBufferUtils.asHex(bb));
+        assertEquals("(0, 0) ", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestByteBufferUtils {
         for (byte b: "helloworld12345".getBytes()) {
             bb.put(b);
         }
-        assertEquals("68,65,6c,6c,6f,77,6f,72,6c,64,31,32,33,34,35", ByteBufferUtils.asHex(bb));
+        assertEquals("(15, 15) 68,65,6c,6c,6f,77,6f,72,6c,64,31,32,33,34,35", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TestByteBufferUtils {
             bb.put(b);
         }
         bb.flip();
-        assertEquals("68,65,6c,6c,6f,77,6f,72,6c,64,31,32,33,34,35", ByteBufferUtils.asHex(bb));
+        assertEquals("(0, 15) 68,65,6c,6c,6f,77,6f,72,6c,64,31,32,33,34,35", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -72,21 +72,21 @@ public class TestByteBufferUtils {
         }
         bb.flip();
         bb.flip();
-        assertEquals("", ByteBufferUtils.asHex(bb));
+        assertEquals("(0, 0) ", ByteBufferUtils.asString(bb));
     }
 
     @Test
     public void testEmpty() {
         ByteBuffer bb = ByteBuffer.allocate(15);
         //Impossible to tell if unfliped empty or flipped full.
-        assertThat(ByteBufferUtils.asString(bb), startsWith("(0)"));
+        assertThat(ByteBufferUtils.asString(bb), startsWith("(0, 15)"));
     }
 
     @Test
     public void testEmptyFlipped() {
         ByteBuffer bb = ByteBuffer.allocate(15);
         bb.flip();
-        assertEquals("(0)", ByteBufferUtils.asString(bb));
+        assertEquals("(0, 0) ", ByteBufferUtils.asString(bb));
     }
 
     @Test
@@ -94,7 +94,6 @@ public class TestByteBufferUtils {
         ByteBuffer bb = ByteBuffer.allocate(15);
         bb.flip();
         bb.flip();
-        //Impossible to tell if unfliped empty or flipped full.
-        assertThat(ByteBufferUtils.asString(bb), startsWith("(0)"));
+        assertEquals("(0, 0) ", ByteBufferUtils.asString(bb));
     }
 }

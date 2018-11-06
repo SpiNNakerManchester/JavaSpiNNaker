@@ -14,7 +14,7 @@ public class ByteBufferUtils {
 
 
     public static String asString(ByteBuffer bb) {
-        return "(" + bb.position() + ")" + asHex(bb);
+        return "(" + bb.position() + ", " +  bb.limit() + ") " + asHex(bb);
     }
 
     public static String asHex(ByteBuffer bb) {
