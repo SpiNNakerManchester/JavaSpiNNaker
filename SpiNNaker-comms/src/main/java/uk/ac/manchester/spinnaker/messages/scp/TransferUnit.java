@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.Constants.SHORT_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 /** What to move data in units of. */
@@ -22,6 +21,17 @@ enum TransferUnit {
 	}
 
 	/**
+	 * Is a value an odd number
+	 *
+	 * @param value
+	 *            The value to test
+	 * @return True exactly when the value is odd.
+	 */
+	private static boolean odd(int value) {
+		return (value & 1) == 1;
+	}
+
+	/**
 	 * What is an efficient transfer unit to use, given a starting address and a
 	 * size of data to move.
 	 *
@@ -34,11 +44,10 @@ enum TransferUnit {
 	public static TransferUnit efficientTransferUnit(int address, int size) {
 		if (address % WORD_SIZE == 0 && size % WORD_SIZE == 0) {
 			return WORD;
-		} else if (address % WORD_SIZE == SHORT_SIZE
-				|| size % WORD_SIZE == SHORT_SIZE) {
-			return HALF_WORD;
-		} else {
+		} else if (odd(address) || odd(size)) {
 			return BYTE;
+		} else {
+			return HALF_WORD;
 		}
 	}
 }
