@@ -14,7 +14,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 public class ReadLink extends SCPRequest<ReadLink.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
-			throw new IllegalArgumentException("size must be in range 1 to 256");
+			throw new IllegalArgumentException(
+					"size must be in range 1 to 256");
 		}
 		return size;
 	}
