@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
 
 import java.nio.ByteBuffer;
@@ -11,9 +12,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP request to read a region of memory via a link on a chip. */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
-	private static final int MAX_SIZE = 256;
 	private static int validate(int size) {
-		if (size < 1 || size > MAX_SIZE) {
+		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException("size must be in range 1 to 256");
 		}
 		return size;
