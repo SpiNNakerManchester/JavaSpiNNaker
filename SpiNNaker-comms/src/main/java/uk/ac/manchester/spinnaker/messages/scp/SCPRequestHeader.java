@@ -3,6 +3,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.getNextSequenceNumber;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
@@ -36,14 +37,19 @@ public class SCPRequestHeader implements SerializableMessage {
 	 * Set the sequence number of this request to the next available number.
 	 * This can only ever be called once per request.
 	 *
+	 * @param inFlight
+	 *            What sequence numbers are current in use and shouldn't be
+	 *            used.
 	 * @return The number that was issued.
 	 */
-	public short issueSequenceNumber() {
+	public short issueSequenceNumber(Collection<Integer> inFlight) {
 		if (sequenceSet) {
 			throw new IllegalStateException(
 					"a message can only have its sequence number set once");
 		}
-		sequence = getNextSequenceNumber();
+		do {
+			sequence = getNextSequenceNumber();
+		} while (inFlight.contains((int) sequence));
 		sequenceSet = true;
 		return sequence;
 	}

@@ -80,8 +80,6 @@ public class SCPRequestPipeline {
 	 */
 	private int packetTimeout;
 
-	/** The number of responses outstanding. */
-	private int inProgress;
 	/** The number of packets that have been resent. */
 	private int numResent;
 	private int numRetryCodeResent;
@@ -281,7 +279,6 @@ public class SCPRequestPipeline {
 		this.retryTracker = retryTracker;
 
 		requests = synchronizedMap(new HashMap<>());
-		inProgress = 0;
 		numTimeouts = 0;
 		numResent = 0;
 		numRetryCodeResent = 0;
@@ -309,19 +306,21 @@ public class SCPRequestPipeline {
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		// If all the channels are used, start to receive packets
-		while (inProgress >= numChannels) {
+		while (requests.size() >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
 		// Update the packet and store required details
-		int sequence = request.scpRequestHeader.issueSequenceNumber();
+		int sequence =
+				request.scpRequestHeader.issueSequenceNumber(requests.keySet());
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
-		requests.put(sequence, req);
+		if (requests.put(sequence, req) != null) {
+			throw new RuntimeException("duplicate sequence number catastrophe");
+		}
 
-		// Send the request, keeping track of how many are sent
+		// Send the request
 		req.send();
-		inProgress++;
 	}
 
 	/**
@@ -332,15 +331,35 @@ public class SCPRequestPipeline {
 	 *             If anything goes wrong with communications.
 	 */
 	public void finish() throws IOException {
-		while (inProgress > 0) {
+		while (requests.size() > 0) {
 			multiRetrieve(0);
 		}
 	}
 
-	private void singleRetrieve(int timeout) throws IOException {
+	/**
+	 * Receives responses until there are only numPackets responses left.
+	 *
+	 * @param numPackets
+	 *            The number of packets that can remain after running.
+	 * @throws IOException
+	 *             If anything goes wrong with receiving a packet.
+	 */
+	private void multiRetrieve(int numPackets) throws IOException {
+		// While there are still more packets in progress than some threshold
+		while (requests.size() > numPackets) {
+			try {
+				// Receive the next response
+				singleRetrieve();
+			} catch (SocketTimeoutException e) {
+				handleReceiveTimeout();
+			}
+		}
+	}
+
+	private void singleRetrieve() throws IOException {
 		// Receive the next response
 		log.debug("waiting for message...");
-		SCPResultMessage msg = connection.receiveSCPResponse(timeout);
+		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
 		log.debug("received message {}", msg.getResult());
 		Request<?> req = msg.pickRequest(requests);
 
@@ -350,7 +369,6 @@ public class SCPRequestPipeline {
 					msg.getSequenceNumber());
 			return;
 		}
-		inProgress--;
 
 		// If the response can be retried, retry it
 		if (msg.isRetriable()) {
@@ -358,21 +376,22 @@ public class SCPRequestPipeline {
 				sleep(RETRY_DELAY_MS);
 				resend(req, msg.getResult());
 				numRetryCodeResent++;
+			} catch (SocketTimeoutException e) {
+				throw e;
 			} catch (Exception e) {
 				req.handleError(e);
 				msg.removeRequest(requests);
 			}
 		} else {
-
 			// No retry is possible - try constructing the result
 			try {
 				req.parseReceivedResponse(msg);
 			} catch (Exception e) {
 				req.handleError(e);
+			} finally {
+				// Remove the sequence from the outstanding responses
+				msg.removeRequest(requests);
 			}
-
-			// Remove the sequence from the outstanding responses
-			msg.removeRequest(requests);
 		}
 	}
 
@@ -389,7 +408,6 @@ public class SCPRequestPipeline {
 				continue;
 			}
 
-			inProgress--;
 			try {
 				resend(req, REASON_TIMEOUT);
 			} catch (Exception e) {
@@ -413,7 +431,6 @@ public class SCPRequestPipeline {
 		}
 
 		// If the request can be retried, retry it
-		inProgress++;
 		req.resend(reason);
 		numResent++;
 	}
@@ -456,26 +473,6 @@ public class SCPRequestPipeline {
 					req.getCommand(), req.getDestination().getX(),
 					req.getDestination().getY(), req.getDestination().getP(),
 					numRetries, req.retryReason));
-		}
-	}
-
-	/**
-	 * Receives responses until there are only numPackets responses left.
-	 *
-	 * @param numPackets
-	 *            The number of packets that can remain after running.
-	 * @throws IOException
-	 *             If anything goes wrong with receiving a packet.
-	 */
-	private void multiRetrieve(int numPackets) throws IOException {
-		// While there are still more packets in progress than some threshold
-		while (inProgress > numPackets) {
-			try {
-				// Receive the next response
-				singleRetrieve(packetTimeout);
-			} catch (SocketTimeoutException e) {
-				handleReceiveTimeout();
-			}
 		}
 	}
 
