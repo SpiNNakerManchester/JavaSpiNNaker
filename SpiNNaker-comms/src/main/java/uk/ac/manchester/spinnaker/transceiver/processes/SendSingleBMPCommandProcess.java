@@ -139,8 +139,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private final class RequestPipeline {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
-		/** The number of responses outstanding. */
-		private int inProgress;
 		/** A dictionary of sequence number -> requests in progress. */
 		private final Map<Integer, Request> requests =
 				synchronizedMap(new HashMap<>());
@@ -224,13 +222,15 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private void sendRequest(BMPRequest<R> request, Consumer<R> callback)
 				throws IOException {
 			// Get the next sequence to be used and store it in the header
-			int sequence = request.scpRequestHeader.issueSequenceNumber();
+			int sequence = request.scpRequestHeader
+					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
-			requests.put(sequence, req);
+			if (requests.put(sequence, req) != null) {
+				throw new RuntimeException("duplicate sequence number catastrophe");
+			}
 			req.send();
-			inProgress++;
 		}
 
 		/**
@@ -243,7 +243,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private void finish() throws IOException {
 			// While there are still more packets in progress than some
 			// threshold
-			while (inProgress > 0) {
+			while (!requests.isEmpty()) {
 				try {
 					// Receive the next response
 					retrieve();
@@ -263,7 +263,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 						msg.getSequenceNumber());
 				return;
 			}
-			inProgress--;
 
 			// If the response can be retried, retry it
 			try {
@@ -294,7 +293,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					continue;
 				}
 
-				inProgress--;
 				try {
 					resend(req, "timeout");
 				} catch (java.lang.Exception e) {
@@ -321,7 +319,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			}
 
 			// If the request can be retried, retry it
-			inProgress++;
 			req.resend(reason.toString());
 		}
 	}
