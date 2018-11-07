@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
@@ -63,7 +64,8 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadMemory scpReq = new ReadMemory(ZERO_CHIP, 0x70000000, 256);
+		ReadMemory scpReq = new ReadMemory(
+                ZERO_CHIP, 0x70000000, UDP_MESSAGE_MAX_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
 		try (SCPConnection connection =
@@ -81,7 +83,8 @@ public class TestUDPConnection {
 		assertThrows(SocketTimeoutException.class, () -> {
 			try (SCPConnection connection =
 					new SCPConnection(boardConfig.remotehost)) {
-				ReadMemory scp = new ReadMemory(ZERO_CHIP, 0, 256);
+				ReadMemory scp = new ReadMemory(
+                        ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
 				connection.sendSCPRequest(scp);
 				connection.receiveSCPResponse(2);
