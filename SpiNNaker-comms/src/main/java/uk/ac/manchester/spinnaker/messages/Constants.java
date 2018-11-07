@@ -5,7 +5,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
 /** Miscellaneous SpiNNaker constants. */
 public abstract class Constants {
 	/** The max size a UDP packet can be. */
-	public static final int UDP_MESSAGE_MAX_SIZE = 255;
+	public static final int UDP_MESSAGE_MAX_SIZE = 256;
 	/** The default port of the connection. */
 	public static final int SCP_SCAMP_PORT = 17893;
 	/** The default port of the connection. */
