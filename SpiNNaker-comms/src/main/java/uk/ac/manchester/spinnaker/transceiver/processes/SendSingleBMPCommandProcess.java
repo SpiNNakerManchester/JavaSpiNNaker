@@ -228,7 +228,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
 			if (requests.put(sequence, req) != null) {
-				throw new RuntimeException("duplicate sequence number catastrophe");
+				throw new RuntimeException(
+						"duplicate sequence number catastrophe");
 			}
 			req.send();
 		}
