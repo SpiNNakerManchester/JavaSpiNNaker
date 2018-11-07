@@ -1,6 +1,5 @@
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
@@ -58,15 +57,13 @@ public class SCPRequestPipeline {
 	 * error is triggered.
 	 */
 	public static final int DEFAULT_RETRIES = 3;
-	private static final int HEADROOM = 8;
-	private static final int DEFAULT_MAX_CHANNELS = 12;
 	private static final int RETRY_DELAY_MS = 100;
 	private static final String REASON_TIMEOUT = "timeout";
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
 	/** The number of requests to send before checking for responses. */
-	private Integer numChannels;
+	private int numChannels;
 	/**
 	 * The number of outstanding responses to wait for before continuing sending
 	 * requests.
@@ -259,11 +256,9 @@ public class SCPRequestPipeline {
 	 *            The connection over which the communication is to take place
 	 * @param numChannels
 	 *            The number of requests to send before checking for responses.
-	 *            (If {@code null}, this will be determined automatically.)
 	 * @param intermediateChannelWaits
 	 *            The number of outstanding responses to wait for before
-	 *            continuing sending requests. (If {@code null}, this will be
-	 *            determined automatically.)
+	 *            continuing sending requests.
 	 * @param numRetries
 	 *            The number of times to resend any packet for any reason before
 	 *            an error is triggered.
@@ -275,16 +270,9 @@ public class SCPRequestPipeline {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SCPRequestPipeline(SCPConnection connection, Integer numChannels,
-			Integer intermediateChannelWaits, int numRetries, int packetTimeout,
+	public SCPRequestPipeline(SCPConnection connection, int numChannels,
+			int intermediateChannelWaits, int numRetries, int packetTimeout,
 			RetryTracker retryTracker) {
-		if (numChannels != null && intermediateChannelWaits == null) {
-			intermediateChannelWaits = numChannels - HEADROOM;
-			if (intermediateChannelWaits < 0) {
-				intermediateChannelWaits = 0;
-			}
-		}
-
 		this.connection = connection;
 		this.numChannels = numChannels;
 		this.intermediateChannelWaits = intermediateChannelWaits;
@@ -320,12 +308,6 @@ public class SCPRequestPipeline {
 	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
-		// If the connection has not been measured
-		if (numChannels == null && connection.isReadyToReceive()) {
-			numChannels = max(inProgress + HEADROOM, DEFAULT_MAX_CHANNELS);
-			intermediateChannelWaits = numChannels - HEADROOM;
-		}
-
 		// If all the channels are used, start to receive packets
 		while (inProgress >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
