@@ -133,7 +133,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		Accumulator a = new Accumulator(receivingBuffer);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
@@ -164,7 +164,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		Accumulator a = new Accumulator(receivingBuffer);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
@@ -196,7 +196,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
@@ -226,7 +226,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
@@ -261,7 +261,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
@@ -294,7 +294,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size, UDP_MESSAGE_MAX_SIZE);
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));

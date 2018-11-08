@@ -190,8 +190,12 @@
 								<packages>uk.ac.manchester.spinnaker.connections*:uk.ac.manchester.spinnaker.io:uk.ac.manchester.spinnaker.messages*:uk.ac.manchester.spinnaker.transceiver*:uk.ac.manchester.spinnaker.spalloc*</packages>
 							</group>
 							<group>
-								<title>Data Specification</title>
-								<packages>uk.ac.manchester.spinnaker.data_spec*</packages>
+								<title>Data Management</title>
+								<packages>uk.ac.manchester.spinnaker.data_spec*:uk.ac.manchester.spinnaker.storage</packages>
+							</group>
+							<group>
+								<title>Front-End System</title>
+								<packages>uk.ac.manchester.spinnaker.front_end*</packages>
 							</group>
 							<group>
 								<title>Utilities</title>
@@ -345,7 +349,6 @@
 				<pluginManagement>
 					<plugins>
 						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<configuration>
 								<additionalOptions>
