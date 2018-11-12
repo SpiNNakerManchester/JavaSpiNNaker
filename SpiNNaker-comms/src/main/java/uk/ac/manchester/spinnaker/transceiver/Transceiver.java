@@ -819,6 +819,9 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 
+        // Remove any chips that are unreachable
+        machine.removeUnreachableChips();
+
 		// Work out and add the SpiNNaker links and FPGA links
 		machine.addSpinnakerLinks();
 		machine.addFpgaLinks();

@@ -250,8 +250,14 @@ public class SDPHeader implements SerializableMessage {
 
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
 	private static class SCAMP {
-		/** Mystery value! */
-		private static final int SDPF_BASE = 0x07;
+		/**
+		 * A secret agent's value!
+		 * <p>
+		 * Most plausible explanation of this (from a set of one) is that Dave
+		 * Lester thinks that Jamie Knight put it in as a reference to wearing
+		 * dinner jackets for a meeting at Pot Shrigley.
+		 */
+		private static final int BOND = 007;
 		/** Reply expected. */
 		private static final int SDPF_REPLY = 0x80;
 		/** Checksum before routing. */
@@ -264,20 +270,19 @@ public class SDPHeader implements SerializableMessage {
 	/** Possible values of the {@code flags} field. */
 	public enum Flag {
 		/** Indicates that a reply is not expected. */
-		REPLY_NOT_EXPECTED(SCAMP.SDPF_BASE),
+		REPLY_NOT_EXPECTED(SCAMP.BOND),
 		/**
 		 * Indicates that a reply is not expected and the packet should not be
 		 * P2P routed.
 		 */
-		REPLY_NOT_EXPECTED_NO_P2P(SCAMP.SDPF_BASE | SCAMP.SDPF_NR),
+		REPLY_NOT_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_NR),
 		/** Indicates that a reply is expected. */
-		REPLY_EXPECTED(SCAMP.SDPF_BASE | SCAMP.SDPF_REPLY),
+		REPLY_EXPECTED(SCAMP.BOND | SCAMP.SDPF_REPLY),
 		/**
 		 * Indicates that a reply is expected and the packet should not be P2P
 		 * routed.
 		 */
-		REPLY_EXPECTED_NO_P2P(
-				SCAMP.SDPF_BASE | SCAMP.SDPF_REPLY | SCAMP.SDPF_NR);
+		REPLY_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_REPLY | SCAMP.SDPF_NR);
 		/** The SDP-encoded form of the flag. */
 		public final byte value;
 		private static final Map<Byte, Flag> MAP = new HashMap<>();

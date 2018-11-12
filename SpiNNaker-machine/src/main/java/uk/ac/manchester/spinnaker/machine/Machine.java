@@ -3,6 +3,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,13 +20,14 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
+
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
-import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
+import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.Counter;
@@ -928,6 +933,31 @@ public class Machine implements Iterable<Chip> {
             count += chip.nProcessors();
         }
         return count;
+    }
+
+    /**
+     * Remove chips that can't be reached or that can't reach other chips due to
+     * missing links.
+     */
+    public void removeUnreachableChips() {
+        chips.keySet().removeAll(getUnreachableIncomingChips());
+        chips.keySet().removeAll(getUnreachableOutgoingChips());
+    }
+
+    private List<ChipLocation> getUnreachableOutgoingChips() {
+        return chipCoordinates().stream()
+                .filter(chip -> asList(Direction.values()).stream()
+                        .allMatch(dir -> !hasLinkAt(chip, dir)))
+                .collect(toList());
+    }
+
+    @SuppressWarnings("deprecation")
+    private List<ChipLocation> getUnreachableIncomingChips() {
+        return chipCoordinates().stream()
+                .filter(chip -> asList(Direction.values()).stream()
+                        .allMatch(dir -> !hasLinkAt(dir.typicalMove(chip),
+                                dir.inverse())))
+                .collect(toList());
     }
 
     @Override
