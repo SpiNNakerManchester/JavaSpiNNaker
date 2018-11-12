@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -22,6 +23,9 @@ import uk.ac.manchester.spinnaker.transceiver.processes.Process;
  */
 public class DataReceiverRunner {
 
+    /** TEMP VARIABLE NEEDS MOVING. */
+    public static final int DEFAULT_HARDWARE = 5;
+
 	public static void main(String... args) throws IOException, SpinnmanException, Process.Exception, StorageException {
         //args 0 = instruction to run this
         ObjectMapper mapper = MapperFactory.createMapper();
@@ -34,7 +38,16 @@ public class DataReceiverRunner {
                 machine_reader, MachineBean.class);
         Machine machine = new Machine(fromJson);
 
-        Transceiver trans = new Transceiver(machine.getBootEthernetAddress(), 3);
+        // TODO: MachineVersion needs pushing down!
+        MachineVersion version = machine.version;
+        int hardwareVersion;
+        if (version.id == null) {
+            hardwareVersion = DEFAULT_HARDWARE;
+        } else {
+            hardwareVersion = version.id;
+        }
+        Transceiver trans = new Transceiver(
+                machine.getBootEthernetAddress(), hardwareVersion);
 
         DataReceiver receiver = new  DataReceiver(trans, args[3]);
         receiver.getDataForPlacements(placements, null);

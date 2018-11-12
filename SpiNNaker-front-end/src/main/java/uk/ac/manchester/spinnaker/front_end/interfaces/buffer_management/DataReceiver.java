@@ -3,6 +3,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferingOperation;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
@@ -137,16 +138,16 @@ public class DataReceiver {
             //int read_ptr = endState.currentRead;
 
 
-            if (endState.currentRead <  endState.currentWrite) {
-                int length =  endState.currentWrite - endState.currentRead;
-                readSomeData(location, endState.currentRead, length);
-            } else if (endState.currentRead >  endState.currentWrite ||
+            if (endState.getCurrentRead() <  endState.currentWrite) {
+                int length =  endState.currentWrite - endState.getCurrentRead();
+                readSomeData(location, endState.getCurrentRead(), length);
+            } else if (endState.getCurrentRead() >  endState.currentWrite ||
                     endState.getLastBufferOperation() == BufferingOperation.BUFFER_WRITE) {
-                int length = endState.endAddress - endState.currentRead;
+                int length = endState.endAddress - endState.getCurrentRead();
                 if (length < 0) {
                     throw new IOException ("The amount of data to read is negative!");
                 }
-                readSomeData(location, endState.currentRead, length);
+                readSomeData(location, endState.getCurrentRead(), length);
                 length = endState.currentWrite - endState.startAddress;
                 readSomeData(location, endState.startAddress, length);
             } else {
