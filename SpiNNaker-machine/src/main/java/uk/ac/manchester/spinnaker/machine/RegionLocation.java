@@ -28,7 +28,7 @@ public class RegionLocation implements HasCoreLocation,
      * Precalculated hashcode.
      */
     public final int hashcode;
-  
+
     /**
      * Creates the Region based on a Core and a region.
      * @param core The Core to use
@@ -40,7 +40,7 @@ public class RegionLocation implements HasCoreLocation,
         this.p = core.getP();
         this.region = region;
         this.hashcode = ((((x << MachineDefaults.COORD_SHIFT) ^ y)
-                << MachineDefaults.CORE_SHIFT) ^ p) 
+                << MachineDefaults.CORE_SHIFT) ^ p)
                 << MachineDefaults.REGION_SHIFT ^ region;
     }
 

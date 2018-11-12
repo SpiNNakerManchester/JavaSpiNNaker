@@ -1113,7 +1113,7 @@ public class Machine implements Iterable<Chip> {
 
     /**
      * Obtains the Boot Ethernet IP Address.
-     * 
+     *
      * @return Th Ip Address of the boot chip (typically 0, 0)
      */
     public InetAddress getBootEthernetAddress() {
