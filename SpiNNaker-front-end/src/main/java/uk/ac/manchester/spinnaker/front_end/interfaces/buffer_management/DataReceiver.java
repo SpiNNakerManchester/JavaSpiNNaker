@@ -15,7 +15,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
@@ -75,14 +75,14 @@ public class DataReceiver {
      */
     public void getDataForPlacements(
             List<Placement> placements, ProgressBar progress)
-            throws IOException, Process.Exception, StorageException {
+            throws IOException, StorageException, ProcessException {
         // TODO  with self._thread_lock_buffer_out:
         getDataForPlacementsLocked(placements, progress);
     }
 
     private void getDataForPlacementsLocked(
             List<Placement> placements, ProgressBar progress)
-            throws IOException, Process.Exception, StorageException {
+            throws IOException, StorageException, ProcessException {
 
         // get data
         for (Placement placement:  placements) {
@@ -98,7 +98,7 @@ public class DataReceiver {
 
     private void getDataForPlacement(
             Placement placement, int recordingRegionId)
-            throws IOException, Process.Exception, StorageException {
+            throws IOException, StorageException, ProcessException {
         // TODO with self._thread_lock_buffer_out:
         getDataForPlacementLocked(placement, recordingRegionId);
     }
@@ -106,7 +106,7 @@ public class DataReceiver {
     // This is only the simple case of the full method in BufferManager
     private void getDataForPlacementLocked(
             Placement placement, int recordingRegionId)
-            throws IOException, Process.Exception, StorageException {
+            throws IOException, StorageException, ProcessException {
 
         Vertex vertex = placement.getVertex();
         int recordingDataAddress = vertex.getRecordingRegionBaseAddress();
@@ -183,7 +183,7 @@ public class DataReceiver {
     }
 
     private void readSomeData(RegionLocation location, int address, int length)
-            throws IOException, Process.Exception, StorageException {
+            throws IOException, StorageException, ProcessException {
         log.debug("< Reading " + length + " bytes from "
             + location + " at " + address);
         ByteBuffer data = requestData(location, address, length);
@@ -194,7 +194,7 @@ public class DataReceiver {
     //    buffer_management/recording_utilities.py
     private int getLastSequenceNumber(
             Placement placement, int recordingDataAddress)
-            throws IOException, Process.Exception {
+            throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
                 placement.getScampCore(),
                 recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
@@ -216,7 +216,7 @@ public class DataReceiver {
      */
     private int getRegionPointer(
             Placement placement, int recordingDataAddress, int region)
-            throws IOException, Process.Exception {
+            throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
                 placement.getScampCore(),
                 recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
@@ -226,7 +226,7 @@ public class DataReceiver {
 
     private ChannelBufferState generateEndBufferingStateFromMachine(
             Placement placement, int stateRegionBaseAddress)
-            throws IOException, Process.Exception {
+            throws IOException, ProcessException {
         // retrieve channel state memory area
         ByteBuffer channelStateData = requestData(
                 placement, stateRegionBaseAddress,
@@ -248,7 +248,7 @@ public class DataReceiver {
      */
     private ByteBuffer requestData(
             HasCoreLocation location, int address, int length)
-            throws IOException, Process.Exception {
+            throws IOException, ProcessException {
         return transceiver.readMemory(location.getScampCore(), address, length);
     }
 

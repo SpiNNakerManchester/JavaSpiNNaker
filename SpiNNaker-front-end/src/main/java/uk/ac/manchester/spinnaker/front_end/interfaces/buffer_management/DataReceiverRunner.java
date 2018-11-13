@@ -16,6 +16,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Prototype for early testing.
@@ -42,8 +43,8 @@ public final class DataReceiverRunner {
      * @throws StorageException
      */
 	public static void main(String... args)
-            throws IOException, SpinnmanException, Process.Exception,
-            StorageException {
+            throws IOException, SpinnmanException,
+            StorageException, ProcessException {
         //args 0 = instruction to run this
         ObjectMapper mapper = MapperFactory.createMapper();
         FileReader placementReader = new FileReader(args[1]);
