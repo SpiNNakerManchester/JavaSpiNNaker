@@ -3,8 +3,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.InetAddress;
