@@ -68,8 +68,10 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -2227,6 +2229,33 @@ public interface TransceiverInterface {
 	 */
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
 			throws IOException, ProcessException;
+
+	/**
+	 * Read some areas of SDRAM from a core of a chip on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is to be read
+	 *            from
+	 * @param region
+	 *            The region of the core that is being read. Used to organise
+	 *            the data in the database.
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param storage
+	 *            The database to write to
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If anything goes wrong with access to the database.
+	 */
+	void readMemory(HasCoreLocation core, int region, int baseAddress,
+			int length, Storage storage)
+			throws IOException, Exception, StorageException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
