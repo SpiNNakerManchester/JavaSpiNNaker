@@ -46,11 +46,12 @@ public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return A list of block descriptors, in block chain order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public List<HeapElement> getBlocks(HasChipLocation chip,
-			SystemVariableDefinition heap) throws IOException, Exception {
+			SystemVariableDefinition heap)
+			throws IOException, ProcessException {
 		int heapBase = readFromAddress(chip,
 				SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset, heap.type.value)
 						.get();
@@ -76,7 +77,7 @@ public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private IntBuffer readFromAddress(HasChipLocation chip, int address,
-			int size) throws IOException, Exception {
+			int size) throws IOException, ProcessException {
 		return synchronousCall(new ReadMemory(chip, address, size)).data
 				.asIntBuffer();
 	}

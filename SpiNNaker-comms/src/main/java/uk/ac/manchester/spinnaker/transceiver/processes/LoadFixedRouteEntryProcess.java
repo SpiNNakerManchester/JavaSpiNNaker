@@ -36,11 +36,11 @@ public class LoadFixedRouteEntryProcess
 	 *            the fixed route entry
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		loadFixedRoute(chip, fixedRoute, 0);
 	}
 
@@ -55,11 +55,11 @@ public class LoadFixedRouteEntryProcess
 	 *            The ID of the application with which to associate the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			int appID) throws IOException, Exception {
+			int appID) throws IOException, ProcessException {
 		int entry = fixedRoute.encode();
 		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
 	}

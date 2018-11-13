@@ -124,11 +124,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            determines how much memory to read.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			ByteBuffer receivingBuffer) throws IOException, Exception {
+			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
 		Accumulator a = new Accumulator(receivingBuffer);
 		int chunk;
@@ -155,11 +155,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            determines how much memory to read.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress,
-			ByteBuffer receivingBuffer) throws IOException, Exception {
+			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
 		Accumulator a = new Accumulator(receivingBuffer);
 		int chunk;
@@ -188,11 +188,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return the filled buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public ByteBuffer readLink(HasChipLocation chip, int linkID,
-			int baseAddress, int size) throws IOException, Exception {
+			int baseAddress, int size) throws IOException, ProcessException {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
@@ -218,11 +218,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return the filled buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
-			int size) throws IOException, Exception {
+			int size) throws IOException, ProcessException {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
@@ -253,11 +253,12 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			int size, RandomAccessFile dataFile) throws IOException, Exception {
+			int size, RandomAccessFile dataFile)
+			throws IOException, ProcessException {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
@@ -286,11 +287,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
-			RandomAccessFile dataFile) throws IOException, Exception {
+			RandomAccessFile dataFile) throws IOException, ProcessException {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
@@ -320,11 +321,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			int size, File dataFile) throws IOException, Exception {
+			int size, File dataFile) throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
 			readLink(chip, linkID, baseAddress, size, s);
 		}
@@ -344,11 +345,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void readMemory(HasChipLocation chip, int baseAddress, int size,
-			File dataFile) throws IOException, Exception {
+			File dataFile) throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
 		}

@@ -1,11 +1,8 @@
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
-import static java.lang.String.format;
-
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -41,15 +38,16 @@ public abstract class Process {
 	/**
 	 * Test if an error occurred, and throw it if it did.
 	 *
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             an exception that wraps the original exception that occurred.
 	 */
-	public final void checkForError() throws Exception {
+	public final void checkForError() throws ProcessException {
 		if (!isError()) {
 			return;
 		}
 		SDPHeader hdr = errorRequest.sdpHeader;
-		Exception ex = new Exception(hdr.getDestination(), exception);
+		ProcessException ex =
+				new ProcessException(hdr.getDestination(), exception);
 		exception = ex;
 		throw ex;
 	}
@@ -105,39 +103,15 @@ public abstract class Process {
 	 * @return The successful response to the request
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
 	protected final <T extends SCPResponse> T synchronousCall(
-			SCPRequest<T> request) throws IOException, Exception {
+			SCPRequest<T> request) throws IOException, ProcessException {
 		ValueHolder<T> holder = new ValueHolder<>();
 		sendRequest(request, holder::setValue);
 		finish();
 		checkForError();
 		return holder.getValue();
-	}
-
-	/**
-	 * Encapsulates exceptions from processes which communicate with some
-	 * core/chip.
-	 */
-	public static class Exception extends java.lang.Exception {
-		private static final long serialVersionUID = -1157220025479591572L;
-		private static final String S = "     "; // five spaces
-
-		/**
-		 * Create an exception.
-		 *
-		 * @param core
-		 *            What core were we talking to.
-		 * @param cause
-		 *            What exception caused problems.
-		 */
-		public Exception(HasCoreLocation core, Throwable cause) {
-			super(format("\n" + S + "Received exception class: %s\n" + S
-					+ "With message: %s\n" + S + "When sending to %d:%d:%d\n",
-					cause.getClass().getName(), cause.getMessage(), core.getX(),
-					core.getY(), core.getP()), cause);
-		}
 	}
 }

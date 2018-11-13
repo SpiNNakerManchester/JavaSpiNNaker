@@ -67,11 +67,11 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *         whatever order they are produced in.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
-			throws Exception, IOException {
+			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
 		for (CoreLocation core : cores) {
 			sendRequest(new ReadMemory(core.getScampCore(),

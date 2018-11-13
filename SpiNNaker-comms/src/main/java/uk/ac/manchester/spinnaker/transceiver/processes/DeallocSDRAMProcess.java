@@ -34,11 +34,11 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return the number of blocks freed
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public int deallocSDRAM(HasChipLocation chip, int appID)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
 	}
 
@@ -54,11 +54,11 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            deallocated
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		synchronousCall(new SDRAMDeAlloc(chip, appID, baseAddress));
 	}
 }

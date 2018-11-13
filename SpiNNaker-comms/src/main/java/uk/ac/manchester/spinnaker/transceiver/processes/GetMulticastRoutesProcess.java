@@ -58,11 +58,12 @@ public class GetMulticastRoutesProcess
 	 * @return The list of routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
-			int baseAddress, Integer appID) throws IOException, Exception {
+			int baseAddress, Integer appID)
+			throws IOException, ProcessException {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;
