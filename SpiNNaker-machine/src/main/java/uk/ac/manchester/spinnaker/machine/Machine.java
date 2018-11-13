@@ -225,7 +225,8 @@ public class Machine implements Iterable<Chip> {
                 rebuilt.addChip(chip);
             }
         }
-        return rebuilt;
+        // Check that the removals do not cause new abmoral chips.
+        return rebuilt.rebuild();
     }
 
     /**
@@ -465,10 +466,15 @@ public class Machine implements Iterable<Chip> {
      * Get the existing Chip over the given link.
      * <p>
      * This method is just a combination of getLocationOverLink and getChipAt.
+     * It therefor takes wraparound into account and does check for the
+     *      existence of the destination chip.
+     *
+     * This method returns the destination chip WITHOUT checking if the
+     *      physical link is active.
      *
      * @param source The x and y coordinates of the source of the link.
      * @param direction The Direction of the link to traverse
-     * @return The Destination Chip connected by this link. or
+     * @return The Destination Chip connected by this (possible) link. or
      *      null if it does not exist.
      */
     public final Chip getChipOverLink(
@@ -936,28 +942,26 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Remove chips that can't be reached or that can't reach other chips due to
-     * missing links.
+     * Check if the inverse link to the one described exists.
+     *
+     * This check is in two stages.
+     * 1. Check that there is actually a second chip in the given direction
+     *      from the input chip. There need not be an actual working link.
+     * 2. Check that the second chip does have a working link back.
+     *      (Inverse direction)
+     *
+     * @param chip Starting Chip which will be the Target of the actual
+     *      link checked.
+     * @param direction Original direction.
+     *      This is the inverse of the direction in the link actually checked.
+     * @return True if and only if there is a active inverse link
      */
-    public void removeUnreachableChips() {
-        chips.keySet().removeAll(getUnreachableIncomingChips());
-        chips.keySet().removeAll(getUnreachableOutgoingChips());
-    }
-
-    private List<ChipLocation> getUnreachableOutgoingChips() {
-        return chipCoordinates().stream()
-                .filter(chip -> asList(Direction.values()).stream()
-                        .allMatch(dir -> !hasLinkAt(chip, dir)))
-                .collect(toList());
-    }
-
-    @SuppressWarnings("deprecation")
-    private List<ChipLocation> getUnreachableIncomingChips() {
-        return chipCoordinates().stream()
-                .filter(chip -> asList(Direction.values()).stream()
-                        .allMatch(dir -> !hasLinkAt(dir.typicalMove(chip),
-                                dir.inverse())))
-                .collect(toList());
+    public boolean hasInverseLinkAt(ChipLocation chip, Direction direction) {
+        Chip source = getChipOverLink(chip, direction);
+        if (source == null) {
+            return false;
+        }
+        return source.router.hasLink(direction.inverse());
     }
 
     @Override

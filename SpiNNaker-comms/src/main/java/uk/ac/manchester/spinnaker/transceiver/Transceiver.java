@@ -804,6 +804,10 @@ public class Transceiver extends UDPTransceiver
 				ignoreLinks, maxCoreID, maxSDRAMSize, this)
 						.getMachineDetails(versionInfo.core, dimensions);
 
+        // Ask the machine to check itself
+        //and if required to rebuild itself with out invalid links or chips ect.
+        machine = machine.rebuild();
+
 		// update the SCAMP selector with the machine
 		if (scpSelector instanceof MachineAware) {
 			((MachineAware) scpSelector).setMachine(machine);
@@ -818,9 +822,6 @@ public class Transceiver extends UDPTransceiver
 				sc.setChip(machine.boot);
 			}
 		}
-
-        // Remove any chips that are unreachable
-        machine.removeUnreachableChips();
 
 		// Work out and add the SpiNNaker links and FPGA links
 		machine.addSpinnakerLinks();

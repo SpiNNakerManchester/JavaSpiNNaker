@@ -102,25 +102,4 @@ public enum Direction {
                 "No direction found for \"" + label + "\"");
     }
 
-    /**
-     * Computes the typical destination location when moving from source in
-     *    this direction.
-     * <p>
-     * This helper method ONLY computes the typical move.
-     * It does not check that the move is possible or correct.
-     * The possibility of a wrap around is IGNORED!
-     * There is no check if the destination location exists.
-     * There is no check if the links is missing, dead or otherwise used.
-     *
-     * @param source Location moving from.
-     * @return The typical location this direction goes to from this source.
-     * @deprecated Not Sure this method will remain
-     *      as it can not do the negative x and y
-     */
-    @Deprecated
-    public ChipLocation typicalMove(HasChipLocation source) {
-        return new ChipLocation(
-            source.getX() + xChange, source.getY() + yChange);
-    }
-
 }
