@@ -6,20 +6,30 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /**
- *
+ * Prototype with minimum information needed.
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 public class Vertex {
 
+    /** Label as received from Python.*/
     final String label;
+
+    /** Address at which to start recording. */
     final int recordingRegionBaseAddress;
-    //No reason this can not be a list but int is required
+
+    /** The ids of the regions recording. */
     final int[] recordedRegionIds;
 
+    /**
+     * Create a minimal vertex, possibly using an unmarshaller.
+     *
+     * @param label Label as received from Python.
+     * @param recordingRegionBaseAddress Address at which to start recording.
+     * @param recordedRegionIds The ids of the regions recording
+     */
     public Vertex(@JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "recordingRegionBaseAddress", required = true)
                     int recordingRegionBaseAddress,
@@ -31,33 +41,33 @@ public class Vertex {
     }
 
 //    Iterable<Integer> getRegions() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
     //hashcode
 
 //    int getRegionBufferSize(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
 //    boolean isEmpty(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
 //    boolean isNextTimestamp(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
 //    Integer getNextTimestamp(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
 //    boolean isNextKey(Integer region, Integer nextTimestamp) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
 //    int getNextKey(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
 //    }
 
     // AbstractReceiveBuffersToHost.get_recorded_region_ids
@@ -70,12 +80,11 @@ public class Vertex {
         return recordedRegionIds;
     }
 
-    // AbstractReceiveBuffersToHost.get_recording_region_base_address
     /**
      * Get the recording region base address.
      *
-     * @param transceiver  the SpiNNMan instance
-     * @param placement the placement object of the core to find the address of
+     * Unlike the python this value is cached here.
+     *
      * @return the base address of the recording region
      */
     int getRecordingRegionBaseAddress() {

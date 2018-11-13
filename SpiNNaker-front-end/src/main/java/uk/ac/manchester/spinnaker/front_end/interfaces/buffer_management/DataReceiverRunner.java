@@ -18,24 +18,41 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.Process;
 
 /**
+ * Prototype for early testing.
  *
  * @author Christian-B
  */
-public class DataReceiverRunner {
+public final class DataReceiverRunner {
+
+    private DataReceiverRunner() {
+    }
 
     /** TEMP VARIABLE NEEDS MOVING. */
     public static final int DEFAULT_HARDWARE = 5;
 
-	public static void main(String... args) throws IOException, SpinnmanException, Process.Exception, StorageException {
+    private static final int THIRD = 3;
+
+    /**
+     * Prototype for early testing.
+     * @param args Arguements as received.
+     * @throws IOException
+     * @throws SpinnmanException
+     * @throws
+     *      uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception
+     * @throws StorageException
+     */
+	public static void main(String... args)
+            throws IOException, SpinnmanException, Process.Exception,
+            StorageException {
         //args 0 = instruction to run this
         ObjectMapper mapper = MapperFactory.createMapper();
-        FileReader placement_reader = new FileReader(args[1]);
+        FileReader placementReader = new FileReader(args[1]);
         List<Placement> placements = mapper.readValue(
-                placement_reader, new TypeReference<List<Placement>>(){});
+                placementReader, new TypeReference<List<Placement>>() { });
 
-        FileReader machine_reader = new FileReader(args[2]);
+        FileReader machineReader = new FileReader(args[2]);
         MachineBean fromJson = mapper.readValue(
-                machine_reader, MachineBean.class);
+                machineReader, MachineBean.class);
         Machine machine = new Machine(fromJson);
 
         // TODO: MachineVersion needs pushing down!
@@ -49,7 +66,7 @@ public class DataReceiverRunner {
         Transceiver trans = new Transceiver(
                 machine.getBootEthernetAddress(), hardwareVersion);
 
-        DataReceiver receiver = new  DataReceiver(trans, args[3]);
+        DataReceiver receiver = new  DataReceiver(trans, args[THIRD]);
         receiver.getDataForPlacements(placements, null);
     }
 }

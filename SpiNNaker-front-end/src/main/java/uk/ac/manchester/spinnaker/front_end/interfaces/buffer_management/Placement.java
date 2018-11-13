@@ -9,18 +9,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
+ * Prototype with minimum information needed.
  *
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 class Placement implements HasCoreLocation {
 
+    /** The x value of the core this placement is on. */
     final int x;
+    /** The y value of the core this placement is on. */
     final int y;
+    /** The p value of the core this placement is on. */
     final int p;
+    /** Minimal vertex info. */
     final Vertex vertex;
 
-    public Placement(@JsonProperty(value = "x", required = true) int x,
+    /**
+     * Constructor with minimum information needed.
+     *
+     * Could be called from an unmarsheller.
+     *
+     * @param x
+     * @param y
+     * @param p
+     * @param vertex
+     */
+    Placement(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
             @JsonProperty(value = "vertex", required = true) Vertex vertex) {
