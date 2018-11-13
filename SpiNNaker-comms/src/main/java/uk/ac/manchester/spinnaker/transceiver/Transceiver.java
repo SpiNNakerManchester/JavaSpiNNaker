@@ -127,6 +127,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
@@ -1509,6 +1511,14 @@ public class Transceiver extends UDPTransceiver
 			int length) throws IOException, Exception {
 		return new ReadMemoryProcess(scpSelector, this).readMemory(core,
 				baseAddress, length);
+	}
+
+	@Override
+	public void readMemory(HasCoreLocation core, int region, int baseAddress,
+			int length, Storage storage)
+			throws IOException, Exception, StorageException {
+		new ReadMemoryProcess(scpSelector, this).readMemory(core, region,
+				baseAddress, length, storage);
 	}
 
 	@Override
