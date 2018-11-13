@@ -54,11 +54,6 @@ public class TestLink {
         checkDifferent(link1, link2);
     }
 
-    public void testDefault() {
-        Link link = new Link(chip00, Direction.NORTH);
-        assertEquals(chip01, link.destination);
-    }
-
     public void testById() {
         Link link1 =  new Link(chip00, Direction.NORTH, chip01);
         Link link2 =  new Link(chip00, 2, chip01);

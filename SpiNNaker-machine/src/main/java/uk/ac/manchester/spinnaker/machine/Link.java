@@ -65,21 +65,6 @@ public final class Link {
                 destination.asChipLocation());
     }
 
-    /**
-     * Pass through constructor that sets the destination as the typical one.
-     * <p>
-     * @see
-     * Direction#typicalMove(uk.ac.manchester.spinnaker.machine.HasChipLocation)
-     *
-     * @param source The coordinates of the source chip of the link.
-     * @param sourceLinkDirection The Direction of the link in the source chip.
-     */
-    @SuppressWarnings("deprecation")
-    public Link(HasChipLocation source, Direction sourceLinkDirection) {
-        this (source, sourceLinkDirection,
-                sourceLinkDirection.typicalMove(source));
-    }
-
     @Override
     public int hashCode() {
         int hash = 7;

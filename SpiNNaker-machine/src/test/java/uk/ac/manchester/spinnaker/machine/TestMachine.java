@@ -516,4 +516,5 @@ public class TestMachine {
         assertNotEquals(instance1, missingChip);
         assertNotNull(instance1.difference(missingChip));
    }
+
 }
