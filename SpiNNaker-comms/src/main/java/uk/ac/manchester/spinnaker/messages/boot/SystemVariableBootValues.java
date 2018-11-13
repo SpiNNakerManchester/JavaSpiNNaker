@@ -104,7 +104,8 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 * @return The defaults for the specific board.
 	 */
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
-		SystemVariableBootValues bv = BootValues.get(boardVersion.id);
+		SystemVariableBootValues bv = BootValues.get(
+                boardVersion.hardwareVersion());
 		if (bv != null) {
 			return bv;
 		}

@@ -106,6 +106,8 @@ public enum MachineVersion {
      */
     public final MachineDimensions machineDimensions;
 
+    private final int DEFAULT_HARDWARE_VERSION = 5;
+
     /**
      * Main constructor.
      * @param id
@@ -284,6 +286,14 @@ public enum MachineVersion {
                 % MachineDefaults.TRIAD_HEIGHT == 0)
                 && ((height - MachineDefaults.HALF_SIZE)
                         % MachineDefaults.TRIAD_WIDTH == 0));
+    }
+
+    public int hardwareVersion(){
+        if (id == null) {
+            return DEFAULT_HARDWARE_VERSION;
+        } else {
+            return id;
+        }
     }
 
 }
