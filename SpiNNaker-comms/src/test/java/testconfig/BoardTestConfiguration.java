@@ -2,6 +2,7 @@ package testconfig;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import org.opentest4j.TestAbortedException;
 
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
@@ -44,7 +46,7 @@ public class BoardTestConfiguration {
 	public String localhost;
 	public Integer localport;
 	public Inet4Address remotehost;
-	public Integer boardVersion;
+	public MachineVersion boardVersion;
 	public List<BMPConnectionData> bmpNames;
 	public Boolean autoDetectBMP;
 
@@ -61,7 +63,7 @@ public class BoardTestConfiguration {
 		localhost = LOCALHOST;
 		localport = PORT;
 		remotehost = InetFactory.getByName(LOCALHOST);
-		boardVersion = config.getint(MCSEC, "version");
+		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
 	}
 
 	public void setUpRemoteBoard()
@@ -69,7 +71,7 @@ public class BoardTestConfiguration {
 		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
 				() -> "test board (" + remotehost + ") appears to be down");
-		boardVersion = config.getint(MCSEC, "version");
+		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {
 			bmpNames = null;
@@ -118,7 +120,7 @@ public class BoardTestConfiguration {
 			job.close();
 			throw e;
 		}
-		boardVersion = 5; // ASSUME FOR SPALLOC!
+		boardVersion = FIVE; // ASSUME FOR SPALLOC!
 		bmpNames = null; // NO ACCESS TO BMP
 		autoDetectBMP = false;
 		return job;
@@ -128,7 +130,7 @@ public class BoardTestConfiguration {
 		localhost = null;
 		localport = PORT;
 		remotehost = InetFactory.getByName(NOHOST);
-		boardVersion = config.getint(MCSEC, "version");
+		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
 	}
 
 	private static boolean hostIsReachable(String remotehost) {
