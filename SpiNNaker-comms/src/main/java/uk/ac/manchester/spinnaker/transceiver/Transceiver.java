@@ -82,6 +82,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
@@ -165,10 +166,9 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 @SuppressWarnings("checkstyle:ParameterNumber")
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
-	private static final int BIGGER_BOARD = 4;
 	private static final Logger log = getLogger(Transceiver.class);
 	/** The version of the board being connected to. */
-	private int version;
+	private MachineVersion version;
 	/** The discovered machine model. */
 	Machine machine;
 	private MachineDimensions dimensions;
@@ -283,6 +283,10 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param host
 	 *            The host IP address of the board
+	 * @param version
+	 *            The type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. May be {@code null} if the board in question can
+	 *            be assumed to be always already booted.
 	 * @param numberOfBoards
 	 *            a number of boards expected to be supported, or {@code null},
 	 *            which defaults to a single board
@@ -302,10 +306,6 @@ public class Transceiver extends UDPTransceiver
 	 * @param maxCoreID
 	 *            The maximum core ID in any discovered machine. Requests for a
 	 *            "machine" will only have core IDs up to this value.
-	 * @param version
-	 *            the type of SpiNNaker board used within the SpiNNaker machine
-	 *            being used. If a spinn-5 board, then the version will be 5,
-	 *            spinn-3 would equal 3 and so on.
 	 * @param bmpConnectionData
 	 *            the details of the BMP connections used to boot multi-board
 	 *            systems
@@ -326,7 +326,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public Transceiver(InetAddress host, int version,
+	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, List<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
@@ -345,7 +345,7 @@ public class Transceiver extends UDPTransceiver
 		 * machine, then an assumption can be made that the BMP is at -1 on the
 		 * final value of the IP address
 		 */
-		if (version >= BIGGER_BOARD && autodetectBMP
+		if (version != null && !version.isFourChip && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData =
 					singletonList(defaultBMPforMachine(host, numberOfBoards));
@@ -407,9 +407,9 @@ public class Transceiver extends UDPTransceiver
 	 * @param hostname
 	 *            The hostname or IP address of the board
 	 * @param version
-	 *            the type of SpiNNaker board used within the SpiNNaker machine
-	 *            being used. If a spinn-5 board, then the version will be 5,
-	 *            spinn-3 would equal 3 and so on.
+	 *            The type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. May be {@code null} if the board in question can
+	 *            be assumed to be always already booted.
 	 * @throws IOException
 	 *             if networking fails
 	 * @throws ProcessException
@@ -417,7 +417,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public Transceiver(InetAddress hostname, int version)
+	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException, ProcessException {
 		this(hostname, version, null, 0, emptyList(), emptyMap(), emptyMap(),
 				null, false, null, null, null);
@@ -435,7 +435,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public Transceiver(int version)
+	public Transceiver(MachineVersion version)
 			throws IOException, SpinnmanException, ProcessException {
 		this(version, null, null, null, null, null, null, null);
 	}
@@ -444,7 +444,32 @@ public class Transceiver extends UDPTransceiver
 	 * Create a transceiver.
 	 *
 	 * @param version
-	 *            The SpiNNaker board version number.
+	 *            The type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. May be {@code null} if the board in question can
+	 *            be assumed to be always already booted.
+	 * @param connections
+	 *            The connections to use in the transceiver. Note that the
+	 *            transceiver may make additional connections.
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws Exception
+	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 */
+	public Transceiver(MachineVersion version,
+			Collection<Connection> connections)
+			throws IOException, SpinnmanException, ProcessException {
+		this(version, null, null, null, null, null, null, null);
+	}
+
+	/**
+	 * Create a transceiver.
+	 *
+	 * @param version
+	 *            The type of SpiNNaker board used within the SpiNNaker machine
+	 *            being used. May be {@code null} if the board in question can
+	 *            be assumed to be always already booted.
 	 * @param connections
 	 *            The connections to use in the transceiver. Note that the
 	 *            transceiver may make additional connections.
@@ -467,7 +492,8 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable.
 	 */
-	public Transceiver(int version, Collection<Connection> connections,
+	public Transceiver(MachineVersion version,
+			Collection<Connection> connections,
 			Collection<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCores,
 			Map<ChipLocation, Collection<Direction>> ignoreLinks,

@@ -18,6 +18,7 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 class ReliabilityITCase {
@@ -40,7 +41,7 @@ class ReliabilityITCase {
         assumeTrue(ping(host) == 0);
 
         for (int i = 0 ; i < REPETITIONS ; i++) {
-        	try (Transceiver txrx = new Transceiver(host, 5)) {
+        	try (Transceiver txrx = new Transceiver(host, FIVE)) {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
         		txrx.getScampVersion();

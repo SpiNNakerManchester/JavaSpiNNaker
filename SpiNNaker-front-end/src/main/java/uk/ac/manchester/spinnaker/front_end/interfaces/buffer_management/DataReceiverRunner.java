@@ -28,9 +28,6 @@ public final class DataReceiverRunner {
     private DataReceiverRunner() {
     }
 
-    /** TEMP VARIABLE NEEDS MOVING. */
-    public static final int DEFAULT_HARDWARE = 5;
-
     private static final int THIRD = 3;
 
     /**
@@ -56,16 +53,8 @@ public final class DataReceiverRunner {
                 machineReader, MachineBean.class);
         Machine machine = new Machine(fromJson);
 
-        // TODO: MachineVersion needs pushing down!
-        MachineVersion version = machine.version;
-        int hardwareVersion;
-        if (version.id == null) {
-            hardwareVersion = DEFAULT_HARDWARE;
-        } else {
-            hardwareVersion = version.id;
-        }
         Transceiver trans = new Transceiver(
-                machine.getBootEthernetAddress(), hardwareVersion);
+                machine.getBootEthernetAddress(), machine.version);
 
         DataReceiver receiver = new  DataReceiver(trans, args[THIRD]);
         receiver.getDataForPlacements(placements, null);
