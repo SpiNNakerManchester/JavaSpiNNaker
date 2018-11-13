@@ -804,6 +804,10 @@ public class Transceiver extends UDPTransceiver
 				ignoreLinks, maxCoreID, maxSDRAMSize, this)
 						.getMachineDetails(versionInfo.core, dimensions);
 
+        // Ask the machine to check itself
+        //and if required to rebuild itself with out invalid links or chips ect.
+        machine = machine.rebuild();
+
 		// update the SCAMP selector with the machine
 		if (scpSelector instanceof MachineAware) {
 			((MachineAware) scpSelector).setMachine(machine);

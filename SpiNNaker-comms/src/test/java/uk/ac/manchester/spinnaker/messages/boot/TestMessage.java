@@ -1,9 +1,9 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +53,8 @@ class TestMessage {
 		assertArrayEquals(expected, got);
 	}
 
+	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 538);
+
 	@Test
 	void testBootMessagesSerialize() {
 		BootMessages bm = new BootMessages(5);
@@ -60,7 +62,8 @@ class TestMessage {
 			ByteBuffer buf = ByteBuffer.allocate(1500);
 			b.addToBuffer(buf);
 			buf.flip();
-			assertTrue(Arrays.asList(18, 1042, 430).contains(buf.remaining()));
+			assertTrue(EXPECTED_SIZES.contains(buf.remaining()), () -> String
+					.format("%d not in %s", buf.remaining(), EXPECTED_SIZES));
 		}
 	}
 }
