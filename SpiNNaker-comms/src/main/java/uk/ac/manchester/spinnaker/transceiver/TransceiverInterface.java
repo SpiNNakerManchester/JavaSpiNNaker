@@ -2238,8 +2238,9 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readMemory(HasCoreLocation core, int region, int baseAddress, int length,
-			Storage storage) throws IOException, Exception, StorageException;
+	void readMemory(HasCoreLocation core, int region, int baseAddress,
+			int length, Storage storage)
+			throws IOException, Exception, StorageException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP

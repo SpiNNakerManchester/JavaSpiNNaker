@@ -46,7 +46,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * written that way; when going to a memory buffer or random access file,
 	 * there's not really any point.
 	 */
-	private static final int DATABASE_WAIT_CHUNK = 1 << 17;
+	private static final int DATABASE_WAIT_CHUNK = 0x20000;
 
 	private static class Accumulator {
 		private final ByteBuffer buffer;
