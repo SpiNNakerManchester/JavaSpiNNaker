@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
@@ -87,6 +88,23 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
 		SystemVariableBootValues bv = BootValues.get(boardVersion);
+		if (bv != null) {
+			return bv;
+		}
+		throw new IllegalArgumentException(
+				"unknown SpiNNaker board version: " + boardVersion);
+	}
+
+	/**
+	 * Get the default values of the system variables that get passed to
+	 * SpiNNaker during boot for a particular version of SpiNNaker board.
+	 *
+	 * @param boardVersion
+	 *            Which sort of SpiNN board is being booted.
+	 * @return The defaults for the specific board.
+	 */
+	public static SystemVariableBootValues get(MachineVersion boardVersion) {
+		SystemVariableBootValues bv = BootValues.get(boardVersion.id);
 		if (bv != null) {
 			return bv;
 		}

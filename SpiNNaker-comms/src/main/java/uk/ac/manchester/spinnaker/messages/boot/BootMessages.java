@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
@@ -127,7 +128,7 @@ public class BootMessages {
 
 	/** Builds the boot messages needed to boot the SpiNNaker machine. */
 	public BootMessages() {
-		this(null, null);
+		this((SystemVariableBootValues) null, null);
 	}
 
 	/**
@@ -136,7 +137,7 @@ public class BootMessages {
 	 * @param boardVersion
 	 *            The version of the board to be booted
 	 */
-	public BootMessages(int boardVersion) {
+	public BootMessages(MachineVersion boardVersion) {
 		this(SystemVariableBootValues.get(boardVersion), null);
 	}
 
@@ -147,7 +148,7 @@ public class BootMessages {
 	 *            Any additional values to be set during boot
 	 */
 	public BootMessages(Map<SystemVariableDefinition, Object> extraBootValues) {
-		this(null, extraBootValues);
+		this((SystemVariableBootValues) null, extraBootValues);
 	}
 
 	/**
@@ -158,7 +159,7 @@ public class BootMessages {
 	 * @param extraBootValues
 	 *            Any additional values to be set during boot
 	 */
-	public BootMessages(int boardVersion,
+	public BootMessages(MachineVersion boardVersion,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		this(SystemVariableBootValues.get(boardVersion), extraBootValues);
 	}

@@ -175,7 +175,7 @@ public enum MachineVersion {
     }
 
     /**
-     * Unspecified size constructor, assumed to be multe board.
+     * Unspecified size constructor, assumed to be multi-board.
      *
      * @param wrapAround
      *      Indicates if this machine is expected to have wrap arounds.
