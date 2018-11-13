@@ -1528,7 +1528,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void readMemory(HasCoreLocation core, int region, int baseAddress,
 			int length, Storage storage)
-			throws IOException, Exception, StorageException {
+			throws IOException, ProcessException, StorageException {
 		new ReadMemoryProcess(scpSelector, this).readMemory(core, region,
 				baseAddress, length, storage);
 	}

@@ -444,14 +444,14 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
 	public void readMemory(HasChipLocation chip, int region, int baseAddress,
 			int size, Storage storage)
-			throws IOException, Exception, StorageException {
+			throws IOException, ProcessException, StorageException {
 		DBAccumulator a = new DBAccumulator(storage, chip, region);
 		int chunk;
 		for (int offset = 0, finishPoint = 0; offset < size; offset += chunk) {

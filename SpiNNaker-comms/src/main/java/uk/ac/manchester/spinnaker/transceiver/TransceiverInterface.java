@@ -2248,14 +2248,14 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
 	void readMemory(HasCoreLocation core, int region, int baseAddress,
 			int length, Storage storage)
-			throws IOException, Exception, StorageException;
+			throws IOException, ProcessException, StorageException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
