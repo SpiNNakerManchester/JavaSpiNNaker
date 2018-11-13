@@ -106,7 +106,7 @@ public enum MachineVersion {
      */
     public final MachineDimensions machineDimensions;
 
-    private final int DEFAULT_HARDWARE_VERSION = 5;
+    private static final int DEFAULT_HARDWARE_VERSION = 5;
 
     /**
      * Main constructor.
@@ -288,12 +288,15 @@ public enum MachineVersion {
                         % MachineDefaults.TRIAD_WIDTH == 0));
     }
 
-    public int hardwareVersion(){
+    /**
+     * Get the version number of the SpiNN boards in the hardware configuration.
+     *
+     * @return 2, 3, 4 or 5.
+     */
+    public int hardwareVersion() {
         if (id == null) {
             return DEFAULT_HARDWARE_VERSION;
-        } else {
-            return id;
         }
+        return id;
     }
-
 }
