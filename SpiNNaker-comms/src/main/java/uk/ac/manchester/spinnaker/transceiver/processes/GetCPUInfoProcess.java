@@ -43,11 +43,11 @@ public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return The CPU information, in undetermined order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
 		for (CoreLocation core : coreSubsets) {
 			sendRequest(

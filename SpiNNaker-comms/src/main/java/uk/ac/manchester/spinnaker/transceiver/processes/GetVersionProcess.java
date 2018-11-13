@@ -34,11 +34,11 @@ public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
 	 * @return The version description.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public VersionInfo getVersion(HasCoreLocation core)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(new GetVersion(core)).versionInfo;
 	}
 }

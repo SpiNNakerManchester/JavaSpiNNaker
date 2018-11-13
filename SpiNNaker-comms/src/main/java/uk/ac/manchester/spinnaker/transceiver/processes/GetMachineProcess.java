@@ -115,11 +115,11 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return The machine description.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public Machine getMachineDetails(HasChipLocation bootChip,
-			MachineDimensions size) throws IOException, Exception {
+			MachineDimensions size) throws IOException, ProcessException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
@@ -129,8 +129,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
-            // TODO work out why mutiple calls is a problem
-    		finish();
+			// TODO work out why mutiple calls is a problem
+			finish();
 		}
 		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
@@ -143,7 +143,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		finish();
 		try {
 			checkForError();
-		} catch (Exception ignored) {
+		} catch (ProcessException ignored) {
 			/*
 			 * Ignore errors so far, as any error here just means that a chip is
 			 * down that wasn't marked as down

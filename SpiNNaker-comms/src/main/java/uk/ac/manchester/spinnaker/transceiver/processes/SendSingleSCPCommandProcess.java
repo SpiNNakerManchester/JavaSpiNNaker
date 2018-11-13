@@ -60,11 +60,11 @@ public class SendSingleSCPCommandProcess
 	 * @return The response to the request
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SCAMP on SpiNNaker reports a failure.
 	 */
 	public <T extends SCPResponse> T execute(SCPRequest<T> request)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(request);
 	}
 }
