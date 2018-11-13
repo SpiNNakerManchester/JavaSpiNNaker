@@ -586,7 +586,8 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private Object getSystemVariable(HasChipLocation chip,
-			SystemVariableDefinition dataItem) throws IOException, ProcessException {
+			SystemVariableDefinition dataItem)
+			throws IOException, ProcessException {
 		ByteBuffer buffer =
 				readMemory(chip, SYSTEM_VARIABLE_BASE_ADDRESS + dataItem.offset,
 						dataItem.type.value);
@@ -804,9 +805,11 @@ public class Transceiver extends UDPTransceiver
 				ignoreLinks, maxCoreID, maxSDRAMSize, this)
 						.getMachineDetails(versionInfo.core, dimensions);
 
-        // Ask the machine to check itself
-        //and if required to rebuild itself with out invalid links or chips ect.
-        machine = machine.rebuild();
+		/*
+		 * Ask the machine to check itself and if required to rebuild itself
+		 * with out invalid links or chips etc.
+		 */
+		machine = machine.rebuild();
 
 		// update the SCAMP selector with the machine
 		if (scpSelector instanceof MachineAware) {
@@ -1256,7 +1259,8 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public final void execute(HasChipLocation chip,
 			Collection<Integer> processors, File executable, int appID,
-			boolean wait) throws IOException, ProcessException, InterruptedException {
+			boolean wait)
+			throws IOException, ProcessException, InterruptedException {
 		// Lock against updates
 		try (ExecuteLock lock = new ExecuteLock(chip)) {
 			// Write the executable
@@ -1371,7 +1375,8 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
-			int timeout, BMPRequest<T> request) throws IOException, ProcessException {
+			int timeout, BMPRequest<T> request)
+			throws IOException, ProcessException {
 		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
 				timeout, this).execute(request);
 	}
@@ -1409,7 +1414,8 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			int cabinet, int frame, int board) throws IOException, ProcessException {
+			int cabinet, int frame, int board)
+			throws IOException, ProcessException {
 		bmpCall(cabinet, frame,
 				new WriteFPGARegister(fpgaNumber, register, value, board));
 	}
@@ -1458,14 +1464,16 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, File dataFile) throws IOException, ProcessException {
+			int baseAddress, File dataFile)
+			throws IOException, ProcessException {
 		new WriteMemoryProcess(scpSelector, this).writeLink(core, link,
 				baseAddress, dataFile);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, ByteBuffer data) throws IOException, ProcessException {
+			int baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
 		new WriteMemoryProcess(scpSelector, this).writeLink(core, link,
 				baseAddress, data);
 	}
@@ -1523,7 +1531,8 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void stopApplication(int appID) throws IOException, ProcessException {
+	public void stopApplication(int appID)
+			throws IOException, ProcessException {
 		if (machineOff) {
 			log.warn("You are calling a app stop on a turned off machine. "
 					+ "Please fix and try again");
@@ -1761,7 +1770,8 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void setRouterDiagnosticFilter(HasChipLocation chip, int position,
-			DiagnosticFilter diagnosticFilter) throws IOException, ProcessException {
+			DiagnosticFilter diagnosticFilter)
+			throws IOException, ProcessException {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
 					"router filter positions must be beween 0 and "
@@ -1824,7 +1834,8 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public List<HeapElement> getHeap(HasChipLocation chip,
-			SystemVariableDefinition heap) throws IOException, ProcessException {
+			SystemVariableDefinition heap)
+			throws IOException, ProcessException {
 		return new GetHeapProcess(scpSelector, this).getBlocks(chip, heap);
 	}
 
