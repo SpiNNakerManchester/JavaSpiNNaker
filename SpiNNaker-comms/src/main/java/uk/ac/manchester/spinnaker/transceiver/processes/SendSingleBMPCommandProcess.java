@@ -28,7 +28,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -101,10 +100,11 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @return The successful response to the request
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	public R execute(BMPRequest<R> request) throws IOException, Exception {
+	public R execute(BMPRequest<R> request)
+			throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -115,7 +115,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		requestPipeline.sendRequest(request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
-			throw new Exception(errorRequest.sdpHeader.getDestination(),
+			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return holder.getValue();
@@ -184,7 +184,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
-					throws java.lang.Exception {
+					throws Exception {
 				R response = msg.parsePayload(request);
 				if (callback != null) {
 					callback.accept(response);
@@ -276,7 +276,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					// Remove the sequence from the outstanding responses
 					msg.removeRequest(requests);
 				}
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				errorRequest = req.request;
 				exception = e;
 				msg.removeRequest(requests);
@@ -296,7 +296,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 				try {
 					resend(req, "timeout");
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					errorRequest = req.request;
 					exception = e;
 					toRemove.set(seq);

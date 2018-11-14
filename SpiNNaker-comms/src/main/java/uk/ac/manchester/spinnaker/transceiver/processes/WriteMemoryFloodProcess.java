@@ -77,11 +77,11 @@ public class WriteMemoryFloodProcess
 	 *            <i>limit</i> (exclusive)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			ByteBuffer data) throws IOException, Exception {
+			ByteBuffer data) throws IOException, ProcessException {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
@@ -121,12 +121,12 @@ public class WriteMemoryFloodProcess
 	 *            problems.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		synchronousCall(
 				new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
@@ -162,11 +162,11 @@ public class WriteMemoryFloodProcess
 	 *            The data in a file, which will be fully transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			File dataFile) throws IOException, Exception {
+			File dataFile) throws IOException, ProcessException {
 		try (InputStream s =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,

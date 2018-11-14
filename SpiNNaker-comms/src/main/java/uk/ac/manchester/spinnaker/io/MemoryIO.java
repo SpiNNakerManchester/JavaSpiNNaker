@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /** A file-like object for reading and writing memory. */
@@ -51,7 +51,7 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public void close() throws Exception, IOException {
+	public void close() throws ProcessException, IOException {
 		synchronized (io) {
 			io.flushWriteBuffer();
 		}
@@ -107,7 +107,7 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public void flush() throws IOException, Exception {
+	public void flush() throws IOException, ProcessException {
 		synchronized (io) {
 			io.flushWriteBuffer();
 		}
@@ -135,7 +135,7 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public byte[] read(Integer numBytes) throws IOException, Exception {
+	public byte[] read(Integer numBytes) throws IOException, ProcessException {
 		int size = (numBytes != null && numBytes >= 0) ? numBytes
 				: (endAddress - currentAddress);
 		if (currentAddress + size > endAddress) {
@@ -151,7 +151,7 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public int write(byte[] data) throws IOException, Exception {
+	public int write(byte[] data) throws IOException, ProcessException {
 		int size = data.length;
 		if (currentAddress + size > endAddress) {
 			throw new EOFException();
@@ -166,7 +166,7 @@ public class MemoryIO implements AbstractIO {
 
 	@Override
 	public void fill(int value, Integer size, DataType type)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		int len = (size == null) ? endAddress - currentAddress : size;
 		if (currentAddress + len > endAddress) {
 			throw new EOFException();

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
@@ -47,7 +47,7 @@ class ReliabilityITCase {
         		txrx.getScampVersion();
 				Machine machine = txrx.getMachineDetails();
                 assertNull(jsonMachine.difference(machine));
-            } catch (Process.Exception e) {
+            } catch (ProcessException e) {
             	if (e.getCause() instanceof SocketTimeoutException) {
             		log.info("ignoring timeout from " + e.getCause());
             	} else {

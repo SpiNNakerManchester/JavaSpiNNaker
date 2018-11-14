@@ -66,12 +66,12 @@ public class LoadMulticastRoutesProcess
 	 *            The application ID associated with the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void loadRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		/*
 		 * Create the routing data. 16 bytes per entry plus one for the end
 		 * entry

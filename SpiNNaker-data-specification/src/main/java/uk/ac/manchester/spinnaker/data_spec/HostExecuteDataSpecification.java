@@ -18,7 +18,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
 
 /**
@@ -55,14 +55,14 @@ public class HostExecuteDataSpecification {
 	 *         happened.
 	 * @throws IOException
 	 *             if communication or disk IO fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
 	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
 			Map<CoreLocation, File> dsgTargets)
-			throws IOException, Exception, DataSpecificationException {
+			throws IOException, ProcessException, DataSpecificationException {
 		return load(machine, appID, dsgTargets, null);
 	}
 
@@ -83,7 +83,7 @@ public class HostExecuteDataSpecification {
 	 *         happened.
 	 * @throws IOException
 	 *             if communication or disk IO fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
@@ -91,7 +91,7 @@ public class HostExecuteDataSpecification {
 	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
 			Map<CoreLocation, File> dsgTargets,
 			Map<CoreLocation, LocationInfo> info)
-			throws IOException, Exception, DataSpecificationException {
+			throws IOException, ProcessException, DataSpecificationException {
 		if (info == null) {
 			info = new HashMap<>();
 		}
@@ -116,14 +116,14 @@ public class HostExecuteDataSpecification {
 	 * @return Information about what was written.
 	 * @throws IOException
 	 *             if communication or disk IO fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
 	public LocationInfo load(Machine machine, int appID, HasCoreLocation core,
 			File dataSpec)
-			throws IOException, Exception, DataSpecificationException {
+			throws IOException, ProcessException, DataSpecificationException {
 		try (Executor executor =
 				new Executor(dataSpec, machine.getChipAt(core).sdram)) {
 			executor.execute();
@@ -155,11 +155,11 @@ public class HostExecuteDataSpecification {
 	 * @return How many bytes were actually written.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SCAMP rejects the request.
 	 */
 	private int writeHeader(HasCoreLocation core, Executor executor,
-			int startAddress) throws IOException, Exception {
+			int startAddress) throws IOException, ProcessException {
 		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
 				.order(LITTLE_ENDIAN);
 
@@ -183,11 +183,11 @@ public class HostExecuteDataSpecification {
 	 * @return How many bytes were actually written.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SCAMP rejects the request.
 	 */
 	private int writeRegion(HasCoreLocation core, MemoryRegion region)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return writeRegion(core, region, region.getRegionBase());
 	}
 
@@ -204,11 +204,11 @@ public class HostExecuteDataSpecification {
 	 * @return How many bytes were actually written.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SCAMP rejects the request.
 	 */
 	private int writeRegion(HasCoreLocation core, MemoryRegion region,
-			int baseAddress) throws IOException, Exception {
+			int baseAddress) throws IOException, ProcessException {
 		ByteBuffer data = region.getRegionData().duplicate();
 
 		data.flip();
@@ -228,13 +228,13 @@ public class HostExecuteDataSpecification {
 	 *            The file holding the data specification for the core.
 	 * @throws IOException
 	 *             if communication or disk IO fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
 	public void reload(HasCoreLocation core, File dataSpec)
-			throws DataSpecificationException, IOException, Exception {
+			throws DataSpecificationException, IOException, ProcessException {
 		try (Executor executor = new Executor(dataSpec, DEFAULT_SDRAM_BYTES)) {
 			// execute the spec
 			executor.execute();
@@ -268,13 +268,13 @@ public class HostExecuteDataSpecification {
 	 *            The file holding the data specification for the core.
 	 * @throws IOException
 	 *             if communication or disk IO fail
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             if SCAMP rejects a message
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
 	public void reload(HasCoreLocation core, LocationInfo info, File dataSpec)
-			throws DataSpecificationException, IOException, Exception {
+			throws DataSpecificationException, IOException, ProcessException {
 		try (Executor executor = new Executor(dataSpec, info.memoryUsed)) {
 			// execute the spec
 			executor.execute();

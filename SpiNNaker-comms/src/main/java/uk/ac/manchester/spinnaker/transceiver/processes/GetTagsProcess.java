@@ -43,11 +43,11 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *         absent.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public List<Tag> getTags(SCPConnection connection)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		Response tagInfo =
 				synchronousCall(new IPTagGetInfo(connection.getChip()));
 

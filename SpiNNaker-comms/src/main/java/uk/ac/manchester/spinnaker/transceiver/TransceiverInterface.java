@@ -71,7 +71,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.Storage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -164,10 +164,11 @@ public interface TransceiverInterface {
 	 * @return The dimensions of the machine
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	MachineDimensions getMachineDimensions() throws IOException, Exception;
+	MachineDimensions getMachineDimensions()
+			throws IOException, ProcessException;
 
 	/**
 	 * Get the details of the machine made up of chips on a board and how they
@@ -176,10 +177,10 @@ public interface TransceiverInterface {
 	 * @return A machine description
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	Machine getMachineDetails() throws IOException, Exception;
+	Machine getMachineDetails() throws IOException, ProcessException;
 
 	/**
 	 * Determines if the board can be contacted.
@@ -207,10 +208,10 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default VersionInfo getScampVersion() throws IOException, Exception {
+	default VersionInfo getScampVersion() throws IOException, ProcessException {
 		return getScampVersion(DEFAULT_DESTINATION,
 				getScampConnectionSelector());
 	}
@@ -224,12 +225,12 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getScampVersion(DEFAULT_DESTINATION, connectionSelector);
 	}
 
@@ -241,11 +242,11 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getScampVersion(chip, getScampConnectionSelector());
 	}
 
@@ -260,12 +261,12 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
@@ -302,13 +303,13 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady()
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
 	}
 
@@ -322,14 +323,14 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(BOARD_BOOT_RETRIES, extraBootValues);
 	}
 
@@ -343,13 +344,13 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default VersionInfo ensureBoardIsReady(int numRetries)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(numRetries, null);
 	}
 
@@ -365,14 +366,14 @@ public interface TransceiverInterface {
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
-			throws IOException, Exception, InterruptedException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get information about the processors on the board.
@@ -380,11 +381,11 @@ public interface TransceiverInterface {
 	 * @return An iterable of the CPU information for all cores.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default Iterable<CPUInfo> getCPUInformation()
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
 	}
 
@@ -396,11 +397,11 @@ public interface TransceiverInterface {
 	 * @return The CPU information for the selected core
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default CPUInfo getCPUInformation(HasCoreLocation core)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		return getCPUInformation(coreSubsets).iterator().next();
@@ -417,11 +418,11 @@ public interface TransceiverInterface {
 	 *         cores if {@code coreSubsets} is {@code null}.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Get the address of user<sub>0</sub> for a given processor on the board.
@@ -504,10 +505,10 @@ public interface TransceiverInterface {
 	 * @return An iterable of the buffers, order undetermined.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default Iterable<IOBuffer> getIobuf() throws IOException, Exception {
+	default Iterable<IOBuffer> getIobuf() throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
 	}
 
@@ -519,11 +520,11 @@ public interface TransceiverInterface {
 	 * @return An IOBUF buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default IOBuffer getIobuf(HasCoreLocation core)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		return getIobuf(coreSubsets).iterator().next();
@@ -538,11 +539,11 @@ public interface TransceiverInterface {
 	 *         {@code coreSubsets}
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Set the value of the watch dog timer on a specific chip.
@@ -553,11 +554,11 @@ public interface TransceiverInterface {
 	 *            value to set the timer count to
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Enable or disable the watch dog timer on a specific chip.
@@ -568,11 +569,11 @@ public interface TransceiverInterface {
 	 *            whether to enable (True) or disable (False) the watchdog timer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watchdog)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Set the value of the watch dog timer.
@@ -581,11 +582,11 @@ public interface TransceiverInterface {
 	 *            value to set the timer count to.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void setWatchDogTimeout(int watchdog)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
 			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
@@ -599,11 +600,11 @@ public interface TransceiverInterface {
 	 *            timer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void enableWatchDogTimer(boolean watchdog)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
 			enableWatchDogTimerOnChip(chip, watchdog);
 		}
@@ -619,11 +620,11 @@ public interface TransceiverInterface {
 	 * @return A count of the cores with the given status
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	int getCoreStateCount(int appID, CPUState state)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Start an executable running on a single core.
@@ -640,14 +641,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, numBytes, appID);
 	}
 
@@ -668,14 +669,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, numBytes, appID, false);
 	}
 
@@ -696,14 +697,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, int appID, boolean wait)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, numBytes, appID,
 				wait);
 	}
@@ -727,14 +728,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID, boolean wait)
-			throws IOException, Exception, InterruptedException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on a single core.
@@ -749,13 +750,13 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
 	}
 
@@ -774,14 +775,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, appID, false);
 	}
 
@@ -800,13 +801,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, File executable, int appID,
-			boolean wait) throws IOException, Exception, InterruptedException {
+			boolean wait)
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, wait);
 	}
 
@@ -827,14 +829,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, int appID, boolean wait)
-			throws IOException, Exception, InterruptedException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on a single core.
@@ -848,13 +850,13 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
 	}
 
@@ -872,14 +874,14 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, appID, false);
 	}
 
@@ -897,13 +899,14 @@ public interface TransceiverInterface {
 	 *            True if the binary should enter a "wait" state on loading
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, ByteBuffer executable, int appID,
-			boolean wait) throws IOException, Exception, InterruptedException {
+			boolean wait)
+			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, wait);
 	}
 
@@ -923,14 +926,14 @@ public interface TransceiverInterface {
 	 *            True if the binary should enter a "wait" state on loading
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, int appID, boolean wait)
-			throws IOException, Exception, InterruptedException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on multiple places on the board. This will be
@@ -949,14 +952,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID)
-			throws IOException, Exception, InterruptedException {
+			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, numBytes, appID, false);
 	}
 
@@ -979,14 +982,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, int appID, boolean wait)
-			throws IOException, Exception, InterruptedException;
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on multiple places on the board. This will be
@@ -1003,13 +1006,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
-			int appID) throws IOException, Exception, InterruptedException {
+			int appID)
+			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, appID, false);
 	}
 
@@ -1030,13 +1034,14 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, File executable, int appID,
-			boolean wait) throws IOException, Exception, InterruptedException;
+			boolean wait)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Start an executable running on multiple places on the board. This will be
@@ -1052,13 +1057,14 @@ public interface TransceiverInterface {
 	 *            executable
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
-			int appID) throws IOException, Exception, InterruptedException {
+			int appID)
+			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, appID, false);
 	}
 
@@ -1078,13 +1084,14 @@ public interface TransceiverInterface {
 	 *            True if the processors should enter a "wait" state on loading
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable, int appID,
-			boolean wait) throws IOException, Exception, InterruptedException;
+			boolean wait)
+			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Execute a set of binaries that make up a complete application on
@@ -1098,7 +1105,7 @@ public interface TransceiverInterface {
 	 *            The application ID to give this application
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
@@ -1106,8 +1113,8 @@ public interface TransceiverInterface {
 	 *             If some cores enter an unexpected state.
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
-			int appID) throws IOException, Exception, InterruptedException,
-			SpinnmanException {
+			int appID) throws IOException, ProcessException,
+			InterruptedException, SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
 		for (String binary : executableTargets.getBinaries()) {
 			executeFlood(executableTargets.getCoresForBinary(binary),
@@ -1142,12 +1149,13 @@ public interface TransceiverInterface {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	void powerOnMachine() throws InterruptedException, IOException, Exception;
+	void powerOnMachine()
+			throws InterruptedException, IOException, ProcessException;
 
 	/**
 	 * Power on a set of boards in the machine.
@@ -1159,13 +1167,13 @@ public interface TransceiverInterface {
 	 *            if the boards are not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(Collection<Integer> boards, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, 0, frame);
 	}
 
@@ -1182,13 +1190,13 @@ public interface TransceiverInterface {
 	 *            if the boards are not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, cabinet, frame);
 	}
 
@@ -1199,13 +1207,13 @@ public interface TransceiverInterface {
 	 *            The board to power off (in cabinet 0, frame 0)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, 0);
 	}
 
@@ -1219,13 +1227,13 @@ public interface TransceiverInterface {
 	 *            if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, frame);
 	}
 
@@ -1242,13 +1250,13 @@ public interface TransceiverInterface {
 	 *            if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOn(int board, int cabinet, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), cabinet, frame);
 	}
 
@@ -1257,12 +1265,13 @@ public interface TransceiverInterface {
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	void powerOffMachine() throws InterruptedException, IOException, Exception;
+	void powerOffMachine()
+			throws InterruptedException, IOException, ProcessException;
 
 	/**
 	 * Power off a set of boards in the machine.
@@ -1274,13 +1283,13 @@ public interface TransceiverInterface {
 	 *            0 if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(Collection<Integer> boards, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, 0, frame);
 	}
 
@@ -1297,13 +1306,13 @@ public interface TransceiverInterface {
 	 *            0 if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, cabinet, frame);
 	}
 
@@ -1314,13 +1323,13 @@ public interface TransceiverInterface {
 	 *            The board to power off (in cabinet 0, frame 0)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, 0);
 	}
 
@@ -1334,13 +1343,13 @@ public interface TransceiverInterface {
 	 *            if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, frame);
 	}
 
@@ -1357,13 +1366,13 @@ public interface TransceiverInterface {
 	 *            if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void powerOff(int board, int cabinet, int frame)
-			throws InterruptedException, IOException, Exception {
+			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), cabinet, frame);
 	}
 
@@ -1382,14 +1391,14 @@ public interface TransceiverInterface {
 	 *            0 if the board is not in a frame
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
 	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
-			throws InterruptedException, IOException, Exception;
+			throws InterruptedException, IOException, ProcessException;
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -1407,12 +1416,12 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -1429,11 +1438,11 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void setLED(Collection<Integer> leds, LEDAction action, int board,
-			int cabinet, int frame) throws IOException, Exception {
+			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(leds, action, singleton(board), cabinet, frame);
 	}
 
@@ -1453,11 +1462,11 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void setLED(int led, LEDAction action, Collection<Integer> board,
-			int cabinet, int frame) throws IOException, Exception {
+			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, board, cabinet, frame);
 	}
 
@@ -1476,11 +1485,11 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void setLED(int led, LEDAction action, int board, int cabinet,
-			int frame) throws IOException, Exception {
+			int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, singleton(board), cabinet, frame);
 	}
 
@@ -1502,11 +1511,11 @@ public interface TransceiverInterface {
 	 * @return the register data
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
-			int board) throws IOException, Exception;
+			int board) throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board. The meaning of setting the
@@ -1527,11 +1536,11 @@ public interface TransceiverInterface {
 	 *            which board to write the FPGA register to
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
-			int frame, int board) throws IOException, Exception;
+			int frame, int board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.
@@ -1545,11 +1554,11 @@ public interface TransceiverInterface {
 	 * @return the FPGA's ADC data object
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	ADCInfo readADCData(int board, int cabinet, int frame)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Read the BMP version.
@@ -1564,11 +1573,11 @@ public interface TransceiverInterface {
 	 * @return the SVER from the BMP
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo readBMPVersion(Iterable<Integer> boards, int cabinet,
-			int frame) throws IOException, Exception {
+			int frame) throws IOException, ProcessException {
 		return readBMPVersion(boards.iterator().next(), cabinet, frame);
 	}
 
@@ -1584,11 +1593,11 @@ public interface TransceiverInterface {
 	 * @return the SVER from the BMP
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	VersionInfo readBMPVersion(int board, int cabinet, int frame)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1606,12 +1615,12 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or reading from the
 	 *             input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			InputStream dataStream, int numBytes)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataStream, numBytes);
 	}
 
@@ -1631,11 +1640,12 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or reading from the
 	 *             input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress,
-			InputStream dataStream, int numBytes) throws IOException, Exception;
+			InputStream dataStream, int numBytes)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1651,11 +1661,11 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or reading from the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
-			File dataFile) throws IOException, Exception {
+			File dataFile) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
 	}
 
@@ -1673,11 +1683,11 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or reading from the
 	 *             file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -1692,11 +1702,11 @@ public interface TransceiverInterface {
 	 *            The word that is to be written (as 4 bytes).
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
-			int dataWord) throws IOException, Exception {
+			int dataWord) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
 	}
 
@@ -1713,11 +1723,11 @@ public interface TransceiverInterface {
 	 *            The word that is to be written (as 4 bytes).
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasCoreLocation core, int baseAddress,
-			int dataWord) throws IOException, Exception {
+			int dataWord) throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
@@ -1736,11 +1746,11 @@ public interface TransceiverInterface {
 	 *            The data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
 	}
 
@@ -1757,11 +1767,11 @@ public interface TransceiverInterface {
 	 *            The data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		writeMemory(core, baseAddress, wrap(data));
 	}
 
@@ -1779,11 +1789,11 @@ public interface TransceiverInterface {
 	 *            <i>position</i> to the <i>limit</i>.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemory(HasChipLocation chip, int baseAddress,
-			ByteBuffer data) throws IOException, Exception {
+			ByteBuffer data) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, data);
 	}
 
@@ -1801,11 +1811,11 @@ public interface TransceiverInterface {
 	 *            <i>position</i> to the <i>limit</i>.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
@@ -1828,12 +1838,12 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataStream,
 				numBytes);
 	}
@@ -1860,11 +1870,12 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			InputStream dataStream, int numBytes) throws IOException, Exception;
+			InputStream dataStream, int numBytes)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
@@ -1885,11 +1896,12 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, File dataFile) throws IOException, Exception {
+			int baseAddress, File dataFile)
+			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataFile);
 	}
 
@@ -1913,11 +1925,11 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			File dataFile) throws IOException, Exception;
+			File dataFile) throws IOException, ProcessException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
@@ -1937,11 +1949,12 @@ public interface TransceiverInterface {
 	 *            The word that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, int dataWord) throws IOException, Exception {
+			int baseAddress, int dataWord)
+			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataWord);
 	}
 
@@ -1964,11 +1977,12 @@ public interface TransceiverInterface {
 	 *            The word that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, int dataWord) throws IOException, Exception {
+			int baseAddress, int dataWord)
+			throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
@@ -1992,11 +2006,11 @@ public interface TransceiverInterface {
 	 *            The data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, byte[] data) throws IOException, Exception {
+			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
@@ -2019,11 +2033,11 @@ public interface TransceiverInterface {
 	 *            The data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, byte[] data) throws IOException, Exception {
+			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
 	}
 
@@ -2046,11 +2060,12 @@ public interface TransceiverInterface {
 	 *            <i>position</i> to the <i>limit</i>.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, ByteBuffer data) throws IOException, Exception {
+			int baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
@@ -2074,11 +2089,11 @@ public interface TransceiverInterface {
 	 *            <i>position</i> to the <i>limit</i>.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			ByteBuffer data) throws IOException, Exception;
+			ByteBuffer data) throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2093,11 +2108,11 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the input stream.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemoryFlood(int baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2110,11 +2125,11 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with reading from
 	 *             the file.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemoryFlood(int baseAddress, File dataFile)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2126,11 +2141,11 @@ public interface TransceiverInterface {
 	 *            The word that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemoryFlood(int baseAddress, int dataWord)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
@@ -2146,11 +2161,11 @@ public interface TransceiverInterface {
 	 *            The data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void writeMemoryFlood(int baseAddress, byte[] data)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		writeMemoryFlood(baseAddress, wrap(data));
 	}
 
@@ -2165,11 +2180,11 @@ public interface TransceiverInterface {
 	 *            <i>position</i> to the <i>limit</i>.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemoryFlood(int baseAddress, ByteBuffer data)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Read some areas of SDRAM from the board.
@@ -2186,11 +2201,11 @@ public interface TransceiverInterface {
 	 *         the data
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
-			int length) throws IOException, Exception {
+			int length) throws IOException, ProcessException {
 		return readMemory(chip.getScampCore(), baseAddress, length);
 	}
 
@@ -2209,11 +2224,11 @@ public interface TransceiverInterface {
 	 *         the data
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Read some areas of SDRAM from a core of a chip on the board.
@@ -2233,14 +2248,14 @@ public interface TransceiverInterface {
 	 *            The length of the data to be read in bytes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
 	void readMemory(HasCoreLocation core, int region, int baseAddress,
 			int length, Storage storage)
-			throws IOException, Exception, StorageException;
+			throws IOException, ProcessException, StorageException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
@@ -2259,11 +2274,11 @@ public interface TransceiverInterface {
 	 *         the start of the data
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
-			int baseAddress, int length) throws IOException, Exception {
+			int baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
 				length);
 	}
@@ -2289,11 +2304,11 @@ public interface TransceiverInterface {
 	 *         the start of the data
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
-			int baseAddress, int length) throws IOException, Exception;
+			int baseAddress, int length) throws IOException, ProcessException;
 
 	/**
 	 * Sends a stop request for an application ID.
@@ -2302,10 +2317,10 @@ public interface TransceiverInterface {
 	 *            The ID of the application to send to
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void stopApplication(int appID) throws IOException, Exception;
+	void stopApplication(int appID) throws IOException, ProcessException;
 
 	/**
 	 * Waits for the specified cores running the given application to be in some
@@ -2320,7 +2335,7 @@ public interface TransceiverInterface {
 	 *            is when each application is in one of these states
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
@@ -2328,7 +2343,7 @@ public interface TransceiverInterface {
 	 *             If some cores enter an error state.
 	 */
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
-			Set<CPUState> cpuStates) throws IOException, Exception,
+			Set<CPUState> cpuStates) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
 		waitForCoresToBeInState(allCoreSubsets, appID, cpuStates,
 				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
@@ -2360,7 +2375,7 @@ public interface TransceiverInterface {
 	 *            using the full CPU state check
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
@@ -2370,7 +2385,7 @@ public interface TransceiverInterface {
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countsBetweenFullCheck)
-			throws IOException, Exception, InterruptedException,
+			throws IOException, ProcessException, InterruptedException,
 			SpinnmanException;
 
 	/**
@@ -2383,11 +2398,11 @@ public interface TransceiverInterface {
 	 * @return Core subsets object containing cores in the given state
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
-			CPUState state) throws IOException, Exception {
+			CPUState state) throws IOException, ProcessException {
 		return getCoresInState(allCoreSubsets, singleton(state));
 	}
 
@@ -2401,11 +2416,11 @@ public interface TransceiverInterface {
 	 * @return Core subsets object containing cores in the given states
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
-			Set<CPUState> states) throws IOException, Exception {
+			Set<CPUState> states) throws IOException, ProcessException {
 		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
 		CoreSubsets coresInState = new CoreSubsets();
 		for (CPUInfo coreInfo : coreInfos) {
@@ -2426,12 +2441,12 @@ public interface TransceiverInterface {
 	 * @return Core subsets object containing cores not in the given state
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getCoresNotInState(allCoreSubsets, singleton(state));
 	}
 
@@ -2445,12 +2460,12 @@ public interface TransceiverInterface {
 	 * @return Core subsets object containing cores not in the given states
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
 		Map<CoreLocation, CPUInfo> coresNotInState = new TreeMap<>();
 		for (CPUInfo coreInfo : coreInfos) {
@@ -2470,10 +2485,11 @@ public interface TransceiverInterface {
 	 *            The signal to send
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void sendSignal(int appID, Signal signal) throws IOException, Exception;
+	void sendSignal(int appID, Signal signal)
+			throws IOException, ProcessException;
 
 	/**
 	 * Set LED states.
@@ -2485,11 +2501,12 @@ public interface TransceiverInterface {
 	 *            inverted.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void setLEDs(HasChipLocation chip,
-			Map<Integer, LEDAction> ledStates) throws IOException, Exception {
+			Map<Integer, LEDAction> ledStates)
+			throws IOException, ProcessException {
 		setLEDs(chip.getScampCore(), ledStates);
 	}
 
@@ -2503,19 +2520,19 @@ public interface TransceiverInterface {
 	 *            inverted.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Find a connection that matches the given board IP address.
 	 *
 	 * @param boardAddress
 	 *            The IP address of the Ethernet connection on the board
-	 * @return A connection for the given IP address, or {@code null} if no
-	 *         such connection exists
+	 * @return A connection for the given IP address, or {@code null} if no such
+	 *         connection exists
 	 */
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
 
@@ -2523,15 +2540,14 @@ public interface TransceiverInterface {
 	 * Set up an IP tag.
 	 *
 	 * @param tag
-	 *            The tag to set up; note its board address can be
-	 *            {@code null}, in which case, the tag will be assigned to all
-	 *            boards
+	 *            The tag to set up; note its board address can be {@code null},
+	 *            in which case, the tag will be assigned to all boards
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void setIPTag(IPTag tag) throws IOException, Exception;
+	void setIPTag(IPTag tag) throws IOException, ProcessException;
 
 	/**
 	 * Set up a reverse IP tag.
@@ -2542,10 +2558,10 @@ public interface TransceiverInterface {
 	 *            boards
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void setReverseIPTag(ReverseIPTag tag) throws IOException, Exception;
+	void setReverseIPTag(ReverseIPTag tag) throws IOException, ProcessException;
 
 	/**
 	 * Clear the setting of an IP tag.
@@ -2554,10 +2570,10 @@ public interface TransceiverInterface {
 	 *            The tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void clearIPTag(Tag tag) throws IOException, Exception {
+	default void clearIPTag(Tag tag) throws IOException, ProcessException {
 		clearIPTag(tag.getTag(), null, tag.getBoardAddress());
 	}
 
@@ -2568,10 +2584,10 @@ public interface TransceiverInterface {
 	 *            The tag ID
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void clearIPTag(int tag) throws IOException, Exception {
+	default void clearIPTag(int tag) throws IOException, ProcessException {
 		clearIPTag(tag, null, null);
 	}
 
@@ -2586,11 +2602,11 @@ public interface TransceiverInterface {
 	 *            tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(int tag, SCPConnection connection)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		clearIPTag(tag, requireNonNull(connection), null);
 	}
 
@@ -2605,11 +2621,11 @@ public interface TransceiverInterface {
 	 *            tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(Tag tag, SCPConnection connection)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		clearIPTag(tag.getTag(), requireNonNull(connection),
 				tag.getBoardAddress());
 	}
@@ -2623,11 +2639,11 @@ public interface TransceiverInterface {
 	 *            Board address where the tag should be cleared.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(int tag, InetAddress boardAddress)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		clearIPTag(tag, null, requireNonNull(boardAddress));
 	}
 
@@ -2646,11 +2662,11 @@ public interface TransceiverInterface {
 	 *            clear the tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Get the current set of tags that have been set on the board using all
@@ -2659,10 +2675,10 @@ public interface TransceiverInterface {
 	 * @return An iterable of tags
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default List<Tag> getTags() throws IOException, Exception {
+	default List<Tag> getTags() throws IOException, ProcessException {
 		return getTags(null);
 	}
 
@@ -2674,10 +2690,11 @@ public interface TransceiverInterface {
 	 * @return An iterable of tags
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	List<Tag> getTags(SCPConnection connection) throws IOException, Exception;
+	List<Tag> getTags(SCPConnection connection)
+			throws IOException, ProcessException;
 
 	/**
 	 * Allocates a chunk of SDRAM on a chip on the machine.
@@ -2689,11 +2706,11 @@ public interface TransceiverInterface {
 	 * @return the base address of the allocated memory
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default int mallocSDRAM(HasChipLocation chip, int size)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, 0, 0);
 	}
 
@@ -2709,11 +2726,11 @@ public interface TransceiverInterface {
 	 * @return the base address of the allocated memory
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default int mallocSDRAM(HasChipLocation chip, int size, int appID)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
 	}
 
@@ -2733,11 +2750,11 @@ public interface TransceiverInterface {
 	 * @return the base address of the allocated memory
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Free allocated SDRAM.
@@ -2750,11 +2767,11 @@ public interface TransceiverInterface {
 	 *            The app ID of the allocated memory
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Free all SDRAM allocated to a given application ID.
@@ -2766,11 +2783,11 @@ public interface TransceiverInterface {
 	 * @return The number of blocks freed
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	int freeSDRAMByAppID(HasChipLocation chip, int appID)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Load a set of multicast routes on to a chip associated with the default
@@ -2782,12 +2799,12 @@ public interface TransceiverInterface {
 	 *            An iterable of multicast routes to load
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		loadMulticastRoutes(chip, routes, 0);
 	}
 
@@ -2802,12 +2819,12 @@ public interface TransceiverInterface {
 	 *            The ID of the application with which to associate the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, int appID)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Loads a fixed route routing table entry onto a chip's router.
@@ -2818,11 +2835,11 @@ public interface TransceiverInterface {
 	 *            the route for the fixed route entry on this chip
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		loadFixedRoute(chip, fixedRoute, 0);
 	}
 
@@ -2837,11 +2854,11 @@ public interface TransceiverInterface {
 	 *            The ID of the application with which to associate the route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			int appID) throws IOException, Exception;
+			int appID) throws IOException, ProcessException;
 
 	/**
 	 * Reads a fixed route routing table entry from a chip's router.
@@ -2851,11 +2868,11 @@ public interface TransceiverInterface {
 	 * @return the route as a fixed route entry
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return readFixedRoute(chip, 0);
 	}
 
@@ -2869,11 +2886,11 @@ public interface TransceiverInterface {
 	 * @return the route as a fixed route entry
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Get the current multicast routes set up on a chip.
@@ -2883,11 +2900,11 @@ public interface TransceiverInterface {
 	 * @return An iterable of multicast routes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getMulticastRoutes(chip, null);
 	}
 
@@ -2901,11 +2918,11 @@ public interface TransceiverInterface {
 	 * @return An iterable of multicast routes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
-			int appID) throws IOException, Exception {
+			int appID) throws IOException, ProcessException {
 		return getMulticastRoutes(chip, appID);
 	}
 
@@ -2919,11 +2936,11 @@ public interface TransceiverInterface {
 	 * @return An iterable of multicast routes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
-			Integer appID) throws IOException, Exception;
+			Integer appID) throws IOException, ProcessException;
 
 	/**
 	 * Remove all the multicast routes on a chip.
@@ -2932,11 +2949,11 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip on which to clear the routes
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void clearMulticastRoutes(HasChipLocation chip)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Get router diagnostic information from a chip.
@@ -2946,11 +2963,11 @@ public interface TransceiverInterface {
 	 * @return The router diagnostic information
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * Sets a router diagnostic filter in a router.
@@ -2966,11 +2983,12 @@ public interface TransceiverInterface {
 	 *            the diagnostic filter being set in the position.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void setRouterDiagnosticFilter(HasChipLocation chip, int position,
-			DiagnosticFilter diagnosticFilter) throws IOException, Exception;
+			DiagnosticFilter diagnosticFilter)
+			throws IOException, ProcessException;
 
 	/**
 	 * Gets a router diagnostic filter from a router.
@@ -2984,11 +3002,11 @@ public interface TransceiverInterface {
 	 * @return The diagnostic filter read
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
-			int position) throws IOException, Exception;
+			int position) throws IOException, ProcessException;
 
 	/**
 	 * Clear router diagnostic information on a chip. Resets and enables all
@@ -2998,11 +3016,11 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false,
 				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
 						.collect(toList()));
@@ -3018,11 +3036,11 @@ public interface TransceiverInterface {
 	 *            True (default) if the counters should be enabled
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
-			boolean enable) throws IOException, Exception {
+			boolean enable) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, enable,
 				range(0, NO_ROUTER_DIAGNOSTIC_FILTERS).boxed()
 						.collect(toList()));
@@ -3039,11 +3057,11 @@ public interface TransceiverInterface {
 	 *            between 0 and 15
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
-			Iterable<Integer> counterIDs) throws IOException, Exception {
+			Iterable<Integer> counterIDs) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false, counterIDs);
 	}
 
@@ -3059,11 +3077,11 @@ public interface TransceiverInterface {
 	 *            each must be between 0 and 15
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void clearRouterDiagnosticCounters(HasChipLocation chip, boolean enable,
-			Iterable<Integer> counterIDs) throws IOException, Exception;
+			Iterable<Integer> counterIDs) throws IOException, ProcessException;
 
 	/**
 	 * Get the contents of the SDRAM heap on a given chip.
@@ -3073,11 +3091,11 @@ public interface TransceiverInterface {
 	 * @return the list of chunks in the heap
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default List<HeapElement> getHeap(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return getHeap(chip, sdram_heap_address);
 	}
 
@@ -3091,11 +3109,11 @@ public interface TransceiverInterface {
 	 * @return the list of chunks in the heap
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	List<HeapElement> getHeap(HasChipLocation chip,
-			SystemVariableDefinition heap) throws IOException, Exception;
+			SystemVariableDefinition heap) throws IOException, ProcessException;
 
 	/**
 	 * Fill some memory with repeated data.
@@ -3112,11 +3130,11 @@ public interface TransceiverInterface {
 	 *            be divisible by 4
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void fillMemory(HasChipLocation chip, int baseAddress,
-			int repeatValue, int size) throws Exception, IOException {
+			int repeatValue, int size) throws ProcessException, IOException {
 		fillMemory(chip, baseAddress, repeatValue, size, WORD);
 	}
 
@@ -3137,9 +3155,9 @@ public interface TransceiverInterface {
 	 *            The type of data to fill.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
-			int size, DataType dataType) throws Exception, IOException;
+			int size, DataType dataType) throws ProcessException, IOException;
 }

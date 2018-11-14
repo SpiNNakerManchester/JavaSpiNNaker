@@ -34,11 +34,11 @@ public class ReadFixedRouteEntryProcess
 	 * @return The route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return readFixedRoute(chip, 0);
 	}
 
@@ -52,11 +52,11 @@ public class ReadFixedRouteEntryProcess
 	 * @return The route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(new FixedRouteRead(chip, appID)).getRoute();
 	}
 }
