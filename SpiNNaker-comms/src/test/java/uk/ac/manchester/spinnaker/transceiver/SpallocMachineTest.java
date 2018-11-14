@@ -19,6 +19,8 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
+
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 class SpallocMachineTest {
@@ -50,7 +52,7 @@ class SpallocMachineTest {
 			InetAddress host = InetAddress.getByName(job.getHostname());
 
 			// InetAddress host = InetAddress.getByName("spinn-2.cs.man.ac.uk");
-			try (Transceiver txrx = new Transceiver(host, 5)) {
+			try (Transceiver txrx = new Transceiver(host, FIVE)) {
 				txrx.ensureBoardIsReady();
 				txrx.getMachineDimensions();
 				txrx.getScampVersion();

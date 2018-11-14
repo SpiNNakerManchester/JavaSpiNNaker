@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.messages.boot;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -37,7 +38,7 @@ class TestMessage {
 
 	@Test
 	void testBootMessages() {
-		BootMessages bm = new BootMessages(5);
+		BootMessages bm = new BootMessages(FIVE);
 		List<BootMessage> bml = bm.getMessages().collect(Collectors.toList());
 		assertEquals(30, bml.size());
 		ByteBuffer patched = bml.get(1).data;
@@ -57,7 +58,7 @@ class TestMessage {
 
 	@Test
 	void testBootMessagesSerialize() {
-		BootMessages bm = new BootMessages(5);
+		BootMessages bm = new BootMessages(FIVE);
 		for (BootMessage b : bm.getMessages().collect(Collectors.toList())) {
 			ByteBuffer buf = ByteBuffer.allocate(1500);
 			b.addToBuffer(buf);

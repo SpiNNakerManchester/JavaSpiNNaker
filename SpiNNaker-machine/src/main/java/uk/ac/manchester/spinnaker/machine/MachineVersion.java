@@ -106,6 +106,8 @@ public enum MachineVersion {
      */
     public final MachineDimensions machineDimensions;
 
+    private static final int DEFAULT_HARDWARE_VERSION = 5;
+
     /**
      * Main constructor.
      * @param id
@@ -175,7 +177,7 @@ public enum MachineVersion {
     }
 
     /**
-     * Unspecified size constructor, assumed to be multe board.
+     * Unspecified size constructor, assumed to be multi-board.
      *
      * @param wrapAround
      *      Indicates if this machine is expected to have wrap arounds.
@@ -286,4 +288,15 @@ public enum MachineVersion {
                         % MachineDefaults.TRIAD_WIDTH == 0));
     }
 
+    /**
+     * Get the version number of the SpiNN boards in the hardware configuration.
+     *
+     * @return 2, 3, 4 or 5.
+     */
+    public int hardwareVersion() {
+        if (id == null) {
+            return DEFAULT_HARDWARE_VERSION;
+        }
+        return id;
+    }
 }
