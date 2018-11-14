@@ -74,7 +74,7 @@ public final class CommandLineInterface {
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						cmd, "download, dse, or version");
+						cmd, "download, dse, upload, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
