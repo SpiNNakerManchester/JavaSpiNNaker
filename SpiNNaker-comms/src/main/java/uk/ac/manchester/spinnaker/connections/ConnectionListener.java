@@ -91,11 +91,10 @@ public class ConnectionListener<MessageType> extends Thread
 		}
 	}
 
-	private void runStep()
-			throws IOException {
+	private void runStep() throws IOException {
 		if (connection.isReadyToReceive(timeout)) {
-			final MessageType message = connection.receiveMessage();
-			for (final MessageHandler<MessageType> callback : callbacks) {
+			MessageType message = connection.receiveMessage();
+			for (MessageHandler<MessageType> callback : callbacks) {
 				callbackPool.submit(() -> callback.handle(message));
 			}
 		}

@@ -48,19 +48,6 @@ public class TestDirection {
     }
 
     /**
-     * Test of typicalMove method, of class Direction.
-     */
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testTypicalMove() {
-        HasChipLocation source = new ChipLocation(0,0);
-        Direction instance = Direction.NORTH;
-        HasChipLocation expResult = new ChipLocation(0, 1);
-        HasChipLocation result = instance.typicalMove(source);
-        assertEquals(expResult, result);
-    }
-
-    /**
      * Test the inverse and that they all return unique values.
      *
      * This makes sure two values do not use the same default.

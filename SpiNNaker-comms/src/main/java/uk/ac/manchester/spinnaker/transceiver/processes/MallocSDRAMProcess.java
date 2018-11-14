@@ -36,11 +36,11 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return Where the start of the allocated memory is.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(new SDRAMAlloc(chip, appID, size)).baseAddress;
 	}
 
@@ -60,11 +60,11 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @return Where the start of the allocated memory is.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
 	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		return synchronousCall(
 				new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
 	}

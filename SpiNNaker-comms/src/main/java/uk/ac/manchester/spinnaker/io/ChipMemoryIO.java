@@ -17,8 +17,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 
 /** A file-like object for the memory of a chip. */
 final class ChipMemoryIO {
@@ -103,7 +103,7 @@ final class ChipMemoryIO {
 	}
 
 	/** Force the writing of the current write buffer. */
-	void flushWriteBuffer() throws IOException, Exception {
+	void flushWriteBuffer() throws IOException, ProcessException {
 		if (writeBuffer.position() > 0) {
 			Transceiver t = hold;
 			if (t == null) {
@@ -124,7 +124,7 @@ final class ChipMemoryIO {
 	 * @param address
 	 *            The address to set.
 	 */
-	void setCurrentAddress(int address) throws IOException, Exception {
+	void setCurrentAddress(int address) throws IOException, ProcessException {
 		flushWriteBuffer();
 		currentAddress = address;
 		writeAddress = address;
@@ -137,7 +137,7 @@ final class ChipMemoryIO {
 	 * @param numBytes
 	 *            The number of bytes to read
 	 */
-	byte[] read(int numBytes) throws IOException, Exception {
+	byte[] read(int numBytes) throws IOException, ProcessException {
 		if (numBytes == 0) {
 			return new byte[0];
 		}
@@ -160,7 +160,7 @@ final class ChipMemoryIO {
 	 * @param data
 	 *            The data to write
 	 */
-	void write(byte[] data) throws IOException, Exception {
+	void write(byte[] data) throws IOException, ProcessException {
 		int numBytes = data.length;
 
 		Transceiver t = txrx();
@@ -197,7 +197,7 @@ final class ChipMemoryIO {
 	 *            The type of the repeat value
 	 */
 	void fill(int value, int size, FillProcess.DataType type)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		Transceiver t = txrx();
 		flushWriteBuffer();
 		t.fillMemory(core, currentAddress, value, size, type);

@@ -7,7 +7,9 @@
 	<module name="JavadocPackage" />
 	<module name="NewlineAtEndOfFile" />
 	<module name="Translation" />
-	<module name="FileLength" />
+	<module name="FileLength">
+		<property name="max" value="5000"/>
+	</module>
 	<module name="RegexpSingleline">
 		<property name="format" value="\s+$" />
 		<property name="minimum" value="0" />

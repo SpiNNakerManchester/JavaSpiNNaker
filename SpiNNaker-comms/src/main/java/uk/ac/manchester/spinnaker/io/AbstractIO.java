@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /**
@@ -30,12 +30,12 @@ public interface AbstractIO extends AutoCloseable {
 	 * @param slice
 	 *            A single index for a single byte of memory.
 	 * @return The slice view of the byte.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	AbstractIO get(int slice) throws IOException, Exception;
+	AbstractIO get(int slice) throws IOException, ProcessException;
 
 	/**
 	 * Get a sub-region of this memory object. The slice must be in range of the
@@ -44,12 +44,12 @@ public interface AbstractIO extends AutoCloseable {
 	 * @param slice
 	 *            A description of a contiguous slice of memory.
 	 * @return The slice view of the chunk.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	AbstractIO get(Slice slice) throws IOException, Exception;
+	AbstractIO get(Slice slice) throws IOException, ProcessException;
 
 	/** @return whether the object has been closed. */
 	boolean isClosed();
@@ -57,12 +57,12 @@ public interface AbstractIO extends AutoCloseable {
 	/**
 	 * Flush any outstanding written data.
 	 *
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	void flush() throws IOException, Exception;
+	void flush() throws IOException, ProcessException;
 
 	/**
 	 * Seek to a position within the region.
@@ -73,12 +73,13 @@ public interface AbstractIO extends AutoCloseable {
 	 *            the file region to be restricted by slice.)
 	 * @param whence
 	 *            Where the numBytes should be measured relative to.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	default void seek(int numBytes, Seek whence) throws IOException, Exception {
+	default void seek(int numBytes, Seek whence)
+			throws IOException, ProcessException {
 		switch (whence) {
 		case SET:
 			seek(numBytes);
@@ -101,23 +102,23 @@ public interface AbstractIO extends AutoCloseable {
 	 *            The absolute location within the region. (Note that this isn't
 	 *            the same concept as the address property; this still allows
 	 *            for the file region to be restricted by slice.)
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	void seek(int numBytes) throws IOException, Exception;
+	void seek(int numBytes) throws IOException, ProcessException;
 
 	/**
 	 * Return the current position within the region relative to the start.
 	 *
 	 * @return the current offset
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	int tell() throws IOException, Exception;
+	int tell() throws IOException, ProcessException;
 
 	/** @return the current absolute address within the region. */
 	int getAddress();
@@ -126,12 +127,12 @@ public interface AbstractIO extends AutoCloseable {
 	 * Read the rest of the data.
 	 *
 	 * @return The bytes that have been read.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
 	 */
-	default byte[] read() throws IOException, Exception {
+	default byte[] read() throws IOException, ProcessException {
 		return read(null);
 	}
 
@@ -142,12 +143,12 @@ public interface AbstractIO extends AutoCloseable {
 	 * @param numBytes
 	 *            The number of bytes to read
 	 * @return The bytes that have been read.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the read will be beyond the end of the region
 	 */
-	byte[] read(Integer numBytes) throws IOException, Exception;
+	byte[] read(Integer numBytes) throws IOException, ProcessException;
 
 	/**
 	 * Write some data to the region.
@@ -155,24 +156,24 @@ public interface AbstractIO extends AutoCloseable {
 	 * @param data
 	 *            The data to write
 	 * @return The number of bytes written
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the write will go over the end of the region
 	 */
-	int write(byte[] data) throws IOException, Exception;
+	int write(byte[] data) throws IOException, ProcessException;
 
 	/**
 	 * Fill the rest of the region with repeated data words.
 	 *
 	 * @param value
 	 *            The value to repeat
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int value) throws IOException, Exception {
+	default void fill(int value) throws IOException, ProcessException {
 		fill(value, null, FillProcess.DataType.WORD);
 	}
 
@@ -183,12 +184,13 @@ public interface AbstractIO extends AutoCloseable {
 	 *            The value to repeat
 	 * @param size
 	 *            Number of bytes to fill from current position
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int value, int size) throws IOException, Exception {
+	default void fill(int value, int size)
+			throws IOException, ProcessException {
 		fill(value, size, FillProcess.DataType.WORD);
 	}
 
@@ -199,13 +201,13 @@ public interface AbstractIO extends AutoCloseable {
 	 *            The value to repeat
 	 * @param type
 	 *            The type of the repeat value
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
 	default void fill(int value, FillProcess.DataType type)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		fill(value, null, type);
 	}
 
@@ -215,17 +217,17 @@ public interface AbstractIO extends AutoCloseable {
 	 * @param value
 	 *            The value to repeat
 	 * @param size
-	 *            Number of bytes to fill from current position, or
-	 *            {@code null} to fill to the end
+	 *            Number of bytes to fill from current position, or {@code null}
+	 *            to fill to the end
 	 * @param type
 	 *            The type of the repeat value
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
 	void fill(int value, Integer size, FillProcess.DataType type)
-			throws IOException, Exception;
+			throws IOException, ProcessException;
 
 	/**
 	 * The various positions that a {@link #seek(int,Seek)} may be relative to.
@@ -253,7 +255,7 @@ public interface AbstractIO extends AutoCloseable {
 					return b[0];
 				} catch (EOFException e) {
 					return -1;
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -266,7 +268,7 @@ public interface AbstractIO extends AutoCloseable {
 					return b.length;
 				} catch (EOFException e) {
 					return -1;
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -280,7 +282,7 @@ public interface AbstractIO extends AutoCloseable {
 					return b.length;
 				} catch (EOFException e) {
 					return -1;
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -292,7 +294,7 @@ public interface AbstractIO extends AutoCloseable {
 					seek(max((int) n, 0), Seek.CUR);
 					int after = tell();
 					return after - before;
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -312,7 +314,7 @@ public interface AbstractIO extends AutoCloseable {
 				buffer[0] = (byte) (b & BYTE_MASK);
 				try {
 					AbstractIO.this.write(buffer);
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -321,7 +323,7 @@ public interface AbstractIO extends AutoCloseable {
 			public void write(byte[] bytes) throws IOException {
 				try {
 					AbstractIO.this.write(bytes);
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -333,7 +335,7 @@ public interface AbstractIO extends AutoCloseable {
 				arraycopy(bytes, offset, buffer, 0, length);
 				try {
 					AbstractIO.this.write(buffer);
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}
@@ -342,7 +344,7 @@ public interface AbstractIO extends AutoCloseable {
 			public void flush() throws IOException {
 				try {
 					AbstractIO.this.flush();
-				} catch (Exception e) {
+				} catch (ProcessException e) {
 					throw new IOException(e);
 				}
 			}

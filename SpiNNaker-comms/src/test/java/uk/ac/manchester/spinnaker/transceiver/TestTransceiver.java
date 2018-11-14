@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.NOHOST;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
@@ -30,13 +31,13 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 class TestTransceiver {
 	static BoardTestConfiguration boardConfig;
-	static final int ver = 5; // Guess?
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
@@ -50,7 +51,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
 				null, null, null, null)) {
 			assertEquals(1, txrx.getConnections().size());
 		}
@@ -63,7 +64,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
 				null, null, null, null)) {
 			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
@@ -79,7 +80,7 @@ class TestTransceiver {
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
 				null, null, null, null)) {
 			for (Connection c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
@@ -99,14 +100,12 @@ class TestTransceiver {
 		connections.add(
 				new BootConnection(null, null, boardConfig.remotehost, null));
 
-		try (Transceiver txrx = new Transceiver(ver, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
 				null, null, null, null)) {
-			if (boardConfig.boardVersion == 3
-					|| boardConfig.boardVersion == 2) {
+			if (boardConfig.boardVersion.isFourChip) {
 				assertEquals(2, txrx.getMachineDimensions().width);
 				assertEquals(2, txrx.getMachineDimensions().height);
-			} else if (boardConfig.boardVersion == 5
-					|| boardConfig.boardVersion == 4) {
+			} else if (boardConfig.boardVersion.isFourtyeightChip) {
 				assertEquals(8, txrx.getMachineDimensions().width);
 				assertEquals(8, txrx.getMachineDimensions().height);
 			} else {
@@ -142,7 +141,7 @@ class TestTransceiver {
 		connections.add(orig);
 
 		// Create transceiver
-		try (Transceiver txrx = new Transceiver(5, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
@@ -159,7 +158,7 @@ class TestTransceiver {
 	}
 
 	@Test
-	//@Disabled("CB commented out")
+	// @Disabled("CB commented out")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
@@ -174,7 +173,7 @@ class TestTransceiver {
 		Inet4Address noHost = InetFactory.getByName(NOHOST);
 		connections.add(new SCPConnection(noHost));
 		try (MockWriteTransceiver txrx =
-				new MockWriteTransceiver(5, connections)) {
+				new MockWriteTransceiver(FIVE, connections)) {
 			// All chips
 			txrx.enableWatchDogTimer(true);
 			txrx.enableWatchDogTimer(false);
@@ -206,19 +205,19 @@ class TestTransceiver {
 	@Test
 	void testReliableMachine() throws Exception {
 		boardConfig.setUpRemoteBoard();
-        Machine first = null;
+		Machine first = null;
 
-        for (int i = 0 ; i < REPETITIONS ; i++) {
+		for (int i = 0; i < REPETITIONS; i++) {
 			try (Transceiver txrx =
-					new Transceiver(boardConfig.remotehost, 5)) {
-        		txrx.ensureBoardIsReady();
-        		txrx.getMachineDimensions();
-        		txrx.getScampVersion();
-                if (first == null) {
-                    first = txrx.getMachineDetails();
-                } else {
-                    assertNull(first.difference(txrx.getMachineDetails()));
-                }
+					new Transceiver(boardConfig.remotehost, FIVE)) {
+				txrx.ensureBoardIsReady();
+				txrx.getMachineDimensions();
+				txrx.getScampVersion();
+				if (first == null) {
+					first = txrx.getMachineDetails();
+				} else {
+					assertNull(first.difference(txrx.getMachineDetails()));
+				}
 			}
 		}
 	}
@@ -243,9 +242,10 @@ class MockWriteTransceiver extends Transceiver {
 
 	List<Write> writtenMemory = new ArrayList<>();
 
-	public MockWriteTransceiver(int version, Collection<Connection> connections)
+	public MockWriteTransceiver(MachineVersion version,
+			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
-			uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception {
+			uk.ac.manchester.spinnaker.transceiver.processes.ProcessException {
 		super(version, connections, null, null, null, null, null, null);
 	}
 

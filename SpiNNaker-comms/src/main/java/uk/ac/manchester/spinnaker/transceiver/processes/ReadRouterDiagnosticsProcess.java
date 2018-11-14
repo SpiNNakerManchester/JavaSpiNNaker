@@ -41,11 +41,11 @@ public class ReadRouterDiagnosticsProcess
 	 * @return The diagnostics from the chip's router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws Exception
+	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
-			throws IOException, Exception {
+			throws IOException, ProcessException {
 		ValueHolder<Integer> cr = new ValueHolder<>();
 		ValueHolder<Integer> es = new ValueHolder<>();
 		int[] reg = new int[NUM_REGISTERS];
