@@ -9,13 +9,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.Machine;
-import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.Process;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
@@ -31,14 +29,19 @@ public final class DataReceiverRunner {
     private static final int THIRD = 3;
 
     /**
-     * Prototype for early testing.
-     * @param args Arguements as received.
-     * @throws IOException
-     * @throws SpinnmanException
-     * @throws
-     *      uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception
-     * @throws StorageException
-     */
+	 * Prototype for early testing.
+	 *
+	 * @param args
+	 *            Arguements as received.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             If the database is in an illegal state
+	 */
 	public static void main(String... args)
             throws IOException, SpinnmanException,
             StorageException, ProcessException {

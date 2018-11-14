@@ -9,27 +9,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Prototype with minimum information needed.
+ *
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 public class Vertex {
 
-    /** Label as received from Python.*/
+    /** Label as received from Python. */
     final String label;
 
     /** Address at which to start recording. */
     final int recordingRegionBaseAddress;
 
-    /** The ids of the regions recording. */
+    /** The IDs of the regions recording. */
     final int[] recordedRegionIds;
 
-    /**
-     * Create a minimal vertex, possibly using an unmarshaller.
-     *
-     * @param label Label as received from Python.
-     * @param recordingRegionBaseAddress Address at which to start recording.
-     * @param recordedRegionIds The ids of the regions recording
-     */
+	/**
+	 * Create a minimal vertex, possibly using an unmarshaller.
+	 *
+	 * @param label
+	 *            Label as received from Python.
+	 * @param recordingRegionBaseAddress
+	 *            Address at which to start recording.
+	 * @param recordedRegionIds
+	 *            The IDs of the regions recording
+	 */
     public Vertex(@JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "recordingRegionBaseAddress", required = true)
                     int recordingRegionBaseAddress,
@@ -82,7 +86,7 @@ public class Vertex {
 
     /**
      * Get the recording region base address.
-     *
+     * <p>
      * Unlike the python this value is cached here.
      *
      * @return the base address of the recording region

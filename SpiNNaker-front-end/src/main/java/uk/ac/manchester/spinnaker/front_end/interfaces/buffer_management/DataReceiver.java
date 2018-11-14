@@ -60,19 +60,23 @@ public class DataReceiver {
 
     }
 
-    /**
-     * Gets the data for a list of placements.
-     *
-     * Note: This method is subject to change as best way to pass in
-     *      placement data is determined.
-     *
-     * @param placements List of placements.
-     * @param progress progressBar if used
-     * @throws IOException
-     * @throws
-     *     uk.ac.manchester.spinnaker.transceiver.processes.Process.Exception
-     * @throws StorageException
-     */
+	/**
+	 * Gets the data for a list of placements.
+	 * <p>
+	 * Note: This method is subject to change as best way to pass in placement
+	 * data is determined.
+	 *
+	 * @param placements
+	 *            List of placements.
+	 * @param progress
+	 *            progressBar if used
+	 * @throws IOException
+	 *             if communications fail
+	 * @throws ProcessException
+	 *             if SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             if database access fails
+	 */
     public void getDataForPlacements(
             List<Placement> placements, ProgressBar progress)
             throws IOException, StorageException, ProcessException {
@@ -213,6 +217,7 @@ public class DataReceiver {
      * @param region
      *      The index of the region to get the pointer of
      * @return The index of the region to get the pointer of.
+     * @throws IOException if communications fail
      */
     private int getRegionPointer(
             Placement placement, int recordingDataAddress, int region)
@@ -245,6 +250,7 @@ public class DataReceiver {
      *      The number of bytes to extract
      * @return
      *      data as a byte array
+     * @throws IOException if communications fail
      */
     private ByteBuffer requestData(
             HasCoreLocation location, int address, int length)
@@ -256,7 +262,7 @@ public class DataReceiver {
     RegionLocation location, ChannelBufferState endState) {
         // if the last ACK packet has not been processed on the chip,
         // process it now
-        // TODO python retreiuves the value and then overwrites it but WHY!
+        // TODO python retrieves the value and then overwrites it but WHY!
         HostDataRead lastSentAck = receivedData.lastSentPacketToCore(location);
 
         EIEIOMessageFactory.readCommandMessage(lastSentAck);

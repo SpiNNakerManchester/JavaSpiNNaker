@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  * A request for writing data to a FPGA register.
  *
  * @see <a href="https://github.com/SpiNNakerManchester/spio/blob/master/designs/spinnaker_fpgas/README.md#spi-interface">
- *      spinnaker_fpga design README</a> for a listing of FPGA registers
+ *      spinnaker_fpga design README listing of FPGA registers</a>
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */

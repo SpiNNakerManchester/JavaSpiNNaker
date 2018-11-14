@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Stores information related to a single channel output buffering state,
- *     as it is retrieved at the end of a simulation on the SpiNNaker system.
+ * as it is retrieved at the end of a simulation on the SpiNNaker system.
  *
  * @see <a href=
  * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/storage_objects/channel_buffer_state.py">
@@ -43,13 +43,14 @@ public class ChannelBufferState {
     /** bool check for if its extracted data from machine. */
     private boolean updateCompleted;
 
-    /**
-     * Size of the state.
-     *
-     * 4 for _start_address, 4 for _current_write, 4 for current_dma_write,
-     * 4 for _current_read, 4 for _end_address, 1 for _region_id,
-     * 1 for _missing_info, 1 for _last_buffer_operation,
-     */
+	/**
+	 * Size of the state.
+	 * <p>
+	 * 4 for {@code startAddress}, 4 for {@code currentWrite}, 4 for
+	 * {@code currentDmaWrite}, 4 for {@code currentRead}, 4 for
+	 * {@code endAddress}, 1 for {@code regionId}, 1 for {@code missingInfo}, 1
+	 * for {@code lastBufferOperation},
+	 */
     public static final int STATE_SIZE = 24;
 
     /**

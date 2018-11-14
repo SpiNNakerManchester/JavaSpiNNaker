@@ -4,9 +4,9 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects;
 
 /**
- * output buffering operations.
- *
- * a listing of what SpiNNaker specific EIEIO commands there are.
+ * Output buffering operations.
+ * <p>
+ * A listing of what SpiNNaker-specific EIEIO commands there are.
  *
  * @see <a href=
  * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/utilities/constants.py">
