@@ -184,7 +184,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
-					throws java.lang.Exception {
+					throws Exception {
 				R response = msg.parsePayload(request);
 				if (callback != null) {
 					callback.accept(response);
@@ -276,7 +276,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 					// Remove the sequence from the outstanding responses
 					msg.removeRequest(requests);
 				}
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				errorRequest = req.request;
 				exception = e;
 				msg.removeRequest(requests);
@@ -296,7 +296,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 
 				try {
 					resend(req, "timeout");
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					errorRequest = req.request;
 					exception = e;
 					toRemove.set(seq);
