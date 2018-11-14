@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.data_spec.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.download.DataOut;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
 
 /**
  * The main command line interface.
@@ -60,6 +61,10 @@ public final class CommandLineInterface {
 			switch (cmd) {
 			case "dse":
 				HostExecuteDataSpecification.Main.main(real);
+				System.exit(0);
+			case "upload":
+				// Expects the original args
+				DataReceiverRunner.main(args);
 				System.exit(0);
 			case "download":
 				DataOut.main(real);
