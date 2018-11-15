@@ -25,10 +25,6 @@ class Placement implements HasCoreLocation {
     final int p;
     /** Minimal vertex info. */
     final Vertex vertex;
-    /** The p value of the core the monitor is on. */
-    final Integer monitorP;
-    /** The IPTag of the package gatherer. */
-    final IPTag iptag;
 
     /**
      * Constructor with minimum information needed.
@@ -43,16 +39,11 @@ class Placement implements HasCoreLocation {
     Placement(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "vertex", required = true) Vertex vertex,
-            @JsonProperty(value = "iptag", required = false) IPTag iptag,
-            @JsonProperty(value = "monitorP", required = false)
-                    Integer monitorP) {
+            @JsonProperty(value = "vertex", required = true) Vertex vertex) {
         this.x = x;
         this.y = y;
         this.p = p;
         this.vertex = vertex;
-        this.monitorP = monitorP;
-        this.iptag = iptag;
     }
 
     @Override
