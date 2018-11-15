@@ -58,8 +58,6 @@ public class DataOut implements Callable<Boolean> {
 	public enum Argument {
 		/** The hostname. */
 		HOSTNAME("H"),
-		/** The port number. */
-		PORT_NUMBER("P"),
 		/** The X coord of the CPU to read from. */
 		PLACEMENT_X("p", 0),
 		/** The Y coord of the CPU to read from. */
@@ -103,9 +101,6 @@ public class DataOut implements Callable<Boolean> {
 	/** The P coord of the CPU to read from. */
 	@Bind(Argument.PLACEMENT_P)
 	int p;
-	/** The port number. */
-	@Bind(Argument.PORT_NUMBER)
-	int portConnection;
 	/** How many bytes to read. */
 	@Bind(Argument.LENGTH_IN_BYTES)
 	int length;
@@ -253,9 +248,9 @@ public class DataOut implements Callable<Boolean> {
 
 	@Override
 	public Boolean call() throws IOException, InterruptedException {
-		HostDataReceiver r = new HostDataReceiver(portConnection,
-				new CoreLocation(x, y, p), hostname, length, address,
-				new ChipLocation(chipX, chipY), iptag);
+		HostDataReceiver r =
+				new HostDataReceiver(new CoreLocation(x, y, p), hostname,
+						length, address, new ChipLocation(chipX, chipY), iptag);
 		r.writeData(dataFile, missingFile);
 		return r.isAlive();
 	}

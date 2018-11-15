@@ -31,8 +31,6 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	 *            What core on SpiNNaker do we download from.
 	 * @param region
 	 *            What memory region of the core we should download.
-	 * @param portConnection
-	 *            What port we talk to.
 	 * @param hostname
 	 *            Where the SpiNNaker machine is.
 	 * @param chip
@@ -45,22 +43,21 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	 *             If the database access fails.
 	 */
 	public StorageBackedHostDataReceiver(Storage storage,
-			HasCoreLocation placement, int region, int portConnection,
-			String hostname, HasChipLocation chip, int iptag)
+			HasCoreLocation placement, int region, String hostname,
+			HasChipLocation chip, int iptag)
 			throws UnknownHostException, StorageException {
 		this(storage, placement, region,
 				requireNonNull(storage.getRegionLocation(placement, region),
 						"region location and size are unknown"),
-				portConnection, hostname, chip, iptag);
+				hostname, chip, iptag);
 	}
 
 	@SuppressWarnings("checkstyle:ParameterNumber")
 	private StorageBackedHostDataReceiver(Storage storage,
 			HasCoreLocation placement, int region, RegionDescriptor d,
-			int portConnection, String hostname, HasChipLocation chip,
-			int iptag) throws UnknownHostException, StorageException {
-		super(portConnection, placement, hostname, d.size, d.baseAddress, chip,
-				iptag);
+			String hostname, HasChipLocation chip, int iptag)
+			throws UnknownHostException, StorageException {
+		super(placement, hostname, d.size, d.baseAddress, chip, iptag);
 		this.storage = storage;
 		this.region = region;
 		this.placement = placement;

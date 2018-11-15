@@ -8,6 +8,7 @@ import static uk.ac.manchester.spinnaker.front_end.download.HostDataReceiver.cei
 import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.NEXT_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -51,8 +52,6 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	 *
 	 * @param destination
 	 *            Where to send the message
-	 * @param destPort
-	 *            Which port to send the message to
 	 * @param missingSeqs
 	 *            The collection of missing sequence numbers. <i>Modified by
 	 *            this method.</i>
@@ -61,14 +60,14 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	 * @return First message to send.
 	 */
 	static MissingSequenceNumbersMessage createFirst(
-			HasCoreLocation destination, int destPort, IntBuffer missingSeqs,
+			HasCoreLocation destination, IntBuffer missingSeqs,
 			int numPackets) {
 		ByteBuffer data = allocate(min(DATA_PER_FULL_PACKET,
 				missingSeqs.remaining() + FIRST_OVERHEAD_WORDS) * WORD_SIZE)
 						.order(LITTLE_ENDIAN);
 		data.putInt(START_MISSING_SEQS.value);
 		data.putInt(numPackets);
-		return create(destination, destPort, missingSeqs, data);
+		return create(destination, missingSeqs, data);
 	}
 
 	/**
@@ -77,34 +76,32 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	 *
 	 * @param destination
 	 *            Where to send the message
-	 * @param destPort
-	 *            Which port to send the message to
 	 * @param missingSeqs
 	 *            The collection of missing sequence numbers. <i>Modified by
 	 *            this method.</i>
 	 * @return Subsequent message to send.
 	 */
 	static MissingSequenceNumbersMessage createNext(HasCoreLocation destination,
-			int destPort, IntBuffer missingSeqs) {
+			IntBuffer missingSeqs) {
 		ByteBuffer data = allocate(min(DATA_PER_FULL_PACKET,
 				missingSeqs.remaining() + NEXT_OVERHEAD_WORDS) * WORD_SIZE)
 						.order(LITTLE_ENDIAN);
 		data.putInt(NEXT_MISSING_SEQS.value);
-		return create(destination, destPort, missingSeqs, data);
+		return create(destination, missingSeqs, data);
 	}
 
 	private static MissingSequenceNumbersMessage create(
-			HasCoreLocation destination, int destPort, IntBuffer missingSeqs,
+			HasCoreLocation destination, IntBuffer missingSeqs,
 			ByteBuffer data) {
 		while (data.hasRemaining() || missingSeqs.hasRemaining()) {
 			data.putInt(missingSeqs.get());
 		}
 		data.flip();
-		return new MissingSequenceNumbersMessage(destination, destPort, data);
+		return new MissingSequenceNumbersMessage(destination, data);
 	}
 
 	private MissingSequenceNumbersMessage(HasCoreLocation destination,
-			int destPort, ByteBuffer payload) {
-		super(destination, destPort, payload);
+			ByteBuffer payload) {
+		super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
 	}
 }

@@ -49,12 +49,11 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
 public class HostDataReceiver extends Thread {
 	private static final Logger log = getLogger(HostDataReceiver.class);
 
-	private final int portConnection;
-	private final HasCoreLocation placement;
+	private final HasCoreLocation extraMonitorPlacement;
 	private final Inet4Address machineIP;
 	private final int length;
 	private final int address;
-	private final HasChipLocation chip;
+	private final HasChipLocation ethernetChip;
 	private final int iptag;
 	private final BlockingQueue<ByteBuffer> messQueue;
 	private final byte[] buffer;
@@ -65,31 +64,34 @@ public class HostDataReceiver extends Thread {
 	private List<Integer> missLog;
 
 	/**
-	 * Create an instance of the protocol implementation.
+	 * Create an instance of the protocol implementation. This depends on the
+	 * appropriate extra monitor cores being deployed (per chip) and the data
+	 * speedup packet gatherer cores being deployed (per ethernet-connected
+	 * chip).
 	 *
-	 * @param portConnection
-	 *            What port we talk to.
-	 * @param placement
-	 *            What core on SpiNNaker do we download from.
+	 * @param extraMonitorPlacement
+	 *            What core (running the extra monitor binary) on SpiNNaker do
+	 *            we download from.
 	 * @param hostname
 	 *            Where the SpiNNaker machine is.
 	 * @param lengthInBytes
 	 *            How many bytes to download.
 	 * @param memoryAddress
 	 *            Where in the SpiNNaker core's memory to download from
-	 * @param chip
-	 *            Used for reprogramming the IP tag.
+	 * @param ethernetChip
+	 *            The ethernet-connected chip where the data speedup packet
+	 *            gatherer resides.
 	 * @param iptag
 	 *            The ID of the IP tag.
 	 * @throws UnknownHostException
 	 *             If the hostname can't be resolved to an IPv4 address.
 	 */
-	public HostDataReceiver(int portConnection, HasCoreLocation placement,
+	public HostDataReceiver(HasCoreLocation extraMonitorPlacement,
 			String hostname, int lengthInBytes, int memoryAddress,
-			HasChipLocation chip, int iptag) throws UnknownHostException {
-		this.portConnection = portConnection;
-		this.placement = placement;
-		this.chip = chip;
+			HasChipLocation ethernetChip, int iptag)
+			throws UnknownHostException {
+		this.extraMonitorPlacement = extraMonitorPlacement;
+		this.ethernetChip = ethernetChip;
 		this.iptag = iptag;
 		machineIP = InetFactory.getByName(hostname);
 		length = lengthInBytes;
@@ -135,7 +137,8 @@ public class HostDataReceiver extends Thread {
 		// create connection
 		SCPConnection sender = null;
 		try {
-			sender = new SCPConnection(placement, machineIP, SCP_SCAMP_PORT);
+			sender = new SCPConnection(extraMonitorPlacement, machineIP,
+					SCP_SCAMP_PORT);
 		} catch (SocketException ex) {
 			log.error("failed to create UDP connection", ex);
 			return null;
@@ -213,7 +216,7 @@ public class HostDataReceiver extends Thread {
 		List<Set<Integer>> result = new ArrayList<>();
 		Set<Integer> missing = new HashSet<>();
 		for (Integer m : missLog) {
-			if  (m == null) {
+			if (m == null) {
 				result.add(missing);
 				missing = new HashSet<>();
 			} else {
@@ -264,10 +267,10 @@ public class HostDataReceiver extends Thread {
 
 			// If first, add n packets to list; otherwise just add data
 			if (i == 0) {
-				message = createFirst(placement, portConnection, missingSeqs,
+				message = createFirst(extraMonitorPlacement, missingSeqs,
 						numPackets);
 			} else {
-				message = createNext(placement, portConnection, missingSeqs);
+				message = createNext(extraMonitorPlacement, missingSeqs);
 			}
 			sender.sendSDPMessage(message);
 			sleep(TIMEOUT_PER_SENDING_IN_MILLISECONDS);
@@ -309,14 +312,14 @@ public class HostDataReceiver extends Thread {
 	private void sendInitialCommand(SCPConnection sender,
 			SCPConnection receiver) throws IOException {
 		// Build an SCP request to set up the IP Tag associated to this socket
-		sender.sendSCPRequest(
-				new IPTagSet(chip, receiver.getLocalIPAddress().getAddress(),
-						receiver.getLocalPort(), iptag, true));
+		sender.sendSCPRequest(new IPTagSet(ethernetChip,
+				receiver.getLocalIPAddress().getAddress(),
+				receiver.getLocalPort(), iptag, true));
 		sender.receiveSCPResponse(null);
 
 		// Create and send Data request SDP packet
-		sender.sendSDPMessage(StartSendingMessage.create(placement,
-				portConnection, address, length));
+		sender.sendSDPMessage(StartSendingMessage.create(extraMonitorPlacement,
+				address, length));
 	}
 
 	private static int calculateMaxSeqNum(int length) {
