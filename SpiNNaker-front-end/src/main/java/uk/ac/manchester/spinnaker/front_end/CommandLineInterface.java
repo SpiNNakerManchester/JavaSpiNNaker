@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.download.DataOut;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataGatherRunner;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
 
 /**
@@ -57,6 +58,9 @@ public final class CommandLineInterface {
 			switch (args[0]) {
 			case "upload":
 				DataReceiverRunner.main(args);
+				System.exit(0);
+			case "gather":
+				DataGatherRunner.main(args);
 				System.exit(0);
 			case "download":
 				download(args);

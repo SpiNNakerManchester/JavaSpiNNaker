@@ -6,6 +6,8 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
+import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
@@ -15,7 +17,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
-class Placement implements HasCoreLocation {
+class Gather implements HasCoreLocation {
 
     /** The x value of the core this placement is on. */
     final int x;
@@ -23,12 +25,10 @@ class Placement implements HasCoreLocation {
     final int y;
     /** The p value of the core this placement is on. */
     final int p;
-    /** Minimal vertex info. */
-    final Vertex vertex;
-    /** The p value of the core the monitor is on. */
-    final Integer monitorP;
     /** The IPTag of the package gatherer. */
-    final IPTag iptag;
+    private final IPTag iptag;
+
+    private final List<Monitor> monitors;
 
     /**
      * Constructor with minimum information needed.
@@ -40,19 +40,17 @@ class Placement implements HasCoreLocation {
      * @param p
      * @param vertex
      */
-    Placement(@JsonProperty(value = "x", required = true) int x,
+    Gather(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "vertex", required = true) Vertex vertex,
-            @JsonProperty(value = "iptag", required = false) IPTag iptag,
-            @JsonProperty(value = "monitorP", required = false)
-                    Integer monitorP) {
+            @JsonProperty(value = "iptag", required = true) IPTag iptag,
+            @JsonProperty(value = "monitors", required = true)
+                    List<Monitor> monitors) {
         this.x = x;
         this.y = y;
         this.p = p;
-        this.vertex = vertex;
-        this.monitorP = monitorP;
         this.iptag = iptag;
+        this.monitors = monitors;
     }
 
     @Override
@@ -70,8 +68,19 @@ class Placement implements HasCoreLocation {
         return p;
     }
 
-    Vertex getVertex() {
-        return vertex;
+    /**
+     * @return the iptag
+     */
+    public IPTag getIptag() {
+        return iptag;
     }
+
+    /**
+     * @return the monitors
+     */
+    public List<Monitor> getMonitors() {
+        return Collections.unmodifiableList(monitors);
+    }
+
 
 }

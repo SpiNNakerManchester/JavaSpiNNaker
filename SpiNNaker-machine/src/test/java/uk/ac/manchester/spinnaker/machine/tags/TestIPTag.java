@@ -3,11 +3,15 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import uk.ac.manchester.spinnaker.machine.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
+import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 
 /**
@@ -161,6 +165,17 @@ public class TestIPTag {
         assertFalse(tag1.equals(null));
         IPTag nullTag = null;
         assertFalse(tag1.equals(nullTag));
+    }
+
+        @Test
+    public void testFromJson() throws IOException {
+        String json = " {\"x\": 0, \"y\": 0, "
+                + "\"boardAddress\": \"192.168.240.253\", "
+                + "\"targetAddress\": \"localhost\", \"stripSDP\": true, "
+                + "\"tagID\": 1, \"trafficIdentifier\": \"DATA_SPEED_UP\"}";
+        ObjectMapper mapper = MapperFactory.createMapper();
+        IPTag fromJson = mapper.readValue(json, IPTag.class);
+        assertNotNull(fromJson);
     }
 
 }

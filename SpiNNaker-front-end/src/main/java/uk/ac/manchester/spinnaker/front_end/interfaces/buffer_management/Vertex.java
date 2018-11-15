@@ -44,37 +44,6 @@ public class Vertex {
         this.recordedRegionIds = recordedRegionIds;
     }
 
-//    Iterable<Integer> getRegions() {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-    //hashcode
-
-//    int getRegionBufferSize(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-//    boolean isEmpty(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-//    boolean isNextTimestamp(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-//    Integer getNextTimestamp(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-//    boolean isNextKey(Integer region, Integer nextTimestamp) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-//    int getNextKey(Integer region) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-
-    // AbstractReceiveBuffersToHost.get_recorded_region_ids
     /**
      * Get the recording region IDs that have been recorded using buffering.
      *

@@ -44,13 +44,4 @@ public class TestPlacements {
         assertEquals(2, fromJson.size());
     }
 
-    @Test
-    public void testTempJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/simple.json");
-        //String f = "/home/brenninc/spinnaker/my_spinnaker/reports/2018-11-01-14-13-14-01/run_1/json_files/java_placements.json";
-        FileReader reader = new FileReader(url.getFile());
-        ObjectMapper mapper = MapperFactory.createMapper();
-        List<Placement> fromJson = mapper.readValue(reader, new TypeReference<List<Placement>>(){});
-        assertEquals(2, fromJson.size());
-    }
 }

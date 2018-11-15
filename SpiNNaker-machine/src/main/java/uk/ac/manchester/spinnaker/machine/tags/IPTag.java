@@ -1,8 +1,12 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.lang.Integer.rotateLeft;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -129,6 +133,37 @@ public final class IPTag extends Tag {
         this.ipAddress = targetAddress;
         this.stripSDP = stripSDP;
         this.trafficIdentifier = trafficIdentifier;
+    }
+
+   public IPTag(
+            @JsonProperty(value = "boardAddress", required = true)
+                    String boardAddress,
+            @JsonProperty(value = "tagID", required = true) int tagID,
+            @JsonProperty(value = "x", required = true) int x,
+            @JsonProperty(value = "y", required = true) int y,
+            @JsonProperty(value = "targetAddress", required = true)
+                    String targetAddress,
+            @JsonProperty(value = "port", required = false) Integer port,
+            @JsonProperty(value = "stripSDP", required = false)
+                    Boolean stripSDP,
+            @JsonProperty(value = "trafficIdentifier", required = false)
+                    String trafficIdentifier)
+            throws UnknownHostException {
+        super(InetAddress.getByName(boardAddress), tagID,
+                (port == null ? DEFAULT_PORT : port));
+        this.destination =  new ChipLocation(x, y);
+        this.ipAddress = InetAddress.getByName(targetAddress);
+        if (stripSDP == null) {
+            this.stripSDP = DEFAULT_STRIP_SDP;
+        } else {
+            this.stripSDP = stripSDP;
+        }
+        if (trafficIdentifier == null) {
+            this.trafficIdentifier = DEFAULT_TRAFFIC_IDENTIFIER;
+        } else {
+            this.trafficIdentifier =
+                    TrafficIdentifer.getInstance(trafficIdentifier);
+        }
     }
 
     /**
