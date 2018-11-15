@@ -1,12 +1,11 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.lang.Integer.rotateLeft;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -38,7 +37,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      */
@@ -56,7 +55,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -75,7 +74,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param stripSDP
@@ -93,7 +92,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -114,7 +113,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -135,7 +134,31 @@ public final class IPTag extends Tag {
         this.trafficIdentifier = trafficIdentifier;
     }
 
-   public IPTag(
+    /**
+     * Constructor for JSON deserialization.
+     *
+     * @param boardAddress
+     *            The IP address of the board on which the tag is allocated
+     * @param tagID
+     *            The ID of the tag (0..7)
+     * @param x
+     *            The X coordinate of the destination.
+     * @param y
+     *            The Y coordinate of the destination.
+     * @param targetAddress
+     *            The IP address to which SDP packets with the tag will be sent
+     * @param port
+     *            The port to which the SDP packets with the tag will be sent,
+     *            or {@code null} if not yet assigned.
+     * @param stripSDP
+     *            Indicates whether the SDP header should be removed
+     * @param trafficIdentifier
+     *            The identifier for traffic transmitted using this tag
+     * @throws UnknownHostException
+     *             If an IP address doesn't resolve.
+     */
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public IPTag(
             @JsonProperty(value = "boardAddress", required = true)
                     String boardAddress,
             @JsonProperty(value = "tagID", required = true) int tagID,
