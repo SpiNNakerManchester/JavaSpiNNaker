@@ -20,15 +20,17 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	private final Storage storage;
 	private final int region;
-	private final HasCoreLocation placement;
+	private final HasCoreLocation originatingPlacement;
 
 	/**
 	 * Create an instance of the protocol implementation.
 	 *
 	 * @param storage
 	 *            The database to write the data to.
-	 * @param placement
+	 * @param extraMonitorPlacement
 	 *            What core on SpiNNaker do we download from.
+	 * @param originatingPlacement
+	 *            What core on SpiNNaker generated the data.
 	 * @param region
 	 *            What memory region of the core we should download.
 	 * @param hostname
@@ -43,24 +45,37 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	 *             If the database access fails.
 	 */
 	public StorageBackedHostDataReceiver(Storage storage,
-			HasCoreLocation placement, int region, String hostname,
+			HasCoreLocation extraMonitorPlacement,
+			HasCoreLocation originatingPlacement, int region, String hostname,
 			HasChipLocation chip, int iptag)
 			throws UnknownHostException, StorageException {
-		this(storage, placement, region,
-				requireNonNull(storage.getRegionLocation(placement, region),
+		this(storage, extraMonitorPlacement, originatingPlacement, region,
+				requireNonNull(
+						storage.getRegionLocation(extraMonitorPlacement,
+								region),
 						"region location and size are unknown"),
 				hostname, chip, iptag);
 	}
 
 	@SuppressWarnings("checkstyle:ParameterNumber")
 	private StorageBackedHostDataReceiver(Storage storage,
-			HasCoreLocation placement, int region, RegionDescriptor d,
-			String hostname, HasChipLocation chip, int iptag)
-			throws UnknownHostException, StorageException {
-		super(placement, hostname, d.size, d.baseAddress, chip, iptag);
+			HasCoreLocation extraMonitorPlacement,
+			HasCoreLocation originatingPlacement, int region,
+			RegionDescriptor d, String hostname, HasChipLocation ethernetChip,
+			int iptag) throws UnknownHostException, StorageException {
+		super(extraMonitorPlacement, hostname, d.size, d.baseAddress,
+				ethernetChip, iptag);
+		if (!originatingPlacement.onSameChipAs(extraMonitorPlacement)) {
+			throw new IllegalArgumentException(
+					"placements for extra monitor core ("
+							+ extraMonitorPlacement.asCoreLocation()
+							+ ") and data producing core ("
+							+ originatingPlacement.asCoreLocation()
+							+ ") must be on the same chip");
+		}
 		this.storage = storage;
 		this.region = region;
-		this.placement = placement;
+		this.originatingPlacement = originatingPlacement;
 	}
 
 	/**
@@ -77,7 +92,7 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	 */
 	public void writeData()
 			throws InterruptedException, IOException, StorageException {
-		storage.storeRegionContents(placement, region, getData());
+		storage.storeRegionContents(originatingPlacement, region, getData());
 	}
 
 	/**
@@ -93,6 +108,6 @@ public class StorageBackedHostDataReceiver extends HostDataReceiver {
 	 */
 	public void appendData()
 			throws InterruptedException, IOException, StorageException {
-		storage.appendRegionContents(placement, region, getData());
+		storage.appendRegionContents(originatingPlacement, region, getData());
 	}
 }
