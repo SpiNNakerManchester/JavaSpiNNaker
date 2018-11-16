@@ -4,6 +4,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.START_SENDING_DATA;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -30,19 +31,19 @@ final class StartSendingMessage extends ProtocolMessage {
 	 *            How many bytes to read
 	 * @return The created message.
 	 */
-	static StartSendingMessage create(HasCoreLocation destination, int destPort,
-			int address, int length) {
+	static StartSendingMessage create(HasCoreLocation destination, int address,
+			int length) {
 		ByteBuffer payload =
 				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		IntBuffer msgPayload = payload.asIntBuffer();
 		msgPayload.put(START_SENDING_DATA.value);
 		msgPayload.put(address);
 		msgPayload.put(length);
-		return new StartSendingMessage(destination, destPort, payload);
+		return new StartSendingMessage(destination, payload);
 	}
 
-	private StartSendingMessage(HasCoreLocation destination, int destPort,
+	private StartSendingMessage(HasCoreLocation destination,
 			ByteBuffer payload) {
-		super(destination, destPort, payload);
+		super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
 	}
 }

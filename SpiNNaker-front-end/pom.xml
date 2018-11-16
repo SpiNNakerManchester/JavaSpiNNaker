@@ -33,6 +33,10 @@
 			<artifactId>SpiNNaker-comms</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-data-specification</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>

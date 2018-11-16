@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 
 /**
  * A message participating in the fast-data-download protocol. This protocol
@@ -25,7 +26,7 @@ public abstract class ProtocolMessage extends SDPMessage {
 	 * @param payload
 	 *            What the contents of the message should be.
 	 */
-	protected ProtocolMessage(HasCoreLocation destination, int destPort,
+	protected ProtocolMessage(HasCoreLocation destination, SDPPort destPort,
 			ByteBuffer payload) {
 		super(new SDPHeader(REPLY_NOT_EXPECTED, destination, destPort),
 				payload);
