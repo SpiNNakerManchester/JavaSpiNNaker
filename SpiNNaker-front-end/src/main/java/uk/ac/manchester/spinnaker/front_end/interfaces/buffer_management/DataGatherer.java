@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +26,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
@@ -38,11 +36,13 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Alan Stokes
  * @author Donal Fellows
  */
-public class DataGatherer {
-	private static final Logger log = getLogger(DataGatherer.class);
+public abstract class DataGatherer {
+	/**
+	 * Logger for the gatherer.
+	 */
+	protected static final Logger log = getLogger(DataGatherer.class);
 
 	private final Transceiver txrx;
-	private final Storage database;
 	private final ExecutorService pool;
 	private int missCount;
 
@@ -81,9 +81,8 @@ public class DataGatherer {
 	 * @param database
 	 *            Where to write downloaded data to.
 	 */
-	public DataGatherer(Transceiver transceiver, Storage database) {
+	public DataGatherer(Transceiver transceiver) {
 		this.txrx = transceiver;
-		this.database = database;
 		this.pool = newFixedThreadPool(POOL_SIZE);
 		this.missCount = 0;
 	}
@@ -115,7 +114,7 @@ public class DataGatherer {
 		return missCount;
 	}
 
-	private static class Region {
+	protected static class Region {
 		CoreLocation core;
 		int regionID;
 		int startAddress;
@@ -199,8 +198,7 @@ public class DataGatherer {
 							Downloader d = new Downloader(conn, messQueue);
 							Region r = getRegion(place, regionID);
 							ByteBuffer data = d.doDownload(place, r);
-							database.appendRegionContents(r.core, r.regionID,
-									data);
+							storeData(r, data);
 						}
 					}
 				}
@@ -226,57 +224,34 @@ public class DataGatherer {
 		// TODO reconfigure router timeouts
 	}
 
-	private Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache =
-			new HashMap<>();
-	/** The number of memory regions in the DSE model. */
-	private static final int MAX_MEM_REGIONS = 16;
-	/** Application data magic number. */
-	static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
-	/** Version of the file produced by the DSE. */
-	static final int DSE_VERSION = 0x00010000;
+	/**
+	 * Work out exactly where is going to be downloaded.
+	 *
+	 * @param placement
+	 *            The placement information.
+	 * @param regionID
+	 *            The region ID.
+	 * @return The region descriptor.
+	 * @throws IOException
+	 *             If communication fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	protected abstract Region getRegion(Placement placement, int regionID)
+			throws IOException, ProcessException;
 
-	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
-			throws IOException, ProcessException {
-		// TODO get this info from the database
-		Map<Integer, ByteBuffer> map;
-		synchronized (coreTableCache) {
-			map = coreTableCache.get(core);
-			if (map == null) {
-				map = new HashMap<>();
-				coreTableCache.put(core, map);
-			}
-		}
-		// Individual cores are only ever handled from one thread
-		ByteBuffer buffer = map.get(vertex.recordingRegionBaseAddress);
-		if (buffer == null) {
-			buffer = txrx.readMemory(core, vertex.recordingRegionBaseAddress,
-					WORD_SIZE * (MAX_MEM_REGIONS + 2));
-			int word = buffer.getInt();
-			if (word != APPDATA_MAGIC_NUM) {
-				throw new IllegalStateException(
-						String.format("unexpected magic number: %08x", word));
-			}
-			word = buffer.getInt();
-			if (word != DSE_VERSION) {
-				throw new IllegalStateException(
-						String.format("unexpected DSE version: %08x", word));
-			}
-			map.put(vertex.recordingRegionBaseAddress, buffer);
-		}
-		return buffer.asIntBuffer();
-	}
-
-	private Region getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException {
-		Region r = new Region();
-		r.core = placement.asCoreLocation();
-		r.regionID = regionID;
-		IntBuffer b = getCoreRegionTable(r.core, placement.vertex);
-		r.startAddress = b.get(regionID);
-		// TODO This is probably wrong!
-		r.size = b.get(regionID + 1) - r.startAddress;
-		return r;
-	}
+	/**
+	 * Store the data retrieved from a region.
+	 *
+	 * @param r
+	 *            Where the data came from.
+	 * @param data
+	 *            The data that was retrieved.
+	 * @throws StorageException
+	 *             If the database refuses to do the store.
+	 */
+	protected abstract void storeData(Region r, ByteBuffer data)
+			throws StorageException;
 
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";

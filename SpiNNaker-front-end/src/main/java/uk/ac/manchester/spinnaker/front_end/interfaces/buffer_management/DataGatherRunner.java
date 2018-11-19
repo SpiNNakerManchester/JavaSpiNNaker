@@ -71,7 +71,7 @@ public abstract class DataGatherRunner {
 		DatabaseEngine database = new DatabaseEngine(new File(args[THIRD]));
 
 		DataGatherer runner =
-				new DataGatherer(trans, new SQLiteStorage(database));
+				new DirectDataGatherer(trans, new SQLiteStorage(database));
 		for (Gather g : gathers) {
 			runner.addTask(g);
 		}
