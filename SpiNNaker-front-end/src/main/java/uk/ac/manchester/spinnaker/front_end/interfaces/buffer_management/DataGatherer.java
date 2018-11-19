@@ -1,6 +1,7 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import static java.lang.Thread.sleep;
+import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.computeNumberOfPackets;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -28,16 +28,21 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
+import uk.ac.manchester.spinnaker.storage.Storage;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
+/**
+ * Implementation of the SpiNNaker Fast Data Download Protocol.
+ *
+ * @author Alan Stokes
+ * @author Donal Fellows
+ */
 public class DataGatherer {
 	private static final Logger log = getLogger(DataGatherer.class);
 
 	private final Transceiver txrx;
-	private final SQLiteStorage database;
+	private final Storage database;
 	private final ExecutorService pool;
 	private int missCount;
 
@@ -67,18 +72,43 @@ public class DataGatherer {
 	 */
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
 
-	public DataGatherer(Transceiver trans, DatabaseEngine database) {
-		this.txrx = trans;
-		this.database = new SQLiteStorage(database);
-		this.pool = Executors.newFixedThreadPool(POOL_SIZE);
+	/**
+	 * Create an instance of the protocol implementation.
+	 *
+	 * @param transceiver
+	 *            How to talk to the SpiNNaker system via SCP. Where the system
+	 *            is located.
+	 * @param database
+	 *            Where to write downloaded data to.
+	 */
+	public DataGatherer(Transceiver transceiver, Storage database) {
+		this.txrx = transceiver;
+		this.database = database;
+		this.pool = newFixedThreadPool(POOL_SIZE);
 		this.missCount = 0;
 	}
 
-
-	public void addTask(Gather g) {
-		pool.execute(() -> downloadBoard(g));
+	/**
+	 * Request that a particular board be downloaded.
+	 *
+	 * @param gather
+	 *            The reference to the speed up data gatherer for the board,
+	 *            together with the information about which bits on the board
+	 *            should be downloaded.
+	 */
+	public void addTask(Gather gather) {
+		pool.execute(() -> downloadBoard(gather));
 	}
 
+	/**
+	 * Indicates that all tasks have been submitted and waits for them all to
+	 * finish (up to a day).
+	 *
+	 * @return The total number of missed packets. Misses are retried, so this
+	 *         is just an assessment of data transfer quality.
+	 * @throws InterruptedException
+	 *             If the wait is interrupted.
+	 */
 	public int waitForTasksToFinish() throws InterruptedException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
@@ -359,8 +389,10 @@ public class DataGatherer {
 
 		private boolean retransmitMissingSequences()
 				throws IOException, InterruptedException {
-			// Calculate number of missing sequences based on difference between
-			// expected and received
+			/*
+			 * Calculate number of missing sequences based on difference between
+			 * expected and received
+			 */
 			IntBuffer missingSeqs = IntBuffer
 					.allocate(maxSeqNum - receivedSeqNums.cardinality());
 			// Calculate missing sequence numbers and add them to "missing"

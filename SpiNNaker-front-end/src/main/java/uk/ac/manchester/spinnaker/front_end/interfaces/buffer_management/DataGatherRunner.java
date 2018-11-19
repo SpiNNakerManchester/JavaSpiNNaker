@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -69,7 +70,8 @@ public abstract class DataGatherRunner {
 
 		DatabaseEngine database = new DatabaseEngine(new File(args[THIRD]));
 
-		DataGatherer runner = new DataGatherer(trans, database);
+		DataGatherer runner =
+				new DataGatherer(trans, new SQLiteStorage(database));
 		for (Gather g : gathers) {
 			runner.addTask(g);
 		}
