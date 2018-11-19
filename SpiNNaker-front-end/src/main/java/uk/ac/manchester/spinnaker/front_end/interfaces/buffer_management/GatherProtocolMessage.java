@@ -15,7 +15,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
  *
  * @author Donal Fellows
  */
-public abstract class ProtocolMessage extends SDPMessage {
+public abstract class GatherProtocolMessage extends SDPMessage {
 	/**
 	 * Create a protocol message.
 	 *
@@ -26,9 +26,25 @@ public abstract class ProtocolMessage extends SDPMessage {
 	 * @param payload
 	 *            What the contents of the message should be.
 	 */
-	protected ProtocolMessage(HasCoreLocation destination, SDPPort destPort,
+	protected GatherProtocolMessage(HasCoreLocation destination, SDPPort destPort,
 			ByteBuffer payload) {
 		super(new SDPHeader(REPLY_NOT_EXPECTED, destination, destPort),
 				payload);
+	}
+
+	/** The various IDs of messages used in the fast download protocol. */
+	public enum ID {
+		/** ID of message used to start sending data. */
+		START_SENDING_DATA(100),
+		/** ID of message used to start sending missing sequence numbers. */
+		START_MISSING_SEQS(1000),
+		/** ID of message used to send more missing sequence numbers. */
+		NEXT_MISSING_SEQS(1001);
+		/** The value of the ID. */
+		public final int value;
+
+		ID(int value) {
+			this.value = value;
+		}
 	}
 }

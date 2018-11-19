@@ -3,8 +3,8 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.NEXT_MISSING_SEQS;
-import static uk.ac.manchester.spinnaker.front_end.download.ProtocolID.START_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.GatherProtocolMessage.ID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
@@ -18,18 +18,19 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * A message used to describe what sequence numbers are missing from a fast data
  * transfer stream so that they can be retransmitted.
  */
-final class MissingSequenceNumbersMessage extends ProtocolMessage {
+public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** What is the maximum number of <i>words</i> in a packet? */
-	static final int DATA_PER_FULL_PACKET = 68;
+	private static final int DATA_PER_FULL_PACKET = 68;
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;
 	/** Number of words of overhead in a subsequent message. */
 	private static final int NEXT_OVERHEAD_WORDS = 1;
 	/** How many sequence numbers fit in the first message. */
-	static final int MAX_FIRST_SIZE =
+	private static final int MAX_FIRST_SIZE =
 			DATA_PER_FULL_PACKET - FIRST_OVERHEAD_WORDS;
 	/** How many sequence numbers fit in each subsequent message. */
-	static final int MAX_NEXT_SIZE = DATA_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
+	private static final int MAX_NEXT_SIZE =
+			DATA_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
 
 	/**
 	 * Compute the number of packets required to send a given count of sequence
@@ -48,6 +49,12 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 		return numPackets;
 	}
 
+	private static ByteBuffer allocateWords(int dataWords, int overhead) {
+		return allocate(
+				min(DATA_PER_FULL_PACKET, dataWords + overhead) * WORD_SIZE)
+						.order(LITTLE_ENDIAN);
+	}
+
 	/**
 	 * Create the first message describing a bunch of missing sequence numbers.
 	 *
@@ -63,9 +70,8 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	static MissingSequenceNumbersMessage createFirst(
 			HasCoreLocation destination, IntBuffer missingSeqs,
 			int numPackets) {
-		ByteBuffer data = allocate(min(DATA_PER_FULL_PACKET,
-				missingSeqs.remaining() + FIRST_OVERHEAD_WORDS) * WORD_SIZE)
-						.order(LITTLE_ENDIAN);
+		ByteBuffer data =
+				allocateWords(missingSeqs.remaining(), FIRST_OVERHEAD_WORDS);
 		data.putInt(START_MISSING_SEQS.value);
 		data.putInt(numPackets);
 		return create(destination, missingSeqs, data);
@@ -84,9 +90,8 @@ final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	 */
 	static MissingSequenceNumbersMessage createNext(HasCoreLocation destination,
 			IntBuffer missingSeqs) {
-		ByteBuffer data = allocate(min(DATA_PER_FULL_PACKET,
-				missingSeqs.remaining() + NEXT_OVERHEAD_WORDS) * WORD_SIZE)
-						.order(LITTLE_ENDIAN);
+		ByteBuffer data =
+				allocateWords(missingSeqs.remaining(), NEXT_OVERHEAD_WORDS);
 		data.putInt(NEXT_MISSING_SEQS.value);
 		return create(destination, missingSeqs, data);
 	}
