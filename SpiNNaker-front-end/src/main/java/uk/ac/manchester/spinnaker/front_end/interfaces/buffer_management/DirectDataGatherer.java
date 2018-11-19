@@ -64,14 +64,6 @@ public class DirectDataGatherer extends DataGatherer {
 		return buffer.asIntBuffer();
 	}
 
-	/**
-	 *
-	 * @param placement
-	 * @param regionID
-	 * @return
-	 * @throws IOException
-	 * @throws ProcessException
-	 */
 	@Override
 	protected Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {

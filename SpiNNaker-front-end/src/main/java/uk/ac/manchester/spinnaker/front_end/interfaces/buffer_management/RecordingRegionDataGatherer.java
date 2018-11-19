@@ -1,0 +1,174 @@
+package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+
+/**
+ * A data gatherer that pulls the data from a recording region.
+ *
+ * @author Donal Fellows
+ */
+public class RecordingRegionDataGatherer extends DataGatherer {
+	private final Transceiver txrx;
+	private final Storage database;
+
+	public RecordingRegionDataGatherer(Transceiver transceiver,
+			Storage database) {
+		super(transceiver);
+		this.txrx = transceiver;
+		this.database = database;
+	}
+
+	/**
+	 * Describes locations in a recording region. Must match
+	 * {@code recording_data_e} in {@code recording.c} in SpiNNFrontEndCommon.
+	 *
+	 * @author Donal Fellows
+	 */
+	enum RecordingDataOffset {
+		//
+		N_REGIONS,
+		//
+		TAG,
+		//
+		TAG_DESTINATION,
+		//
+		SDP_PORT,
+		//
+		BUFFER_SIZE_BEFORE_REQUEST,
+		//
+		TIME_BETWEEN_TRIGGERS,
+		//
+		LAST_SEQUENCE_NUMBER,
+		//
+		REGION_POINTERS_START
+	};
+
+	static class RecordingRegionsDescriptor {
+		int numRegions;
+		int tag;
+		int tagDestination;
+		int sdpPort;
+		int bufferSizeBeforeRequest;
+		int timeBetweenTriggers;
+		int lastSequenceNumber;
+		int[] regionPointers;
+		int[] regionSizes;
+
+		private RecordingRegionsDescriptor(int numRegions, ByteBuffer buffer) {
+			this.numRegions = numRegions;
+			tag = buffer.getInt();
+			tagDestination = buffer.getInt();
+			sdpPort = buffer.getInt();
+			bufferSizeBeforeRequest = buffer.getInt();
+			lastSequenceNumber = buffer.getInt();
+			regionPointers = new int[numRegions];
+			buffer.asIntBuffer().get(regionPointers);
+			regionSizes = new int[numRegions];
+			buffer.asIntBuffer().get(regionSizes);
+		}
+
+		static RecordingRegionsDescriptor get(Transceiver txrx,
+				HasChipLocation chip, int address)
+				throws IOException, ProcessException {
+			int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
+			int size = WORD_SIZE
+					* (RecordingDataOffset.REGION_POINTERS_START.ordinal() - 1
+							+ 2 * nr);
+			return new RecordingRegionsDescriptor(nr,
+					txrx.readMemory(chip, address + WORD_SIZE, size));
+		}
+	}
+
+	/**
+	 * Describes a recording region. Must match {@code recording_channel_t} in
+	 * {@code recording.c} in SpiNNFrontEndCommon.
+	 *
+	 * @author Donal Fellows
+	 */
+	static class ChannelBufferState {
+		/** Size of this structure in bytes. */
+		static final int SIZE = 24;
+		/** The start buffering area memory address. (32 bits) */
+		int start;
+		/** The address where data was last written. (32 bits) */
+		int currentWrite;
+		/** The address where the DMA write got up to. (32 bits) */
+		int dmaCurrentWrite;
+		/** The address where data was last read. (32 bits) */
+		int currentRead;
+		/** The address of first byte after the buffer. (32 bits) */
+		int end;
+		/** The ID of the region. (8 bits) */
+		byte regionId;
+		/** True if the region overflowed during the simulation. (8 bits) */
+		boolean missingInfo;
+		/** Last operation performed on the buffer. Read or write (8 bits) */
+		byte lastBufferOperation;
+
+		ChannelBufferState(ByteBuffer buffer) {
+			start = buffer.getInt();
+			currentWrite = buffer.getInt();
+			dmaCurrentWrite = buffer.getInt();
+			currentRead = buffer.getInt();
+			end = buffer.getInt();
+			regionId = buffer.get();
+			missingInfo = (buffer.get() != 0);
+			lastBufferOperation = buffer.get();
+			buffer.get(); // padding
+		}
+	}
+
+	private Map<ChipLocation, RecordingRegionsDescriptor> descriptors =
+			new HashMap<>();
+
+	private synchronized RecordingRegionsDescriptor getDescriptor(
+			ChipLocation chip, int baseAddress)
+			throws IOException, ProcessException {
+		RecordingRegionsDescriptor rrd = descriptors.get(chip);
+		if (rrd == null) {
+			rrd = RecordingRegionsDescriptor.get(txrx, chip, baseAddress);
+			descriptors.put(chip, rrd);
+		}
+		return rrd;
+	}
+
+	private ChannelBufferState getState(ChipLocation chip,
+			RecordingRegionsDescriptor descriptor, int regionID)
+			throws IOException, ProcessException {
+		return new ChannelBufferState(txrx.readMemory(chip,
+				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
+	}
+
+	@Override
+	protected Region getRegion(Placement placement, int regionID)
+			throws IOException, ProcessException {
+		ChipLocation chip = placement.asChipLocation();
+		RecordingRegionsDescriptor desc = getDescriptor(chip,
+				placement.getVertex().recordingRegionBaseAddress);
+		ChannelBufferState state = getState(chip, desc, regionID);
+		Region r = new Region();
+		r.core = placement.asCoreLocation();
+		r.regionID = regionID;
+		r.startAddress = state.start;
+		r.size = state.end - state.start;
+		return r;
+	}
+
+	@Override
+	protected void storeData(Region r, ByteBuffer data)
+			throws StorageException {
+		database.appendRegionContents(r.core, r.regionID, data);
+	}
+}
