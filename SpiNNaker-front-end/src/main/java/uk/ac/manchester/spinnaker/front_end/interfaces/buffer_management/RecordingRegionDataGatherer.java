@@ -98,7 +98,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		/** True if the region overflowed during the simulation. (8 bits) */
 		boolean missingInfo;
 		/** Last operation performed on the buffer. Read or write (8 bits) */
-		byte lastBufferOperation;
+		boolean lastBufferOperationWasWrite;
 
 		ChannelBufferState(ByteBuffer buffer) {
 			start = buffer.getInt();
@@ -108,7 +108,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			end = buffer.getInt();
 			regionId = buffer.get();
 			missingInfo = (buffer.get() != 0);
-			lastBufferOperation = buffer.get();
+			lastBufferOperationWasWrite = (buffer.get() != 0);
 			buffer.get(); // padding
 		}
 	}
@@ -142,7 +142,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		ChannelBufferState state = getState(placement, regionID);
 		Region r = new Region();
 		r.core = placement.asCoreLocation();
-		r.regionID = regionID;
+		r.regionID = state.regionId;
 		r.startAddress = state.start;
 		r.size = state.end - state.start;
 		return r;
