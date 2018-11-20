@@ -32,29 +32,12 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 	/**
 	 * Describes locations in a recording region. Must match
-	 * {@code recording_data_e} in {@code recording.c} in SpiNNFrontEndCommon.
+	 * {@code recording_data_t} in {@code recording.c} in SpiNNFrontEndCommon.
+	 * If the correct branch is merged there. Otherwise, it is defined by
+	 * pseudo-structure done with offsets into an array of integers. Yay.
 	 *
 	 * @author Donal Fellows
 	 */
-	enum RecordingDataOffset {
-		//
-		N_REGIONS,
-		//
-		TAG,
-		//
-		TAG_DESTINATION,
-		//
-		SDP_PORT,
-		//
-		BUFFER_SIZE_BEFORE_REQUEST,
-		//
-		TIME_BETWEEN_TRIGGERS,
-		//
-		LAST_SEQUENCE_NUMBER,
-		//
-		REGION_POINTERS_START
-	};
-
 	static class RecordingRegionsDescriptor {
 		int numRegions;
 		int tag;
@@ -79,15 +62,15 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			buffer.asIntBuffer().get(regionSizes);
 		}
 
+		private static final int REGION_POINTERS_START = 7;
+
 		static RecordingRegionsDescriptor get(Transceiver txrx,
 				HasChipLocation chip, int address)
 				throws IOException, ProcessException {
-			int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
-			int size = WORD_SIZE
-					* (RecordingDataOffset.REGION_POINTERS_START.ordinal() - 1
-							+ 2 * nr);
-			return new RecordingRegionsDescriptor(nr,
-					txrx.readMemory(chip, address + WORD_SIZE, size));
+			int numRegions = txrx.readMemory(chip, address, WORD_SIZE).getInt();
+			int size = WORD_SIZE * (REGION_POINTERS_START + 2 * numRegions);
+			return new RecordingRegionsDescriptor(numRegions, txrx
+					.readMemory(chip, address + WORD_SIZE, size - WORD_SIZE));
 		}
 	}
 
@@ -144,9 +127,11 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		return rrd;
 	}
 
-	private ChannelBufferState getState(ChipLocation chip,
-			RecordingRegionsDescriptor descriptor, int regionID)
+	private ChannelBufferState getState(Placement placement, int regionID)
 			throws IOException, ProcessException {
+		ChipLocation chip = placement.asChipLocation();
+		RecordingRegionsDescriptor descriptor = getDescriptor(chip,
+				placement.getVertex().recordingRegionBaseAddress);
 		return new ChannelBufferState(txrx.readMemory(chip,
 				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
 	}
@@ -154,10 +139,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	@Override
 	protected Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
-		ChipLocation chip = placement.asChipLocation();
-		RecordingRegionsDescriptor desc = getDescriptor(chip,
-				placement.getVertex().recordingRegionBaseAddress);
-		ChannelBufferState state = getState(chip, desc, regionID);
+		ChannelBufferState state = getState(placement, regionID);
 		Region r = new Region();
 		r.core = placement.asCoreLocation();
 		r.regionID = regionID;
