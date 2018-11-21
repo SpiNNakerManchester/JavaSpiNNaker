@@ -45,6 +45,7 @@ public abstract class DataGatherer {
 	private final Transceiver txrx;
 	private final ExecutorService pool;
 	private int missCount;
+    private Exception caught;
 
 	private static final int POOL_SIZE = 1; // TODO
 	private static final int QUEUE_CAPACITY = 1024;
@@ -85,6 +86,7 @@ public abstract class DataGatherer {
 		this.txrx = transceiver;
 		this.pool = newFixedThreadPool(POOL_SIZE);
 		this.missCount = 0;
+        this.caught = null;
 	}
 
 	/**
@@ -96,7 +98,10 @@ public abstract class DataGatherer {
 	 *            should be downloaded.
 	 */
 	public void addTask(Gather gather) {
-		pool.execute(() -> downloadBoard(gather));
+        //No need to keep adding if there is already an exception
+        if (this.caught == null) {
+            pool.execute(() -> downloadBoard(gather));
+        }
 	}
 
 	/**
@@ -108,9 +113,12 @@ public abstract class DataGatherer {
 	 * @throws InterruptedException
 	 *             If the wait is interrupted.
 	 */
-	public int waitForTasksToFinish() throws InterruptedException {
+	public int waitForTasksToFinish() throws InterruptedException, Exception {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
+        if (this.caught != null) {
+            throw this.caught;
+        }
 		return missCount;
 	}
 
@@ -206,9 +214,10 @@ public abstract class DataGatherer {
 				setBoardRouterTimeoutsOn(gathererLocation);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+            e.printStackTrace();
+			this.caught = e;
 		}
-	}
+ 	}
 
 	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
 			GatherDownloadConnection conn) throws IOException, ProcessException {
