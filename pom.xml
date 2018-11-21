@@ -246,9 +246,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<version>0.13</version>
 					<configuration>
 						<excludes>
+							<!-- Files without comment formats should be excluded -->
 							<exclude>.github/*</exclude>
 							<exclude>.travis/*</exclude>
 							<exclude>.travis.yml</exclude>
+							<exclude>**/*.json</exclude>
 							<exclude>README.md</exclude>
 						</excludes>
 					</configuration>

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.HashMap;
@@ -28,7 +44,7 @@ public class TestRegionLocation {
         assertEquals(r1.toString(), r2.toString());
         assertEquals(r1.hashCode(), r2.hashCode());
     }
-    
+
     private void greater(RegionLocation big, RegionLocation small) {
         assertThat(big, greaterThan(small));
         assertThat(small, lessThan(big));
@@ -36,7 +52,7 @@ public class TestRegionLocation {
         assertNotEquals(big.hashCode(), small.hashCode());
         assertNotEquals(big.toString(), small.toString());
     }
-            
+
     @Test
     public void testCompare() {
         CoreLocation core001 = new CoreLocation(0, 0, 1);
