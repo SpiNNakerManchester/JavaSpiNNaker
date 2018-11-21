@@ -139,4 +139,12 @@ public interface Storage {
 	 */
 	List<Integer> getRegionsWithStorage(HasCoreLocation core)
 			throws StorageException;
+
+
+	public static class Region {
+		CoreLocation core;
+		int regionID;
+		int startAddress;
+		int size;
+	}
 }

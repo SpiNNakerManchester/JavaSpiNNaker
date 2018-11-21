@@ -1,3 +1,7 @@
+CREATE TABLE IF NOT EXISTS global_setup(
+	current_run INTEGER NOT NULL);
+INSERT INTO global_setup(current_run) VALUES (1);
+
 -- A table describing the vertices.
 CREATE TABLE IF NOT EXISTS locations(
     global_location_id INTEGER PRIMARY KEY AUTOINCREMENT,
