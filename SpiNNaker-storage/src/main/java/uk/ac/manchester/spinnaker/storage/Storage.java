@@ -13,80 +13,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public interface Storage {
 	/**
-	 * Stores some bytes in the database. The bytes represent the contents of a
-	 * region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @param contents
-	 *            The contents to store.
-	 * @return The row ID. (Not currently used elsewhere.)
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	int storeRegionContents(HasCoreLocation core, int region, byte[] contents)
-			throws StorageException;
-
-	/**
-	 * Stores some bytes in the database. The bytes represent the contents of a
-	 * region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @param contents
-	 *            The contents to store.
-	 * @return The row ID. (Not currently used elsewhere.)
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	default int storeRegionContents(HasCoreLocation core, int region,
-			ByteBuffer contents) throws StorageException {
-		byte[] ary = new byte[contents.remaining()];
-		contents.slice().get(ary);
-		return storeRegionContents(core, region, ary);
-	}
-
-	/**
-	 * Appends some bytes to some already in the database. The bytes represent
-	 * the contents of a region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @param contents
-	 *            The contents to store.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	void appendRegionContents(HasCoreLocation core, int region, byte[] contents)
-			throws StorageException;
-
-	/**
-	 * Appends some bytes to some already in the database. The bytes represent
-	 * the contents of a region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @param contents
-	 *            The contents to store.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	default void appendRegionContents(HasCoreLocation core, int region,
-			ByteBuffer contents) throws StorageException {
-		byte[] ary = new byte[contents.remaining()];
-		contents.slice().get(ary);
-		appendRegionContents(core, region, ary);
-	}
-
-	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
 	 * of a region of a particular SpiNNaker core.
 	 *
@@ -140,11 +66,98 @@ public interface Storage {
 	List<Integer> getRegionsWithStorage(HasCoreLocation core)
 			throws StorageException;
 
-
+	/**
+	 * A DSE region descriptor.
+	 *
+	 * @author Donal Fellows
+	 */
 	public static class Region {
-		CoreLocation core;
-		int regionID;
-		int startAddress;
-		int size;
+		public final CoreLocation core;
+		public final int regionIndex;
+		public final int startAddress;
+		public final int size;
+
+		public Region(CoreLocation core, int regionIndex, int startAddress,
+				int size) {
+			this.core = core;
+			this.regionIndex = regionIndex;
+			this.startAddress = startAddress;
+			this.size = size;
+		}
+
+		public Region(HasCoreLocation core, int regionIndex, int startAddress,
+				int size) {
+			this(core.asCoreLocation(), regionIndex, startAddress, size);
+		}
+	}
+
+	/**
+	 * Stores some bytes in the database. The bytes represent the contents of a
+	 * DSE region of a particular SpiNNaker core.
+	 *
+	 * @param region
+	 *            The DSE region that this is the contents of.
+	 * @param contents
+	 *            The contents to store.
+	 * @return The storage ID. (Not currently used elsewhere.)
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	int storeRegionContents(Region region, byte[] contents)
+			throws StorageException;
+
+	/**
+	 * Stores some bytes in the database. The bytes represent the contents of a
+	 * region of a particular SpiNNaker core.
+	 *
+	 * @param region
+	 *            The DSE region that this is the contents of.
+	 * @param contents
+	 *            The contents to store.
+	 * @return The storage ID. (Not currently used elsewhere.)
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	default int storeRegionContents(Region region, ByteBuffer contents)
+			throws StorageException {
+		byte[] ary = new byte[contents.remaining()];
+		contents.slice().get(ary);
+		return storeRegionContents(region, ary);
+	}
+
+	/**
+	 * Adds some bytes to the database. The bytes represent part of the contents
+	 * of a recording region of a particular SpiNNaker core.
+	 *
+	 * @param region
+	 *            The DSE region owning the recording.
+	 * @param recordingIndex
+	 *            The index of this recording.
+	 * @param contents
+	 *            The bytes to append.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	void appendRecordingContents(Region region, int recordingIndex,
+			byte[] contents) throws StorageException;
+
+	/**
+	 * Adds some bytes to the database. The bytes represent part of the contents
+	 * of a recording region of a particular SpiNNaker core.
+	 *
+	 * @param region
+	 *            The DSE region that this is the contents of.
+	 * @param recordingIndex
+	 *            The index of this recording.
+	 * @param contents
+	 *            The contents to store.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	default void appendRecordingContents(Region region, int recordingIndex,
+			ByteBuffer contents) throws StorageException {
+		byte[] ary = new byte[contents.remaining()];
+		contents.slice().get(ary);
+		appendRecordingContents(region, recordingIndex, ary);
 	}
 }

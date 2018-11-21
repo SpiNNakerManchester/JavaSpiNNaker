@@ -3,7 +3,6 @@ package uk.ac.manchester.spinnaker.storage;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 import java.io.ByteArrayInputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -185,6 +184,7 @@ public class SQLiteStorage implements Storage {
 		return 1; // Default
 	}
 
+	@Override
 	public int storeRegionContents(Region region, byte[] contents)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
@@ -207,7 +207,7 @@ public class SQLiteStorage implements Storage {
 		int run = getRun(conn);
 		int locID = getLocationID(conn, region.core);
 		int storID = storeContent(conn, contents);
-		return makeDSErecord(conn, locID, region.regionID,
+		return makeDSErecord(conn, locID, region.regionIndex,
 				region.startAddress, region.size, storID, run);
 	}
 
@@ -290,6 +290,7 @@ public class SQLiteStorage implements Storage {
 		}
 	}
 
+	@Override
 	public void appendRecordingContents(Region region, int recordingID,
 			byte[] contents) throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
@@ -325,7 +326,7 @@ public class SQLiteStorage implements Storage {
 			int recordingID, byte[] contents) throws SQLException {
 		int run = getRun(conn);
 		int locID = getLocationID(conn, region.core);
-		int dseID = makeDSErecord(conn, locID, region.regionID,
+		int dseID = makeDSErecord(conn, locID, region.regionIndex,
 				region.startAddress, region.size, null, run);
 		int recID = createRecordingRegion(conn, dseID, recordingID);
 		Integer existingStorage = getRecordingStorage(conn, recID);
@@ -335,22 +336,6 @@ public class SQLiteStorage implements Storage {
 		} else {
 			appendContent(conn, existingStorage, contents);
 			incrementFetches(conn, recID);
-		}
-	}
-
-	@Override
-	public void appendRegionContents(HasCoreLocation core, int region,
-			byte[] contents) throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(APPEND)) {
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
-			s.setInt(FOURTH, region);
-			s.setBytes(FIFTH, contents);
-			s.executeUpdate();
-		} catch (SQLException e) {
-			throw new StorageException("while appending to a region", e);
 		}
 	}
 

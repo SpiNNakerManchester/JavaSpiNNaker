@@ -41,8 +41,9 @@ class TestSQLiteStorage {
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 
-		storage.storeRegionContents(core, 0, bytes("abc"));
-		storage.appendRegionContents(core, 0, bytes("def"));
+		Storage.Region r = new Storage.Region(core, 0, 0, 100);
+		storage.storeRegionContents(r, bytes("abc"));
+		storage.appendRecordingContents(r, 0, bytes("def"));
 
 		assertArrayEquals("abcdef".getBytes(UTF_8),
 				storage.getRegionContents(core, 0));
@@ -61,14 +62,15 @@ class TestSQLiteStorage {
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// store overwrites
-		storage.storeRegionContents(core, 0, bytes("abc"));
-		storage.storeRegionContents(core, 0, bytes("def"));
+		Storage.Region r = new Storage.Region(core, 0, 0, 100);
+		storage.storeRegionContents(r, bytes("abc"));
+		storage.storeRegionContents(r, bytes("def"));
 		assertEquals("def",
 				new String(storage.getRegionContents(core, 0), UTF_8));
 
 		// append creates
-		storage.appendRegionContents(core, 1, bytes("abc"));
-		storage.appendRegionContents(core, 1, bytes("def"));
+		storage.appendRecordingContents(r, 1, bytes("abc"));
+		storage.appendRecordingContents(r, 1, bytes("def"));
 		assertEquals("abcdef",
 				new String(storage.getRegionContents(core, 1), UTF_8));
 	}
