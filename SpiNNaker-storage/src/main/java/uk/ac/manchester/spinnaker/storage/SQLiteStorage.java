@@ -216,19 +216,8 @@ public class SQLiteStorage implements Storage {
 	@Override
 	public int storeRegionContents(Region region, byte[] contents)
 			throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
-			try {
-				int recID = storeRegionContents(conn, region, contents);
-				conn.commit();
-				return recID;
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
-			}
-		} catch (SQLException e) {
-			throw new StorageException("while creating a region", e);
-		}
+		return callR(conn -> storeRegionContents(conn, region, contents),
+				"creating a region");
 	}
 
 	private int storeRegionContents(Connection conn, Region region,
@@ -306,18 +295,8 @@ public class SQLiteStorage implements Storage {
 	@Override
 	public void appendRecordingContents(Region region, int recordingID,
 			byte[] contents) throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
-			try {
-				appendRecordContents(conn, region, recordingID, contents);
-				conn.commit();
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
-			}
-		} catch (SQLException e) {
-			throw new StorageException("while creating a region", e);
-		}
+		callV(conn -> appendRecordContents(conn, region, recordingID, contents),
+				"creating a region");
 	}
 
 	/**
@@ -355,11 +334,16 @@ public class SQLiteStorage implements Storage {
 	@Override
 	public byte[] getRegionContents(Region region, Integer run)
 			throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(FETCH_DSE)) {
-			if (run == null) {
-				run = getRun(conn);
-			}
+		return callR(conn -> getRegionContents(conn, region, run),
+				"retrieving a region");
+	}
+
+	private static byte[] getRegionContents(Connection conn, Region region,
+			Integer run) throws SQLException {
+		if (run == null) {
+			run = getRun(conn);
+		}
+		try (PreparedStatement s = conn.prepareStatement(FETCH_DSE)) {
 			s.setInt(FIRST, region.core.getX());
 			s.setInt(SECOND, region.core.getY());
 			s.setInt(THIRD, region.core.getP());
@@ -370,21 +354,25 @@ public class SQLiteStorage implements Storage {
 					return rs.getBytes(FIRST);
 				}
 			}
-			throw new IllegalArgumentException("core " + region.core
-					+ " has no data for region " + region.regionIndex);
-		} catch (SQLException e) {
-			throw new StorageException("while retrieving a region", e);
 		}
+		throw new IllegalArgumentException("core " + region.core
+				+ " has no data for region " + region.regionIndex);
 	}
 
 	@Override
 	public byte[] getRecordingRegionContents(Region region, int recordingIndex,
 			Integer run) throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(FETCH_RECORDING)) {
-			if (run == null) {
-				run = getRun(conn);
-			}
+		return callR(conn -> getRecordingRegionContents(conn, region,
+				recordingIndex, run), "retrieving a recording region");
+	}
+
+	private static byte[] getRecordingRegionContents(Connection conn,
+			Region region, int recordingIndex, Integer run)
+			throws SQLException {
+		if (run == null) {
+			run = getRun(conn);
+		}
+		try (PreparedStatement s = conn.prepareStatement(FETCH_RECORDING)) {
 			s.setInt(FIRST, region.core.getX());
 			s.setInt(SECOND, region.core.getY());
 			s.setInt(THIRD, region.core.getP());
@@ -398,69 +386,131 @@ public class SQLiteStorage implements Storage {
 			}
 			throw new IllegalArgumentException("core " + region.core
 					+ " has no data for region " + region.regionIndex);
-		} catch (SQLException e) {
-			throw new StorageException("while retrieving a region", e);
 		}
 	}
 
 	@Override
-	public void deleteRegionContents(HasCoreLocation core, int region, Integer run)
-			throws StorageException {
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s =
-						conn.prepareStatement(DELETE_DSE_REGION)) {
-			if (run == null) {
-				run = getRun(conn);
-			}
+	public void deleteRegionContents(HasCoreLocation core, int region,
+			Integer run) throws StorageException {
+		callV(conn -> deleteRegionContents(conn, core, region, run),
+				"deleting a region");
+	}
+
+	private static void deleteRegionContents(Connection conn,
+			HasCoreLocation core, int region, Integer run) throws SQLException {
+		if (run == null) {
+			run = getRun(conn);
+		}
+		try (PreparedStatement s = conn.prepareStatement(DELETE_DSE_REGION)) {
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());
 			s.setInt(FOURTH, region);
 			s.setInt(FIFTH, run);
 			s.executeUpdate();
-		} catch (SQLException e) {
-			throw new StorageException("while deleting a region", e);
 		}
 	}
 
 	@Override
 	public List<CoreLocation> getCoresWithStorage() throws StorageException {
-		ArrayList<CoreLocation> result = new ArrayList<>();
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s =
-						conn.prepareStatement(CORES_WITH_DSE_STORAGE);
-				ResultSet rs = s.executeQuery()) {
-			while (rs.next()) {
-				int x = rs.getInt(FIRST);
-				int y = rs.getInt(SECOND);
-				int p = rs.getInt(THIRD);
-				result.add(new CoreLocation(x, y, p));
+		return callR(conn -> {
+			ArrayList<CoreLocation> result = new ArrayList<>();
+			try (PreparedStatement s =
+					conn.prepareStatement(CORES_WITH_DSE_STORAGE);
+					ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					int x = rs.getInt(FIRST);
+					int y = rs.getInt(SECOND);
+					int p = rs.getInt(THIRD);
+					result.add(new CoreLocation(x, y, p));
+				}
 			}
-		} catch (SQLException e) {
-			throw new StorageException("while listing cores", e);
-		}
-		return result;
+			return result;
+		}, "listing cores");
 	}
 
 	@Override
 	public List<Integer> getRegionsWithStorage(HasCoreLocation core)
 			throws StorageException {
-		ArrayList<Integer> result = new ArrayList<>();
-		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s =
-						conn.prepareStatement(DSE_REGIONS_WITH_STORAGE)) {
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					int r = rs.getInt(FIRST);
-					result.add(r);
+		return callR(conn -> {
+			try (PreparedStatement s =
+					conn.prepareStatement(DSE_REGIONS_WITH_STORAGE)) {
+				s.setInt(FIRST, core.getX());
+				s.setInt(SECOND, core.getY());
+				s.setInt(THIRD, core.getP());
+				ArrayList<Integer> result = new ArrayList<>();
+				try (ResultSet rs = s.executeQuery()) {
+					while (rs.next()) {
+						result.add(rs.getInt(FIRST));
+					}
 				}
+				return result;
+			}
+		}, "listing regions for a core");
+	}
+
+	@FunctionalInterface
+	private interface CallWithResult<T> {
+		T call(Connection conn) throws SQLException;
+	}
+
+	@FunctionalInterface
+	private interface CallWithoutResult {
+		void call(Connection conn) throws SQLException;
+	}
+
+	/**
+	 * Wrapper for applying a transaction correctly.
+	 *
+	 * @param call
+	 *            What is wrapped
+	 * @param actionDescription
+	 *            Extra message to use with wrapping exception
+	 * @return The value returned by the call
+	 * @throws StorageException
+	 *             If anything goes wrong
+	 */
+	private <T> T callR(CallWithResult<T> call, String actionDescription)
+			throws StorageException {
+		try (Connection conn = connProvider.getConnection()) {
+			conn.setAutoCommit(false);
+			try {
+				T result = call.call(conn);
+				conn.commit();
+				return result;
+			} catch (Exception e) {
+				conn.rollback();
+				throw e;
 			}
 		} catch (SQLException e) {
-			throw new StorageException("while listing regions for a core", e);
+			throw new StorageException("while " + actionDescription, e);
 		}
-		return result;
+	}
+
+	/**
+	 * Wrapper for applying a transaction correctly.
+	 *
+	 * @param call
+	 *            What is wrapped
+	 * @param actionDescription
+	 *            Extra message to use with wrapping exception
+	 * @throws StorageException
+	 *             If anything goes wrong
+	 */
+	private void callV(CallWithoutResult call, String actionDescription)
+			throws StorageException {
+		try (Connection conn = connProvider.getConnection()) {
+			conn.setAutoCommit(false);
+			try {
+				call.call(conn);
+				conn.commit();
+				return;
+			} catch (Exception e) {
+				conn.rollback();
+				throw e;
+			}
+		} catch (SQLException e) {
+			throw new StorageException("while " + actionDescription, e);
+		}
 	}
 }
