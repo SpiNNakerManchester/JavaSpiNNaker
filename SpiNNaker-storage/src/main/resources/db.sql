@@ -34,6 +34,10 @@ CREATE TABLE IF NOT EXISTS dse_regions(
 CREATE UNIQUE INDEX IF NOT EXISTS dseSanity ON dse_regions(
 	global_location_id, dse_index, run);
 
+CREATE VIEW IF NOT EXISTS dse_view AS
+	SELECT x, y, processor, vertex_id, dse_index, address, size, storage_id, run, dse_id
+	FROM dse_regions NATURAL JOIN locations;
+
 CREATE TABLE IF NOT EXISTS recording_regions(
 	recording_region_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	dse_id INTEGER NOT NULL,
@@ -45,3 +49,32 @@ CREATE TABLE IF NOT EXISTS recording_regions(
 -- Every recording region for a vertex has a unique ID
 CREATE UNIQUE INDEX IF NOT EXISTS recordingSanity ON recording_regions(
 	dse_id, local_region_id);
+
+CREATE VIEW IF NOT EXISTS recording_view AS
+	SELECT x, y, processor, vertex_id, dse_index, local_region_id,
+		recording_regions.storage_id AS storage_id, run, fetches
+	FROM recording_regions JOIN dse_regions USING (dse_id)
+		NATURAL JOIN locations;
+
+-- Deleting a DSE region deletes its associated recording regions and storage
+CREATE TRIGGER IF NOT EXISTS dseStorageDeletion AFTER DELETE ON dse_regions
+	BEGIN
+		DELETE FROM storage
+			WHERE OLD.storage_id IS NOT NULL AND storage_id = OLD.storage_id;
+		DELETE FROM recording_regions
+			WHERE dse_id = OLD.dse_id;
+	END;
+-- Setting the storage for a DSE region will delete its old storage
+CREATE TRIGGER IF NOT EXISTS dseStorageUpdate AFTER UPDATE ON dse_regions
+	WHEN OLD.storage_id IS NOT NULL
+	BEGIN
+		DELETE FROM storage
+			WHERE storage_id = OLD.storage_id;
+	END;
+-- Deleting a recording region deletes its associated storage
+CREATE TRIGGER IF NOT EXISTS recordingStorageDeletion AFTER DELETE ON recording_regions
+	WHEN OLD.storage_id IS NOT NULL
+	BEGIN
+		DELETE FROM storage
+			WHERE storage_id = OLD.storage_id;
+	END;

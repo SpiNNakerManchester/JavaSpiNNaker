@@ -2,7 +2,6 @@ package uk.ac.manchester.spinnaker.storage;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,24 +21,70 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public class SQLiteStorage implements Storage {
 	private final ConnectionProvider connProvider;
 
-	private static final String STORE =
-			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
-					+ "VALUES(?, ?, ?, ?, ?)";
-	private static final String APPEND =
-			"INSERT INTO storage(x, y, processor, region, content) "
-					+ "VALUES(?, ?, ?, ?, ?) "
-					+ "ON CONFLICT(x, y, processor, region) DO UPDATE "
-					+ "SET content = storage.content || excluded.content";
-	private static final String FETCH = "SELECT content FROM storage WHERE "
-			+ "x = ? AND y = ? AND processor = ? AND region = ?";
-	private static final String DELETE = "DELETE FROM storage WHERE "
-			+ "x = ? AND y = ? AND processor = ? AND region = ?";
-	private static final String CORES =
-			"SELECT DISTINCT x, y, processor FROM storage "
+	// Locations
+	private static final String INSERT_LOCATION =
+			"INSERT INTO locations(x, y, processor) VALUES(?, ?, ?)";
+	private static final String GET_LOCATION =
+			"SELECT global_location_id FROM locations "
+					+ "WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
+
+	// Basic storage
+	private static final String STORE_CONTENT =
+			"INSERT INTO storage(content, creation_time) VALUES(?, ?)";
+	private static final String APPEND_CONTENT =
+			"UPDATE storage SET content = content || ? "
+					+ "WHERE storage_id = ?";
+
+	// DSE regions
+	private static final String MAKE_DSE_RECORD =
+			"INSERT OR REPLACE INTO dse_regions "
+					+ "(global_location_id, dse_index, address, size, "
+					+ "storage_id, run) VALUES (?, ?, ?, ?, ?, ?)";
+	private static final String GET_DSE_RECORD_ID =
+			"SELECT dse_id FROM dse_regions WHERE "
+					+ "global_location_id = ? AND dse_index = ? AND run = ? "
+					+ "LIMIT 1";
+	private static final String UPDATE_DSE_STORAGE =
+			"UPDATE dse_regions SET storage_id = ? WHERE dse_id = ?";
+	private static final String FETCH_DSE =
+			"SELECT content FROM storage NATURAL JOIN dse_view WHERE "
+					+ "x = ? AND y = ? AND processor = ? AND dse_index = ? "
+					+ "AND run = ? LIMIT 1";
+	private static final String DELETE_DSE_REGION =
+			"DELETE FROM dse_regions WHERE dse_id IN ("
+					+ "SELECT dse_id FROM dse_view WHERE "
+					+ "x = ? AND y = ? AND processor = ? AND dse_index = ? "
+					+ "AND run = ?)";
+	private static final String CORES_WITH_DSE_STORAGE =
+			"SELECT DISTINCT x, y, processor FROM dse_view "
+					+ "WHERE storage_id IS NOT NULL "
 					+ "ORDER BY x, y, processor";
-	private static final String REGIONS =
-			"SELECT DISTINCT region FROM storage WHERE "
-					+ "x = ? AND y = ? AND processor = ? ORDER BY region";
+	private static final String DSE_REGIONS_WITH_STORAGE =
+			"SELECT DISTINCT dse_index FROM storage NATURAL JOIN dse_view "
+					+ "WHERE x = ? AND y = ? AND processor = ? "
+					+ "AND storage_id IS NOT NULL ORDER BY dse_index";
+
+	// Recording regions
+	private static final String CREATE_RECORDING =
+			"INSERT INTO recording_regions(dse_id, local_region_id)"
+					+ " VALUES (?, ?)";
+	private static final String GET_RECORDING =
+			"SELECT recording_region_id FROM recording_regions "
+					+ "WHERE dse_id = ? AND local_region_id = ?";
+	private static final String GET_REC_STORAGE =
+			"SELECT storage_id FROM recording_regions "
+					+ "WHERE recording_region_id = ? LIMIT 1";
+	private static final String REC_CHUNK_ONE =
+			"UPDATE recording_regions SET storage_id = ?, fetches = 1 "
+					+ "WHERE recording_region_id = ?";
+	private static final String INCR_FETCHES =
+			"UPDATE recording_regions SET fetches = fetches + 1 "
+					+ "WHERE recording_region_id = ?";
+	private static final String FETCH_RECORDING =
+			"SELECT content, storage_id "
+					+ "FROM storage NATURAL JOIN recording_view WHERE "
+					+ "x = ? AND y = ? AND processor = ? AND dse_index = ? "
+					+ "AND local_region_id = ? AND run = ? LIMIT 1";
 
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
@@ -59,15 +104,18 @@ public class SQLiteStorage implements Storage {
 		this.connProvider = connectionProvider;
 	}
 
-	private static final String INSERT_LOCATION =
-			"INSERT OR IGNORE INTO locations"
-					+ "(x, y, processor) VALUES(?, ?, ?)";
-	private static final String GET_LOCATION =
-			"SELECT global_location_id FROM locations "
-					+ "WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
-
 	static int getLocationID(Connection conn, HasCoreLocation core)
 			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(GET_LOCATION)) {
+			s.setInt(FIRST, core.getX());
+			s.setInt(SECOND, core.getY());
+			s.setInt(THIRD, core.getP());
+			try (ResultSet keys = s.executeQuery()) {
+				while (keys.next()) {
+					return keys.getInt(FIRST);
+				}
+			}
+		}
 		try (PreparedStatement s =
 				conn.prepareStatement(INSERT_LOCATION, RETURN_GENERATED_KEYS)) {
 			s.setInt(FIRST, core.getX());
@@ -80,28 +128,14 @@ public class SQLiteStorage implements Storage {
 				}
 			}
 		}
-		try (PreparedStatement s = conn.prepareStatement(GET_LOCATION)) {
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
-			try (ResultSet keys = s.executeQuery()) {
-				while (keys.next()) {
-					return keys.getInt(FIRST);
-				}
-			}
-		}
 		throw new IllegalStateException(
 				"could neither create nor find location ID");
 	}
-
-	private static final String STORE_CONTENT =
-			"INSERT INTO storage(content, creation_time) VALUES(?, ?)";
 
 	private static int storeContent(Connection conn, byte[] content)
 			throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(STORE_CONTENT, RETURN_GENERATED_KEYS)) {
-			s.setBlob(FIRST, new ByteArrayInputStream(content));
 			s.setBytes(FIRST, content);
 			s.setLong(SECOND, System.currentTimeMillis());
 			s.executeUpdate();
@@ -114,32 +148,28 @@ public class SQLiteStorage implements Storage {
 		throw new IllegalStateException("could not store blob");
 	}
 
-	private static final String APPEND_CONTENT =
-			"UPDATE storage SET content = content || ? "
-					+ "WHERE storage_id = ?";
-
-	private static void appendContent(Connection conn, int storageId, byte[] content)
-			throws SQLException {
-		try (PreparedStatement s = conn
-				.prepareStatement(APPEND_CONTENT)) {
-			s.setInt(FIRST, storageId);
-			s.setBlob(SECOND, new ByteArrayInputStream(content));
+	private static void appendContent(Connection conn, int storageId,
+			byte[] content) throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(APPEND_CONTENT)) {
+			s.setBytes(FIRST, content);
+			s.setInt(SECOND, storageId);
 			s.executeUpdate();
 		}
 	}
 
-	private static final String MAKE_DSE_RECORD =
-			"INSERT OR REPLACE INTO dse_regions "
-					+ "(global_location_id, dse_index, address, size, "
-					+ "storage_id, run) VALUES (?, ?, ?, ?, ?, ?)";
-	private static final String GET_DSE_RECORD_ID =
-			"SELECT dse_id FROM dse_regions WHERE "
-					+ "global_location_id = ? AND dse_index = ? AND run = ? "
-					+ "LIMIT 1";
-
 	private static int makeDSErecord(Connection conn, int locID, int regionID,
 			int address, int size, Integer storageID, int run)
 			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(GET_DSE_RECORD_ID)) {
+			s.setInt(FIRST, locID);
+			s.setInt(SECOND, regionID);
+			s.setInt(THIRD, run);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt(FIRST);
+				}
+			}
+		}
 		try (PreparedStatement s =
 				conn.prepareStatement(MAKE_DSE_RECORD, RETURN_GENERATED_KEYS)) {
 			s.setInt(FIRST, locID);
@@ -159,17 +189,16 @@ public class SQLiteStorage implements Storage {
 				}
 			}
 		}
-		try (PreparedStatement s = conn.prepareStatement(GET_DSE_RECORD_ID)) {
-			s.setInt(FIRST, locID);
-			s.setInt(SECOND, regionID);
-			s.setInt(THIRD, run);
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt(FIRST);
-				}
-			}
-		}
 		throw new IllegalStateException("could not make DSE region record");
+	}
+
+	private static void updateStorage(Connection conn, int dseID, int storID)
+			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(UPDATE_DSE_STORAGE)) {
+			s.setInt(FIRST, storID);
+			s.setInt(SECOND, dseID);
+			s.executeUpdate();
+		}
 	}
 
 	private static int getRun(Connection conn) throws SQLException {
@@ -207,19 +236,23 @@ public class SQLiteStorage implements Storage {
 		int run = getRun(conn);
 		int locID = getLocationID(conn, region.core);
 		int storID = storeContent(conn, contents);
-		return makeDSErecord(conn, locID, region.regionIndex,
-				region.startAddress, region.size, storID, run);
+		int dseID = makeDSErecord(conn, locID, region.regionIndex,
+				region.startAddress, region.size, null, run);
+		updateStorage(conn, dseID, storID);
+		return dseID;
 	}
-
-	private static final String CREATE_RECORDING =
-			"INSERT OR IGNORE INTO recording_regions (dse_id, local_region_id)"
-					+ " VALUES (?, ?)";
-	private static final String GET_RECORDING =
-			"SELECT recording_region_id FROM recording_regions "
-					+ "WHERE dse_id = ? AND local_region_id = ?";
 
 	private static int createRecordingRegion(Connection conn, int dseRegionID,
 			int recordingRegionID) throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(GET_RECORDING)) {
+			s.setInt(FIRST, dseRegionID);
+			s.setInt(SECOND, recordingRegionID);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt(FIRST);
+				}
+			}
+		}
 		try (PreparedStatement s = conn.prepareStatement(CREATE_RECORDING,
 				RETURN_GENERATED_KEYS)) {
 			s.setInt(FIRST, dseRegionID);
@@ -231,21 +264,9 @@ public class SQLiteStorage implements Storage {
 				}
 			}
 		}
-		try (PreparedStatement s = conn.prepareStatement(GET_RECORDING)) {
-			s.setInt(FIRST, dseRegionID);
-			s.setInt(SECOND, recordingRegionID);
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt(FIRST);
-				}
-			}
-		}
 		throw new IllegalStateException(
 				"could not make or find recording region record");
 	}
-
-	private static final String GET_REC_STORAGE =
-			"SELECT storage_id FROM recording_regions WHERE recording_region_id = ? LIMIT 1";
 
 	private static Integer getRecordingStorage(Connection conn, int recID)
 			throws SQLException {
@@ -265,10 +286,6 @@ public class SQLiteStorage implements Storage {
 				"could not find recording region record");
 	}
 
-	private static final String REC_CHUNK_ONE =
-			"UPDATE recording_regions SET storage_id = ?, fetches = 1 "
-					+ "WHERE recording_region_id = ?";
-
 	private static void recordFirstChunk(Connection conn, int recID, int storID)
 			throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(REC_CHUNK_ONE)) {
@@ -277,10 +294,6 @@ public class SQLiteStorage implements Storage {
 			s.executeUpdate();
 		}
 	}
-
-	private static final String INCR_FETCHES =
-			"UPDATE recording_regions SET fetches = fetches + 1 "
-					+ "WHERE recording_region_id = ?";
 
 	private static void incrementFetches(Connection conn, int recID)
 			throws SQLException {
@@ -340,35 +353,70 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public byte[] getRegionContents(HasCoreLocation core, int region)
+	public byte[] getRegionContents(Region region, Integer run)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(FETCH)) {
-			s.setInt(FIRST, core.getX());
-			s.setInt(SECOND, core.getY());
-			s.setInt(THIRD, core.getP());
-			s.setInt(FOURTH, region);
+				PreparedStatement s = conn.prepareStatement(FETCH_DSE)) {
+			if (run == null) {
+				run = getRun(conn);
+			}
+			s.setInt(FIRST, region.core.getX());
+			s.setInt(SECOND, region.core.getY());
+			s.setInt(THIRD, region.core.getP());
+			s.setInt(FOURTH, region.regionIndex);
+			s.setInt(FIFTH, run);
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getBytes(FIRST);
 				}
-				throw new IllegalArgumentException(
-						"core " + core + " has no data for region " + region);
 			}
+			throw new IllegalArgumentException("core " + region.core
+					+ " has no data for region " + region.regionIndex);
 		} catch (SQLException e) {
 			throw new StorageException("while retrieving a region", e);
 		}
 	}
 
 	@Override
-	public void deleteRegionContents(HasCoreLocation core, int region)
+	public byte[] getRecordingRegionContents(Region region, int recordingIndex,
+			Integer run) throws StorageException {
+		try (Connection conn = connProvider.getConnection();
+				PreparedStatement s = conn.prepareStatement(FETCH_RECORDING)) {
+			if (run == null) {
+				run = getRun(conn);
+			}
+			s.setInt(FIRST, region.core.getX());
+			s.setInt(SECOND, region.core.getY());
+			s.setInt(THIRD, region.core.getP());
+			s.setInt(FOURTH, region.regionIndex);
+			s.setInt(FIFTH, recordingIndex);
+			s.setInt(SIXTH, run);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getBytes(FIRST);
+				}
+			}
+			throw new IllegalArgumentException("core " + region.core
+					+ " has no data for region " + region.regionIndex);
+		} catch (SQLException e) {
+			throw new StorageException("while retrieving a region", e);
+		}
+	}
+
+	@Override
+	public void deleteRegionContents(HasCoreLocation core, int region, Integer run)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(DELETE)) {
+				PreparedStatement s =
+						conn.prepareStatement(DELETE_DSE_REGION)) {
+			if (run == null) {
+				run = getRun(conn);
+			}
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());
 			s.setInt(FOURTH, region);
+			s.setInt(FIFTH, run);
 			s.executeUpdate();
 		} catch (SQLException e) {
 			throw new StorageException("while deleting a region", e);
@@ -379,7 +427,8 @@ public class SQLiteStorage implements Storage {
 	public List<CoreLocation> getCoresWithStorage() throws StorageException {
 		ArrayList<CoreLocation> result = new ArrayList<>();
 		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(CORES);
+				PreparedStatement s =
+						conn.prepareStatement(CORES_WITH_DSE_STORAGE);
 				ResultSet rs = s.executeQuery()) {
 			while (rs.next()) {
 				int x = rs.getInt(FIRST);
@@ -398,7 +447,8 @@ public class SQLiteStorage implements Storage {
 			throws StorageException {
 		ArrayList<Integer> result = new ArrayList<>();
 		try (Connection conn = connProvider.getConnection();
-				PreparedStatement s = conn.prepareStatement(REGIONS)) {
+				PreparedStatement s =
+						conn.prepareStatement(DSE_REGIONS_WITH_STORAGE)) {
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());

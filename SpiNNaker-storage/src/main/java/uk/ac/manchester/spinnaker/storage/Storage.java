@@ -14,24 +14,97 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public interface Storage {
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a region of a particular SpiNNaker core.
+	 * of a DSE region of a particular SpiNNaker core.
 	 *
-	 * @param core
-	 *            The core that has the memory region.
 	 * @param region
-	 *            The region ID.
+	 *            The region descriptor.
+	 * @param run
+	 *            Which run to retrieve the data for, or {@code null} to use the
+	 *            default (the current run).
 	 * @return The region contents.
 	 * @throws IllegalArgumentException
 	 *             If there's no such saved region.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	byte[] getRegionContents(HasCoreLocation core, int region)
+	byte[] getRegionContents(Region region, Integer run)
+			throws StorageException;
+
+	/**
+	 * Retrieves some bytes from the database. The bytes represent the contents
+	 * of a DSE region of a particular SpiNNaker core for the current run.
+	 *
+	 * @param region
+	 *            The region descriptor.
+	 * @return The region contents.
+	 * @throws IllegalArgumentException
+	 *             If there's no such saved region.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	default byte[] getRegionContents(Region region) throws StorageException {
+		return getRegionContents(region, null);
+	}
+
+	/**
+	 * Retrieves some bytes from the database. The bytes represent the contents
+	 * of a recording region of a particular SpiNNaker core.
+	 *
+	 * @param region
+	 *            The (DSE) region descriptor.
+	 * @param recordingIndex
+	 *            The index into the recordings done by that core.
+	 * @param run
+	 *            Which run to retrieve the data for, or {@code null} to use the
+	 *            default (the current run).
+	 * @return The region contents.
+	 * @throws IllegalArgumentException
+	 *             If there's no such saved region.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	byte[] getRecordingRegionContents(Region region, int recordingIndex,
+			Integer run) throws StorageException;
+
+	/**
+	 * Retrieves some bytes from the database. The bytes represent the contents
+	 * of a recording region of a particular SpiNNaker core for the current run.
+	 *
+	 * @param region
+	 *            The (DSE) region descriptor.
+	 * @param recordingIndex
+	 *            The index into the recordings done by that core.
+	 * @return The region contents.
+	 * @throws IllegalArgumentException
+	 *             If there's no such saved region.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	default byte[] getRecordingRegionContents(Region region, int recordingIndex)
+			throws StorageException {
+		return getRecordingRegionContents(region, recordingIndex, null);
+	}
+
+	/**
+	 * Removes some bytes from the database. The bytes represent the contents of
+	 * a DSE region of a particular SpiNNaker core.
+	 *
+	 * @param core
+	 *            The core that has the memory region.
+	 * @param region
+	 *            The region ID.
+	 * @param run
+	 *            Which run to delete the data for, or {@code null} to use the
+	 *            default (the current run).
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	void deleteRegionContents(HasCoreLocation core, int region, Integer run)
 			throws StorageException;
 
 	/**
 	 * Removes some bytes from the database. The bytes represent the contents of
-	 * a region of a particular SpiNNaker core.
+	 * a DSE region of a particular SpiNNaker core in the current run.
 	 *
 	 * @param core
 	 *            The core that has the memory region.
@@ -40,8 +113,10 @@ public interface Storage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	void deleteRegionContents(HasCoreLocation core, int region)
-			throws StorageException;
+	default void deleteRegionContents(HasCoreLocation core, int region)
+			throws StorageException {
+		deleteRegionContents(core, region, null);
+	}
 
 	/**
 	 * Get a list of all cores that have data stored in the database.
