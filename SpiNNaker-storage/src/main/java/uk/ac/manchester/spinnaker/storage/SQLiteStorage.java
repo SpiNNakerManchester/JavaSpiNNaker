@@ -2,6 +2,7 @@ package uk.ac.manchester.spinnaker.storage;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -80,11 +81,10 @@ public class SQLiteStorage implements Storage {
 	private static final String INCR_FETCHES =
 			"UPDATE recording_regions SET fetches = fetches + 1 "
 					+ "WHERE recording_region_id = ?";
-	private static final String FETCH_RECORDING =
-			"SELECT content, storage_id "
-					+ "FROM storage NATURAL JOIN recording_view WHERE "
-					+ "x = ? AND y = ? AND processor = ? AND dse_index = ? "
-					+ "AND local_region_id = ? AND run = ? LIMIT 1";
+	private static final String FETCH_RECORDING = "SELECT content, storage_id "
+			+ "FROM storage NATURAL JOIN recording_view WHERE "
+			+ "x = ? AND y = ? AND processor = ? AND dse_index = ? "
+			+ "AND local_region_id = ? AND run = ? LIMIT 1";
 
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
@@ -136,7 +136,8 @@ public class SQLiteStorage implements Storage {
 			throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(STORE_CONTENT, RETURN_GENERATED_KEYS)) {
-			s.setBytes(FIRST, content);
+			s.setBinaryStream(FIRST, new ByteArrayInputStream(content),
+					content.length);
 			s.setLong(SECOND, System.currentTimeMillis());
 			s.executeUpdate();
 			try (ResultSet keys = s.getGeneratedKeys()) {
@@ -151,7 +152,8 @@ public class SQLiteStorage implements Storage {
 	private static void appendContent(Connection conn, int storageId,
 			byte[] content) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(APPEND_CONTENT)) {
-			s.setBytes(FIRST, content);
+			s.setBinaryStream(FIRST, new ByteArrayInputStream(content),
+					content.length);
 			s.setInt(SECOND, storageId);
 			s.executeUpdate();
 		}
