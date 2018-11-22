@@ -26,6 +26,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -112,13 +113,6 @@ public abstract class DataGatherer {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
 		return missCount;
-	}
-
-	protected static class Region {
-		CoreLocation core;
-		int regionID;
-		int startAddress;
-		int size;
 	}
 
 	private static class GatherDownloadConnection extends SCPConnection {

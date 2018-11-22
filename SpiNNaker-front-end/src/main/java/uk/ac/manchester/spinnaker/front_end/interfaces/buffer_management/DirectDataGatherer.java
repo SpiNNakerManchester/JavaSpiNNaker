@@ -10,6 +10,7 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -67,19 +68,16 @@ public class DirectDataGatherer extends DataGatherer {
 	@Override
 	protected Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
-		Region r = new Region();
-		r.core = placement.asCoreLocation();
-		r.regionID = regionID;
-		IntBuffer b = getCoreRegionTable(r.core, placement.vertex);
-		r.startAddress = b.get(regionID);
+		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
+				placement.vertex);
 		// TODO This is probably wrong!
-		r.size = b.get(regionID + 1) - r.startAddress;
-		return r;
+		int size = b.get(regionID + 1) - b.get(regionID);
+		return new Region(placement, regionID, b.get(regionID), size);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		database.storeRegionContents(r.core, r.regionID, data);
+		database.storeRegionContents(r, data);
 	}
 }

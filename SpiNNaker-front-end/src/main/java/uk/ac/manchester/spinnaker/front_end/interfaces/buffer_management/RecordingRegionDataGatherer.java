@@ -9,7 +9,9 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -136,21 +138,25 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
 	}
 
+	static class RecordingRegion extends Region {
+		public final int recordingIndex;
+		RecordingRegion(HasCoreLocation core, int regionIndex, int recordingIndex) {
+			super(core, regionIndex, 0, 0);
+			this.recordingIndex = recordingIndex;
+		}
+	}
+
 	@Override
 	protected Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
 		ChannelBufferState state = getState(placement, regionID);
-		Region r = new Region();
-		r.core = placement.asCoreLocation();
-		r.regionID = state.regionId;
-		r.startAddress = state.start;
-		r.size = state.end - state.start;
-		return r;
+		return new RecordingRegion(placement, -1, state.regionId);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		database.appendRegionContents(r.core, r.regionID, data);
+		RecordingRegion rr = (RecordingRegion) r;
+		database.appendRecordingContents(rr, rr.recordingIndex, data);
 	}
 }

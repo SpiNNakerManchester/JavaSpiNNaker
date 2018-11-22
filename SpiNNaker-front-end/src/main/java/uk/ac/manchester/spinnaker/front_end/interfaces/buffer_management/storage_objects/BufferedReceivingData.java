@@ -14,6 +14,7 @@ import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -247,7 +248,8 @@ public class BufferedReceivingData {
 	 */
 	public void storeDataInRegionBuffer(RegionLocation location,
 			ByteBuffer data) throws StorageException {
-		storage.appendRegionContents(location.asCoreLocation(), location.region,
+		storage.storeRegionContents(
+				new Region(location.asCoreLocation(), location.region, 0, 0),
 				data);
 	}
 
