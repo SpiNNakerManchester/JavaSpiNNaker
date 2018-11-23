@@ -104,7 +104,7 @@ public class SQLiteStorage implements Storage {
 		this.connProvider = connectionProvider;
 	}
 
-	static int getLocationID(Connection conn, HasCoreLocation core)
+	private static int getLocationID(Connection conn, HasCoreLocation core)
 			throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(GET_LOCATION)) {
 			s.setInt(FIRST, core.getX());

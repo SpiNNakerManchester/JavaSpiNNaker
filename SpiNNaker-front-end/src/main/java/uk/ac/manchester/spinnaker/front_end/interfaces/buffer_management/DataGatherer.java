@@ -74,13 +74,12 @@ public abstract class DataGatherer {
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
 
 	/**
-	 * Create an instance of the protocol implementation.
+	 * Create an instance of the protocol implementation. (Subclasses handle
+	 * where to put it afterwards.)
 	 *
 	 * @param transceiver
 	 *            How to talk to the SpiNNaker system via SCP. Where the system
 	 *            is located.
-	 * @param database
-	 *            Where to write downloaded data to.
 	 */
 	public DataGatherer(Transceiver transceiver) {
 		this.txrx = transceiver;

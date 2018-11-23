@@ -147,11 +147,53 @@ public interface Storage {
 	 * @author Donal Fellows
 	 */
 	public static class Region {
+		/**
+		 * What core owned the DSE region? Note that the region might be
+		 * retrieved from another core of the same chip.
+		 */
 		public final CoreLocation core;
+		/**
+		 * What was the index of the DSE region in the table of regions for the
+		 * core?
+		 */
 		public final int regionIndex;
+		/**
+		 * Where should the data be downloaded from? <em>This is not necessarily
+		 * the start of the region, or even inside the actual allocation for
+		 * that region.</em> (It varies when the DSE region is associated with
+		 * the recording mechanism, for example.)
+		 */
 		public final int startAddress;
+		/**
+		 * How much data should be downloaded? <em>This is not necessarily the
+		 * size of the region, or even constrained by the actual allocation for
+		 * that region.</em> (It varies when the DSE region is associated with
+		 * the recording mechanism, for example.)
+		 */
 		public final int size;
 
+		/**
+		 * Create a DSE region descriptor.
+		 *
+		 * @param core
+		 *            What core owned the DSE region? Note that the region might
+		 *            be retrieved from another core of the same chip.
+		 * @param regionIndex
+		 *            What was the index of the DSE region in the table of
+		 *            regions for the core?
+		 * @param startAddress
+		 *            Where should the data be downloaded from? <em>This is not
+		 *            necessarily the start of the region, or even inside the
+		 *            actual allocation for that region.</em> (It varies when
+		 *            the DSE region is associated with the recording mechanism,
+		 *            for example.)
+		 * @param size
+		 *            How much data should be downloaded? <em>This is not
+		 *            necessarily the size of the region, or even constrained by
+		 *            the actual allocation for that region.</em> (It varies
+		 *            when the DSE region is associated with the recording
+		 *            mechanism, for example.)
+		 */
 		public Region(CoreLocation core, int regionIndex, int startAddress,
 				int size) {
 			this.core = core;
@@ -160,6 +202,28 @@ public interface Storage {
 			this.size = size;
 		}
 
+		/**
+		 * Create a DSE region descriptor.
+		 *
+		 * @param core
+		 *            What core owned the DSE region? Note that the region might
+		 *            be retrieved from another core of the same chip.
+		 * @param regionIndex
+		 *            What was the index of the DSE region in the table of
+		 *            regions for the core?
+		 * @param startAddress
+		 *            Where should the data be downloaded from? <em>This is not
+		 *            necessarily the start of the region, or even inside the
+		 *            actual allocation for that region.</em> (It varies when
+		 *            the DSE region is associated with the recording mechanism,
+		 *            for example.)
+		 * @param size
+		 *            How much data should be downloaded? <em>This is not
+		 *            necessarily the size of the region, or even constrained by
+		 *            the actual allocation for that region.</em> (It varies
+		 *            when the DSE region is associated with the recording
+		 *            mechanism, for example.)
+		 */
 		public Region(HasCoreLocation core, int regionIndex, int startAddress,
 				int size) {
 			this(core.asCoreLocation(), regionIndex, startAddress, size);

@@ -436,15 +436,12 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	/**
-	 * Read memory into a database.
+	 * Read memory into a database from a DSE-allocated region.
 	 *
 	 * @param region
 	 *            What region of the chip is being read. This is used to
 	 *            organise the data within the database as well as to specify
 	 *            where to read.
-	 * @param recordingRegion
-	 *            What recording region (associated with the main region) is
-	 *            being pulled.
 	 * @param storage
 	 *            where to write the bytes
 	 * @throws IOException
@@ -479,13 +476,13 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	/**
-	 * Read memory into a database.
+	 * Read memory into a database from a recording region.
 	 *
 	 * @param region
 	 *            What region of the chip is being read. This is used to
 	 *            organise the data within the database as well as to specify
 	 *            where to read.
-	 * @param recordingRegion
+	 * @param recordingIndex
 	 *            What recording region (associated with the main region) is
 	 *            being pulled.
 	 * @param storage
