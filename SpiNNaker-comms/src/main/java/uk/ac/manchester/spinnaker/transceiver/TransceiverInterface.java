@@ -2231,21 +2231,16 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Read some areas of SDRAM from a core of a chip on the board.
+	 * Read an area associated with a <em>DSE region</em> from SDRAM from
+	 * a core of a chip on the board.
 	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
-	 *            from
 	 * @param region
-	 *            The region of the core that is being read. Used to organise
-	 *            the data in the database.
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
+	 *            The region of SDRAM that is being read. Describes which core
+	 *            produced the data, what <em>DSE index</em> the data came from
+	 *            (<em>not the recording index</em>), and where in memory to
+	 *            actually read.
 	 * @param storage
-	 *            The database to write to
-	 * @param length
-	 *            The length of the data to be read in bytes
+	 *            The database to write to.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2253,8 +2248,32 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readMemory(HasCoreLocation core, int region, int baseAddress,
-			int length, Storage storage)
+	void readRegion(Storage.Region region, Storage storage)
+			throws IOException, ProcessException, StorageException;
+
+	/**
+	 * Read an area associated with a <em>recording region</em> from SDRAM from
+	 * a core of a chip on the board.
+	 *
+	 * @param region
+	 *            The region of SDRAM that is being read. Describes which core
+	 *            produced the data, what <em>DSE index</em> the data came from
+	 *            (<em>not the recording index</em>), and where in memory to
+	 *            actually read.
+	 * @param recordingIndex
+	 *            Which recording region on the core is being read. Used to
+	 *            organise the data in the database.
+	 * @param storage
+	 *            The database to write to.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If anything goes wrong with access to the database.
+	 */
+	void readRecordingRegion(Storage.Region region, int recordingIndex,
+			Storage storage)
 			throws IOException, ProcessException, StorageException;
 
 	/**
