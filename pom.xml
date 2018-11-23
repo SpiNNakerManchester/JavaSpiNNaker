@@ -244,6 +244,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
 					<version>0.13</version>
+					<executions>
+						<execution>
+							<id>default-check</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
 					<configuration>
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
