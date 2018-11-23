@@ -15,28 +15,54 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
+/**
+ * A data gatherer that can fetch DSE regions.
+ *
+ * @author Donal Fellows
+ */
 public class DirectDataGatherer extends DataGatherer {
+	/** The number of memory regions in the DSE model. */
+	private static final int MAX_MEM_REGIONS = 16;
+	/** Application data magic number. */
+	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
+	/** Version of the file produced by the DSE. */
+	private static final int DSE_VERSION = 0x00010000;
+
 	private final Transceiver txrx;
 	private final Storage database;
+	private final Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache;
 
+	/**
+	 * Create a data gatherer.
+	 *
+	 * @param transceiver
+	 *            How to talk to the machine.
+	 * @param database
+	 *            Where to put the retrieved data.
+	 */
 	public DirectDataGatherer(Transceiver transceiver, Storage database) {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;
+		coreTableCache = new HashMap<>();
 	}
 
-	private Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache =
-			new HashMap<>();
-	/** The number of memory regions in the DSE model. */
-	private static final int MAX_MEM_REGIONS = 16;
-	/** Application data magic number. */
-	static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
-	/** Version of the file produced by the DSE. */
-	static final int DSE_VERSION = 0x00010000;
-
+	/**
+	 * Get the region location table for a chip.
+	 *
+	 * @param core
+	 *            Where to retrieve from.
+	 * @param vertex
+	 *            Information about what this means.
+	 * @return The region location table, as an integer buffer.
+	 * @throws IOException
+	 *             If IO fails
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
 			throws IOException, ProcessException {
-		// TODO get this info from the database
+		// TODO get this info from the database, if the DB knows it
 		Map<Integer, ByteBuffer> map;
 		synchronized (coreTableCache) {
 			map = coreTableCache.get(core);

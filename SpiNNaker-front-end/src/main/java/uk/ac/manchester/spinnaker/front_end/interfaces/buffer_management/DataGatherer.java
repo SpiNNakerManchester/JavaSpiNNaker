@@ -204,7 +204,8 @@ public abstract class DataGatherer {
 	}
 
 	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
-			GatherDownloadConnection conn) throws IOException, ProcessException {
+			GatherDownloadConnection conn)
+			throws IOException, ProcessException {
 		txrx.setIPTag(new IPTag(iptag.getBoardAddress(), gathererLocation,
 				conn.getLocalPort(), iptag.getIPAddress()));
 	}

@@ -25,6 +25,14 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	private final Transceiver txrx;
 	private final Storage database;
 
+	/**
+	 * Create a data gatherer.
+	 *
+	 * @param transceiver
+	 *            How to talk to the machine.
+	 * @param database
+	 *            Where to put the retrieved data.
+	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
 			Storage database) {
 		super(transceiver);
@@ -40,15 +48,24 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	static class RecordingRegionsDescriptor {
+	static final class RecordingRegionsDescriptor {
+		/** The number of recording regions. */
 		int numRegions;
+		/** Tag associated with recording regions. */
 		int tag;
+		/** Tag associated with streaming data out. */
 		int tagDestination;
+		/** SDP port to use. */
 		int sdpPort;
+		/** How much to accumulate before sending out. */
 		int bufferSizeBeforeRequest;
+		/** How long to wait before sending out. */
 		int timeBetweenTriggers;
+		/** Sequence number last sent out. */
 		int lastSequenceNumber;
+		/** The pointers to regions. Size, {@link #numRegions} entries. */
 		int[] regionPointers;
+		/** The sizes of regions. Size, {@link #numRegions} entries. */
 		int[] regionSizes;
 
 		private RecordingRegionsDescriptor(int numRegions, ByteBuffer buffer) {
@@ -66,6 +83,21 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 		private static final int REGION_POINTERS_START = 7;
 
+		/**
+		 * Create an instance of the record.
+		 *
+		 * @param txrx
+		 *            The transceiver.
+		 * @param chip
+		 *            The chip to ask.
+		 * @param address
+		 *            Where on the chip to read the region data from.
+		 * @return The descriptor.
+		 * @throws IOException
+		 *             If I/O fails.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 */
 		static RecordingRegionsDescriptor get(Transceiver txrx,
 				HasChipLocation chip, int address)
 				throws IOException, ProcessException {
@@ -82,7 +114,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	static class ChannelBufferState {
+	@SuppressWarnings("unused")
+	private static class ChannelBufferState {
 		/** Size of this structure in bytes. */
 		static final int SIZE = 24;
 		/** The start buffering area memory address. (32 bits) */
@@ -138,9 +171,11 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
 	}
 
-	static class RecordingRegion extends Region {
+	private static class RecordingRegion extends Region {
 		public final int recordingIndex;
-		RecordingRegion(HasCoreLocation core, int regionIndex, int recordingIndex) {
+
+		RecordingRegion(HasCoreLocation core, int regionIndex,
+				int recordingIndex) {
 			super(core, regionIndex, 0, 0);
 			this.recordingIndex = recordingIndex;
 		}

@@ -23,8 +23,6 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 	 *
 	 * @param destination
 	 *            Where to send the message
-	 * @param destPort
-	 *            Which port to send the message to
 	 * @param address
 	 *            Where to start reading from
 	 * @param length
