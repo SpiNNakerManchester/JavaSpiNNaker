@@ -146,7 +146,7 @@ public interface Storage {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static class Region {
+	class Region {
 		/**
 		 * What core owned the DSE region? Note that the region might be
 		 * retrieved from another core of the same chip.
