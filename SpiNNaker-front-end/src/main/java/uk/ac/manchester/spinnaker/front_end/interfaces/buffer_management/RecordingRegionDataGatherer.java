@@ -24,7 +24,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	private final Storage database;
 
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			Storage database) {
+			Storage database) throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;

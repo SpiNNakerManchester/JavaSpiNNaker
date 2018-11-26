@@ -18,7 +18,8 @@ public class DirectDataGatherer extends DataGatherer {
 	private final Transceiver txrx;
 	private final Storage database;
 
-	public DirectDataGatherer(Transceiver transceiver, Storage database) {
+	public DirectDataGatherer(Transceiver transceiver, Storage database)
+			throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;
