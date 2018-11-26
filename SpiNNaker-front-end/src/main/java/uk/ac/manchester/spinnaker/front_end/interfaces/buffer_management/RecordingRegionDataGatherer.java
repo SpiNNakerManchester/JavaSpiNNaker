@@ -32,9 +32,14 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *            How to talk to the machine.
 	 * @param database
 	 *            Where to put the retrieved data.
+	 * @throws ProcessException
+	 *             If we can't discover the machine details due to SpiNNaker
+	 *             rejecting messages
+	 * @throws IOException
+	 *             If we can't discover the machine details due to I/O problems
 	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			Storage database) {
+			Storage database) throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;

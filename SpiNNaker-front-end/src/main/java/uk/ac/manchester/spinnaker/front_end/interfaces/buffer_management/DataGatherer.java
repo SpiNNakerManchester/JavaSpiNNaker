@@ -14,7 +14,9 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -23,8 +25,11 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -44,8 +49,10 @@ public abstract class DataGatherer {
 	protected static final Logger log = getLogger(DataGatherer.class);
 
 	private final Transceiver txrx;
+	private final Machine machine;
 	private final ExecutorService pool;
 	private int missCount;
+    private Exception caught;
 
 	private static final int POOL_SIZE = 1; // TODO
 	private static final int QUEUE_CAPACITY = 1024;
@@ -80,11 +87,19 @@ public abstract class DataGatherer {
 	 * @param transceiver
 	 *            How to talk to the SpiNNaker system via SCP. Where the system
 	 *            is located.
+	 * @throws ProcessException
+	 *             If we can't discover the machine details due to SpiNNaker
+	 *             rejecting messages
+	 * @throws IOException
+	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DataGatherer(Transceiver transceiver) {
+	public DataGatherer(Transceiver transceiver)
+			throws IOException, ProcessException {
 		this.txrx = transceiver;
 		this.pool = newFixedThreadPool(POOL_SIZE);
+		this.machine = txrx.getMachineDetails();
 		this.missCount = 0;
+        this.caught = null;
 	}
 
 	/**
@@ -96,7 +111,10 @@ public abstract class DataGatherer {
 	 *            should be downloaded.
 	 */
 	public void addTask(Gather gather) {
-		pool.execute(() -> downloadBoard(gather));
+        //No need to keep adding if there is already an exception
+        if (this.caught == null) {
+            pool.execute(() -> downloadBoard(gather));
+        }
 	}
 
 	/**
@@ -108,9 +126,12 @@ public abstract class DataGatherer {
 	 * @throws InterruptedException
 	 *             If the wait is interrupted.
 	 */
-	public int waitForTasksToFinish() throws InterruptedException {
+	public int waitForTasksToFinish() throws InterruptedException, Exception {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
+        if (this.caught != null) {
+            throw this.caught;
+        }
 		return missCount;
 	}
 
@@ -175,31 +196,45 @@ public abstract class DataGatherer {
 		}
 	}
 
+	/**
+	 * Retrieves of data that is less than this are done via a normal SCAMP
+	 * memory read.
+	 */
+	private static final int SMALL_RETRIEVE_THRESHOLD = 256;
+
 	private void downloadBoard(Gather g) {
 		try {
-			// getRegionLocations();
+			List<Region> smallRetrieves = new ArrayList<>();
 			ChipLocation gathererLocation = g.asChipLocation();
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
 					gathererLocation, g.getIptag())) {
 				reconfigureIPtag(g.getIptag(), gathererLocation, conn);
-				setBoardRouterTimeoutsOff(gathererLocation);
+				enableBoardRouterTimeouts(gathererLocation, false);
 				BlockingQueue<ByteBuffer> messQueue = conn.launchReaderThread();
 				for (Monitor mon : g.getMonitors()) {
 					for (Placement place : mon.getPlacements()) {
 						for (int regionID : place.getVertex()
 								.getRecordedRegionIds()) {
-							Downloader d = new Downloader(conn, messQueue);
 							Region r = getRegion(place, regionID);
-							ByteBuffer data = d.doDownload(place, r);
-							storeData(r, data);
+							if (r.size < SMALL_RETRIEVE_THRESHOLD) {
+								smallRetrieves.add(r);
+							} else {
+								Downloader d = new Downloader(conn, messQueue);
+								storeData(r, d.doDownload(place, r));
+							}
 						}
 					}
 				}
 			} finally {
-				setBoardRouterTimeoutsOn(gathererLocation);
+				enableBoardRouterTimeouts(gathererLocation, true);
+			}
+			for (Region r : smallRetrieves) {
+				storeData(r, txrx.readMemory((HasChipLocation) r.core,
+						r.startAddress, r.size));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			this.caught = e;
 		}
 	}
 
@@ -210,12 +245,12 @@ public abstract class DataGatherer {
 				conn.getLocalPort(), iptag.getIPAddress()));
 	}
 
-	private void setBoardRouterTimeoutsOff(ChipLocation boardEthernet) {
-		// TODO reconfigure router timeouts
-	}
-
-	private void setBoardRouterTimeoutsOn(ChipLocation boardEthernet) {
-		// TODO reconfigure router timeouts
+	private void enableBoardRouterTimeouts(ChipLocation boardEthernet,
+			boolean state) throws IOException, ProcessException {
+		for (Chip chip : machine
+				.iterChipsOnBoard(machine.getChipAt(boardEthernet))) {
+			txrx.enableWatchDogTimerOnChip(chip, state);
+		}
 	}
 
 	/**
