@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 		<spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<junit.version>5.2.0</junit.version>
@@ -250,6 +252,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>.github/*</exclude>
 							<exclude>.travis/*</exclude>
 							<exclude>.travis.yml</exclude>
+							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
 							<exclude>README.md</exclude>
 						</excludes>
