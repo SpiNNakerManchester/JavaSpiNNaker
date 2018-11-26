@@ -81,7 +81,7 @@ CREATE TRIGGER IF NOT EXISTS dseStorageDeletion AFTER DELETE ON dse_regions
 
 -- Setting the storage for a DSE region will delete its old storage
 CREATE TRIGGER IF NOT EXISTS dseStorageUpdate AFTER UPDATE ON dse_regions
-	WHEN OLD.storage_id IS NOT NULL
+	WHEN OLD.storage_id IS NOT NULL AND OLD.storage_id != NEW.storage_id
 	BEGIN
 		DELETE FROM storage
 			WHERE storage_id = OLD.storage_id;
