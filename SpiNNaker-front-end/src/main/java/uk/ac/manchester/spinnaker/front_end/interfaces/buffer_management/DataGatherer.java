@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifer;
 import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -241,8 +242,10 @@ public abstract class DataGatherer {
 	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
-		txrx.setIPTag(new IPTag(iptag.getBoardAddress(), gathererLocation,
-				conn.getLocalPort(), iptag.getIPAddress()));
+		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
+				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
+				TrafficIdentifer.getInstance("DATA_SPEED_UP"));
+		txrx.setIPTag(tag);
 	}
 
 	private void enableBoardRouterTimeouts(ChipLocation boardEthernet,
