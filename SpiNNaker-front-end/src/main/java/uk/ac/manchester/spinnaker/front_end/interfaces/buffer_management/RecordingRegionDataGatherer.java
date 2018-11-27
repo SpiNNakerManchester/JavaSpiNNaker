@@ -188,8 +188,19 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 	@Override
 	protected Region getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException {
+			throws IOException, ProcessException, StorageException {
 		ChannelBufferState state = getState(placement, regionID);
+		try {
+			database.noteRecordingVertex(
+					// TODO put the right values in!
+					new Region(placement.getScampCore(), -1, 0, 0),
+					placement.getVertex().label);
+		} catch (StorageException e) {
+			/*
+			 * Ignore; assume that the DB was already populated with the
+			 * information.
+			 */
+		}
 		return new RecordingRegion(placement, -1, state.regionId);
 	}
 

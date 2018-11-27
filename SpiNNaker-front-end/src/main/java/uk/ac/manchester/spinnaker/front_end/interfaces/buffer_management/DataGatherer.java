@@ -268,9 +268,11 @@ public abstract class DataGatherer {
 	 *             If communication fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database doesn't like something.
 	 */
 	protected abstract Region getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, StorageException;
 
 	/**
 	 * Store the data retrieved from a region.
