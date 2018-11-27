@@ -50,7 +50,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS dseStorageSanity on dse_storage(
 
 CREATE VIEW IF NOT EXISTS dse_storage_view AS
 	SELECT x, y, processor, dse_index, address, size, reset_counter,
-		run_counter, content, creation_time, core_id, meta_data_id, dse_storage_id
+		run_counter, content, creation_time, core_id, dse_storage_id
 	FROM core NATURAL JOIN dse NATURAL JOIN dse_storage;
 
 
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS vertex(
 
 CREATE VIEW IF NOT EXISTS vertex_view AS
 	SELECT x, y, processor, dse_index, address AS meta_data_address,
-		size AS meta_data_size, label, core_id, meta_data_id
+		size AS meta_data_size, label, core_id, meta_data_id, vertex_id
 	FROM dse NATURAL JOIN core JOIN vertex ON (vertex.meta_data_id = dse.dse_id);
 
 
@@ -82,7 +82,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS regionSanity on region(
 
 CREATE VIEW IF NOT EXISTS region_view AS
 	SELECT x, y, processor, dse_index, meta_data_address, meta_data_size,
-		label, core_id, meta_data_id, local_region_num,
+		label, core_id, meta_data_id, local_region_index,
 		region.address AS recording_address, region_id
 	FROM vertex_view NATURAL JOIN region;
 
@@ -93,15 +93,15 @@ CREATE TABLE IF NOT EXISTS region_storage(
 	region_storage_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	region_id INTEGER NOT NULL,
 	reset_counter INTEGER NOT NULL,
-	content BLOB,
+	content BLOB NOT NULL DEFAULT X'',
 	append_time INTEGER NOT NULL,
-	fetches INTEGER NOT NULL,
+	fetches INTEGER NOT NULL DEFAULT 0,
 	FOREIGN KEY(region_id) REFERENCES region(region_id));
 -- Every recording region storage has a unique recording region and execution phase
 CREATE UNIQUE INDEX IF NOT EXISTS regionStorageSanity on region_storage(
 	region_id ASC, reset_counter ASC);
 
-CREATE VIEW IF NOT EXISTS recording_storage_view AS
+CREATE VIEW IF NOT EXISTS region_storage_view AS
 	SELECT x, y, processor, dse_index, meta_data_address, meta_data_size,
 		label, core_id, meta_data_id, local_region_num, recording_address,
 		region_id, region_storage_id, content, append_time, reset_counter,

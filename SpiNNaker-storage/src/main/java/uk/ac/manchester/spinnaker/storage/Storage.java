@@ -18,16 +18,20 @@ public interface Storage {
 	 *
 	 * @param region
 	 *            The region descriptor.
+	 * @param reset
+	 *            Which reset phase to retrieve the data for, or {@code null} to
+	 *            use the default (the current phase).
 	 * @param run
-	 *            Which run to retrieve the data for, or {@code null} to use the
-	 *            default (the current run).
+	 *            Which run to retrieve the data for within the given reset
+	 *            phase, or {@code null} to use the default (the current run).
+	 *            It is <em>advised</em> to specify both if either is given.
 	 * @return The region contents.
 	 * @throws IllegalArgumentException
 	 *             If there's no such saved region.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	byte[] getRegionContents(Region region, Integer run)
+	byte[] getRegionContents(Region region, Integer reset, Integer run)
 			throws StorageException;
 
 	/**
@@ -43,7 +47,7 @@ public interface Storage {
 	 *             If anything goes wrong.
 	 */
 	default byte[] getRegionContents(Region region) throws StorageException {
-		return getRegionContents(region, null);
+		return getRegionContents(region, null, null);
 	}
 
 	/**
@@ -242,12 +246,12 @@ public interface Storage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	int storeRegionContents(Region region, byte[] contents)
+	int storeDSEContents(Region region, byte[] contents)
 			throws StorageException;
 
 	/**
 	 * Stores some bytes in the database. The bytes represent the contents of a
-	 * region of a particular SpiNNaker core.
+	 * DSE region of a particular SpiNNaker core.
 	 *
 	 * @param region
 	 *            The DSE region that this is the contents of.
@@ -261,7 +265,7 @@ public interface Storage {
 			throws StorageException {
 		byte[] ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
-		return storeRegionContents(region, ary);
+		return storeDSEContents(region, ary);
 	}
 
 	/**
@@ -299,4 +303,20 @@ public interface Storage {
 		contents.slice().get(ary);
 		appendRecordingContents(region, recordingIndex, ary);
 	}
+
+	/**
+	 * Note that a particular core is a machine graph vertex, and that that
+	 * vertex uses the recording interface.
+	 *
+	 * @param metadataID
+	 *            The ID of the DSE region that holds the recording metadata for
+	 *            the vertex. Links to what core this is talking about.
+	 * @param label
+	 *            The label of the vertex.
+	 * @return The ID of the vertex.
+	 * @throws StorageException
+	 *             If anything goes wrong.
+	 */
+	int noteRecordingVertex(int metadataID, String label)
+			throws StorageException;
 }
