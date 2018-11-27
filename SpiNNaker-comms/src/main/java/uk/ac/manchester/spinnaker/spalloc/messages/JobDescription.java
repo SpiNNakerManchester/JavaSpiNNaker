@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.util.Collections;
 import java.util.Date;
@@ -153,7 +153,7 @@ public class JobDescription {
 		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
 		builder.append(" startTime: ")
-				.append(new Date((long) (startTime * MS_PER_S)));
+				.append(new Date((long) (startTime * MSEC_PER_SEC)));
 		builder.append(" power: ").append(power);
 		builder.append(" reason: ").append(reason);
 		builder.append(" machine: ").append(machine);

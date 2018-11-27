@@ -41,7 +41,6 @@ import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.DESTROYED;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MS_PER_S;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -64,6 +63,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 /**
  * A high-level interface for requesting and managing allocations of SpiNNaker
@@ -615,7 +615,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		if (obj == null) {
 			return null;
 		}
-		return (int) (((Number) obj).doubleValue() * MS_PER_S);
+		return (int) (((Number) obj).doubleValue() * MSEC_PER_SEC);
 	}
 
 	/**
