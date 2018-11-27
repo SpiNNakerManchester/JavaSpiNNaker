@@ -18,9 +18,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  *
  * @author Donal Fellows
  */
-public class SQLiteStorage implements Storage {
-	private final ConnectionProvider connProvider;
-
+public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	// Locations
 	private static final String INSERT_LOCATION =
 			"INSERT INTO core(x, y, processor) VALUES(?, ?, ?)";
@@ -93,7 +91,7 @@ public class SQLiteStorage implements Storage {
 	 *            to the database.
 	 */
 	public SQLiteStorage(ConnectionProvider connectionProvider) {
-		this.connProvider = connectionProvider;
+		super(connectionProvider);
 	}
 
 	private static int getLocationID(Connection conn, HasCoreLocation core)
@@ -341,17 +339,20 @@ public class SQLiteStorage implements Storage {
 	}
 
 	@Override
-	public int noteRecordingVertex(int metadataID, String label)
+	public int noteRecordingVertex(Region region, String label)
 			throws StorageException {
-		return callR(conn -> noteRecordingVertex(conn, metadataID, label),
+		return callR(conn -> noteRecordingVertex(conn, region, label),
 				"creating a vertex with recording");
 	}
 
-	private int noteRecordingVertex(Connection conn, int metadataID,
+	private int noteRecordingVertex(Connection conn, Region region,
 			String label) throws SQLException {
+		int coreID = getLocationID(conn, region.core);
+		int dseID = makeDSErecord(conn, coreID, region.regionIndex,
+				region.startAddress, region.size);
 		try (PreparedStatement s =
 				conn.prepareStatement(CREATE_VERTEX, RETURN_GENERATED_KEYS)) {
-			s.setInt(FIRST, metadataID);
+			s.setInt(FIRST, dseID);
 			s.setString(SECOND, label);
 			s.executeUpdate();
 			try (ResultSet keys = s.getGeneratedKeys()) {
@@ -484,70 +485,5 @@ public class SQLiteStorage implements Storage {
 				return result;
 			}
 		}, "listing regions for a core");
-	}
-
-	@FunctionalInterface
-	private interface CallWithResult<T> {
-		T call(Connection conn) throws SQLException;
-	}
-
-	@FunctionalInterface
-	private interface CallWithoutResult {
-		void call(Connection conn) throws SQLException;
-	}
-
-	/**
-	 * Wrapper for applying a transaction correctly.
-	 *
-	 * @param call
-	 *            What is wrapped
-	 * @param actionDescription
-	 *            Extra message to use with wrapping exception
-	 * @return The value returned by the call
-	 * @throws StorageException
-	 *             If anything goes wrong
-	 */
-	private <T> T callR(CallWithResult<T> call, String actionDescription)
-			throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
-			try {
-				T result = call.call(conn);
-				conn.commit();
-				return result;
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
-			}
-		} catch (SQLException | IllegalStateException e) {
-			throw new StorageException("while " + actionDescription, e);
-		}
-	}
-
-	/**
-	 * Wrapper for applying a transaction correctly.
-	 *
-	 * @param call
-	 *            What is wrapped
-	 * @param actionDescription
-	 *            Extra message to use with wrapping exception
-	 * @throws StorageException
-	 *             If anything goes wrong
-	 */
-	private void callV(CallWithoutResult call, String actionDescription)
-			throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
-			try {
-				call.call(conn);
-				conn.commit();
-				return;
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
-			}
-		} catch (SQLException | IllegalStateException e) {
-			throw new StorageException("while " + actionDescription, e);
-		}
 	}
 }

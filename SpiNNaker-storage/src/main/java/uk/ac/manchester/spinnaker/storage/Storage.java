@@ -308,15 +308,14 @@ public interface Storage {
 	 * Note that a particular core is a machine graph vertex, and that that
 	 * vertex uses the recording interface.
 	 *
-	 * @param metadataID
-	 *            The ID of the DSE region that holds the recording metadata for
-	 *            the vertex. Links to what core this is talking about.
+	 * @param region
+	 *            The information about where we're talking about.
 	 * @param label
 	 *            The label of the vertex.
 	 * @return The ID of the vertex.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	int noteRecordingVertex(int metadataID, String label)
+	int noteRecordingVertex(Region region, String label)
 			throws StorageException;
 }

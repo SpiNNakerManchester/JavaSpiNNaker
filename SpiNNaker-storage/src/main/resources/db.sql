@@ -88,7 +88,7 @@ CREATE VIEW IF NOT EXISTS region_view AS
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
--- A table holding storag for recording regions.
+-- A table holding storage for recording regions.
 CREATE TABLE IF NOT EXISTS region_storage(
 	region_storage_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	region_id INTEGER NOT NULL,
