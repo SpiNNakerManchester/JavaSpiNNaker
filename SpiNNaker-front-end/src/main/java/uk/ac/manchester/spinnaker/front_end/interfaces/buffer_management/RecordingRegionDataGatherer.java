@@ -167,33 +167,36 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		return rrd;
 	}
 
-	private ChannelBufferState getState(Placement placement, int regionID)
-			throws IOException, ProcessException {
+	private ChannelBufferState getState(Placement placement,
+			int recordingRegionIndex) throws IOException, ProcessException {
 		ChipLocation chip = placement.asChipLocation();
 		RecordingRegionsDescriptor descriptor = getDescriptor(chip,
 				placement.getVertex().recordingRegionBaseAddress);
 		return new ChannelBufferState(txrx.readMemory(chip,
-				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
+				descriptor.regionPointers[recordingRegionIndex],
+				ChannelBufferState.SIZE));
 	}
 
 	private static class RecordingRegion extends Region {
 		public final int recordingIndex;
 
 		RecordingRegion(HasCoreLocation core, int regionIndex,
-				int recordingIndex) {
-			super(core, regionIndex, 0, 0);
-			this.recordingIndex = recordingIndex;
+				ChannelBufferState state) {
+			super(core, regionIndex, state.start,
+					state.currentWrite - state.start);
+			this.recordingIndex = state.regionId;
 		}
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int regionID)
+	protected Region getRegion(Placement placement, int recordingRegionIndex)
 			throws IOException, ProcessException, StorageException {
-		ChannelBufferState state = getState(placement, regionID);
+		int dseIndex = -1; // TODO use the right value
+		ChannelBufferState state = getState(placement, recordingRegionIndex);
 		try {
 			database.noteRecordingVertex(
 					// TODO put the right values in!
-					new Region(placement.getScampCore(), -1, 0, 0),
+					new Region(placement.getScampCore(), dseIndex, 0, 0),
 					placement.getVertex().label);
 		} catch (StorageException e) {
 			/*
@@ -201,7 +204,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			 * information.
 			 */
 		}
-		return new RecordingRegion(placement, -1, state.regionId);
+		return new RecordingRegion(placement, dseIndex, state);
 	}
 
 	@Override
