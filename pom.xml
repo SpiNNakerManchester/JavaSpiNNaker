@@ -254,6 +254,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>.travis.yml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
+							<exclude>**/nbproject/**</exclude>
+							<exclude>**/target/**</exclude>
 							<exclude>README.md</exclude>
 						</excludes>
 					</configuration>
