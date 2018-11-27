@@ -466,7 +466,7 @@ public class SCPRequestPipeline {
 		 */
 		SendTimedOutException(Request<?> req, int timeout) {
 			super(format("Operation %s timed out after %f seconds",
-					req.getCommand(), timeout / (double)MSEC_PER_SEC));
+					req.getCommand(), timeout / (double) MSEC_PER_SEC));
 		}
 	}
 

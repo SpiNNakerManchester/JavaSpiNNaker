@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.messages;
 
-import uk.ac.manchester.spinnaker.utils.UnitConstants;
-
 /** Miscellaneous SpiNNaker constants. */
 public abstract class Constants {
 	/** The max size a UDP packet can be. */

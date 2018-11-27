@@ -61,7 +61,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
 			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
-	public static final int DEFAULT_TIMEOUT = (int) (MSEC_PER_SEC * BMP_TIMEOUT);
+	public static final int DEFAULT_TIMEOUT =
+            (int) (MSEC_PER_SEC * BMP_TIMEOUT);
+
 	/**
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
@@ -347,7 +349,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / (double)MSEC_PER_SEC));
+					timeout / (double) MSEC_PER_SEC));
 		}
 	}
 
