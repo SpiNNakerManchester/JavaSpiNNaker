@@ -11,17 +11,51 @@ import java.sql.SQLException;
 abstract class SQLiteConnectionManager {
 	private final ConnectionProvider connProvider;
 
+	/**
+	 * @param connProvider
+	 *            The source of database connections.
+	 * @see Connection
+	 */
 	protected SQLiteConnectionManager(ConnectionProvider connProvider) {
 		this.connProvider = connProvider;
 	}
 
+	/**
+	 * A wrapped piece of code that produces a result.
+	 *
+	 * @param <T>
+	 *            The type of the result of the call
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
 	interface CallWithResult<T> {
+		/**
+		 * The wrapped code.
+		 *
+		 * @param conn
+		 *            The connection that has a running transaction on it.
+		 * @return The result of the code.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
 		T call(Connection conn) throws SQLException;
 	}
 
+	/**
+	 * A wrapped piece of code that doesn't produce a result.
+	 *
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
 	interface CallWithoutResult {
+		/**
+		 * The wrapped code.
+		 *
+		 * @param conn
+		 *            The connection that has a running transaction on it.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
 		void call(Connection conn) throws SQLException;
 	}
 
