@@ -51,6 +51,7 @@ class TestSQLiteStorage {
 				storage.getRegionContents(r));
 
 		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
+		storage.noteRecordingVertex(rr, "foo");
 		storage.appendRecordingContents(rr, 0, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr, 0));
@@ -77,6 +78,7 @@ class TestSQLiteStorage {
 
 		// append creates
 		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
+		storage.noteRecordingVertex(rr, "foo");
 		storage.appendRecordingContents(rr, 0, bytes("abc"));
 		storage.appendRecordingContents(rr, 0, bytes("def"));
 		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr, 0)));

@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS region_storage(
 	region_id INTEGER NOT NULL,
 	reset_counter INTEGER NOT NULL,
 	content BLOB NOT NULL DEFAULT X'',
-	append_time INTEGER NOT NULL,
+	append_time INTEGER,
 	fetches INTEGER NOT NULL DEFAULT 0,
 	FOREIGN KEY(region_id) REFERENCES region(region_id));
 -- Every recording region storage has a unique recording region and execution phase
@@ -103,7 +103,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS regionStorageSanity on region_storage(
 
 CREATE VIEW IF NOT EXISTS region_storage_view AS
 	SELECT x, y, processor, dse_index, meta_data_address, meta_data_size,
-		label, core_id, meta_data_id, local_region_num, recording_address,
+		label, core_id, meta_data_id, local_region_index, recording_address,
 		region_id, region_storage_id, content, append_time, reset_counter,
 		fetches
 	FROM region_view NATURAL JOIN region_storage;

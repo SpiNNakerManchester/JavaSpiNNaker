@@ -74,7 +74,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	private static final String FETCH_RECORDING =
 			"SELECT content, region_storage_id FROM region_storage_view"
 			+ " WHERE x = ? AND y = ? AND processor = ? AND dse_index = ?"
-			+ " AND local_region_indx = ? AND reset_counter = ? LIMIT 1";
+			+ " AND local_region_index = ? AND reset_counter = ? LIMIT 1";
 
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
@@ -440,11 +440,11 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			run = getRun(conn);
 		}
 		try (PreparedStatement s = conn.prepareStatement(DELETE_DSE_REGION)) {
+			// x, y, processor, dse_index
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
 			s.setInt(THIRD, core.getP());
 			s.setInt(FOURTH, region);
-			s.setInt(FIFTH, run);
 			s.executeUpdate();
 		}
 	}
