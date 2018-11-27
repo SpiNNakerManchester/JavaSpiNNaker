@@ -39,7 +39,8 @@ public class ManualSpalloc {
                 System.out.println(job);
             }
         }
-
+        int two = 2;
+        System.out.println(3/two);
     }
 
 }

@@ -34,7 +34,7 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
@@ -1429,7 +1429,7 @@ public class Transceiver extends UDPTransceiver
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
-		int timeout = (int) (MS_PER_S
+		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
 		bmpCall(cabinet, frame, timeout,
@@ -1438,7 +1438,7 @@ public class Transceiver extends UDPTransceiver
 
 		// Sleep for 5 seconds if the machine has just been powered on
 		if (!machineOff) {
-			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * MS_PER_S));
+			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * MSEC_PER_SEC));
 		}
 	}
 

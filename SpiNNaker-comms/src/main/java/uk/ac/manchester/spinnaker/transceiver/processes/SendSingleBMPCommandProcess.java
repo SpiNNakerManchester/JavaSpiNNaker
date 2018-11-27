@@ -21,7 +21,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
 			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
-	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
+	public static final int DEFAULT_TIMEOUT = (int) (MSEC_PER_SEC * BMP_TIMEOUT);
 	/**
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
@@ -347,7 +347,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / MS_PER_S));
+					timeout / (double)MSEC_PER_SEC));
 		}
 	}
 
