@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 
@@ -53,7 +53,7 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 *             our feet.
 	 */
 	default boolean isReadyToReceive(double timeout) throws IOException {
-		return isReadyToReceive((int) (timeout * MS_PER_S));
+		return isReadyToReceive((int) (timeout * MSEC_PER_SEC));
 	}
 
 	/**
