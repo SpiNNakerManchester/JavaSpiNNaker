@@ -13,10 +13,18 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- "Global variables"; this table should only ever have one row
 CREATE TABLE IF NOT EXISTS global_setup(
 	current_reset_counter INTEGER NOT NULL,
 	current_run_counter INTEGER NOT NULL);
-INSERT INTO global_setup(current_reset_counter, current_run_counter) VALUES (0, 0);
+INSERT OR IGNORE INTO global_setup(current_reset_counter, current_run_counter)
+	VALUES (0, 0);
+CREATE TRIGGER globalSetupHasOneRowOnly BEFORE INSERT ON global_setup
+	BEGIN
+		-- Cannot add more rows than one
+		SELECT RAISE(ABORT, 'global variables may not be duplicated')
+			WHERE EXISTS(SELECT 1 FROM global_setup);
+	END;
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -41,7 +49,7 @@ CREATE TABLE IF NOT EXISTS dse(
 	size INTEGER NOT NULL,
 	FOREIGN KEY(core_id) REFERENCES core(core_id));
 -- Every DSE region has a unique ID
-CREATE UNIQUE INDEX IF NOT EXISTS dseSanity on dse(
+CREATE UNIQUE INDEX IF NOT EXISTS dseSanity ON dse(
 	core_id ASC, dse_index ASC);
 
 CREATE VIEW IF NOT EXISTS dse_view AS
@@ -60,7 +68,7 @@ CREATE TABLE IF NOT EXISTS dse_storage(
 	creation_time INTEGER NOT NULL,
 	FOREIGN KEY(dse_id) REFERENCES dse(dse_id));
 -- Every DSE region storage has a unique DSE region and execution phase
-CREATE UNIQUE INDEX IF NOT EXISTS dseStorageSanity on dse_storage(
+CREATE UNIQUE INDEX IF NOT EXISTS dseStorageSanity ON dse_storage(
 	dse_id ASC, reset_counter ASC, run_counter ASC);
 
 CREATE VIEW IF NOT EXISTS dse_storage_view AS
@@ -92,7 +100,7 @@ CREATE TABLE IF NOT EXISTS region(
 	address INTEGER NOT NULL,
 	FOREIGN KEY(vertex_id) REFERENCES vertex(vertex_id));
 -- Every recording region has a unique vertex and index
-CREATE UNIQUE INDEX IF NOT EXISTS regionSanity on region(
+CREATE UNIQUE INDEX IF NOT EXISTS regionSanity ON region(
 	vertex_id ASC, local_region_index ASC);
 
 CREATE VIEW IF NOT EXISTS region_view AS
@@ -113,7 +121,7 @@ CREATE TABLE IF NOT EXISTS region_storage(
 	fetches INTEGER NOT NULL DEFAULT 0,
 	FOREIGN KEY(region_id) REFERENCES region(region_id));
 -- Every recording region storage has a unique recording region and execution phase
-CREATE UNIQUE INDEX IF NOT EXISTS regionStorageSanity on region_storage(
+CREATE UNIQUE INDEX IF NOT EXISTS regionStorageSanity ON region_storage(
 	region_id ASC, reset_counter ASC);
 
 CREATE VIEW IF NOT EXISTS region_storage_view AS
