@@ -21,7 +21,6 @@ import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 
@@ -43,6 +42,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 /**
  * Allows a set of SCP requests to be grouped together in a communication across
@@ -466,7 +466,7 @@ public class SCPRequestPipeline {
 		 */
 		SendTimedOutException(Request<?> req, int timeout) {
 			super(format("Operation %s timed out after %f seconds",
-					req.getCommand(), timeout / MS_PER_S));
+					req.getCommand(), timeout / (double) MSEC_PER_SEC));
 		}
 	}
 

@@ -26,7 +26,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.BOOT_VARIABLE_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
@@ -67,7 +67,7 @@ public class BootMessages {
 		SystemVariableBootValues specific =
 				bootVars == null ? new SystemVariableBootValues()
 						: new SystemVariableBootValues(bootVars);
-		int currentTime = (int) (System.currentTimeMillis() / MS_PER_S);
+		int currentTime = (int) (System.currentTimeMillis() / MSEC_PER_SEC);
 		specific.setValue(unix_timestamp, currentTime);
 		specific.setValue(boot_signature, currentTime);
 		specific.setValue(is_root_chip, 1);
