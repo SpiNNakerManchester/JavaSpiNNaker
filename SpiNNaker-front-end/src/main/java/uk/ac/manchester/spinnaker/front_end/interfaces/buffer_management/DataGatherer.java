@@ -56,8 +56,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
  *
- * @author Alan Stokes
  * @author Donal Fellows
+ * @author Alan Stokes
  */
 public abstract class DataGatherer {
 	/**
@@ -140,15 +140,29 @@ public abstract class DataGatherer {
 	 *
 	 * @return The total number of missed packets. Misses are retried, so this
 	 *         is just an assessment of data transfer quality.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
 	 * @throws InterruptedException
 	 *             If the wait is interrupted.
 	 */
-	public int waitForTasksToFinish() throws InterruptedException, Exception {
+	public int waitForTasksToFinish() throws IOException, ProcessException,
+			StorageException, InterruptedException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
-        if (this.caught != null) {
-            throw this.caught;
-        }
+		if (caught != null) {
+			try {
+				throw caught;
+			} catch (IOException | ProcessException | StorageException
+					| RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException("unexpected exception", e);
+			}
+		}
 		return missCount;
 	}
 
@@ -249,8 +263,9 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory((HasChipLocation) r.core,
 						r.startAddress, r.size));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException | ProcessException | StorageException
+				| RuntimeException e) {
+			log.warn("problem when downloading a board's data", e);
 			this.caught = e;
 		}
 	}
@@ -328,7 +343,8 @@ public abstract class DataGatherer {
 				throws IOException {
 			this.extraMonitor = extraMonitor.asCoreLocation();
 			dataReceiver = ByteBuffer.allocate(region.size);
-			maxSeqNum = calculateMaxSeqNum(region.size);
+			maxSeqNum = ceildiv(region.size,
+					DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.sendStart(this.extraMonitor, region.startAddress, region.size);
 			finished = false;
@@ -344,11 +360,6 @@ public abstract class DataGatherer {
 				finished = true;
 			}
 			return null;
-		}
-
-		private int calculateMaxSeqNum(int size) {
-			return ceildiv(size,
-					DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
 		}
 
 		private void processOnePacket() throws Exception {

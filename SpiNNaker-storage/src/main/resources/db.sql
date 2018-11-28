@@ -19,12 +19,6 @@ CREATE TABLE IF NOT EXISTS global_setup(
 	current_run_counter INTEGER NOT NULL);
 INSERT OR IGNORE INTO global_setup(current_reset_counter, current_run_counter)
 	VALUES (0, 0);
-CREATE TRIGGER globalSetupHasOneRowOnly BEFORE INSERT ON global_setup
-	BEGIN
-		-- Cannot add more rows than one
-		SELECT RAISE(ABORT, 'global variables may not be duplicated')
-			WHERE EXISTS(SELECT 1 FROM global_setup);
-	END;
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

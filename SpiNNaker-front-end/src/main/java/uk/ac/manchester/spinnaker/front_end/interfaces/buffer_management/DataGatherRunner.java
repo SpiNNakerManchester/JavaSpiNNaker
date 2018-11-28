@@ -72,7 +72,8 @@ public abstract class DataGatherRunner {
 	 *             to be done
 	 */
 	public static void main(String... args)
-			throws Exception {
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, InterruptedException {
 		// args 0 = instruction to run this
 		List<Gather> gathers = readGathererJson(args[1]);
 		Machine machine = readMachineJson(args[2]);
