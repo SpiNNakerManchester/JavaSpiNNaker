@@ -241,25 +241,25 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				}
 			}
 		}
-		Integer vertex_id = null;
+		Integer vertexId = null;
 		try (PreparedStatement s = conn.prepareStatement(
 				"SELECT vertex_id FROM vertex WHERE meta_data_id = ?")) {
 			s.setInt(FIRST, dseID);
 			try (ResultSet resultSet = s.executeQuery()) {
 				while (resultSet.next()) {
-					vertex_id = resultSet.getInt(FIRST);
+					vertexId = resultSet.getInt(FIRST);
 					break;
 				}
 			}
 		}
-		if (vertex_id == null) {
+		if (vertexId == null) {
 			throw new IllegalStateException(
 					"could not find vertex for recording region");
 		}
 		try (PreparedStatement s = conn.prepareStatement(CREATE_RECORDING,
 				RETURN_GENERATED_KEYS)) {
 			// vertex_id, local_region_index, address
-			s.setInt(FIRST, vertex_id);
+			s.setInt(FIRST, vertexId);
 			s.setInt(SECOND, recordingRegionIndex);
 			s.setInt(THIRD, address);
 			s.executeUpdate();
@@ -273,8 +273,8 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				"could not make or find recording region record");
 	}
 
-	private static Integer getRecordingStorage(Connection conn, int recID, int reset)
-			throws SQLException {
+	private static Integer getRecordingStorage(Connection conn, int recID,
+			int reset) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(GET_REC_STORAGE)) {
 			s.setInt(FIRST, recID);
 			s.setInt(SECOND, reset);

@@ -13,7 +13,7 @@ before_install:
 install:
   - mvn dependency:resolve dependency:resolve-plugins
 script:
-  - mvn apache-rat:check --settings .travis/travis-settings.xml -B -V || (cat target/rat*.txt; exit 1)
+  - mvn apache-rat:check --settings .travis/travis-settings.xml -B -V || (find . -type f -name 'rat*.txt' -print | xargs cat; exit 1)
   - mvn install --settings .travis/travis-settings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B
   - mvn verify --settings .travis/travis-settings.xml -B -Dmaven.javadoc.skip=true jacoco:report
   - mvn checkstyle:check --settings .travis/travis-settings.xml -Dmaven.javadoc.skip=true

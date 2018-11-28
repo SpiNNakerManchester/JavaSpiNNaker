@@ -62,10 +62,12 @@ abstract class SQLiteConnectionManager {
 	/**
 	 * Wrapper for applying a transaction correctly.
 	 *
+	 * @param <T>
+	 *            The type of the result of the wrapped call.
 	 * @param call
-	 *            What is wrapped
+	 *            What is wrapped. Produces a result.
 	 * @param actionDescription
-	 *            Extra message to use with wrapping exception
+	 *            Extra message to use with wrapping exception.
 	 * @return The value returned by the call
 	 * @throws StorageException
 	 *             If anything goes wrong
@@ -91,9 +93,9 @@ abstract class SQLiteConnectionManager {
 	 * Wrapper for applying a transaction correctly.
 	 *
 	 * @param call
-	 *            What is wrapped
+	 *            What is wrapped. Produces no result.
 	 * @param actionDescription
-	 *            Extra message to use with wrapping exception
+	 *            Extra message to use with wrapping exception.
 	 * @throws StorageException
 	 *             If anything goes wrong
 	 */
