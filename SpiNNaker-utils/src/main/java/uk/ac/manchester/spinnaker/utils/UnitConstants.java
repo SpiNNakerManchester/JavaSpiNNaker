@@ -1,5 +1,18 @@
 /*
  * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package uk.ac.manchester.spinnaker.utils;
 
@@ -21,19 +34,19 @@ public final class UnitConstants {
     public static final int MEGAHERTZ_PER_HERTZ = 1000000;
 
     /** The number of milliseconds per second. */
-	public static final int MS_PER_S = 1000;
+	public static final int MSEC_PER_SEC = 1000;
 
     /** The number of millisecond per minute. */
-	public static final double MS_PER_M = 60000.0;
+	public static final double MSEC_PER_MINUTE = 60000.0;
 
    /** The number of second per minute. */
-	public static final int S_PER_M = 60;
+	public static final int SEC_PER_MINUTE = 60;
 
     /** The number of millisecond per hour. */
-	public static final double MS_PER_H = 3600000.0;
+	public static final double MSEC_PER_HOUR = 3600000.0;
 
-    /** The number of millisecond per hour. */
-	public static final int M_PER_H = 60;
+    /** The number of minute per hour. */
+	public static final int MINUTE_PER_HOUR = 60;
 
     /**
      * Formats a Duration with hours, minutes seconds and milliseconds
@@ -45,9 +58,12 @@ public final class UnitConstants {
      */
     public static String formatDuration(long durationInMillis) {
         long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
-        long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis) % M_PER_H;
-        long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis) % S_PER_M;
-        long ms = TimeUnit.MILLISECONDS.toMillis(durationInMillis) % MS_PER_S;
+        long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis)
+                % MINUTE_PER_HOUR;
+        long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis)
+                % SEC_PER_MINUTE;
+        long ms = TimeUnit.MILLISECONDS.toMillis(durationInMillis)
+                % MSEC_PER_SEC;
         if (hr > 0) {
             return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
         }

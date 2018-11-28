@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.messages.boot;
 
 import static java.lang.Integer.reverseBytes;
@@ -10,7 +26,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.BOOT_VARIABLE_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
@@ -51,7 +67,7 @@ public class BootMessages {
 		SystemVariableBootValues specific =
 				bootVars == null ? new SystemVariableBootValues()
 						: new SystemVariableBootValues(bootVars);
-		int currentTime = (int) (System.currentTimeMillis() / MS_PER_S);
+		int currentTime = (int) (System.currentTimeMillis() / MSEC_PER_SEC);
 		specific.setValue(unix_timestamp, currentTime);
 		specific.setValue(boot_signature, currentTime);
 		specific.setValue(is_root_chip, 1);

@@ -1,8 +1,24 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.util.Collections;
 import java.util.Date;
@@ -137,7 +153,7 @@ public class JobDescription {
 		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
 		builder.append(" startTime: ")
-				.append(new Date((long) (startTime * MS_PER_S)));
+				.append(new Date((long) (startTime * MSEC_PER_SEC)));
 		builder.append(" power: ").append(power);
 		builder.append(" reason: ").append(reason);
 		builder.append(" machine: ").append(machine);

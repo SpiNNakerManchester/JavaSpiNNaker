@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.lang.String.format;
@@ -5,7 +21,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.Constants.MS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 
 import java.io.IOException;
@@ -45,7 +61,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
 			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
-	public static final int DEFAULT_TIMEOUT = (int) (MS_PER_S * BMP_TIMEOUT);
+	public static final int DEFAULT_TIMEOUT =
+            (int) (MSEC_PER_SEC * BMP_TIMEOUT);
+
 	/**
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
@@ -331,7 +349,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	static final class SendTimedOutException extends SocketTimeoutException {
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / MS_PER_S));
+					timeout / (double) MSEC_PER_SEC));
 		}
 	}
 
