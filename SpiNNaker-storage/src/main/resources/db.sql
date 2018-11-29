@@ -14,11 +14,10 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -- "Global variables"; this table should only ever have one row
-CREATE TABLE IF NOT EXISTS global_setup(
-	current_reset_counter INTEGER NOT NULL,
-	current_run_counter INTEGER NOT NULL);
-INSERT OR IGNORE INTO global_setup(current_reset_counter, current_run_counter)
-	VALUES (0, 0);
+CREATE TABLE IF NOT EXISTS last_run(
+	reset_counter INTEGER NOT NULL,
+	run_counter INTEGER NOT NULL);
+INSERT OR IGNORE INTO last_run(reset_counter, run_counter) VALUES (1, 1);
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,6 +30,24 @@ CREATE TABLE IF NOT EXISTS core(
 -- Every processor has a unique ID
 CREATE UNIQUE INDEX IF NOT EXISTS coreSanity ON core(
 	x ASC, y ASC, processor ASC);
+
+
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- A table describing (DSE?) writes...
+CREATE TABLE IF NOT EXISTS write(
+	write_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	core_id INTEGER NOT NULL,
+	file TEXT NOT NULL,
+	start_address INTEGER NOT NULL,
+	memory_used INTEGER NOT NULL,
+	memory_written INTEGER NOT NULL,
+	FOREIGN KEY(core_id) REFERENCES core(core_id));
+-- No candidate key yet
+
+CREATE VIEW IF NOT EXISTS write_view AS
+	SELECT x, y, processor, write_id, core_id, file, start_address,
+		memory_used, memory_written
+	FROM write NATURAL JOIN core;
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,9 +189,40 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		throw new IllegalStateException("could not make DSE region record");
 	}
 
+	/**
+	 * Advances the counter of resets and resets the counter of runs within a
+	 * reset.
+	 *
+	 * @throws StorageException
+	 *             If access to the DB fails.
+	 */
+	public void nextReset() throws StorageException {
+		callV(conn -> {
+			try (Statement s = conn.createStatement()) {
+				s.execute("UPDATE last_run SET "
+						+ "reset_counter = reset_counter + 1, "
+						+ "run_counter = 1");
+			}
+		}, "updating reset counter");
+	}
+
+	/**
+	 * Advances the count of runs within a reset.
+	 *
+	 * @throws StorageException
+	 *             If access to the DB fails.
+	 */
+	public void nextRun() throws StorageException {
+		callV(conn -> {
+			try (Statement s = conn.createStatement()) {
+				s.execute("UPDATE last_run SET run_counter = run_counter + 1");
+			}
+		}, "updating run counter");
+	}
+
 	private static int getRun(Connection conn) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(
-				"SELECT current_run_counter FROM global_setup LIMIT 1")) {
+				"SELECT run_counter FROM last_run LIMIT 1")) {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt(FIRST);
@@ -202,7 +234,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 
 	private static int getReset(Connection conn) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(
-				"SELECT current_reset_counter FROM global_setup LIMIT 1")) {
+				"SELECT reset_counter FROM last_run LIMIT 1")) {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt(FIRST);
