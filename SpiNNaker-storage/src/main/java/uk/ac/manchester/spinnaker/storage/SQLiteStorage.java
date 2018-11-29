@@ -220,9 +220,20 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		}, "updating run counter");
 	}
 
+	/**
+	 * Get the current count of runs within a reset.
+	 *
+	 * @return The current run counter.
+	 * @throws StorageException
+	 *             If access to the DB fails.
+	 */
+	public int getRun() throws StorageException {
+		return callR(SQLiteStorage::getRun, "getting the run counter");
+	}
+
 	private static int getRun(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(
-				"SELECT run_counter FROM last_run LIMIT 1")) {
+		try (PreparedStatement s = conn
+				.prepareStatement("SELECT run_counter FROM last_run LIMIT 1")) {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt(FIRST);
@@ -230,6 +241,17 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			}
 		}
 		return 1; // Default
+	}
+
+	/**
+	 * Get the current count of resets.
+	 *
+	 * @return The current reset counter.
+	 * @throws StorageException
+	 *             If access to the DB fails.
+	 */
+	public int getReset() throws StorageException {
+		return callR(SQLiteStorage::getReset, "getting the reset counter");
 	}
 
 	private static int getReset(Connection conn) throws SQLException {
