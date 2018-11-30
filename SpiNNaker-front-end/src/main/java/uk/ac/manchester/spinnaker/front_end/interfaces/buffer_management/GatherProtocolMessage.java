@@ -42,8 +42,8 @@ public abstract class GatherProtocolMessage extends SDPMessage {
 	 * @param payload
 	 *            What the contents of the message should be.
 	 */
-	protected GatherProtocolMessage(HasCoreLocation destination, SDPPort destPort,
-			ByteBuffer payload) {
+	protected GatherProtocolMessage(HasCoreLocation destination,
+			SDPPort destPort, ByteBuffer payload) {
 		super(new SDPHeader(REPLY_NOT_EXPECTED, destination, destPort),
 				payload);
 	}

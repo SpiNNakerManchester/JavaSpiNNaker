@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public abstract class DataGatherRunner {
 	private static final Logger log = getLogger(DataGatherRunner.class);
-	private static final ObjectMapper mapper = createMapper();
+	private static final ObjectMapper MAPPER = createMapper();
 
 	private DataGatherRunner() {
 	}
@@ -72,7 +72,8 @@ public abstract class DataGatherRunner {
 	 *             to be done
 	 */
 	public static void main(String... args)
-			throws Exception {
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, InterruptedException {
 		// args 0 = instruction to run this
 		List<Gather> gathers = readGathererJson(args[1]);
 		Machine machine = readMachineJson(args[2]);
@@ -96,14 +97,14 @@ public abstract class DataGatherRunner {
 			throws JsonParseException, JsonMappingException, IOException {
 		try (FileReader machineReader = new FileReader(filename)) {
 			return new Machine(
-					mapper.readValue(machineReader, MachineBean.class));
+					MAPPER.readValue(machineReader, MachineBean.class));
 		}
 	}
 
 	private static List<Gather> readGathererJson(String filename)
 			throws IOException, JsonParseException, JsonMappingException {
 		try (FileReader gatherReader = new FileReader(filename)) {
-			return mapper.readValue(gatherReader,
+			return MAPPER.readValue(gatherReader,
 					new TypeReference<List<Gather>>() {
 					});
 		}

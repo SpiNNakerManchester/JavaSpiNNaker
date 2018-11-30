@@ -97,13 +97,12 @@ public abstract class DataGatherer {
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
 
 	/**
-	 * Create an instance of the protocol implementation.
+	 * Create an instance of the protocol implementation. (Subclasses handle
+	 * where to put it afterwards.)
 	 *
 	 * @param transceiver
 	 *            How to talk to the SpiNNaker system via SCP. Where the system
 	 *            is located.
-	 * @param database
-	 *            Where to write downloaded data to.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
@@ -140,22 +139,47 @@ public abstract class DataGatherer {
 	 *
 	 * @return The total number of missed packets. Misses are retried, so this
 	 *         is just an assessment of data transfer quality.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
 	 * @throws InterruptedException
 	 *             If the wait is interrupted.
 	 */
-	public int waitForTasksToFinish() throws InterruptedException, Exception {
+	public int waitForTasksToFinish() throws InterruptedException, IOException,
+			ProcessException, StorageException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
         if (this.caught != null) {
-            throw this.caught;
+    		if (caught != null) {
+    			try {
+    				throw caught;
+    			} catch (IOException | ProcessException | StorageException
+    					| RuntimeException e) {
+    				throw e;
+    			} catch (Exception e) {
+    				throw new RuntimeException("unexpected exception", e);
+    			}
+    		}
         }
 		return missCount;
 	}
 
+	/**
+	 * Describes where to download data from.
+	 *
+	 * @author Donal Fellows
+	 */
 	protected static class Region {
+		/** The region's owning core. */
 		CoreLocation core;
+		/** The region index. */
 		int regionID;
+		/** The region start index. */
 		int startAddress;
+		/** The region size. */
 		int size;
 	}
 

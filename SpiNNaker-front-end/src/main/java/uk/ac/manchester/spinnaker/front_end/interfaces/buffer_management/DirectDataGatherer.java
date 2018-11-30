@@ -30,10 +30,28 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
+/**
+ * A data gatherer that can fetch DSE regions.
+ *
+ * @author Donal Fellows
+ */
 public class DirectDataGatherer extends DataGatherer {
 	private final Transceiver txrx;
 	private final Storage database;
 
+	/**
+	 * Create a data gatherer.
+	 *
+	 * @param transceiver
+	 *            How to talk to the machine.
+	 * @param database
+	 *            Where to put the retrieved data.
+	 * @throws ProcessException
+	 *             If we can't discover the machine details due to SpiNNaker
+	 *             rejecting messages
+	 * @throws IOException
+	 *             If we can't discover the machine details due to I/O problems
+	 */
 	public DirectDataGatherer(Transceiver transceiver, Storage database)
 			throws IOException, ProcessException {
 		super(transceiver);
