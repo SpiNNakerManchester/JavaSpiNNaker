@@ -155,38 +155,38 @@ public class DataOut implements Callable<Boolean> {
 		if (USE_NAMED_OPTIONS) {
 			// Options for building the transceiver
 			options.addOption(Option.builder("H").longOpt("hostname")
-					.desc("the SpiNNaker host name/IP address").hasArg()
-					.build());
+                .desc("the SpiNNaker host name/IP address").hasArg()
+                .build());
 			options.addOption(Option.builder("P").longOpt("port")
-					.desc("the SpiNNaker port number").hasArg()
-					.type(Number.class).build());
+                .desc("the SpiNNaker port number").hasArg()
+                .type(Number.class).build());
 
 			// What are we retrieving from
 			options.addOption(Option.builder("p").longOpt("placement")
-					.desc("the coordinates (X, Y, P) of the placement")
-					.numberOfArgs(NUM_CORE_ARGS).build());
+                .desc("the coordinates (X, Y, P) of the placement")
+                .numberOfArgs(NUM_CORE_ARGS).build());
 			options.addOption(Option.builder("l").longOpt("length")
-					.desc("the number of bytes to download").hasArg()
-					.type(Number.class).build());
+                .desc("the number of bytes to download").hasArg()
+                .type(Number.class).build());
 			options.addOption(Option.builder("a").longOpt("address")
-					.desc("the address to download from").hasArg()
-					.type(Number.class).build());
+                .desc("the address to download from").hasArg()
+                .type(Number.class).build());
 
 			// Where will we write
 			options.addOption(Option.builder("D").longOpt("datafile")
-					.desc("the file to write the downloaded data into").hasArg()
-					.type(File.class).build());
+                .desc("the file to write the downloaded data into").hasArg()
+                .type(File.class).build());
 			options.addOption(Option.builder("S").longOpt("seqsfile").desc(
-					"the file to write the sequence number information into")
-					.hasArg().type(File.class).build());
+                "the file to write the sequence number information into")
+                .hasArg().type(File.class).build());
 
 			// How do we configure the iptag
 			options.addOption(Option.builder("C").longOpt("chip").desc(
-					"the coordinates (X, Y) of the chip for IPtag setting")
-					.numberOfArgs(NUM_CHIP_ARGS).build());
+                "the coordinates (X, Y) of the chip for IPtag setting")
+                .numberOfArgs(NUM_CHIP_ARGS).build());
 			options.addOption(Option.builder("T").longOpt("iptag")
-					.desc("the IPtag ID number").hasArg().type(Number.class)
-					.build());
+                .desc("the IPtag ID number").hasArg().type(Number.class)
+                .build());
 		}
 
 		DefaultParser parser = new DefaultParser();
@@ -224,8 +224,8 @@ public class DataOut implements Callable<Boolean> {
 		} else {
 			if (positionals.size() != Argument.values().length) {
 				System.err.println("wrong # args: should be \""
-						+ System.getProperty("java.home") + "/bin/java "
-						+ DataOut.class + " " + join(Argument.values()) + "\"");
+                    + System.getProperty("java.home") + "/bin/java "
+                    + DataOut.class + " " + join(Argument.values()) + "\"");
 				System.exit(1);
 			}
 			setFields(a -> positionals.get(a.ordinal()), operation);
@@ -270,8 +270,8 @@ public class DataOut implements Callable<Boolean> {
 	@Override
 	public Boolean call() throws IOException, InterruptedException {
 		HostDataReceiver r = new HostDataReceiver(portConnection,
-				new CoreLocation(x, y, p), hostname, length, address,
-				new ChipLocation(chipX, chipY), iptag);
+            new CoreLocation(x, y, p), hostname, length, address,
+            new ChipLocation(chipX, chipY), iptag);
 		r.writeData(dataFile, missingFile);
 		return r.isAlive();
 	}

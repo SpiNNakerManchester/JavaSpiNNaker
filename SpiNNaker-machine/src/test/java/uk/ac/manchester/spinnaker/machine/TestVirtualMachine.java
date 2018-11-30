@@ -122,8 +122,6 @@ public class TestVirtualMachine {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
         assertEquals(3 * 48, instance.chips().size());
         assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
-        instance.reserveSystemProcessors();
-        assertEquals(3 * 48 * 16, instance.totalAvailableUserCores());
 
         instance.addFpgaLinks();
         ArrayList<FPGALinkData> links = new ArrayList<>();
