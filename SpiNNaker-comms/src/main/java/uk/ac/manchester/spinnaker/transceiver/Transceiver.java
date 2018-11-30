@@ -264,8 +264,8 @@ public class Transceiver extends UDPTransceiver
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
 	private final Map<BMPCoords, ConnectionSelector<BMPConnection>>
-	// force line wrap
-	bmpSelectors = new HashMap<>();
+		// force line wrap
+		bmpSelectors = new HashMap<>();
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
 	/** The nearest neighbour start ID. */
@@ -1953,7 +1953,7 @@ public class Transceiver extends UDPTransceiver
 	static {
 		try {
 			WILDCARD_ADDRESS = getByAddress(new byte[] {
-					0, 0, 0, 0
+				0, 0, 0, 0
 			});
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
 				throw new RuntimeException(
