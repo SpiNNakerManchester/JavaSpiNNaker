@@ -171,11 +171,11 @@ public class ProgressBar implements Closeable {
     private static String distanceIndicator() {
         StringBuilder builder = new StringBuilder("0%");
         for (int i = 0; i < LEFT_SPACES; i += 1) {
-             builder.append(" ");
+            builder.append(" ");
         }
         builder.append("50%");
         for (int i = 0; i < RIGHT_SPACES; i += 1) {
-             builder.append(" ");
+            builder.append(" ");
         }
         builder.append("100%");
         return builder.toString();
