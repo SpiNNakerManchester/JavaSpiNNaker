@@ -472,32 +472,32 @@ public class Chip implements HasChipLocation {
      * @param other Another chip to check if it has the same variables.
      * @return null if no difference is detected otherwise a string.
      */
-    public String difference(Chip that) {
-        if (!location.equals(that.location)) {
+    public String difference(Chip other) {
+        if (!location.equals(other.location)) {
             return "Location";
         }
-        if (!monitorProcessors.equals(that.monitorProcessors)) {
+        if (!monitorProcessors.equals(other.monitorProcessors)) {
             return "Monitors";
         }
-        if (!userProcessors.equals(that.userProcessors)) {
-             return "userProcessors";
+        if (!userProcessors.equals(other.userProcessors)) {
+            return "userProcessors";
         }
-        if (!router.equals(that.router)) {
-             return "router";
+        if (!router.equals(other.router)) {
+            return "router";
         }
-        if (sdram != that.sdram) {
+        if (sdram != other.sdram) {
             return "sdram";
         }
-        if (!Objects.equals(ipAddress, that.ipAddress)) {
+        if (!Objects.equals(ipAddress, other.ipAddress)) {
             return "ipAddress";
         }
-        if (virtual != that.virtual) {
+        if (virtual != other.virtual) {
             return "virtual";
         }
-        if (!tagIds.equals(that.tagIds)) {
-            return "tagIds " + tagIds + " != " + that.tagIds;
+        if (!tagIds.equals(other.tagIds)) {
+            return "tagIds " + tagIds + " != " + other.tagIds;
         }
-        if (!nearestEthernet.equals(that.nearestEthernet)) {
+        if (!nearestEthernet.equals(other.nearestEthernet)) {
             return "router";
         }
         return null;

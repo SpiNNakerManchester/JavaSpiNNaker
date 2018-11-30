@@ -330,7 +330,7 @@ public final class SpiNNakerTriadGeometry {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return ("(" + x + ", " + y + ")");
         }
     }
