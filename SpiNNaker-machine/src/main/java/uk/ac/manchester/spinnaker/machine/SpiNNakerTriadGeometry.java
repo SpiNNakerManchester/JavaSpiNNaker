@@ -281,6 +281,12 @@ public final class SpiNNakerTriadGeometry {
         return singleBoardCoordinates.iterator();
     }
 
+    /**
+     * Allows forEach to be called on all ChipLocations in
+     *      SingleBoardCoordinates.
+     *
+     * @param action The action to be performed for each element
+     */
     public void singleBoardForEach(Consumer<ChipLocation> action) {
         singleBoardCoordinates.forEach(action);
     }
