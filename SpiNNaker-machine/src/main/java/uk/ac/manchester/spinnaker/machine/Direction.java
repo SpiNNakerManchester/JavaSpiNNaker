@@ -76,12 +76,18 @@ public enum Direction {
      */
     Direction inverse() {
         switch (this) {
-            case EAST: return WEST;
-            case NORTHEAST: return SOUTHWEST;
-            case NORTH: return SOUTH;
-            case WEST: return EAST;
-            case SOUTHWEST: return NORTHEAST;
-            default: return NORTH;
+        case EAST:
+            return WEST;
+        case NORTHEAST:
+            return SOUTHWEST;
+        case NORTH:
+            return SOUTH;
+        case WEST:
+            return EAST;
+        case SOUTHWEST:
+            return NORTHEAST;
+        default:
+            return NORTH;
         }
     }
 

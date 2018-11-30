@@ -151,7 +151,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 		 * version 2, etc.
 		 */
 		private static final int[] LED0 = {
-				0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
+			0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
 		};
 
 		static {
