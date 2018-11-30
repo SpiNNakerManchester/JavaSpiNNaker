@@ -145,10 +145,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException(
+						"could neither create nor find location ID");
 			}
 		}
-		throw new IllegalStateException(
-				"could neither create nor find location ID");
 	}
 
 	private static int storeContent(Connection conn, int dseId,
@@ -168,14 +168,13 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException("could not store blob");
 			}
 		}
-		throw new IllegalStateException("could not store blob");
 	}
 
 	private static int makeDSErecord(Connection conn, int coreID, int dseIndex,
-			int address, int size)
-			throws SQLException {
+			int address, int size) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(GET_DSE_RECORD_ID)) {
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, dseIndex);
@@ -196,9 +195,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException(
+						"could not make DSE region record");
 			}
 		}
-		throw new IllegalStateException("could not make DSE region record");
 	}
 
 	/**
@@ -242,14 +242,13 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	}
 
 	private static int getRun(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_RUN)) {
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt(FIRST);
-				}
+		try (PreparedStatement s = conn.prepareStatement(GET_RUN);
+				ResultSet rs = s.executeQuery()) {
+			while (rs.next()) {
+				return rs.getInt(FIRST);
 			}
+			return 1; // Default
 		}
-		return 1; // Default
 	}
 
 	/**
@@ -264,14 +263,13 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	}
 
 	private static int getReset(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_RESET)) {
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt(FIRST);
-				}
+		try (PreparedStatement s = conn.prepareStatement(GET_RESET);
+				ResultSet rs = s.executeQuery()) {
+			while (rs.next()) {
+				return rs.getInt(FIRST);
 			}
+			return 1; // Default
 		}
-		return 1; // Default
 	}
 
 	@Override
@@ -291,6 +289,20 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		return storeContent(conn, dseID, reset, run, contents);
 	}
 
+	private static int getVertex(Connection conn, int dseID)
+			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(GET_VERTEX)) {
+			s.setInt(FIRST, dseID);
+			try (ResultSet resultSet = s.executeQuery()) {
+				while (resultSet.next()) {
+					return resultSet.getInt(FIRST);
+				}
+				throw new IllegalStateException(
+						"could not find vertex for recording region");
+			}
+		}
+	}
+
 	private static int createRecordingRegion(Connection conn, int dseID,
 			int recordingRegionIndex, int address) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(GET_RECORDING)) {
@@ -303,20 +315,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				}
 			}
 		}
-		Integer vertexId = null;
-		try (PreparedStatement s = conn.prepareStatement(GET_VERTEX)) {
-			s.setInt(FIRST, dseID);
-			try (ResultSet resultSet = s.executeQuery()) {
-				while (resultSet.next()) {
-					vertexId = resultSet.getInt(FIRST);
-					break;
-				}
-			}
-		}
-		if (vertexId == null) {
-			throw new IllegalStateException(
-					"could not find vertex for recording region");
-		}
+		int vertexId = getVertex(conn, dseID);
 		try (PreparedStatement s = conn.prepareStatement(CREATE_RECORDING,
 				RETURN_GENERATED_KEYS)) {
 			// vertex_id, local_region_index, address
@@ -328,10 +327,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException(
+						"could not make or find recording region record");
 			}
 		}
-		throw new IllegalStateException(
-				"could not make or find recording region record");
 	}
 
 	private static Integer getRecordingStorage(Connection conn, int recID,
@@ -343,9 +342,9 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (resultSet.next()) {
 					return resultSet.getInt(FIRST);
 				}
+				return null;
 			}
 		}
-		return null;
 	}
 
 	private static int recordingInit(Connection conn, int regionID, int reset)
@@ -360,10 +359,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException(
+						"cound not create region storage record");
 			}
 		}
-		throw new IllegalStateException(
-				"cound not create region storage record");
 	}
 
 	private static void appendContent(Connection conn, int storageId,
@@ -436,9 +435,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (keys.next()) {
 					return keys.getInt(FIRST);
 				}
+				throw new IllegalStateException(
+						"cound not create vertex record");
 			}
 		}
-		throw new IllegalStateException("cound not create vertex record");
 	}
 
 	@Override
@@ -468,10 +468,10 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (rs.next()) {
 					return rs.getBytes(FIRST);
 				}
+				throw new IllegalArgumentException("core " + region.core
+						+ " has no data for region " + region.regionIndex);
 			}
 		}
-		throw new IllegalArgumentException("core " + region.core
-				+ " has no data for region " + region.regionIndex);
 	}
 
 	@Override
@@ -498,9 +498,9 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				while (rs.next()) {
 					return rs.getBytes(FIRST);
 				}
+				throw new IllegalArgumentException("core " + region.core
+						+ " has no data for region " + region.regionIndex);
 			}
-			throw new IllegalArgumentException("core " + region.core
-					+ " has no data for region " + region.regionIndex);
 		}
 	}
 
@@ -529,18 +529,18 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	@Override
 	public List<CoreLocation> getCoresWithStorage() throws StorageException {
 		return callR(conn -> {
-			ArrayList<CoreLocation> result = new ArrayList<>();
 			try (PreparedStatement s =
 					conn.prepareStatement(CORES_WITH_DSE_STORAGE);
 					ResultSet rs = s.executeQuery()) {
+				ArrayList<CoreLocation> result = new ArrayList<>();
 				while (rs.next()) {
 					int x = rs.getInt(FIRST);
 					int y = rs.getInt(SECOND);
 					int p = rs.getInt(THIRD);
 					result.add(new CoreLocation(x, y, p));
 				}
+				return result;
 			}
-			return result;
 		}, "listing cores");
 	}
 
@@ -553,13 +553,13 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				s.setInt(FIRST, core.getX());
 				s.setInt(SECOND, core.getY());
 				s.setInt(THIRD, core.getP());
-				ArrayList<Integer> result = new ArrayList<>();
 				try (ResultSet rs = s.executeQuery()) {
+					ArrayList<Integer> result = new ArrayList<>();
 					while (rs.next()) {
 						result.add(rs.getInt(FIRST));
 					}
+					return result;
 				}
-				return result;
 			}
 		}, "listing regions for a core");
 	}
