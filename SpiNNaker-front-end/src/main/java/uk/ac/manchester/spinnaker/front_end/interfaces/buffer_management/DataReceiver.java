@@ -193,8 +193,8 @@ public class DataReceiver {
                 length = endState.currentWrite - endState.startAddress;
                 readSomeData(location, endState.startAddress, length);
             } else {
-               ByteBuffer data = ByteBuffer.allocate(0);
-               receivedData.flushingDataFromRegion(location, data);
+                ByteBuffer data = ByteBuffer.allocate(0);
+                receivedData.flushingDataFromRegion(location, data);
             }
         }
     }
