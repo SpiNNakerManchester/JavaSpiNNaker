@@ -34,7 +34,7 @@ public class RegionNotAllocatedException extends DataSpecificationException {
 	 */
 	public RegionNotAllocatedException(int currentRegion, Commands command) {
 		super("Region " + currentRegion
-				+ " has not been allocated during execution of command "
-				+ command);
+            + " has not been allocated during execution of command "
+            + command);
 	}
 }

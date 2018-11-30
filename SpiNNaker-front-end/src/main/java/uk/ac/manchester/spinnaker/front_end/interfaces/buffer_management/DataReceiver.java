@@ -187,7 +187,7 @@ public class DataReceiver {
                 int length = endState.endAddress - endState.getCurrentRead();
                 if (length < 0) {
                     throw new IOException(
-                            "The amount of data to read is negative!");
+                        "The amount of data to read is negative!");
                 }
                 readSomeData(location, endState.getCurrentRead(), length);
                 length = endState.currentWrite - endState.startAddress;
@@ -213,8 +213,8 @@ public class DataReceiver {
             Placement placement, int recordingDataAddress)
             throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
-                placement.getScampCore(),
-                recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
+            placement.getScampCore(),
+            recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
         int num =  data.getInt(0);
         return num;
     }
@@ -236,9 +236,9 @@ public class DataReceiver {
             Placement placement, int recordingDataAddress, int region)
             throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
-                placement.getScampCore(),
-                recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
-                        + (region * WORD_SIZE), WORD_SIZE);
+            placement.getScampCore(),
+            recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
+                + (region * WORD_SIZE), WORD_SIZE);
         return data.getInt(0);
     }
 
@@ -247,8 +247,8 @@ public class DataReceiver {
             throws IOException, ProcessException {
         // retrieve channel state memory area
         ByteBuffer channelStateData = requestData(
-                placement, stateRegionBaseAddress,
-                ChannelBufferState.STATE_SIZE);
+            placement, stateRegionBaseAddress,
+            ChannelBufferState.STATE_SIZE);
         return new ChannelBufferState(channelStateData);
     }
 
