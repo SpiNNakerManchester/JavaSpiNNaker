@@ -69,11 +69,11 @@ public class HostDataRead extends EIEIOCommandMessage {
 	public HostDataRead(byte sequenceNum, byte channel, byte regionID,
 			int spaceRead) {
 		this((byte) 1, sequenceNum, new byte[] {
-				channel
+			channel
 		}, new byte[] {
-				regionID
+			regionID
 		}, new int[] {
-				spaceRead
+			spaceRead
 		});
 	}
 

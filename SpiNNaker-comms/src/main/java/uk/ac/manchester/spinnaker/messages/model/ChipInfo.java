@@ -116,7 +116,7 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
  */
 public class ChipInfo implements HasChipLocation {
 	private static final byte[] NO_IP = {
-			0, 0, 0, 0
+		0, 0, 0, 0
 	};
 	private static final int UNMAPPED = 0xFF;
 	private static final int TEN_MS = 10;
@@ -142,12 +142,12 @@ public class ChipInfo implements HasChipLocation {
 
 		int links = read(links_available);
 		linksAvailable = BitSet.valueOf(new byte[] {
-				(byte) links
+			(byte) links
 		});
 
 		ledFlashPeriod = read(led_half_period_10_ms) * TEN_MS;
 		leds = new int[] {
-				read(led_0), read(led_1)
+			read(led_0), read(led_1)
 		};
 		statusMap = readBytes(status_map);
 		physicalToVirtualCoreMap = readBytes(physical_to_virtual_core_map);

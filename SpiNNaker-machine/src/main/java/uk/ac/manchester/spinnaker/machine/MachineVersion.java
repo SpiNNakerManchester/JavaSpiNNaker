@@ -209,12 +209,12 @@ public enum MachineVersion {
      * @return Machine version assuming just a single board.
      */
     public static MachineVersion byId(Integer id) {
-       for (MachineVersion possible: MachineVersion.values()) {
-           if (possible.id == id) {
-               return possible;
-           }
-       }
-       throw new IllegalArgumentException("No Board version with id: " + id);
+        for (MachineVersion possible: MachineVersion.values()) {
+            if (possible.id == id) {
+                return possible;
+            }
+        }
+        throw new IllegalArgumentException("No Board version with id: " + id);
     }
 
     /**
@@ -247,9 +247,9 @@ public enum MachineVersion {
             return MachineVersion.FIVE;
         }
         for (MachineVersion possible: MachineVersion.values()) {
-           if (dimensions.equals(possible.machineDimensions)) {
-               return possible;
-           }
+            if (dimensions.equals(possible.machineDimensions)) {
+                return possible;
+            }
         }
         if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
                 && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {

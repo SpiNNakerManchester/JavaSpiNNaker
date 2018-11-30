@@ -191,7 +191,7 @@ public class Chip implements HasChipLocation {
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
      */
-     public Chip(ChipLocation location, Iterable<Processor> processors,
+    public Chip(ChipLocation location, Iterable<Processor> processors,
              Router router, InetAddress ipAddress,
              HasChipLocation nearestEthernet) {
         this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
@@ -227,11 +227,11 @@ public class Chip implements HasChipLocation {
         this.ipAddress = ipAddress;
 
         this.virtual = false;
-            if (ipAddress == null) {
-                this.tagIds = emptyList();
-            } else {
-                this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
-            }
+        if (ipAddress == null) {
+            this.tagIds = emptyList();
+        } else {
+            this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
+        }
 
         this.nearestEthernet = nearestEthernet;
     }
@@ -275,7 +275,7 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
-           processors.put(i, Processor.factory(i, false));
+            processors.put(i, Processor.factory(i, false));
         }
         return processors;
     }
@@ -289,7 +289,7 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = 0; i < monitors; i++) {
-           processors.put(i, Processor.factory(i, true));
+            processors.put(i, Processor.factory(i, true));
         }
         return processors;
     }
@@ -298,7 +298,7 @@ public class Chip implements HasChipLocation {
             int monitors, int cores) {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = monitors; i < cores; i++) {
-           processors.put(i, Processor.factory(i, false));
+            processors.put(i, Processor.factory(i, false));
         }
         return processors;
     }
