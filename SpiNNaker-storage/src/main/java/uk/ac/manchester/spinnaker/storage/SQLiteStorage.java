@@ -36,12 +36,24 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * @author Donal Fellows
  */
 public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
-	// Locations
+	// "Global" state
+	private static final String ADVANCE_RESET = "UPDATE last_run "
+			+ "SET reset_counter = reset_counter + 1, run_counter = 1";
+	private static final String GET_RESET =
+			"SELECT reset_counter FROM last_run LIMIT 1";
+	private static final String ADVANCE_RUN =
+			"UPDATE last_run " + "SET run_counter = run_counter + 1";
+	private static final String GET_RUN =
+			"SELECT run_counter FROM last_run LIMIT 1";
+
+	// Cores and vertices
 	private static final String INSERT_LOCATION =
 			"INSERT INTO core(x, y, processor) VALUES(?, ?, ?)";
 	private static final String GET_LOCATION =
 			"SELECT core_id FROM core"
 					+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
+	private static final String GET_VERTEX =
+			"SELECT vertex_id FROM vertex WHERE meta_data_id = ?";
 
 	// DSE regions
 	private static final String MAKE_DSE_RECORD =
@@ -199,9 +211,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	public void nextReset() throws StorageException {
 		callV(conn -> {
 			try (Statement s = conn.createStatement()) {
-				s.execute("UPDATE last_run SET "
-						+ "reset_counter = reset_counter + 1, "
-						+ "run_counter = 1");
+				s.execute(ADVANCE_RESET);
 			}
 		}, "updating reset counter");
 	}
@@ -215,7 +225,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	public void nextRun() throws StorageException {
 		callV(conn -> {
 			try (Statement s = conn.createStatement()) {
-				s.execute("UPDATE last_run SET run_counter = run_counter + 1");
+				s.execute(ADVANCE_RUN);
 			}
 		}, "updating run counter");
 	}
@@ -232,8 +242,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	}
 
 	private static int getRun(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn
-				.prepareStatement("SELECT run_counter FROM last_run LIMIT 1")) {
+		try (PreparedStatement s = conn.prepareStatement(GET_RUN)) {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt(FIRST);
@@ -255,8 +264,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	}
 
 	private static int getReset(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(
-				"SELECT reset_counter FROM last_run LIMIT 1")) {
+		try (PreparedStatement s = conn.prepareStatement(GET_RESET)) {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt(FIRST);
@@ -296,8 +304,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			}
 		}
 		Integer vertexId = null;
-		try (PreparedStatement s = conn.prepareStatement(
-				"SELECT vertex_id FROM vertex WHERE meta_data_id = ?")) {
+		try (PreparedStatement s = conn.prepareStatement(GET_VERTEX)) {
 			s.setInt(FIRST, dseID);
 			try (ResultSet resultSet = s.executeQuery()) {
 				while (resultSet.next()) {

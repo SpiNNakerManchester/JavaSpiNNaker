@@ -17,7 +17,9 @@
 CREATE TABLE IF NOT EXISTS last_run(
 	reset_counter INTEGER NOT NULL,
 	run_counter INTEGER NOT NULL);
-INSERT OR IGNORE INTO last_run(reset_counter, run_counter) VALUES (1, 1);
+INSERT INTO last_run(reset_counter, run_counter)
+	SELECT 1, 1
+	WHERE NOT EXISTS (SELECT 1 FROM last_run);
 
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -26,7 +28,9 @@ CREATE TABLE IF NOT EXISTS core(
     core_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	x INTEGER NOT NULL,
 	y INTEGER NOT NULL,
-	processor INTEGER NOT NULL);
+	processor INTEGER NOT NULL,
+	ethernet_core_id INTEGER,
+	FOREIGN KEY(ethernet_core_id) REFERENCES core(core_id));
 -- Every processor has a unique ID
 CREATE UNIQUE INDEX IF NOT EXISTS coreSanity ON core(
 	x ASC, y ASC, processor ASC);
