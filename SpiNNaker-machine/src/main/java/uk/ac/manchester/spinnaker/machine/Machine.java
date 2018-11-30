@@ -309,7 +309,7 @@ public class Machine implements Iterable<Chip> {
     }
 
     @Override
-   /**
+    /**
      * Returns an iterator over the Chips in this Machine.
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
