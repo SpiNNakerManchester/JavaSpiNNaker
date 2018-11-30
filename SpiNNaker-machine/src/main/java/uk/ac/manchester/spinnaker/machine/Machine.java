@@ -260,7 +260,7 @@ public class Machine implements Iterable<Chip> {
                     + machineDimensions.width);
         }
         if (chip.getY() >= machineDimensions.height) {
-           throw new IllegalArgumentException("Chip y: " + chip.getY()
+            throw new IllegalArgumentException("Chip y: " + chip.getY()
                    + " is too high for a machine with height "
                    + machineDimensions.height + " " + chip);
         }
@@ -1077,7 +1077,7 @@ public class Machine implements Iterable<Chip> {
      */
     public String difference(Machine other) {
         if (!machineDimensions.equals(other.machineDimensions)) {
-             return "machineDimensions " + machineDimensions
+            return "machineDimensions " + machineDimensions
                      + " != " + other.machineDimensions;
         }
         if (!chips.keySet().equals(other.chips.keySet())) {
@@ -1105,7 +1105,7 @@ public class Machine implements Iterable<Chip> {
             }
         }
         if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
-           return "ethernetConnectedChips " + ethernetConnectedChips
+            return "ethernetConnectedChips " + ethernetConnectedChips
                    + " != " + other.ethernetConnectedChips;
         }
         if (!spinnakerLinks.equals(other.spinnakerLinks)) {
@@ -1208,4 +1208,4 @@ public class Machine implements Iterable<Chip> {
         }
     }
 
- }
+}

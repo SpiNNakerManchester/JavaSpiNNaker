@@ -73,7 +73,7 @@ public class RoutingEntry {
             route |= 1 << (NUM_LINKS + processorID);
         }
         for (Direction linkID : linkIDs) {
-           route |= 1 << linkID.id;
+            route |= 1 << linkID.id;
         }
         return route;
     }
@@ -196,4 +196,4 @@ public class RoutingEntry {
     public boolean removeLinkID(Direction oldValue) {
         return linkIDs.remove(oldValue);
     }
- }
+}
