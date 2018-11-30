@@ -447,44 +447,59 @@ public class Chip implements HasChipLocation {
             System.out.println("type");
             return false;
         }
-        Chip that = (Chip) obj;
-        if (!location.equals(that.location)) {
-            System.out.println("location");
-            return false;
-        }
-        if (!monitorProcessors.equals(that.monitorProcessors)) {
-            System.out.println("monitorProcessors");
-            return false;
-        }
-        if (!userProcessors.equals(that.userProcessors)) {
-            System.out.println("userProcessors");
-            return false;
-        }
-        if (!router.equals(that.router)) {
-            System.out.println("router");
-            return false;
-        }
-        if (sdram != that.sdram) {
-            System.out.println("sdram");
-            return false;
-        }
-        if (!Objects.equals(ipAddress, that.ipAddress)) {
-            System.out.println("ipAddress");
-            return false;
-        }
-        if (virtual != that.virtual) {
-            System.out.println("virtual");
-            return false;
-        }
-        if (!tagIds.equals(that.tagIds)) {
-            System.out.println("tagIds " + tagIds + " != " + that.tagIds);
-            return false;
-        }
-        if (!nearestEthernet.equals(that.nearestEthernet)) {
-            System.out.println("router");
-            return false;
-        }
-        return true;
+        return difference((Chip) obj) == null;
     }
 
+    /**
+     * Describes one difference found between this machine and another machine.
+     *
+     * This method will always return null if no difference is found between
+     *      the two machines.
+     * So semantically is the same as Equals except that this works if other
+     *      is a super class of machine
+     *      in which case only the share variables are compared.
+     *
+     * This method returns as soon as it has found a difference so there may
+     *      be other not specified differences.
+     *
+     * Warning This method could change over time,
+     *     so there is no implied guarantee
+     *     to the order that variables are checked
+     *     or to the message that is returned.
+     *
+     * The only guarantee is that null is returned if no difference is detected.
+     *
+     * @param other Another chip to check if it has the same variables.
+     * @return null if no difference is detected otherwise a string.
+     */
+    public String difference(Chip that) {
+        if (!location.equals(that.location)) {
+            return "Location";
+        }
+        if (!monitorProcessors.equals(that.monitorProcessors)) {
+            return "Monitors";
+        }
+        if (!userProcessors.equals(that.userProcessors)) {
+             return "userProcessors";
+        }
+        if (!router.equals(that.router)) {
+             return "router";
+        }
+        if (sdram != that.sdram) {
+            return "sdram";
+        }
+        if (!Objects.equals(ipAddress, that.ipAddress)) {
+            return "ipAddress";
+        }
+        if (virtual != that.virtual) {
+            return "virtual";
+        }
+        if (!tagIds.equals(that.tagIds)) {
+            return "tagIds " + tagIds + " != " + that.tagIds;
+        }
+        if (!nearestEthernet.equals(that.nearestEthernet)) {
+            return "router";
+        }
+        return null;
+    }
 }
