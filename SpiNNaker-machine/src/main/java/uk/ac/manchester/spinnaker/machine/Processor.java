@@ -156,16 +156,16 @@ public final class Processor implements Comparable<Processor> {
             }
         }
         if (this.dtcmAvailable < other.dtcmAvailable) {
-           return -1;
+            return -1;
         }
         if (this.dtcmAvailable > other.dtcmAvailable) {
-           return 1;
+            return 1;
         }
         if (this.clockSpeed < other.clockSpeed) {
-           return -1;
+            return -1;
         }
         if (this.clockSpeed > other.clockSpeed) {
-           return 1;
+            return 1;
         }
         return 0;
     }

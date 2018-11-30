@@ -70,23 +70,29 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 * @author Donal Fellows
 	 */
 	static final class RecordingRegionsDescriptor {
-		/** The number of recording regions. */
+		/** Number of recording regions. */
 		int numRegions;
-		/** Tag associated with recording regions. */
+		/** Tag for sending buffered output. */
 		int tag;
-		/** Tag associated with streaming data out. */
+		/** Destination for sending buffered output. */
 		int tagDestination;
-		/** SDP port to use. */
+		/** SDP port for receiving buffering messages. */
 		int sdpPort;
-		/** How much to accumulate before sending out. */
+		/** Minimum size of data to start buffering out at. */
 		int bufferSizeBeforeRequest;
-		/** How long to wait before sending out. */
+		/** Minimum interval between buffering out actions. */
 		int timeBetweenTriggers;
-		/** Sequence number last sent out. */
+		/** Last sequence number used when buffering out. */
 		int lastSequenceNumber;
-		/** The pointers to regions. Size, {@link #numRegions} entries. */
+		/**
+		 * Array of addresses of recording regions. This actually points to the
+		 * channel's buffer state. Size, {@link #numRegions} entries.
+		 */
 		int[] regionPointers;
-		/** The sizes of regions. Size, {@link #numRegions} entries. */
+		/**
+		 * Array of sizes of recording regions. Size, {@link #numRegions}
+		 * entries.
+		 */
 		int[] regionSizes;
 
 		private RecordingRegionsDescriptor(int numRegions, ByteBuffer buffer) {
@@ -105,15 +111,15 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		private static final int REGION_POINTERS_START = 7;
 
 		/**
-		 * Create an instance of the record.
+		 * Get an instance of this descriptor from SpiNNaker.
 		 *
 		 * @param txrx
-		 *            The transceiver.
+		 *            The transceiver to use to do the reading.
 		 * @param chip
-		 *            The chip to ask.
+		 *            The chip to read from.
 		 * @param address
 		 *            Where on the chip to read the region data from.
-		 * @return The descriptor.
+		 * @return The descriptor. Not validated.
 		 * @throws IOException
 		 *             If I/O fails.
 		 * @throws ProcessException
@@ -156,6 +162,13 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		/** Last operation performed on the buffer. Read or write (8 bits) */
 		boolean lastBufferOperationWasWrite;
 
+		/**
+		 * Deserialize an instance of this class.
+		 *
+		 * @param buffer
+		 *            Little-endian buffer to read from. Must be (at least) 24
+		 *            bytes long.
+		 */
 		ChannelBufferState(ByteBuffer buffer) {
 			start = buffer.getInt();
 			currentWrite = buffer.getInt();

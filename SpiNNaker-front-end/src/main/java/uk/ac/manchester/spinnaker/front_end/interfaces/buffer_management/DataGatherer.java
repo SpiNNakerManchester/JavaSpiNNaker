@@ -153,16 +153,18 @@ public abstract class DataGatherer {
 			StorageException, InterruptedException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
-		if (caught != null) {
-			try {
-				throw caught;
-			} catch (IOException | ProcessException | StorageException
-					| RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
-			}
-		}
+        if (caught != null) {
+    		if (caught != null) {
+    			try {
+    				throw caught;
+    			} catch (IOException | ProcessException | StorageException
+    					| RuntimeException e) {
+    				throw e;
+    			} catch (Exception e) {
+    				throw new RuntimeException("unexpected exception", e);
+    			}
+    		}
+        }
 		return missCount;
 	}
 
