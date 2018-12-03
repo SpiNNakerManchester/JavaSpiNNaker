@@ -263,9 +263,8 @@ public class Transceiver extends UDPTransceiver
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
-	private final Map<BMPCoords, ConnectionSelector<BMPConnection>>
-		// force line wrap
-		bmpSelectors = new HashMap<>();
+	private final Map<BMPCoords,
+			ConnectionSelector<BMPConnection>> bmpSelectors = new HashMap<>();
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
 	/** The nearest neighbour start ID. */
