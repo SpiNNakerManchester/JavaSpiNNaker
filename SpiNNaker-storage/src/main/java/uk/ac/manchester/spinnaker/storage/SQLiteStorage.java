@@ -247,7 +247,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			while (rs.next()) {
 				return rs.getInt(FIRST);
 			}
-			return 1; // Default
+			throw new IllegalStateException("no current run counter");
 		}
 	}
 
@@ -268,7 +268,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			while (rs.next()) {
 				return rs.getInt(FIRST);
 			}
-			return 1; // Default
+			throw new IllegalStateException("no current reset counter");
 		}
 	}
 
