@@ -188,7 +188,7 @@ public class Transceiver extends UDPTransceiver
 	/** The version of the board being connected to. */
 	private MachineVersion version;
 	/** The discovered machine model. */
-	Machine machine;
+	private Machine machine;
 	private MachineDimensions dimensions;
 	/**
 	 * A set of chips to ignore in the machine. Requests for a "machine" will

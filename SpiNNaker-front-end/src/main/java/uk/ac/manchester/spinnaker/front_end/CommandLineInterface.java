@@ -66,8 +66,8 @@ public final class CommandLineInterface {
 	public static void main(String... args) {
 		if (args.length < 1) {
 			System.err.printf(
-					"wrong # args: must be \"java -jar %s <command> ...\"\n",
-					JAR_FILE);
+                "wrong # args: must be \"java -jar %s <command> ...\"\n",
+                JAR_FILE);
 			System.exit(1);
 		}
 		try {
@@ -86,7 +86,7 @@ public final class CommandLineInterface {
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], "download, or version");
+                    args[0], "download, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {

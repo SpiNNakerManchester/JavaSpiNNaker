@@ -96,7 +96,6 @@ public class VirtualMachine extends Machine {
                 }
             }
         }
-        //System.out.println(allChips.keySet());
         for (ChipLocation location: allChips.keySet()) {
             Router router = getRouter(location, allChips, ignoreLinks);
             InetAddress ipAddress = getIpaddress(location, roots);

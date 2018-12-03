@@ -265,6 +265,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/target/**</exclude>
 							<exclude>README.md</exclude>
 						</excludes>
+						<consoleOutput>true</consoleOutput>
 					</configuration>
 				</plugin>
 			</plugins>

@@ -99,10 +99,10 @@ public final class SpiNNakerTriadGeometry {
         for (int x = 0; x < triadHeight; x++) {
             for (int y = 0; y < triadWidth; y++) {
                 Location bestCalc = locateNearestRoot(x, y,
-                        calulationEthernets);
+                    calulationEthernets);
                 ChipLocation key = new ChipLocation(x, y);
                 localChipCoordinates.put(key,
-                        new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
+                    new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
                 if (bestCalc.x == 0 && bestCalc.y == 0) {
                     singleBoardCoordinates.add(key);
                 }
@@ -136,7 +136,7 @@ public final class SpiNNakerTriadGeometry {
         float dx = x - xCentre;
         float dy = y - yCentre;
         return Math.max(Math.abs(dx),
-                Math.max(Math.abs(dy), Math.abs(dx - dy)));
+            Math.max(Math.abs(dy), Math.abs(dx - dy)));
     }
 
     /**
@@ -164,8 +164,8 @@ public final class SpiNNakerTriadGeometry {
         float bestDistance = Float.MAX_VALUE;
         for (Location ethernet : roots) {
             float calc = hexagonalMetricDistance(x, y,
-                    ethernet.x + (float) xCenterer,
-                    ethernet.y + (float) yCenterer);
+                ethernet.x + (float) xCenterer,
+                ethernet.y + (float) yCenterer);
             if (calc < bestDistance) {
                 bestDistance = calc;
                 bestCalc = ethernet;
@@ -192,12 +192,12 @@ public final class SpiNNakerTriadGeometry {
     public ChipLocation getRootChip(HasChipLocation chip, int width,
             int height) {
         ChipLocation adjusted = new ChipLocation(chip.getX() % triadHeight,
-                chip.getY() % triadWidth);
+            chip.getY() % triadWidth);
         ChipLocation localChip = localChipCoordinates.get(adjusted);
 
         return new ChipLocation(
-                (chip.getX() - localChip.getX() + height) % height,
-                (chip.getY() - localChip.getY() + width) % width);
+            (chip.getX() - localChip.getX() + height) % height,
+            (chip.getY() - localChip.getY() + width) % width);
     }
 
     /**
@@ -244,9 +244,9 @@ public final class SpiNNakerTriadGeometry {
             maxHeight = dimensions.height;
         } else {
             maxWidth = dimensions.width
-                    - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
+                - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
             maxHeight = dimensions.height
-                    - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+                - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
             if (maxWidth < 0 || maxHeight < 0) {
                 results.add(ChipLocation.ZERO_ZERO);
                 return results;
@@ -281,6 +281,12 @@ public final class SpiNNakerTriadGeometry {
         return singleBoardCoordinates.iterator();
     }
 
+    /**
+     * Allows forEach to be called on all ChipLocations in
+     *      SingleBoardCoordinates.
+     *
+     * @param action The action to be performed for each element
+     */
     public void singleBoardForEach(Consumer<ChipLocation> action) {
         singleBoardCoordinates.forEach(action);
     }
@@ -323,9 +329,9 @@ public final class SpiNNakerTriadGeometry {
             this.y = y;
         }
 
-        // @Override
-        // public String toString(){
-        // return ("(" + x + ", " + y + ")");
-        // }
+        @Override
+        public String toString() {
+            return ("(" + x + ", " + y + ")");
+        }
     }
 }

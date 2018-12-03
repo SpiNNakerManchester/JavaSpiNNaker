@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -272,7 +273,14 @@ class MockWriteTransceiver extends Transceiver {
 
 	@Override
 	void updateMachine() {
-		this.machine = getMachineDetails();
+		Machine details = getMachineDetails();
+		try {
+			Field machineField = Transceiver.class.getField("machine");
+			machineField.setAccessible(true);
+			machineField.set(this, details);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
