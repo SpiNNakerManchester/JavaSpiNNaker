@@ -370,7 +370,7 @@ public class TransceiverITCase {
 		try (Transceiver txrx =
 				new Transceiver(boardConfig.remotehost, boardConfig.boardVersion,
 						boardConfig.bmpNames, null, downChips, downCores, null,
-						null, boardConfig.autoDetectBMP, null, null, null)) {
+						boardConfig.autoDetectBMP, null, null, null)) {
 
 			section("Version Information", () -> boardReady(txrx));
 

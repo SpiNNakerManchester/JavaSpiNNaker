@@ -61,7 +61,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Collection<ChipLocation> ignoreChips;
 	private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
 	private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
-	private final Integer maxCoreID;
 	private final Integer maxSDRAMSize;
 
 	private static <T> Collection<T> def(Collection<T> c) {
@@ -92,9 +91,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The core blacklist.
 	 * @param ignoreLinksMap
 	 *            The link blacklist.
-	 * @param maxCoreID
-	 *            The maximum core ID, or {@code null} for the system's standard
-	 *            limit. For debugging.
 	 * @param maxSDRAMSize
 	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
@@ -108,14 +104,12 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 			Collection<ChipLocation> ignoreChips,
 			Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
-			Integer maxCoreID, Integer maxSDRAMSize,
-			RetryTracker retryTracker) {
+			Integer maxSDRAMSize, RetryTracker retryTracker) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
 				THROTTLED, THROTTLED - 1, retryTracker);
 		this.ignoreChips = def(ignoreChips);
 		this.ignoreCoresMap = def(ignoreCoresMap);
 		this.ignoreLinksMap = def(ignoreLinksMap);
-		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
 		this.chipInfo = new HashMap<>();
 	}
@@ -197,13 +191,12 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private Chip makeChip(MachineDimensions size, ChipSummaryInfo chipInfo) {
 		// Create the processor list
 		List<Processor> processors = new ArrayList<>();
-		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
 		ChipLocation location = chipInfo.chip.asChipLocation();
 		Collection<Integer> ignoreCores =
 				ignoreCoresMap.getOrDefault(location, emptyList());
-		for (int id = 0; id <= maxCore; id++) {
+		for (int id = 0; id <= chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
-			if (!ignoreCores.contains(id)) {
+			if (ignoreCores != null && !ignoreCores.contains(id)) {
 				if (id == 0) {
 					processors.add(Processor.factory(id, true));
 				} else if (chipInfo.coreStates.get(id) == IDLE) {
