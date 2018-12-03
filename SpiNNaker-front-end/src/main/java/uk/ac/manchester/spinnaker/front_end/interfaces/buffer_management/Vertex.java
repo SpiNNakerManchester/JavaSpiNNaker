@@ -35,7 +35,7 @@ public class Vertex {
     final int recordingRegionBaseAddress;
 
     /** The IDs of the regions recording. */
-    final int[] recordedRegionIds;
+    private final int[] recordedRegionIds;
 
 	/**
 	 * Create a minimal vertex, possibly using an unmarshaller.

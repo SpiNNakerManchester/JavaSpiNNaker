@@ -67,7 +67,7 @@ public class Generator {
 		Generator spec = new Generator();
 		specGen.generate(spec);
 		return new ByteArrayInputStream(spec.buffer.array(), 0,
-				spec.buffer.position());
+            spec.buffer.position());
 	}
 
 	@FunctionalInterface

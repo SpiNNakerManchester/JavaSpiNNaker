@@ -187,7 +187,7 @@ public class DataReceiver {
                 int length = endState.endAddress - endState.getCurrentRead();
                 if (length < 0) {
                     throw new IOException(
-                            "The amount of data to read is negative!");
+                        "The amount of data to read is negative!");
                 }
                 readSomeData(location, endState.getCurrentRead(), length);
                 length = endState.currentWrite - endState.startAddress;
@@ -213,8 +213,8 @@ public class DataReceiver {
             Placement placement, int recordingDataAddress)
             throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
-                placement.getScampCore(),
-                recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
+            placement.getScampCore(),
+            recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
         int num =  data.getInt(0);
         return num;
     }
@@ -236,9 +236,9 @@ public class DataReceiver {
             Placement placement, int recordingDataAddress, int region)
             throws IOException, ProcessException {
         ByteBuffer data = transceiver.readMemory(
-                placement.getScampCore(),
-                recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
-                        + (region * WORD_SIZE), WORD_SIZE);
+            placement.getScampCore(),
+            recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
+                + (region * WORD_SIZE), WORD_SIZE);
         return data.getInt(0);
     }
 
@@ -247,8 +247,8 @@ public class DataReceiver {
             throws IOException, ProcessException {
         // retrieve channel state memory area
         ByteBuffer channelStateData = requestData(
-                placement, stateRegionBaseAddress,
-                ChannelBufferState.STATE_SIZE);
+            placement, stateRegionBaseAddress,
+            ChannelBufferState.STATE_SIZE);
         return new ChannelBufferState(channelStateData);
     }
 
@@ -270,46 +270,4 @@ public class DataReceiver {
             throws IOException, ProcessException {
         return transceiver.readMemory(location.getScampCore(), address, length);
     }
-
-/*    private void processLastAck(
-    RegionLocation location, ChannelBufferState endState) {
-        // if the last ACK packet has not been processed on the chip,
-        // process it now
-        // TODO python retrieves the value and then overwrites it but WHY!
-        HostDataRead lastSentAck = receivedData.lastSentPacketToCore(location);
-
-        EIEIOMessageFactory.readCommandMessage(lastSentAck);
-
-
-        lastSentAck = create_eieio_command.read_eieio_command_message(
-            last_sent_ack.data, 0)
-        if not isinstance(last_sent_ack, HostDataRead):
-            raise Exception(
-                "Something somewhere went terribly wrong; looking for a "
-                "HostDataRead packet, while I got {0:s}".format(last_sent_ack))
-
-        start_ptr = end_state.start_address
-        write_ptr = end_state.current_write
-        end_ptr = end_state.end_address
-        read_ptr = end_state.current_read
-
-        for i in xrange(last_sent_ack.n_requests):
-            in_region = region_id == last_sent_ack.region_id(i)
-            if in_region and not end_state.is_state_updated:
-                read_ptr += last_sent_ack.space_read(i)
-                if (read_ptr == write_ptr or
-                        (read_ptr == end_ptr and write_ptr == start_ptr)):
-                    end_state.update_last_operation(
-                        BUFFERING_OPERATIONS.BUFFER_READ.value)
-                if read_ptr == end_ptr:
-                    read_ptr = start_ptr
-                elif read_ptr > end_ptr:
-                    raise Exception(
-                        "Something somewhere went terribly wrong; I was "
-                        "reading beyond the region area")
-        end_state.update_read_pointer(read_ptr)
-        end_state.set_update_completed()
-
-    }
-*/
 }
