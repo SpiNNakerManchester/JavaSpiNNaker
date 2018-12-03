@@ -352,9 +352,8 @@ public class Transceiver extends UDPTransceiver
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
-		if (host != null) {
-			log.info("Creating transceiver for {}", host);
-		}
+		log.info("Creating transceiver for {}", requireNonNull(host,
+				"SpiNNaker machine host name must be not null"));
 		List<Connection> connections = new ArrayList<>();
 
 		/*
