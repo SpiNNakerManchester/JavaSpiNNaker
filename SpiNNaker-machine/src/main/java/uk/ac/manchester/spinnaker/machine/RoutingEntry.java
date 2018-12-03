@@ -16,16 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.IntStream.range;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
-    private static final int NUM_PROCESSORS = 32 - Direction.values().length;
-    private static final int NUM_LINKS = Direction.values().length;
-
     private final List<Integer> processorIDs = new ArrayList<>();
     private final List<Direction> linkIDs = new ArrayList<>();
 
@@ -40,9 +40,10 @@ public class RoutingEntry {
      *            the encoded route
      */
     public RoutingEntry(int route) {
-        range(0, NUM_PROCESSORS).filter(pi -> bitset(route, NUM_LINKS + pi))
+        range(0, MAX_NUM_CORES)
+                .filter(pidx -> bitset(route, MAX_LINKS_PER_ROUTER + pidx))
                 .forEach(processorIDs::add);
-        range(0, NUM_LINKS).filter(li -> bitset(route, li))
+        range(0, MAX_LINKS_PER_ROUTER).filter(lidx -> bitset(route, lidx))
                 .forEach(this::addLinkID);
     }
 
@@ -70,7 +71,7 @@ public class RoutingEntry {
     public int encode() {
         int route = 0;
         for (Integer processorID : processorIDs) {
-            route |= 1 << (NUM_LINKS + processorID);
+            route |= 1 << (MAX_LINKS_PER_ROUTER + processorID);
         }
         for (Direction linkID : linkIDs) {
             route |= 1 << linkID.id;
@@ -88,7 +89,7 @@ public class RoutingEntry {
      * @return An unmodifiable over the processor IDs.
      */
     public List<Direction> getLinkIDs() {
-        return Collections.unmodifiableList(linkIDs);
+        return unmodifiableList(linkIDs);
     }
 
     /**
@@ -101,7 +102,7 @@ public class RoutingEntry {
      * @return An unmodifiable view over the link IDs in natural order.
      */
     public List<Integer> getProcessorIDs() {
-        return Collections.unmodifiableList(processorIDs);
+        return unmodifiableList(processorIDs);
     }
 
     /**
@@ -126,10 +127,10 @@ public class RoutingEntry {
      *            and may or may not be ignore prior to that.
      */
     public void addProcessorID(Integer newValue) {
-        if (newValue >= NUM_PROCESSORS || newValue < 0) {
+        if (newValue >= MAX_NUM_CORES || newValue < 0) {
             throw new IllegalArgumentException(
                     "Processor IDs must be between 0 and "
-                    + NUM_PROCESSORS + " found " + newValue);
+                            + (MAX_NUM_CORES - 1) + " found " + newValue);
         }
         if (!processorIDs.contains(newValue)) {
             processorIDs.add(newValue);
