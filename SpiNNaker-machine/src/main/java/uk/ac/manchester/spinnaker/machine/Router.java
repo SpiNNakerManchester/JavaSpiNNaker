@@ -316,7 +316,6 @@ public final class Router implements Iterable<Link> {
             return true;
         }
         if (!(obj instanceof Router)) {
-            System.out.println("type");
             return false;
         }
         Router that = (Router) obj;

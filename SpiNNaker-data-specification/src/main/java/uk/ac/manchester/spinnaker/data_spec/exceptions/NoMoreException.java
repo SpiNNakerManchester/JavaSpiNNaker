@@ -34,8 +34,8 @@ public class NoMoreException extends DataSpecificationException {
 	 */
 	public NoMoreException(int remainingSpace, int length, int currentRegion) {
 		super("Space unavailable to write all the elements requested by the "
-				+ "write operation. Space available: " + remainingSpace
-				+ "; space requested: " + length + " for region "
-				+ currentRegion + ".");
+            + "write operation. Space available: " + remainingSpace
+            + "; space requested: " + length + " for region "
+            + currentRegion + ".");
 	}
 }

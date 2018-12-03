@@ -36,7 +36,7 @@ public class UnimplementedDSECommandException
 	 */
 	public UnimplementedDSECommandException(int index, Commands command) {
 		super(format("Command %s (at index %d) in the data specification "
-				+ "executor has not yet been implemented", command, index));
+            + "executor has not yet been implemented", command, index));
 	}
 
 	/**

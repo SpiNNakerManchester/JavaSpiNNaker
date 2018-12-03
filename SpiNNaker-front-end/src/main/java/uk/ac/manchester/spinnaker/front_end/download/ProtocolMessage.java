@@ -44,6 +44,6 @@ public abstract class ProtocolMessage extends SDPMessage {
 	protected ProtocolMessage(HasCoreLocation destination, int destPort,
 			ByteBuffer payload) {
 		super(new SDPHeader(REPLY_NOT_EXPECTED, destination, destPort),
-				payload);
+            payload);
 	}
 }

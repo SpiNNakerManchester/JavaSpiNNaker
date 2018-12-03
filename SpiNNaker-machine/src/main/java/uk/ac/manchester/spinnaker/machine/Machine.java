@@ -41,7 +41,6 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.Counter;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
@@ -309,7 +308,7 @@ public class Machine implements Iterable<Chip> {
     }
 
     @Override
-   /**
+    /**
      * Returns an iterator over the Chips in this Machine.
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
@@ -841,35 +840,7 @@ public class Machine implements Iterable<Chip> {
         };
     }
 
-    /**
-     * Reserves (if possible) one extra processor on each Chip as a monitor.
-     * <p>
-     * Chips where this was not possible are added as failedChips.
-     *
-     * @return Locations of the new monitor processors and the failed chips.
-     * @deprecated Will be removed if confirmed to never be called any more.
-     */
-    @Deprecated
-    public final CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
-        maxUserProssorsOnAChip = 0;
-        CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
-
-        this.chips.forEach((location, chip) -> {
-            @SuppressWarnings("deprecation")
-            int p = chip.reserveASystemProcessor();
-            if (p == -1) {
-                result.addFailedChip(chip);
-            } else {
-                result.addCore(location, p);
-            }
-            if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
-                maxUserProssorsOnAChip = chip.nUserProcessors();
-            }
-        });
-        return result;
-    }
-
-    /**
+     /**
      * The maximum number of user cores on any chip.
      * <p>
      * A user core is defined as one that has not been reserved as a monitor.
@@ -881,48 +852,6 @@ public class Machine implements Iterable<Chip> {
      */
     public final int maximumUserCoresOnChip() {
         return maxUserProssorsOnAChip;
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      forEach so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores1() {
-        Counter count = new Counter();
-        this.chips.forEach((location, chip) -> {
-            count.add(chip.nUserProcessors());
-        });
-        return count.get();
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      stream so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores2() {
-        return chips.values().stream().map(Chip::nUserProcessors).
-                mapToInt(Integer::intValue).sum();
-
     }
 
     /**
