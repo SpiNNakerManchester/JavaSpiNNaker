@@ -307,12 +307,12 @@ public class Transceiver extends UDPTransceiver
 	 * @param numberOfBoards
 	 *            a number of boards expected to be supported, or {@code null},
 	 *            which defaults to a single board
-	 * @param ignoreChips
+	 * @param ignoredChips
 	 *            An optional set of chips to ignore in the machine. Requests
 	 *            for a "machine" will have these chips excluded, as if they
 	 *            never existed. The processors of the specified chips are
 	 *            ignored.
-	 * @param ignoreCores
+	 * @param ignoredCores
 	 *            An optional map of cores to ignore in the machine. Requests
 	 *            for a "machine" will have these cores excluded, as if they
 	 *            never existed.
@@ -345,8 +345,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
-			Integer numberOfBoards, List<ChipLocation> ignoreChips,
-			Map<ChipLocation, Collection<Integer>> ignoreCores,
+			Integer numberOfBoards, List<ChipLocation> ignoredChips,
+			Map<ChipLocation, Collection<Integer>> ignoredCores,
 			Map<ChipLocation, Collection<Direction>> ignoredLinks,
 			Integer maxCoreID, boolean autodetectBMP,
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
@@ -391,14 +391,14 @@ public class Transceiver extends UDPTransceiver
 		connections.add(new BootConnection(host, bootPortNumber));
 
 		this.version = version;
-		if (ignoreChips != null) {
-			this.ignoreChips.addAll(ignoreChips);
+		if (ignoredChips != null) {
+			ignoreChips.addAll(ignoredChips);
 		}
-		if (ignoreCores != null) {
-			this.ignoreCores.putAll(ignoreCores);
+		if (ignoredCores != null) {
+			ignoreCores.putAll(ignoredCores);
 		}
-		if (ignoreLinks != null) {
-			this.ignoreLinks.putAll(ignoreLinks);
+		if (ignoredLinks != null) {
+			ignoreLinks.putAll(ignoredLinks);
 		}
 		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
@@ -490,11 +490,11 @@ public class Transceiver extends UDPTransceiver
 	 * @param connections
 	 *            The connections to use in the transceiver. Note that the
 	 *            transceiver may make additional connections.
-	 * @param ignoreChips
+	 * @param ignoredChips
 	 *            Blacklisted chips.
-	 * @param ignoreCores
+	 * @param ignoredCores
 	 *            Blacklisted cores.
-	 * @param ignoreLinks
+	 * @param ignoredLinks
 	 *            Blacklisted links.
 	 * @param maxCoreID
 	 *            If not {@code null}, the maximum core ID to allow.
@@ -511,22 +511,22 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections,
-			Collection<ChipLocation> ignoreChips,
-			Map<ChipLocation, Collection<Integer>> ignoreCores,
-			Map<ChipLocation, Collection<Direction>> ignoreLinks,
+			Collection<ChipLocation> ignoredChips,
+			Map<ChipLocation, Collection<Integer>> ignoredCores,
+			Map<ChipLocation, Collection<Direction>> ignoredLinks,
 			Integer maxCoreID,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
 		this.version = version;
-		if (ignoreChips != null) {
-			this.ignoreChips.addAll(ignoreChips);
+		if (ignoredChips != null) {
+			ignoreChips.addAll(ignoredChips);
 		}
-		if (ignoreCores != null) {
-			this.ignoreCores.putAll(ignoreCores);
+		if (ignoredCores != null) {
+			ignoreCores.putAll(ignoredCores);
 		}
-		if (ignoreLinks != null) {
-			this.ignoreLinks.putAll(ignoreLinks);
+		if (ignoredLinks != null) {
+			ignoreLinks.putAll(ignoredLinks);
 		}
 		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
