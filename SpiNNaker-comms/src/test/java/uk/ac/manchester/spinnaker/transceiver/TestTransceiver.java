@@ -279,7 +279,7 @@ class MockWriteTransceiver extends Transceiver {
 			machineField.setAccessible(true);
 			machineField.set(this, details);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
