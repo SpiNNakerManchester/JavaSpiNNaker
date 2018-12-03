@@ -479,7 +479,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		try {
 			channel.disconnect();
 		} catch (Exception e) {

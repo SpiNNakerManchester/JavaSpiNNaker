@@ -25,7 +25,9 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -84,10 +86,13 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		int lastSequenceNumber;
 		/**
 		 * Array of addresses of recording regions. This actually points to the
-		 * channel's buffer state.
+		 * channel's buffer state. Size, {@link #numRegions} entries.
 		 */
 		int[] regionPointers;
-		/** Array of sizes of recording regions. */
+		/**
+		 * Array of sizes of recording regions. Size, {@link #numRegions}
+		 * entries.
+		 */
 		int[] regionSizes;
 
 		private RecordingRegionsDescriptor(int numRegions, ByteBuffer buffer) {
@@ -113,8 +118,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		 * @param chip
 		 *            The chip to read from.
 		 * @param address
-		 *            Where on the chip to read it from.
-		 * @return The chip's descriptor. Not validated.
+		 *            Where on the chip to read the region data from.
+		 * @return The descriptor. Not validated.
 		 * @throws IOException
 		 *             If I/O fails.
 		 * @throws ProcessException
@@ -136,7 +141,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	static class ChannelBufferState {
+	@SuppressWarnings("unused")
+	private static class ChannelBufferState {
 		/** Size of this structure in bytes. */
 		static final int SIZE = 24;
 		/** The start buffering area memory address. (32 bits) */
@@ -190,30 +196,50 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		return rrd;
 	}
 
-	private ChannelBufferState getState(Placement placement, int regionID)
-			throws IOException, ProcessException {
+	private ChannelBufferState getState(Placement placement,
+			int recordingRegionIndex) throws IOException, ProcessException {
 		ChipLocation chip = placement.asChipLocation();
 		RecordingRegionsDescriptor descriptor = getDescriptor(chip,
 				placement.getVertex().recordingRegionBaseAddress);
 		return new ChannelBufferState(txrx.readMemory(chip,
-				descriptor.regionPointers[regionID], ChannelBufferState.SIZE));
+				descriptor.regionPointers[recordingRegionIndex],
+				ChannelBufferState.SIZE));
+	}
+
+	private static class RecordingRegion extends Region {
+		public final int recordingIndex;
+
+		RecordingRegion(HasCoreLocation core, int regionIndex,
+				ChannelBufferState state) {
+			super(core, regionIndex, state.start,
+					state.currentWrite - state.start);
+			this.recordingIndex = state.regionId;
+		}
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException {
-		ChannelBufferState state = getState(placement, regionID);
-		Region r = new Region();
-		r.core = placement.asCoreLocation();
-		r.regionID = state.regionId;
-		r.startAddress = state.start;
-		r.size = state.end - state.start;
-		return r;
+	protected Region getRegion(Placement placement, int recordingRegionIndex)
+			throws IOException, ProcessException, StorageException {
+		int dseIndex = -1; // TODO use the right value
+		ChannelBufferState state = getState(placement, recordingRegionIndex);
+		try {
+			database.noteRecordingVertex(
+					// TODO put the right values in!
+					new Region(placement.getScampCore(), dseIndex, 0, 0),
+					placement.getVertex().label);
+		} catch (StorageException e) {
+			/*
+			 * Ignore; assume that the DB was already populated with the
+			 * information.
+			 */
+		}
+		return new RecordingRegion(placement, dseIndex, state);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		database.appendRegionContents(r.core, r.regionID, data);
+		RecordingRegion rr = (RecordingRegion) r;
+		database.appendRecordingContents(rr, rr.recordingIndex, data);
 	}
 }
