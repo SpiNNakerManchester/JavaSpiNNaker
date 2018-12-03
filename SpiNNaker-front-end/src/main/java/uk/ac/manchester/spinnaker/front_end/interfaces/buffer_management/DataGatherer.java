@@ -48,6 +48,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifer;
+import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -55,8 +56,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
  *
- * @author Alan Stokes
  * @author Donal Fellows
+ * @author Alan Stokes
  */
 public abstract class DataGatherer {
 	/**
@@ -148,11 +149,11 @@ public abstract class DataGatherer {
 	 * @throws InterruptedException
 	 *             If the wait is interrupted.
 	 */
-	public int waitForTasksToFinish() throws InterruptedException, IOException,
-			ProcessException, StorageException {
+	public int waitForTasksToFinish() throws IOException, ProcessException,
+			StorageException, InterruptedException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
-        if (this.caught != null) {
+        if (caught != null) {
     		if (caught != null) {
     			try {
     				throw caught;
@@ -165,22 +166,6 @@ public abstract class DataGatherer {
     		}
         }
 		return missCount;
-	}
-
-	/**
-	 * Describes where to download data from.
-	 *
-	 * @author Donal Fellows
-	 */
-	protected static class Region {
-		/** The region's owning core. */
-		CoreLocation core;
-		/** The region index. */
-		int regionID;
-		/** The region start index. */
-		int startAddress;
-		/** The region size. */
-		int size;
 	}
 
 	private static class GatherDownloadConnection extends SCPConnection {
@@ -280,8 +265,9 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory((HasChipLocation) r.core,
 						r.startAddress, r.size));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException | ProcessException | StorageException
+				| RuntimeException e) {
+			log.warn("problem when downloading a board's data", e);
 			this.caught = e;
 		}
 	}
@@ -315,9 +301,11 @@ public abstract class DataGatherer {
 	 *             If communication fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database doesn't like something.
 	 */
 	protected abstract Region getRegion(Placement placement, int regionID)
-			throws IOException, ProcessException;
+			throws IOException, ProcessException, StorageException;
 
 	/**
 	 * Store the data retrieved from a region.
@@ -357,7 +345,8 @@ public abstract class DataGatherer {
 				throws IOException {
 			this.extraMonitor = extraMonitor.asCoreLocation();
 			dataReceiver = ByteBuffer.allocate(region.size);
-			maxSeqNum = calculateMaxSeqNum(region.size);
+			maxSeqNum = ceildiv(region.size,
+					DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.sendStart(this.extraMonitor, region.startAddress, region.size);
 			finished = false;
@@ -373,11 +362,6 @@ public abstract class DataGatherer {
 				finished = true;
 			}
 			return null;
-		}
-
-		private int calculateMaxSeqNum(int size) {
-			return ceildiv(size,
-					DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
 		}
 
 		private void processOnePacket() throws Exception {

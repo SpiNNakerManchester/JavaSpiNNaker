@@ -1568,11 +1568,17 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void readMemory(HasCoreLocation core, int region, int baseAddress,
-			int length, Storage storage)
+	public void readRegion(Storage.Region region, Storage storage)
 			throws IOException, ProcessException, StorageException {
-		new ReadMemoryProcess(scpSelector, this).readMemory(core, region,
-				baseAddress, length, storage);
+		new ReadMemoryProcess(scpSelector, this).readMemory(region, storage);
+	}
+
+	@Override
+	public void readRecordingRegion(Storage.Region region, int recordingIndex,
+			Storage storage)
+			throws IOException, ProcessException, StorageException {
+		new ReadMemoryProcess(scpSelector, this).readMemory(region,
+				recordingIndex, storage);
 	}
 
 	@Override
