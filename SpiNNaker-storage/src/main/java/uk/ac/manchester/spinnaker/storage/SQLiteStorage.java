@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
@@ -90,42 +90,63 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		super(connectionProvider);
 	}
 
-	public static class Board implements HasChipLocation {
-		final int id;
-		public final int ethernetX;
-		public final int ethernetY;
+	/**
+	 * A board which has data specifications loaded onto it.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class Board {
+		private final int id;
+		/**
+		 * The virtual location of this board.
+		 */
+		public final ChipLocation ethernet;
+		/**
+		 * The network address of this board.
+		 */
 		public final String ethernetAddress;
 
 		private Board(int id, int etherx, int ethery, String addr) {
 			this.id = id;
-			this.ethernetX = etherx;
-			this.ethernetY = ethery;
+			this.ethernet = new ChipLocation(etherx, ethery);
 			this.ethernetAddress = addr;
 		}
 
 		@Override
-		public int getX() {
-			return ethernetX;
+		public boolean equals(Object other) {
+			if (other == null || !(other instanceof Board)) {
+				return false;
+			}
+			Board b = (Board) other;
+			return id == b.id;
 		}
 
 		@Override
-		public int getY() {
-			return ethernetY;
+		public int hashCode() {
+			return id;
 		}
 	}
 
+	/**
+	 * A core with a data specification to load.
+	 *
+	 * @author Donal Fellows
+	 */
 	public static class CoreToLoad implements HasCoreLocation {
-		public CoreToLoad(int id, int x, int y, int p, byte[] bytes) {
+		private final int id;
+		private final int x, y, p;
+		/**
+		 * The data specification to execute for this core.
+		 */
+		public final byte[] dataSpec;
+
+		private CoreToLoad(int id, int x, int y, int p, byte[] bytes) {
 			this.id = id;
 			this.x = x;
 			this.y = y;
 			this.p = p;
 			this.dataSpec = bytes;
 		}
-
-		private final int id;
-		private final int x, y, p;
-		public final byte[] dataSpec;
 
 		@Override
 		public int getX() {
@@ -141,6 +162,20 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		public int getP() {
 			return p;
 		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == null || !(other instanceof CoreToLoad)) {
+				return false;
+			}
+			CoreToLoad c = (CoreToLoad) other;
+			return id == c.id;
+		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
 	}
 
 	public List<Board> listBoardsToLoad() throws StorageException {
@@ -153,6 +188,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				ResultSet rs = s.executeQuery()) {
 			List<Board> result = new ArrayList<>();
 			while (rs.next()) {
+				// board_id, ethernet_x, ethernet_y, ethernet_address
 				result.add(new Board(rs.getInt(FIRST), rs.getInt(SECOND),
 						rs.getInt(THIRD), rs.getString(FOURTH)));
 			}
@@ -169,10 +205,12 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	private static List<CoreToLoad> listCoresToLoad(Connection conn,
 			Board board) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
+			// board_id
 			s.setInt(FIRST, board.id);
 			try (ResultSet rs = s.executeQuery()) {
 				List<CoreToLoad> result = new ArrayList<>();
 				while (rs.next()) {
+					// core_id, x, y, processor, content
 					result.add(new CoreToLoad(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
 							rs.getInt(FOURTH), rs.getBytes(FIFTH)));
