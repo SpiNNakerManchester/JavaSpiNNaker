@@ -55,7 +55,7 @@ class TestSQLiteStorage {
 
 	@Test
 	void testBasicOps() throws StorageException {
-		ConnectionProvider engine = new DatabaseEngine(db);
+		ConnectionProvider engine = new DSEDatabaseEngine(db);
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
@@ -82,7 +82,7 @@ class TestSQLiteStorage {
 
 	@Test
 	void testWithExisting() throws StorageException {
-		ConnectionProvider engine = new DatabaseEngine(db);
+		ConnectionProvider engine = new DSEDatabaseEngine(db);
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 

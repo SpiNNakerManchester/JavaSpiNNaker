@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.Storage;
 import uk.ac.manchester.spinnaker.storage.Storage.Region;
@@ -81,7 +81,7 @@ public class BufferedReceivingData {
 	 */
     public BufferedReceivingData(String databasePath) {
         File databaseFile = new File(databasePath);
-		ConnectionProvider engine = new DatabaseEngine(databaseFile);
+		ConnectionProvider engine = new DSEDatabaseEngine(databaseFile);
 		storage = new SQLiteStorage(engine);
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
