@@ -207,39 +207,23 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	private static class RecordingRegion extends Region {
-		public final int recordingIndex;
-
 		RecordingRegion(HasCoreLocation core, int regionIndex,
 				ChannelBufferState state) {
 			super(core, regionIndex, state.start,
 					state.currentWrite - state.start);
-			this.recordingIndex = state.regionId;
 		}
 	}
 
 	@Override
 	protected Region getRegion(Placement placement, int recordingRegionIndex)
 			throws IOException, ProcessException, StorageException {
-		int dseIndex = -1; // TODO use the right value
 		ChannelBufferState state = getState(placement, recordingRegionIndex);
-		try {
-			database.noteRecordingVertex(
-					// TODO put the right values in!
-					new Region(placement.getScampCore(), dseIndex, 0, 0),
-					placement.getVertex().label);
-		} catch (StorageException e) {
-			/*
-			 * Ignore; assume that the DB was already populated with the
-			 * information.
-			 */
-		}
-		return new RecordingRegion(placement, dseIndex, state);
+		return new RecordingRegion(placement, recordingRegionIndex, state);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		RecordingRegion rr = (RecordingRegion) r;
-		database.appendRecordingContents(rr, rr.recordingIndex, data);
+		database.appendRecordingContents(r, data);
 	}
 }

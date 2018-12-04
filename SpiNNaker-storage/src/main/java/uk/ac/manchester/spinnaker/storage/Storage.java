@@ -34,28 +34,6 @@ public interface Storage {
 	 *
 	 * @param region
 	 *            The region descriptor.
-	 * @param reset
-	 *            Which reset phase to retrieve the data for, or {@code null} to
-	 *            use the default (the current phase).
-	 * @param run
-	 *            Which run to retrieve the data for within the given reset
-	 *            phase, or {@code null} to use the default (the current run).
-	 *            It is <em>advised</em> to specify both if either is given.
-	 * @return The region contents.
-	 * @throws IllegalArgumentException
-	 *             If there's no such saved region.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	byte[] getRegionContents(Region region, Integer reset, Integer run)
-			throws StorageException;
-
-	/**
-	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a DSE region of a particular SpiNNaker core for the current run.
-	 *
-	 * @param region
-	 *            The region descriptor.
 	 * @return The region contents.
 	 * @throws IllegalArgumentException
 	 *             If there's no such saved region.
@@ -63,7 +41,7 @@ public interface Storage {
 	 *             If anything goes wrong.
 	 */
 	default byte[] getRegionContents(Region region) throws StorageException {
-		return getRegionContents(region, null, null);
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -72,59 +50,17 @@ public interface Storage {
 	 *
 	 * @param region
 	 *            The (DSE) region descriptor.
-	 * @param recordingIndex
-	 *            The index into the recordings done by that core.
-	 * @param run
-	 *            Which run to retrieve the data for, or {@code null} to use the
-	 *            default (the current run).
 	 * @return The region contents.
 	 * @throws IllegalArgumentException
 	 *             If there's no such saved region.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	byte[] getRecordingRegionContents(Region region, int recordingIndex,
-			Integer run) throws StorageException;
-
-	/**
-	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a recording region of a particular SpiNNaker core for the current run.
-	 *
-	 * @param region
-	 *            The (DSE) region descriptor.
-	 * @param recordingIndex
-	 *            The index into the recordings done by that core.
-	 * @return The region contents.
-	 * @throws IllegalArgumentException
-	 *             If there's no such saved region.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	default byte[] getRecordingRegionContents(Region region, int recordingIndex)
-			throws StorageException {
-		return getRecordingRegionContents(region, recordingIndex, null);
-	}
+	byte[] getRecordingRegionContents(Region region) throws StorageException;
 
 	/**
 	 * Removes some bytes from the database. The bytes represent the contents of
 	 * a DSE region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @param run
-	 *            Which run to delete the data for, or {@code null} to use the
-	 *            default (the current run).
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	void deleteRegionContents(HasCoreLocation core, int region, Integer run)
-			throws StorageException;
-
-	/**
-	 * Removes some bytes from the database. The bytes represent the contents of
-	 * a DSE region of a particular SpiNNaker core in the current run.
 	 *
 	 * @param core
 	 *            The core that has the memory region.
@@ -135,7 +71,7 @@ public interface Storage {
 	 */
 	default void deleteRegionContents(HasCoreLocation core, int region)
 			throws StorageException {
-		deleteRegionContents(core, region, null);
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -262,8 +198,10 @@ public interface Storage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	int storeDSEContents(Region region, byte[] contents)
-			throws StorageException;
+	default int storeDSEContents(Region region, byte[] contents)
+			throws StorageException {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Stores some bytes in the database. The bytes represent the contents of a
@@ -289,49 +227,30 @@ public interface Storage {
 	 * of a recording region of a particular SpiNNaker core.
 	 *
 	 * @param region
-	 *            The DSE region owning the recording.
-	 * @param recordingIndex
-	 *            The index of this recording.
+	 *            The recording region doing the recording.
 	 * @param contents
 	 *            The bytes to append.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	void appendRecordingContents(Region region, int recordingIndex,
-			byte[] contents) throws StorageException;
+	void appendRecordingContents(Region region, byte[] contents)
+			throws StorageException;
 
 	/**
 	 * Adds some bytes to the database. The bytes represent part of the contents
 	 * of a recording region of a particular SpiNNaker core.
 	 *
 	 * @param region
-	 *            The DSE region that this is the contents of.
-	 * @param recordingIndex
-	 *            The index of this recording.
+	 *            The recording region that is being recorded.
 	 * @param contents
-	 *            The contents to store.
+	 *            The contents to append.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	default void appendRecordingContents(Region region, int recordingIndex,
-			ByteBuffer contents) throws StorageException {
+	default void appendRecordingContents(Region region, ByteBuffer contents)
+			throws StorageException {
 		byte[] ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
-		appendRecordingContents(region, recordingIndex, ary);
+		appendRecordingContents(region, ary);
 	}
-
-	/**
-	 * Note that a particular core is a machine graph vertex, and that that
-	 * vertex uses the recording interface.
-	 *
-	 * @param region
-	 *            The information about where we're talking about.
-	 * @param label
-	 *            The label of the vertex.
-	 * @return The ID of the vertex.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	int noteRecordingVertex(Region region, String label)
-			throws StorageException;
 }
