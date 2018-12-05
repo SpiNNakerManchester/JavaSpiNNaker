@@ -1056,7 +1056,7 @@ public class Transceiver extends UDPTransceiver
 	 *            The version to test
 	 * @return true exactly when they are compatible
 	 */
-	public static boolean isScampVersionCompabible(Version version) {
+	public static boolean isScampVersionCompatible(Version version) {
 		// The major version must match exactly
 		if (version.majorVersion != SCAMP_VERSION.majorVersion) {
 			return false;
@@ -1127,7 +1127,7 @@ public class Transceiver extends UDPTransceiver
 			throw new IOException("Failed to communicate with the machine");
 		}
 		if (!versionInfo.name.equals(SCAMP_NAME)
-				|| !isScampVersionCompabible(versionInfo.versionNumber)) {
+				|| !isScampVersionCompatible(versionInfo.versionNumber)) {
 			throw new IOException(format(
 					"The machine is currently booted with %s %s "
 							+ "which is incompatible with this transceiver, "
