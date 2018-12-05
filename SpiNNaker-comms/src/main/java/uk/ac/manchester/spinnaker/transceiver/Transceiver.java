@@ -1213,7 +1213,6 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
