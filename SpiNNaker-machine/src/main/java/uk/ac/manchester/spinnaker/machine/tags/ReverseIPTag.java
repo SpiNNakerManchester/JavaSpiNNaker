@@ -89,10 +89,7 @@ public final class ReverseIPTag extends Tag {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof ReverseIPTag) {
-            return equals((ReverseIPTag) o);
-        }
-        return false;
+        return (o instanceof ReverseIPTag) && equals((ReverseIPTag) o);
     }
 
     /**

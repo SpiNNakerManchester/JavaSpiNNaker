@@ -2007,7 +2007,7 @@ public class Transceiver extends UDPTransceiver
 
 		@Override
 		public boolean equals(Object o) {
-			if (o != null && o instanceof BMPCoords) {
+			if (o instanceof BMPCoords) {
 				BMPCoords b = (BMPCoords) o;
 				return cabinet == b.cabinet && frame == b.frame;
 			}
