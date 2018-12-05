@@ -1929,8 +1929,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
 			throws Exception {
-		if (powerOffMachine && bmpConnections != null
-				&& !bmpConnections.isEmpty()) {
+		if (powerOffMachine && !bmpConnections.isEmpty()) {
 			powerOffMachine();
 		}
 
