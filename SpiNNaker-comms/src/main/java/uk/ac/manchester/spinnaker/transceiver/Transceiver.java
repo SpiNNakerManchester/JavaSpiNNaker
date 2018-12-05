@@ -1668,7 +1668,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public SCPConnection locateSpinnakerConnection(InetAddress boardAddress) {
-		return (SCPConnection) udpScampConnections.get(boardAddress);
+		return udpScampConnections.get(boardAddress);
 	}
 
 	@Override
