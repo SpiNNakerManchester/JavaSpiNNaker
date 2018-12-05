@@ -179,7 +179,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 	}
 
 	public List<Board> listBoardsToLoad() throws StorageException {
-		return this.callR(SQLiteStorage::listBoardsToLoad, "listing boards");
+		return callR(SQLiteStorage::listBoardsToLoad, "listing boards");
 	}
 
 	private static List<Board> listBoardsToLoad(Connection conn)
@@ -198,7 +198,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 
 	public List<CoreToLoad> listCoresToLoad(Board board)
 			throws StorageException {
-		return this.callR(conn -> listCoresToLoad(conn, board),
+		return callR(conn -> listCoresToLoad(conn, board),
 				"listing cores to load data onto");
 	}
 
