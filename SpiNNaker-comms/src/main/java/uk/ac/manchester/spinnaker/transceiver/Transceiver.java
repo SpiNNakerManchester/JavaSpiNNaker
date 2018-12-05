@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Byte.toUnsignedInt;
-import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
@@ -1894,13 +1893,6 @@ public class Transceiver extends UDPTransceiver
 			throws ProcessException, IOException {
 		new FillProcess(scpSelector, this).fillMemory(chip, baseAddress,
 				repeatValue, size, dataType);
-	}
-
-	/** @return the number of boards currently configured. */
-	public int getNumberOfBoardsLocated() {
-		// NB if no BMPs are available, then there's still at least one board
-		return max(1, bmpConnections.stream()
-				.mapToInt(bmpConn -> bmpConn.boards.size()).sum());
 	}
 
 	/**
