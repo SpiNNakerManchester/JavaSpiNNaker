@@ -474,7 +474,7 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException, ProcessException {
-		this(version, null, null, null, null, null, null, null);
+		this(version, connections, null, null, null, null, null, null);
 	}
 
 	/**
