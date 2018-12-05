@@ -1982,7 +1982,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(hostname);
+			this.hostname = requireNonNull(host);
 			this.chip = chip.asChipLocation();
 			this.portNumber = port;
 		}
