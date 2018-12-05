@@ -897,7 +897,7 @@ public class Transceiver extends UDPTransceiver
 		 * Currently, this only finds other UDP connections given a connection
 		 * that supports SCP - this is done via the machine
 		 */
-		if (scampConnections == null || scampConnections.isEmpty()) {
+		if (scampConnections.isEmpty()) {
 			return Collections.emptyList();
 		}
 
