@@ -920,10 +920,7 @@ public class Transceiver extends UDPTransceiver
 				conn = new SCPConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
-				if (udpScampConnections
-						.containsKey(conn.getRemoteIPAddress())) {
-					udpScampConnections.remove(conn.getRemoteIPAddress());
-				}
+				udpScampConnections.remove(conn.getRemoteIPAddress());
 			}
 
 			// check if it works
