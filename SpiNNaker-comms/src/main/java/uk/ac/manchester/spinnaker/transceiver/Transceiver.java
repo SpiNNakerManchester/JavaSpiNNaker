@@ -646,7 +646,7 @@ public class Transceiver extends UDPTransceiver
 			return dst;
 		default:
 			// Unreachable
-			return null;
+			throw new IllegalStateException();
 		}
 	}
 
