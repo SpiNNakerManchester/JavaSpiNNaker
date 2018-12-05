@@ -58,7 +58,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1947,26 +1946,11 @@ public class Transceiver extends UDPTransceiver
 		log.info("total retries used: " + retryCount);
 	}
 
-	private static final InetAddress WILDCARD_ADDRESS;
-	static {
-		try {
-			WILDCARD_ADDRESS = getByAddress(new byte[] {
-				0, 0, 0, 0
-			});
-			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
-				throw new RuntimeException(
-						"wildcard address is not wildcard address?");
-			}
-		} catch (UnknownHostException e) {
-			throw new RuntimeException("unexpected failure to initialise", e);
-		}
-	}
-
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> // force newline
-			getBMPConnection() {
+	public Map<BMPCoords,
+			ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;
 	}
 
