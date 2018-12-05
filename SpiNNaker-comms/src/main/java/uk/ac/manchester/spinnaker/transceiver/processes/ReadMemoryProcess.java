@@ -143,16 +143,13 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class DBAccumulator {
 		private final Storage storage;
 		private final Storage.Region region;
-		private final Integer recordingIndex;
 		private final Map<Integer, ByteBuffer> writes;
 		private boolean done = false;
 		private StorageException exception;
 
-		DBAccumulator(Storage storage, Storage.Region region,
-				Integer recordingIndex) {
+		DBAccumulator(Storage storage, Storage.Region region) {
 			this.storage = storage;
 			this.region = region;
-			this.recordingIndex = recordingIndex;
 			this.writes = new LinkedHashMap<>();
 		}
 
@@ -191,11 +188,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		private void store(ByteBuffer buffer) throws StorageException {
-			if (recordingIndex == null) {
-				storage.storeRegionContents(region, buffer);
-			} else {
-				storage.appendRecordingContents(region, recordingIndex, buffer);
-			}
+			storage.appendRecordingContents(region, buffer);
 		}
 
 		synchronized void finish() throws StorageException {
@@ -452,7 +445,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	/**
-	 * Read memory into a database from a DSE-allocated region.
+	 * Read memory into a database from a recording region.
 	 *
 	 * @param region
 	 *            What region of the chip is being read. This is used to
@@ -470,51 +463,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public void readMemory(Storage.Region region, Storage storage)
 			throws IOException, ProcessException, StorageException {
-		DBAccumulator a = new DBAccumulator(storage, region, null);
-		int chunk;
-		for (int offset = 0, finishPoint = 0; offset < region.size; offset +=
-				chunk) {
-			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = a.bookSlot(offset);
-			sendRequest(
-					new ReadMemory(region.core.asChipLocation(),
-							region.startAddress + offset, chunk),
-					response -> a.add(thisOffset, response.data));
-			// Apply wait chunking
-			if (thisOffset > finishPoint + DATABASE_WAIT_CHUNK) {
-				finish();
-				finishPoint = thisOffset;
-			}
-		}
-		finish();
-		checkForError();
-		a.finish();
-	}
-
-	/**
-	 * Read memory into a database from a recording region.
-	 *
-	 * @param region
-	 *            What region of the chip is being read. This is used to
-	 *            organise the data within the database as well as to specify
-	 *            where to read.
-	 * @param recordingIndex
-	 *            What recording region (associated with the main region) is
-	 *            being pulled.
-	 * @param storage
-	 *            where to write the bytes
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with access to the
-	 *             file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If anything goes wrong with access to the database.
-	 */
-	public void readMemory(Storage.Region region, int recordingIndex,
-			Storage storage)
-			throws IOException, ProcessException, StorageException {
-		DBAccumulator a = new DBAccumulator(storage, region, recordingIndex);
+		DBAccumulator a = new DBAccumulator(storage, region);
 		int chunk;
 		for (int offset = 0, finishPoint = 0; offset < region.size; offset +=
 				chunk) {

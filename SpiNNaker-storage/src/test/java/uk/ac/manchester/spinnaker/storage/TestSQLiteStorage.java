@@ -81,7 +81,7 @@ class TestSQLiteStorage {
 
 	@Test
 	void testWithExisting() throws StorageException {
-		ConnectionProvider engine = new DSEDatabaseEngine(db);
+		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
 		Storage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 

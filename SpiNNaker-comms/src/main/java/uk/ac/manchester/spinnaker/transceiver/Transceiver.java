@@ -1215,7 +1215,6 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
@@ -1569,14 +1568,6 @@ public class Transceiver extends UDPTransceiver
 	public void readRegion(Storage.Region region, Storage storage)
 			throws IOException, ProcessException, StorageException {
 		new ReadMemoryProcess(scpSelector, this).readMemory(region, storage);
-	}
-
-	@Override
-	public void readRecordingRegion(Storage.Region region, int recordingIndex,
-			Storage storage)
-			throws IOException, ProcessException, StorageException {
-		new ReadMemoryProcess(scpSelector, this).readMemory(region,
-				recordingIndex, storage);
 	}
 
 	@Override
