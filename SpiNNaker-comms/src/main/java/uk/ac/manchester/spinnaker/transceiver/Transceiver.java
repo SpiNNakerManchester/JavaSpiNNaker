@@ -187,9 +187,6 @@ public class Transceiver extends UDPTransceiver
 	 * Where executables are written to prior to launching them.
 	 */
 	private static final int EXECUTABLE_ADDRESS = 0x67800000;
-	private static final int DEFAULT_DESTINATION_COORDINATE = 255;
-	private static final ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
 	private static final String SCAMP_NAME = "SC&MP";
 	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
 	private static final String BMP_NAME = "BC&MP";
