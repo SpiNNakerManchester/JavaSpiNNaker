@@ -183,6 +183,39 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
 	private static final Logger log = getLogger(Transceiver.class);
+	/**
+	 * Where executables are written to prior to launching them.
+	 */
+	private static final int EXECUTABLE_ADDRESS = 0x67800000;
+	private static final int DEFAULT_DESTINATION_COORDINATE = 255;
+	private static final ChipLocation DEFAULT_DESTINATION = new ChipLocation(
+			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
+	private static final String SCAMP_NAME = "SC&MP";
+	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
+	private static final String BMP_NAME = "BC&MP";
+	private static final Set<Integer> BMP_MAJOR_VERSIONS =
+			unmodifiableSet(new HashSet<>(asList(1, 2)));
+	/**
+	 * How many times do we try to find SCAMP?
+	 */
+	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
+	private static final int STANDARD_RETRIES_NO = 3;
+	private static final int CONNECTION_CHECK_DELAY = 100;
+	private static final int NNID_MAX = 0x7F;
+	private static final int POST_BOOT_DELAY = 2000;
+	/**
+	 * The number of milliseconds after powering on the machine to wait before
+	 * attempting to boot SCAMP on its chips. This is time to allow the code on
+	 * each chip's ROM to figure out what the state of the hardware is enough
+	 * for booting to be viable.
+	 */
+	private static final int POST_POWER_ON_DELAY = 2000;
+	private static final int ENABLE_SHIFT = 16;
+	/**
+	 * Where to read router diagnostic counters from.
+	 */
+	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
+
 	/** The version of the board being connected to. */
 	private MachineVersion version;
 	/** The discovered machine model. */
@@ -661,8 +694,6 @@ public class Transceiver extends UDPTransceiver
 		return bmpSelectors.get(key);
 	}
 
-	private static final int NNID_MAX = 0x7F;
-
 	private byte getNextNearestNeighbourID() {
 		synchronized (nearestNeighbourLock) {
 			int next = (nearestNeighbourID + 1) & NNID_MAX;
@@ -717,18 +748,6 @@ public class Transceiver extends UDPTransceiver
 		return connections.get(idx);
 	}
 
-	private static final int EXECUTABLE_ADDRESS = 0x67800000;
-	private static final int DEFAULT_DESTINATION_COORDINATE = 255;
-	private static final ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
-	private static final String SCAMP_NAME = "SC&MP";
-	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
-	private static final String BMP_NAME = "BC&MP";
-	private static final Set<Integer> BMP_MAJOR_VERSIONS =
-			unmodifiableSet(new HashSet<>(asList(1, 2)));
-	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
-	private static final int STANDARD_RETRIES_NO = 3;
-
 	/** Check that the BMP connections are actually connected to valid BMPs. */
 	private void checkBMPConnections()
 			throws IOException, SpinnmanException, ProcessException {
@@ -776,8 +795,6 @@ public class Transceiver extends UDPTransceiver
 	public void retryNeeded() {
 		retryCount++;
 	}
-
-	private static final int CONNECTION_CHECK_DELAY = 100;
 
 	/**
 	 * Check that the given connection to the given chip works.
@@ -1033,8 +1050,6 @@ public class Transceiver extends UDPTransceiver
 				.getVersion(chip.getScampCore());
 	}
 
-	private static final int POST_BOOT_DELAY = 2000;
-
 	@Override
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
@@ -1082,14 +1097,6 @@ public class Transceiver extends UDPTransceiver
 	private SendSingleSCPCommandProcess simpleProcess() {
 		return new SendSingleSCPCommandProcess(scpSelector, this);
 	}
-
-	/**
-	 * The number of milliseconds after powering on the machine to wait before
-	 * attempting to boot SCAMP on its chips. This is time to allow the code on
-	 * each chip's ROM to figure out what the state of the hardware is enough
-	 * for booting to be viable.
-	 */
-	private static final int POST_POWER_ON_DELAY = 2000;
 
 	@Override
 	public VersionInfo ensureBoardIsReady(int numRetries,
@@ -1852,9 +1859,6 @@ public class Transceiver extends UDPTransceiver
 				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
-
-	private static final int ENABLE_SHIFT = 16;
-	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
 
 	@Override
 	public void clearRouterDiagnosticCounters(HasChipLocation chip,
