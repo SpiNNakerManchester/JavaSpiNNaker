@@ -1,4 +1,4 @@
-_Remember: the better you describe your issue, the easier it is for us to help you._
+Full path to where you find the problem:
 
 What is the problem you see?
 ============================
