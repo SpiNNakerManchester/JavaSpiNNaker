@@ -1250,7 +1250,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {
-			iobufSize = (Integer) getSystemVariable(new ChipLocation(0, 0),
+			iobufSize = (Integer) getSystemVariable(DEFAULT_DESTINATION,
 					SystemVariableDefinition.iobuf_size);
 		}
 
