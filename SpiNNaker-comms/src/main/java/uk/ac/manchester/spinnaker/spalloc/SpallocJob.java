@@ -688,8 +688,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				}
 			} catch (IOException | SpallocServerException e) {
 				stopping = true;
-			} catch (InterruptedException e) {
-				continue;
+			} catch (InterruptedException ignore) {
 			}
 		}
 	}
