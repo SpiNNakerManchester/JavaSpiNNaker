@@ -70,6 +70,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 */
 	private static final int DEFAULT_RETRIES = 3;
 	private static final int RETRY_SLEEP = 100;
+	private static final String TIMEOUT_TOKEN = "timeout";
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -197,8 +198,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retries > 0;
 			}
 
-			private boolean allOneReason(String reason) {
-				return retryReason.stream().allMatch(r -> reason.equals(r));
+			private boolean allTimeoutFailures() {
+				return retryReason.stream().allMatch(r -> TIMEOUT_TOKEN.equals(r));
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
@@ -327,7 +328,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private void resend(Request req, Object reason) throws IOException {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
-				if (req.allOneReason("timeout")) {
+				if (req.allTimeoutFailures()) {
 					throw new SendTimedOutException(
 							req.request.scpRequestHeader, timeout);
 				}
