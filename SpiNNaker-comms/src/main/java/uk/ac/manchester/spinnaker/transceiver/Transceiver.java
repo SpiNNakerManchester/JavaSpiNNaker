@@ -231,14 +231,14 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Integer>> ignoreCores =
+	private final Map<ChipLocation, Collection<Integer>> ignoreCores =
 			new DefaultMap<>(new HashSet<>());
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Direction>> ignoreLinks =
+	private final Map<ChipLocation, Collection<Direction>> ignoreLinks =
 			new DefaultMap<>(new HashSet<>());
 
 	/**
