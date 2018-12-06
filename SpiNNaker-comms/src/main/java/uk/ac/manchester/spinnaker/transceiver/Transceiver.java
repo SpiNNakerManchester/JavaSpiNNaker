@@ -750,7 +750,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return a connection object
 	 */
 	private static <C> C getRandomConnection(List<C> connections) {
-		if (connections == null || connections.isEmpty()) {
+		if (connections.isEmpty()) {
 			return null;
 		}
 		int idx = ThreadLocalRandom.current().nextInt(0, connections.size());
