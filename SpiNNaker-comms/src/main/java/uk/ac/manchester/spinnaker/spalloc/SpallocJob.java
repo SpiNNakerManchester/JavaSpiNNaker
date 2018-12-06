@@ -988,7 +988,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * first).
 	 *
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws InterruptedException
+	 *             If the wait is interrupted.
 	 */
 	private void doReconnect(Long finishTime)
 			throws IOException, InterruptedException {
