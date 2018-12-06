@@ -443,9 +443,11 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return MAPPER.readValue(json, WhereIs.class);
 	}
 
-	@SuppressWarnings("serial")
 	private static class ResponseBasedDeserializer
 			extends PropertyBasedDeserialiser<Response> {
+		// This class should never be serialised
+		private static final long serialVersionUID = 1L;
+
 		ResponseBasedDeserializer() {
 			super(Response.class);
 			register("jobs_changed", JobsChangedNotification.class);
