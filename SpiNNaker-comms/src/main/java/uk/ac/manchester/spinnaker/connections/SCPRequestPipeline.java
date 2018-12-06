@@ -453,8 +453,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request timed out.
 	 */
-	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = -7911020002602751941L;
+
 		/**
 		 * Instantiate.
 		 *
@@ -472,8 +473,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request could not be sent.
 	 */
-	@SuppressWarnings("serial")
 	static class SendFailedException extends IOException {
+		private static final long serialVersionUID = -5555562816486761027L;
+
 		/**
 		 * Instantiate.
 		 *

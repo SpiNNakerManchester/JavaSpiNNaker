@@ -346,8 +346,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending timed out.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = 1660563278795501381L;
+
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
 					timeout / (double) MSEC_PER_SEC));
@@ -357,8 +358,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending failed for various reasons.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendFailedException extends IOException {
+		private static final long serialVersionUID = -7806549580351626377L;
+
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
 				List<String> retryReason) {
 			super(format(
