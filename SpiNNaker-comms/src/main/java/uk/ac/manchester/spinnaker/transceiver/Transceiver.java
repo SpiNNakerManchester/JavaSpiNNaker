@@ -657,8 +657,7 @@ public class Transceiver extends UDPTransceiver
 	 * @param connection
 	 *            Directly gives the connection to use. May be {@code null} to
 	 *            use defaults.
-	 * @return List of length 1 or 0 (the latter only if the search for the
-	 *         given board address fails).
+	 * @return List of connections that could reach a board.
 	 */
 	private Collection<SCPConnection> getConnectionList(
 			SCPConnection connection) {
