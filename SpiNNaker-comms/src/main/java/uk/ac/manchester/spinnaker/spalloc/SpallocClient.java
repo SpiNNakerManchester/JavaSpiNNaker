@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.PORT_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
@@ -96,8 +97,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  */
 public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
-	/** The default spalloc port. */
-	public static final int DEFAULT_PORT = 22244;
 	/** The default communication timeout. (This is no timeout at all.) */
 	public static final Integer DEFAULT_TIMEOUT = null;
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
@@ -118,7 +117,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The hostname of the server.
 	 */
 	public SpallocClient(String hostname) {
-		super(hostname, DEFAULT_PORT, DEFAULT_TIMEOUT);
+		super(hostname, PORT_DEFAULT, DEFAULT_TIMEOUT);
 	}
 
 	/**
@@ -131,7 +130,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, Integer timeout) {
-		super(hostname, DEFAULT_PORT, timeout);
+		super(hostname, PORT_DEFAULT, timeout);
 	}
 
 	/**
@@ -159,7 +158,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, Integer port, Integer timeout) {
-        super(hostname, (port == null) ? DEFAULT_PORT : port, timeout);
+        super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
 	}
 
     /**
