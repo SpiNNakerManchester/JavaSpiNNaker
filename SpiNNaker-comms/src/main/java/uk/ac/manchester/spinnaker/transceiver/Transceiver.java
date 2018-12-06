@@ -86,7 +86,7 @@ import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
-import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.selectors.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -616,8 +616,7 @@ public class Transceiver extends UDPTransceiver
 					BMPConnection bmpc = (BMPConnection) conn;
 					bmpConnections.add(bmpc);
 					bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
-							new RoundRobinConnectionSelector<>(
-									singletonList(bmpc)));
+							new SingletonConnectionSelector<>(bmpc));
 				} else if (conn instanceof SCPConnection) {
 					SCPConnection scamp = (SCPConnection) conn;
 					scampConnections.add(scamp);
@@ -812,14 +811,12 @@ public class Transceiver extends UDPTransceiver
 	 *            the connection selector to use
 	 * @param chip
 	 *            the chip coordinates to try to talk to
-	 * @param retries
-	 *            how many attempts to do before giving up
 	 * @return True if a valid response is received, False otherwise
 	 */
-	protected boolean checkConnection(
-			ConnectionSelector<SCPConnection> connectionSelector, int retries,
+	private boolean checkConnection(
+			ConnectionSelector<SCPConnection> connectionSelector,
 			HasChipLocation chip) {
-		for (int r = 0; r < retries; r++) {
+		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
 			try {
 				ChipSummaryInfo chipInfo =
 						new SendSingleSCPCommandProcess(connectionSelector,
@@ -950,8 +947,8 @@ public class Transceiver extends UDPTransceiver
 			}
 
 			// check if it works
-			if (checkConnection(new MostDirectConnectionSelector<>(null,
-					singletonList(conn)), STANDARD_RETRIES_NO, chip)) {
+			if (checkConnection(new SingletonConnectionSelector<>(conn),
+					chip)) {
 				scpSenderConnections.add(conn);
 				allConnections.add(conn);
 				udpScampConnections.put(ipAddress, conn);
