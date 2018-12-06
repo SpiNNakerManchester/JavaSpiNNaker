@@ -1858,7 +1858,7 @@ public class Transceiver extends UDPTransceiver
 			int position) throws IOException, ProcessException {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"router filter positions must be bewteen 0 and "
+					"router filter positions must be between 0 and "
 							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		int address =
