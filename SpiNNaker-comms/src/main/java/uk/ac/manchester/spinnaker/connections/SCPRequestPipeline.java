@@ -431,7 +431,7 @@ public class SCPRequestPipeline {
 			}
 		}
 
-		toRemove.stream().forEach(seq -> requests.remove(seq));
+		toRemove.stream().forEach(requests::remove);
 	}
 
 	private void resend(Request<?> req, Object reason) throws IOException {
