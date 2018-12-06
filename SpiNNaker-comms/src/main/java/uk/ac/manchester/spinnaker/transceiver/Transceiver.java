@@ -634,23 +634,36 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Get the connections for talking to a board.
 	 *
-	 * @param connection
-	 *            directly gives the connection to use. May be {@code null}
 	 * @param boardAddress
-	 *            the address of the board to talk to. May be {@code null}
+	 *            The address of the board to talk to. May be {@code null} to
+	 *            use all connections.
+	 * @return All the connections that could reach the board.
+	 */
+	private Collection<SCPConnection> getConnectionList(
+			InetAddress boardAddress) {
+		if (boardAddress == null) {
+			return scampConnections;
+		}
+		SCPConnection connection = locateSpinnakerConnection(boardAddress);
+		if (connection == null) {
+			return emptyList();
+		}
+		return singletonList(connection);
+	}
+
+	/**
+	 * Get the connections for talking to a board.
+	 *
+	 * @param connection
+	 *            Directly gives the connection to use. May be {@code null} to
+	 *            use defaults.
 	 * @return List of length 1 or 0 (the latter only if the search for the
 	 *         given board address fails).
 	 */
 	private Collection<SCPConnection> getConnectionList(
-			SCPConnection connection, InetAddress boardAddress) {
-		if (connection != null) {
-			return singletonList(connection);
-		} else if (boardAddress == null) {
-			return scampConnections;
-		}
-		connection = locateSpinnakerConnection(boardAddress);
+			SCPConnection connection) {
 		if (connection == null) {
-			return emptyList();
+			return scampConnections;
 		}
 		return singletonList(connection);
 	}
@@ -1685,7 +1698,7 @@ public class Transceiver extends UDPTransceiver
 		 * otherwise apply the tag to all connections
 		 */
 		Collection<SCPConnection> connections =
-				getConnectionList(null, tag.getBoardAddress());
+				getConnectionList(tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1721,7 +1734,7 @@ public class Transceiver extends UDPTransceiver
 		 * otherwise apply the tag to all connections
 		 */
 		Collection<SCPConnection> connections =
-				getConnectionList(null, tag.getBoardAddress());
+				getConnectionList(tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1735,9 +1748,9 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void clearIPTag(int tag, SCPConnection connection,
-			InetAddress boardAddress) throws IOException, ProcessException {
-		for (SCPConnection conn : getConnectionList(connection, boardAddress)) {
+	public void clearIPTag(int tag, InetAddress boardAddress)
+			throws IOException, ProcessException {
+		for (SCPConnection conn : getConnectionList(boardAddress)) {
 			simpleProcess().execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
@@ -1746,7 +1759,7 @@ public class Transceiver extends UDPTransceiver
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		List<Tag> allTags = new ArrayList<>();
-		for (SCPConnection conn : getConnectionList(connection, null)) {
+		for (SCPConnection conn : getConnectionList(connection)) {
 			allTags.addAll(new GetTagsProcess(scpSelector, this).getTags(conn));
 		}
 		return allTags;
