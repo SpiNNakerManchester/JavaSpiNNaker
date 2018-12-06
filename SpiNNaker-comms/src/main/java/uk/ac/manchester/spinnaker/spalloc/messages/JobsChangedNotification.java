@@ -16,8 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class JobsChangedNotification implements Notification {
 	 *            The ID of the job that has changed.
 	 */
 	public JobsChangedNotification(int jobID) {
-		setJobsChanged(asList(jobID));
+		setJobsChanged(singletonList(jobID));
 	}
 
 	public List<Integer> getJobsChanged() {
