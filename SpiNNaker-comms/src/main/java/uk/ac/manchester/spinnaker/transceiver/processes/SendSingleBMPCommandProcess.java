@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.DEFAULT_RETRIES;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
@@ -64,11 +65,6 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	public static final int DEFAULT_TIMEOUT =
             (int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
-	/**
-	 * The default number of times to resend any packet for any reason before an
-	 * error is triggered.
-	 */
-	private static final int DEFAULT_RETRIES = 3;
 	private static final int RETRY_SLEEP = 100;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
