@@ -173,10 +173,7 @@ public final class IPTag extends Tag {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof IPTag) {
-            return equals((IPTag) o);
-        }
-        return false;
+        return (o instanceof IPTag) && equals((IPTag) o);
     }
 
     /**

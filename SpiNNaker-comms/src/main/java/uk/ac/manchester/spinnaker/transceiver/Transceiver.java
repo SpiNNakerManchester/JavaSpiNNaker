@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Byte.toUnsignedInt;
-import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
@@ -58,7 +57,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,7 +86,7 @@ import uk.ac.manchester.spinnaker.connections.model.SDPSender;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MachineAware;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
-import uk.ac.manchester.spinnaker.connections.selectors.RoundRobinConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.selectors.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -185,6 +183,36 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
 	private static final Logger log = getLogger(Transceiver.class);
+	/**
+	 * Where executables are written to prior to launching them.
+	 */
+	private static final int EXECUTABLE_ADDRESS = 0x67800000;
+	private static final String SCAMP_NAME = "SC&MP";
+	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
+	private static final String BMP_NAME = "BC&MP";
+	private static final Set<Integer> BMP_MAJOR_VERSIONS =
+			unmodifiableSet(new HashSet<>(asList(1, 2)));
+	/**
+	 * How many times do we try to find SCAMP?
+	 */
+	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
+	private static final int STANDARD_RETRIES_NO = 3;
+	private static final int CONNECTION_CHECK_DELAY = 100;
+	private static final int NNID_MAX = 0x7F;
+	private static final int POST_BOOT_DELAY = 2000;
+	/**
+	 * The number of milliseconds after powering on the machine to wait before
+	 * attempting to boot SCAMP on its chips. This is time to allow the code on
+	 * each chip's ROM to figure out what the state of the hardware is enough
+	 * for booting to be viable.
+	 */
+	private static final int POST_POWER_ON_DELAY = 2000;
+	private static final int ENABLE_SHIFT = 16;
+	/**
+	 * Where to read router diagnostic counters from.
+	 */
+	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
+
 	/** The version of the board being connected to. */
 	private MachineVersion version;
 	/** The discovered machine model. */
@@ -200,14 +228,14 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Integer>> ignoreCores =
+	private final Map<ChipLocation, Collection<Integer>> ignoreCores =
 			new DefaultMap<>(new HashSet<>());
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final DefaultMap<ChipLocation, Collection<Direction>> ignoreLinks =
+	private final Map<ChipLocation, Collection<Direction>> ignoreLinks =
 			new DefaultMap<>(new HashSet<>());
 
 	/**
@@ -476,7 +504,7 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException, ProcessException {
-		this(version, null, null, null, null, null, null, null);
+		this(version, connections, null, null, null, null, null, null);
 	}
 
 	/**
@@ -588,8 +616,7 @@ public class Transceiver extends UDPTransceiver
 					BMPConnection bmpc = (BMPConnection) conn;
 					bmpConnections.add(bmpc);
 					bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
-							new RoundRobinConnectionSelector<>(
-									singletonList(bmpc)));
+							new SingletonConnectionSelector<>(bmpc));
 				} else if (conn instanceof SCPConnection) {
 					SCPConnection scamp = (SCPConnection) conn;
 					scampConnections.add(scamp);
@@ -606,23 +633,35 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Get the connections for talking to a board.
 	 *
-	 * @param connection
-	 *            directly gives the connection to use. May be {@code null}
 	 * @param boardAddress
-	 *            the address of the board to talk to. May be {@code null}
-	 * @return List of length 1 or 0 (the latter only if the search for the
-	 *         given board address fails).
+	 *            The address of the board to talk to. May be {@code null} to
+	 *            use all connections.
+	 * @return All the connections that could reach the board.
 	 */
 	private Collection<SCPConnection> getConnectionList(
-			SCPConnection connection, InetAddress boardAddress) {
-		if (connection != null) {
-			return singletonList(connection);
-		} else if (boardAddress == null) {
+			InetAddress boardAddress) {
+		if (boardAddress == null) {
 			return scampConnections;
 		}
-		connection = locateSpinnakerConnection(boardAddress);
+		SCPConnection connection = locateSpinnakerConnection(boardAddress);
 		if (connection == null) {
 			return emptyList();
+		}
+		return singletonList(connection);
+	}
+
+	/**
+	 * Get the connections for talking to a board.
+	 *
+	 * @param connection
+	 *            Directly gives the connection to use. May be {@code null} to
+	 *            use defaults.
+	 * @return List of connections that could reach a board.
+	 */
+	private Collection<SCPConnection> getConnectionList(
+			SCPConnection connection) {
+		if (connection == null) {
+			return scampConnections;
 		}
 		return singletonList(connection);
 	}
@@ -648,7 +687,7 @@ public class Transceiver extends UDPTransceiver
 			return dst;
 		default:
 			// Unreachable
-			return null;
+			throw new IllegalStateException();
 		}
 	}
 
@@ -662,8 +701,6 @@ public class Transceiver extends UDPTransceiver
 		}
 		return bmpSelectors.get(key);
 	}
-
-	private static final int NNID_MAX = 0x7F;
 
 	private byte getNextNearestNeighbourID() {
 		synchronized (nearestNeighbourLock) {
@@ -712,24 +749,12 @@ public class Transceiver extends UDPTransceiver
 	 * @return a connection object
 	 */
 	private static <C> C getRandomConnection(List<C> connections) {
-		if (connections == null || connections.isEmpty()) {
+		if (connections.isEmpty()) {
 			return null;
 		}
 		int idx = ThreadLocalRandom.current().nextInt(0, connections.size());
 		return connections.get(idx);
 	}
-
-	private static final int EXECUTABLE_ADDRESS = 0x67800000;
-	private static final int DEFAULT_DESTINATION_COORDINATE = 255;
-	private static final ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
-	private static final String SCAMP_NAME = "SC&MP";
-	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
-	private static final String BMP_NAME = "BC&MP";
-	private static final Set<Integer> BMP_MAJOR_VERSIONS =
-			unmodifiableSet(new HashSet<>(asList(1, 2)));
-	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
-	private static final int STANDARD_RETRIES_NO = 3;
 
 	/** Check that the BMP connections are actually connected to valid BMPs. */
 	private void checkBMPConnections()
@@ -779,8 +804,6 @@ public class Transceiver extends UDPTransceiver
 		retryCount++;
 	}
 
-	private static final int CONNECTION_CHECK_DELAY = 100;
-
 	/**
 	 * Check that the given connection to the given chip works.
 	 *
@@ -788,14 +811,12 @@ public class Transceiver extends UDPTransceiver
 	 *            the connection selector to use
 	 * @param chip
 	 *            the chip coordinates to try to talk to
-	 * @param retries
-	 *            how many attempts to do before giving up
 	 * @return True if a valid response is received, False otherwise
 	 */
-	protected boolean checkConnection(
-			ConnectionSelector<SCPConnection> connectionSelector, int retries,
+	private boolean checkConnection(
+			ConnectionSelector<SCPConnection> connectionSelector,
 			HasChipLocation chip) {
-		for (int r = 0; r < retries; r++) {
+		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
 			try {
 				ChipSummaryInfo chipInfo =
 						new SendSingleSCPCommandProcess(connectionSelector,
@@ -899,7 +920,7 @@ public class Transceiver extends UDPTransceiver
 		 * Currently, this only finds other UDP connections given a connection
 		 * that supports SCP - this is done via the machine
 		 */
-		if (scampConnections == null || scampConnections.isEmpty()) {
+		if (scampConnections.isEmpty()) {
 			return Collections.emptyList();
 		}
 
@@ -922,15 +943,12 @@ public class Transceiver extends UDPTransceiver
 				conn = new SCPConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
-				if (udpScampConnections
-						.containsKey(conn.getRemoteIPAddress())) {
-					udpScampConnections.remove(conn.getRemoteIPAddress());
-				}
+				udpScampConnections.remove(conn.getRemoteIPAddress());
 			}
 
 			// check if it works
-			if (checkConnection(new MostDirectConnectionSelector<>(null,
-					singletonList(conn)), STANDARD_RETRIES_NO, chip)) {
+			if (checkConnection(new SingletonConnectionSelector<>(conn),
+					chip)) {
 				scpSenderConnections.add(conn);
 				allConnections.add(conn);
 				udpScampConnections.put(ipAddress, conn);
@@ -1038,8 +1056,6 @@ public class Transceiver extends UDPTransceiver
 				.getVersion(chip.getScampCore());
 	}
 
-	private static final int POST_BOOT_DELAY = 2000;
-
 	@Override
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
@@ -1058,7 +1074,7 @@ public class Transceiver extends UDPTransceiver
 	 *            The version to test
 	 * @return true exactly when they are compatible
 	 */
-	public static boolean isScampVersionCompabible(Version version) {
+	public static boolean isScampVersionCompatible(Version version) {
 		// The major version must match exactly
 		if (version.majorVersion != SCAMP_VERSION.majorVersion) {
 			return false;
@@ -1087,14 +1103,6 @@ public class Transceiver extends UDPTransceiver
 	private SendSingleSCPCommandProcess simpleProcess() {
 		return new SendSingleSCPCommandProcess(scpSelector, this);
 	}
-
-	/**
-	 * The number of milliseconds after powering on the machine to wait before
-	 * attempting to boot SCAMP on its chips. This is time to allow the code on
-	 * each chip's ROM to figure out what the state of the hardware is enough
-	 * for booting to be viable.
-	 */
-	private static final int POST_POWER_ON_DELAY = 2000;
 
 	@Override
 	public VersionInfo ensureBoardIsReady(int numRetries,
@@ -1129,7 +1137,7 @@ public class Transceiver extends UDPTransceiver
 			throw new IOException("Failed to communicate with the machine");
 		}
 		if (!versionInfo.name.equals(SCAMP_NAME)
-				|| !isScampVersionCompabible(versionInfo.versionNumber)) {
+				|| !isScampVersionCompatible(versionInfo.versionNumber)) {
 			throw new IOException(format(
 					"The machine is currently booted with %s %s "
 							+ "which is incompatible with this transceiver, "
@@ -1215,7 +1223,6 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
@@ -1240,7 +1247,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {
-			iobufSize = (Integer) getSystemVariable(new ChipLocation(0, 0),
+			iobufSize = (Integer) getSystemVariable(DEFAULT_DESTINATION,
 					SystemVariableDefinition.iobuf_size);
 		}
 
@@ -1430,8 +1437,8 @@ public class Transceiver extends UDPTransceiver
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		bmpCall(cabinet, frame, timeout,
-				new SetPower(powerCommand, boards, 0.0));
+		requireNonNull(bmpCall(cabinet, frame, timeout,
+				new SetPower(powerCommand, boards, 0.0)));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on
@@ -1671,7 +1678,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public SCPConnection locateSpinnakerConnection(InetAddress boardAddress) {
-		return (SCPConnection) udpScampConnections.get(boardAddress);
+		return udpScampConnections.get(boardAddress);
 	}
 
 	@Override
@@ -1687,7 +1694,7 @@ public class Transceiver extends UDPTransceiver
 		 * otherwise apply the tag to all connections
 		 */
 		Collection<SCPConnection> connections =
-				getConnectionList(null, tag.getBoardAddress());
+				getConnectionList(tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1723,7 +1730,7 @@ public class Transceiver extends UDPTransceiver
 		 * otherwise apply the tag to all connections
 		 */
 		Collection<SCPConnection> connections =
-				getConnectionList(null, tag.getBoardAddress());
+				getConnectionList(tag.getBoardAddress());
 		if (connections == null || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
@@ -1737,9 +1744,9 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void clearIPTag(int tag, SCPConnection connection,
-			InetAddress boardAddress) throws IOException, ProcessException {
-		for (SCPConnection conn : getConnectionList(connection, boardAddress)) {
+	public void clearIPTag(int tag, InetAddress boardAddress)
+			throws IOException, ProcessException {
+		for (SCPConnection conn : getConnectionList(boardAddress)) {
 			simpleProcess().execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
@@ -1748,7 +1755,7 @@ public class Transceiver extends UDPTransceiver
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		List<Tag> allTags = new ArrayList<>();
-		for (SCPConnection conn : getConnectionList(connection, null)) {
+		for (SCPConnection conn : getConnectionList(connection)) {
 			allTags.addAll(new GetTagsProcess(scpSelector, this).getTags(conn));
 		}
 		return allTags;
@@ -1824,7 +1831,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"router filter positions must be beween 0 and "
+					"router filter positions must be between 0 and "
 							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		if (position <= ROUTER_DEFAULT_FILTERS_MAX_POSITION) {
@@ -1848,7 +1855,7 @@ public class Transceiver extends UDPTransceiver
 			int position) throws IOException, ProcessException {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
 			throw new IllegalArgumentException(
-					"router filter positions must be beween 0 and "
+					"router filter positions must be between 0 and "
 							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
 		int address =
@@ -1858,9 +1865,6 @@ public class Transceiver extends UDPTransceiver
 				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
 	}
-
-	private static final int ENABLE_SHIFT = 16;
-	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
 
 	@Override
 	public void clearRouterDiagnosticCounters(HasChipLocation chip,
@@ -1897,13 +1901,6 @@ public class Transceiver extends UDPTransceiver
 				repeatValue, size, dataType);
 	}
 
-	/** @return the number of boards currently configured. */
-	public int getNumberOfBoardsLocated() {
-		// NB if no BMPs are available, then there's still at least one board
-		return max(1, bmpConnections.stream()
-				.mapToInt(bmpConn -> bmpConn.boards.size()).sum());
-	}
-
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
@@ -1930,8 +1927,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
 			throws Exception {
-		if (powerOffMachine && bmpConnections != null
-				&& !bmpConnections.isEmpty()) {
+		if (powerOffMachine && !bmpConnections.isEmpty()) {
 			powerOffMachine();
 		}
 
@@ -1947,26 +1943,11 @@ public class Transceiver extends UDPTransceiver
 		log.info("total retries used: " + retryCount);
 	}
 
-	private static final InetAddress WILDCARD_ADDRESS;
-	static {
-		try {
-			WILDCARD_ADDRESS = getByAddress(new byte[] {
-				0, 0, 0, 0
-			});
-			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
-				throw new RuntimeException(
-						"wildcard address is not wildcard address?");
-			}
-		} catch (UnknownHostException e) {
-			throw new RuntimeException("unexpected failure to initialise", e);
-		}
-	}
-
 	/**
 	 * @return The connection selectors used for BMP connections.
 	 */
-	public Map<BMPCoords, ConnectionSelector<BMPConnection>> // force newline
-			getBMPConnection() {
+	public Map<BMPCoords,
+			ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;
 	}
 
@@ -2008,7 +1989,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(hostname);
+			this.hostname = requireNonNull(host);
 			this.chip = chip.asChipLocation();
 			this.portNumber = port;
 		}
@@ -2033,7 +2014,7 @@ public class Transceiver extends UDPTransceiver
 
 		@Override
 		public boolean equals(Object o) {
-			if (o != null && o instanceof BMPCoords) {
+			if (o instanceof BMPCoords) {
 				BMPCoords b = (BMPCoords) o;
 				return cabinet == b.cabinet && frame == b.frame;
 			}

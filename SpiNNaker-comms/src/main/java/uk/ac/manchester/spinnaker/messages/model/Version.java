@@ -107,7 +107,7 @@ public final class Version implements Comparable<Version> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof Version)) {
+		if (!(other instanceof Version)) {
 			return false;
 		}
 		Version v = (Version) other;
