@@ -59,17 +59,11 @@ final class ChipMemoryIO {
 	 */
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
-		Map<ChipLocation, ChipMemoryIO> map = existing.get(transceiver);
-		if (map == null) {
-			map = new HashMap<>();
-			existing.put(transceiver, map);
-		}
-		ChipLocation key = chip.asChipLocation();
-		if (!map.containsKey(key)) {
-			map.put(key, new ChipMemoryIO(transceiver, chip, SDRAM_START,
-					UDP_MESSAGE_MAX_SIZE));
-		}
-		return map.get(key);
+		Map<ChipLocation, ChipMemoryIO> map =
+				existing.computeIfAbsent(transceiver, x -> new HashMap<>());
+		return map.computeIfAbsent(chip.asChipLocation(),
+				k -> new ChipMemoryIO(transceiver, chip, SDRAM_START,
+						UDP_MESSAGE_MAX_SIZE));
 	}
 
 	/** The transceiver for speaking to the machine. */
@@ -101,8 +95,8 @@ final class ChipMemoryIO {
 	 * @param bufferSize
 	 *            The size of the write buffer to improve efficiency
 	 */
-	ChipMemoryIO(Transceiver transceiver, HasChipLocation chip, int baseAddress,
-			int bufferSize) {
+	private ChipMemoryIO(Transceiver transceiver, HasChipLocation chip,
+			int baseAddress, int bufferSize) {
 		this.transceiver = new WeakReference<>(transceiver);
 		core = chip.getScampCore().asCoreLocation();
 		currentAddress = baseAddress;

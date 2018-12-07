@@ -16,25 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.io;
 
-import java.io.EOFException;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /** A file-like object for reading and writing memory. */
-public class MemoryIO implements AbstractIO {
+public class MemoryIO extends BaseIO {
 	/** The transceiver for speaking to the machine. */
 	private final ChipMemoryIO io;
-	/** The start address of the region to write to. */
-	private final int startAddress;
-	/** The current pointer where read and writes are taking place. */
-	private int currentAddress;
-	/** The end of the region to write to. */
-	private final int endAddress;
 
 	/**
 	 * @param transceiver
@@ -49,21 +42,13 @@ public class MemoryIO implements AbstractIO {
 	 */
 	public MemoryIO(Transceiver transceiver, HasChipLocation chip,
 			int startAddress, int endAddress) {
-		if (startAddress >= endAddress) {
-			throw new IllegalArgumentException(
-					"start address must precede end address");
-		}
+		super(startAddress, endAddress);
 		io = ChipMemoryIO.getInstance(transceiver, chip);
-		this.startAddress = startAddress;
-		this.currentAddress = startAddress;
-		this.endAddress = endAddress;
 	}
 
 	private MemoryIO(ChipMemoryIO io, int startAddress, int endAddress) {
+		super(startAddress, endAddress);
 		this.io = io;
-		this.startAddress = startAddress;
-		this.currentAddress = startAddress;
-		this.endAddress = endAddress;
 	}
 
 	@Override
@@ -74,54 +59,16 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public int size() {
-		return endAddress - startAddress;
-	}
-
-	@Override
 	public MemoryIO get(int slice) throws IOException {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new MemoryIO(io, startAddress + slice, startAddress + slice + 1);
+		return new MemoryIO(io, start + slice, start + slice + 1);
 	}
 
 	@Override
 	public MemoryIO get(Slice slice) throws IOException {
-		int from = startAddress;
-		int to = endAddress;
-		if (slice.start != null) {
-			if (slice.start < 0) {
-				from = endAddress + slice.start;
-			} else {
-				from += slice.start;
-			}
-		}
-		if (slice.stop != null) {
-			if (slice.stop < 0) {
-				to = endAddress + slice.stop;
-			} else {
-				to += slice.stop;
-			}
-		}
-		/*
-		 * When slice.start is null, from is guaranteed to be equal to
-		 * startAddress and startAddress is also guaranteed to be no more than
-		 * endAddress.
-		 *
-		 * An equivalent argument holds for slice.stop.
-		 */
-		if (from < startAddress || from > endAddress) {
-			throw new ArrayIndexOutOfBoundsException(slice.start);
-		}
-		if (to < startAddress || to > endAddress) {
-			throw new ArrayIndexOutOfBoundsException(slice.stop);
-		}
-		if (from == to) {
-			throw new ArrayIndexOutOfBoundsException(
-					"zero-sized regions are not supported");
-		}
-		return new MemoryIO(io, from, to);
+		return get(slice, (from, to) -> new MemoryIO(io, from, to));
 	}
 
 	@Override
@@ -137,72 +84,28 @@ public class MemoryIO implements AbstractIO {
 	}
 
 	@Override
-	public void seek(int numBytes) throws IOException {
-		int position = startAddress + numBytes;
-		if (position < startAddress || position > endAddress) {
-			throw new IllegalArgumentException(
-					"Attempt to seek to a position of " + position
-							+ " which is outside of the region");
-		}
-		currentAddress = position;
-	}
-
-	@Override
-	public int tell() throws IOException {
-		return currentAddress - startAddress;
-	}
-
-	@Override
-	public int getAddress() {
-		return currentAddress;
-	}
-
-	@Override
-	public byte[] read(Integer numBytes) throws IOException, ProcessException {
-		int size = (numBytes != null && numBytes >= 0) ? numBytes
-				: (endAddress - currentAddress);
-		if (currentAddress + size > endAddress) {
-			throw new EOFException();
-		}
-		byte[] data;
+	byte[] doRead(int size) throws IOException, ProcessException {
 		synchronized (io) {
-			io.setCurrentAddress(currentAddress);
-			data = io.read(size);
+			io.setCurrentAddress(current);
+			return io.read(size);
 		}
-		currentAddress += size;
-		return data;
 	}
 
 	@Override
-	public int write(byte[] data) throws IOException, ProcessException {
-		int size = data.length;
-		if (currentAddress + size > endAddress) {
-			throw new EOFException();
-		}
+	void doWrite(byte[] data, int from, int len)
+			throws IOException, ProcessException {
 		synchronized (io) {
-			io.setCurrentAddress(currentAddress);
+			io.setCurrentAddress(current);
 			io.write(data);
 		}
-		currentAddress += size;
-		return size;
 	}
 
 	@Override
-	public void fill(int value, Integer size, DataType type)
+	void doFill(int value, DataType type, int len)
 			throws IOException, ProcessException {
-		int len = (size == null) ? endAddress - currentAddress : size;
-		if (currentAddress + len > endAddress) {
-			throw new EOFException();
-		}
-		if (len % type.size != 0) {
-			throw new IllegalArgumentException("The size of " + len
-					+ " bytes to fill is not divisible by the size of"
-					+ " the data of " + type.size + " bytes");
-		}
 		synchronized (io) {
-			io.setCurrentAddress(currentAddress);
+			io.setCurrentAddress(current);
 			io.fill(value, len, type);
 		}
-		currentAddress += len;
 	}
 }
