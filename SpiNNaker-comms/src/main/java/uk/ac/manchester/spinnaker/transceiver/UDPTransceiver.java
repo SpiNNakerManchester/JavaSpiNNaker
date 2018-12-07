@@ -304,7 +304,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 
 	@SuppressWarnings({
-			"unchecked", "rawtypes"
+		"unchecked", "rawtypes"
 	})
 	private <T> List<Pair<T>> getConnections(
 			Class<? extends UDPConnection<T>> clazz) {

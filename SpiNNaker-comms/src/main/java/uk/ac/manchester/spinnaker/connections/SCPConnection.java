@@ -46,22 +46,6 @@ public class SCPConnection extends SDPConnection
 	/**
 	 * Create a connection to a particular instance of SCAMP.
 	 *
-	 * @param remoteHost
-	 *            The remote host to send messages to.
-	 * @param remotePort
-	 *            The optional remote port number to send messages to. If
-	 *            {@code null}, the default remote port is used.
-	 * @throws IOException
-	 *             If anything goes wrong with socket setup.
-	 */
-	public SCPConnection(InetAddress remoteHost, Integer remotePort)
-			throws IOException {
-		this(DEFAULT_CHIP, null, null, remoteHost, remotePort);
-	}
-
-	/**
-	 * Create a connection to a particular instance of SCAMP.
-	 *
 	 * @param localHost
 	 *            The optional host of the local interface to
 	 *            listen on; use {@code null} to listen on all local
