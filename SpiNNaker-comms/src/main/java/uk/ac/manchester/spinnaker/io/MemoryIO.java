@@ -104,6 +104,13 @@ public class MemoryIO implements AbstractIO {
 				to += slice.stop;
 			}
 		}
+		/*
+		 * When slice.start is null, from is guaranteed to be equal to
+		 * startAddress and startAddress is also guaranteed to be no more than
+		 * endAddress.
+		 *
+		 * An equivalent argument holds for slice.stop.
+		 */
 		if (from < startAddress || from > endAddress) {
 			throw new ArrayIndexOutOfBoundsException(slice.start);
 		}
