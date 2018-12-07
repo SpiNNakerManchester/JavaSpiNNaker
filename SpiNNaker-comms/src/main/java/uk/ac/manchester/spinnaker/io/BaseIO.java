@@ -23,6 +23,11 @@ import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
+/**
+ * Common code for memory IO.
+ *
+ * @author Donal Fellows
+ */
 abstract class BaseIO implements AbstractIO {
 	/** The start address of the region to write to. */
 	final int start;
@@ -178,6 +183,8 @@ abstract class BaseIO implements AbstractIO {
 	/**
 	 * Core of slice application.
 	 *
+	 * @param <IO>
+	 *            The type of slice produced.
 	 * @param slice
 	 *            The slice to apply.
 	 * @param factory
