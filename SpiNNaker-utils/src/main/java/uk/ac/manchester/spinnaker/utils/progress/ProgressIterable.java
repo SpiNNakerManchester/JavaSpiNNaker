@@ -38,7 +38,7 @@ import java.util.Iterator;
  *
  * @author Christian-B
  * @param <E>
- *            Type of elemente to be iterated over.
+ *            Type of elements to be iterated over.
  */
 public class ProgressIterable<E> implements Iterable<E>, Closeable {
 
