@@ -23,7 +23,6 @@ import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Collections.singleton;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
@@ -37,6 +36,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
@@ -201,10 +201,9 @@ public class BootMessages {
 		BootMessage finish = new EndOfBootMessages();
 
 		// Concatenate everything in the right order
-		Stream<BootMessage> first = singleton(start).stream();
-		Stream<BootMessage> mid =
+		Stream<BootMessage> imageMessages =
 				range(0, numDataPackets).mapToObj(this::getBootMessage);
-		Stream<BootMessage> last = singleton(finish).stream();
-		return concat(first, concat(mid, last));
+		return concat(Stream.of(start),
+				concat(imageMessages, Stream.of(finish)));
 	}
 }
