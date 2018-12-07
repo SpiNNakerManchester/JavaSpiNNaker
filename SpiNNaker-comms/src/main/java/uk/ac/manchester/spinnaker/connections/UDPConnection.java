@@ -137,8 +137,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			InetSocketAddress us = null;
 			try {
 				us = getLocalAddress();
-			} catch (Exception e) {
-				// ignore
+			} catch (Exception ignore) {
 			}
 			if (us == null) {
 				us = new InetSocketAddress((InetAddress) null, 0);
@@ -146,8 +145,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			InetSocketAddress them = null;
 			try {
 				them = getRemoteAddress();
-			} catch (Exception e) {
-				// ignore
+			} catch (Exception ignore) {
 			}
 			if (them == null) {
 				them = new InetSocketAddress((InetAddress) null, 0);
@@ -555,12 +553,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	public String toString() {
 		InetSocketAddress la = null, ra = null;
 		try {
-			la = this.getLocalAddress();
-		} catch (IOException e) {
+			la = getLocalAddress();
+		} catch (IOException ignore) {
 		}
 		try {
-			ra = this.getRemoteAddress();
-		} catch (IOException e) {
+			ra = getRemoteAddress();
+		} catch (IOException ignore) {
 		}
 		return String.format("%s(%s <--> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""), la, ra);
