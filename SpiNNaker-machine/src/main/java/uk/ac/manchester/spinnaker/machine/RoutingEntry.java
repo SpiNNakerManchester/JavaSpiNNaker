@@ -47,7 +47,7 @@ public class RoutingEntry {
                 .forEach(this::addLinkID);
     }
 
-   /**
+    /**
      * Create a routing entry from its expanded description.
      *
      * @param processorIDs

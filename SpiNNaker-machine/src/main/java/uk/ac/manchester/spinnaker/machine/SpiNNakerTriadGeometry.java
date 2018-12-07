@@ -65,13 +65,13 @@ public final class SpiNNakerTriadGeometry {
      *            Width of a triad in chips.
      * @param roots
      *            Bottom Left corner chips within the triad
-     * @param xCenterer
+     * @param xCenter
      *            Magic number to adjust X to find the nearest root.
-     * @param yCenterer
+     * @param yCenter
      *            Magic number to adjust Y to find the nearest root.
      */
     private SpiNNakerTriadGeometry(int triadHeight, int triadWidth,
-            ArrayList<ChipLocation> roots, float xCenterer, float yCenterer) {
+            ArrayList<ChipLocation> roots, float xCenter, float yCenter) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
         this.roots = roots;
@@ -90,8 +90,8 @@ public final class SpiNNakerTriadGeometry {
                         new Location(root.getX(), root.getY() - triadWidth));
             }
         }
-        this.xCenterer = xCenterer;
-        this.yCenterer = yCenterer;
+        this.xCenterer = xCenter;
+        this.yCenterer = yCenter;
 
         localChipCoordinates = new HashMap<>();
         singleBoardCoordinates = new ArrayList<>();

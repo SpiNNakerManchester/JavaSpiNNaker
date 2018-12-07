@@ -16,12 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
@@ -171,7 +166,8 @@ public final class Router implements Iterable<Link> {
                 ChipLocation destination = machine.normalizedLocation(
                         source.getX() + direction.xChange,
                         source.getY() + direction.yChange);
-                addLink(new Link(source, direction, destination));
+                addLink(new Link(source, direction,
+                    Objects.requireNonNull(destination)));
             }
         }
     }
@@ -315,13 +311,8 @@ public final class Router implements Iterable<Link> {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Router)) {
-            return false;
-        }
-        Router that = (Router) obj;
-        // TODO compare this and that
-
-        return true;
+        // TODO compare internal states
+        return obj instanceof Router;
     }
 
 }
