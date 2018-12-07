@@ -23,7 +23,6 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
@@ -2609,7 +2608,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(Tag tag) throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), null, tag.getBoardAddress());
+		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
 
 	/**
@@ -2623,46 +2622,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(int tag) throws IOException, ProcessException {
-		clearIPTag(tag, null, null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(int tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag, requireNonNull(connection), null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(Tag tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), requireNonNull(connection),
-				tag.getBoardAddress());
+		clearIPTag(tag, null);
 	}
 
 	/**
@@ -2671,36 +2631,15 @@ public interface TransceiverInterface {
 	 * @param tag
 	 *            The tag ID
 	 * @param boardAddress
-	 *            Board address where the tag should be cleared.
+	 *            Board address where the tag should be cleared. If
+	 *            {@code null}, all SCPSender connections will send the message
+	 *            to clear the tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void clearIPTag(int tag, InetAddress boardAddress)
-			throws IOException, ProcessException {
-		clearIPTag(tag, null, requireNonNull(boardAddress));
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @param boardAddress
-	 *            Board address where the tag should be cleared. If not
-	 *            specified, all SCPSender connections will send the message to
-	 *            clear the tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
+	void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException;
 
 	/**

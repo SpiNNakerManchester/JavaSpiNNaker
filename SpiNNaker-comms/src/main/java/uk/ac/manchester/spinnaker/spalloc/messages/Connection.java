@@ -94,7 +94,7 @@ public final class Connection {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other != null && other instanceof Connection) {
+		if (other instanceof Connection) {
 			Connection c = (Connection) other;
 			return Objects.equals(chip, c.chip)
                     && Objects.equals(hostname, c.hostname);

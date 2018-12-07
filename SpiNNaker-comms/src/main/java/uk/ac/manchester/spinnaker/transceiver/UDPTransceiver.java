@@ -254,8 +254,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		}
 
 		// normalise local_host to the IP address
-		InetAddress addr =
-				normalize(localHost == null ? null : localHost);
+		InetAddress addr = normalize(localHost);
 
 		// If the local port was specified
 		Pair<T> pair;
