@@ -25,24 +25,23 @@ import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.boot.SystemVariableBootValues.BOOT_VARIABLE_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.boot_signature;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.is_root_chip;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.unix_timestamp;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
-import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
 /** Represents a set of boot messages to be sent to boot the board. */
@@ -52,11 +51,10 @@ public class BootMessages {
 	 */
 	static final int BOOT_MESSAGE_DATA_WORDS = 256;
 	private static final int BOOT_MESSAGE_DATA_BYTES =
-			BOOT_MESSAGE_DATA_WORDS * Constants.WORD_SIZE;
+			BOOT_MESSAGE_DATA_WORDS * WORD_SIZE;
 	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
-	private static final int WORD_SIZE = 4;
 	private static final String BOOT_IMAGE = "scamp.boot";
 
 	private final ByteBuffer bootData;

@@ -87,4 +87,8 @@ public abstract class Constants {
 	public static final int WORD_SIZE = 4;
 	/** Number of bytes in an IPv4 address. */
 	public static final int IPV4_SIZE = 4;
+	/** Mask of the low 8 bits of a word. */
+	public static final int BYTE_MASK = 0xFF;
+	/** Number of bits per byte. */
+	public static final int NBBY = 8;
 }
