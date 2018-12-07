@@ -504,7 +504,7 @@ public class Machine implements Iterable<Chip> {
         return machineDimensions.width - 1;
     }
 
-   /**
+    /**
      * The maximum possible y-coordinate of any chip in the board.
      * <p>
      * Currently no check is carried out to guarantee there is actually a
@@ -541,14 +541,6 @@ public class Machine implements Iterable<Chip> {
     public final Collection<SpinnakerLinkData> spinnakerLinks() {
         return Collections.unmodifiableCollection(spinnakerLinks.values());
     }
-
-    /**
-     * Get the a specific spynakker link if it exists.
-     *
-     * @return An unmodifiable unordered collection of
-     *      all the spinnaker links on this machine.
-     */
-
 
     /**
      * Get a SpiNNaker link with a given ID.
@@ -753,17 +745,11 @@ public class Machine implements Iterable<Chip> {
                         fpgaEnum.id, fpgaEnum.fpgaId, location,
                         fpgaEnum.direction, address);
                 Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-                byAddress = fpgaLinks.get(address);
-                if (byAddress == null) {
-                    byAddress = new HashMap<>();
-                    fpgaLinks.put(address, byAddress);
-                }
+                byAddress = fpgaLinks.computeIfAbsent(
+                    address, k -> new HashMap<>());
                 Map<Integer, FPGALinkData> byId;
-                byId = byAddress.get(fpgaEnum.fpgaId);
-                if (byId == null) {
-                    byId = new HashMap<>();
-                    byAddress.put(fpgaEnum.fpgaId, byId);
-                }
+                byId = byAddress.computeIfAbsent(
+                    fpgaEnum.fpgaId, k -> new HashMap<>());
                 byId.put(fpgaEnum.id, fpgaLinkData);
             }
         }
@@ -795,7 +781,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return A quick description of the machine.
      */
-    @SuppressWarnings("deprecation")
     public final String coresAndLinkOutputString() {
         int cores = 0;
         int everyLink = 0;
@@ -872,7 +857,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return The number of cores over all Chips.
      */
-    @SuppressWarnings("deprecation")
     public final int totalCores() {
         int count = 0;
         for (Chip chip :chips.values()) {
@@ -1016,7 +1000,7 @@ public class Machine implements Iterable<Chip> {
             return "version " + version + " != " + version;
         }
         if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
-            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+            return "maxUserProcessorsOnAChip " + maxUserProssorsOnAChip
                     + " != " + other.maxUserProssorsOnAChip;
         }
         if (!boot.equals(other.boot)) {
@@ -1076,7 +1060,7 @@ public class Machine implements Iterable<Chip> {
             Set<ChipLocation> temp1 = new HashSet<>(setThis);
             temp1.removeAll(setThat);
             if (temp1.isEmpty()) {
-                return "No difference between chip ketsets found.";
+                return "No difference between chip key sets found.";
             }
             Set<ChipLocation> temp2 = new HashSet<>(setThat);
             temp2.removeAll(setThis);

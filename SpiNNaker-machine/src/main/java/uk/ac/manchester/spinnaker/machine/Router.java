@@ -95,7 +95,7 @@ public final class Router implements Iterable<Link> {
     public Router(Stream<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
         this(clockSpeed, nAvailableMulticastEntries);
-        links.forEach((link) -> this.addLink(link));
+        links.forEach(this::addLink);
     }
 
     /**

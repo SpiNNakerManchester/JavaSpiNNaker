@@ -174,26 +174,26 @@ public enum MachineVersion {
      * @param height Number of rows in chips.
      * @param isFourChip
      *      Indicates if this machine has exactly 4 chips is a 2 by 2 layout.
-     * @param isFourtyeightChip
+     * @param isFortyEightChip
      *      Indicates if this machine has exactly one 48 chip board.
      * @param wrapAround
-     *      Indicates if this machine is expected to have wrap arounds.
+     *      Indicates if this machine is expected to have wrap a-rounds.
      * @param isTriad
      *      Indicates if this board is made up of triads,
      */
     @SuppressWarnings("checkstyle:ParameterNumber")
     MachineVersion(Integer id, int width, int height,
-            boolean isFourChip, boolean isFourtyeightChip,
+            boolean isFourChip, boolean isFortyEightChip,
             boolean horizontalWrap, boolean verticalWrap, boolean isTriad) {
         this(id, new MachineDimensions(width, height), isFourChip,
-                isFourtyeightChip, horizontalWrap, verticalWrap, isTriad);
+                isFortyEightChip, horizontalWrap, verticalWrap, isTriad);
     }
 
     /**
      * Unspecified size constructor, assumed to be multi-board.
      *
      * @param wrapAround
-     *      Indicates if this machine is expected to have wrap arounds.
+     *      Indicates if this machine is expected to have wrap a-rounds.
      * @param isTriad
      *      Indicates if this board is made up of triads,
      */
@@ -210,7 +210,7 @@ public enum MachineVersion {
      */
     public static MachineVersion byId(Integer id) {
         for (MachineVersion possible: MachineVersion.values()) {
-            if (possible.id == id) {
+            if (possible.id.equals(id)) {
                 return possible;
             }
         }
@@ -261,8 +261,8 @@ public enum MachineVersion {
                         % MachineDefaults.TRIAD_WIDTH == 0)) {
             return MachineVersion.TRIAD_NO_WRAPAROUND;
         }
-        // Having elimiated a single 4 chip and 48 chip board
-        // as well as a three board troid we need at least two board
+        // Having eliminated a single 4 chip and 48 chip board
+        // as well as a three board toroid we need at least two board
         // on top of each other or next to each other
         if (dimensions.width < MachineDefaults.SIZE_X_OF_ONE_BOARD * 2) {
             if (dimensions.height < MachineDefaults.SIZE_Y_OF_ONE_BOARD * 2) {

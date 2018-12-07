@@ -52,7 +52,7 @@ public class ChipBean {
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "details", required = true)
             ChipDetails details,
-            @JsonProperty(value = "resources", required = false)
+            @JsonProperty(value = "resources")
             ChipResources resources) {
         location = new ChipLocation(x, y);
         this.details = details;
