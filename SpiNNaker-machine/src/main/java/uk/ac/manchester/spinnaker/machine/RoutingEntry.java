@@ -59,8 +59,19 @@ public class RoutingEntry {
      */
     public RoutingEntry(
             Iterable<Integer> processorIDs, Iterable<Direction> linkIDs) {
-        addProcessorIDs(processorIDs);
-        addLinkIDs(linkIDs);
+        for (int procId : processorIDs) {
+            if (procId >= MAX_NUM_CORES || procId < 0) {
+                throw new IllegalArgumentException(
+                    "Processor IDs must be between 0 and "
+                            + (MAX_NUM_CORES - 1) + " found " + procId);
+            }
+            if (!this.processorIDs.contains(procId)) {
+                this.processorIDs.add(procId);
+            }
+        }
+        for (Direction linkIds: linkIDs) {
+            this.linkIDs.add(linkIds);
+        }
     }
 
     /**
@@ -106,70 +117,12 @@ public class RoutingEntry {
     }
 
     /**
-     * Adds extra processors to this routing entry.
-     *
-     * @param newValues
-     *            The IDs of the processors to add.
-     *            The Duplicate IDs are ignored.
-     */
-    public void addProcessorIDs(Iterable<Integer> newValues) {
-        for (int newValue : newValues) {
-            addProcessorID(newValue);
-        }
-    }
-
-    /**
-     * Adds an extra processor to this routing entry.
-     *
-     * @param newValue
-     *            The ID of the processors to add.
-     *            The Duplicate IDs will not effect the encode value,
-     *            and may or may not be ignore prior to that.
-     */
-    public void addProcessorID(Integer newValue) {
-        if (newValue >= MAX_NUM_CORES || newValue < 0) {
-            throw new IllegalArgumentException(
-                    "Processor IDs must be between 0 and "
-                            + (MAX_NUM_CORES - 1) + " found " + newValue);
-        }
-        if (!processorIDs.contains(newValue)) {
-            processorIDs.add(newValue);
-        }
-    }
-
-    /**
-     * Removes a processor ID if it existed.
-     *
-     * @param oldValue The Id of the processor to remove.
-     * @return {@code true} If this entry contained the specified processor.
-     */
-    public boolean removeProcessorID(Integer oldValue) {
-        return processorIDs.remove(oldValue);
-    }
-
-    /**
      * Adds extra link ID/Directions to the entry.
      *
      * @param newValues
      *            The IDs of the links to add.
      *            Duplicate ID will be ignored.
      */
-    public void addLinkIDs(Iterable<Direction> newValues) {
-        for (Direction newValue: newValues) {
-            addLinkID(newValue);
-        }
-    }
-
-    /**
-     * Adds an extra link ID/Direction to the entry.
-     *
-     * @param newValue
-     *            The ID of the links to add.
-     *            The Duplicate IDs are ignored..
-     */
-    public void addLinkID(Direction newValue) {
-        linkIDs.add(newValue);
-    }
 
     /**
      * Adds an extra link ID/Direction to the entry.
@@ -180,21 +133,11 @@ public class RoutingEntry {
       * @throws ArrayIndexOutOfBoundsException
      *      If the new Value does not map to a Direction.
      */
-    public void addLinkID(int newValue) {
+    private void addLinkID(int newValue) {
         Direction d = Direction.byId(newValue);
         if (!linkIDs.contains(d)) {
             linkIDs.add(d);
         }
     }
 
-    /**
-     * Removes a link ID/Direction if it existed.
-     *
-     * @param oldValue The Id of the processor to remove.
-     * @return {@code true} If this entry contained the specified
-     *      link/direction.
-     */
-    public boolean removeLinkID(Direction oldValue) {
-        return linkIDs.remove(oldValue);
-    }
 }

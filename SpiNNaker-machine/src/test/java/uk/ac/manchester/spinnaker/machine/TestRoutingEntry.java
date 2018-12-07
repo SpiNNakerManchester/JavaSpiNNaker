@@ -49,31 +49,6 @@ public class TestRoutingEntry {
     }
 
     @Test
-    public void testAddRemove() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        RoutingEntry instance = new RoutingEntry(ids, directions);
-
-        instance.addLinkID(Direction.EAST);
-        instance.removeLinkID(Direction.SOUTH);
-        instance.removeLinkID(Direction.WEST);
-        instance.addLinkID(Direction.NORTHEAST);
-        instance.addProcessorID(5);
-        assertTrue(instance.removeProcessorID(6));
-        assertFalse(instance.removeProcessorID(6));
-
-        Direction[] directions2 = {Direction.EAST, Direction.NORTHEAST, Direction.NORTH};
-        Integer[] ids2 = {4, 5, 8};
-
-        assertThat(instance.getLinkIDs(), containsInAnyOrder(directions2));
-        assertThat(instance.getProcessorIDs(), containsInAnyOrder(ids2));
-
-        assertThrows(Exception.class, () -> {
-            instance.addProcessorID(-1);
-        });
-    }
-
-    @Test
     public void testSingleId() {
         List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
         List<Integer> ids = Arrays.asList(4);
