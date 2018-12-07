@@ -124,11 +124,11 @@ public class SCPRequestPipeline {
 		/** Callback function for response. */
 		private final Consumer<T> callback;
 		/** Callback function for errors. */
-		final SCPErrorHandler errorCallback;
+		private final SCPErrorHandler errorCallback;
 		/** Retry reasons. */
-		final List<String> retryReason;
+		private final List<String> retryReason;
 		/** Number of retries for the packet. */
-		int retries;
+		private int retries;
 
 		/**
 		 * Make a record.
@@ -140,7 +140,7 @@ public class SCPRequestPipeline {
 		 * @param errorCallback
 		 *            The failure callback.
 		 */
-		Request(SCPRequest<T> request, Consumer<T> callback,
+		private Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
 			this.requestData = request.getMessageData(connection.getChip());
@@ -162,7 +162,7 @@ public class SCPRequestPipeline {
 		 * @throws IOException
 		 *             If the connection throws.
 		 */
-		void resend(Object reason) throws IOException {
+		private void resend(Object reason) throws IOException {
 			retries--;
 			retryReason.add(reason.toString());
 			if (retryTracker != null) {
@@ -172,14 +172,12 @@ public class SCPRequestPipeline {
 		}
 
 		/**
-		 * Tests whether the reasons for resending are consistent.
+		 * Tests whether the reasons for resending are consistently timeouts.
 		 *
-		 * @param reason
-		 *            The particular reason being checked for.
-		 * @return True if all reasons are that reason.
+		 * @return True if all reasons are timeouts.
 		 */
-		boolean allOneReason(String reason) {
-			return retryReason.stream().allMatch(r -> reason.equals(r));
+		private boolean allTimeoutFailures() {
+			return retryReason.stream().allMatch(r -> REASON_TIMEOUT.equals(r));
 		}
 
 		/**
@@ -188,7 +186,8 @@ public class SCPRequestPipeline {
 		 * @param responseData
 		 *            the content of the message, in a little-endian buffer.
 		 */
-		void parseReceivedResponse(SCPResultMessage msg) throws Exception {
+		private void parseReceivedResponse(SCPResultMessage msg)
+				throws Exception {
 			T response = msg.parsePayload(request);
 			if (callback != null) {
 				callback.accept(response);
@@ -200,7 +199,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The core location.
 		 */
-		HasCoreLocation getDestination() {
+		private HasCoreLocation getDestination() {
 			return request.sdpHeader.getDestination();
 		}
 
@@ -210,7 +209,7 @@ public class SCPRequestPipeline {
 		 * @param exception
 		 *            The problem that is being reported.
 		 */
-		void handleError(Throwable exception) {
+		private void handleError(Throwable exception) {
 			if (errorCallback != null) {
 				errorCallback.handleError(request, exception);
 			}
@@ -221,7 +220,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The request's SCP command.
 		 */
-		SCPCommand getCommand() {
+		private SCPCommand getCommand() {
 			return request.scpRequestHeader.command;
 		}
 	}
@@ -432,13 +431,13 @@ public class SCPRequestPipeline {
 			}
 		}
 
-		toRemove.stream().forEach(seq -> requests.remove(seq));
+		toRemove.stream().forEach(requests::remove);
 	}
 
 	private void resend(Request<?> req, Object reason) throws IOException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
-			if (req.allOneReason(REASON_TIMEOUT)) {
+			if (req.allTimeoutFailures()) {
 				throw new SendTimedOutException(req, packetTimeout);
 			}
 
@@ -454,8 +453,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request timed out.
 	 */
-	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = -7911020002602751941L;
+
 		/**
 		 * Instantiate.
 		 *
@@ -473,8 +473,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request could not be sent.
 	 */
-	@SuppressWarnings("serial")
 	static class SendFailedException extends IOException {
+		private static final long serialVersionUID = -5555562816486761027L;
+
 		/**
 		 * Instantiate.
 		 *

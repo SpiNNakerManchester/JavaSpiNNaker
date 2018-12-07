@@ -66,6 +66,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
             (int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final int RETRY_SLEEP = 100;
+	private static final String TIMEOUT_TOKEN = "timeout";
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -193,8 +194,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retries > 0;
 			}
 
-			private boolean allOneReason(String reason) {
-				return retryReason.stream().allMatch(r -> reason.equals(r));
+			private boolean allTimeoutFailures() {
+				return retryReason.stream()
+						.allMatch(r -> TIMEOUT_TOKEN.equals(r));
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
@@ -317,13 +319,13 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				}
 			}
 
-			toRemove.stream().forEach(seq -> requests.remove(seq));
+			toRemove.stream().forEach(requests::remove);
 		}
 
 		private void resend(Request req, Object reason) throws IOException {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
-				if (req.allOneReason("timeout")) {
+				if (req.allTimeoutFailures()) {
 					throw new SendTimedOutException(
 							req.request.scpRequestHeader, timeout);
 				}
@@ -341,8 +343,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending timed out.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = 1660563278795501381L;
+
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
 					timeout / (double) MSEC_PER_SEC));
@@ -352,8 +355,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending failed for various reasons.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendFailedException extends IOException {
+		private static final long serialVersionUID = -7806549580351626377L;
+
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
 				List<String> retryReason) {
 			super(format(

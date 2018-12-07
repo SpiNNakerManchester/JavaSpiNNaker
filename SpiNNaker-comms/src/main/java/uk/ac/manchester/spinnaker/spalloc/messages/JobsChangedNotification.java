@@ -53,7 +53,7 @@ public class JobsChangedNotification implements Notification {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof JobsChangedNotification)) {
+		if (!(other instanceof JobsChangedNotification)) {
 			return false;
 		}
 		return jobsChanged
