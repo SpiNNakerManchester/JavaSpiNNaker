@@ -154,13 +154,39 @@ abstract class BaseIO implements AbstractIO {
 		current += len;
 	}
 
+	/**
+	 * How to make new instances of a class that are slices.
+	 *
+	 * @param <V>
+	 *            The type that is made.
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
-	interface Factory<V> {
+	interface SliceFactory<V> {
+		/**
+		 * Make the slice of the object.
+		 *
+		 * @param from
+		 *            Where the slice starts.
+		 * @param to
+		 *            Where the slice ends. Greater than {@code from}.
+		 * @return The sliced object.
+		 */
 		V call(int from, int to);
 	}
 
-	final <IO extends AbstractIO> IO get(Slice slice, Factory<IO> factory)
-			throws IOException {
+	/**
+	 * Core of slice application.
+	 *
+	 * @param slice
+	 *            The slice to apply.
+	 * @param factory
+	 *            How to make a new instance of the current class that
+	 *            represents the slice.
+	 * @return The sliced object.
+	 */
+	final <IO extends AbstractIO> IO get(Slice slice,
+			SliceFactory<IO> factory) {
 		int from = start;
 		int to = end;
 		if (slice.start != null) {
