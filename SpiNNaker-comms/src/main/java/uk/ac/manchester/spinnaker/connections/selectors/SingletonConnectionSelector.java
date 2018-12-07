@@ -22,7 +22,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 /**
  * A selector that only ever handles a single connection.
  *
- * @param <C>
+ * @param <T>
  *            The type of the connection.
  */
 public class SingletonConnectionSelector<T extends Connection>

@@ -199,7 +199,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			}
 
 			private boolean allTimeoutFailures() {
-				return retryReason.stream().allMatch(r -> TIMEOUT_TOKEN.equals(r));
+				return retryReason.stream()
+						.allMatch(r -> TIMEOUT_TOKEN.equals(r));
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
