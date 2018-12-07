@@ -18,12 +18,12 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -31,9 +31,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 /** A UDP connection to SC&amp;MP on the board. */
 public class SCPConnection extends SDPConnection
 		implements SCPSenderReceiver {
-	private static final HasChipLocation DEFAULT_CHIP = new ChipLocation(255,
-			255);
-
 	/**
 	 * Create a connection to a particular instance of SCAMP.
 	 *
