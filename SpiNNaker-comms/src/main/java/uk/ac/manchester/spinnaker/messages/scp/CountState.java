@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.ALL_CORE_SIGNAL_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 
 import java.nio.ByteBuffer;
@@ -37,14 +38,18 @@ public class CountState extends SCPRequest<CountState.Response> {
 	private static final int MODE_SHIFT = 20;
 
 	/**
-	 * @param appId
+	 * @param appID
 	 *            The ID of the application to run, between 16 and 255
 	 * @param state
 	 *            The state to count
 	 */
-	public CountState(int appId, CPUState state) {
+	public CountState(int appID, CPUState state) {
 		super(DEFAULT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
-				argument2(appId, state), ALL_CORE_SIGNAL_MASK);
+				argument2(appID, state), ALL_CORE_SIGNAL_MASK);
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 	}
 
 	private static int argument2(int appId, CPUState state) {

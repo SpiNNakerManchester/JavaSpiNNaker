@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_ROUTING;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 
 import java.nio.ByteBuffer;
@@ -43,6 +44,10 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	public RouterAlloc(HasChipLocation chip, int appID, int numEntries) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), numEntries);
 		this.numEntries = numEntries;
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 	}
 
 	private static int argument1(int appID) {

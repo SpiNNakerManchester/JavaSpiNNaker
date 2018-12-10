@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
@@ -43,6 +44,10 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 			int baseAddress, int appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
 				tableAddress, baseAddress);
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 		if (numEntries < 1) {
 			throw new IllegalArgumentException(
 					"numEntries must be more than 0");

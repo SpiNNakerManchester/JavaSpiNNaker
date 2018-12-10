@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
@@ -74,6 +75,10 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 			Iterable<Integer> processors, boolean wait) {
 		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 	}
 
 	private static int argument1(byte nearestNeighbourID) {

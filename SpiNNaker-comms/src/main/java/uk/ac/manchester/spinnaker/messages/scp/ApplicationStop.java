@@ -22,11 +22,10 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
-
-import uk.ac.manchester.spinnaker.messages.model.Signal;
 
 /** An SCP Request to stop an application. */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
@@ -40,8 +39,8 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 		return MAGIC1 << BYTE2;
 	}
 
-	private static int argument2(int appID, Signal signal) {
-		return (MAGIC2 << SHIFT) | (signal.value << BYTE2) | (APP_MASK << BYTE1)
+	private static int argument2(int appID) {
+		return (MAGIC2 << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
 				| (appID << BYTE0);
 	}
 
@@ -54,8 +53,12 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public ApplicationStop(int appID) {
-		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(),
-				argument2(appID, STOP), argument3());
+		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(), argument2(appID),
+				argument3());
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 	}
 
 	@Override

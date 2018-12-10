@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 
 import java.nio.ByteBuffer;
@@ -31,16 +32,20 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
-	 * @param appId
+	 * @param appID
 	 *            The ID of the application to run, between 16 and 255
 	 * @param chip
 	 *            The coordinates of the chip to run on
 	 * @param processors
 	 *            The processors of the chip to run on, between 1 and 17
 	 */
-	public ApplicationRun(int appId, HasChipLocation chip,
+	public ApplicationRun(int appID, HasChipLocation chip,
 			Iterable<Integer> processors) {
-		this(appId, chip, processors, false);
+		this(appID, chip, processors, false);
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 	}
 
 	/**

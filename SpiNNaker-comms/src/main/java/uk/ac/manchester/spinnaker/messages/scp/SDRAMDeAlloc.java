@@ -20,6 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_POINTER;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 
 import java.nio.ByteBuffer;
@@ -58,6 +59,10 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	public SDRAMDeAlloc(HasChipLocation chip, int appID, int baseAddress) {
 		super(chip.getScampCore(), CMD_ALLOC, (int) FREE_SDRAM_BY_POINTER.value,
 				baseAddress);
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 		readNumFreedBlocks = false;
 	}
 

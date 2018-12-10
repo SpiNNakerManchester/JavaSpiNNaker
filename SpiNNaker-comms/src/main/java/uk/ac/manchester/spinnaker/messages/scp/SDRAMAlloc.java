@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_SDRAM;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 
 import java.nio.ByteBuffer;
@@ -59,6 +60,10 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
 		this.size = size;
+		if (appID < 0 || appID > MAX_APP_ID) {
+			throw new IllegalArgumentException(
+					"appID must be between 0 and 255");
+		}
 		if (tag < 0 || tag > MAX_SDRAM_TAG) {
 			throw new IllegalArgumentException(
 					"The tag parameter needs to be between 0 and "
