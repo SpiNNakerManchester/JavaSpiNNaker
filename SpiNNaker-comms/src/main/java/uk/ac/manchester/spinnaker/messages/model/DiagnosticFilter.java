@@ -35,21 +35,35 @@ import java.util.stream.Stream;
  */
 public class DiagnosticFilter {
 	private static final int PACKET_TYPE_OFFSET = 0;
+
 	private static final int EMERGENCY_ROUTE_OFFSET = 4;
+
 	private static final int EMERGENCY_ROUTE_MODE_OFFSET = 8;
+
 	private static final int DEFAULT_ROUTE_OFFSET = 10;
+
 	private static final int PAYLOAD_OFFSET = 12;
+
 	private static final int SOURCE_OFFSET = 14;
+
 	private static final int DESTINATION_OFFSET = 16;
+
 	private static final int ENABLE_INTERRUPT_OFFSET = 30;
 
 	private final boolean enableInterrupt;
+
 	private final boolean emergencyMode;
+
 	private final Collection<Destination> destinations;
+
 	private final Collection<Source> sources;
+
 	private final Collection<PayloadStatus> payloads;
+
 	private final Collection<DefaultRoutingStatus> defaultStatuses;
+
 	private final Collection<EmergencyRoutingStatus> emergencyStatuses;
+
 	private final Collection<PacketType> packetTypes;
 
 	/**

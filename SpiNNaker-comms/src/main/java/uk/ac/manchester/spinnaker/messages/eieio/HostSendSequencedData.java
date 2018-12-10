@@ -29,8 +29,10 @@ import java.nio.ByteBuffer;
 public class HostSendSequencedData extends EIEIOCommandMessage {
 	/** What region will be moved. */
 	public final int regionID;
+
 	/** The message sequence number. */
 	public final int sequenceNum;
+
 	/** The data. */
 	public final EIEIODataMessage eieioDataMessage;
 

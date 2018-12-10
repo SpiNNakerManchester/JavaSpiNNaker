@@ -60,23 +60,31 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		 * The count of the number of packets that have been sent with the tag.
 		 */
 		public final int count;
+
 		/** The flags of the tag. */
 		public final short flags;
+
 		/** The IP address of the tag. */
 		public final InetAddress ipAddress;
+
 		/** The MAC address of the tag, as an array of 6 bytes. */
 		public final byte[] macAddress;
+
 		/** The port of the tag. */
 		public final int port;
+
 		/** The receive port of the tag. */
 		public final short rxPort;
+
 		/**
 		 * The location of the core on the chip which the tag is defined on and
 		 * where the core that handles the tag's messages resides.
 		 */
 		public final HasCoreLocation spinCore;
+
 		/** The spin-port of the IP tag. */
 		public final int spinPort;
+
 		/** The timeout of the tag. */
 		public final IPTagTimeOutWaitTime timeout;
 
@@ -104,11 +112,17 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		}
 
 		private static final int IPV4_BYTES = 4;
+
 		private static final int MAC_BYTES = 6;
+
 		private static final int USE_BIT = 15;
+
 		private static final int TEMP_BIT = 14;
+
 		private static final int ARP_BIT = 13;
+
 		private static final int REV_BIT = 9;
+
 		private static final int STRIP_BIT = 8;
 
 		private boolean bitset(int bit) {

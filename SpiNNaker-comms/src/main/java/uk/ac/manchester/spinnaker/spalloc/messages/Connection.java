@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 @JsonFormat(shape = ARRAY)
 public final class Connection {
 	private ChipLocation chip;
+
 	private String hostname;
 
 	/**

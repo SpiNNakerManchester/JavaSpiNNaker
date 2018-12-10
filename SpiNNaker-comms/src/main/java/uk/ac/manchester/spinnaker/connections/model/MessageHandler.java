@@ -23,6 +23,7 @@ package uk.ac.manchester.spinnaker.connections.model;
  *            the type of message handled.
  * @author Donal Fellows
  */
+@FunctionalInterface
 public interface MessageHandler<MessageType> {
 	void handle(MessageType message);
 }

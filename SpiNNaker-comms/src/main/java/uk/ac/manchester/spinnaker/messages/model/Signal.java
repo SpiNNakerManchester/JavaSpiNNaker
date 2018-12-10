@@ -54,8 +54,10 @@ public enum Signal {
 
 	/** The value used for the signal. */
 	public final byte value;
+
 	/** The "type" of the signal. */
 	public final Type type;
+
 	private static final Map<Byte, Signal> MAP = new HashMap<>();
 
 	/**

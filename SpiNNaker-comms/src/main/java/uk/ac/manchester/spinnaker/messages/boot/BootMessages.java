@@ -51,15 +51,22 @@ public class BootMessages {
 	 * The (maximum) number of data words in an individual boot data message.
 	 */
 	static final int BOOT_MESSAGE_DATA_WORDS = 256;
+
 	private static final int BOOT_MESSAGE_DATA_BYTES =
 			BOOT_MESSAGE_DATA_WORDS * Constants.WORD_SIZE;
+
 	private static final int BOOT_IMAGE_MAX_BYTES = 32 * 1024;
+
 	private static final int BOOT_STRUCT_REPLACE_OFFSET = 384;
+
 	private static final int BOOT_STRUCT_REPLACE_LENGTH = 128;
+
 	private static final int WORD_SIZE = 4;
+
 	private static final String BOOT_IMAGE = "scamp.boot";
 
 	private final ByteBuffer bootData;
+
 	private final int numDataPackets;
 
 	private static SystemVariableBootValues initFlags(

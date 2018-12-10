@@ -28,11 +28,16 @@ import java.util.List;
  */
 public class JobMachineInfo {
 	private int width;
+
 	private int height;
+
 	private List<Connection> connections = Collections.emptyList();
+
 	private String machineName;
+
 	private List<BoardCoordinates> boards = Collections.emptyList();
-    /** Number of boards/Connections to list individually in the toString. */
+
+	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
 	public int getWidth() {

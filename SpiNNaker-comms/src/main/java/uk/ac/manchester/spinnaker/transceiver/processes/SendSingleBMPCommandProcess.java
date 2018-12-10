@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
 			getLogger(SendSingleBMPCommandProcess.class);
+
 	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT =
             (int) (MSEC_PER_SEC * BMP_TIMEOUT);
@@ -69,13 +70,19 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * error is triggered.
 	 */
 	private static final int DEFAULT_RETRIES = 3;
+
 	private static final int RETRY_SLEEP = 100;
+
 	private static final String TIMEOUT_TOKEN = "timeout";
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
+
 	private final int timeout;
+
 	private final RetryTracker retryTracker;
+
 	private BMPRequest<?> errorRequest;
+
 	private Throwable exception;
 
 	/**
@@ -158,6 +165,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private final class RequestPipeline {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
+
 		/** A dictionary of sequence number -> requests in progress. */
 		private final Map<Integer, Request> requests =
 				synchronizedMap(new HashMap<>());
@@ -166,12 +174,16 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 		private final class Request {
 			/** request in progress. */
 			private final BMPRequest<R> request;
+
 			/** payload of request in progress. */
 			private final ByteBuffer requestData;
+
 			/** callback function for response. */
 			private final Consumer<R> callback;
+
 			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
+
 			/** number of retries for the packet. */
 			private int retries = DEFAULT_RETRIES;
 

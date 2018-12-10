@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /** An abstract process for talking to SpiNNaker efficiently. */
 public abstract class Process {
 	private SCPRequest<?> errorRequest;
+
 	private Throwable exception;
 
 	/**

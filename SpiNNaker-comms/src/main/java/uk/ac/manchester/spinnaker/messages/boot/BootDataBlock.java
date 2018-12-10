@@ -28,7 +28,9 @@ import java.nio.ByteBuffer;
  */
 class BootDataBlock extends BootMessage {
 	private static final int BYTE_MASK = 0xFF;
+
 	private static final int BYTE_SIZE = 8;
+
 	private static final int BOOT_DATA_OPERAND_1 =
 			(BOOT_MESSAGE_DATA_WORDS - 1) << BYTE_SIZE;
 

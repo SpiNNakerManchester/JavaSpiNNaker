@@ -29,7 +29,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 @JsonFormat(shape = ARRAY)
 public class BoardPhysicalCoordinates {
-	private int cabinet, frame, board;
+	private int cabinet;
+
+	private int frame;
+
+	private int board;
 
 	/**
 	 * Create with default coordinates.

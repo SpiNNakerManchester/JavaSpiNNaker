@@ -34,8 +34,11 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		implements ConnectionSelector<C>, MachineAware {
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
+
 	private final Map<ChipLocation, C> connections;
+
 	private final C defaultConnection;
+
 	private Machine machine;
 
 	/**

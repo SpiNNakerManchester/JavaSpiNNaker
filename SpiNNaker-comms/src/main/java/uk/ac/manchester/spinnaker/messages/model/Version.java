@@ -35,8 +35,10 @@ public final class Version implements Comparable<Version> {
 	 * dominate.
 	 */
 	public final int majorVersion;
+
 	/** The minor version number. */
 	public final int minorVersion;
+
 	/** The revision number. Less important than the minor version number. */
 	public final int revision;
 

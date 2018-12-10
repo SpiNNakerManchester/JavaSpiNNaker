@@ -30,7 +30,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /** The contents of IOBUF for a core. */
 public class IOBuffer implements HasCoreLocation {
 	private static final Charset ASCII = Charset.forName("ascii");
+
 	private final HasCoreLocation core;
+
 	private final byte[] iobuf;
 
 	/**

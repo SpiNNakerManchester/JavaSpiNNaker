@@ -66,7 +66,9 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private static class Accumulator {
 		private final ByteBuffer buffer;
+
 		private boolean done = false;
+
 		private int maxpos = 0;
 
 		Accumulator(int size) {
@@ -106,8 +108,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	private static class FileAccumulator {
 		private final RandomAccessFile file;
+
 		private final long initOffset;
+
 		private boolean done = false;
+
 		private IOException exception;
 
 		FileAccumulator(RandomAccessFile dataStream) throws IOException {
@@ -142,10 +147,15 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private static class DBAccumulator {
 		private final Storage storage;
+
 		private final HasChipLocation chip;
+
 		private final int region;
+
 		private final Map<Integer, ByteBuffer> writes;
+
 		private boolean done = false;
+
 		private StorageException exception;
 
 		DBAccumulator(Storage storage, HasChipLocation chip, int region) {

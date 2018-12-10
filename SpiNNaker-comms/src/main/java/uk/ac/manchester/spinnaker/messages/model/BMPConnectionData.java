@@ -31,14 +31,20 @@ import java.util.Collection;
  * Processor (BMP).
  */
 public class BMPConnectionData {
+	private static final int MIN_BYTE_FIELD = 3;
+
 	/** The boards to be addressed. */
 	public final Collection<Integer> boards;
+
 	/** The cabinet number. */
 	public final int cabinet;
+
 	/** The frame number. Frames are contained within a cabinet. */
 	public final int frame;
+
 	/** The IP address of the BMP. */
 	public final InetAddress ipAddress;
+
 	/**
 	 * The port number associated with the BMP connection, or {@code null} for
 	 * the default.
@@ -60,8 +66,6 @@ public class BMPConnectionData {
 		this.boards = boards;
 		this.portNumber = portNumber;
 	}
-
-	private static final int MIN_BYTE_FIELD = 3;
 
 	/**
 	 * Work out the BMP connection IP address given the machine details. This is

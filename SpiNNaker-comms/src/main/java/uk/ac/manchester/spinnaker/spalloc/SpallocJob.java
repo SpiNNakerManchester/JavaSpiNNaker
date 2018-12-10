@@ -117,38 +117,53 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
  */
 public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private static final Logger log = getLogger(SpallocJob.class);
+
 	private static final int DEFAULT_KEEPALIVE = 30;
+
 	private static final int MAX_SHAPE_ARGS = 3;
+
 	/** Minimum supported server version. */
 	private static final Version MIN_VER = new Version(0, 4, 0);
+
 	/** Maximum supported server version. */
 	private static final Version MAX_VER = new Version(2, 0, 0);
+
 	private static final int STATUS_CACHE_PERIOD = 500;
 
 	private SpallocClient client;
+
 	private int id;
+
 	private Integer timeout;
+
 	private Integer keepaliveTime;
+
 	/** The keepalive thread. */
 	private Thread keepalive;
+
 	/** Used to signal that the keepalive thread should stop. */
 	private volatile boolean stopping;
+
 	/**
 	 * Cache of information about a job's state. This information can change,
 	 * but not usually extremely rapidly; it has a caching period, implemented
 	 * using the {@link #statusTimestamp} field.
 	 */
 	private JobState statusCache;
+
 	/**
 	 * The time when the information in {@link #statusCache} was last collected.
 	 */
 	private long statusTimestamp;
+
 	/**
 	 * Cache of information about a machine. This is information which doesn't
 	 * change once it is assigned, so there is no expiry mechanism.
 	 */
 	private JobMachineInfo machineInfoCache;
+
 	private int reconnectDelay = f2ms(RECONNECT_DELAY_DEFAULT);
+
 	private static final ThreadGroup SPALLOC_WORKERS =
 			new ThreadGroup("spalloc worker threads");
 

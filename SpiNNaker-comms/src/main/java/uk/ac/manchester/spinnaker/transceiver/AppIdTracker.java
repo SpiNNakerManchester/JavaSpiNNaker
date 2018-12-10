@@ -25,9 +25,13 @@ import java.util.Set;
 /** A tracker of application IDs to make it easier to allocate new IDs. */
 public class AppIdTracker {
 	private static final int MIN_APP_ID = 17;
+
 	private static final int MAX_APP_ID = 254;
+
 	private final Set<Integer> freeIDs;
+
 	private final int maxID;
+
 	private final int minID;
 
 	/**

@@ -37,8 +37,11 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 public abstract class SingleConnectionProcess<T extends SCPConnection>
 		extends Process {
 	private final ConnectionSelector<T> connectionSelector;
+
 	private SCPRequestPipeline requestPipeline;
+
 	private final int timeout;
+
 	private final RetryTracker retryTracker;
 
 	/**

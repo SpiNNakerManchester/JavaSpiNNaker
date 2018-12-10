@@ -56,12 +56,18 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
+
 	/** A dictionary of (x, y) -> ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
+
 	private final Collection<ChipLocation> ignoreChips;
+
 	private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
+
 	private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
+
 	private final Integer maxCoreID;
+
 	private final Integer maxSDRAMSize;
 
 	private static <T> Collection<T> def(Collection<T> c) {

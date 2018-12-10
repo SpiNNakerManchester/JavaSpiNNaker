@@ -40,6 +40,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
 final class ChipMemoryIO {
 	// TODO What is this value _really?_
 	private static final int SDRAM_START = 0x60000000;
+
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
 	 * transceiver, x and y (thus two transceivers might not see the same
@@ -74,6 +75,7 @@ final class ChipMemoryIO {
 
 	/** The transceiver for speaking to the machine. */
 	private final WeakReference<Transceiver> transceiver;
+
 	/**
 	 * A strong reference to the transceiver, held while there is data to flush.
 	 */

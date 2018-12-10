@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 public final class RoundRobinConnectionSelector<T extends Connection>
 		implements ConnectionSelector<T> {
 	private final List<T> connections;
+
 	private int next;
 
 	/**

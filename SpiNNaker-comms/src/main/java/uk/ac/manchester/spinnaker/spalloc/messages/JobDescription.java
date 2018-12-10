@@ -32,16 +32,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class JobDescription {
 	private int jobID;
+
 	private String owner;
+
 	private double startTime;
+
 	private State state;
+
 	private Boolean power;
+
 	private double keepAlive;
+
 	private String reason;
+
 	private String machine;
+
 	private List<Integer> args;
+
 	private Map<String, Object> kwargs;
+
 	private List<BoardCoordinates> boards = Collections.emptyList();
+
 	private String keepAliveHost;
 
     /** Number of boards to list individually in the toString. */

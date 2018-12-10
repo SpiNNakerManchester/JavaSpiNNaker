@@ -25,6 +25,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 public class CustomEIEIOCommand implements EIEIOCommand {
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
+
 	private final int command;
 
 	/**

@@ -36,7 +36,6 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 public class EIEIOConnection
 		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>>
 		implements EIEIOReceiver, EIEIOSender {
-
 	/**
 	 * Create an EIEIO connection only available for listening, using default
 	 * local port.
@@ -185,6 +184,7 @@ public class EIEIOConnection
 	}
 
 	private static final int MASK = 0xC000;
+
 	private static final int FLAG = 0x4000;
 
 	@Override

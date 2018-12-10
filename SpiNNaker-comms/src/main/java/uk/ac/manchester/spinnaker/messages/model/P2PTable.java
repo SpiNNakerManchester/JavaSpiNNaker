@@ -36,15 +36,21 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 /** Represents a P2P routing table read from the machine. */
 public class P2PTable {
 	private final Map<ChipLocation, P2PTableRoute> routes;
+
 	/** The width of the machine that this table represents. */
 	public final int width;
+
 	/** The height of the machine that this table represents. */
 	public final int height;
 
 	private static final int ROUTE_CHUNK = 8;
+
 	private static final int COLUMN_SIZE = 256;
+
 	private static final int ROUTE_BITS = 3;
+
 	private static final int ROUTE_MASK = (1 << ROUTE_BITS) - 1;
+
 	/** Number of bits per byte. */
 	private static final int NBBY = 8;
 

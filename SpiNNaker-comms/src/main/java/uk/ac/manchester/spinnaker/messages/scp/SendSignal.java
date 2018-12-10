@@ -28,7 +28,9 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
 /** An SCP Request to send a signal to cores. */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
 	private static final int ALL_CORE_MASK = 0xFFFF;
+
 	private static final int APP_MASK = 0xFF;
+
 	private static final int MAX_APP_ID = 255;
 
 	/**

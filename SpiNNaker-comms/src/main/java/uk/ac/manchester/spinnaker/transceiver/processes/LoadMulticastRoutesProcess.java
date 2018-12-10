@@ -52,7 +52,9 @@ public class LoadMulticastRoutesProcess
 	}
 
 	private static final int UNIT_SIZE = 16;
+
 	private static final int END = 0xFFFFFFFF;
+
 	private static final int ROUTING_TABLE_ADDRESS = 0x67800000;
 
 	private static void writeEntry(ByteBuffer buffer, short index,

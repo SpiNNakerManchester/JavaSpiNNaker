@@ -32,7 +32,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
 public abstract class SCPRequest<T extends SCPResponse>
 		extends SpinnakerRequest {
 	private static final int DEFAULT_DEST_X_COORD = 255;
+
 	private static final int DEFAULT_DEST_Y_COORD = 255;
+
 	/**
 	 * The location of the default SCAMP.
 	 */
@@ -41,12 +43,16 @@ public abstract class SCPRequest<T extends SCPResponse>
 
 	/** The first argument. */
 	public final int argument1;
+
 	/** The second argument. */
 	public final int argument2;
+
 	/** The third argument. */
 	public final int argument3;
+
 	/** The payload data as a buffer, or {@code null} if no payload data. */
 	public final ByteBuffer data;
+
 	/** The SCP request header of the message. */
 	public final SCPRequestHeader scpRequestHeader;
 

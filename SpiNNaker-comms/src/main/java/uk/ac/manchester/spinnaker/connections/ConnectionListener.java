@@ -42,17 +42,25 @@ public class ConnectionListener<MessageType> extends Thread
 		implements Closeable {
 	/** What size of thread pool to use by default. */
 	public static final int POOL_SIZE = 4;
+
 	/**
 	 * The default time (in ms) to wait in a system call for a message to
 	 * arrive.
 	 */
 	public static final int TIMEOUT = 1000;
+
 	private static final long POOL_TIMEOUT = 1000L;
+
 	private static final Logger log = getLogger(ConnectionListener.class);
+
 	private ThreadPoolExecutor callbackPool;
+
 	private Set<MessageHandler<MessageType>> callbacks;
+
 	private Listenable<MessageType> connection;
+
 	private volatile boolean done;
+
 	private Integer timeout;
 
 	/**

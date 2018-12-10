@@ -25,6 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class ProcessException extends Exception {
 	private static final long serialVersionUID = 7759365416594564702L;
+
 	private static final String S = "     "; // five spaces
 
 	/**

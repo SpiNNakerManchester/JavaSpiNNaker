@@ -33,7 +33,9 @@ public enum EIEIOType {
 	KEY_PAYLOAD_32_BIT(3, 4, 4);
 
 	private static final int NBBY = 8;
+
 	private static final Map<Integer, EIEIOType> MAP;
+
 	static {
 		MAP = new HashMap<>();
 		for (EIEIOType v : values()) {
@@ -42,10 +44,13 @@ public enum EIEIOType {
 	}
 
 	private final int value;
+
 	/** The number of bytes used by each key element. */
 	public final int keyBytes;
+
 	/** The number of bytes used by each payload element. */
 	public final int payloadBytes;
+
 	/** The maximum value of the key or payload (if there is a payload). */
 	public final long maxValue;
 

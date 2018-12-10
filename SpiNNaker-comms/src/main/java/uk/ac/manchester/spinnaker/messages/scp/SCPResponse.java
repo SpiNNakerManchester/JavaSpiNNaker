@@ -28,8 +28,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public abstract class SCPResponse {
 	/** The SDP header from the response. */
 	public final SDPHeader sdpHeader;
+
 	/** The result of the SCP response. */
 	public final SCPResult result;
+
 	/** The sequence number of the SCP response, between 0 and 65535. */
 	public final short sequence;
 
