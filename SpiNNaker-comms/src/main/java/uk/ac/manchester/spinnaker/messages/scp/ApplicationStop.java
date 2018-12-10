@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
@@ -29,7 +30,6 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
 
 /** An SCP Request to stop an application. */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
-	private static final int APP_MASK = 0xFF;
 	// TODO Better names for these constants
 	private static final int SHIFT = 28;
 	private static final int MAGIC1 = 0x3f;

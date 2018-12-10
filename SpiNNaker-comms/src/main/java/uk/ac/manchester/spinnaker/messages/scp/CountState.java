@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.ALL_CORE_SIGNAL_MASK;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 
 import java.nio.ByteBuffer;
@@ -30,7 +31,6 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP Request to get a count of the cores in a particular state. */
 public class CountState extends SCPRequest<CountState.Response> {
-	private static final int APP_MASK = 0xFF;
 	private static final int COUNT_OPERATION = 1;
 	private static final int COUNT_MODE = 2;
 	private static final int OP_SHIFT = 22;

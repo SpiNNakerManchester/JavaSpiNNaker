@@ -13,4 +13,9 @@ abstract class Constants {
 	 * Indicates that all cores should receive a signal.
 	 */
 	static final int ALL_CORE_SIGNAL_MASK = 0xFFFF;
+
+	/**
+	 * Mask for selecting application IDs for signals.
+	 */
+	static final int APP_MASK = 0xFF;
 }
