@@ -30,15 +30,20 @@ public final class IPTag extends Tag {
     /** Default traffic identifier. */
     public static final TrafficIdentifer DEFAULT_TRAFFIC_IDENTIFIER =
             TrafficIdentifer.DEFAULT;
+
     private static final boolean DEFAULT_STRIP_SDP = false;
+
     private static final Integer DEFAULT_PORT = null;
 
     /** The IP address to which SDP packets with the tag will be sent. */
     private final InetAddress ipAddress;
+
     /** Indicates whether the SDP header should be removed. */
     private final boolean stripSDP;
+
     /** The identifier for traffic transmitted using this tag. */
     private final TrafficIdentifer trafficIdentifier;
+
     /** The coordinates where users of this tag should send packets to. */
     private final ChipLocation destination;
 

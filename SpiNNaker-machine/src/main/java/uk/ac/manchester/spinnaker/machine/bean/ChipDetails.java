@@ -31,12 +31,14 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  * @author Christian-B
  */
 public class ChipDetails {
-
     /** Total number of working core on this Chip. */
     public final int cores;
+
     /** Location of the nearest Ethernet Chip. */
     public final ChipLocation ethernet;
+
     private InetAddress ipAddress;
+
     private List<Direction> deadDirections = emptyList();
 
     /**

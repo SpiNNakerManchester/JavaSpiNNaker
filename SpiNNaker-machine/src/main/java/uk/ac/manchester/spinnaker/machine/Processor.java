@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
 public final class Processor implements Comparable<Processor> {
     private static final Processor[] NON_MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
+
     private static final Processor[] MONITOR =
         new Processor[MachineDefaults.PROCESSORS_PER_CHIP];
 

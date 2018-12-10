@@ -22,8 +22,10 @@ import java.net.InetAddress;
 public abstract class Tag {
     /** The board address associated with this tagID. */
     private final InetAddress boardAddress;
+
     /** The tagID ID associated with this tagID. */
     private final int tagID;
+
     /** The port number associated with this tagID. */
     private Integer port;
 
@@ -102,6 +104,7 @@ public abstract class Tag {
     }
 
     private static final int MAGIC1 = 43;
+
     private static final int MAGIC2 = 17;
 
     /**

@@ -17,14 +17,22 @@
 package uk.ac.manchester.spinnaker.machine;
 
 /**
+ * The location of a SpiNNaker Core as an (X, Y, P) tuple.
+ * <p>
+ * This class is final as it is used a key in maps.
  *
- * @author alan
- * @author dkf
+ * @author Alan Stokes
+ * @author Donal Fellows
  */
 public final class CoreLocation
         implements HasCoreLocation, Comparable<CoreLocation> {
+    /** The X coordinate of this core. */
     private final int x;
+
+    /** The Y coordinate of this core. */
     private final int y;
+
+    /** The P coordinate (virtual processor ID) of this core. */
     private final int p;
 
     /**

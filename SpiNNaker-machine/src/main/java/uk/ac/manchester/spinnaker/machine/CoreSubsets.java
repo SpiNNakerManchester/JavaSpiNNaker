@@ -37,9 +37,9 @@ import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
  * @author Christian-B
  */
 public class CoreSubsets implements Iterable<CoreLocation> {
-
     private final TreeMap<ChipLocation,
             TreeMap<Integer, CoreLocation>> locations;
+
     private boolean immutable;
 
     /**

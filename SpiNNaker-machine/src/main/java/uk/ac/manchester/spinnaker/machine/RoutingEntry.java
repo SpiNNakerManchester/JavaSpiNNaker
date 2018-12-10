@@ -27,6 +27,7 @@ import java.util.List;
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
     private final List<Integer> processorIDs = new ArrayList<>();
+
     private final List<Direction> linkIDs = new ArrayList<>();
 
     private static boolean bitset(int word, int bit) {

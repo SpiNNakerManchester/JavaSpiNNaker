@@ -29,7 +29,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class ReverseIPTag extends Tag {
     private static final int DEFAULT_SDP_PORT = 1;
+
     private final CoreLocation destination;
+
     private final int sdpPort;
 
     /**

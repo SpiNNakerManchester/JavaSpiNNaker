@@ -25,7 +25,6 @@ import java.util.Map;
  * @author Christian-B
  */
 public final class TrafficIdentifer {
-
     private static final Map<String, TrafficIdentifer> MAP = new HashMap<>();
 
     /** Default if not provided.
@@ -36,6 +35,7 @@ public final class TrafficIdentifer {
      */
     public static final TrafficIdentifer DEFAULT = new TrafficIdentifer(
             "DEFAULT");
+
     /** Used to identify buffered traffic.
      *
      * @see <a href=

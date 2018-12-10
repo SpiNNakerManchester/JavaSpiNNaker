@@ -23,23 +23,26 @@ package uk.ac.manchester.spinnaker.machine;
  */
 public class RegionLocation implements HasCoreLocation,
         Comparable<RegionLocation> {
-
     /**
      * The Chip / Core's X value.
      */
     public final int x;
+
     /**
      * The Chip / Core's Y value.
      */
     public final int y;
+
     /**
      * The Core's P value.
      */
     public final int p;
+
     /**
      * The recording Region.
      */
     public final int region;
+
     /**
      * Precalculated hashcode.
      */

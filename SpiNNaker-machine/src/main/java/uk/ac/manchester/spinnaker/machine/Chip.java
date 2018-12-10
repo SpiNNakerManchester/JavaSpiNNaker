@@ -43,7 +43,6 @@ import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
  * @author Christian-B
  */
 public class Chip implements HasChipLocation {
-
     private final ChipLocation location;
 
     private TreeMap<Integer, Processor> monitorProcessors;
@@ -270,7 +269,6 @@ public class Chip implements HasChipLocation {
 
         this.nearestEthernet = details.getEthernet(); //chip.nearestEthernet;
     }
-
 
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();

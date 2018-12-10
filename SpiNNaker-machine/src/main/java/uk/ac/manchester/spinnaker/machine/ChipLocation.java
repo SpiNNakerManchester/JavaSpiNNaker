@@ -21,19 +21,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 /**
  * The location of a Chip as an X and Y tuple.
  * <p>
  * This class is final as it is used a key in maps.
  *
- * @author alan
- * @author dkf
+ * @author Alan Stokes
+ * @author Donal Fellows
  */
 @JsonFormat(shape = ARRAY)
 public final class ChipLocation implements
         HasChipLocation, Comparable<ChipLocation> {
+    /** The X coordinate of this chip. */
     private final int x;
+
+    /** The Y coordinate of this chip. */
     private final int y;
 
     /**

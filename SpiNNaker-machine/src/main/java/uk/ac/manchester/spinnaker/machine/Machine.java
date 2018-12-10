@@ -61,7 +61,6 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @author Christian-B
  */
 public class Machine implements Iterable<Chip> {
-
     private static final Logger log = getLogger(Link.class);
 
     /** Size of the machine along the x and y axes in Chips. */
@@ -970,7 +969,6 @@ public class Machine implements Iterable<Chip> {
                 "hashCode not supported as equals implemented.");
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -1095,9 +1093,10 @@ public class Machine implements Iterable<Chip> {
     }
 
     private class ChipOnBoardIterator implements Iterator<Chip> {
-
         private HasChipLocation root;
+
         private Chip nextChip;
+
         private Iterator<ChipLocation> singleBoardIterator;
 
         ChipOnBoardIterator(HasChipLocation root) {

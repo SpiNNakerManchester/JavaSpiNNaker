@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
-
 /**
  * A representation of a SpiNNaker Machine with a number of Chips.
  * <p>
@@ -43,7 +42,6 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * @author Christian-B
  */
 public class VirtualMachine extends Machine {
-
      /**
      * Creates a virtual machine to fill the machine dimensions.
      *
@@ -193,10 +191,15 @@ public class VirtualMachine extends Machine {
 
     // Hide magic numbers
     private static final int BYTES_PER_IP_ADDRESS = 4;
+
     private static final int LOCAL_HOST_ONE = 127;
+
     private static final int FIRST_BYTE = 0;
+
     private static final int SECOND_BYTE = 1;
+
     private static final int THIRD_BYTE = 2;
+
     private static final int FOURTH_BYTE = 3;
 
     private Inet4Address getIpaddress(

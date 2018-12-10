@@ -39,10 +39,15 @@ import java.util.function.Consumer;
  * @author Christian-B
  */
 public final class SpiNNakerTriadGeometry {
+    private static final float VIRTUAL_CENTRE_X = 3.6F;
+
+    private static final float VIRTUAL_CENTRE_Y = 3.4F;
+
     private static SpiNNakerTriadGeometry spinn5TriadGeometry = null;
 
     /** Height of a triad in chips. */
     public final int triadHeight;
+
     /** Width of a triad in chips. */
     public final int triadWidth;
 
@@ -54,6 +59,7 @@ public final class SpiNNakerTriadGeometry {
     private final ArrayList<ChipLocation> singleBoardCoordinates;
 
     private final float xCenterer;
+
     private final float yCenterer;
 
     /**
@@ -271,7 +277,6 @@ public final class SpiNNakerTriadGeometry {
         return Collections.unmodifiableList(singleBoardCoordinates);
     }
 
-
     /**
      * An Iterator all the chips on a Single board with a root of 0, 0.
      *
@@ -314,14 +319,12 @@ public final class SpiNNakerTriadGeometry {
         return spinn5TriadGeometry;
     }
 
-    private static final float VIRTUAL_CENTRE_X = 3.6F;
-    private static final float VIRTUAL_CENTRE_Y = 3.4F;
-
     /**
      * Local class with x and y values that can be negative.
      */
     private static final class Location {
         final int x;
+
         final int y;
 
         Location(int x, int y) {

@@ -19,7 +19,9 @@ package uk.ac.manchester.spinnaker.machine;
 /** A multicast packet routing table entry. */
 public class MulticastRoutingEntry extends RoutingEntry {
     private final int key;
+
     private final int mask;
+
     private final boolean defaultable;
 
     /**
