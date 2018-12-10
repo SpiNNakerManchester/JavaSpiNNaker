@@ -171,8 +171,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		} catch (ClassCastException e) {
 			throw new UnknownHostException("SpiNNaker only talks IPv4");
 		}
-		InetSocketAddress addr = new InetSocketAddress(localAddr, localPort);
-		return addr;
+		return new InetSocketAddress(localAddr, localPort);
 	}
 
 	private InetSocketAddress getLocalAddress() throws IOException {
