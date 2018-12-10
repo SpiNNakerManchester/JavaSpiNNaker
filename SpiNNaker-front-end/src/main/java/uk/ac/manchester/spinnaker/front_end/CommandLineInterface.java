@@ -36,9 +36,12 @@ public final class CommandLineInterface {
 	}
 
 	private static final Logger log = getLogger(CommandLineInterface.class);
+
 	private static final String JAR_FILE;
+
 	@SuppressWarnings("unused")
 	private static final String MAIN_CLASS;
+
 	private static final String VERSION;
 
 	static {

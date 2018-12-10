@@ -30,16 +30,20 @@ abstract class Constants {
 
 	/** What is the maximum number of <i>words</i> in a packet? */
 	static final int DATA_PER_FULL_PACKET = 68;
+
 	/**
 	 * What is the maximum number of payload <i>words</i> in a packet that also
 	 * has a sequence number?
 	 */
 	static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
         DATA_PER_FULL_PACKET - 1;
+
 	/** How many bytes for the end-flag? */
 	static final int END_FLAG_SIZE_IN_BYTES = WORD_SIZE;
+
 	/** How many bytes for the sequence number? */
 	static final int SEQUENCE_NUMBER_SIZE = WORD_SIZE;
+
 	/**
 	 * Mask used to pick out the bit tha says whether a sequence number is the
 	 * last in a stream.
@@ -50,8 +54,10 @@ abstract class Constants {
 
 	/** The maximum number of times to retry. */
 	static final int TIMEOUT_RETRY_LIMIT = 20;
+
 	/** The time delay between sending each message. */
 	static final int TIMEOUT_PER_SENDING_IN_MILLISECONDS = 10;
+
 	/** The timeout when receiving message. */
 	static final int TIMEOUT_PER_RECEIVE_IN_MILLISECONDS = 250;
 }

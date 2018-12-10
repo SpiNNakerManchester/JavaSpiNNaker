@@ -113,41 +113,53 @@ public class DataOut implements Callable<Boolean> {
 	/** The X coord of the CPU to read from. */
 	@Bind(Argument.PLACEMENT_X)
 	int x;
+
 	/** The Y coord of the CPU to read from. */
 	@Bind(Argument.PLACEMENT_Y)
 	int y;
+
 	/** The P coord of the CPU to read from. */
 	@Bind(Argument.PLACEMENT_P)
 	int p;
+
 	/** The port number. */
 	@Bind(Argument.PORT_NUMBER)
 	int portConnection;
+
 	/** How many bytes to read. */
 	@Bind(Argument.LENGTH_IN_BYTES)
 	int length;
+
 	/** Where to read from. */
 	@Bind(Argument.MEMORY_ADDRESS)
 	int address;
+
 	/** The hostname. */
 	@Bind(Argument.HOSTNAME)
 	String hostname;
+
 	/** Where to write data to. */
 	@Bind(Argument.DATA_FILE)
 	String dataFile;
+
 	/** Where to report missing sequence numbers. */
 	@Bind(Argument.MISSING_SEQS_FILE)
 	String missingFile;
+
 	/** X coord for IPtag setting. */
 	@Bind(Argument.CHIP_X)
 	int chipX;
+
 	/** Y coord for IPtag setting. */
 	@Bind(Argument.CHIP_Y)
 	int chipY;
+
 	/** The ID of the IPtag. */
 	@Bind(Argument.IPTAG)
 	int iptag;
 
 	private static final int NUM_CHIP_ARGS = 2;
+
 	private static final int NUM_CORE_ARGS = 3;
 
 	private static CommandLine parse(String[] args) throws ParseException {

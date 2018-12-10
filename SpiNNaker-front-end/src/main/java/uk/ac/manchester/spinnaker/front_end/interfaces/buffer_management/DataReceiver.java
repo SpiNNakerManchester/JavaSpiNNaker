@@ -54,6 +54,7 @@ public class DataReceiver {
     private static final int FIRST_REGION_ADDRESS_OFFSET = 4 * 7;
 
     private final Transceiver transceiver;
+
     private final BufferedReceivingData receivedData;
 
     private static final Logger log = getLogger(DataReceiver.class);
@@ -151,7 +152,6 @@ public class DataReceiver {
             } else {
                 endState = receivedData.getEndBufferingState(location);
             }
-
 
             // current read needs to be adjusted in case the last portion of the
             // memory has already been read, but the HostDataRead packet has not

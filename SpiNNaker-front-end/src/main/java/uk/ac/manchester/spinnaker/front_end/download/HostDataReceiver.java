@@ -62,17 +62,29 @@ public class HostDataReceiver extends Thread {
 	private static final Logger log = getLogger(HostDataReceiver.class);
 
 	private final int portConnection;
+
 	private final HasCoreLocation placement;
+
 	private final Inet4Address machineIP;
+
 	private final int length;
+
 	private final int address;
+
 	private final HasChipLocation chip;
+
 	private final int iptag;
+
 	private final BlockingQueue<ByteBuffer> messQueue;
+
 	private final byte[] buffer;
+
 	private final int maxSeqNum;
+
 	private boolean finished;
+
 	private int missCount;
+
 	private BitSet receivedSeqNums;
 
 	/**
@@ -314,6 +326,7 @@ public class HostDataReceiver extends Thread {
 
 	private class ProcessorThread extends Thread {
 		private final SCPConnection connection;
+
 		private int timeoutcount = 0;
 
 		ProcessorThread(SCPConnection connection) {

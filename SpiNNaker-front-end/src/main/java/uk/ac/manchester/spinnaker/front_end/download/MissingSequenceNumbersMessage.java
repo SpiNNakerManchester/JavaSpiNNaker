@@ -37,11 +37,14 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;
+
 	/** Number of words of overhead in a subsequent message. */
 	private static final int NEXT_OVERHEAD_WORDS = 1;
+
 	/** How many sequence numbers fit in the first message. */
 	static final int MAX_FIRST_SIZE =
 			DATA_PER_FULL_PACKET - FIRST_OVERHEAD_WORDS;
+
 	/** How many sequence numbers fit in each subsequent message. */
 	static final int MAX_NEXT_SIZE = DATA_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
 

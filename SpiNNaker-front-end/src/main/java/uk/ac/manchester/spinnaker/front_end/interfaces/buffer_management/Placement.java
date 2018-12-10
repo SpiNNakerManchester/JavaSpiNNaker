@@ -28,13 +28,15 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 @JsonFormat(shape = OBJECT)
 class Placement implements HasCoreLocation {
-
     /** The x value of the core this placement is on. */
     final int x;
+
     /** The y value of the core this placement is on. */
     final int y;
+
     /** The p value of the core this placement is on. */
     final int p;
+
     /** Minimal vertex info. */
     final Vertex vertex;
 
@@ -76,5 +78,4 @@ class Placement implements HasCoreLocation {
     Vertex getVertex() {
         return vertex;
     }
-
 }
