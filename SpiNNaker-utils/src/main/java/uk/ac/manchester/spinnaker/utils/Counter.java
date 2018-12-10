@@ -26,7 +26,6 @@ package uk.ac.manchester.spinnaker.utils;
  * @author Christian-B
  */
 public final class Counter {
-
     private int count;
 
     /**
@@ -53,6 +52,7 @@ public final class Counter {
     public void add(int other) {
         count += other;
     }
+
     /**
      * Retrieve the current value.
      *

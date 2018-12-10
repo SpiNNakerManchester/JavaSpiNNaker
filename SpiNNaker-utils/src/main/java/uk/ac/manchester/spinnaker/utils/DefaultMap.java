@@ -35,8 +35,11 @@ import java.util.function.Supplier;
 @SuppressWarnings("serial")
 public class DefaultMap<K, V> extends HashMap<K, V> {
 	private final boolean direct;
+
 	private final V defValue;
+
 	private final Supplier<? extends V> defFactory;
+
 	private final KeyAwareFactory<? super K, ? extends V> advFactory;
 
 	/**

@@ -41,10 +41,12 @@ import java.util.Iterator;
  *            Type of elemente to be iterated over.
  */
 public class ProgressIterable<E> implements Iterable<E>, Closeable {
-
 	private final Collection<E> things;
+
 	private final String description;
+
 	private final ArrayList<ProgressIterator<E>> progressIterables;
+
 	private final PrintStream output;
 
 	/**

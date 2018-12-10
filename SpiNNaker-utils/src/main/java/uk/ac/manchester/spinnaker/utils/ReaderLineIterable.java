@@ -53,9 +53,12 @@ import java.util.NoSuchElementException;
  */
 public class ReaderLineIterable implements Iterable<String>, Closeable {
 	private final BufferedReader r;
-    private boolean closed = false;
-    private boolean used = false;
-    private IOException caught;
+
+	private boolean closed = false;
+
+	private boolean used = false;
+
+	private IOException caught;
 
     /**
 	 * Create a new <i>one-shot</i> iterable.

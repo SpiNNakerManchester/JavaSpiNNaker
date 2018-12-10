@@ -36,7 +36,9 @@ import java.util.NoSuchElementException;
  */
 public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	private final ProgressBar bar;
+
 	private final Iterator<E> inner;
+
 	private boolean first;
 
 	/**

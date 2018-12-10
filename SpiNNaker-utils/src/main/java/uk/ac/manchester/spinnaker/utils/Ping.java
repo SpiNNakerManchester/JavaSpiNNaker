@@ -27,7 +27,10 @@ import java.net.InetAddress;
  */
 public abstract class Ping {
 	private static final int PING_DELAY = 500;
+
 	private static final int PING_COUNT = 10;
+
+	private static final int BUFFER_SIZE = 256;
 
 	private Ping() {
 	}
@@ -98,7 +101,6 @@ public abstract class Ping {
 	}
 
 	private static class InputStreamDrain implements Runnable {
-		private static final int BUFFER_SIZE = 256;
 		private InputStream is;
 
 		InputStreamDrain(InputStream is) {
