@@ -32,7 +32,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Christian-B
  */
-@SuppressWarnings("deprecation")
 public class TestChip {
 
     ChipLocation location00 = new ChipLocation(0,0);

@@ -19,8 +19,9 @@ package uk.ac.manchester.spinnaker.messages.model;
 /**
  * Indicate that a memory allocation operation has failed.
  */
-@SuppressWarnings("serial")
 public class MemoryAllocationFailedException extends Exception {
+	private static final long serialVersionUID = 4463116302552127934L;
+
 	public MemoryAllocationFailedException(String message) {
 		super(message);
 	}

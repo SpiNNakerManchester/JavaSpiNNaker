@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.io;
 
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
-import static uk.ac.manchester.spinnaker.io.Constants.BYTE_MASK;
+import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 
 import java.io.EOFException;
 import java.io.IOException;

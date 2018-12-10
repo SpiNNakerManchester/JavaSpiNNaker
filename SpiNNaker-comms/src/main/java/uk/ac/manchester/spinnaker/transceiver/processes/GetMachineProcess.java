@@ -145,7 +145,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
-			// TODO work out why mutiple calls is a problem
+			// TODO work out why multiple calls is a problem
 			finish();
 		}
 		checkForError();
@@ -199,12 +199,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		List<Processor> processors = new ArrayList<>();
 		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
 		ChipLocation location = chipInfo.chip.asChipLocation();
-		Collection<Integer> ignoreCores;
-		if (ignoreCoresMap.containsKey(location)) {
-			ignoreCores = ignoreCoresMap.get(location);
-		} else {
-			ignoreCores = emptyList();
-		}
+		Collection<Integer> ignoreCores =
+				ignoreCoresMap.getOrDefault(location, emptyList());
 		for (int id = 0; id <= maxCore; id++) {
 			// Add the core provided it is not to be ignored
 			if (!ignoreCores.contains(id)) {

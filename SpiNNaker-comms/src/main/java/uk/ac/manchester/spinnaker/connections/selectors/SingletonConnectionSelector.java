@@ -14,28 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
+package uk.ac.manchester.spinnaker.connections.selectors;
 
-import uk.ac.manchester.spinnaker.data_spec.Commands;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
 /**
- * An exception which occurs when trying to write to an unallocated region of
- * memory.
+ * A selector that only ever handles a single connection.
+ *
+ * @param <T>
+ *            The type of the connection.
  */
-public class RegionNotAllocatedException extends DataSpecificationException {
-	private static final long serialVersionUID = 7075946109066864639L;
+public class SingletonConnectionSelector<T extends Connection>
+		implements ConnectionSelector<T> {
+	private final T connection;
 
 	/**
-	 * Create an instance.
+	 * Create a selector.
 	 *
-	 * @param currentRegion
-	 *            What is the current region.
-	 * @param command
-	 *            What command was trying to use the region.
+	 * @param connection
+	 *            The connection in the selector.
 	 */
-	public RegionNotAllocatedException(int currentRegion, Commands command) {
-		super("Region " + currentRegion
-            + " has not been allocated during execution of command "
-            + command);
+	public SingletonConnectionSelector(T connection) {
+		this.connection = connection;
+	}
+
+	@Override
+	public T getNextConnection(SCPRequest<?> request) {
+		// Ignores the request, always
+		return connection;
 	}
 }

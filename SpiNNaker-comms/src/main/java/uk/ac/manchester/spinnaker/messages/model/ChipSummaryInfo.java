@@ -56,7 +56,9 @@ public final class ChipSummaryInfo {
     public final HasChipLocation chip;
 
     private static final int ADDRESS_SIZE = 4;
-    private static final byte[] NO_ADDRESS = new byte[ADDRESS_SIZE];
+	private static final byte[] NO_ADDRESS = new byte[] {
+		0, 0, 0, 0
+	};
     private static final int NUM_CORES = 18;
     private static final int NUM_LINKS = 6;
     private static final int LINKS_FIELD_SHIFT = 8;

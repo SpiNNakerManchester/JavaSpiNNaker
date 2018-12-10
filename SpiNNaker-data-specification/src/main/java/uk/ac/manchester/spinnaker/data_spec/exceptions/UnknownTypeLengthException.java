@@ -21,8 +21,9 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
 /**
  * An exception that indicates that the value of the requested type is unknown.
  */
-@SuppressWarnings("serial")
 public class UnknownTypeLengthException extends DataSpecificationException {
+	private static final long serialVersionUID = 8012093021275095441L;
+
 	/**
 	 * Create an instance.
 	 *
