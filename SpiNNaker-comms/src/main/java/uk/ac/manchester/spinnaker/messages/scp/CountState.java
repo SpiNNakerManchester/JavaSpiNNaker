@@ -20,6 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.model.Signal.Type.POINT_TO_POI
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.ALL_CORE_SIGNAL_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 
 import java.nio.ByteBuffer;
@@ -29,7 +30,6 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 
 /** An SCP Request to get a count of the cores in a particular state. */
 public class CountState extends SCPRequest<CountState.Response> {
-	private static final int ALL_CORE_MASK = 0xFFFF;
 	private static final int APP_MASK = 0xFF;
 	private static final int COUNT_OPERATION = 1;
 	private static final int COUNT_MODE = 2;
@@ -44,7 +44,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	 */
 	public CountState(int appId, CPUState state) {
 		super(DEFAULT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
-				argument2(appId, state), ALL_CORE_MASK);
+				argument2(appId, state), ALL_CORE_SIGNAL_MASK);
 	}
 
 	private static int argument2(int appId, CPUState state) {
