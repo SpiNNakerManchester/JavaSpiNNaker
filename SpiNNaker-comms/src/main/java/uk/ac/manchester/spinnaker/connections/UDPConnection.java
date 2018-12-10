@@ -464,7 +464,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public boolean isConnected() throws IOException {
+	public boolean isConnected() {
 		if (!canSend) {
 			return false;
 		}
