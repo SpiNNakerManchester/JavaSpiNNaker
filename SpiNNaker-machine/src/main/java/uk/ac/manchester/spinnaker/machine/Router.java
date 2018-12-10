@@ -16,9 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
+import java.util.List;
 
 /**
  *
@@ -158,8 +164,8 @@ public final class Router implements Iterable<Link> {
      *      ignoredLinks
      */
     public Router(HasChipLocation source, int clockSpeed,
-            int nAvailableMulticastEntries,
-            Collection<Direction> ignoreDirections, Machine machine) {
+                  int nAvailableMulticastEntries,
+                  Collection<Direction> ignoreDirections, Machine machine) {
         this(clockSpeed, nAvailableMulticastEntries);
         for (Direction direction: Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
@@ -243,9 +249,7 @@ public final class Router implements Iterable<Link> {
      */
     public Stream<ChipLocation> streamNeighbouringChipsCoords() {
         return links.values().stream().map(
-            link -> {
-                return link.destination;
-            });
+            link -> link.destination);
     }
 
     /**
@@ -257,12 +261,7 @@ public final class Router implements Iterable<Link> {
      * @return A Stream over the destination locations.
      */
     public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
-        return new Iterable<ChipLocation>() {
-            @Override
-            public Iterator<ChipLocation> iterator() {
-                return new NeighbourIterator(links.values().iterator());
-            }
-        };
+        return () -> new NeighbourIterator(links.values().iterator());
     }
 
     /**
