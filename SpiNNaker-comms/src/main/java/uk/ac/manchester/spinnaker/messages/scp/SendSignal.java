@@ -37,7 +37,7 @@ public class SendSignal extends SCPRequest<CheckOKResponse> {
 	 *            The coordinates of the chip to run on
 	 */
 	public SendSignal(int appID, Signal signal) {
-		super(DEFAULT_MONITOR_CORE, CMD_SIG, signal.type.value,
+		super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
 				argument2(appID, signal), ALL_CORE_SIGNAL_MASK);
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(

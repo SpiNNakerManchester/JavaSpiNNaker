@@ -53,7 +53,7 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application, between 0 and 255
 	 */
 	public ApplicationStop(int appID) {
-		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(), argument2(appID),
+		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(), argument2(appID),
 				argument3());
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(

@@ -37,7 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
@@ -219,7 +219,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_CHIP, getScampConnectionSelector());
+		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
 
 	/**
@@ -237,7 +237,7 @@ public interface TransceiverInterface {
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_CHIP, connectionSelector);
+		return getScampVersion(BOOT_CHIP, connectionSelector);
 	}
 
 	/**

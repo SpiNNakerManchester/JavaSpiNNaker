@@ -44,7 +44,7 @@ public class CountState extends SCPRequest<CountState.Response> {
 	 *            The state to count
 	 */
 	public CountState(int appID, CPUState state) {
-		super(DEFAULT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
+		super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
 				argument2(appID, state), ALL_CORE_SIGNAL_MASK);
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(

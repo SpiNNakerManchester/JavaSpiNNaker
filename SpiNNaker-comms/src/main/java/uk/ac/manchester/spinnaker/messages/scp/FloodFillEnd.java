@@ -73,7 +73,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillEnd(byte nearestNeighbourID, int appID,
 			Iterable<Integer> processors, boolean wait) {
-		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
+		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(

@@ -32,18 +32,18 @@ import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
  */
 public abstract class SCPRequest<T extends SCPResponse>
 		extends SpinnakerRequest {
-	private static final int DEFAULT_DEST_X = 255;
-	private static final int DEFAULT_DEST_Y = 255;
+	private static final int BOOT_DEST_X = 255;
+	private static final int BOOT_DEST_Y = 255;
 	/**
 	 * The location of the default SCAMP.
 	 */
-	public static final CoreLocation DEFAULT_MONITOR_CORE =
-			new CoreLocation(DEFAULT_DEST_X, DEFAULT_DEST_Y, 0);
-    /**
+	public static final CoreLocation BOOT_MONITOR_CORE =
+			new CoreLocation(BOOT_DEST_X, BOOT_DEST_Y, 0);
+	/**
 	 * The pseudo-location of the default chip.
 	 */
-	public static final ChipLocation DEFAULT_CHIP =
-			DEFAULT_MONITOR_CORE.asChipLocation();
+	public static final ChipLocation BOOT_CHIP =
+			BOOT_MONITOR_CORE.asChipLocation();
 
 	/** The first argument. */
 	public final int argument1;
