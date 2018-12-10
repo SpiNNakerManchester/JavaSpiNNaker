@@ -38,7 +38,9 @@ import org.sqlite.SQLiteConfig;
  */
 public class DatabaseEngine implements ConnectionProvider {
 	private static final Logger log = getLogger(DatabaseEngine.class);
+
 	private static String sqlDDL;
+
 	static {
 		try {
 			sqlDDL = resourceToString("/db.sql", UTF_8);

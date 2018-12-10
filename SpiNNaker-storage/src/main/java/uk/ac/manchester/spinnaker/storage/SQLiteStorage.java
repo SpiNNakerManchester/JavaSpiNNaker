@@ -39,26 +39,35 @@ public class SQLiteStorage implements Storage {
 	private static final String STORE =
 			"INSERT OR REPLACE INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?)";
+
 	private static final String APPEND =
 			"INSERT INTO storage(x, y, processor, region, content) "
 					+ "VALUES(?, ?, ?, ?, ?) "
 					+ "ON CONFLICT(x, y, processor, region) DO UPDATE "
 					+ "SET content = storage.content || excluded.content";
+
 	private static final String FETCH = "SELECT content FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
+
 	private static final String DELETE = "DELETE FROM storage WHERE "
 			+ "x = ? AND y = ? AND processor = ? AND region = ?";
+
 	private static final String CORES =
 			"SELECT DISTINCT x, y, processor FROM storage "
 					+ "ORDER BY x, y, processor";
+
 	private static final String REGIONS =
 			"SELECT DISTINCT region FROM storage WHERE "
 					+ "x = ? AND y = ? AND processor = ? ORDER BY region";
 
 	private static final int FIRST = 1;
+
 	private static final int SECOND = 2;
+
 	private static final int THIRD = 3;
+
 	private static final int FOURTH = 4;
+
 	private static final int FIFTH = 5;
 
 	/**
