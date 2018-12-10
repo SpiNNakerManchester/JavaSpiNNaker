@@ -152,7 +152,7 @@ public class SDPHeader implements SerializableMessage {
 
 			@Override
 			public boolean equals(Object other) {
-				if (other == null || !(other instanceof HasCoreLocation)) {
+				if (!(other instanceof HasCoreLocation)) {
 					return false;
 				}
 				HasCoreLocation c = (HasCoreLocation) other;

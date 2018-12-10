@@ -38,7 +38,7 @@ public final class MachineDimensions {
 
     @Override
     public boolean equals(Object o) {
-        return (o != null) && (o instanceof MachineDimensions)
+        return (o instanceof MachineDimensions)
                 && equals((MachineDimensions) o);
     }
 

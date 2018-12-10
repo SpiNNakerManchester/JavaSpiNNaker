@@ -20,9 +20,11 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.DEFAULT_RETRIES;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -64,12 +66,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	public static final int DEFAULT_TIMEOUT =
             (int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
-	/**
-	 * The default number of times to resend any packet for any reason before an
-	 * error is triggered.
-	 */
-	private static final int DEFAULT_RETRIES = 3;
-	private static final int RETRY_SLEEP = 100;
+	private static final String TIMEOUT_TOKEN = "BMP timed out";
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -197,8 +194,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				return retries > 0;
 			}
 
-			private boolean allOneReason(String reason) {
-				return retryReason.stream().allMatch(r -> reason.equals(r));
+			private boolean allTimeoutFailures() {
+				return retryReason.stream()
+						.allMatch(r -> TIMEOUT_TOKEN.equals(r));
 			}
 
 			private void parseReceivedResponse(SCPResultMessage msg)
@@ -286,7 +284,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			// If the response can be retried, retry it
 			try {
 				if (msg.isRetriable()) {
-					sleep(RETRY_SLEEP);
+					sleep(RETRY_DELAY_MS);
 					resend(req, msg.getResult());
 				} else {
 					// No retry is possible. Try constructing the result
@@ -313,7 +311,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				}
 
 				try {
-					resend(req, "timeout");
+					resend(req, TIMEOUT_TOKEN);
 				} catch (Exception e) {
 					errorRequest = req.request;
 					exception = e;
@@ -321,13 +319,13 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				}
 			}
 
-			toRemove.stream().forEach(seq -> requests.remove(seq));
+			toRemove.stream().forEach(requests::remove);
 		}
 
 		private void resend(Request req, Object reason) throws IOException {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
-				if (req.allOneReason("timeout")) {
+				if (req.allTimeoutFailures()) {
 					throw new SendTimedOutException(
 							req.request.scpRequestHeader, timeout);
 				}
@@ -345,8 +343,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending timed out.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = 1660563278795501381L;
+
 		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
 			super(format("Operation %s timed out after %f seconds", hdr.command,
 					timeout / (double) MSEC_PER_SEC));
@@ -356,8 +355,9 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	/**
 	 * Indicates that message sending failed for various reasons.
 	 */
-	@SuppressWarnings("serial")
 	static final class SendFailedException extends IOException {
+		private static final long serialVersionUID = -7806549580351626377L;
+
 		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
 				List<String> retryReason) {
 			super(format(

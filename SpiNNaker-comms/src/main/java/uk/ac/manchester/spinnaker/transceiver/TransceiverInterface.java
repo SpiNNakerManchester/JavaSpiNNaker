@@ -23,7 +23,6 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
@@ -38,6 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
@@ -101,15 +101,6 @@ public interface TransceiverInterface {
 	 * core is ready for operational use. In milliseconds.
 	 */
 	int LAUNCH_DELAY = 500;
-	/**
-	 * Coordinate of a <i>default</i> destination.
-	 */
-	int DEFAULT_DESTINATION_COORDINATE = 255;
-	/**
-	 * The default destination chip.
-	 */
-	ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
 	/**
 	 * A marker to indicate that no timeout applies.
 	 */
@@ -228,8 +219,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION,
-				getScampConnectionSelector());
+		return getScampVersion(DEFAULT_CHIP, getScampConnectionSelector());
 	}
 
 	/**
@@ -247,7 +237,7 @@ public interface TransceiverInterface {
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION, connectionSelector);
+		return getScampVersion(DEFAULT_CHIP, connectionSelector);
 	}
 
 	/**
@@ -2583,7 +2573,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(Tag tag) throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), null, tag.getBoardAddress());
+		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
 
 	/**
@@ -2597,46 +2587,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(int tag) throws IOException, ProcessException {
-		clearIPTag(tag, null, null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(int tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag, requireNonNull(connection), null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(Tag tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), requireNonNull(connection),
-				tag.getBoardAddress());
+		clearIPTag(tag, null);
 	}
 
 	/**
@@ -2645,36 +2596,15 @@ public interface TransceiverInterface {
 	 * @param tag
 	 *            The tag ID
 	 * @param boardAddress
-	 *            Board address where the tag should be cleared.
+	 *            Board address where the tag should be cleared. If
+	 *            {@code null}, all SCPSender connections will send the message
+	 *            to clear the tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void clearIPTag(int tag, InetAddress boardAddress)
-			throws IOException, ProcessException {
-		clearIPTag(tag, null, requireNonNull(boardAddress));
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @param boardAddress
-	 *            Board address where the tag should be cleared. If not
-	 *            specified, all SCPSender connections will send the message to
-	 *            clear the tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
+	void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException;
 
 	/**

@@ -254,8 +254,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		}
 
 		// normalise local_host to the IP address
-		InetAddress addr =
-				normalize(localHost == null ? null : localHost);
+		InetAddress addr = normalize(localHost);
 
 		// If the local port was specified
 		Pair<T> pair;
@@ -305,7 +304,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 
 	@SuppressWarnings({
-			"unchecked", "rawtypes"
+		"unchecked", "rawtypes"
 	})
 	private <T> List<Pair<T>> getConnections(
 			Class<? extends UDPConnection<T>> clazz) {

@@ -55,7 +55,6 @@ public class TestIterable {
 	public void testSimple() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String description = "Easiest";
-		@SuppressWarnings("resource")
 		ProgressIterable<Integer> pb =
 				new ProgressIterable<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7),
 						description, new PrintStream(baos));
