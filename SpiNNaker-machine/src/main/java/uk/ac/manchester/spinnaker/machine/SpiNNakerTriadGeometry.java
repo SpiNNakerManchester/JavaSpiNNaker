@@ -210,7 +210,7 @@ public final class SpiNNakerTriadGeometry {
      */
     public ChipLocation getLocalChipCoordinate(HasChipLocation chip) {
         if (chip.getX() < triadWidth && chip.getY() < triadHeight) {
-            return localChipCoordinates.get(chip);
+            return localChipCoordinates.get(chip.asChipLocation());
         }
 
         int x = chip.getX() % triadWidth;
