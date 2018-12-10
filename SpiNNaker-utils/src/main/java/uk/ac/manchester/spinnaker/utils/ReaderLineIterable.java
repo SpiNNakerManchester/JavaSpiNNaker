@@ -120,8 +120,8 @@ public class ReaderLineIterable implements Iterable<String>, Closeable {
 			@Override
 			public String next() {
                 if (s == null) {
-                    hasNext();
-                    if (s == null) {
+					boolean bool_result = hasNext();
+                    if (!bool_result) {
                         throw new NoSuchElementException("No lines left.");
                     }
                 }

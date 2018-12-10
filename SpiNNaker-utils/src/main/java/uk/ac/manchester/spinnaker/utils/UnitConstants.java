@@ -36,14 +36,8 @@ public final class UnitConstants {
     /** The number of milliseconds per second. */
 	public static final int MSEC_PER_SEC = 1000;
 
-    /** The number of millisecond per minute. */
-	public static final double MSEC_PER_MINUTE = 60000.0;
-
    /** The number of second per minute. */
 	public static final int SEC_PER_MINUTE = 60;
-
-    /** The number of millisecond per hour. */
-	public static final double MSEC_PER_HOUR = 3600000.0;
 
     /** The number of minute per hour. */
 	public static final int MINUTE_PER_HOUR = 60;
@@ -54,7 +48,7 @@ public final class UnitConstants {
      *
      * @param durationInMillis A time interval in milliseconds
      *
-     * @return A formated String with only the relative units.
+     * @return A formatted String with only the relative units.
      */
     public static String formatDuration(long durationInMillis) {
         long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
