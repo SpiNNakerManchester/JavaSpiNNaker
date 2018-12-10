@@ -55,7 +55,6 @@ public class TestBar {
     @Test
     public void testToMany() {
         String description = "tooMany";
-        @SuppressWarnings("resource")
 		ProgressBar pb = new ProgressBar(5, description,
 				new PrintStream(new ByteArrayOutputStream()));
         for (int i = 0; i < 5 ; i++){
@@ -105,7 +104,6 @@ public class TestBar {
     public void testNoDivBig() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String description = "Big";
-        @SuppressWarnings("resource")
 		ProgressBar pb =
 				new ProgressBar(133, description, new PrintStream(baos));
         for (int i = 0; i < 133 ; i++){
