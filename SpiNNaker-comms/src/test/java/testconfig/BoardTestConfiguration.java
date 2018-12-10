@@ -79,7 +79,7 @@ public class BoardTestConfiguration {
 		localhost = LOCALHOST;
 		localport = PORT;
 		remotehost = InetFactory.getByName(LOCALHOST);
-		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
+		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 	}
 
 	public void setUpRemoteBoard()
@@ -87,7 +87,7 @@ public class BoardTestConfiguration {
 		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
 				() -> "test board (" + remotehost + ") appears to be down");
-		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
+		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {
 			bmpNames = null;
@@ -96,7 +96,7 @@ public class BoardTestConfiguration {
 			bmpNames = asList(
 					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
-		autoDetectBMP = config.getboolean(MCSEC, "auto_detect_bmp");
+		autoDetectBMP = config.getBoolean(MCSEC, "auto_detect_bmp");
 		localport = PORT;
 		try (DatagramSocket s = new DatagramSocket()) {
 			s.connect(new InetSocketAddress(remotehost, PORT));
@@ -111,8 +111,8 @@ public class BoardTestConfiguration {
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
 				() -> "spalloc server (" + spalloc + ") appears to be down");
-		Integer port = config.getint(SPSEC, "port");
-		Integer timeout = config.getint(SPSEC, "timeout");
+		Integer port = config.getInt(SPSEC, "port");
+		Integer timeout = config.getInt(SPSEC, "timeout");
 		String tag = config.get(SPSEC, "tag");
 		Map<String, Object> kwargs = new HashMap<>();
 		kwargs.put("owner", "java test harness");
@@ -146,7 +146,7 @@ public class BoardTestConfiguration {
 		localhost = null;
 		localport = PORT;
 		remotehost = InetFactory.getByName(NOHOST);
-		boardVersion = MachineVersion.byId(config.getint(MCSEC, "version"));
+		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 	}
 
 	private static boolean hostIsReachable(String remotehost) {
