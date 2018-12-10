@@ -197,7 +197,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				}
 				entries.remove();
 			}
-			return;
 		}
 
 		synchronized void finish() throws StorageException {

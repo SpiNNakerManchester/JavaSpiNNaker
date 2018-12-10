@@ -21,6 +21,6 @@ package uk.ac.manchester.spinnaker.data_spec.exceptions;
  * {@link uk.ac.manchester.spinnaker.data_spec.Commands#BREAK BREAK} was
  * encountered.
  */
-@SuppressWarnings("serial")
 public class ExecuteBreakInstruction extends DataSpecificationException {
+	private static final long serialVersionUID = -4902287652556707319L;
 }

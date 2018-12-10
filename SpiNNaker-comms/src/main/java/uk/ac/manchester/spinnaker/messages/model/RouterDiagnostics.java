@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.System.arraycopy;
+import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.DUMP_FR;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.DUMP_MC;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.DUMP_NN;
@@ -61,8 +62,6 @@ public class RouterDiagnostics {
 	private static final int NUM_USER_CONTROL_REGISTERS = 4;
 
 	private static final int MON_MASK = 0x1F;
-
-	private static final int BYTE_MASK = 0xFF;
 
 	private static final int MON_SHIFT = 8;
 

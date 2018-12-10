@@ -22,8 +22,9 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
  * An exception that indicates that a memory region is being used that was
  * originally requested to be unfilled.
  */
-@SuppressWarnings("serial")
 public class RegionUnfilledException extends DataSpecificationException {
+	private static final long serialVersionUID = -3485312741873589073L;
+
 	/**
 	 * Create an instance.
 	 *

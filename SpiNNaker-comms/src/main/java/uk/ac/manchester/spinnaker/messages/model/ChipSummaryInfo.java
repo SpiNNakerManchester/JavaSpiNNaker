@@ -66,7 +66,9 @@ public final class ChipSummaryInfo {
 
     private static final int ADDRESS_SIZE = 4;
 
-    private static final byte[] NO_ADDRESS = new byte[ADDRESS_SIZE];
+	private static final byte[] NO_ADDRESS = new byte[] {
+		0, 0, 0, 0
+	};
 
     private static final int NUM_CORES = 18;
 

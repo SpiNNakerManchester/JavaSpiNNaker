@@ -38,8 +38,19 @@ import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
 
 /** A file-like object for the memory of a chip. */
 final class ChipMemoryIO {
-	// TODO What is this value _really?_
-	private static final int SDRAM_START = 0x60000000;
+	/**
+	 * Start of unbuffered access to SDRAM. Writes will block until they have
+	 * completed.
+	 * <p>
+	 * <blockquote> Buffered SDRAM means that writes go through a write buffer.
+	 * Unbuffered means that they go directly to SDRAM. Reads are unaffected in
+	 * general. If you are writing lots of data, it is unlikely to matter much
+	 * since the write buffer is limited in size. Here you probably want to use
+	 * Unbuffered anyway, as it will then block until the write is definitely
+	 * done. Using Buffered writing means that the write may or may not have
+	 * happened at the time of the response. </blockquote>
+	 */
+	private static final int UNBUFFERED_SDRAM_START = 0x60000000;
 
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
@@ -53,24 +64,18 @@ final class ChipMemoryIO {
 	 * Get the instance for a particular transceiver and chip.
 	 *
 	 * @param transceiver
-	 *            The transciever.
+	 *            The transceiver.
 	 * @param chip
 	 *            The chip.
 	 * @return The access interface to the chip's memory.
 	 */
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
-		Map<ChipLocation, ChipMemoryIO> map = existing.get(transceiver);
-		if (map == null) {
-			map = new HashMap<>();
-			existing.put(transceiver, map);
-		}
-		ChipLocation key = chip.asChipLocation();
-		if (!map.containsKey(key)) {
-			map.put(key, new ChipMemoryIO(transceiver, chip, SDRAM_START,
-					UDP_MESSAGE_MAX_SIZE));
-		}
-		return map.get(key);
+		Map<ChipLocation, ChipMemoryIO> map =
+				existing.computeIfAbsent(transceiver, x -> new HashMap<>());
+		return map.computeIfAbsent(chip.asChipLocation(),
+				k -> new ChipMemoryIO(transceiver, chip, UNBUFFERED_SDRAM_START,
+						UDP_MESSAGE_MAX_SIZE));
 	}
 
 	/** The transceiver for speaking to the machine. */
@@ -103,8 +108,8 @@ final class ChipMemoryIO {
 	 * @param bufferSize
 	 *            The size of the write buffer to improve efficiency
 	 */
-	ChipMemoryIO(Transceiver transceiver, HasChipLocation chip, int baseAddress,
-			int bufferSize) {
+	private ChipMemoryIO(Transceiver transceiver, HasChipLocation chip,
+			int baseAddress, int bufferSize) {
 		this.transceiver = new WeakReference<>(transceiver);
 		core = chip.getScampCore().asCoreLocation();
 		currentAddress = baseAddress;

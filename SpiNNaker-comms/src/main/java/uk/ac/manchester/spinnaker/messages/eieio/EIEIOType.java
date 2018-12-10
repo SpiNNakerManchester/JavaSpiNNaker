@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.eieio;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +32,6 @@ public enum EIEIOType {
 	KEY_32_BIT(2, 4, 0),
 	/** Indicates that data is keys and payloads of 32 bits. */
 	KEY_PAYLOAD_32_BIT(3, 4, 4);
-
-	private static final int NBBY = 8;
 
 	private static final Map<Integer, EIEIOType> MAP;
 

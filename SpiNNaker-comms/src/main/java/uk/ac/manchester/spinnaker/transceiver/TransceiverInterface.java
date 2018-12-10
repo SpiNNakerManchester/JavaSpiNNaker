@@ -37,6 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
@@ -100,17 +101,6 @@ public interface TransceiverInterface {
 	 * core is ready for operational use. In milliseconds.
 	 */
 	int LAUNCH_DELAY = 500;
-
-	/**
-	 * Coordinate of a <i>default</i> destination.
-	 */
-	int DEFAULT_DESTINATION_COORDINATE = 255;
-
-	/**
-	 * The default destination chip.
-	 */
-	ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
 
 	/**
 	 * A marker to indicate that no timeout applies.
@@ -234,8 +224,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION,
-				getScampConnectionSelector());
+		return getScampVersion(DEFAULT_CHIP, getScampConnectionSelector());
 	}
 
 	/**
@@ -253,7 +242,7 @@ public interface TransceiverInterface {
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION, connectionSelector);
+		return getScampVersion(DEFAULT_CHIP, connectionSelector);
 	}
 
 	/**

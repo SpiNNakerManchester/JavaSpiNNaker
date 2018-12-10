@@ -70,7 +70,7 @@ public class DiagnosticFilter {
 	 * @param enableInterruptOnCounterEvent
 	 *            Indicates whether an interrupt should be raised when this rule
 	 *            matches
-	 * @param matchmergencyRoutingStatusToIncomingPacket
+	 * @param matchEmergencyRoutingStatusToIncomingPacket
 	 *            Indicates whether the emergency routing statuses should be
 	 *            matched against packets arriving at this router (if True), or
 	 *            if they should be matched against packets leaving this router
@@ -96,14 +96,14 @@ public class DiagnosticFilter {
 	 */
 	@SuppressWarnings("checkstyle:ParameterNumber")
 	public DiagnosticFilter(boolean enableInterruptOnCounterEvent,
-			boolean matchmergencyRoutingStatusToIncomingPacket,
+			boolean matchEmergencyRoutingStatusToIncomingPacket,
 			Collection<Destination> destinations, Collection<Source> sources,
 			Collection<PayloadStatus> payloadStatuses,
 			Collection<DefaultRoutingStatus> defaultRoutingStatuses,
 			Collection<EmergencyRoutingStatus> emergencyRoutingStatuses,
 			Collection<PacketType> packetTypes) {
 		this.enableInterrupt = enableInterruptOnCounterEvent;
-		this.emergencyMode = matchmergencyRoutingStatusToIncomingPacket;
+		this.emergencyMode = matchEmergencyRoutingStatusToIncomingPacket;
 		this.destinations = convert(destinations, Destination.values());
 		this.sources = convert(sources, Source.values());
 		this.payloads = convert(payloadStatuses, PayloadStatus.values());

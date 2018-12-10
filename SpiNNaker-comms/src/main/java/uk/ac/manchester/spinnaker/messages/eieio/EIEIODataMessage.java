@@ -312,8 +312,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			return (b >>> bit) & 1;
 		}
 
-		private static int bits(byte b, int bitbase) {
-			return (b >>> bitbase) & TWO_BITS_MASK;
+		private static int bits(byte b, int bitBase) {
+			return (b >>> bitBase) & TWO_BITS_MASK;
 		}
 
 		/**

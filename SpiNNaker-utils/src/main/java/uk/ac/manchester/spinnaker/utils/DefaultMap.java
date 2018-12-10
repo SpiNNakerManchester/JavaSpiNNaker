@@ -32,8 +32,9 @@ import java.util.function.Supplier;
  * @param <V>
  *            The type of values.
  */
-@SuppressWarnings("serial")
 public class DefaultMap<K, V> extends HashMap<K, V> {
+	private static final long serialVersionUID = -3805864660424802906L;
+
 	private final boolean direct;
 
 	private final V defValue;

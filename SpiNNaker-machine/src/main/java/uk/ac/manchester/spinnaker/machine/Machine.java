@@ -794,7 +794,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return A quick description of the machine.
      */
-    @SuppressWarnings("deprecation")
     public final String coresAndLinkOutputString() {
         int cores = 0;
         int everyLink = 0;
@@ -871,7 +870,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return The number of cores over all Chips.
      */
-    @SuppressWarnings("deprecation")
     public final int totalCores() {
         int count = 0;
         for (Chip chip :chips.values()) {

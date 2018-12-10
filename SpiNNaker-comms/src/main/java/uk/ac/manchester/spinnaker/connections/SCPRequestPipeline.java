@@ -77,7 +77,10 @@ public class SCPRequestPipeline {
 	 */
 	public static final int DEFAULT_RETRIES = 3;
 
-	private static final int RETRY_DELAY_MS = 100;
+	/**
+	 * How long to wait between retries, in milliseconds.
+	 */
+	public static final int RETRY_DELAY_MS = 100;
 
 	private static final String REASON_TIMEOUT = "timeout";
 

@@ -50,6 +50,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.router_table_copy_address;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 
 import java.io.File;
@@ -922,7 +923,7 @@ public class Transceiver extends UDPTransceiver
 		 * SCP request params with the boot chip coordinates
 		 */
 		for (SCPConnection sc : scampConnections) {
-			if (sc.getChip().equals(DEFAULT_DESTINATION)) {
+			if (sc.getChip().equals(DEFAULT_CHIP)) {
 				sc.setChip(machine.boot);
 			}
 		}
@@ -1036,7 +1037,7 @@ public class Transceiver extends UDPTransceiver
 	public MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException {
 		if (dimensions == null) {
-			ByteBuffer data = readMemory(DEFAULT_DESTINATION,
+			ByteBuffer data = readMemory(DEFAULT_CHIP,
 					SYSTEM_VARIABLE_BASE_ADDRESS + y_size.offset, 2);
 			int height = toUnsignedInt(data.get());
 			int width = toUnsignedInt(data.get());
@@ -1219,8 +1220,7 @@ public class Transceiver extends UDPTransceiver
 		while (versionInfo == null && triesLeft > 0) {
 			try {
 				versionInfo = getScampVersion();
-				if (versionInfo.core.asChipLocation()
-						.equals(DEFAULT_DESTINATION)) {
+				if (versionInfo.core.asChipLocation().equals(DEFAULT_CHIP)) {
 					versionInfo = null;
 					sleep(CONNECTION_CHECK_DELAY);
 				}
@@ -1248,7 +1248,7 @@ public class Transceiver extends UDPTransceiver
 		// The last thing we tried was booting, so try again to get the version
 		if (versionInfo == null) {
 			versionInfo = getScampVersion();
-			if (versionInfo.core.asChipLocation().equals(DEFAULT_DESTINATION)) {
+			if (versionInfo.core.asChipLocation().equals(DEFAULT_CHIP)) {
 				versionInfo = null;
 			}
 		}
@@ -1285,7 +1285,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {
-			iobufSize = (Integer) getSystemVariable(DEFAULT_DESTINATION,
+			iobufSize = (Integer) getSystemVariable(DEFAULT_CHIP,
 					SystemVariableDefinition.iobuf_size);
 		}
 

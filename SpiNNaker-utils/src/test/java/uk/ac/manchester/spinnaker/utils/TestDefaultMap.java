@@ -31,7 +31,7 @@ public class TestDefaultMap {
     }
 
     @SuppressWarnings({
-			"unchecked", "rawtypes"
+    	"unchecked", "rawtypes"
 	})
 	@Test
     public void testUntyped() {

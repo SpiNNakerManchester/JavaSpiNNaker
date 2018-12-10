@@ -89,7 +89,8 @@ public class JobMachineInfo {
 		builder.append(" machineName: ").append(machineName);
 		if (connections.size() > PRINT_CONNECTIONS_THRESHOLD
 				&& boards.size() == connections.size()) {
-			builder.append(" # connections/boards: " + connections.size());
+			builder.append(" # connections/boards: ")
+					.append(connections.size());
 		} else {
 			builder.append(" connections: ").append(connections);
 			builder.append(" boards: ").append(boards);

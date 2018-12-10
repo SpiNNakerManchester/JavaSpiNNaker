@@ -20,8 +20,9 @@ package uk.ac.manchester.spinnaker.data_spec.exceptions;
  * An exception that indicates that there is no more space for the requested
  * item.
  */
-@SuppressWarnings("serial")
 public class NoMoreException extends DataSpecificationException {
+	private static final long serialVersionUID = 1924179276762267554L;
+
 	/**
 	 * Create an instance.
 	 *

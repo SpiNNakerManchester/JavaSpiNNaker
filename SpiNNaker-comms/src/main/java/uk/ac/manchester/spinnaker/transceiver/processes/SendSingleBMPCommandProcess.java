@@ -20,9 +20,11 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.DEFAULT_RETRIES;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -65,15 +67,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	public static final int DEFAULT_TIMEOUT =
             (int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
-	/**
-	 * The default number of times to resend any packet for any reason before an
-	 * error is triggered.
-	 */
-	private static final int DEFAULT_RETRIES = 3;
-
-	private static final int RETRY_SLEEP = 100;
-
-	private static final String TIMEOUT_TOKEN = "timeout";
+	private static final String TIMEOUT_TOKEN = "BMP timed out";
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 
@@ -300,7 +294,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			// If the response can be retried, retry it
 			try {
 				if (msg.isRetriable()) {
-					sleep(RETRY_SLEEP);
+					sleep(RETRY_DELAY_MS);
 					resend(req, msg.getResult());
 				} else {
 					// No retry is possible. Try constructing the result
@@ -327,7 +321,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 				}
 
 				try {
-					resend(req, "timeout");
+					resend(req, TIMEOUT_TOKEN);
 				} catch (Exception e) {
 					errorRequest = req.request;
 					exception = e;

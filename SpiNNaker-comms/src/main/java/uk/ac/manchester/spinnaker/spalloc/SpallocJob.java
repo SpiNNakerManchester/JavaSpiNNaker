@@ -703,8 +703,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				}
 			} catch (IOException | SpallocServerException e) {
 				stopping = true;
-			} catch (InterruptedException e) {
-				continue;
+			} catch (InterruptedException ignore) {
 			}
 		}
 	}
@@ -956,7 +955,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            when our timeout expires, or {@code null} for never
 	 * @return True if the state has changed, or false on timeout
 	 * @throws SpallocServerException
+	 *             If the server throws an exception.
 	 * @throws IOException
+	 *             If communications fail.
 	 */
 	private boolean doWaitForAChange(Long finishTime)
 			throws IOException, SpallocServerException {
@@ -1002,7 +1003,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * first).
 	 *
 	 * @throws IOException
+	 *             If communications fail.
 	 * @throws InterruptedException
+	 *             If the wait is interrupted.
 	 */
 	private void doReconnect(Long finishTime)
 			throws IOException, InterruptedException {

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
 import java.io.IOException;
@@ -39,9 +40,6 @@ public class GetMulticastRoutesProcess
 		extends MultiConnectionProcess<SCPConnection> {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
 
-	/** There are 1024 entries in a routing table. */
-	private static final int NUM_ENTRIES = 1024;
-
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
 
@@ -50,7 +48,8 @@ public class GetMulticastRoutesProcess
 			UDP_MESSAGE_MAX_SIZE / BYTES_PER_ENTRY;
 
 	/** 64 reads of 16 entries are required for 1024 entries. */
-	private static final int NUM_READS = NUM_ENTRIES / ENTRIES_PER_READ;
+	private static final int NUM_READS =
+			ROUTER_AVAILABLE_ENTRIES / ENTRIES_PER_READ;
 
 	/**
 	 * @param connectionSelector
