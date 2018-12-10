@@ -248,8 +248,7 @@ public final class Router implements Iterable<Link> {
      * @return A Stream over the destination locations.
      */
     public Stream<ChipLocation> streamNeighbouringChipsCoords() {
-        return links.values().stream().map(
-            link -> link.destination);
+        return links.values().stream().map(link -> link.destination);
     }
 
     /**

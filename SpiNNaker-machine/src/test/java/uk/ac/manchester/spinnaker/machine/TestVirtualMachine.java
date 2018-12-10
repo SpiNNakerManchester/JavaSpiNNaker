@@ -116,7 +116,6 @@ public class TestVirtualMachine {
         assertEquals(3 * 16, links.size());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void test3Boards() {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);

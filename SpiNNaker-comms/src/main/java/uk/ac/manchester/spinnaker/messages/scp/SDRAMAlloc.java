@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException
 
 /** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
-	private static final int MAX_TAG = 255;
+	private static final int MAX_SDRAM_TAG = 255;
 	private final int size;
 
 	/**
@@ -59,9 +59,10 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
 		this.size = size;
-		if (tag < 0 || tag > MAX_TAG) {
+		if (tag < 0 || tag > MAX_SDRAM_TAG) {
 			throw new IllegalArgumentException(
-					"The tag parameter needs to be between 0 and " + MAX_TAG);
+					"The tag parameter needs to be between 0 and "
+							+ MAX_SDRAM_TAG);
 		}
 	}
 
