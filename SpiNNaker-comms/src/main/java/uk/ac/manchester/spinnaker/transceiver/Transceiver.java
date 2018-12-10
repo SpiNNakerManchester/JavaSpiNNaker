@@ -314,8 +314,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private final Map<ChipLocation, Semaphore> chipExecuteLocks =
 			new DefaultMap<>(() -> new Semaphore(1));
-	private final Object chipExecuteLockCondition = new Object();
-	private int numChipExecuteLocks = 0;
+	private final FloodLock executeFloodLock = new FloodLock();
 	private boolean machineOff = false;
 	private long retryCount = 0L;
 
@@ -708,30 +707,6 @@ public class Transceiver extends UDPTransceiver
 			int next = (nearestNeighbourID + 1) & NNID_MAX;
 			nearestNeighbourID = next;
 			return (byte) next;
-		}
-	}
-
-	private class ExecuteLock implements AutoCloseable {
-		private final Semaphore lock;
-
-		ExecuteLock(HasChipLocation chip) throws InterruptedException {
-			ChipLocation key = chip.asChipLocation();
-			synchronized (chipExecuteLockCondition) {
-				lock = chipExecuteLocks.get(key);
-			}
-			lock.acquire();
-			synchronized (chipExecuteLockCondition) {
-				numChipExecuteLocks++;
-			}
-		}
-
-		@Override
-		public void close() {
-			synchronized (chipExecuteLockCondition) {
-				lock.release();
-				numChipExecuteLocks--;
-				chipExecuteLockCondition.notifyAll();
-			}
 		}
 	}
 
@@ -1290,6 +1265,88 @@ public class Transceiver extends UDPTransceiver
 		return simpleProcess().execute(new CountState(appID, state)).count;
 	}
 
+	/**
+	 * The guardian of the flood lock. Also the lock around that piece of
+	 * global state.
+	 *
+	 * @see ExecuteLock
+	 * @author Donal Fellows
+	 */
+	private class FloodLock {
+		private int count = 0;
+
+		/**
+		 * Wait for the system to be ready to perform a flood fill. Must only
+		 * ever be called with this object already locked.
+		 *
+		 * @throws InterruptedException
+		 *             If the wait is interrupted.
+		 */
+		void waitForReady() throws InterruptedException {
+			while (count > 0) {
+				wait();
+			}
+		}
+
+		/**
+		 * Increment the lock counter. Must only ever be called with this object
+		 * already locked.
+		 */
+		void increment() {
+			count++;
+		}
+
+		/**
+		 * Decrement the lock counter. Must only ever be called with this object
+		 * already locked.
+		 */
+		void decrement() {
+			count--;
+			notifyAll();
+		}
+	}
+
+	/**
+	 * Helper class that makes lock management for application launch a lot
+	 * easier.
+	 *
+	 * @see FloodLock
+	 * @author Donal Fellows
+	 */
+	private class ExecuteLock implements AutoCloseable {
+		private final Semaphore lock;
+
+		/**
+		 * Acquire the lock associated with a particular chip.
+		 *
+		 * @param chip
+		 *            The chip we're talking about.
+		 * @throws InterruptedException
+		 *             If any waits to acquire locks are interrupted.
+		 */
+		ExecuteLock(HasChipLocation chip) throws InterruptedException {
+			ChipLocation key = chip.asChipLocation();
+			synchronized (executeFloodLock) {
+				lock = chipExecuteLocks.get(key);
+			}
+			lock.acquire();
+			synchronized (executeFloodLock) {
+				executeFloodLock.increment();
+			}
+		}
+
+		/**
+		 * Release the lock associated with a particular chip.
+		 */
+		@Override
+		public void close() {
+			synchronized (executeFloodLock) {
+				lock.release();
+				executeFloodLock.decrement();
+			}
+		}
+	}
+
 	@Override
 	public void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, int appID, boolean wait)
@@ -1341,10 +1398,8 @@ public class Transceiver extends UDPTransceiver
 			int numBytes, int appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
-		synchronized (chipExecuteLockCondition) {
-			while (numChipExecuteLocks > 0) {
-				wait();
-			}
+		synchronized (executeFloodLock) {
+			executeFloodLock.waitForReady();
 
 			// Flood fill the system with the binary
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable, numBytes);
@@ -1360,10 +1415,8 @@ public class Transceiver extends UDPTransceiver
 			int appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
-		synchronized (chipExecuteLockCondition) {
-			while (numChipExecuteLocks > 0) {
-				wait();
-			}
+		synchronized (executeFloodLock) {
+			executeFloodLock.waitForReady();
 
 			// Flood fill the system with the binary
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
@@ -1379,10 +1432,8 @@ public class Transceiver extends UDPTransceiver
 			int appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
-		synchronized (chipExecuteLockCondition) {
-			while (numChipExecuteLocks > 0) {
-				wait();
-			}
+		synchronized (executeFloodLock) {
+			executeFloodLock.waitForReady();
 
 			// Flood fill the system with the binary
 			writeMemoryFlood(EXECUTABLE_ADDRESS, executable);
