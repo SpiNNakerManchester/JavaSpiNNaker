@@ -44,7 +44,9 @@ import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
  */
 public class HostExecuteDataSpecification {
 	private static final int DEFAULT_SDRAM_BYTES = 117 * 1024 * 1024;
+
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * INT_SIZE;
+
 	private Transceiver txrx;
 
 	/**
@@ -323,8 +325,10 @@ public class HostExecuteDataSpecification {
 	public static class LocationInfo {
 		/** Where did the writes start. */
 		public final int startAddress;
+
 		/** How much memory was allocated. */
 		public final int memoryUsed;
+
 		/** How much memory was written. No more than the space allocated. */
 		public final int bytesWrittenBySpec;
 

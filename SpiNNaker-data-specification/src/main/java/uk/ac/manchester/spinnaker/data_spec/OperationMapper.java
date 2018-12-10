@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  */
 abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
+
 	private static final Map<FunctionAPI, Map<Commands, Callable>> MAP =
 			new WeakHashMap<>();
 
