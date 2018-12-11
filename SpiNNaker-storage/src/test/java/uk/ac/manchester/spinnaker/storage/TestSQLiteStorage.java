@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteStorage;
 
 class TestSQLiteStorage {
 	File db;
@@ -57,7 +56,7 @@ class TestSQLiteStorage {
 	@Test
 	void testBasicOps() throws StorageException {
 		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		BufferManagerStorage storage = new SQLiteStorage(engine);
+		BufferManagerStorage storage = engine.getBufferManagerStorage();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
@@ -83,7 +82,7 @@ class TestSQLiteStorage {
 	@Test
 	void testWithExisting() throws StorageException {
 		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		BufferManagerStorage storage = new SQLiteStorage(engine);
+		BufferManagerStorage storage = engine.getBufferManagerStorage();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// store overwrites

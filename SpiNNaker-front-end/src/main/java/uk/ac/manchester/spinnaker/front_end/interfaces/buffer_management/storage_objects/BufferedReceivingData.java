@@ -27,7 +27,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
-import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -83,7 +82,7 @@ public class BufferedReceivingData {
         File databaseFile = new File(databasePath);
 		ConnectionProvider engine =
 				new BufferManagerDatabaseEngine(databaseFile);
-		storage = new SQLiteStorage(engine);
+		storage = engine.getBufferManagerStorage();
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
         //self._last_packet_received = defaultdict(lambda: None)

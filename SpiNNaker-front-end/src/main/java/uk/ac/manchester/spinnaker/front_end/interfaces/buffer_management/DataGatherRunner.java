@@ -36,7 +36,6 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteStorage;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -85,8 +84,8 @@ public abstract class DataGatherRunner {
 		DatabaseEngine database =
 				new BufferManagerDatabaseEngine(new File(args[THIRD]));
 
-		DataGatherer runner =
-				new DirectDataGatherer(trans, new SQLiteStorage(database));
+		DataGatherer runner = new DirectDataGatherer(trans,
+				database.getBufferManagerStorage());
 		for (Gather g : gathers) {
 			runner.addTask(g);
 		}
