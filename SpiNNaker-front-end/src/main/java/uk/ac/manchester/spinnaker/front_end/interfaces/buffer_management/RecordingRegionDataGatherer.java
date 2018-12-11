@@ -26,8 +26,8 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.Storage.Region;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public class RecordingRegionDataGatherer extends DataGatherer {
 	private final Transceiver txrx;
-	private final Storage database;
+	private final BufferManagerStorage database;
 
 	/**
 	 * Create a data gatherer.
@@ -55,7 +55,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *             If we can't discover the machine details due to I/O problems
 	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			Storage database) throws IOException, ProcessException {
+			BufferManagerStorage database) throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;

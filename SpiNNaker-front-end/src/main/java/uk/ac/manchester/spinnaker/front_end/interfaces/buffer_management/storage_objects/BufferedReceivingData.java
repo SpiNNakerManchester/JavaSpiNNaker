@@ -25,9 +25,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
-import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.Storage.Region;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
+import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class BufferedReceivingData {
 
     /** The physical storage of the data. */
-    private final Storage storage;
+    private final BufferManagerStorage storage;
 
     /** Map of booleans indicating if a region on a core has been flushed. */
     private final Map<RegionLocation, Boolean> isFlushed;

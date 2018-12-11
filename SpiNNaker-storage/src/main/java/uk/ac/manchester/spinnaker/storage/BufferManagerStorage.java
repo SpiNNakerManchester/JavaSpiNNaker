@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  *
  * @author Donal Fellows
  */
-public interface Storage {
+public interface BufferManagerStorage {
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
 	 * of a DSE region of a particular SpiNNaker core.

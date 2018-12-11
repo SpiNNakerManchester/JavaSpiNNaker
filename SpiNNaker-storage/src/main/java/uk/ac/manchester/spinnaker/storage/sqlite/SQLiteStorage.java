@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.storage;
+package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -26,16 +26,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DSEStorage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
  * How to actually talk to an SQLite database.
  *
  * @author Donal Fellows
  */
-public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
+public class SQLiteStorage extends SQLiteConnectionManager
+		implements BufferManagerStorage, DSEStorage {
 	// Recording regions
 	private static final String INSERT_LOCATION =
 			"INSERT INTO core(x, y, processor) VALUES(?, ?, ?)";
@@ -68,7 +72,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 					+ " FROM core_view";
 	private static final String LIST_CORES_TO_LOAD =
 			"SELECT core_id, x, y, processor, content FROM core_view "
-					+ "WHERE board_id = ?";
+					+ "WHERE board_id = ? AND start_address IS NULL";
 	private static final String ADD_LOADING_METADATA = "UPDATE core "
 			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
 			+ "WHERE core_id = ?";
@@ -90,94 +94,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		super(connectionProvider);
 	}
 
-	/**
-	 * A board which has data specifications loaded onto it.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static class Board {
-		private final int id;
-		/**
-		 * The virtual location of this board.
-		 */
-		public final ChipLocation ethernet;
-		/**
-		 * The network address of this board.
-		 */
-		public final String ethernetAddress;
-
-		private Board(int id, int etherx, int ethery, String addr) {
-			this.id = id;
-			this.ethernet = new ChipLocation(etherx, ethery);
-			this.ethernetAddress = addr;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == null || !(other instanceof Board)) {
-				return false;
-			}
-			Board b = (Board) other;
-			return id == b.id;
-		}
-
-		@Override
-		public int hashCode() {
-			return id;
-		}
-	}
-
-	/**
-	 * A core with a data specification to load.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static class CoreToLoad implements HasCoreLocation {
-		private final int id;
-		private final int x, y, p;
-		/**
-		 * The data specification to execute for this core.
-		 */
-		public final byte[] dataSpec;
-
-		private CoreToLoad(int id, int x, int y, int p, byte[] bytes) {
-			this.id = id;
-			this.x = x;
-			this.y = y;
-			this.p = p;
-			this.dataSpec = bytes;
-		}
-
-		@Override
-		public int getX() {
-			return x;
-		}
-
-		@Override
-		public int getY() {
-			return y;
-		}
-
-		@Override
-		public int getP() {
-			return p;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == null || !(other instanceof CoreToLoad)) {
-				return false;
-			}
-			CoreToLoad c = (CoreToLoad) other;
-			return id == c.id;
-		}
-
-		@Override
-		public int hashCode() {
-			return id;
-		}
-	}
-
+	@Override
 	public List<Board> listBoardsToLoad() throws StorageException {
 		return callR(SQLiteStorage::listBoardsToLoad, "listing boards");
 	}
@@ -189,21 +106,26 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 			List<Board> result = new ArrayList<>();
 			while (rs.next()) {
 				// board_id, ethernet_x, ethernet_y, ethernet_address
-				result.add(new Board(rs.getInt(FIRST), rs.getInt(SECOND),
+				result.add(new BoardImpl(rs.getInt(FIRST), rs.getInt(SECOND),
 						rs.getInt(THIRD), rs.getString(FOURTH)));
 			}
 			return result;
 		}
 	}
 
+	@Override
 	public List<CoreToLoad> listCoresToLoad(Board board)
 			throws StorageException {
-		return callR(conn -> listCoresToLoad(conn, board),
+		if (!(board instanceof BoardImpl)) {
+			throw new IllegalArgumentException(
+					"can only list cores for boards described by this class");
+		}
+		return callR(conn -> listCoresToLoad(conn, (BoardImpl) board),
 				"listing cores to load data onto");
 	}
 
 	private static List<CoreToLoad> listCoresToLoad(Connection conn,
-			Board board) throws SQLException {
+			BoardImpl board) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
 			// board_id
 			s.setInt(FIRST, board.id);
@@ -211,7 +133,7 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				List<CoreToLoad> result = new ArrayList<>();
 				while (rs.next()) {
 					// core_id, x, y, processor, content
-					result.add(new CoreToLoad(rs.getInt(FIRST),
+					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
 							rs.getInt(FOURTH), rs.getBytes(FIFTH)));
 				}
@@ -220,13 +142,17 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 		}
 	}
 
+	@Override
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException {
-		callV(conn -> saveLoadingMetadata(conn, core, startAddress, memoryUsed,
+		if (!(core instanceof CoreToLoadImpl)) {
+
+		}
+		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core, startAddress, memoryUsed,
 				memoryWritten), "saving data loading metadata");
 	}
 
-	private static void saveLoadingMetadata(Connection conn, CoreToLoad core,
+	private static void saveLoadingMetadata(Connection conn, CoreToLoadImpl core,
 			int startAddress, int memoryUsed, int memoryWritten)
 			throws SQLException {
 		try (PreparedStatement s =
@@ -398,5 +324,54 @@ public class SQLiteStorage extends SQLiteConnectionManager implements Storage {
 				}
 			}
 		}, "listing regions for a core");
+	}
+
+	private static class BoardImpl extends Board {
+		/** The primary key. */
+		final int id;
+
+		BoardImpl(int id, int etherx, int ethery, String addr) {
+			super(etherx, ethery, addr);
+			this.id = id;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof BoardImpl)) {
+				return false;
+			}
+			BoardImpl b = (BoardImpl) other;
+			return id == b.id;
+		}
+
+		@Override
+		public int hashCode() {
+			return id ^ 444113;
+		}
+
+	}
+
+	private static class CoreToLoadImpl extends CoreToLoad {
+		/** The primary key. */
+		final int id;
+
+		private CoreToLoadImpl(int id, int x, int y, int p, byte[] bytes) {
+			super(x,y,p,bytes);
+			this.id = id;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof CoreToLoadImpl)) {
+				return false;
+			}
+			CoreToLoadImpl c = (CoreToLoadImpl) other;
+			return id == c.id;
+		}
+
+		@Override
+		public int hashCode() {
+			return id ^ 187043;
+		}
 	}
 }

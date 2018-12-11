@@ -84,7 +84,7 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -2253,7 +2253,8 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readRegion(Storage.Region region, Storage storage)
+	void readRegion(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
 
 	/**

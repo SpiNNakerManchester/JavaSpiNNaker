@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.Storage.Region;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -45,7 +45,7 @@ public class DirectDataGatherer extends DataGatherer {
 	private static final int DSE_VERSION = 0x00010000;
 
 	private final Transceiver txrx;
-	private final Storage database;
+	private final BufferManagerStorage database;
 	private final Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache;
 
 	/**
@@ -61,7 +61,7 @@ public class DirectDataGatherer extends DataGatherer {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DirectDataGatherer(Transceiver transceiver, Storage database)
+	public DirectDataGatherer(Transceiver transceiver, BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;

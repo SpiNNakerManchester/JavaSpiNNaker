@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -141,13 +141,14 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private static class DBAccumulator {
-		private final Storage storage;
-		private final Storage.Region region;
+		private final BufferManagerStorage storage;
+		private final BufferManagerStorage.Region region;
 		private final Map<Integer, ByteBuffer> writes;
 		private boolean done = false;
 		private StorageException exception;
 
-		DBAccumulator(Storage storage, Storage.Region region) {
+		DBAccumulator(BufferManagerStorage storage,
+				BufferManagerStorage.Region region) {
 			this.storage = storage;
 			this.region = region;
 			this.writes = new LinkedHashMap<>();
@@ -460,7 +461,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	public void readMemory(Storage.Region region, Storage storage)
+	public void readMemory(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
 		DBAccumulator a = new DBAccumulator(storage, region);
 		int chunk;

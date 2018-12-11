@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteStorage;
 
 class TestSQLiteStorage {
 	File db;
@@ -56,17 +57,17 @@ class TestSQLiteStorage {
 	@Test
 	void testBasicOps() throws StorageException {
 		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		Storage storage = new SQLiteStorage(engine);
+		BufferManagerStorage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 
-		Storage.Region r = new Storage.Region(core, 0, 0, 100);
+		BufferManagerStorage.Region r = new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.storeRegionContents(r, bytes("abc"));
 		assertArrayEquals("abc".getBytes(UTF_8),
 				storage.getRegionContents(r));
 
-		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
+		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -82,17 +83,17 @@ class TestSQLiteStorage {
 	@Test
 	void testWithExisting() throws StorageException {
 		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		Storage storage = new SQLiteStorage(engine);
+		BufferManagerStorage storage = new SQLiteStorage(engine);
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// store overwrites
-		Storage.Region r = new Storage.Region(core, 0, 0, 100);
+		BufferManagerStorage.Region r = new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.storeRegionContents(r, bytes("abc"));
 		storage.storeRegionContents(r, bytes("def"));
 		assertEquals("def", str(storage.getRegionContents(r)));
 
 		// append creates
-		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
+		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
 		storage.appendRecordingContents(rr, bytes("abc"));
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr)));
