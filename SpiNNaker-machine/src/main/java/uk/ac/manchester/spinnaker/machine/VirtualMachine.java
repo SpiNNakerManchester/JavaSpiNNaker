@@ -82,7 +82,7 @@ public class VirtualMachine extends Machine {
                 SpiNNakerTriadGeometry.getSpinn5Geometry();
 
         // Get all the root and therefor ethernet locations
-        ArrayList<ChipLocation> roots =
+        Collection<ChipLocation> roots =
                 geometry.getPotentialRootChips(machineDimensions);
 
         // Get all the valid locations

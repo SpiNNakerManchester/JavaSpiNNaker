@@ -17,10 +17,13 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -47,11 +50,11 @@ public final class SpiNNakerTriadGeometry {
     public final int triadWidth;
 
     /** Bottom Left corner Chips. Typically the Ethernet Chip */
-    private final ArrayList<ChipLocation> roots;
+    private final Iterable<ChipLocation> roots;
 
-    private final HashMap<ChipLocation, ChipLocation> localChipCoordinates;
+    private final Map<ChipLocation, ChipLocation> localChipCoordinates;
 
-    private final ArrayList<ChipLocation> singleBoardCoordinates;
+    private final Collection<ChipLocation> singleBoardCoordinates;
 
     private final float xCenterer;
     private final float yCenterer;
@@ -71,7 +74,7 @@ public final class SpiNNakerTriadGeometry {
      *            Magic number to adjust Y to find the nearest root.
      */
     private SpiNNakerTriadGeometry(int triadHeight, int triadWidth,
-            ArrayList<ChipLocation> roots, float xCenterer, float yCenterer) {
+            Iterable<ChipLocation> roots, float xCenterer, float yCenterer) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
         this.roots = roots;
@@ -233,9 +236,9 @@ public final class SpiNNakerTriadGeometry {
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
-    public ArrayList<ChipLocation> getPotentialRootChips(
+    public Collection<ChipLocation> getPotentialRootChips(
             MachineDimensions dimensions) {
-        ArrayList<ChipLocation> results = new ArrayList<>();
+        Collection<ChipLocation> results = new LinkedHashSet<>();
         int maxWidth;
         int maxHeight;
         if (dimensions.width % triadWidth == 0
@@ -268,7 +271,7 @@ public final class SpiNNakerTriadGeometry {
      * @return An unmodifiable Collection of the Locations on one board.
      */
     public Collection<ChipLocation> singleBoard() {
-        return Collections.unmodifiableList(singleBoardCoordinates);
+        return Collections.unmodifiableCollection(singleBoardCoordinates);
     }
 
 
@@ -301,12 +304,13 @@ public final class SpiNNakerTriadGeometry {
      */
     public static SpiNNakerTriadGeometry getSpinn5Geometry() {
         if (spinn5TriadGeometry == null) {
-            ArrayList<ChipLocation> roots = new ArrayList<>();
-            roots.add(new ChipLocation(0, 0));
-            roots.add(new ChipLocation(MachineDefaults.HALF_SIZE,
-                    MachineDefaults.SIZE_Y_OF_ONE_BOARD));
-            roots.add(new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
-                    MachineDefaults.HALF_SIZE));
+            Collection<ChipLocation> roots = Arrays.asList(
+                    new ChipLocation(0, 0),
+                    new ChipLocation(MachineDefaults.HALF_SIZE,
+                            MachineDefaults.SIZE_Y_OF_ONE_BOARD),
+                    new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
+                            MachineDefaults.HALF_SIZE));
+
             spinn5TriadGeometry = new SpiNNakerTriadGeometry(
                     MachineDefaults.TRIAD_HEIGHT, MachineDefaults.TRIAD_WIDTH,
                     roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);

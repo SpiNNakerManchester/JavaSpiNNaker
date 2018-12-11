@@ -16,18 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
-    private final List<Integer> processorIDs = new ArrayList<>();
-    private final List<Direction> linkIDs = new ArrayList<>();
+    private final Set<Integer> processorIDs = new LinkedHashSet<>();
+    private final Set<Direction> linkIDs = new LinkedHashSet<>();
 
     private static boolean bitset(int word, int bit) {
         return (word & (1 << bit)) != 0;
@@ -65,9 +66,7 @@ public class RoutingEntry {
                     "Processor IDs must be between 0 and "
                             + (MAX_NUM_CORES - 1) + " found " + procId);
             }
-            if (!this.processorIDs.contains(procId)) {
-                this.processorIDs.add(procId);
-            }
+            this.processorIDs.add(procId);
         }
         for (Direction linkIds: linkIDs) {
             this.linkIDs.add(linkIds);
@@ -99,8 +98,8 @@ public class RoutingEntry {
      *
      * @return An unmodifiable over the processor IDs.
      */
-    public List<Direction> getLinkIDs() {
-        return unmodifiableList(linkIDs);
+    public Collection<Direction> getLinkIDs() {
+        return unmodifiableCollection(linkIDs);
     }
 
     /**
@@ -112,8 +111,8 @@ public class RoutingEntry {
      *
      * @return An unmodifiable view over the link IDs in natural order.
      */
-    public List<Integer> getProcessorIDs() {
-        return unmodifiableList(processorIDs);
+    public Collection<Integer> getProcessorIDs() {
+        return unmodifiableCollection(processorIDs);
     }
 
     /**
@@ -134,10 +133,6 @@ public class RoutingEntry {
      *      If the new Value does not map to a Direction.
      */
     private void addLinkID(int newValue) {
-        Direction d = Direction.byId(newValue);
-        if (!linkIDs.contains(d)) {
-            linkIDs.add(d);
-        }
+        linkIDs.add(Direction.byId(newValue));
     }
-
 }
