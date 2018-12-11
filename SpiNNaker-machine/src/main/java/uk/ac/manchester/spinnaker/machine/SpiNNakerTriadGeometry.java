@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -236,9 +237,9 @@ public final class SpiNNakerTriadGeometry {
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
-    public Collection<ChipLocation> getPotentialRootChips(
+    public Set<ChipLocation> getPotentialRootChips(
             MachineDimensions dimensions) {
-        Collection<ChipLocation> results = new LinkedHashSet<>();
+        Set<ChipLocation> results = new LinkedHashSet<>();
         int maxWidth;
         int maxHeight;
         if (dimensions.width % triadWidth == 0

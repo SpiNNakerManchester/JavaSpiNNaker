@@ -16,13 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static java.util.Collections.emptySet;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import static java.util.Collections.emptyList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 
@@ -37,7 +41,7 @@ public class ChipDetails {
     /** Location of the nearest Ethernet Chip. */
     public final ChipLocation ethernet;
     private InetAddress ipAddress;
-    private List<Direction> deadDirections = emptyList();
+    private Set<Direction> deadDirections = emptySet();
 
     /**
      * Creates a Chip Details bean with the required fields leaving optional
@@ -91,7 +95,7 @@ public class ChipDetails {
      * @return the deadLinks
      */
     @JsonIgnore
-    public List<Direction> getDeadDirections() {
+    public Set<Direction> getDeadDirections() {
         return deadDirections;
     }
 
@@ -100,7 +104,7 @@ public class ChipDetails {
      *            the deadLinks to set
      */
     public void setDeadLinks(List<Integer> deadLinks) {
-        deadDirections = new ArrayList<>();
+        deadDirections = new HashSet<>();
         for (Integer deadLink : deadLinks) {
             deadDirections.add(Direction.byId(deadLink));
         }

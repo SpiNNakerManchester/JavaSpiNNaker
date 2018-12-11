@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 
@@ -61,9 +64,9 @@ public class VirtualMachine extends Machine {
      *      as if they never existed.
      */
     public VirtualMachine(MachineDimensions machineDimensions,
-            Collection<ChipLocation> ignoreChips,
-            Map<ChipLocation, Collection<Integer>> ignoreCores,
-            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+            Set<ChipLocation> ignoreChips,
+            Map<ChipLocation, Set<Integer>> ignoreCores,
+            Map<ChipLocation, Set<Direction>> ignoreLinks) {
         super(machineDimensions, ChipLocation.ZERO_ZERO);
 
         if (ignoreChips == null) {
@@ -81,13 +84,13 @@ public class VirtualMachine extends Machine {
         SpiNNakerTriadGeometry geometry =
                 SpiNNakerTriadGeometry.getSpinn5Geometry();
 
-        // Get all the root and therefor ethernet locations
-        Collection<ChipLocation> roots =
+        // Get all the root and therefore ethernet locations
+        Set<ChipLocation> roots =
                 geometry.getPotentialRootChips(machineDimensions);
 
         // Get all the valid locations
-        HashMap<ChipLocation, ChipLocation> allChips = new HashMap<>();
-        for (ChipLocation root: roots) {
+        Map<ChipLocation, ChipLocation> allChips = new HashMap<>();
+        for (ChipLocation root : roots) {
             for (ChipLocation local: geometry.singleBoard()) {
                 ChipLocation normalized = normalizedLocation(
                         root.getX() + local.getX(), root.getY() + local.getY());
@@ -125,16 +128,16 @@ public class VirtualMachine extends Machine {
     }
 
     private void addVersionIgnores(
-            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+            Map<ChipLocation, Set<Direction>> ignoreLinks) {
         if (version.isFourChip) {
             ignoreLinks.putAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
         }
     }
 
     private Router getRouter(ChipLocation location,
-            HashMap<ChipLocation, ChipLocation> allChips,
-            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
-        ArrayList<Link> links;
+            Map<ChipLocation, ChipLocation> allChips,
+            Map<ChipLocation, Set<Direction>> ignoreLinks) {
+        Iterable<Link> links;
         if (ignoreLinks.containsKey(location)) {
             links = getLinks(location, allChips, ignoreLinks.get(location));
         } else {
@@ -143,10 +146,10 @@ public class VirtualMachine extends Machine {
         return new Router(links);
     }
 
-    private ArrayList<Link> getLinks(ChipLocation location,
-            HashMap<ChipLocation, ChipLocation> allChips) {
-        ArrayList<Link> links = new ArrayList<>();
-        for (Direction direction: Direction.values()) {
+    private Iterable<Link> getLinks(ChipLocation location,
+            Map<ChipLocation, ChipLocation> allChips) {
+        List<Link> links = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
             ChipLocation destination = normalizedMove(location, direction);
             if (allChips.containsKey(destination)) {
                 links.add(new Link(location, direction, destination));
@@ -155,11 +158,11 @@ public class VirtualMachine extends Machine {
         return links;
     }
 
-    private ArrayList<Link> getLinks(ChipLocation location,
-            HashMap<ChipLocation, ChipLocation> allChips,
-            Collection<Direction> ignoreLinks) {
-        ArrayList<Link> links = new ArrayList<>();
-        for (Direction direction: Direction.values()) {
+    private Iterable<Link> getLinks(ChipLocation location,
+            Map<ChipLocation, ChipLocation> allChips,
+            Set<Direction> ignoreLinks) {
+        List<Link> links = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
             if (!ignoreLinks.contains(direction)) {
                 ChipLocation destination = normalizedMove(location, direction);
                 if (allChips.containsKey(destination)) {
@@ -172,11 +175,11 @@ public class VirtualMachine extends Machine {
 
     private Chip getChip(ChipLocation location, Router router,
             InetAddress ipAddress, ChipLocation ethernet,
-            Map<ChipLocation, Collection<Integer>> ignoreCores) {
+            Map<ChipLocation, Set<Integer>> ignoreCores) {
 
         if (ignoreCores.containsKey(location)) {
-            Collection<Integer> ignoreProcessors = ignoreCores.get(location);
-            ArrayList<Processor> processors = new ArrayList<>();
+            Set<Integer> ignoreProcessors = ignoreCores.get(location);
+            Collection<Processor> processors = new ArrayList<>();
             if (!ignoreProcessors.contains(0)) {
                 processors.add(Processor.factory(0, true));
             }
@@ -200,7 +203,7 @@ public class VirtualMachine extends Machine {
     private static final int FOURTH_BYTE = 3;
 
     private Inet4Address getIpaddress(
-            ChipLocation location, Collection<ChipLocation> roots) {
+            ChipLocation location, Set<ChipLocation> roots) {
         if (roots.contains(location)) {
             byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
             bytes[FIRST_BYTE] = LOCAL_HOST_ONE;
