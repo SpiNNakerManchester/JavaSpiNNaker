@@ -148,7 +148,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException {
 		if (!(core instanceof CoreToLoadImpl)) {
-
+			throw new IllegalArgumentException(
+					"can only save metadata for cores described by this class");
 		}
 		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core,
 				startAddress, memoryUsed, memoryWritten),
@@ -329,7 +330,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		}, "listing regions for a core");
 	}
 
-	private static class BoardImpl extends Board {
+	private static final class BoardImpl extends Board {
 		/** The primary key. */
 		final int id;
 
@@ -351,10 +352,9 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		public int hashCode() {
 			return id ^ 444113;
 		}
-
 	}
 
-	private static class CoreToLoadImpl extends CoreToLoad {
+	private static final class CoreToLoadImpl extends CoreToLoad {
 		/** The primary key. */
 		final int id;
 

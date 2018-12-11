@@ -41,6 +41,8 @@ public interface DSEStorage {
 	 * Get a list of all DSE loading actions that need to be done for a
 	 * particular board.
 	 *
+	 * @param board
+	 *            The SpiNNaker board we're loading onto.
 	 * @return The list of actions.
 	 * @throws StorageException
 	 *             If the database access fails.
@@ -126,6 +128,8 @@ public interface DSEStorage {
 		 *            The Y coordinate of the core.
 		 * @param p
 		 *            The P coordinate of the core.
+		 * @param appID
+		 *            The application identifier.
 		 * @param dataSpec
 		 *            The data specification to execute.
 		 */

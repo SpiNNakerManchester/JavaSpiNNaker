@@ -55,7 +55,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *             If we can't discover the machine details due to I/O problems
 	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			BufferManagerStorage database) throws IOException, ProcessException {
+			BufferManagerStorage database)
+			throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;
