@@ -71,7 +71,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 			"SELECT DISTINCT board_id, ethernet_x, ethernet_y, ethernet_address"
 					+ " FROM core_view";
 	private static final String LIST_CORES_TO_LOAD =
-			"SELECT core_id, x, y, processor, content FROM core_view "
+			"SELECT core_id, x, y, processor, app_id, content FROM core_view "
 					+ "WHERE board_id = ? AND start_address IS NULL";
 	private static final String ADD_LOADING_METADATA = "UPDATE core "
 			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
@@ -82,6 +82,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
 	private static final int FIFTH = 5;
+	private static final int SIXTH = 6;
 
 	/**
 	 * Create an instance.
@@ -135,7 +136,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getBytes(FIFTH)));
+							rs.getInt(FOURTH), rs.getInt(FIFTH),
+							rs.getBytes(SIXTH)));
 				}
 				return result;
 			}
@@ -148,13 +150,14 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		if (!(core instanceof CoreToLoadImpl)) {
 
 		}
-		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core, startAddress, memoryUsed,
-				memoryWritten), "saving data loading metadata");
+		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core,
+				startAddress, memoryUsed, memoryWritten),
+				"saving data loading metadata");
 	}
 
-	private static void saveLoadingMetadata(Connection conn, CoreToLoadImpl core,
-			int startAddress, int memoryUsed, int memoryWritten)
-			throws SQLException {
+	private static void saveLoadingMetadata(Connection conn,
+			CoreToLoadImpl core, int startAddress, int memoryUsed,
+			int memoryWritten) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
@@ -355,8 +358,9 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(int id, int x, int y, int p, byte[] bytes) {
-			super(x,y,p,bytes);
+		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
+				byte[] bytes) {
+			super(x, y, p, appID, bytes);
 			this.id = id;
 		}
 
