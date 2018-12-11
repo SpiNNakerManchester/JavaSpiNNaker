@@ -41,7 +41,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 */
 	public static final CoreLocation DEFAULT_MONITOR_CORE =
 			new CoreLocation(DEFAULT_DEST_X, DEFAULT_DEST_Y, 0);
-    /**
+
+	/**
 	 * The pseudo-location of the default chip.
 	 */
 	public static final ChipLocation DEFAULT_CHIP =
