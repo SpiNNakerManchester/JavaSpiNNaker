@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
+import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
+import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.messages.boot.BootMessages.BOOT_MESSAGE_DATA_WORDS;
 import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_BLOCK;
 
@@ -27,10 +29,8 @@ import java.nio.ByteBuffer;
  * @author Donal Fellows
  */
 class BootDataBlock extends BootMessage {
-	private static final int BYTE_MASK = 0xFF;
-	private static final int BYTE_SIZE = 8;
 	private static final int BOOT_DATA_OPERAND_1 =
-			(BOOT_MESSAGE_DATA_WORDS - 1) << BYTE_SIZE;
+			(BOOT_MESSAGE_DATA_WORDS - 1) << NBBY;
 
 	private static boolean inByteRange(int value) {
 		return (value & BYTE_MASK) == value;

@@ -41,12 +41,6 @@ public abstract class Constants {
 	public static final int ROUTER_DIAGNOSTIC_FILTER_SIZE = 4;
 	/** Number of router diagnostic filters. */
 	public static final int NO_ROUTER_DIAGNOSTIC_FILTERS = 16;
-	/** The size of the system variable structure in bytes. */
-	public static final int SYSTEM_VARIABLE_BYTES = 256;
-	/** The amount of size in bytes that the EIEIO command header is. */
-	public static final int EIEIO_COMMAND_HEADER_SIZE = 3;
-	/** The amount of size in bytes the EIEIO data header is. */
-	public static final int EIEIO_DATA_HEADER_SIZE = 2;
 	/** The address of the start of the VCPU structure (copied from sark.h). */
 	public static final int CPU_INFO_OFFSET = 0xe5007000;
 	/** How many bytes the CPU info data takes up. */
@@ -59,8 +53,6 @@ public abstract class Constants {
 	public static final int CPU_USER_2_START_ADDRESS = 120;
 	/** The address at which the iobuf address starts. */
 	public static final int CPU_IOBUF_ADDRESS_OFFSET = 88;
-	/** default UDP tag. */
-	public static final int DEFAULT_SDP_TAG = 0xFF;
 	/** max user requested tag value. */
 	public static final int MAX_TAG_ID = 7;
 	private static final int BMP_ADC_RANGE_BITS = 12;
@@ -88,15 +80,15 @@ public abstract class Constants {
 	public static final double BMP_TIMEOUT = 0.5;
 	/** Time to sleep after powering on boards (in seconds). */
 	public static final double BMP_POST_POWER_ON_SLEEP_TIME = 5.0;
-	/** number of chips to check are booted fully from the middle. */
-	public static final int NO_MIDDLE_CHIPS_TO_CHECK = 8;
 	/** This is the default timeout when using SCP, in milliseconds. */
 	public static final int SCP_TIMEOUT = 1000;
 
 	/** Number of bytes in a SpiNNaker word. */
 	public static final int WORD_SIZE = 4;
-	/** Number of bytes in a SpiNNaker half-word. */
-	public static final int SHORT_SIZE = 2;
 	/** Number of bytes in an IPv4 address. */
 	public static final int IPV4_SIZE = 4;
+	/** Mask of the low 8 bits of a word. */
+	public static final int BYTE_MASK = 0xFF;
+	/** Number of bits per byte. */
+	public static final int NBBY = 8;
 }

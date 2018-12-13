@@ -187,7 +187,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				}
 				entries.remove();
 			}
-			return;
 		}
 
 		private void store(ByteBuffer buffer) throws StorageException {

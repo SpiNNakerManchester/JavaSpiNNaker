@@ -22,8 +22,9 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
  * An exception which occurs when trying to write to an unallocated region of
  * memory.
  */
-@SuppressWarnings("serial")
 public class RegionNotAllocatedException extends DataSpecificationException {
+	private static final long serialVersionUID = 7075946109066864639L;
+
 	/**
 	 * Create an instance.
 	 *
