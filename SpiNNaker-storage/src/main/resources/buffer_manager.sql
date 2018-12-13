@@ -29,13 +29,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS coreSanity ON core(
 -- A table describing recording regions.
 CREATE TABLE IF NOT EXISTS region(
 	region_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	core_id INTEGER NOT NULL,
+	core_id INTEGER NOT NULL
+		REFERENCES core(core_id) ON DELETE RESTRICT,
 	local_region_index INTEGER NOT NULL,
 	address INTEGER NOT NULL,
 	content BLOB NOT NULL DEFAULT X'',
 	fetches INTEGER NOT NULL DEFAULT 0,
-	append_time INTEGER,
-	FOREIGN KEY(core_id) REFERENCES core(core_id) ON DELETE CASCADE);
+	append_time INTEGER);
 -- Every recording region has a unique vertex and index
 CREATE UNIQUE INDEX IF NOT EXISTS regionSanity ON region(
 	core_id ASC, local_region_index ASC);

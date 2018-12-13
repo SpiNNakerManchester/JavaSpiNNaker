@@ -32,13 +32,13 @@ CREATE TABLE IF NOT EXISTS core(
 	x INTEGER NOT NULL,
 	y INTEGER NOT NULL,
 	processor INTEGER NOT NULL,
-	board_id INTEGER NOT NULL,
+	board_id INTEGER NOT NULL
+		REFERENCES board(board_id) ON DELETE CASCADE,
 	app_id INTEGER NOT NULL,
 	content BLOB,
 	start_address INTEGER,
 	memory_used INTEGER,
-	memory_written INTEGER,
-	FOREIGN KEY(board_id) REFERENCES board(board_id) ON DELETE CASCADE);
+	memory_written INTEGER);
 -- Every processor has a unique ID
 CREATE UNIQUE INDEX IF NOT EXISTS coreSanity ON core(
 	x ASC, y ASC, processor ASC);

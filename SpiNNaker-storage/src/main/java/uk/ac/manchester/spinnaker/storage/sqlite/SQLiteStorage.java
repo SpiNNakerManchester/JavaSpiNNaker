@@ -40,43 +40,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 public class SQLiteStorage extends SQLiteConnectionManager
 		implements BufferManagerStorage, DSEStorage {
-	// Recording regions
-	private static final String INSERT_LOCATION =
-			"INSERT INTO core(x, y, processor) VALUES(?, ?, ?)";
-	private static final String GET_LOCATION = "SELECT core_id FROM core"
-			+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
-	private static final String GET_REGION =
-			"SELECT region_id FROM region WHERE "
-					+ "core_id = ? AND local_region_index = ? LIMIT 1";
-	private static final String INSERT_REGION =
-			"INSERT INTO region(core_id, local_region_index, address) "
-					+ "VALUES (?, ?, ?)";
-	private static final String APPEND_CONTENT =
-			"UPDATE region SET content = content || ?, fetches = fetches + 1,"
-					+ " append_time = ? WHERE region_id = ?";
-	private static final String FETCH_RECORDING =
-			"SELECT content, fetches, append_time FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " AND local_region_index = ? LIMIT 1";
-	private static final String GET_CORES_WITH_STORAGE =
-			"SELECT DISTINCT x, y, processor FROM region_view"
-					+ " ORDER BY x, y, processor";
-	private static final String GET_REGIONS_WITH_STORAGE =
-			"SELECT DISTINCT local_region_index FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " ORDER BY local_region_index";
-
-	// Data loading
-	private static final String LIST_BOARDS =
-			"SELECT DISTINCT board_id, ethernet_x, ethernet_y, ethernet_address"
-					+ " FROM core_view";
-	private static final String LIST_CORES_TO_LOAD =
-			"SELECT core_id, x, y, processor, app_id, content FROM core_view "
-					+ "WHERE board_id = ? AND start_address IS NULL";
-	private static final String ADD_LOADING_METADATA = "UPDATE core "
-			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
-			+ "WHERE core_id = ?";
-
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
 	private static final int THIRD = 3;
@@ -102,7 +65,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static List<Board> listBoardsToLoad(Connection conn)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(LIST_BOARDS);
+		try (PreparedStatement s = conn.prepareStatement(SQL.LIST_BOARDS);
 				ResultSet rs = s.executeQuery()) {
 			List<Board> result = new ArrayList<>();
 			while (rs.next()) {
@@ -127,7 +90,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static List<CoreToLoad> listCoresToLoad(Connection conn,
 			BoardImpl board) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
 			// board_id
 			s.setInt(FIRST, board.id);
 			try (ResultSet rs = s.executeQuery()) {
@@ -160,7 +124,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 			CoreToLoadImpl core, int startAddress, int memoryUsed,
 			int memoryWritten) throws SQLException {
 		try (PreparedStatement s =
-				conn.prepareStatement(ADD_LOADING_METADATA)) {
+				conn.prepareStatement(SQL.ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);
@@ -171,7 +135,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static int getRecordingCore(Connection conn, CoreLocation core)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_LOCATION)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.GET_LOCATION)) {
 			// x, y, processor
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
@@ -182,8 +146,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 				}
 			}
 		}
-		try (PreparedStatement s =
-				conn.prepareStatement(INSERT_LOCATION, RETURN_GENERATED_KEYS)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.INSERT_LOCATION,
+				RETURN_GENERATED_KEYS)) {
 			// x, y, processor
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
@@ -201,7 +165,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static int getRecordingRegion(Connection conn, int coreID,
 			Region region) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_REGION)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.GET_REGION)) {
 			// core_id, local_region_index
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, region.regionIndex);
@@ -211,8 +175,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 				}
 			}
 		}
-		try (PreparedStatement s =
-				conn.prepareStatement(INSERT_REGION, RETURN_GENERATED_KEYS)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.INSERT_REGION,
+				RETURN_GENERATED_KEYS)) {
 			// core_id, local_region_index, address
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, region.regionIndex);
@@ -230,7 +194,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private void appendRecordingContents(Connection conn, int regionID,
 			byte[] content) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(APPEND_CONTENT)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.APPEND_CONTENT)) {
 			// content, append_time, region_id
 			s.setBinaryStream(FIRST, new ByteArrayInputStream(content),
 					content.length);
@@ -276,7 +240,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static byte[] getRecordingRegionContents(Connection conn,
 			Region region) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(FETCH_RECORDING)) {
+		try (PreparedStatement s = conn.prepareStatement(SQL.FETCH_RECORDING)) {
 			// x, y, processor, local_region_index
 			s.setInt(FIRST, region.core.getX());
 			s.setInt(SECOND, region.core.getY());
@@ -296,7 +260,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	public List<CoreLocation> getCoresWithStorage() throws StorageException {
 		return callR(conn -> {
 			try (PreparedStatement s =
-					conn.prepareStatement(GET_CORES_WITH_STORAGE);
+					conn.prepareStatement(SQL.GET_CORES_WITH_STORAGE);
 					ResultSet rs = s.executeQuery()) {
 				ArrayList<CoreLocation> result = new ArrayList<>();
 				while (rs.next()) {
@@ -315,7 +279,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 			throws StorageException {
 		return callR(conn -> {
 			try (PreparedStatement s =
-					conn.prepareStatement(GET_REGIONS_WITH_STORAGE)) {
+					conn.prepareStatement(SQL.GET_REGIONS_WITH_STORAGE)) {
 				s.setInt(FIRST, core.getX());
 				s.setInt(SECOND, core.getY());
 				s.setInt(THIRD, core.getP());
