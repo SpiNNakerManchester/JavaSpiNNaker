@@ -32,7 +32,7 @@ public class TestMachineVersion {
     @Test
     public void testById() {
         assertEquals(MachineVersion.FIVE, MachineVersion.byId(5));
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             MachineVersion.byId(1);
         });
     }
