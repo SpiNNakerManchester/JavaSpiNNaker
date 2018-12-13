@@ -322,11 +322,4 @@ public class TestVirtualMachine {
         assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.version);
     }
 
-    @Test
-    public void testCoverageHackery() {
-        assertThrows(Error.class, () -> {
-            VirtualMachine.addressFromBytes(new byte[0]);
-        });
-    }
-
 }

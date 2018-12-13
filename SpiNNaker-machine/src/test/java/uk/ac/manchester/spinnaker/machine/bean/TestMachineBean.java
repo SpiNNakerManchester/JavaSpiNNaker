@@ -53,4 +53,15 @@ public class TestMachineBean {
         assertNotNull(machine);
     }
 
+    @Test
+    public void testSevenEight() throws IOException {
+        URL url = TestMachineBean.class.getResource("/test24_12.json");
+        ObjectMapper mapper = MapperFactory.createMapper();
+        MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+
+        Machine machine = new Machine(fromJson);
+        assertEquals(24, machine.machineDimensions.height);
+        assertEquals(12, machine.machineDimensions.width);
+        assertNotNull(machine);
+    }
 }

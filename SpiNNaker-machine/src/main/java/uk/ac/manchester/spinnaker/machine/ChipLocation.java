@@ -91,13 +91,7 @@ public final class ChipLocation implements
         if (this.x > o.x) {
             return 1;
         }
-        if (this.y < o.y) {
-            return -1;
-        }
-        if (this.y > o.y) {
-            return 1;
-        }
-        return 0;
+        return Integer.compare(this.y, o.y);
     }
 
     @Override
