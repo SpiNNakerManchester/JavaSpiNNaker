@@ -276,10 +276,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return false;
         }
         final CoreSubsets other = (CoreSubsets) obj;
-        if (!Objects.equals(this.locations, other.locations)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.locations, other.locations);
     }
 
     @Override
@@ -299,11 +296,11 @@ public class CoreSubsets implements Iterable<CoreLocation> {
         for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry
                 :locations.entrySet()) {
             if (other.locations.containsKey(entry.getKey())) {
-                TreeMap<Integer, CoreLocation> othersubset =
+                TreeMap<Integer, CoreLocation> otherSubset =
                         other.locations.get(entry.getKey());
-                if (othersubset != null) {
+                if (otherSubset != null) {
                     for (CoreLocation location:entry.getValue().values()) {
-                        if (othersubset.containsValue(location)) {
+                        if (otherSubset.containsValue(location)) {
                             results.addCore(location);
                         }
                     }

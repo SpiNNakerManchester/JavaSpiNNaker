@@ -31,8 +31,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public final class IPTag extends Tag {
     /** Default traffic identifier. */
-    public static final TrafficIdentifer DEFAULT_TRAFFIC_IDENTIFIER =
-            TrafficIdentifer.DEFAULT;
+    public static final TrafficIdentifier DEFAULT_TRAFFIC_IDENTIFIER =
+            TrafficIdentifier.DEFAULT;
     private static final boolean DEFAULT_STRIP_SDP = false;
     private static final Integer DEFAULT_PORT = null;
 
@@ -41,7 +41,7 @@ public final class IPTag extends Tag {
     /** Indicates whether the SDP header should be removed. */
     private final boolean stripSDP;
     /** The identifier for traffic transmitted using this tag. */
-    private final TrafficIdentifer trafficIdentifier;
+    private final TrafficIdentifier trafficIdentifier;
     /** The coordinates where users of this tag should send packets to. */
     private final ChipLocation destination;
 
@@ -142,7 +142,7 @@ public final class IPTag extends Tag {
      */
     public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
             InetAddress targetAddress, Integer port, boolean stripSDP,
-            TrafficIdentifer trafficIdentifier) {
+            TrafficIdentifier trafficIdentifier) {
         super(boardAddress, tagID, port);
         this.destination = destination;
         this.ipAddress = targetAddress;
@@ -201,7 +201,7 @@ public final class IPTag extends Tag {
             this.trafficIdentifier = DEFAULT_TRAFFIC_IDENTIFIER;
         } else {
             this.trafficIdentifier =
-                    TrafficIdentifer.getInstance(trafficIdentifier);
+                    TrafficIdentifier.getInstance(trafficIdentifier);
         }
     }
 
@@ -218,7 +218,7 @@ public final class IPTag extends Tag {
     }
 
     /** @return The identifier of traffic using this tag. */
-    public TrafficIdentifer getTrafficIdentifier() {
+    public TrafficIdentifier getTrafficIdentifier() {
         return trafficIdentifier;
     }
 

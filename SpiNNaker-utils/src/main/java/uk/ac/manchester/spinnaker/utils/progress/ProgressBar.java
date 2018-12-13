@@ -46,9 +46,9 @@ public class ProgressBar implements Closeable {
     private static final int RIGHT_SPACES = MAX_LENGTH_IN_CHARS / 2 - 5;
     private static final String DISTANCE_INDICATOR = distanceIndicator();
 
-    private final char stepChar = '-';
-    private final char endChar = '|';
-    private final char startChar = '|';
+    private static final char STEP_CHAR = '-';
+    private static final char END_CHAR = '|';
+    private static final char START_CHAR = '|';
 
     private final int numberOfThings;
     private final String description;
@@ -154,13 +154,13 @@ public class ProgressBar implements Closeable {
         if (description != null) {
             output.println(description);
         }
-        output.println(startChar + DISTANCE_INDICATOR + endChar);
+        output.println(START_CHAR + DISTANCE_INDICATOR + END_CHAR);
         output.print(" ");
     }
 
     private void printProgress(int expectedCharsDone) {
         for (int i = charsDone; i < expectedCharsDone; i++) {
-            output.print(stepChar);
+            output.print(STEP_CHAR);
         }
         charsDone = expectedCharsDone;
         if (charsDone >= MAX_LENGTH_IN_CHARS) {

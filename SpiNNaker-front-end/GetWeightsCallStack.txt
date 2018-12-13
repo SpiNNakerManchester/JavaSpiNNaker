@@ -1,0 +1,19 @@
+  File ".../IntroLab/learning/stdp.py", line 54, in <module>
+    print(stdp_projection.getWeights())
+  File ".../sPyNNaker8/spynnaker8/models/projection.py", line 165, in getWeights
+    return self.get('weight', format, gather, with_address=False)
+  File ".../sPyNNaker8/spynnaker8/models/projection.py", line 119, in get
+    attribute_names, format, with_address, multiple_synapses)
+  File ".../sPyNNaker8/spynnaker8/models/projection.py", line 157, in _get_data
+    format == "list", data_items, fixed_values, notify=notify)
+  File ".../spynnaker/pyNN/models/pynn_projection_common.py", line 268, in _get_synaptic_data
+    handle_time_out_configuration)
+  File ".../spynnaker/pyNN/models/pynn_projection_common.py", line 318, in __get_projection_data
+    ctl.fixed_routes)
+  File ".../spynnaker/pyNN/models/neuron/abstract_population_vertex.py", line 764, in get_connections_from_machine
+    handle_time_out_configuration, fixed_routes)
+  File ".../sPyNNaker/spynnaker/pyNN/models/neuron/synaptic_manager.py", line 991, in get_connections_from_machine
+    extra_monitor_cores_for_router_timeout, fixed_routes)
+  File ".../spynnaker/pyNN/models/neuron/synaptic_manager.py", line 1038, in _retrieve_synaptic_block
+
+So at what level do we want to hand over to the Java and with what information????
