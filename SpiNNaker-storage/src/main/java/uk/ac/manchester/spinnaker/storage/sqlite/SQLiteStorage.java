@@ -334,7 +334,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		/** The primary key. */
 		final int id;
 
-		BoardImpl(int id, int etherx, int ethery, String addr) {
+		private BoardImpl(int id, int etherx, int ethery, String addr) {
 			super(etherx, ethery, addr);
 			this.id = id;
 		}
