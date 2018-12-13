@@ -201,7 +201,7 @@ public final class IPTag extends Tag {
             this.trafficIdentifier = DEFAULT_TRAFFIC_IDENTIFIER;
         } else {
             this.trafficIdentifier =
-                    TrafficIdentifer.getInstance(trafficIdentifier);
+                    TrafficIdentifier.getInstance(trafficIdentifier);
         }
     }
 

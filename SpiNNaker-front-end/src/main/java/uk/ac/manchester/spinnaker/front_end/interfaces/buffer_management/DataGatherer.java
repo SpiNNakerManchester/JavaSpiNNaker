@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifer;
+import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.storage.Storage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -277,7 +277,7 @@ public abstract class DataGatherer {
 			throws IOException, ProcessException {
 		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
 				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
-				TrafficIdentifer.getInstance("DATA_SPEED_UP"));
+				TrafficIdentifier.getInstance("DATA_SPEED_UP"));
 		txrx.setIPTag(tag);
 	}
 
