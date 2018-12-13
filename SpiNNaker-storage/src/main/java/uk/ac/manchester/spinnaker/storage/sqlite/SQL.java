@@ -58,8 +58,8 @@ abstract class SQL {
 	})
 	@GeneratesID
 	static final String INSERT_REGION =
-	"INSERT INTO region(core_id, local_region_index, address) "
-			+ "VALUES (?, ?, ?)";
+			"INSERT INTO region(core_id, local_region_index, address) "
+					+ "VALUES (?, ?, ?)";
 
 	/** Find an existing region record. */
 	@Parameters({
