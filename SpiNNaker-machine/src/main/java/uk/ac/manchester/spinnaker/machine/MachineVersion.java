@@ -210,7 +210,7 @@ public enum MachineVersion {
      */
     public static MachineVersion byId(Integer id) {
         for (MachineVersion possible: MachineVersion.values()) {
-            if (possible.id.equals(id)) {
+            if (possible.id != null && possible.id.equals(id)) {
                 return possible;
             }
         }
