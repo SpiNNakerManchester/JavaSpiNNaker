@@ -146,15 +146,17 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException {
 		if (!(core instanceof CoreToLoadImpl)) {
-
+			throw new IllegalArgumentException(
+					"can only save metadata for cores described by this class");
 		}
-		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core, startAddress, memoryUsed,
-				memoryWritten), "saving data loading metadata");
+		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core,
+				startAddress, memoryUsed, memoryWritten),
+				"saving data loading metadata");
 	}
 
-	private static void saveLoadingMetadata(Connection conn, CoreToLoadImpl core,
-			int startAddress, int memoryUsed, int memoryWritten)
-			throws SQLException {
+	private static void saveLoadingMetadata(Connection conn,
+			CoreToLoadImpl core, int startAddress, int memoryUsed,
+			int memoryWritten) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
@@ -326,11 +328,11 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		}, "listing regions for a core");
 	}
 
-	private static class BoardImpl extends Board {
+	private static final class BoardImpl extends Board {
 		/** The primary key. */
 		final int id;
 
-		BoardImpl(int id, int etherx, int ethery, String addr) {
+		private BoardImpl(int id, int etherx, int ethery, String addr) {
 			super(etherx, ethery, addr);
 			this.id = id;
 		}
@@ -351,12 +353,12 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	}
 
-	private static class CoreToLoadImpl extends CoreToLoad {
+	private static final class CoreToLoadImpl extends CoreToLoad {
 		/** The primary key. */
 		final int id;
 
 		private CoreToLoadImpl(int id, int x, int y, int p, byte[] bytes) {
-			super(x,y,p,bytes);
+			super(x, y, p, bytes);
 			this.id = id;
 		}
 

@@ -61,7 +61,8 @@ public class DirectDataGatherer extends DataGatherer {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DirectDataGatherer(Transceiver transceiver, BufferManagerStorage database)
+	public DirectDataGatherer(Transceiver transceiver,
+			BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
