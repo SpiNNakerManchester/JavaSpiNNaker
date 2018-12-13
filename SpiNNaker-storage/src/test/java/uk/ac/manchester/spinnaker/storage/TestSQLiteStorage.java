@@ -61,22 +61,13 @@ class TestSQLiteStorage {
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 
-		BufferManagerStorage.Region r = new BufferManagerStorage.Region(core, 0, 0, 100);
-		storage.storeRegionContents(r, bytes("abc"));
-		assertArrayEquals("abc".getBytes(UTF_8),
-				storage.getRegionContents(r));
-
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
 
 		assertEquals(Arrays.asList(core), storage.getCoresWithStorage());
 		assertEquals(Arrays.asList(0), storage.getRegionsWithStorage(core));
-
-		storage.deleteRegionContents(core, 0);
-
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 	}
 
 	@Test
@@ -84,12 +75,6 @@ class TestSQLiteStorage {
 		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
 		BufferManagerStorage storage = engine.getBufferManagerStorage();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
-
-		// store overwrites
-		BufferManagerStorage.Region r = new BufferManagerStorage.Region(core, 0, 0, 100);
-		storage.storeRegionContents(r, bytes("abc"));
-		storage.storeRegionContents(r, bytes("def"));
-		assertEquals("def", str(storage.getRegionContents(r)));
 
 		// append creates
 		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
