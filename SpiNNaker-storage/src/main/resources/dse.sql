@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS board(
 	board_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	ethernet_x INTEGER NOT NULL,
 	ethernet_y INTEGER NOT NULL,
-	address TEXT UNIQUE); -- NB: NULL *or* UNIQUE
+	address TEXT UNIQUE NOT NULL);
 -- Every board has a unique ethernet chip location in virtual space.
 CREATE UNIQUE INDEX IF NOT EXISTS boardSanity ON board(
 	ethernet_x ASC, ethernet_y ASC);
