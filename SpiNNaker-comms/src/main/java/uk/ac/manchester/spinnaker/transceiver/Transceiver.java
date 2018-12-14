@@ -114,6 +114,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -1260,7 +1261,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public int getCoreStateCount(int appID, CPUState state)
+	public int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException {
 		return simpleProcess().execute(new CountState(appID, state)).count;
 	}
@@ -1349,7 +1350,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void execute(HasChipLocation chip, Collection<Integer> processors,
-			InputStream executable, int numBytes, int appID, boolean wait)
+			InputStream executable, int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against updates
 		try (ExecuteLock lock = new ExecuteLock(chip)) {
@@ -1364,7 +1365,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public final void execute(HasChipLocation chip,
-			Collection<Integer> processors, File executable, int appID,
+			Collection<Integer> processors, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against updates
@@ -1380,7 +1381,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void execute(HasChipLocation chip, Collection<Integer> processors,
-			ByteBuffer executable, int appID, boolean wait)
+			ByteBuffer executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against updates
 		try (ExecuteLock lock = new ExecuteLock(chip)) {
@@ -1395,7 +1396,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void executeFlood(CoreSubsets coreSubsets, InputStream executable,
-			int numBytes, int appID, boolean wait)
+			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
 		synchronized (executeFloodLock) {
@@ -1412,7 +1413,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void executeFlood(CoreSubsets coreSubsets, File executable,
-			int appID, boolean wait)
+			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
 		synchronized (executeFloodLock) {
@@ -1429,7 +1430,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
-			int appID, boolean wait)
+			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		// Lock against other executables
 		synchronized (executeFloodLock) {
@@ -1639,7 +1640,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void stopApplication(int appID)
+	public void stopApplication(AppID appID)
 			throws IOException, ProcessException {
 		if (machineOff) {
 			log.warn("You are calling a app stop on a turned off machine. "
@@ -1650,7 +1651,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
+	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countBetweenFullChecks)
 			throws IOException, ProcessException, InterruptedException,
@@ -1716,7 +1717,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void sendSignal(int appID, Signal signal)
+	public void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException {
 		simpleProcess().execute(new SendSignal(appID, signal));
 	}
@@ -1813,21 +1814,21 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
+	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
 		return new MallocSDRAMProcess(scpSelector, this).mallocSDRAM(chip, size,
 				appID, tag);
 	}
 
 	@Override
-	public void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
+	public void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
-		new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip, appID,
+		new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
 				baseAddress);
 	}
 
 	@Override
-	public int freeSDRAMByAppID(HasChipLocation chip, int appID)
+	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
 				appID);
@@ -1835,7 +1836,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void loadMulticastRoutes(HasChipLocation chip,
-			Collection<MulticastRoutingEntry> routes, int appID)
+			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
 		new LoadMulticastRoutesProcess(scpSelector, this).loadRoutes(chip,
 				routes, appID);
@@ -1843,13 +1844,13 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			int appID) throws IOException, ProcessException {
+			AppID appID) throws IOException, ProcessException {
 		new LoadFixedRouteEntryProcess(scpSelector, this).loadFixedRoute(chip,
 				fixedRoute, appID);
 	}
 
 	@Override
-	public RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
+	public RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return new ReadFixedRouteEntryProcess(scpSelector, this)
 				.readFixedRoute(chip, appID);
@@ -1857,7 +1858,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
-			Integer appID) throws IOException, ProcessException {
+			AppID appID) throws IOException, ProcessException {
 		int address = (int) getSystemVariable(chip, router_table_copy_address);
 		return new GetMulticastRoutesProcess(scpSelector, this).getRoutes(chip,
 				address, appID);

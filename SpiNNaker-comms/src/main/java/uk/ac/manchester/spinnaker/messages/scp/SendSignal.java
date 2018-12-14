@@ -21,32 +21,29 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.ALL_CORE_SIGNAL_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 
 /** An SCP Request to send a signal to cores. */
 public class SendSignal extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param appID
-	 *            The ID of the application to run, between 16 and 255
+	 *            The ID of the application to run
 	 * @param signal
 	 *            The coordinates of the chip to run on
 	 */
-	public SendSignal(int appID, Signal signal) {
+	public SendSignal(AppID appID, Signal signal) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
 				argument2(appID, signal), ALL_CORE_SIGNAL_MASK);
-		if (appID < 0 || appID > MAX_APP_ID) {
-			throw new IllegalArgumentException(
-					"appID must be between 0 and 255");
-		}
 	}
 
-	private static int argument2(int appID, Signal signal) {
-		return (signal.value << BYTE2) | (APP_MASK << BYTE1) | (appID << BYTE0);
+	private static int argument2(AppID appID, Signal signal) {
+		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
+				| (appID.appID << BYTE0);
 	}
 
 	@Override

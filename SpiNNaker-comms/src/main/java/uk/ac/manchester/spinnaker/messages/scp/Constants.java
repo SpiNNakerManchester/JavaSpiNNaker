@@ -18,10 +18,4 @@ abstract class Constants {
 	 * Mask for selecting application IDs for signals.
 	 */
 	static final int APP_MASK = 0xFF;
-
-	/**
-	 * Maximum app ID.
-	 */
-	static final int MAX_APP_ID = 255;
-
 }

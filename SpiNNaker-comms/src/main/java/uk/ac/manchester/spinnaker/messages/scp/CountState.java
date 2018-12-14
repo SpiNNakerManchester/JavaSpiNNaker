@@ -22,11 +22,11 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.ALL_CORE_SIGNAL_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
-import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_SIG;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -39,21 +39,17 @@ public class CountState extends SCPRequest<CountState.Response> {
 
 	/**
 	 * @param appID
-	 *            The ID of the application to run, between 16 and 255
+	 *            The ID of the application to count states of
 	 * @param state
 	 *            The state to count
 	 */
-	public CountState(int appID, CPUState state) {
+	public CountState(AppID appID, CPUState state) {
 		super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
 				argument2(appID, state), ALL_CORE_SIGNAL_MASK);
-		if (appID < 0 || appID > MAX_APP_ID) {
-			throw new IllegalArgumentException(
-					"appID must be between 0 and 255");
-		}
 	}
 
-	private static int argument2(int appId, CPUState state) {
-		int data = (APP_MASK << BYTE1) | (appId << BYTE0);
+	private static int argument2(AppID appId, CPUState state) {
+		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
 		data |= COUNT_OPERATION << OP_SHIFT;
 		data |= COUNT_MODE << MODE_SHIFT;
 		data |= state.value << BYTE2;

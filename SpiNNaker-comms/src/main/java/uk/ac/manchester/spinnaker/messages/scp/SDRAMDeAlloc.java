@@ -20,12 +20,12 @@ import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.FREE_SDRAM_BY_POINTER;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
-import static uk.ac.manchester.spinnaker.messages.scp.Constants.MAX_APP_ID;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /** An SCP Request to free space in the SDRAM. */
@@ -38,9 +38,9 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 */
-	public SDRAMDeAlloc(HasChipLocation chip, int appID) {
+	public SDRAMDeAlloc(HasChipLocation chip, AppID appID) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID));
 		readNumFreedBlocks = true;
 	}
@@ -50,24 +50,18 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *
 	 * @param chip
 	 *            the chip to allocate on
-	 * @param appID
-	 *            The ID of the application, between 0 and 255 (ignored)
 	 * @param baseAddress
 	 *            The start address in SDRAM to which the block needs to be
 	 *            deallocated
 	 */
-	public SDRAMDeAlloc(HasChipLocation chip, int appID, int baseAddress) {
+	public SDRAMDeAlloc(HasChipLocation chip, int baseAddress) {
 		super(chip.getScampCore(), CMD_ALLOC, (int) FREE_SDRAM_BY_POINTER.value,
 				baseAddress);
-		if (appID < 0 || appID > MAX_APP_ID) {
-			throw new IllegalArgumentException(
-					"appID must be between 0 and 255");
-		}
 		readNumFreedBlocks = false;
 	}
 
-	private static int argument1(int appID) {
-		return (appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
+	private static int argument1(AppID appID) {
+		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
 	}
 
 	@Override

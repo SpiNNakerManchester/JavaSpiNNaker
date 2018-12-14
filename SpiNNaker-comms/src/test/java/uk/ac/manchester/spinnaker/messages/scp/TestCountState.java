@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.CountState.Response;
@@ -36,7 +37,7 @@ class TestCountState {
 
 	@Test
 	void testNewStateRequest() {
-		assertNotNull(new CountState(32, CPUState.READY));
+		assertNotNull(new CountState(AppID.DEFAULT, CPUState.READY));
 	}
 
 	@Test
