@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS core(
 	y INTEGER NOT NULL,
 	processor INTEGER NOT NULL,
 	board_id INTEGER NOT NULL
-		REFERENCES board(board_id) ON DELETE CASCADE,
-	app_id INTEGER NOT NULL,
+		REFERENCES board(board_id) ON DELETE RESTRICT,
+	app_id INTEGER,
 	content BLOB,
 	start_address INTEGER,
 	memory_used INTEGER,
