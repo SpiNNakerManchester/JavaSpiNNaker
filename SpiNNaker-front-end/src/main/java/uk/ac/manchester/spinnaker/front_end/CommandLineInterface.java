@@ -20,7 +20,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -33,10 +32,8 @@ import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataGatherRunner;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
@@ -110,24 +107,21 @@ public final class CommandLineInterface {
 		}
 	}
 
-	private static final int NUM_DSE_ARGS = 3;
+	private static final int NUM_DSE_ARGS = 2;
 	private static void dseRun(String[] args)
 			throws UnknownHostException, IOException, SpinnmanException,
 			ProcessException, StorageException, ExecutionException,
 			InterruptedException, DataSpecificationException {
 		if (args.length != NUM_DSE_ARGS) {
 			System.err.printf("wrong # args: must be \"java -jar %s "
-					+ "dse <hostname> <database>\"\n", JAR_FILE);
+					+ "dse <database>\"\n", JAR_FILE);
 			System.exit(1);
 		}
-		InetAddress host = InetAddress.getByName(args[1]);
-		File db = new File(args[2]);
+		File db = new File(args[1]);
 
-		Transceiver txrx = new Transceiver(host, null);
-		DatabaseEngine e = new DSEDatabaseEngine(db);
 		HostExecuteDataSpecification dseExec =
-				new HostExecuteDataSpecification(txrx);
-		dseExec.loadAll(e);
+				new HostExecuteDataSpecification();
+		dseExec.loadAll(new DSEDatabaseEngine(db));
 	}
 
 	private static void download(String[] args) throws Exception {
