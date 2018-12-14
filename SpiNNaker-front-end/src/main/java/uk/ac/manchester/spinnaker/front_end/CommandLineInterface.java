@@ -17,8 +17,10 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -26,11 +28,17 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataOut;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataGatherRunner;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
+import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -50,6 +58,7 @@ public final class CommandLineInterface {
 	@SuppressWarnings("unused")
 	private static final String MAIN_CLASS;
 	private static final String VERSION;
+	private static final ObjectMapper MAPPER = createMapper();
 
 	static {
 		Properties prop = new Properties();
@@ -107,20 +116,21 @@ public final class CommandLineInterface {
 		}
 	}
 
-	private static final int NUM_DSE_ARGS = 2;
+	private static final int NUM_DSE_ARGS = 3;
 	private static void dseRun(String[] args)
 			throws UnknownHostException, IOException, SpinnmanException,
 			ProcessException, StorageException, ExecutionException,
 			InterruptedException, DataSpecificationException {
 		if (args.length != NUM_DSE_ARGS) {
 			System.err.printf("wrong # args: must be \"java -jar %s "
-					+ "dse <database>\"\n", JAR_FILE);
+					+ "dse <machineFile> <database>\"\n", JAR_FILE);
 			System.exit(1);
 		}
-		File db = new File(args[1]);
+		Machine machine = readMachineJson(args[1]);
+		File db = new File(args[2]);
 
 		HostExecuteDataSpecification dseExec =
-				new HostExecuteDataSpecification();
+				new HostExecuteDataSpecification(machine);
 		dseExec.loadAll(new DSEDatabaseEngine(db));
 	}
 
@@ -129,5 +139,13 @@ public final class CommandLineInterface {
 		String[] real = new String[args.length - 1];
 		System.arraycopy(args, 1, real, 0, real.length);
 		DataOut.main(real);
+	}
+
+	private static Machine readMachineJson(String filename)
+			throws JsonParseException, JsonMappingException, IOException {
+		try (FileReader machineReader = new FileReader(filename)) {
+			return new Machine(
+					MAPPER.readValue(machineReader, MachineBean.class));
+		}
 	}
 }

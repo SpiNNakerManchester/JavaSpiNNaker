@@ -54,9 +54,30 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public class HostExecuteDataSpecification {
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
+
+	/**
+	 * Maximum number of parallel threads that can execute and load data
+	 * specifications.
+	 */
 	private static final int PARALLEL_FACTOR = 4;
+
+	/**
+	 * Global thread pool for DSE execution.
+	 */
 	private static ExecutorService executor =
 			newFixedThreadPool(PARALLEL_FACTOR);
+
+	private final Machine machine;
+
+	/**
+	 * Create a high-level DSE interface.
+	 *
+	 * @param machine
+	 *            The description of the SpiNNaker machine.
+	 */
+	public HostExecuteDataSpecification(Machine machine) {
+		this.machine = machine;
+	}
 
 	/**
 	 * Execute all data specifications that a particular connection knows about,
@@ -113,7 +134,6 @@ public class HostExecuteDataSpecification {
 
 	private class BoardWorker implements AutoCloseable {
 		private final Transceiver txrx;
-		private final Machine machine;
 		private final Board board;
 		private final DSEStorage storage;
 
@@ -121,7 +141,6 @@ public class HostExecuteDataSpecification {
 				throws IOException, SpinnmanException, ProcessException {
 			txrx = new Transceiver(InetAddress.getByName(board.ethernetAddress),
 					null);
-			machine = txrx.getMachineDetails();
 			this.board = board;
 			this.storage = storage;
 		}
