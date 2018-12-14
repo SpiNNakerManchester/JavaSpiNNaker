@@ -143,7 +143,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
@@ -1573,17 +1573,10 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void readRegion(Storage.Region region, Storage storage)
+	public void readRegion(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
 		new ReadMemoryProcess(scpSelector, this).readMemory(region, storage);
-	}
-
-	@Override
-	public void readRecordingRegion(Storage.Region region, int recordingIndex,
-			Storage storage)
-			throws IOException, ProcessException, StorageException {
-		new ReadMemoryProcess(scpSelector, this).readMemory(region,
-				recordingIndex, storage);
 	}
 
 	@Override

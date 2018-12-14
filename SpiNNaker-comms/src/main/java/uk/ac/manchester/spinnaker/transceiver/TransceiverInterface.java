@@ -84,7 +84,7 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -2237,38 +2237,13 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Read an area associated with a <em>DSE region</em> from SDRAM from
-	 * a core of a chip on the board.
-	 *
-	 * @param region
-	 *            The region of SDRAM that is being read. Describes which core
-	 *            produced the data, what <em>DSE index</em> the data came from
-	 *            (<em>not the recording index</em>), and where in memory to
-	 *            actually read.
-	 * @param storage
-	 *            The database to write to.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If anything goes wrong with access to the database.
-	 */
-	void readRegion(Storage.Region region, Storage storage)
-			throws IOException, ProcessException, StorageException;
-
-	/**
 	 * Read an area associated with a <em>recording region</em> from SDRAM from
 	 * a core of a chip on the board.
 	 *
 	 * @param region
-	 *            The region of SDRAM that is being read. Describes which core
-	 *            produced the data, what <em>DSE index</em> the data came from
-	 *            (<em>not the recording index</em>), and where in memory to
-	 *            actually read.
-	 * @param recordingIndex
-	 *            Which recording region on the core is being read. Used to
-	 *            organise the data in the database.
+	 *            The recording region that is being read. Describes which core
+	 *            produced the data, what <em>DSE index</em> the data came from,
+	 *            and where in memory to actually read.
 	 * @param storage
 	 *            The database to write to.
 	 * @throws IOException
@@ -2278,8 +2253,8 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readRecordingRegion(Storage.Region region, int recordingIndex,
-			Storage storage)
+	void readRegion(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
 
 	/**

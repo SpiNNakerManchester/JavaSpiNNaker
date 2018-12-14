@@ -23,11 +23,10 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
+import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.Storage.Region;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -48,7 +47,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class BufferedReceivingData {
 
     /** The physical storage of the data. */
-    private final Storage storage;
+    private final BufferManagerStorage storage;
 
     /** Map of booleans indicating if a region on a core has been flushed. */
     private final Map<RegionLocation, Boolean> isFlushed;
@@ -81,8 +80,9 @@ public class BufferedReceivingData {
 	 */
     public BufferedReceivingData(String databasePath) {
         File databaseFile = new File(databasePath);
-		ConnectionProvider engine = new DatabaseEngine(databaseFile);
-		storage = new SQLiteStorage(engine);
+		ConnectionProvider engine =
+				new BufferManagerDatabaseEngine(databaseFile);
+		storage = engine.getBufferManagerStorage();
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
         //self._last_packet_received = defaultdict(lambda: None)

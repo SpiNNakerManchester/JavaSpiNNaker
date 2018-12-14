@@ -14,10 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.storage;
+package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
  * Wrapper that handles how to perform transactions.

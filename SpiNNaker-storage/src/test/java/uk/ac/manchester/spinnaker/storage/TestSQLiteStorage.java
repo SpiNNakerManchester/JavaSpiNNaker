@@ -55,49 +55,32 @@ class TestSQLiteStorage {
 
 	@Test
 	void testBasicOps() throws StorageException {
-		ConnectionProvider engine = new DatabaseEngine(db);
-		Storage storage = new SQLiteStorage(engine);
+		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
+		BufferManagerStorage storage = engine.getBufferManagerStorage();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 
-		Storage.Region r = new Storage.Region(core, 0, 0, 100);
-		storage.storeRegionContents(r, bytes("abc"));
-		assertArrayEquals("abc".getBytes(UTF_8),
-				storage.getRegionContents(r));
-
-		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
-		storage.noteRecordingVertex(rr, "foo");
-		storage.appendRecordingContents(rr, 0, bytes("def"));
+		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 0, 0, 100);
+		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
-				storage.getRecordingRegionContents(rr, 0));
+				storage.getRecordingRegionContents(rr));
 
 		assertEquals(Arrays.asList(core), storage.getCoresWithStorage());
 		assertEquals(Arrays.asList(0), storage.getRegionsWithStorage(core));
-
-		storage.deleteRegionContents(core, 0);
-
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
 	}
 
 	@Test
 	void testWithExisting() throws StorageException {
-		ConnectionProvider engine = new DatabaseEngine(db);
-		Storage storage = new SQLiteStorage(engine);
+		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
+		BufferManagerStorage storage = engine.getBufferManagerStorage();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
-		// store overwrites
-		Storage.Region r = new Storage.Region(core, 0, 0, 100);
-		storage.storeRegionContents(r, bytes("abc"));
-		storage.storeRegionContents(r, bytes("def"));
-		assertEquals("def", str(storage.getRegionContents(r)));
-
 		// append creates
-		Storage.Region rr = new Storage.Region(core, 1, 0, 100);
-		storage.noteRecordingVertex(rr, "foo");
-		storage.appendRecordingContents(rr, 0, bytes("abc"));
-		storage.appendRecordingContents(rr, 0, bytes("def"));
-		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr, 0)));
+		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		storage.appendRecordingContents(rr, bytes("abc"));
+		storage.appendRecordingContents(rr, bytes("def"));
+		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr)));
 	}
 
 }

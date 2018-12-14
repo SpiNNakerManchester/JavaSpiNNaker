@@ -16,13 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.OFF;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -36,17 +33,8 @@ import org.sqlite.SQLiteConfig;
  *
  * @author Donal Fellows
  */
-public class DatabaseEngine implements ConnectionProvider {
+public abstract class DatabaseEngine implements ConnectionProvider {
 	private static final Logger log = getLogger(DatabaseEngine.class);
-	private static String sqlDDL;
-	static {
-		try {
-			sqlDDL = resourceToString("/db.sql", UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("failed to read database definition SQL",
-					e);
-		}
-	}
 
 	private String dbConnectionUrl;
 
@@ -78,8 +66,13 @@ public class DatabaseEngine implements ConnectionProvider {
 		Connection conn = DriverManager.getConnection(dbConnectionUrl,
 				config.toProperties());
 		try (Statement statement = conn.createStatement()) {
-			statement.executeUpdate(sqlDDL);
+			statement.executeUpdate(getDDL());
 		}
 		return conn;
 	}
+
+	/**
+	 * @return The DDL for initialising this kind of database.
+	 */
+	public abstract String getDDL();
 }

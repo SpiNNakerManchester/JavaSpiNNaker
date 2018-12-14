@@ -37,4 +37,17 @@ public class DataSpecificationException extends Exception {
 	 */
 	DataSpecificationException() {
 	}
+
+	/**
+	 * Create an exception.
+	 *
+	 * @param msg
+	 *            The message in the exception.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	public DataSpecificationException(String msg,
+			Throwable cause) {
+		super(msg, cause);
+	}
 }

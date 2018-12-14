@@ -26,8 +26,8 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.storage.Storage;
-import uk.ac.manchester.spinnaker.storage.Storage.Region;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public class RecordingRegionDataGatherer extends DataGatherer {
 	private final Transceiver txrx;
-	private final Storage database;
+	private final BufferManagerStorage database;
 
 	/**
 	 * Create a data gatherer.
@@ -55,7 +55,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *             If we can't discover the machine details due to I/O problems
 	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			Storage database) throws IOException, ProcessException {
+			BufferManagerStorage database)
+			throws IOException, ProcessException {
 		super(transceiver);
 		this.txrx = transceiver;
 		this.database = database;
@@ -207,39 +208,23 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	private static class RecordingRegion extends Region {
-		public final int recordingIndex;
-
 		RecordingRegion(HasCoreLocation core, int regionIndex,
 				ChannelBufferState state) {
 			super(core, regionIndex, state.start,
 					state.currentWrite - state.start);
-			this.recordingIndex = state.regionId;
 		}
 	}
 
 	@Override
 	protected Region getRegion(Placement placement, int recordingRegionIndex)
 			throws IOException, ProcessException, StorageException {
-		int dseIndex = -1; // TODO use the right value
 		ChannelBufferState state = getState(placement, recordingRegionIndex);
-		try {
-			database.noteRecordingVertex(
-					// TODO put the right values in!
-					new Region(placement.getScampCore(), dseIndex, 0, 0),
-					placement.getVertex().label);
-		} catch (StorageException e) {
-			/*
-			 * Ignore; assume that the DB was already populated with the
-			 * information.
-			 */
-		}
-		return new RecordingRegion(placement, dseIndex, state);
+		return new RecordingRegion(placement, recordingRegionIndex, state);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		RecordingRegion rr = (RecordingRegion) r;
-		database.appendRecordingContents(rr, rr.recordingIndex, data);
+		database.appendRecordingContents(r, data);
 	}
 }
