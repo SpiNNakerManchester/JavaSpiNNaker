@@ -53,8 +53,8 @@ public final class SpiNNakerTriadGeometry {
 
     private final ArrayList<ChipLocation> singleBoardCoordinates;
 
-    private final float xCenterer;
-    private final float yCenterer;
+    private final float xCentre;
+    private final float yCentre;
 
     /**
      * Constructor is private to force reuse of statically held Object(s).
@@ -65,13 +65,13 @@ public final class SpiNNakerTriadGeometry {
      *            Width of a triad in chips.
      * @param roots
      *            Bottom Left corner chips within the triad
-     * @param xCenterer
+     * @param xCentre
      *            Magic number to adjust X to find the nearest root.
-     * @param yCenterer
+     * @param yCentre
      *            Magic number to adjust Y to find the nearest root.
      */
     private SpiNNakerTriadGeometry(int triadHeight, int triadWidth,
-            ArrayList<ChipLocation> roots, float xCenterer, float yCenterer) {
+            ArrayList<ChipLocation> roots, float xCentre, float yCentre) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
         this.roots = roots;
@@ -90,8 +90,8 @@ public final class SpiNNakerTriadGeometry {
                         new Location(root.getX(), root.getY() - triadWidth));
             }
         }
-        this.xCenterer = xCenterer;
-        this.yCenterer = yCenterer;
+        this.xCentre = xCentre;
+        this.yCentre = yCentre;
 
         localChipCoordinates = new HashMap<>();
         singleBoardCoordinates = new ArrayList<>();
@@ -164,8 +164,8 @@ public final class SpiNNakerTriadGeometry {
         float bestDistance = Float.MAX_VALUE;
         for (Location ethernet : roots) {
             float calc = hexagonalMetricDistance(x, y,
-                ethernet.x + (float) xCenterer,
-                ethernet.y + (float) yCenterer);
+                ethernet.x + (float) xCentre,
+                ethernet.y + (float) yCentre);
             if (calc < bestDistance) {
                 bestDistance = calc;
                 bestCalc = ethernet;

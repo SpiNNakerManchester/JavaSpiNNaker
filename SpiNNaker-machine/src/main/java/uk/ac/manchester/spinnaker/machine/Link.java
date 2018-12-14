@@ -117,10 +117,7 @@ public final class Link {
         if (!Objects.equals(this.source, other.source)) {
             return false;
         }
-        if (!Objects.equals(this.destination, other.destination)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.destination, other.destination);
     }
 
     @Override

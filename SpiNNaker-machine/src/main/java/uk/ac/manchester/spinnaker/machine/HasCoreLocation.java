@@ -27,7 +27,7 @@ public interface HasCoreLocation extends HasChipLocation {
     int getP();
 
     /**
-     * Check if two locations are colocated at the core level. This does
+     * Check if two locations are co-located at the core level. This does
      * <i>not</i> imply that the two are equal.
      *
      * @param other
