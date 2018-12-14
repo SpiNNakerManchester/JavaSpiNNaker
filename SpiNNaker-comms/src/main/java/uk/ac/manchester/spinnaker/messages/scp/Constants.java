@@ -14,29 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.utils;
-
-import java.net.URL;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+package uk.ac.manchester.spinnaker.messages.scp;
 
 /**
+ * Constants used elsewhere in this package only.
  *
- * @author Christian-B
+ * @author Donal Fellows
  */
-public class TestRawConfigParser {
+abstract class Constants {
+	private Constants() {
+	}
 
-    public TestRawConfigParser() {
-    }
+	/**
+	 * Indicates that all cores should receive a signal.
+	 */
+	static final int ALL_CORE_SIGNAL_MASK = 0xFFFF;
 
-    @Test
-    public void testSimple() {
-        URL url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
-        RawConfigParser parser = new RawConfigParser(url);
-        assertEquals((Integer)5, parser.getInt("Machine", "version"));
-        assertTrue(parser.getBoolean("Other", "alan_is_scotish"));
-    }
-
-
-
+	/**
+	 * Mask for selecting application IDs for signals.
+	 */
+	static final int APP_MASK = 0xFF;
 }

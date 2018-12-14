@@ -73,6 +73,7 @@ import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
@@ -212,7 +213,7 @@ public class TransceiverITCase {
 		System.out.printf("%x\n", readData.getInt());
 	}
 
-	private void execFlood(Transceiver txrx, int appID) throws Exception {
+	private void execFlood(Transceiver txrx, AppID appID) throws Exception {
 		txrx.executeFlood(coreSubsets, new File("hello.aplx"), appID);
 		int count = 0;
 		while (count < 20) {
@@ -239,7 +240,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void sync(Transceiver txrx, int appID) throws Exception {
+	private void sync(Transceiver txrx, AppID appID) throws Exception {
 		txrx.sendSignal(appID, Signal.SYNC0);
 		int count = 0;
 		while (count < 20) {
@@ -255,7 +256,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void stop(Transceiver txrx, int appID) throws Exception {
+	private void stop(Transceiver txrx, AppID appID) throws Exception {
 		txrx.sendSignal(appID, STOP);
 		sleep(500);
 		List<CPUInfo> cpuInfos = getCPUInfo(txrx, coreSubsets);
@@ -284,7 +285,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void routes(Transceiver txrx, int appID) throws Exception {
+	private void routes(Transceiver txrx, AppID appID) throws Exception {
 		List<MulticastRoutingEntry> routes;
 
 		routes = singletonList(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
@@ -373,7 +374,7 @@ public class TransceiverITCase {
 
 			section("Version Information", () -> boardReady(txrx));
 
-			int appID = txrx.getAppIdTracker().allocateNewID();
+			AppID appID = txrx.getAppIdTracker().allocateNewID();
 
 			section("Discovering other connections to the machine",
 					() -> findConnections(txrx));

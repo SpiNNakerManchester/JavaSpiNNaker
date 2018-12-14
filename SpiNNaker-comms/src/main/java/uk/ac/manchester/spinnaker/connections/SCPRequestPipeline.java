@@ -180,7 +180,7 @@ public class SCPRequestPipeline {
 		 * @return True if all reasons are timeouts.
 		 */
 		private boolean allTimeoutFailures() {
-			return retryReason.stream().allMatch(r -> REASON_TIMEOUT.equals(r));
+			return retryReason.stream().allMatch(REASON_TIMEOUT::equals);
 		}
 
 		/**

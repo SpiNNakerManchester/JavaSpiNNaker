@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.progress.ProgressIterable;
@@ -76,7 +77,7 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
+	public Map<CoreLocation, LocationInfo> load(Machine machine, AppID appID,
 			Map<CoreLocation, File> dsgTargets)
 			throws IOException, ProcessException, DataSpecificationException {
 		return load(machine, appID, dsgTargets, null);
@@ -104,7 +105,7 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public Map<CoreLocation, LocationInfo> load(Machine machine, int appID,
+	public Map<CoreLocation, LocationInfo> load(Machine machine, AppID appID,
 			Map<CoreLocation, File> dsgTargets,
 			Map<CoreLocation, LocationInfo> info)
 			throws IOException, ProcessException, DataSpecificationException {
@@ -137,7 +138,7 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             if there's a bug in a data spec file
 	 */
-	public LocationInfo load(Machine machine, int appID, HasCoreLocation core,
+	public LocationInfo load(Machine machine, AppID appID, HasCoreLocation core,
 			File dataSpec)
 			throws IOException, ProcessException, DataSpecificationException {
 		try (Executor executor =

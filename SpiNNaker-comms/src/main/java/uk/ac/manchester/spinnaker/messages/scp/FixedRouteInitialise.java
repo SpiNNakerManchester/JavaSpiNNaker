@@ -22,11 +22,12 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** Sets a fixed route entry. */
 public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
-	private static int argument1(int appID) {
-		return appID << BYTE1;
+	private static int argument1(AppID appID) {
+		return appID.appID << BYTE1;
 	}
 
 	/**
@@ -35,9 +36,9 @@ public final class FixedRouteInitialise extends SCPRequest<CheckOKResponse> {
 	 * @param entry
 	 *            the fixed route entry (converted for writing)
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 */
-	public FixedRouteInitialise(HasChipLocation chip, int entry, int appID) {
+	public FixedRouteInitialise(HasChipLocation chip, int entry, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
 	}
 

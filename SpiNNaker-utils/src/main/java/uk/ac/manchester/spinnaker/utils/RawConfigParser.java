@@ -219,7 +219,7 @@ public class RawConfigParser {
 	 *            The option to look at.
 	 * @return The option value, or {@code null} if it is absent.
 	 */
-	public Integer getint(String section, String option) {
+	public Integer getInt(String section, String option) {
 		String value = get(section, option);
 		if (isNone(value)) {
 			return null;
@@ -236,7 +236,7 @@ public class RawConfigParser {
 	 *            The option to look at.
 	 * @return The option value, or {@code null} if it is absent.
 	 */
-	public Boolean getboolean(String section, String option) {
+	public Boolean getBoolean(String section, String option) {
 		String value = get(section, option);
 		if (isNone(value)) {
 			return null;

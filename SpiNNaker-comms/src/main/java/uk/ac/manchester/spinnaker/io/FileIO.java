@@ -25,7 +25,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /** A file input/output interface to match the MemoryIO interface. */
@@ -56,7 +55,7 @@ public class FileIO extends BaseIO {
 	 * @param endOffset
 	 *            The end offset from the start of the file
 	 */
-	public FileIO(RandomAccessFile file, int startOffset, int endOffset) {
+	private FileIO(RandomAccessFile file, int startOffset, int endOffset) {
 		super(startOffset, endOffset);
 		this.file = file;
 	}
@@ -67,7 +66,7 @@ public class FileIO extends BaseIO {
 	}
 
 	@Override
-	public FileIO get(int slice) throws IOException {
+	public FileIO get(int slice) {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
@@ -75,7 +74,7 @@ public class FileIO extends BaseIO {
 	}
 
 	@Override
-	public FileIO get(Slice slice) throws IOException {
+	public FileIO get(Slice slice) {
 		return get(slice, (from, to) -> new FileIO(file, from, to));
 	}
 
@@ -85,7 +84,7 @@ public class FileIO extends BaseIO {
 	}
 
 	@Override
-	public void flush() throws IOException {
+	public void flush() {
 		// Do nothing
 	}
 
@@ -108,8 +107,7 @@ public class FileIO extends BaseIO {
 	}
 
 	@Override
-	void doFill(int value, DataType type, int len)
-			throws IOException, ProcessException {
+	void doFill(int value, DataType type, int len) throws IOException {
 		ByteBuffer b = allocate(len).order(LITTLE_ENDIAN);
 		while (b.hasRemaining()) {
 			type.writeTo(value, b);

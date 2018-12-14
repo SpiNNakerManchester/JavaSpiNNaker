@@ -25,6 +25,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.AppID;
+
 /** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	private static final int MAGIC1 = 0x3f;
@@ -39,20 +41,19 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the packet, between 0 and 127
 	 */
 	public FloodFillEnd(byte nearestNeighbourID) {
-		this(nearestNeighbourID, 0, null, false);
+		this(nearestNeighbourID, AppID.DEFAULT, null, false);
 	}
 
 	/**
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param appID
-	 *            The application ID to start using the data, between 16 and
-	 *            255. If not specified, no application is started
+	 *            The application ID to start using the data
 	 * @param processors
 	 *            A list of processors on which to start the application, each
 	 *            between 1 and 17. If not specified, no application is started.
 	 */
-	public FloodFillEnd(byte nearestNeighbourID, int appID,
+	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
 			Iterable<Integer> processors) {
 		this(nearestNeighbourID, appID, processors, false);
 	}
@@ -61,8 +62,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param appID
-	 *            The application ID to start using the data, between 16 and
-	 *            255. If not specified, no application is started
+	 *            The application ID to start using the data
 	 * @param processors
 	 *            A list of processors on which to start the application, each
 	 *            between 1 and 17. If not specified, no application is started.
@@ -70,9 +70,9 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            True if the binary should go into a "wait" state before
 	 *            executing
 	 */
-	public FloodFillEnd(byte nearestNeighbourID, int appID,
+	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
 			Iterable<Integer> processors, boolean wait) {
-		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
+		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(nearestNeighbourID),
 				argument2(appID, processors, wait), NNP_FORWARD_RETRY);
 	}
 
@@ -81,7 +81,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 				| toUnsignedInt(nearestNeighbourID);
 	}
 
-	private static int argument2(int appID, Iterable<Integer> processors,
+	private static int argument2(AppID appID, Iterable<Integer> processors,
 			boolean wait) {
 		int processorMask = 0;
 		if (processors != null) {
@@ -91,7 +91,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 				}
 			}
 		}
-		processorMask |= appID << BYTE3;
+		processorMask |= appID.appID << BYTE3;
 		if (wait) {
 			processorMask |= 1 << WAIT_BIT;
 		}

@@ -21,6 +21,7 @@ import java.io.IOException;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -55,7 +56,7 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, int appID)
+	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
 			throws IOException, ProcessException {
 		return synchronousCall(new SDRAMAlloc(chip, appID, size)).baseAddress;
 	}
@@ -79,7 +80,7 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
+	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
 		return synchronousCall(
 				new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
