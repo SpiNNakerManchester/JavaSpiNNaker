@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -111,7 +112,12 @@ public interface DSEStorage {
 		/**
 		 * The data specification to execute for this core.
 		 */
-		public final byte[] dataSpec;
+		public final ByteBuffer dataSpec;
+
+		/**
+		 * The application identifier associated with a core.
+		 */
+		public final int appID;
 
 		/**
 		 * Create an instance.
@@ -122,12 +128,15 @@ public interface DSEStorage {
 		 *            The Y coordinate of the core.
 		 * @param p
 		 *            The P coordinate of the core.
+		 * @param appID
+		 *            The application identifier.
 		 * @param dataSpec
 		 *            The data specification to execute.
 		 */
-		protected CoreToLoad(int x, int y, int p, byte[] dataSpec) {
+		protected CoreToLoad(int x, int y, int p, int appID, byte[] dataSpec) {
 			this.core = new CoreLocation(x, y, p);
-			this.dataSpec = dataSpec;
+			this.dataSpec = ByteBuffer.wrap(dataSpec);
+			this.appID = appID;
 		}
 	}
 }

@@ -45,6 +45,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
 	private static final int FIFTH = 5;
+	private static final int SIXTH = 6;
 
 	/**
 	 * Create an instance.
@@ -99,7 +100,8 @@ public class SQLiteStorage extends SQLiteConnectionManager
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getBytes(FIFTH)));
+							rs.getInt(FOURTH), rs.getInt(FIFTH),
+							rs.getBytes(SIXTH)));
 				}
 				return result;
 			}
@@ -314,15 +316,15 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		public int hashCode() {
 			return id ^ 444113;
 		}
-
 	}
 
 	private static final class CoreToLoadImpl extends CoreToLoad {
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(int id, int x, int y, int p, byte[] bytes) {
-			super(x, y, p, bytes);
+		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
+				byte[] bytes) {
+			super(x, y, p, appID, bytes);
 			this.id = id;
 		}
 

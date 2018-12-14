@@ -117,9 +117,9 @@ abstract class SQL {
 
 	/** List the cores of a board with a data specification to run. */
 	@Parameters("board_id")
-	@ResultColumns({"core_id", "x", "y", "processor", "content"})
+	@ResultColumns({"core_id", "x", "y", "processor", "app_id", "content"})
 	static final String LIST_CORES_TO_LOAD =
-			"SELECT core_id, x, y, processor, content FROM core_view "
+			"SELECT core_id, x, y, processor, app_id, content FROM core_view "
 					+ "WHERE board_id = ? AND start_address IS NULL";
 
 	/**
