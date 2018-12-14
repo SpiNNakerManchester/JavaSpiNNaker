@@ -25,14 +25,15 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** Gets a fixed route entry. */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static final int MAGIC = 3;
 
-	private static int argument1(int appID) {
-		return (appID << BYTE1) | (MAGIC << BYTE0);
+	private static int argument1(AppID appID) {
+		return (appID.appID << BYTE1) | (MAGIC << BYTE0);
 	}
 
 	private static int argument2() {
@@ -43,10 +44,9 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	 * @param chip
 	 *            The chip to get the route from.
 	 * @param appID
-	 *            The ID of the application associated with the route, between 0
-	 *            and 255
+	 *            The ID of the application associated with the route
 	 */
-	public FixedRouteRead(HasChipLocation chip, int appID) {
+	public FixedRouteRead(HasChipLocation chip, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(appID), argument2());
 	}
 

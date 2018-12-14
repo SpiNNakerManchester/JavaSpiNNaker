@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /**
  * A request to run an application.
@@ -31,21 +32,21 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
-	 * @param appId
-	 *            The ID of the application to run, between 16 and 255
+	 * @param appID
+	 *            The ID of the application to run
 	 * @param chip
 	 *            The coordinates of the chip to run on
 	 * @param processors
 	 *            The processors of the chip to run on, between 1 and 17
 	 */
-	public ApplicationRun(int appId, HasChipLocation chip,
+	public ApplicationRun(AppID appID, HasChipLocation chip,
 			Iterable<Integer> processors) {
-		this(appId, chip, processors, false);
+		this(appID, chip, processors, false);
 	}
 
 	/**
 	 * @param appId
-	 *            The ID of the application to run, between 16 and 255
+	 *            The ID of the application to run
 	 * @param chip
 	 *            The coordinates of the chip to run on
 	 * @param processors
@@ -53,12 +54,12 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	 * @param wait
 	 *            True if the processors should enter a "wait" state on starting
 	 */
-	public ApplicationRun(int appId, HasChipLocation chip,
+	public ApplicationRun(AppID appId, HasChipLocation chip,
 			Iterable<Integer> processors, boolean wait) {
 		super(chip.getScampCore(), CMD_AR, argument1(appId, processors, wait));
 	}
 
-	private static int argument1(int appId, Iterable<Integer> processors,
+	private static int argument1(AppID appId, Iterable<Integer> processors,
 			boolean wait) {
 		int processorMask = 0;
 		if (processors != null) {
@@ -68,7 +69,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 				}
 			}
 		}
-		processorMask |= appId << BYTE3;
+		processorMask |= appId.appID << BYTE3;
 		if (wait) {
 			processorMask |= 1 << WAIT_BIT;
 		}

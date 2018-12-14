@@ -52,7 +52,7 @@ abstract class BaseIO implements AbstractIO {
 	}
 
 	@Override
-	public void seek(int numBytes) throws IOException {
+	public void seek(int numBytes) {
 		int position = start + numBytes;
 		if (position < start || position > end) {
 			throw new IllegalArgumentException(
@@ -63,7 +63,7 @@ abstract class BaseIO implements AbstractIO {
 	}
 
 	@Override
-	public int tell() throws IOException {
+	public int tell() {
 		return current - start;
 	}
 

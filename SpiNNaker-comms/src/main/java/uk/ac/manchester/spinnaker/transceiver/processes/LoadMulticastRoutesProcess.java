@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
@@ -86,7 +87,7 @@ public class LoadMulticastRoutesProcess
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void loadRoutes(HasChipLocation chip,
-			Collection<MulticastRoutingEntry> routes, int appID)
+			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
 		/*
 		 * Create the routing data. 16 bytes per entry plus one for the end

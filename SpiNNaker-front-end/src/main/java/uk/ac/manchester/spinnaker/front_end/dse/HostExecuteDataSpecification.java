@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Board;
@@ -166,8 +167,8 @@ public class HostExecuteDataSpecification {
 					machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int bytesUsed = executor.getConstructedDataSize();
-				int startAddress =
-						txrx.mallocSDRAM(ctl.core, bytesUsed, ctl.appID);
+				int startAddress = txrx.mallocSDRAM(ctl.core, bytesUsed,
+						new AppID(ctl.appID));
 				int bytesWritten =
 						writeHeader(ctl.core, executor, startAddress);
 

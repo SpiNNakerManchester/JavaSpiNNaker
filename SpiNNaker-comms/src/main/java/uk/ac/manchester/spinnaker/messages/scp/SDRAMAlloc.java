@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /** An SCP Request to allocate space in the SDRAM space. */
@@ -36,11 +37,11 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 * @param size
 	 *            The size in bytes of memory to be allocated
 	 */
-	public SDRAMAlloc(HasChipLocation chip, int appID, int size) {
+	public SDRAMAlloc(HasChipLocation chip, AppID appID, int size) {
 		this(chip, appID, size, 0);
 	}
 
@@ -48,7 +49,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 * @param size
 	 *            The size in bytes of memory to be allocated
 	 * @param tag
@@ -56,7 +57,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *            looked up by a SpiNNaker application to discover the address
 	 *            of the allocated block
 	 */
-	public SDRAMAlloc(HasChipLocation chip, int appID, int size, int tag) {
+	public SDRAMAlloc(HasChipLocation chip, AppID appID, int size, int tag) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
 		this.size = size;
 		if (tag < 0 || tag > MAX_SDRAM_TAG) {
@@ -66,8 +67,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 		}
 	}
 
-	private static int argument1(int appID) {
-		return (appID << BYTE1) | (ALLOC_SDRAM.value << BYTE0);
+	private static int argument1(AppID appID) {
+		return (appID.appID << BYTE1) | (ALLOC_SDRAM.value << BYTE0);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
 /** An SCP Request to allocate space for routing entries. */
@@ -40,13 +41,13 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	 *            The number of entries to allocate
 	 *
 	 */
-	public RouterAlloc(HasChipLocation chip, int appID, int numEntries) {
+	public RouterAlloc(HasChipLocation chip, AppID appID, int numEntries) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), numEntries);
 		this.numEntries = numEntries;
 	}
 
-	private static int argument1(int appID) {
-		return (appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
+	private static int argument1(AppID appID) {
+		return (appID.appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to initialise the router on a chip. */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
@@ -40,7 +41,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the application with which to associate the routes.
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries, int tableAddress,
-			int baseAddress, int appID) {
+			int baseAddress, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
 				tableAddress, baseAddress);
 		if (numEntries < 1) {
@@ -57,8 +58,8 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 		}
 	}
 
-	private static int argument1(int numEntries, int appID) {
-		return (numEntries << BYTE2) | (appID << BYTE1) | (2 << BYTE0);
+	private static int argument1(int numEntries, AppID appID) {
+		return (numEntries << BYTE2) | (appID.appID << BYTE1) | (2 << BYTE0);
 	}
 
 	@Override
