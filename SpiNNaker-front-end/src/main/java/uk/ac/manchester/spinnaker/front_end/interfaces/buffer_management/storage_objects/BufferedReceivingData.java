@@ -16,15 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
-import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -74,14 +72,11 @@ public class BufferedReceivingData {
 	 * Stores the information received through the buffering output technique
 	 * from the SpiNNaker system.
 	 *
-	 * @param databaseFile
-	 *            The path of a file that contains an SQLite database holding
-	 *            the data.
+	 * @param storage
+	 *            How to talk to the database.
 	 */
-    public BufferedReceivingData(File databaseFile) {
-		ConnectionProvider engine =
-				new BufferManagerDatabaseEngine(databaseFile);
-		storage = engine.getBufferManagerStorage();
+	public BufferedReceivingData(BufferManagerStorage storage) {
+		this.storage = storage;
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
         //self._last_packet_received = defaultdict(lambda: None)
@@ -107,20 +102,9 @@ public class BufferedReceivingData {
 	 *            Location to check retrieved from.
 	 * @return True if the number has been retrieved
 	 */
-	public boolean isEndBufferingSequenceNumberStored(CoreLocation location) {
-		return endBufferingSequenceNo.containsKey(location);
-	}
-
-	/**
-	 * Determine if the last sequence number has been retrieved.
-	 *
-	 * @param location
-	 *            Location to check retrieved from.
-	 * @return True if the number has been retrieved
-	 */
 	public boolean isEndBufferingSequenceNumberStored(
 			HasCoreLocation location) {
-		return isEndBufferingSequenceNumberStored(location.asCoreLocation());
+		return endBufferingSequenceNo.containsKey(location.asCoreLocation());
 	}
 
 	/**
@@ -129,24 +113,11 @@ public class BufferedReceivingData {
 	 * @param location
 	 *            The core retrieved from.
 	 * @param lastSequenceNumber
-	 *            he last sequence number
-	 */
-	public void storeEndBufferingSequenceNumber(CoreLocation location,
-			Integer lastSequenceNumber) {
-		endBufferingSequenceNo.put(location, lastSequenceNumber);
-	}
-
-	/**
-	 * Store the last sequence number sent by the core.
-	 *
-	 * @param location
-	 *            The core retrieved from.
-	 * @param lastSequenceNumber
-	 *            he last sequence number
+	 *            The last sequence number
 	 */
 	public void storeEndBufferingSequenceNumber(HasCoreLocation location,
-			Integer lastSequenceNumber) {
-		storeEndBufferingSequenceNumber(location.asCoreLocation(),
+			int lastSequenceNumber) {
+		endBufferingSequenceNo.put(location.asCoreLocation(),
 				lastSequenceNumber);
 	}
 
@@ -157,12 +128,12 @@ public class BufferedReceivingData {
 	 *            The core
 	 * @return The last sequence number.
 	 */
-	public Integer getEndBufferingSequenceNumber(CoreLocation location) {
+	public int getEndBufferingSequenceNumber(CoreLocation location) {
         if (endBufferingSequenceNo.containsKey(location)) {
             return endBufferingSequenceNo.get(location);
         }
         throw new IllegalArgumentException(
-                "no squence number know for " + location);
+                "no squence number known for " + location);
     }
 
 	/**
@@ -172,7 +143,7 @@ public class BufferedReceivingData {
 	 *            The core
 	 * @return The last sequence number.
 	 */
-	public Integer getEndBufferingSequenceNumber(HasCoreLocation location) {
+	public int getEndBufferingSequenceNumber(HasCoreLocation location) {
 		return getEndBufferingSequenceNumber(location.asCoreLocation());
 	}
 

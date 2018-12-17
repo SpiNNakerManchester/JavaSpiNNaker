@@ -16,11 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -31,11 +26,16 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -81,8 +81,9 @@ public final class DataReceiverRunner {
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
 				machine.version);
-		DataReceiver receiver =
-				new DataReceiver(trans, new File(runFolder, BUFFER_DB_FILE));
+		BufferManagerStorage database = getDatabase(runFolder);
+
+		DataReceiver receiver = new DataReceiver(trans, database);
 		receiver.getDataForPlacements(placements, null);
 	}
 
@@ -115,11 +116,9 @@ public final class DataReceiverRunner {
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
 				machine.version);
-		DatabaseEngine database = new BufferManagerDatabaseEngine(
-				new File(runFolder, BUFFER_DB_FILE));
+		BufferManagerStorage database = getDatabase(runFolder);
 
-		DataGatherer runner = new DirectDataGatherer(trans,
-				database.getBufferManagerStorage());
+		DataGatherer runner = new DirectDataGatherer(trans, database);
 		for (Gather g : gathers) {
 			runner.addTask(g);
 		}
@@ -152,5 +151,10 @@ public final class DataReceiverRunner {
 					new TypeReference<List<Placement>>() {
 					});
 		}
+	}
+
+	private static BufferManagerStorage getDatabase(String runFolder) {
+		return new BufferManagerDatabaseEngine(
+				new File(runFolder, BUFFER_DB_FILE)).getBufferManagerStorage();
 	}
 }
