@@ -16,9 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -43,6 +47,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * @author Christian-B
  */
 public class BufferedReceivingData {
+	private static final Logger log = getLogger(BufferedReceivingData.class);
 
     /** The physical storage of the data. */
     private final BufferManagerStorage storage;
@@ -231,6 +236,11 @@ public class BufferedReceivingData {
 	 */
 	public void storeDataInRegionBuffer(RegionLocation location,
 			ByteBuffer data) throws StorageException {
+		if (log.isInfoEnabled()) {
+			log.info("retrieved {} bytes from region {} of {}",
+					data.remaining(), location.region,
+					location.asCoreLocation());
+		}
 		storage.appendRecordingContents(
 				new Region(location, location.region, 0, 0), data);
 	}
