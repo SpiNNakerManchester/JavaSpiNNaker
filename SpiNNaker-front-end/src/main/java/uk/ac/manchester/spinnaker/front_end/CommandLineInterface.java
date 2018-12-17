@@ -107,7 +107,7 @@ public final class CommandLineInterface {
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-                    args[0], "download, dse, or version");
+                    args[0], "dse, gather, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
@@ -117,17 +117,19 @@ public final class CommandLineInterface {
 	}
 
 	private static final int NUM_DSE_ARGS = 3;
+	private static final String DSE_DB_FILE = "ds.sqlite3";
+
 	private static void dseRun(String[] args)
 			throws UnknownHostException, IOException, SpinnmanException,
 			ProcessException, StorageException, ExecutionException,
 			InterruptedException, DataSpecificationException {
 		if (args.length != NUM_DSE_ARGS) {
 			System.err.printf("wrong # args: must be \"java -jar %s "
-					+ "dse <machineFile> <database>\"\n", JAR_FILE);
+					+ "dse <machineFile> <runFolder>\"\n", JAR_FILE);
 			System.exit(1);
 		}
 		Machine machine = readMachineJson(args[1]);
-		File db = new File(args[2]);
+		File db = new File(args[2], DSE_DB_FILE);
 
 		HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine);

@@ -53,6 +53,7 @@ public abstract class DataGatherRunner {
 	}
 
 	private static final int THIRD = 3;
+	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	/**
 	 * Prototype for early testing.
@@ -81,8 +82,8 @@ public abstract class DataGatherRunner {
 		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
 				machine.version);
 
-		DatabaseEngine database =
-				new BufferManagerDatabaseEngine(new File(args[THIRD]));
+		DatabaseEngine database = new BufferManagerDatabaseEngine(
+				new File(args[THIRD], BUFFER_DB_FILE));
 
 		DataGatherer runner = new DirectDataGatherer(trans,
 				database.getBufferManagerStorage());
