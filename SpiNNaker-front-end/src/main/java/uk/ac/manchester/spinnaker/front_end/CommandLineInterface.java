@@ -33,9 +33,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-import uk.ac.manchester.spinnaker.front_end.download.DataOut;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataGatherRunner;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
@@ -84,17 +82,29 @@ public final class CommandLineInterface {
 	public static void main(String... args) {
 		if (args.length < 1) {
 			System.err.printf(
-                "wrong # args: must be \"java -jar %s <command> ...\"\n",
-                JAR_FILE);
+					"wrong # args: must be \"java -jar %s <command> ...\"\n",
+					JAR_FILE);
 			System.exit(1);
 		}
 		try {
 			switch (args[0]) {
 			case "gather":
-				DataGatherRunner.main(args);
+				if (args.length != NUM_DOWNLOAD_ARGS) {
+					System.err.printf("wrong # args: must be \"java -jar %s "
+							+ "gather <gatherFile> <machineFile> "
+							+ "<runFolder>\"\n", JAR_FILE);
+					System.exit(1);
+				}
+				DataReceiverRunner.gather(args[1], args[2], args[THIRD]);
 				System.exit(0);
 			case "download":
-				DataReceiverRunner.main(args);
+				if (args.length != NUM_DOWNLOAD_ARGS) {
+					System.err.printf("wrong # args: must be \"java -jar %s "
+							+ "download <placementFile> <machineFile> "
+							+ "<runFolder>\"\n", JAR_FILE);
+					System.exit(1);
+				}
+				DataReceiverRunner.receive(args[1], args[2], args[THIRD]);
 				System.exit(0);
 			case "dse":
 				dseRun(args);
@@ -104,7 +114,7 @@ public final class CommandLineInterface {
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-                    args[0], "download, dse, gather, or version");
+						args[0], "download, dse, gather, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
@@ -112,6 +122,9 @@ public final class CommandLineInterface {
 			System.exit(2);
 		}
 	}
+
+	private static final int NUM_DOWNLOAD_ARGS = 4;
+	private static final int THIRD = 3;
 
 	private static final int NUM_DSE_ARGS = 3;
 	private static final String DSE_DB_FILE = "ds.sqlite3";

@@ -21,37 +21,50 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+
+import org.slf4j.Logger;
+
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
+import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
- * Data dowloader that does not use advanced monitors.
+ * Data dowloader runner.
  *
  * @author Christian-B
+ * @author Donal Fellows
  */
 public final class DataReceiverRunner {
+	private static final Logger log = getLogger(DataReceiverRunner.class);
 	private static final ObjectMapper MAPPER = MapperFactory.createMapper();
 	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
-	private static final int THIRD = 3;
 
 	private DataReceiverRunner() {
 	}
 
 	/**
-	 * Prototype for early testing.
+	 * Download data without using data gatherer cores.
 	 *
-	 * @param args
-	 *            Arguements as received.
+	 * @param placementsJsonFile
+	 *            Name of file containing JSON description of placements.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that receives the output).
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -61,23 +74,73 @@ public final class DataReceiverRunner {
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 */
-	public static void main(String... args) throws IOException,
+	public static void receive(String placementsJsonFile,
+			String machineJsonFile, String runFolder) throws IOException,
 			SpinnmanException, StorageException, ProcessException {
-		// args 0 = instruction to run this
-		List<Placement> placements = getPlacements(args[1]);
-		Machine machine = new Machine(getMachine(args[2]));
+		List<Placement> placements = getPlacements(placementsJsonFile);
+		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
 				machine.version);
-		DataReceiver receiver = new DataReceiver(trans,
-				new File(args[THIRD], BUFFER_DB_FILE));
+		DataReceiver receiver =
+				new DataReceiver(trans, new File(runFolder, BUFFER_DB_FILE));
 		receiver.getDataForPlacements(placements, null);
 	}
 
-	private static MachineBean getMachine(String machineFile)
-			throws IOException, JsonParseException, JsonMappingException,
-			FileNotFoundException {
-		try (FileReader machineReader = new FileReader(machineFile)) {
-			return MAPPER.readValue(machineReader, MachineBean.class);
+	/**
+	 * Download data using data gatherer cores.
+	 *
+	 * @param gatherersJsonFile
+	 *            Name of file containing JSON description of gatherers.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that receives the output).
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             If the database is in an illegal state
+	 * @throws InterruptedException
+	 *             If things are interrupted while waiting for all the downloads
+	 *             to be done
+	 */
+	public static void gather(String gatherersJsonFile, String machineJsonFile,
+			String runFolder) throws IOException, SpinnmanException,
+			ProcessException, StorageException, InterruptedException {
+		List<Gather> gathers = getGatherers(gatherersJsonFile);
+		Machine machine = getMachine(machineJsonFile);
+		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
+				machine.version);
+		DatabaseEngine database = new BufferManagerDatabaseEngine(
+				new File(runFolder, BUFFER_DB_FILE));
+
+		DataGatherer runner = new DirectDataGatherer(trans,
+				database.getBufferManagerStorage());
+		for (Gather g : gathers) {
+			runner.addTask(g);
+		}
+		int misses = runner.waitForTasksToFinish();
+		log.info("total misses: " + misses);
+	}
+
+	private static Machine getMachine(String filename)
+			throws JsonParseException, JsonMappingException, IOException {
+		try (FileReader machineReader = new FileReader(filename)) {
+			return new Machine(
+					MAPPER.readValue(machineReader, MachineBean.class));
+		}
+	}
+
+	private static List<Gather> getGatherers(String filename)
+			throws IOException, JsonParseException, JsonMappingException {
+		try (FileReader gatherReader = new FileReader(filename)) {
+			return MAPPER.readValue(gatherReader,
+					new TypeReference<List<Gather>>() {
+					});
 		}
 	}
 
