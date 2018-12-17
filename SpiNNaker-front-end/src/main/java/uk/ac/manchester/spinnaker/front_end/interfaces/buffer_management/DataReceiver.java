@@ -173,7 +173,7 @@ public class DataReceiver {
 			int length = endState.currentWrite - endState.getCurrentRead();
 			readSomeData(location, endState.getCurrentRead(), length);
 		} else if (endState.getCurrentRead() > endState.currentWrite
-				|| endState.getLastBufferOperation() == BUFFER_WRITE) {
+				|| lastOperation == BUFFER_WRITE) {
 			int length = endState.endAddress - endState.getCurrentRead();
 			if (length < 0) {
 				throw new IOException(
