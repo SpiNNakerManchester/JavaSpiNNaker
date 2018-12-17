@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferedReceivingData;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferingOperation;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -58,19 +60,19 @@ public class DataReceiver {
 
     private static final Logger log = getLogger(DataReceiver.class);
 
-    /**
-     * Creates a new mini BufferManager.
-     *
-     * @param tranceiver Transceiver to get data from.
-     * @param databasePath The path of a file that contains
-     *      an SQLite database holding the data.
-     */
-    public DataReceiver(Transceiver tranceiver, String databasePath) {
-
+	/**
+	 * Creates a new mini BufferManager.
+	 *
+	 * @param tranceiver
+	 *            Transceiver to get data from.
+	 * @param databaseFile
+	 *            The path of a file that contains an SQLite database holding
+	 *            the data.
+	 */
+    public DataReceiver(Transceiver tranceiver, File databaseFile) {
         this.transceiver = tranceiver;
         // storage area for received data from cores
-        receivedData = new BufferedReceivingData(databasePath);
-
+        receivedData = new BufferedReceivingData(databaseFile);
     }
 
 	/**
@@ -100,7 +102,6 @@ public class DataReceiver {
     private void getDataForPlacementsLocked(
             List<Placement> placements, ProgressBar progress)
             throws IOException, StorageException, ProcessException {
-
         // get data
         for (Placement placement:  placements) {
             for (int recordingRegionId

@@ -74,12 +74,11 @@ public class BufferedReceivingData {
 	 * Stores the information received through the buffering output technique
 	 * from the SpiNNaker system.
 	 *
-	 * @param databasePath
+	 * @param databaseFile
 	 *            The path of a file that contains an SQLite database holding
 	 *            the data.
 	 */
-    public BufferedReceivingData(String databasePath) {
-        File databaseFile = new File(databasePath);
+    public BufferedReceivingData(File databaseFile) {
 		ConnectionProvider engine =
 				new BufferManagerDatabaseEngine(databaseFile);
 		storage = engine.getBufferManagerStorage();

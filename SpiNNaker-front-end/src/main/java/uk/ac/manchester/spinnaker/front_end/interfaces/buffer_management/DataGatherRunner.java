@@ -47,13 +47,12 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public abstract class DataGatherRunner {
 	private static final Logger log = getLogger(DataGatherRunner.class);
+	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 	private static final ObjectMapper MAPPER = createMapper();
+	private static final int THIRD = 3;
 
 	private DataGatherRunner() {
 	}
-
-	private static final int THIRD = 3;
-	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	/**
 	 * Prototype for early testing.

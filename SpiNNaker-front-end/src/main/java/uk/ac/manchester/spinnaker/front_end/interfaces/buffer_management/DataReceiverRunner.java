@@ -16,8 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -30,18 +35,19 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
- * Prototype for early testing.
+ * Data dowloader that does not use advanced monitors.
  *
  * @author Christian-B
  */
 public final class DataReceiverRunner {
+	private static final ObjectMapper MAPPER = MapperFactory.createMapper();
+	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
+	private static final int THIRD = 3;
 
-    private DataReceiverRunner() {
-    }
+	private DataReceiverRunner() {
+	}
 
-    private static final int THIRD = 3;
-
-    /**
+	/**
 	 * Prototype for early testing.
 	 *
 	 * @param args
@@ -55,24 +61,33 @@ public final class DataReceiverRunner {
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 */
-	public static void main(String... args)
-            throws IOException, SpinnmanException,
-            StorageException, ProcessException {
-        //args 0 = instruction to run this
-        ObjectMapper mapper = MapperFactory.createMapper();
-        FileReader placementReader = new FileReader(args[1]);
-        List<Placement> placements = mapper.readValue(
-                placementReader, new TypeReference<List<Placement>>() { });
+	public static void main(String... args) throws IOException,
+			SpinnmanException, StorageException, ProcessException {
+		// args 0 = instruction to run this
+		List<Placement> placements = getPlacements(args[1]);
+		Machine machine = new Machine(getMachine(args[2]));
+		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
+				machine.version);
+		DataReceiver receiver = new DataReceiver(trans,
+				new File(args[THIRD], BUFFER_DB_FILE));
+		receiver.getDataForPlacements(placements, null);
+	}
 
-        FileReader machineReader = new FileReader(args[2]);
-        MachineBean fromJson = mapper.readValue(
-                machineReader, MachineBean.class);
-        Machine machine = new Machine(fromJson);
+	private static MachineBean getMachine(String machineFile)
+			throws IOException, JsonParseException, JsonMappingException,
+			FileNotFoundException {
+		try (FileReader machineReader = new FileReader(machineFile)) {
+			return MAPPER.readValue(machineReader, MachineBean.class);
+		}
+	}
 
-        Transceiver trans = new Transceiver(
-                machine.getBootEthernetAddress(), machine.version);
-
-        DataReceiver receiver = new  DataReceiver(trans, args[THIRD]);
-        receiver.getDataForPlacements(placements, null);
-    }
+	private static List<Placement> getPlacements(String placementsFile)
+			throws IOException, JsonParseException, JsonMappingException,
+			FileNotFoundException {
+		try (FileReader placementReader = new FileReader(placementsFile)) {
+			return MAPPER.readValue(placementReader,
+					new TypeReference<List<Placement>>() {
+					});
+		}
+	}
 }
