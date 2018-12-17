@@ -204,7 +204,7 @@ public class BufferedReceivingData {
 	 * @return Last sequence number used
 	 */
 	public Integer lastSequenceNoForCore(CoreLocation location) {
-		return this.sequenceNo.get(location);
+		return sequenceNo.get(location);
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class BufferedReceivingData {
 	 * @return Last sequence number used
 	 */
 	public Integer lastSequenceNoForCore(HasCoreLocation location) {
-		return this.sequenceNo.get(location.asCoreLocation());
+		return sequenceNo.get(location.asCoreLocation());
 	}
 
 	/**
@@ -231,9 +231,8 @@ public class BufferedReceivingData {
 	 */
 	public void storeDataInRegionBuffer(RegionLocation location,
 			ByteBuffer data) throws StorageException {
-		storage.storeRegionContents(
-				new Region(location.asCoreLocation(), location.region, 0, 0),
-				data);
+		storage.appendRecordingContents(
+				new Region(location, location.region, 0, 0), data);
 	}
 
 	/**
