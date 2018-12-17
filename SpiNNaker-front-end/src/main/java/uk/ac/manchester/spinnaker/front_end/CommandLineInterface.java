@@ -90,14 +90,11 @@ public final class CommandLineInterface {
 		}
 		try {
 			switch (args[0]) {
-			case "upload":
-				DataReceiverRunner.main(args);
-				System.exit(0);
 			case "gather":
 				DataGatherRunner.main(args);
 				System.exit(0);
 			case "download":
-				download(args);
+				DataReceiverRunner.main(args);
 				System.exit(0);
 			case "dse":
 				dseRun(args);
@@ -107,7 +104,7 @@ public final class CommandLineInterface {
 				System.exit(0);
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-                    args[0], "dse, gather, or version");
+                    args[0], "download, dse, gather, or version");
 				System.exit(1);
 			}
 		} catch (Throwable t) {
@@ -134,13 +131,6 @@ public final class CommandLineInterface {
 		HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine);
 		dseExec.loadAll(new DSEDatabaseEngine(db));
-	}
-
-	private static void download(String[] args) throws Exception {
-		// Shim
-		String[] real = new String[args.length - 1];
-		System.arraycopy(args, 1, real, 0, real.length);
-		DataOut.main(real);
 	}
 
 	private static Machine readMachineJson(String filename)
