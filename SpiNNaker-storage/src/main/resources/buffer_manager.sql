@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS region(
 	core_id INTEGER NOT NULL
 		REFERENCES core(core_id) ON DELETE RESTRICT,
 	local_region_index INTEGER NOT NULL,
-	address INTEGER NOT NULL,
+	address INTEGER,
 	content BLOB NOT NULL DEFAULT X'',
 	fetches INTEGER NOT NULL DEFAULT 0,
 	append_time INTEGER);
