@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
@@ -25,8 +26,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-
-import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,7 +50,6 @@ public final class CommandLineInterface {
 	private CommandLineInterface() {
 	}
 
-	private static final Logger log = getLogger(CommandLineInterface.class);
 	private static final String JAR_FILE;
 	@SuppressWarnings("unused")
 	private static final String MAIN_CLASS;
@@ -59,12 +57,13 @@ public final class CommandLineInterface {
 	private static final ObjectMapper MAPPER = createMapper();
 
 	static {
+		Class<?> cls = CommandLineInterface.class;
 		Properties prop = new Properties();
 		try {
-			prop.load(CommandLineInterface.class.getClassLoader()
+			prop.load(cls.getClassLoader()
 					.getResourceAsStream("command-line.properties"));
 		} catch (IOException e) {
-			log.error("failed to read properties", e);
+			getLogger(cls).error("failed to read properties", e);
 			System.exit(2);
 		}
 		JAR_FILE = prop.getProperty("jar");
@@ -95,6 +94,7 @@ public final class CommandLineInterface {
 							+ "<runFolder>\"\n", JAR_FILE);
 					System.exit(1);
 				}
+				setLoggerDir(args[THIRD]);
 				DataReceiverRunner.gather(args[1], args[2], args[THIRD]);
 				System.exit(0);
 			case "download":
@@ -104,6 +104,7 @@ public final class CommandLineInterface {
 							+ "<runFolder>\"\n", JAR_FILE);
 					System.exit(1);
 				}
+				setLoggerDir(args[THIRD]);
 				DataReceiverRunner.receive(args[1], args[2], args[THIRD]);
 				System.exit(0);
 			case "dse":
@@ -125,7 +126,6 @@ public final class CommandLineInterface {
 
 	private static final int NUM_DOWNLOAD_ARGS = 4;
 	private static final int THIRD = 3;
-
 	private static final int NUM_DSE_ARGS = 3;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
 
@@ -138,6 +138,7 @@ public final class CommandLineInterface {
 					+ "dse <machineFile> <runFolder>\"\n", JAR_FILE);
 			System.exit(1);
 		}
+		setLoggerDir(args[2]);
 		Machine machine = readMachineJson(args[1]);
 		File db = new File(args[2], DSE_DB_FILE);
 

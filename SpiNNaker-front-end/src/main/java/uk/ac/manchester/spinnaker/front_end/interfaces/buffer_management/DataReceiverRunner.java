@@ -24,8 +24,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import org.slf4j.Logger;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,7 +46,6 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public final class DataReceiverRunner {
-	private static final Logger log = getLogger(DataReceiverRunner.class);
 	private static final ObjectMapper MAPPER = MapperFactory.createMapper();
 	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
@@ -123,7 +120,7 @@ public final class DataReceiverRunner {
 			runner.addTask(g);
 		}
 		int misses = runner.waitForTasksToFinish();
-		log.info("total misses: " + misses);
+		getLogger(DataReceiverRunner.class).info("total misses: " + misses);
 	}
 
 	private static Machine getMachine(String filename)
