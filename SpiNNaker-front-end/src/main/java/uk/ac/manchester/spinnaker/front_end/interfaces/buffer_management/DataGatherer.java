@@ -104,17 +104,19 @@ public abstract class DataGatherer {
 	 * @param transceiver
 	 *            How to talk to the SpiNNaker system via SCP. Where the system
 	 *            is located.
+	 * @param machine
+	 *            The description of the SpiNNaker machine being talked to.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DataGatherer(Transceiver transceiver)
+	public DataGatherer(Transceiver transceiver, Machine machine)
 			throws IOException, ProcessException {
 		this.txrx = transceiver;
+		this.machine = machine;
 		this.pool = newFixedThreadPool(POOL_SIZE);
-		this.machine = txrx.getMachineDetails();
 		this.missCount = 0;
         this.caught = null;
 	}

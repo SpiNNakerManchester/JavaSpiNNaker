@@ -115,7 +115,8 @@ public final class DataReceiverRunner {
 				machine.version);
 		BufferManagerStorage database = getDatabase(runFolder);
 
-		DataGatherer runner = new DirectDataGatherer(trans, database);
+		DataGatherer runner =
+				new RecordingRegionDataGatherer(trans, machine, database);
 		for (Gather g : gathers) {
 			runner.addTask(g);
 		}

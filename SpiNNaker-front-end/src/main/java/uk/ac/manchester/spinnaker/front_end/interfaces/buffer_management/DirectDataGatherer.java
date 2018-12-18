@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -35,6 +36,9 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * A data gatherer that can fetch DSE regions.
  *
  * @author Donal Fellows
+ * @deprecated This class uses an unimplemented API call that needs to be fixed
+ *             but hasn't been yet.
+ * @see RecordingRegionDataGatherer
  */
 public class DirectDataGatherer extends DataGatherer {
 	/** The number of memory regions in the DSE model. */
@@ -55,16 +59,18 @@ public class DirectDataGatherer extends DataGatherer {
 	 *            How to talk to the machine.
 	 * @param database
 	 *            Where to put the retrieved data.
+	 * @param machine
+	 *            The description of the machine being talked to.
 	 * @throws ProcessException
 	 *             If we can't discover the machine details due to SpiNNaker
 	 *             rejecting messages
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DirectDataGatherer(Transceiver transceiver,
+	public DirectDataGatherer(Transceiver transceiver, Machine machine,
 			BufferManagerStorage database)
 			throws IOException, ProcessException {
-		super(transceiver);
+		super(transceiver, machine);
 		this.txrx = transceiver;
 		this.database = database;
 		coreTableCache = new HashMap<>();

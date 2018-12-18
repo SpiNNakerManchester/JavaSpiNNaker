@@ -26,6 +26,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -46,6 +47,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @param transceiver
 	 *            How to talk to the machine.
+	 * @param machine
+	 *            The description of the machine talked to.
 	 * @param database
 	 *            Where to put the retrieved data.
 	 * @throws ProcessException
@@ -55,9 +58,9 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *             If we can't discover the machine details due to I/O problems
 	 */
 	public RecordingRegionDataGatherer(Transceiver transceiver,
-			BufferManagerStorage database)
+			Machine machine, BufferManagerStorage database)
 			throws IOException, ProcessException {
-		super(transceiver);
+		super(transceiver, machine);
 		this.txrx = transceiver;
 		this.database = database;
 	}
