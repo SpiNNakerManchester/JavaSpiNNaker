@@ -21,7 +21,9 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -121,13 +123,14 @@ public class DirectDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int regionID)
+	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
 		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.vertex);
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return new Region(placement, regionID, b.get(regionID), size);
+		return Collections.singletonList(
+				new Region(placement, regionID, b.get(regionID), size));
 	}
 
 	@Override

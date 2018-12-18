@@ -17,12 +17,15 @@
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import static java.lang.Integer.toHexString;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -177,15 +180,15 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		/** Size of this structure in bytes. */
 		static final int SIZE = 24;
 		/** The start buffering area memory address. (32 bits) */
-		int start;
+		long start;
 		/** The address where data was last written. (32 bits) */
-		int currentWrite;
+		long currentWrite;
 		/** The address where the DMA write got up to. (32 bits) */
-		int dmaCurrentWrite;
+		long dmaCurrentWrite;
 		/** The address where data was last read. (32 bits) */
-		int currentRead;
+		long currentRead;
 		/** The address of first byte after the buffer. (32 bits) */
-		int end;
+		long end;
 		/** The ID of the region. (8 bits) */
 		byte regionId;
 		/** True if the region overflowed during the simulation. (8 bits) */
@@ -201,11 +204,11 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		 *            bytes long.
 		 */
 		ChannelBufferState(ByteBuffer buffer) {
-			start = buffer.getInt();
-			currentWrite = buffer.getInt();
-			dmaCurrentWrite = buffer.getInt();
-			currentRead = buffer.getInt();
-			end = buffer.getInt();
+			start = Integer.toUnsignedLong(buffer.getInt());
+			currentWrite = Integer.toUnsignedLong(buffer.getInt());
+			dmaCurrentWrite = Integer.toUnsignedLong(buffer.getInt());
+			currentRead = Integer.toUnsignedLong(buffer.getInt());
+			end = Integer.toUnsignedLong(buffer.getInt());
 			regionId = buffer.get();
 			missingInfo = (buffer.get() != 0);
 			lastBufferOperationWasWrite = (buffer.get() != 0);
@@ -216,12 +219,14 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		public String toString() {
 			StringBuilder sb = new StringBuilder("Channel #").append(regionId)
 					.append(":{");
-			sb.append("start0x:").append(toHexString(start));
-			sb.append(",currentWrite:0x").append(toHexString(currentWrite));
-			sb.append(",dmaCurrentWrite:0x")
-					.append(toHexString(dmaCurrentWrite));
-			sb.append(",currentRead:0x").append(toHexString(currentRead));
-			sb.append(",end:0x").append(toHexString(end));
+			sb.append("start:0x").append(Long.toHexString(start))
+					.append(",currentWrite:0x")
+					.append(Long.toHexString(currentWrite))
+					.append(",dmaCurrentWrite:0x")
+					.append(Long.toHexString(dmaCurrentWrite))
+					.append(",currentRead:0x")
+					.append(Long.toHexString(currentRead)).append(",end:0x")
+					.append(Long.toHexString(end));
 			if (missingInfo) {
 				sb.append(",missingInfo");
 			}
@@ -241,7 +246,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		RecordingRegionsDescriptor rrd = descriptors.get(chip);
 		if (rrd == null) {
 			rrd = new RecordingRegionsDescriptor(chip, baseAddress);
-			log.info("got recording region info {}", rrd);
+			log.debug("got recording region info {}", rrd);
 			descriptors.put(chip, rrd);
 		}
 		return rrd;
@@ -259,21 +264,45 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 	private static class RecordingRegion extends Region {
 		RecordingRegion(HasCoreLocation core, int regionIndex,
-				ChannelBufferState state) {
-			super(core, regionIndex, state.start,
-					state.currentWrite - state.start);
+				long from, long to) {
+			super(core, regionIndex, (int) from, (int) (to - from));
+		}
+
+		@Override
+		public String toString() {
+			return "RegionRead(@" + core + ":" + regionIndex + ")=0x"
+					+ toHexString(startAddress) + "[0x" + toHexString(size)
+					+ "]";
 		}
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int recordingRegionIndex)
+	protected List<Region> getRegion(Placement placement, int index)
 			throws IOException, ProcessException, StorageException {
-		ChannelBufferState state = getState(placement, recordingRegionIndex);
+		ChannelBufferState state = getState(placement, index);
 		if (log.isInfoEnabled()) {
 			log.info("got state of {}:{} as {}", placement.asCoreLocation(),
-					recordingRegionIndex, state);
+					index, state);
 		}
-		return new RecordingRegion(placement, recordingRegionIndex, state);
+		List<Region> regionPieces = new ArrayList<>(2);
+		if (state.currentRead < state.currentWrite) {
+			regionPieces.add(new RecordingRegion(placement, index,
+					state.currentRead, state.currentWrite));
+		} else if (state.currentRead > state.currentWrite
+				|| state.lastBufferOperationWasWrite) {
+			regionPieces.add(new RecordingRegion(placement, index,
+					state.currentRead, state.end));
+			regionPieces.add(new RecordingRegion(placement, index, state.start,
+					state.currentWrite));
+		}
+		// Remove any zero-sized reads
+		regionPieces =
+				regionPieces.stream().filter(r -> r.size > 0).collect(toList());
+		if (log.isInfoEnabled()) {
+			log.info("generated reads for {}:{} :: {}",
+					placement.asCoreLocation(), index, regionPieces);
+		}
+		return regionPieces;
 	}
 
 	@Override

@@ -37,6 +37,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -250,12 +251,16 @@ public abstract class DataGatherer {
 					for (Placement place : mon.getPlacements()) {
 						for (int regionID : place.getVertex()
 								.getRecordedRegionIds()) {
-							Region r = getRegion(place, regionID);
-							if (r.size < SMALL_RETRIEVE_THRESHOLD) {
-								smallRetrieves.add(r);
+							List<Region> rs = getRegion(place, regionID);
+							if (rs.stream().allMatch(
+									r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
+								smallRetrieves.addAll(rs);
 							} else {
-								Downloader d = new Downloader(conn, messQueue);
-								storeData(r, d.doDownload(place, r));
+								for (Region r : rs) {
+									Downloader d =
+											new Downloader(conn, messQueue);
+									storeData(r, d.doDownload(place, r));
+								}
 							}
 						}
 					}
@@ -298,7 +303,7 @@ public abstract class DataGatherer {
 	 *            The placement information.
 	 * @param regionID
 	 *            The region ID.
-	 * @return The region descriptor.
+	 * @return The region descriptors that are the actual download instructions.
 	 * @throws IOException
 	 *             If communication fails.
 	 * @throws ProcessException
@@ -306,7 +311,8 @@ public abstract class DataGatherer {
 	 * @throws StorageException
 	 *             If the database doesn't like something.
 	 */
-	protected abstract Region getRegion(Placement placement, int regionID)
+	protected abstract List<Region> getRegion(Placement placement,
+			int regionID)
 			throws IOException, ProcessException, StorageException;
 
 	/**
