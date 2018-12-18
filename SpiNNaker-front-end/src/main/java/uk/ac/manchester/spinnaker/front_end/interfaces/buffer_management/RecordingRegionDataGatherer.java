@@ -79,38 +79,62 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	static final class RecordingRegionsDescriptor {
+	final class RecordingRegionsDescriptor {
 		/** Number of recording regions. */
-		int numRegions;
+		final int numRegions;
 		/** Tag for sending buffered output. */
-		int tag;
+		final int tag;
 		/** Destination for sending buffered output. */
-		int tagDestination;
+		final int tagDestination;
 		/** SDP port for receiving buffering messages. */
-		int sdpPort;
+		final int sdpPort;
 		/** Minimum size of data to start buffering out at. */
-		int bufferSizeBeforeRequest;
+		final int bufferSizeBeforeRequest;
 		/** Minimum interval between buffering out actions. */
-		int timeBetweenTriggers;
+		final int timeBetweenTriggers;
 		/** Last sequence number used when buffering out. */
-		int lastSequenceNumber;
+		final int lastSequenceNumber;
 		/**
 		 * Array of addresses of recording regions. This actually points to the
 		 * channel's buffer state. Size, {@link #numRegions} entries.
 		 */
-		int[] regionPointers;
+		final int[] regionPointers;
 		/**
 		 * Array of sizes of recording regions. Size, {@link #numRegions}
 		 * entries.
 		 */
-		int[] regionSizes;
+		final int[] regionSizes;
+		private final ChipLocation chip;
+		private final int addr;
 
-		private RecordingRegionsDescriptor(int numRegions, ByteBuffer buffer) {
-			this.numRegions = numRegions;
+		/**
+		 * Get an instance of this descriptor from SpiNNaker.
+		 *
+		 * @param chip
+		 *            The chip to read from.
+		 * @param address
+		 *            Where on the chip to read the region data from.
+		 * @throws IOException
+		 *             If I/O fails.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 */
+		RecordingRegionsDescriptor(HasChipLocation chip, int address)
+				throws IOException, ProcessException {
+			// Read the descriptor from SpiNNaker
+			int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
+			int size = WORD_SIZE * (REGION_POINTERS_START + 2 * nr);
+			ByteBuffer buffer = txrx.readMemory(chip, address, size);
+			this.chip = chip.asChipLocation();
+			this.addr = address;
+
+			// Unpack the contents of the descriptor
+			numRegions = buffer.getInt();
 			tag = buffer.getInt();
 			tagDestination = buffer.getInt();
 			sdpPort = buffer.getInt();
 			bufferSizeBeforeRequest = buffer.getInt();
+			timeBetweenTriggers = buffer.getInt();
 			lastSequenceNumber = buffer.getInt();
 			regionPointers = new int[numRegions];
 			buffer.asIntBuffer().get(regionPointers);
@@ -120,46 +144,24 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 		private static final int REGION_POINTERS_START = 7;
 
-		/**
-		 * Get an instance of this descriptor from SpiNNaker.
-		 *
-		 * @param txrx
-		 *            The transceiver to use to do the reading.
-		 * @param chip
-		 *            The chip to read from.
-		 * @param address
-		 *            Where on the chip to read the region data from.
-		 * @return The descriptor. Not validated.
-		 * @throws IOException
-		 *             If I/O fails.
-		 * @throws ProcessException
-		 *             If SpiNNaker rejects a message.
-		 */
-		static RecordingRegionsDescriptor get(Transceiver txrx,
-				HasChipLocation chip, int address)
-				throws IOException, ProcessException {
-			int numRegions = txrx.readMemory(chip, address, WORD_SIZE).getInt();
-			int size = WORD_SIZE * (REGION_POINTERS_START + 2 * numRegions);
-			return new RecordingRegionsDescriptor(numRegions, txrx
-					.readMemory(chip, address + WORD_SIZE, size - WORD_SIZE));
-		}
-
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("RecordingRegions:{");
+			StringBuilder sb = new StringBuilder("RecordingRegions:")
+					.append(chip).append("@0x").append(toHexString(addr))
+					.append("{");
 			sb.append("#").append(numRegions);
-			sb.append(",tag=").append(toHexString(tag));
-			sb.append(",dst=").append(toHexString(tagDestination));
-			sb.append(",sdp=").append(toHexString(sdpPort));
-			sb.append(",min=").append(toHexString(bufferSizeBeforeRequest));
-			sb.append(",trg=").append(toHexString(timeBetweenTriggers));
-			sb.append(",seq=").append(toHexString(lastSequenceNumber));
-			sb.append("}:[");
+			sb.append(",tag=").append(tag);
+			sb.append(",dst=0x").append(toHexString(tagDestination));
+			sb.append(",sdp=0x").append(toHexString(sdpPort));
+			sb.append(",min=0x").append(toHexString(bufferSizeBeforeRequest));
+			sb.append(",trg=").append(timeBetweenTriggers);
+			sb.append(",seq=").append(lastSequenceNumber);
+			sb.append("}:[0x");
 			String sep = "";
 			for (int i = 0; i < numRegions; i++) {
 				sb.append(sep).append(toHexString(regionPointers[i]))
-						.append(":").append(toHexString(regionSizes[i]));
-				sep = ", ";
+						.append(":0x").append(toHexString(regionSizes[i]));
+				sep = ", 0x";
 			}
 			return sb.append("]").toString();
 		}
@@ -214,11 +216,12 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		public String toString() {
 			StringBuilder sb = new StringBuilder("Channel #").append(regionId)
 					.append(":{");
-			sb.append("start:").append(toHexString(start));
-			sb.append(",currentWrite:").append(toHexString(currentWrite));
-			sb.append(",dmaCurrentWrite:").append(toHexString(dmaCurrentWrite));
-			sb.append(",currentRead:").append(toHexString(currentRead));
-			sb.append(",end:").append(toHexString(end));
+			sb.append("start0x:").append(toHexString(start));
+			sb.append(",currentWrite:0x").append(toHexString(currentWrite));
+			sb.append(",dmaCurrentWrite:0x")
+					.append(toHexString(dmaCurrentWrite));
+			sb.append(",currentRead:0x").append(toHexString(currentRead));
+			sb.append(",end:0x").append(toHexString(end));
 			if (missingInfo) {
 				sb.append(",missingInfo");
 			}
@@ -237,9 +240,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			throws IOException, ProcessException {
 		RecordingRegionsDescriptor rrd = descriptors.get(chip);
 		if (rrd == null) {
-			rrd = RecordingRegionsDescriptor.get(txrx, chip, baseAddress);
-			log.info("got recording region info for {} from {}: {}", chip,
-					baseAddress, rrd);
+			rrd = new RecordingRegionsDescriptor(chip, baseAddress);
+			log.info("got recording region info {}", rrd);
 			descriptors.put(chip, rrd);
 		}
 		return rrd;
