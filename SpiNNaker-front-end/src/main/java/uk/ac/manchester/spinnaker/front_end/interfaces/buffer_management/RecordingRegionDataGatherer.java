@@ -16,12 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import static java.lang.Integer.toHexString;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -39,6 +43,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public class RecordingRegionDataGatherer extends DataGatherer {
+	protected static final Logger log =
+			getLogger(RecordingRegionDataGatherer.class);
 	private final Transceiver txrx;
 	private final BufferManagerStorage database;
 
@@ -57,8 +63,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public RecordingRegionDataGatherer(Transceiver transceiver,
-			Machine machine, BufferManagerStorage database)
+	public RecordingRegionDataGatherer(Transceiver transceiver, Machine machine,
+			BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver, machine);
 		this.txrx = transceiver;
@@ -137,6 +143,26 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			return new RecordingRegionsDescriptor(numRegions, txrx
 					.readMemory(chip, address + WORD_SIZE, size - WORD_SIZE));
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("RecordingRegions:{");
+			sb.append("#").append(numRegions);
+			sb.append(",tag=").append(toHexString(tag));
+			sb.append(",dst=").append(toHexString(tagDestination));
+			sb.append(",sdp=").append(toHexString(sdpPort));
+			sb.append(",min=").append(toHexString(bufferSizeBeforeRequest));
+			sb.append(",trg=").append(toHexString(timeBetweenTriggers));
+			sb.append(",seq=").append(toHexString(lastSequenceNumber));
+			sb.append("}:[");
+			String sep = "";
+			for (int i = 0; i < numRegions; i++) {
+				sb.append(sep).append(toHexString(regionPointers[i]))
+						.append(":").append(toHexString(regionSizes[i]));
+				sep = ", ";
+			}
+			return sb.append("]").toString();
+		}
 	}
 
 	/**
@@ -145,7 +171,6 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	@SuppressWarnings("unused")
 	private static class ChannelBufferState {
 		/** Size of this structure in bytes. */
 		static final int SIZE = 24;
@@ -184,6 +209,24 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			lastBufferOperationWasWrite = (buffer.get() != 0);
 			buffer.get(); // padding
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("Channel #").append(regionId)
+					.append(":{");
+			sb.append("start:").append(toHexString(start));
+			sb.append(",currentWrite:").append(toHexString(currentWrite));
+			sb.append(",dmaCurrentWrite:").append(toHexString(dmaCurrentWrite));
+			sb.append(",currentRead:").append(toHexString(currentRead));
+			sb.append(",end:").append(toHexString(end));
+			if (missingInfo) {
+				sb.append(",missingInfo");
+			}
+			if (lastBufferOperationWasWrite) {
+				sb.append(",lastWasWrite");
+			}
+			return sb.append("}").toString();
+		}
 	}
 
 	private Map<ChipLocation, RecordingRegionsDescriptor> descriptors =
@@ -195,6 +238,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		RecordingRegionsDescriptor rrd = descriptors.get(chip);
 		if (rrd == null) {
 			rrd = RecordingRegionsDescriptor.get(txrx, chip, baseAddress);
+			log.info("got recording region info for {} from {}: {}", chip,
+					baseAddress, rrd);
 			descriptors.put(chip, rrd);
 		}
 		return rrd;
@@ -222,12 +267,18 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	protected Region getRegion(Placement placement, int recordingRegionIndex)
 			throws IOException, ProcessException, StorageException {
 		ChannelBufferState state = getState(placement, recordingRegionIndex);
+		if (log.isInfoEnabled()) {
+			log.info("got state of {}:{} as {}", placement.asCoreLocation(),
+					recordingRegionIndex, state);
+		}
 		return new RecordingRegion(placement, recordingRegionIndex, state);
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
+		log.info("storing region data for {}:{} from {}:{} as {} bytes", r.core,
+				r.regionIndex, r.startAddress, r.size, data.remaining());
 		database.appendRecordingContents(r, data);
 	}
 }
