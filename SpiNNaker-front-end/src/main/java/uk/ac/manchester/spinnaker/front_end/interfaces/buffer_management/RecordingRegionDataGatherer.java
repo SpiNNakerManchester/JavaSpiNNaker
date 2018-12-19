@@ -317,6 +317,11 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
+		if (data == null) {
+			log.warn("failed to download data for {}:{} from {}:{}", r.core,
+					r.regionIndex, r.startAddress, r.size);
+			return;
+		}
 		log.info("storing region data for {}:{} from {}:{} as {} bytes", r.core,
 				r.regionIndex, r.startAddress, r.size, data.remaining());
 		database.appendRecordingContents(r, data);
