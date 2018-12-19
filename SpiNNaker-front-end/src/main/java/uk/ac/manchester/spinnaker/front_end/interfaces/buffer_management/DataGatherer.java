@@ -190,6 +190,8 @@ public abstract class DataGatherer {
 		} catch (IOException | ProcessException | StorageException
 				| RuntimeException e) {
 			throw e;
+		} catch (FullFailureException e) {
+			System.exit(1);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		}
@@ -295,13 +297,17 @@ public abstract class DataGatherer {
 		}
 	}
 
+	private class FullFailureException extends Exception {
+		private static final long serialVersionUID = 1L;
+	}
+
 	/**
 	 * Do all the downloads for a board.
 	 *
 	 * @param gatherer
 	 *            The particular gatherer that identifies a board.
 	 */
-	private void downloadBoard(Gather gatherer) {
+	private void downloadBoard(Gather gatherer)  {
 		try {
 			List<Region> smallRetrieves = new ArrayList<>();
 			ChipLocation gathererLocation = gatherer.asChipLocation();
@@ -323,7 +329,7 @@ public abstract class DataGatherer {
 				}
 			}
 		} catch (IOException | ProcessException | StorageException
-				| RuntimeException e) {
+				| RuntimeException | FullFailureException e) {
 			log.warn("problem when downloading a board's data", e);
 			this.caught = e;
 		}
@@ -349,11 +355,13 @@ public abstract class DataGatherer {
 	 *             If IO on the network fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws FullFailureException
+	 *             If things time out unrecoverably
 	 */
 	private void doDownloads(Collection<Monitor> monitors,
 			List<Region> smallRetrieves, GatherDownloadConnection conn,
 			BlockingQueue<ByteBuffer> messQueue)
-			throws IOException, ProcessException, StorageException {
+			throws IOException, ProcessException, StorageException, FullFailureException {
 		Downloader d = null;
 		for (Monitor mon : monitors) {
 			for (Placement place : mon.getPlacements()) {
@@ -390,11 +398,14 @@ public abstract class DataGatherer {
 	 *             If IO on the network fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws FullFailureException
+	 *             If things time out unrecoverably
 	 */
 	private Downloader handleOneRecordingRegion(GatherDownloadConnection conn,
 			BlockingQueue<ByteBuffer> messQueue, List<Region> smallRetrieves,
 			Downloader d, Placement place, int regionID)
-			throws StorageException, IOException, ProcessException {
+			throws StorageException, IOException, ProcessException,
+			FullFailureException {
 		List<Region> rs = getRegion(place, regionID);
 		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
 			smallRetrieves.addAll(rs);
@@ -532,12 +543,15 @@ public abstract class DataGatherer {
 		 *            Where to download from.
 		 * @param region
 		 *            What to download.
-		 * @return The downloaded data.
+		 * @return The downloaded data, or {@code null} if an unrecoverable
+		 *         error occurred.
 		 * @throws IOException
 		 *             If anything unexpected goes wrong.
+		 * @throws FullFailureException
+		 *             If a download fails unrecoverably
 		 */
 		ByteBuffer doDownload(Placement extraMonitor, Region region)
-				throws IOException {
+				throws IOException, FullFailureException {
 			this.extraMonitor = extraMonitor.asCoreLocation();
 			dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size,
@@ -549,14 +563,17 @@ public abstract class DataGatherer {
 			try {
 				do {
 					processOnePacket();
-				} while (!finished);
-				return dataReceiver;
+				} while (!finished && dataReceiver != null);
 			} catch (IOException e) {
 				throw e;
 			} catch (Exception e) {
 				finished = true;
+				dataReceiver = null;
 			}
-			return null;
+			if (dataReceiver != null) {
+				return dataReceiver;
+			}
+			throw new FullFailureException();
 		}
 
 		/**
@@ -566,9 +583,11 @@ public abstract class DataGatherer {
 		 *             If packet retransmission requesting fails.
 		 * @throws InterruptedException
 		 *             If any wait is interrupted.
+		 * @throws FullFailureException
+		 *             If we have a full failure.
 		 */
 		private void processOnePacket()
-				throws IOException, InterruptedException {
+				throws IOException, InterruptedException, FullFailureException {
 			ByteBuffer p =
 					queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
 			if (p != null && p.hasRemaining()) {
@@ -631,11 +650,14 @@ public abstract class DataGatherer {
 		 *             causes an error.
 		 * @throws InterruptedException
 		 *             If a wait is interrupted (unexpectedly)
+		 * @throws FullFailureException
+		 *             If we have a full failure.
 		 */
-		private void processTimeout() throws IOException, InterruptedException {
+		private void processTimeout()
+				throws IOException, InterruptedException, FullFailureException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
-				finished = true;
+				throw new FullFailureException();
 			} else if (!finished) {
 				// retransmit missing packets
 				log.debug("doing reinjection");
