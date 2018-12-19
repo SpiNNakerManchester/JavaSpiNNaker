@@ -302,6 +302,15 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			log.info("generated reads for {}:{} :: {}",
 					placement.asCoreLocation(), index, regionPieces);
 		}
+		/*
+		 * But if there are NO reads, directly ask the database to store data so
+		 * that it has definitely a record for the current region.
+		 */
+		if (regionPieces.isEmpty()) {
+			database.appendRecordingContents(
+					new RecordingRegion(placement, index, state.start, 0),
+					new byte[0]);
+		}
 		return regionPieces;
 	}
 

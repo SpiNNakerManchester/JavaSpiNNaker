@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newFixedThreadPool;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.computeNumberOfPackets;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createFirst;
@@ -28,10 +28,12 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -44,7 +46,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
@@ -64,31 +65,42 @@ public abstract class DataGatherer {
 	 * Logger for the gatherer.
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
-
-	private final Transceiver txrx;
-	private final Machine machine;
-	private final ExecutorService pool;
-	private int missCount;
-    private Exception caught;
-
-	private static final int POOL_SIZE = 1; // TODO
+	/**
+	 * The number of parallel downloads that we do. The size of the thread pool
+	 * used to parallelise them.
+	 */
+	public static final int PARALLEL_SIZE = 1; // TODO
+	/**
+	 * Retrieves of data that is less than this many bytes are done via a normal
+	 * SCAMP memory read.
+	 */
+	public static final int SMALL_RETRIEVE_THRESHOLD = 256; // TODO
+	/**
+	 * Maximum number of messages in the message queue. Per parallel download.
+	 */
 	private static final int QUEUE_CAPACITY = 1024;
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
-	/** The time delay between sending each message. */
-	private static final int TIMEOUT_PER_SENDING_IN_MILLISECONDS = 10;
-	/** The timeout when receiving message. */
-	private static final int TIMEOUT_PER_RECEIVE_IN_MILLISECONDS = 250;
-	/** What is the maximum number of <i>words</i> in a packet? */
+	/**
+	 * The time delay between sending each message. In
+	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 */
+	private static final int DELAY_PER_SEND = 10;
+	/**
+	 * The timeout when receiving a message. In
+	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 */
+	private static final int TIMEOUT_PER_RECEIVE = 250;
+	/** What is the maximum number of <em>words</em> in a packet? */
 	private static final int DATA_PER_FULL_PACKET = 68;
 	/**
-	 * What is the maximum number of payload <i>words</i> in a packet that also
-	 * has a sequence number?
+	 * What is the maximum number of payload <em>words</em> in a packet that
+	 * also has a sequence number?
 	 */
 	private static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
 			DATA_PER_FULL_PACKET - 1;
 	/** How many bytes for the end-flag? */
-	private static final int END_FLAG_SIZE_IN_BYTES = WORD_SIZE;
+	private static final int END_FLAG_SIZE = WORD_SIZE;
 	/** How many bytes for the sequence number? */
 	private static final int SEQUENCE_NUMBER_SIZE = WORD_SIZE;
 	/**
@@ -96,6 +108,21 @@ public abstract class DataGatherer {
 	 * last in a stream.
 	 */
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
+	/**
+	 * An empty buffer. Used so we don't try to read zero bytes.
+	 */
+	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
+	/**
+	 * Message used to report problems.
+	 */
+	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
+			+ "machine (please try removing firewalls)";
+
+	private final Transceiver txrx;
+	private final Machine machine;
+	private final ExecutorService pool;
+	private int missCount;
+    private Exception caught;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -116,7 +143,7 @@ public abstract class DataGatherer {
 			throws IOException, ProcessException {
 		this.txrx = transceiver;
 		this.machine = machine;
-		this.pool = newFixedThreadPool(POOL_SIZE);
+		this.pool = newFixedThreadPool(PARALLEL_SIZE);
 		this.missCount = 0;
         this.caught = null;
 	}
@@ -155,18 +182,16 @@ public abstract class DataGatherer {
 			StorageException, InterruptedException {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.DAYS);
-        if (caught != null) {
-    		if (caught != null) {
-    			try {
-    				throw caught;
-    			} catch (IOException | ProcessException | StorageException
-    					| RuntimeException e) {
-    				throw e;
-    			} catch (Exception e) {
-    				throw new RuntimeException("unexpected exception", e);
-    			}
-    		}
-        }
+		try {
+			if (caught != null) {
+				throw caught;
+			}
+		} catch (IOException | ProcessException | StorageException
+				| RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
+		}
 		return missCount;
 	}
 
@@ -214,28 +239,31 @@ public abstract class DataGatherer {
 			public void run() {
 				// While socket is open add messages to the queue
 				try {
-					do {
-						ByteBuffer recvd =
-								receive(TIMEOUT_PER_RECEIVE_IN_MILLISECONDS);
-						if (recvd != null) {
-							messQueue.put(recvd);
-							log.debug("pushed");
-						}
-					} while (!isClosed());
+					mainLoop();
 				} catch (InterruptedException e) {
 					log.error("failed to offer packet to queue");
 				} catch (IOException e) {
 					log.error("failed to receive packet", e);
 				}
 			}
+
+			private void mainLoop() throws IOException, InterruptedException {
+				do {
+					try {
+						ByteBuffer recvd =
+								receive(TIMEOUT_PER_RECEIVE);
+						if (recvd != null) {
+							messQueue.put(recvd);
+							log.debug("pushed");
+						}
+					} catch (SocketTimeoutException e) {
+						log.info("socket timed out");
+						messQueue.put(EMPTY_DATA);
+					}
+				} while (!isClosed());
+			}
 		}
 	}
-
-	/**
-	 * Retrieves of data that is less than this are done via a normal SCAMP
-	 * memory read.
-	 */
-	private static final int SMALL_RETRIEVE_THRESHOLD = 256;
 
 	private void downloadBoard(Gather g) {
 		try {
@@ -245,36 +273,58 @@ public abstract class DataGatherer {
 					gathererLocation, g.getIptag())) {
 				reconfigureIPtag(g.getIptag(), gathererLocation, conn);
 				enableBoardRouterTimeouts(gathererLocation, false);
-				BlockingQueue<ByteBuffer> messQueue = conn.launchReaderThread();
-				for (Monitor mon : g.getMonitors()) {
-					for (Placement place : mon.getPlacements()) {
-						for (int regionID : place.getVertex()
-								.getRecordedRegionIds()) {
-							List<Region> rs = getRegion(place, regionID);
-							if (rs.stream().allMatch(
-									r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
-								smallRetrieves.addAll(rs);
-							} else {
-								for (Region r : rs) {
-									Downloader d =
-											new Downloader(conn, messQueue);
-									storeData(r, d.doDownload(place, r));
-								}
-							}
-						}
-					}
-				}
+				doDownloads(g.getMonitors(), smallRetrieves, conn,
+						conn.launchReaderThread());
 			} finally {
 				enableBoardRouterTimeouts(gathererLocation, true);
 			}
 			for (Region r : smallRetrieves) {
-				storeData(r, txrx.readMemory((HasChipLocation) r.core,
-						r.startAddress, r.size));
+				if (r.size > 0) {
+					storeData(r, txrx.readMemory(r.core.asChipLocation(),
+							r.startAddress, r.size));
+				} else {
+					storeData(r, EMPTY_DATA);
+				}
 			}
 		} catch (IOException | ProcessException | StorageException
 				| RuntimeException e) {
 			log.warn("problem when downloading a board's data", e);
 			this.caught = e;
+		}
+	}
+
+	private void doDownloads(Collection<Monitor> monitors,
+			List<Region> smallRetrieves, GatherDownloadConnection conn,
+			BlockingQueue<ByteBuffer> messQueue)
+			throws IOException, ProcessException, StorageException {
+		Downloader d = null;
+		for (Monitor mon : monitors) {
+			for (Placement place : mon.getPlacements()) {
+				for (int regionID : place.getVertex().getRecordedRegionIds()) {
+					List<Region> rs = getRegion(place, regionID);
+					if (rs.stream()
+							.allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
+						smallRetrieves.addAll(rs);
+						continue;
+					}
+					for (Region r : rs) {
+						if (r.size < 1) {
+							smallRetrieves.add(r);
+							continue;
+						}
+						if (r.size < SMALL_RETRIEVE_THRESHOLD) {
+							storeData(r,
+									txrx.readMemory(r.core.asChipLocation(),
+											r.startAddress, r.size));
+						} else {
+							if (d == null) {
+								d = new Downloader(conn, messQueue);
+							}
+							storeData(r, d.doDownload(place, r));
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -327,12 +377,15 @@ public abstract class DataGatherer {
 	protected abstract void storeData(Region r, ByteBuffer data)
 			throws StorageException;
 
-	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
-			+ "machine (please try removing firewalls)";
-
+	/**
+	 * Class used to manage a download. Every instance <em>must only</em> ever
+	 * be used from one thread.
+	 *
+	 * @author Donal Fellows
+	 */
 	private class Downloader {
 		private final GatherDownloadConnection conn;
-		private final BlockingQueue<ByteBuffer> messQueue;
+		private final BlockingQueue<ByteBuffer> queue;
 
 		private boolean received;
 		private boolean finished;
@@ -342,12 +395,31 @@ public abstract class DataGatherer {
 		private ByteBuffer dataReceiver;
 		private CoreLocation extraMonitor;
 
-		Downloader(GatherDownloadConnection conn,
-				BlockingQueue<ByteBuffer> messQueue) {
-			this.conn = conn;
-			this.messQueue = messQueue;
+		/**
+		 * Create an instance.
+		 *
+		 * @param connection
+		 *            The connection used to send messages.
+		 * @param messageQueue
+		 *            The queue used to receive messages.
+		 */
+		private Downloader(GatherDownloadConnection connection,
+				BlockingQueue<ByteBuffer> messageQueue) {
+			conn = connection;
+			queue = messageQueue;
 		}
 
+		/**
+		 * Do the downloading.
+		 *
+		 * @param extraMonitor
+		 *            Where to download from.
+		 * @param region
+		 *            What to download.
+		 * @return The downloaded data.
+		 * @throws IOException
+		 *             If anything unexpected goes wrong.
+		 */
 		ByteBuffer doDownload(Placement extraMonitor, Region region)
 				throws IOException {
 			this.extraMonitor = extraMonitor.asCoreLocation();
@@ -372,22 +444,13 @@ public abstract class DataGatherer {
 		}
 
 		private void processOnePacket() throws Exception {
-			ByteBuffer p = messQueue.poll(1, SECONDS);
+			ByteBuffer p =
+					queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
 			if (p != null && p.hasRemaining()) {
 				processData(p);
 				received = true;
 			} else {
-				timeoutcount++;
-				if (timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
-					log.error(TIMEOUT_MESSAGE);
-					finished = true;
-					return;
-				}
-				if (!finished) {
-					// retransmit missing packets
-					log.debug("doing reinjection");
-					finished = retransmitMissingSequences();
-				}
+				processTimeout();
 			}
 		}
 
@@ -399,7 +462,7 @@ public abstract class DataGatherer {
 					((firstPacketElement & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 
 			if (seqNum > maxSeqNum || seqNum < 0) {
-				throw new IllegalStateException("Got insane sequence number");
+				throw new IllegalStateException("got insane sequence number");
 			}
 			int offset =
 					seqNum * DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE;
@@ -409,7 +472,7 @@ public abstract class DataGatherer {
 						"received more data than expected");
 			}
 
-			if (!isEndOfStream || data.limit() != END_FLAG_SIZE_IN_BYTES) {
+			if (!isEndOfStream || data.limit() != END_FLAG_SIZE) {
 				data.position(SEQUENCE_NUMBER_SIZE);
 				data.get(dataReceiver.array(), offset, trueDataLength - offset);
 			}
@@ -423,11 +486,22 @@ public abstract class DataGatherer {
 			}
 		}
 
+		private void processTimeout() throws IOException, InterruptedException {
+			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
+				log.error(TIMEOUT_MESSAGE);
+				finished = true;
+			} else if (!finished) {
+				// retransmit missing packets
+				log.debug("doing reinjection");
+				finished = retransmitMissingSequences();
+			}
+		}
+
 		private boolean check() {
 			int recvsize = receivedSeqNums.length();
 			if (recvsize > maxSeqNum + 1) {
 				throw new IllegalStateException(
-						"Received more data than expected");
+						"received more data than expected");
 			}
 			return recvsize == maxSeqNum + 1;
 		}
@@ -436,12 +510,11 @@ public abstract class DataGatherer {
 				throws IOException, InterruptedException {
 			/*
 			 * Calculate number of missing sequences based on difference between
-			 * expected and received
+			 * expected and received, then determine what they really are by
+			 * building a buffer of them.
 			 */
 			IntBuffer missingSeqs = IntBuffer
 					.allocate(maxSeqNum - receivedSeqNums.cardinality());
-			// Calculate missing sequence numbers and add them to "missing"
-			log.debug("max seq num of " + maxSeqNum);
 			for (int i = 0; i < maxSeqNum; i++) {
 				if (!receivedSeqNums.get(i)) {
 					missingSeqs.put(i);
@@ -467,7 +540,7 @@ public abstract class DataGatherer {
 			// Transmit missing sequences as a new SDP Packet
 			conn.sendFirstMissing(extraMonitor, missingSeqs, numPackets);
 			for (int i = 1; i < numPackets; i++) {
-				sleep(TIMEOUT_PER_SENDING_IN_MILLISECONDS);
+				sleep(DELAY_PER_SEND);
 				conn.sendNextMissing(extraMonitor, missingSeqs);
 			}
 			return false;
