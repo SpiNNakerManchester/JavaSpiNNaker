@@ -214,6 +214,16 @@ public class Transceiver extends UDPTransceiver
 	 * Where to read router diagnostic counters from.
 	 */
 	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
+	/**
+	 * How much data to pile into SCAMP before reducing the number of messages
+	 * in flight at a time.
+	 */
+	private static final int LARGE_DATA_WRITE_THRESHOLD = 16 * 1024;
+	/**
+	 * The maximum number of SCP messages to have in flight in a large data
+	 * write.
+	 */
+	private static final int LARGE_WRITE_PARALLEL_MESSAGE_COUNT = 4;
 
 	/** The version of the board being connected to. */
 	private MachineVersion version;
@@ -1267,8 +1277,8 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * The guardian of the flood lock. Also the lock around that piece of
-	 * global state.
+	 * The guardian of the flood lock. Also the lock around that piece of global
+	 * state.
 	 *
 	 * @see ExecuteLock
 	 * @author Donal Fellows
@@ -1533,50 +1543,62 @@ public class Transceiver extends UDPTransceiver
 		return bmpCall(cabinet, frame, new GetBMPVersion(board)).versionInfo;
 	}
 
+	private WriteMemoryProcess writeProcess(long size) {
+		if (size > LARGE_DATA_WRITE_THRESHOLD) {
+			/*
+			 * If there's more than a (tunable) threshold of data to move, we
+			 * limit the number of messages in flight when doing uploads so that
+			 * we don't overload SCAMP. Overloading SCAMP *really* slows things
+			 * down!
+			 */
+			return new WriteMemoryProcess(scpSelector,
+					LARGE_WRITE_PARALLEL_MESSAGE_COUNT, this);
+		}
+		return new WriteMemoryProcess(scpSelector, this);
+	}
+
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeMemory(core, baseAddress,
-				dataStream, numBytes);
+		writeProcess(numBytes).writeMemory(core, baseAddress, dataStream,
+				numBytes);
 	}
 
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeMemory(core, baseAddress,
+		writeProcess(dataFile.length()).writeMemory(core, baseAddress,
 				dataFile);
 	}
 
 	@Override
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeMemory(core, baseAddress,
-				data);
+		writeProcess(data.remaining()).writeMemory(core, baseAddress, data);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeLink(core, link,
-				baseAddress, dataStream, numBytes);
+		writeProcess(numBytes).writeLink(core, link, baseAddress, dataStream,
+				numBytes);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeLink(core, link,
-				baseAddress, dataFile);
+		writeProcess(dataFile.length()).writeLink(core, link, baseAddress,
+				dataFile);
 	}
 
 	@Override
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		new WriteMemoryProcess(scpSelector, this).writeLink(core, link,
-				baseAddress, data);
+		writeProcess(data.remaining()).writeLink(core, link, baseAddress, data);
 	}
 
 	@Override
