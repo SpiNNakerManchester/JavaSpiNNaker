@@ -157,8 +157,9 @@ public abstract class DataGatherer {
 	 *            should be downloaded.
 	 */
 	public void addTask(Gather gather) {
-        //No need to keep adding if there is already an exception
-        if (this.caught == null) {
+        // No need to keep adding if there is already an exception
+		// Note: don't care about synchronisation; it's purely an optimisation
+        if (caught == null) {
             pool.execute(() -> downloadBoard(gather));
         }
 	}
@@ -195,7 +196,22 @@ public abstract class DataGatherer {
 		return missCount;
 	}
 
+	/**
+	 * A connection for handling the Data Speed Up protocol.
+	 *
+	 * @author Donal Fellows
+	 */
 	private static class GatherDownloadConnection extends SCPConnection {
+		/**
+		 * Create an instance.
+		 *
+		 * @param location
+		 *            Where the connection is talking to.
+		 * @param iptag
+		 *            What IPtag the Data Speed Up protocol is working on.
+		 * @throws IOException
+		 *             If anything goes wrong with socket setup.
+		 */
 		GatherDownloadConnection(ChipLocation location, IPTag iptag)
 				throws IOException {
 			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
@@ -226,6 +242,11 @@ public abstract class DataGatherer {
 			return messQueue;
 		}
 
+		/**
+		 * The thread that listens for Data Speed Up messages.
+		 *
+		 * @author Donal Fellows
+		 */
 		private class ReaderThread extends Thread {
 			private final BlockingQueue<ByteBuffer> messQueue;
 
@@ -247,6 +268,15 @@ public abstract class DataGatherer {
 				}
 			}
 
+			/**
+			 * The main loop of the thread.
+			 *
+			 * @throws IOException
+			 *             If message reception fails.
+			 * @throws InterruptedException
+			 *             If the message queue is full and we get interrupted
+			 *             when trying to put a message on it. (unexpected)
+			 */
 			private void mainLoop() throws IOException, InterruptedException {
 				do {
 					try {
@@ -265,18 +295,24 @@ public abstract class DataGatherer {
 		}
 	}
 
-	private void downloadBoard(Gather g) {
+	/**
+	 * Do all the downloads for a board.
+	 *
+	 * @param gatherer
+	 *            The particular gatherer that identifies a board.
+	 */
+	private void downloadBoard(Gather gatherer) {
 		try {
 			List<Region> smallRetrieves = new ArrayList<>();
-			ChipLocation gathererLocation = g.asChipLocation();
+			ChipLocation gathererLocation = gatherer.asChipLocation();
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
-					gathererLocation, g.getIptag())) {
-				reconfigureIPtag(g.getIptag(), gathererLocation, conn);
-				enableBoardRouterTimeouts(gathererLocation, false);
-				doDownloads(g.getMonitors(), smallRetrieves, conn,
+					gathererLocation, gatherer.getIptag())) {
+				reconfigureIPtag(gatherer.getIptag(), gathererLocation, conn);
+				configureBoardRouterTimeouts(gathererLocation, false);
+				doDownloads(gatherer.getMonitors(), smallRetrieves, conn,
 						conn.launchReaderThread());
 			} finally {
-				enableBoardRouterTimeouts(gathererLocation, true);
+				configureBoardRouterTimeouts(gathererLocation, true);
 			}
 			for (Region r : smallRetrieves) {
 				if (r.size > 0) {
@@ -293,6 +329,27 @@ public abstract class DataGatherer {
 		}
 	}
 
+	/**
+	 * Process all the Data Speed Up activity for a board.
+	 *
+	 * @param monitors
+	 *            The information about what downloads are wanted for a
+	 *            particular Data Speed Up Packet Gatherer, by Extra Monitor
+	 *            Core.
+	 * @param smallRetrieves
+	 *            Where to store small retrieves for later handling (via usual
+	 *            SCP transfers).
+	 * @param conn
+	 *            The connection for talking to SpiNNaker
+	 * @param messQueue
+	 *            The queue of received Data Speed Up messages.
+	 * @throws StorageException
+	 *             If the database rejects something.
+	 * @throws IOException
+	 *             If IO on the network fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
 	private void doDownloads(Collection<Monitor> monitors,
 			List<Region> smallRetrieves, GatherDownloadConnection conn,
 			BlockingQueue<ByteBuffer> messQueue)
@@ -301,33 +358,80 @@ public abstract class DataGatherer {
 		for (Monitor mon : monitors) {
 			for (Placement place : mon.getPlacements()) {
 				for (int regionID : place.getVertex().getRecordedRegionIds()) {
-					List<Region> rs = getRegion(place, regionID);
-					if (rs.stream()
-							.allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
-						smallRetrieves.addAll(rs);
-						continue;
-					}
-					for (Region r : rs) {
-						if (r.size < 1) {
-							smallRetrieves.add(r);
-							continue;
-						}
-						if (r.size < SMALL_RETRIEVE_THRESHOLD) {
-							storeData(r,
-									txrx.readMemory(r.core.asChipLocation(),
-											r.startAddress, r.size));
-						} else {
-							if (d == null) {
-								d = new Downloader(conn, messQueue);
-							}
-							storeData(r, d.doDownload(place, r));
-						}
-					}
+					d = handleOneRecordingRegion(conn, messQueue,
+							smallRetrieves, d, place, regionID);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Process a single (recording) region.
+	 *
+	 * @param conn
+	 *            The connection for talking to SpiNNaker
+	 * @param messQueue
+	 *            The queue of received Data Speed Up messages.
+	 * @param smallRetrieves
+	 *            Where to store small retrieves for later handling (via usual
+	 *            SCP transfers).
+	 * @param d
+	 *            The downloader object. May be {@code null} if it hasn't been
+	 *            allocated yet.
+	 * @param place
+	 *            Where this region is.
+	 * @param regionID
+	 *            The ID (index) of this region.
+	 * @return The downloader object. May be {@code null} if it hasn't been
+	 *         allocated yet.
+	 * @throws StorageException
+	 *             If the database rejects something.
+	 * @throws IOException
+	 *             If IO on the network fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private Downloader handleOneRecordingRegion(GatherDownloadConnection conn,
+			BlockingQueue<ByteBuffer> messQueue, List<Region> smallRetrieves,
+			Downloader d, Placement place, int regionID)
+			throws StorageException, IOException, ProcessException {
+		List<Region> rs = getRegion(place, regionID);
+		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
+			smallRetrieves.addAll(rs);
+			return d;
+		}
+		for (Region r : rs) {
+			if (r.size < 1) {
+				smallRetrieves.add(r);
+				continue;
+			}
+			if (r.size < SMALL_RETRIEVE_THRESHOLD) {
+				storeData(r, txrx.readMemory(r.core.asChipLocation(),
+						r.startAddress, r.size));
+			} else {
+				if (d == null) {
+					d = new Downloader(conn, messQueue);
+				}
+				storeData(r, d.doDownload(place, r));
+			}
+		}
+		return d;
+	}
+
+	/**
+	 * Configure an IPTag for use in the Data Speed Up protocol.
+	 *
+	 * @param iptag
+	 *            The tag to configure
+	 * @param gathererLocation
+	 *            Where the tag is.
+	 * @param conn
+	 *            How to talk to the gatherer.
+	 * @throws IOException
+	 *             If message sending or reception fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
 	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
@@ -337,7 +441,19 @@ public abstract class DataGatherer {
 		txrx.setIPTag(tag);
 	}
 
-	private void enableBoardRouterTimeouts(ChipLocation boardEthernet,
+	/**
+	 * Configure the watchdog timers of the chips on a board.
+	 *
+	 * @param boardEthernet
+	 *            The board, by its ethernet chip.
+	 * @param state
+	 *            True to turn on the timers, false to switch them off.
+	 * @throws IOException
+	 *             If message sending or reception fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private void configureBoardRouterTimeouts(ChipLocation boardEthernet,
 			boolean state) throws IOException, ProcessException {
 		for (Chip chip : machine
 				.iterChipsOnBoard(machine.getChipAt(boardEthernet))) {
@@ -443,7 +559,15 @@ public abstract class DataGatherer {
 			return null;
 		}
 
-		private void processOnePacket() throws Exception {
+		/**
+		 * Take one message off the queue and process it.
+		 *
+		 * @throws IOException
+		 *             If packet retransmission requesting fails.
+		 * @throws InterruptedException
+		 *             If any wait is interrupted.
+		 */
+		private void processOnePacket() throws IOException, InterruptedException {
 			ByteBuffer p =
 					queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
 			if (p != null && p.hasRemaining()) {
@@ -454,6 +578,18 @@ public abstract class DataGatherer {
 			}
 		}
 
+		/**
+		 * Process a single received packet.
+		 *
+		 * @param data
+		 *            The content of the packet.
+		 * @throws IOException
+		 *             If the packet is an end-of-stream packet yet there are
+		 *             packets outstanding, and the retransmssion causes an
+		 *             error.
+		 * @throws InterruptedException
+		 *             If a wait is interrupted (unexpectedly)
+		 */
 		private void processData(ByteBuffer data)
 				throws IOException, InterruptedException {
 			int firstPacketElement = data.getInt();
@@ -478,7 +614,7 @@ public abstract class DataGatherer {
 			}
 			receivedSeqNums.set(seqNum);
 			if (isEndOfStream) {
-				if (!check()) {
+				if (!checkAllReceived()) {
 					finished |= retransmitMissingSequences();
 				} else {
 					finished = true;
@@ -486,6 +622,15 @@ public abstract class DataGatherer {
 			}
 		}
 
+		/**
+		 * Process the fact that the message queue was in a timeout state.
+		 *
+		 * @throws IOException
+		 *             If there are packets outstanding, and the retransmssion
+		 *             causes an error.
+		 * @throws InterruptedException
+		 *             If a wait is interrupted (unexpectedly)
+		 */
 		private void processTimeout() throws IOException, InterruptedException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
@@ -497,7 +642,7 @@ public abstract class DataGatherer {
 			}
 		}
 
-		private boolean check() {
+		private boolean checkAllReceived() {
 			int recvsize = receivedSeqNums.length();
 			if (recvsize > maxSeqNum + 1) {
 				throw new IllegalStateException(
@@ -506,6 +651,15 @@ public abstract class DataGatherer {
 			return recvsize == maxSeqNum + 1;
 		}
 
+		/**
+		 * Request that the extra monitor core retransmit some packets.
+		 *
+		 * @return Whether there were really any packets to retransmit.
+		 * @throws IOException
+		 *             If there are failures.
+		 * @throws InterruptedException
+		 *             If a delay is interrupted (unexpectedly)
+		 */
 		private boolean retransmitMissingSequences()
 				throws IOException, InterruptedException {
 			/*
