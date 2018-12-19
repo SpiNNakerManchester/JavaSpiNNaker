@@ -499,7 +499,7 @@ public abstract class DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	private class Downloader {
+	private final class Downloader {
 		private final GatherDownloadConnection conn;
 		private final BlockingQueue<ByteBuffer> queue;
 
@@ -567,7 +567,8 @@ public abstract class DataGatherer {
 		 * @throws InterruptedException
 		 *             If any wait is interrupted.
 		 */
-		private void processOnePacket() throws IOException, InterruptedException {
+		private void processOnePacket()
+				throws IOException, InterruptedException {
 			ByteBuffer p =
 					queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
 			if (p != null && p.hasRemaining()) {
