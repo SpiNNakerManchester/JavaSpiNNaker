@@ -29,12 +29,19 @@ import org.apache.log4j.FileAppender;
  * @author Donal Fellows
  */
 public abstract class LogControl {
-	private LogControl() {
-		// TODO Auto-generated constructor stub
-	}
-
+	private static final String DEFAULT_LOGGING_LEVEL = "INFO";
 	private static final String LOG_FILE = "jspin.log";
 	private static final String LOGGER_NAME = "tofile";
+	private static final String LOGGING_LEVEL_NAME = "logging.level";
+
+	static {
+		if (System.getProperty(LOGGING_LEVEL_NAME) == null) {
+			System.setProperty(LOGGING_LEVEL_NAME, DEFAULT_LOGGING_LEVEL);
+		}
+	}
+
+	private LogControl() {
+	}
 
 	/**
 	 * Initialise the logging subsystem to log to the correct directory.
