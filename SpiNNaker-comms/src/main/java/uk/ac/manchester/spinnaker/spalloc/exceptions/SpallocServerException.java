@@ -22,8 +22,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
  * Thrown when something went wrong on the server side that caused us to be sent
  * a message.
  */
-@SuppressWarnings("serial")
 public class SpallocServerException extends Exception {
+	private static final long serialVersionUID = 3865188016221866202L;
+
 	public SpallocServerException(String string) {
 		super(string);
 	}

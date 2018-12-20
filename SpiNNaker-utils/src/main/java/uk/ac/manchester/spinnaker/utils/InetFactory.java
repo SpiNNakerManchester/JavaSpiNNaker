@@ -85,9 +85,10 @@ public abstract class InetFactory {
 	/**
 	 * Specific Exception to show Ipv6 is not supported.
 	 */
-	@SuppressWarnings("serial")
 	public static class Inet6NotSupportedException
 			extends UnknownHostException {
+		private static final long serialVersionUID = -7430619278827122304L;
+
 		/**
 		 * Constructs a new {@code Inet6NotSupportedException} with the
 		 * specified detail message.

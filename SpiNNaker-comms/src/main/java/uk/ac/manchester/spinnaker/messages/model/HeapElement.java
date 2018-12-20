@@ -37,7 +37,7 @@ public class HeapElement {
 	 * The application ID of the block if allocated, or {@code null} if not.
 	 */
 	@SARKField("free")
-	public final Integer appID;
+	public final AppID appID;
 
 	private static final int FREE_MASK = 0xFFFF0000;
 	private static final int BYTE_MASK = 0x000000FF;
@@ -62,7 +62,7 @@ public class HeapElement {
 			appID = null;
 		} else {
 			tag = free & BYTE_MASK;
-			appID = (free >>> BYTE1_SHIFT) & BYTE_MASK;
+			appID = new AppID((free >>> BYTE1_SHIFT) & BYTE_MASK);
 		}
 		size = nextAddress - blockAddress - BLOCK_HEADER_SIZE;
 	}

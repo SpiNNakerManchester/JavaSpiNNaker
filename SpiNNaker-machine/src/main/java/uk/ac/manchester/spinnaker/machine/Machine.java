@@ -41,7 +41,6 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.Counter;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
@@ -260,7 +259,7 @@ public class Machine implements Iterable<Chip> {
                     + machineDimensions.width);
         }
         if (chip.getY() >= machineDimensions.height) {
-           throw new IllegalArgumentException("Chip y: " + chip.getY()
+            throw new IllegalArgumentException("Chip y: " + chip.getY()
                    + " is too high for a machine with height "
                    + machineDimensions.height + " " + chip);
         }
@@ -309,7 +308,7 @@ public class Machine implements Iterable<Chip> {
     }
 
     @Override
-   /**
+    /**
      * Returns an iterator over the Chips in this Machine.
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
@@ -505,7 +504,7 @@ public class Machine implements Iterable<Chip> {
         return machineDimensions.width - 1;
     }
 
-   /**
+    /**
      * The maximum possible y-coordinate of any chip in the board.
      * <p>
      * Currently no check is carried out to guarantee there is actually a
@@ -542,14 +541,6 @@ public class Machine implements Iterable<Chip> {
     public final Collection<SpinnakerLinkData> spinnakerLinks() {
         return Collections.unmodifiableCollection(spinnakerLinks.values());
     }
-
-    /**
-     * Get the a specific spynakker link if it exists.
-     *
-     * @return An unmodifiable unordered collection of
-     *      all the spinnaker links on this machine.
-     */
-
 
     /**
      * Get a SpiNNaker link with a given ID.
@@ -754,17 +745,11 @@ public class Machine implements Iterable<Chip> {
                         fpgaEnum.id, fpgaEnum.fpgaId, location,
                         fpgaEnum.direction, address);
                 Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-                byAddress = fpgaLinks.get(address);
-                if (byAddress == null) {
-                    byAddress = new HashMap<>();
-                    fpgaLinks.put(address, byAddress);
-                }
+                byAddress = fpgaLinks.computeIfAbsent(
+                    address, k -> new HashMap<>());
                 Map<Integer, FPGALinkData> byId;
-                byId = byAddress.get(fpgaEnum.fpgaId);
-                if (byId == null) {
-                    byId = new HashMap<>();
-                    byAddress.put(fpgaEnum.fpgaId, byId);
-                }
+                byId = byAddress.computeIfAbsent(
+                    fpgaEnum.fpgaId, k -> new HashMap<>());
                 byId.put(fpgaEnum.id, fpgaLinkData);
             }
         }
@@ -796,7 +781,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return A quick description of the machine.
      */
-    @SuppressWarnings("deprecation")
     public final String coresAndLinkOutputString() {
         int cores = 0;
         int everyLink = 0;
@@ -841,35 +825,7 @@ public class Machine implements Iterable<Chip> {
         };
     }
 
-    /**
-     * Reserves (if possible) one extra processor on each Chip as a monitor.
-     * <p>
-     * Chips where this was not possible are added as failedChips.
-     *
-     * @return Locations of the new monitor processors and the failed chips.
-     * @deprecated Will be removed if confirmed to never be called any more.
-     */
-    @Deprecated
-    public final CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
-        maxUserProssorsOnAChip = 0;
-        CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
-
-        this.chips.forEach((location, chip) -> {
-            @SuppressWarnings("deprecation")
-            int p = chip.reserveASystemProcessor();
-            if (p == -1) {
-                result.addFailedChip(chip);
-            } else {
-                result.addCore(location, p);
-            }
-            if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
-                maxUserProssorsOnAChip = chip.nUserProcessors();
-            }
-        });
-        return result;
-    }
-
-    /**
+     /**
      * The maximum number of user cores on any chip.
      * <p>
      * A user core is defined as one that has not been reserved as a monitor.
@@ -881,48 +837,6 @@ public class Machine implements Iterable<Chip> {
      */
     public final int maximumUserCoresOnChip() {
         return maxUserProssorsOnAChip;
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      forEach so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores1() {
-        Counter count = new Counter();
-        this.chips.forEach((location, chip) -> {
-            count.add(chip.nUserProcessors());
-        });
-        return count.get();
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      stream so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores2() {
-        return chips.values().stream().map(Chip::nUserProcessors).
-                mapToInt(Integer::intValue).sum();
-
     }
 
     /**
@@ -943,7 +857,6 @@ public class Machine implements Iterable<Chip> {
      *
      * @return The number of cores over all Chips.
      */
-    @SuppressWarnings("deprecation")
     public final int totalCores() {
         int count = 0;
         for (Chip chip :chips.values()) {
@@ -1077,7 +990,7 @@ public class Machine implements Iterable<Chip> {
      */
     public String difference(Machine other) {
         if (!machineDimensions.equals(other.machineDimensions)) {
-             return "machineDimensions " + machineDimensions
+            return "machineDimensions " + machineDimensions
                      + " != " + other.machineDimensions;
         }
         if (!chips.keySet().equals(other.chips.keySet())) {
@@ -1087,7 +1000,7 @@ public class Machine implements Iterable<Chip> {
             return "version " + version + " != " + version;
         }
         if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
-            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+            return "maxUserProcessorsOnAChip " + maxUserProssorsOnAChip
                     + " != " + other.maxUserProssorsOnAChip;
         }
         if (!boot.equals(other.boot)) {
@@ -1105,7 +1018,7 @@ public class Machine implements Iterable<Chip> {
             }
         }
         if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
-           return "ethernetConnectedChips " + ethernetConnectedChips
+            return "ethernetConnectedChips " + ethernetConnectedChips
                    + " != " + other.ethernetConnectedChips;
         }
         if (!spinnakerLinks.equals(other.spinnakerLinks)) {
@@ -1147,7 +1060,7 @@ public class Machine implements Iterable<Chip> {
             Set<ChipLocation> temp1 = new HashSet<>(setThis);
             temp1.removeAll(setThat);
             if (temp1.isEmpty()) {
-                return "No difference between chip ketsets found.";
+                return "No difference between chip key sets found.";
             }
             Set<ChipLocation> temp2 = new HashSet<>(setThat);
             temp2.removeAll(setThis);
@@ -1208,4 +1121,4 @@ public class Machine implements Iterable<Chip> {
         }
     }
 
- }
+}

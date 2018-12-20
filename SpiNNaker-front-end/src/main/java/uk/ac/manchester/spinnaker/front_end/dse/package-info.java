@@ -14,13 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.io;
-
-/** Misc constants. */
-abstract class Constants {
-	private Constants() {
-	}
-
-	/** Mask of the low 8 bits of a word. */
-	static final int BYTE_MASK = 0xFF;
-}
+/**
+ * Data specification execution interface.
+ *
+ * @author Donal Fellows
+ */
+package uk.ac.manchester.spinnaker.front_end.dse;

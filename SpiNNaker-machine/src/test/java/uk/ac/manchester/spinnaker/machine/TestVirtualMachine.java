@@ -116,14 +116,11 @@ public class TestVirtualMachine {
         assertEquals(3 * 16, links.size());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void test3Boards() {
         Machine instance = new VirtualMachine(MachineVersion.THREE_BOARD);
         assertEquals(3 * 48, instance.chips().size());
         assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
-        instance.reserveSystemProcessors();
-        assertEquals(3 * 48 * 16, instance.totalAvailableUserCores());
 
         instance.addFpgaLinks();
         ArrayList<FPGALinkData> links = new ArrayList<>();
@@ -323,13 +320,6 @@ public class TestVirtualMachine {
         Machine instance = new VirtualMachine(new MachineDimensions(252,248));
         assertEquals(60528, instance.chips().size());
         assertEquals(MachineVersion.NONE_TRIAD_LARGE, instance.version);
-    }
-
-    @Test
-    public void testCoverageHackery() {
-        assertThrows(Error.class, () -> {
-            VirtualMachine.addressFromBytes(new byte[0]);
-        });
     }
 
 }

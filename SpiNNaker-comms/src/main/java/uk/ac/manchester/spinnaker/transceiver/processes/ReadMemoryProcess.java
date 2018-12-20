@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -141,16 +141,15 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private static class DBAccumulator {
-		private final Storage storage;
-		private final HasChipLocation chip;
-		private final int region;
+		private final BufferManagerStorage storage;
+		private final BufferManagerStorage.Region region;
 		private final Map<Integer, ByteBuffer> writes;
 		private boolean done = false;
 		private StorageException exception;
 
-		DBAccumulator(Storage storage, HasChipLocation chip, int region) {
+		DBAccumulator(BufferManagerStorage storage,
+				BufferManagerStorage.Region region) {
 			this.storage = storage;
-			this.chip = chip;
 			this.region = region;
 			this.writes = new LinkedHashMap<>();
 		}
@@ -178,8 +177,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 					break;
 				}
 				try {
-					storage.appendRegionContents(chip.getScampCore(), region,
-							ent.getValue());
+					store(ent.getValue());
 				} catch (StorageException e) {
 					if (exception == null) {
 						exception = e;
@@ -187,7 +185,10 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				}
 				entries.remove();
 			}
-			return;
+		}
+
+		private void store(ByteBuffer buffer) throws StorageException {
+			storage.appendRecordingContents(region, buffer);
 		}
 
 		synchronized void finish() throws StorageException {
@@ -444,17 +445,12 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	/**
-	 * Read memory into a database.
+	 * Read memory into a database from a recording region.
 	 *
-	 * @param chip
-	 *            What chip has the memory to read from.
 	 * @param region
 	 *            What region of the chip is being read. This is used to
-	 *            organise the data within the database.
-	 * @param baseAddress
-	 *            where to read from.
-	 * @param size
-	 *            The number of bytes to read.
+	 *            organise the data within the database as well as to specify
+	 *            where to read.
 	 * @param storage
 	 *            where to write the bytes
 	 * @throws IOException
@@ -465,15 +461,18 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	public void readMemory(HasChipLocation chip, int region, int baseAddress,
-			int size, Storage storage)
+	public void readMemory(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
-		DBAccumulator a = new DBAccumulator(storage, chip, region);
+		DBAccumulator a = new DBAccumulator(storage, region);
 		int chunk;
-		for (int offset = 0, finishPoint = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
+		for (int offset = 0, finishPoint = 0; offset < region.size; offset +=
+				chunk) {
+			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = a.bookSlot(offset);
-			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
+			sendRequest(
+					new ReadMemory(region.core.asChipLocation(),
+							region.startAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
 			// Apply wait chunking
 			if (thisOffset > finishPoint + DATABASE_WAIT_CHUNK) {

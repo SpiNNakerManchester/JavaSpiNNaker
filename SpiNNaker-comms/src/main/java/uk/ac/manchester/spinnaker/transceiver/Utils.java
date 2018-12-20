@@ -37,7 +37,7 @@ public abstract class Utils {
 	/**
 	 * The size of buffer to allocate for SpiNNaker messages.
 	 */
-	public static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
+	private static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
 
 	private Utils() {
 	}

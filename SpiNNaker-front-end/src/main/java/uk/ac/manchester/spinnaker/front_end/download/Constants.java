@@ -35,7 +35,7 @@ abstract class Constants {
 	 * has a sequence number?
 	 */
 	static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
-			DATA_PER_FULL_PACKET - 1;
+        DATA_PER_FULL_PACKET - 1;
 	/** How many bytes for the end-flag? */
 	static final int END_FLAG_SIZE_IN_BYTES = WORD_SIZE;
 	/** How many bytes for the sequence number? */

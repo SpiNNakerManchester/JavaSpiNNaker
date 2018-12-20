@@ -38,12 +38,12 @@ public class TripleMapIterator<V> implements Iterator<V> {
 	/**
 	 * Creates an Iterator given a Map of Maps of Maps.
 	 *
-	 * @param outermap
+	 * @param outerMap
 	 *            A triple map with any type(s) as the keys.
 	 */
 	public TripleMapIterator(
-			Map<?, ? extends Map<?, ? extends Map<?, V>>> outermap) {
-		this(outermap.values().iterator());
+			Map<?, ? extends Map<?, ? extends Map<?, V>>> outerMap) {
+		this(outerMap.values().iterator());
 	}
 
 	/**

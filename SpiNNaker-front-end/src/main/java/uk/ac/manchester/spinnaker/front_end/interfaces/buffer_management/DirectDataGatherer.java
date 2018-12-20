@@ -21,38 +21,79 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
+/**
+ * A data gatherer that can fetch DSE regions.
+ *
+ * @author Donal Fellows
+ * @deprecated This class uses an unimplemented API call that needs to be fixed
+ *             but hasn't been yet.
+ * @see RecordingRegionDataGatherer
+ */
 public class DirectDataGatherer extends DataGatherer {
-	private final Transceiver txrx;
-	private final Storage database;
-
-	public DirectDataGatherer(Transceiver transceiver, Storage database)
-			throws IOException, ProcessException {
-		super(transceiver);
-		this.txrx = transceiver;
-		this.database = database;
-	}
-
-	private Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache =
-			new HashMap<>();
 	/** The number of memory regions in the DSE model. */
 	private static final int MAX_MEM_REGIONS = 16;
 	/** Application data magic number. */
-	static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
+	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
 	/** Version of the file produced by the DSE. */
-	static final int DSE_VERSION = 0x00010000;
+	private static final int DSE_VERSION = 0x00010000;
 
+	private final Transceiver txrx;
+	private final BufferManagerStorage database;
+	private final Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache;
+
+	/**
+	 * Create a data gatherer.
+	 *
+	 * @param transceiver
+	 *            How to talk to the machine.
+	 * @param database
+	 *            Where to put the retrieved data.
+	 * @param machine
+	 *            The description of the machine being talked to.
+	 * @throws ProcessException
+	 *             If we can't discover the machine details due to SpiNNaker
+	 *             rejecting messages
+	 * @throws IOException
+	 *             If we can't discover the machine details due to I/O problems
+	 */
+	public DirectDataGatherer(Transceiver transceiver, Machine machine,
+			BufferManagerStorage database)
+			throws IOException, ProcessException {
+		super(transceiver, machine);
+		this.txrx = transceiver;
+		this.database = database;
+		coreTableCache = new HashMap<>();
+	}
+
+	/**
+	 * Get the region location table for a chip.
+	 *
+	 * @param core
+	 *            Where to retrieve from.
+	 * @param vertex
+	 *            Information about what this means.
+	 * @return The region location table, as an integer buffer.
+	 * @throws IOException
+	 *             If IO fails
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
 			throws IOException, ProcessException {
-		// TODO get this info from the database
+		// TODO get this info from the database, if the DB knows it
 		Map<Integer, ByteBuffer> map;
 		synchronized (coreTableCache) {
 			map = coreTableCache.get(core);
@@ -82,21 +123,19 @@ public class DirectDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int regionID)
+	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
-		Region r = new Region();
-		r.core = placement.asCoreLocation();
-		r.regionID = regionID;
-		IntBuffer b = getCoreRegionTable(r.core, placement.vertex);
-		r.startAddress = b.get(regionID);
+		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
+				placement.vertex);
 		// TODO This is probably wrong!
-		r.size = b.get(regionID + 1) - r.startAddress;
-		return r;
+		int size = b.get(regionID + 1) - b.get(regionID);
+		return Collections.singletonList(
+				new Region(placement, regionID, b.get(regionID), size));
 	}
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data)
 			throws StorageException {
-		database.storeRegionContents(r.core, r.regionID, data);
+		database.storeRegionContents(r, data);
 	}
 }

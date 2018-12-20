@@ -122,12 +122,6 @@ public class TestMachine {
             assertEquals(address, c.ipAddress);
             assertEquals(SDRAM, c.sdram);
             assert(c.router.links().containsAll(LINKS));
-            for (Processor p: c.allProcessors()) {
-                assertThat(processors, hasItems(p));
-            }
-            for (Processor p: c.monitorProcessors()) {
-                assertTrue(p.isMonitor);
-            }
             for (Processor p: c.userProcessors()) {
                 assertFalse(p.isMonitor);
             }
@@ -135,8 +129,6 @@ public class TestMachine {
 
         assertEquals(450, instance.totalCores());
         assertEquals(425, instance.totalAvailableUserCores());
-        assertEquals(425, instance.totalAvailableUserCores1());
-        assertEquals(425, instance.totalAvailableUserCores2());
         assertEquals(ChipLocation.ZERO_ZERO, instance.boot);
         assertEquals(address, instance.bootChip().ipAddress );
         assertEquals(25, instance.nChips());
@@ -283,15 +275,6 @@ public class TestMachine {
         assertEquals(processors.size() - 2, instance.maximumUserCoresOnChip());
         assertEquals((processors.size() - 2 ) * 2 , instance.totalAvailableUserCores());
         assertEquals(processors.size() * 2, instance.totalCores());
-        CoreSubsetsFailedChipsTuple result = instance.reserveSystemProcessors();
-        assertEquals(processors.size() - 3, instance.maximumUserCoresOnChip());
-        assertEquals((processors.size() - 3 ) * 2 , instance.totalAvailableUserCores());
-        assertEquals(processors.size() * 2, instance.totalCores());
-        assertThat(result.failedChips, contains(chip02));
-        ArrayList<CoreLocation> cores = new ArrayList<>();
-        result.forEach(cores::add);
-        assertThat(cores, containsInAnyOrder(
-                new CoreLocation(0,0,2), new CoreLocation(0,1,2)));
     }
 
     @Test

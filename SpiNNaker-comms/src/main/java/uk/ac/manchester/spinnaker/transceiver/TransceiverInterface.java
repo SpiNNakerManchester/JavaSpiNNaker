@@ -23,7 +23,6 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
@@ -38,6 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
@@ -70,6 +70,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
@@ -84,7 +85,7 @@ import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -101,15 +102,6 @@ public interface TransceiverInterface {
 	 * core is ready for operational use. In milliseconds.
 	 */
 	int LAUNCH_DELAY = 500;
-	/**
-	 * Coordinate of a <i>default</i> destination.
-	 */
-	int DEFAULT_DESTINATION_COORDINATE = 255;
-	/**
-	 * The default destination chip.
-	 */
-	ChipLocation DEFAULT_DESTINATION = new ChipLocation(
-			DEFAULT_DESTINATION_COORDINATE, DEFAULT_DESTINATION_COORDINATE);
 	/**
 	 * A marker to indicate that no timeout applies.
 	 */
@@ -228,8 +220,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION,
-				getScampConnectionSelector());
+		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
 
 	/**
@@ -247,7 +238,7 @@ public interface TransceiverInterface {
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
-		return getScampVersion(DEFAULT_DESTINATION, connectionSelector);
+		return getScampVersion(BOOT_CHIP, connectionSelector);
 	}
 
 	/**
@@ -639,7 +630,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	int getCoreStateCount(int appID, CPUState state)
+	int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException;
 
 	/**
@@ -663,7 +654,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
-			int numBytes, int appID)
+			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, numBytes, appID);
 	}
@@ -691,7 +682,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
-			InputStream executable, int numBytes, int appID)
+			InputStream executable, int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, numBytes, appID, false);
 	}
@@ -719,7 +710,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasCoreLocation core, InputStream executable,
-			int numBytes, int appID, boolean wait)
+			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, numBytes, appID,
 				wait);
@@ -750,7 +741,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
-			InputStream executable, int numBytes, int appID, boolean wait)
+			InputStream executable, int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
@@ -771,7 +762,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	default void execute(HasCoreLocation core, File executable, int appID)
+	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
 	}
@@ -797,7 +788,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
-			File executable, int appID)
+			File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, appID, false);
 	}
@@ -822,7 +813,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	default void execute(HasCoreLocation core, File executable, int appID,
+	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, wait);
@@ -851,7 +842,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
-			File executable, int appID, boolean wait)
+			File executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
@@ -871,7 +862,8 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	default void execute(HasCoreLocation core, ByteBuffer executable, int appID)
+	default void execute(HasCoreLocation core, ByteBuffer executable,
+			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
 	}
@@ -896,7 +888,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
-			ByteBuffer executable, int appID)
+			ByteBuffer executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(chip, processors, executable, appID, false);
 	}
@@ -920,8 +912,8 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	default void execute(HasCoreLocation core, ByteBuffer executable, int appID,
-			boolean wait)
+	default void execute(HasCoreLocation core, ByteBuffer executable,
+			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, wait);
 	}
@@ -948,7 +940,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	void execute(HasChipLocation chip, Collection<Integer> processors,
-			ByteBuffer executable, int appID, boolean wait)
+			ByteBuffer executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
@@ -974,7 +966,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
-			int numBytes, int appID)
+			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, numBytes, appID, false);
 	}
@@ -1004,7 +996,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
-			int numBytes, int appID, boolean wait)
+			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
@@ -1028,7 +1020,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
-			int appID)
+			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, appID, false);
 	}
@@ -1055,7 +1047,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	void executeFlood(CoreSubsets coreSubsets, File executable, int appID,
+	void executeFlood(CoreSubsets coreSubsets, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
@@ -1079,7 +1071,7 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
-			int appID)
+			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		executeFlood(coreSubsets, executable, appID, false);
 	}
@@ -1105,8 +1097,8 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
-	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable, int appID,
-			boolean wait)
+	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
+			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
@@ -1129,7 +1121,7 @@ public interface TransceiverInterface {
 	 *             If some cores enter an unexpected state.
 	 */
 	default void executeApplication(ExecutableTargets executableTargets,
-			int appID) throws IOException, ProcessException,
+			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
 		for (String binary : executableTargets.getBinaries()) {
@@ -2247,21 +2239,15 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Read some areas of SDRAM from a core of a chip on the board.
+	 * Read an area associated with a <em>recording region</em> from SDRAM from
+	 * a core of a chip on the board.
 	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
-	 *            from
 	 * @param region
-	 *            The region of the core that is being read. Used to organise
-	 *            the data in the database.
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
+	 *            The recording region that is being read. Describes which core
+	 *            produced the data, what <em>DSE index</em> the data came from,
+	 *            and where in memory to actually read.
 	 * @param storage
-	 *            The database to write to
-	 * @param length
-	 *            The length of the data to be read in bytes
+	 *            The database to write to.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2269,8 +2255,8 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readMemory(HasCoreLocation core, int region, int baseAddress,
-			int length, Storage storage)
+	void readRegion(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
 
 	/**
@@ -2336,7 +2322,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void stopApplication(int appID) throws IOException, ProcessException;
+	void stopApplication(AppID appID) throws IOException, ProcessException;
 
 	/**
 	 * Waits for the specified cores running the given application to be in some
@@ -2358,9 +2344,9 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
-	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
-			Set<CPUState> cpuStates) throws IOException, ProcessException,
-			InterruptedException, SpinnmanException {
+	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets,
+			AppID appID, Set<CPUState> cpuStates) throws IOException,
+			ProcessException, InterruptedException, SpinnmanException {
 		waitForCoresToBeInState(allCoreSubsets, appID, cpuStates,
 				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
 				DEFAULT_CHECK_INTERVAL);
@@ -2398,7 +2384,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
-	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, int appID,
+	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countsBetweenFullCheck)
 			throws IOException, ProcessException, InterruptedException,
@@ -2504,7 +2490,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void sendSignal(int appID, Signal signal)
+	void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException;
 
 	/**
@@ -2590,7 +2576,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(Tag tag) throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), null, tag.getBoardAddress());
+		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
 
 	/**
@@ -2604,46 +2590,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	default void clearIPTag(int tag) throws IOException, ProcessException {
-		clearIPTag(tag, null, null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(int tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag, requireNonNull(connection), null);
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	default void clearIPTag(Tag tag, SCPConnection connection)
-			throws IOException, ProcessException {
-		clearIPTag(tag.getTag(), requireNonNull(connection),
-				tag.getBoardAddress());
+		clearIPTag(tag, null);
 	}
 
 	/**
@@ -2652,36 +2599,15 @@ public interface TransceiverInterface {
 	 * @param tag
 	 *            The tag ID
 	 * @param boardAddress
-	 *            Board address where the tag should be cleared.
+	 *            Board address where the tag should be cleared. If
+	 *            {@code null}, all SCPSender connections will send the message
+	 *            to clear the tag
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void clearIPTag(int tag, InetAddress boardAddress)
-			throws IOException, ProcessException {
-		clearIPTag(tag, null, requireNonNull(boardAddress));
-	}
-
-	/**
-	 * Clear the setting of an IP tag.
-	 *
-	 * @param tag
-	 *            The tag ID
-	 * @param connection
-	 *            Connection where the tag should be cleared. If not specified,
-	 *            all SCPSender connections will send the message to clear the
-	 *            tag
-	 * @param boardAddress
-	 *            Board address where the tag should be cleared. If not
-	 *            specified, all SCPSender connections will send the message to
-	 *            clear the tag
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void clearIPTag(int tag, SCPConnection connection, InetAddress boardAddress)
+	void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException;
 
 	/**
@@ -2727,7 +2653,7 @@ public interface TransceiverInterface {
 	 */
 	default int mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
-		return mallocSDRAM(chip, size, 0, 0);
+		return mallocSDRAM(chip, size, AppID.DEFAULT, 0);
 	}
 
 	/**
@@ -2745,7 +2671,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default int mallocSDRAM(HasChipLocation chip, int size, int appID)
+	default int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
 	}
@@ -2769,7 +2695,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	int mallocSDRAM(HasChipLocation chip, int size, int appID, int tag)
+	int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException;
 
 	/**
@@ -2779,14 +2705,12 @@ public interface TransceiverInterface {
 	 *            The coordinates of the chip onto which to free memory
 	 * @param baseAddress
 	 *            The base address of the allocated memory
-	 * @param appID
-	 *            The app ID of the allocated memory
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void freeSDRAM(HasChipLocation chip, int baseAddress, int appID)
+	void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException;
 
 	/**
@@ -2795,14 +2719,14 @@ public interface TransceiverInterface {
 	 * @param chip
 	 *            The coordinates of the chip onto which to free memory
 	 * @param appID
-	 *            The app ID of the allocated memory
+	 *            The app ID of the owner of the allocated memory
 	 * @return The number of blocks freed
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	int freeSDRAMByAppID(HasChipLocation chip, int appID)
+	int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
 	/**
@@ -2821,7 +2745,7 @@ public interface TransceiverInterface {
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
 			throws IOException, ProcessException {
-		loadMulticastRoutes(chip, routes, 0);
+		loadMulticastRoutes(chip, routes, AppID.DEFAULT);
 	}
 
 	/**
@@ -2839,7 +2763,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void loadMulticastRoutes(HasChipLocation chip,
-			Collection<MulticastRoutingEntry> routes, int appID)
+			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException;
 
 	/**
@@ -2856,7 +2780,7 @@ public interface TransceiverInterface {
 	 */
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
-		loadFixedRoute(chip, fixedRoute, 0);
+		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
 	}
 
 	/**
@@ -2874,7 +2798,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			int appID) throws IOException, ProcessException;
+			AppID appID) throws IOException, ProcessException;
 
 	/**
 	 * Reads a fixed route routing table entry from a chip's router.
@@ -2889,7 +2813,7 @@ public interface TransceiverInterface {
 	 */
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
-		return readFixedRoute(chip, 0);
+		return readFixedRoute(chip, AppID.DEFAULT);
 	}
 
 	/**
@@ -2905,7 +2829,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	RoutingEntry readFixedRoute(HasChipLocation chip, int appID)
+	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
 	/**
@@ -2937,26 +2861,8 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
-			int appID) throws IOException, ProcessException {
-		return getMulticastRoutes(chip, appID);
-	}
-
-	/**
-	 * Get the current multicast routes set up on a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip from which to get the routes
-	 * @param appID
-	 *            The ID of the application to filter the routes for.
-	 * @return An iterable of multicast routes
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
-			Integer appID) throws IOException, ProcessException;
+			AppID appID) throws IOException, ProcessException;
 
 	/**
 	 * Remove all the multicast routes on a chip.

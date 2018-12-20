@@ -62,15 +62,15 @@ class TestMessage {
 		byte[] got = new byte[16];
 		patched.get(got);
 		byte[] expected = {
-				0, 0, 0, 0, // 0-3
-				0, 0, 0, 0, // 4-7
-				0, 5, 0, 0, // 8-11
-				0, 51, 4, 4 // 12-15
+			0, 0, 0, 0, // 0-3
+			0, 0, 0, 0, // 4-7
+			0, 5, 0, 0, // 8-11
+			0, 51, 4, 4 // 12-15
 		};
 		assertArrayEquals(expected, got);
 	}
 
-	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 538);
+	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 566);
 
 	@Test
 	void testBootMessagesSerialize() {

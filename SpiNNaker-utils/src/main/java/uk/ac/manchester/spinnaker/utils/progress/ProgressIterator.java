@@ -62,7 +62,7 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	 * true if {@link #next()} would return an element rather than throwing an
 	 * exception.)
 	 * <p>
-	 * When <code>hasNext()</code> returns false the ProgessBar is closed.
+	 * When <code>hasNext()</code> returns false the ProgressBar is closed.
 	 *
 	 * @return the next element in the iteration
 	 */

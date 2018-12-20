@@ -16,17 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects;
 
-import java.io.File;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
-import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.SQLiteStorage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -45,9 +47,10 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * @author Christian-B
  */
 public class BufferedReceivingData {
+	private static final Logger log = getLogger(BufferedReceivingData.class);
 
     /** The physical storage of the data. */
-    private final Storage storage;
+    private final BufferManagerStorage storage;
 
     /** Map of booleans indicating if a region on a core has been flushed. */
     private final Map<RegionLocation, Boolean> isFlushed;
@@ -74,14 +77,11 @@ public class BufferedReceivingData {
 	 * Stores the information received through the buffering output technique
 	 * from the SpiNNaker system.
 	 *
-	 * @param databasePath
-	 *            The path of a file that contains an SQLite database holding
-	 *            the data.
+	 * @param storage
+	 *            How to talk to the database.
 	 */
-    public BufferedReceivingData(String databasePath) {
-        File databaseFile = new File(databasePath);
-		ConnectionProvider engine = new DatabaseEngine(databaseFile);
-		storage = new SQLiteStorage(engine);
+	public BufferedReceivingData(BufferManagerStorage storage) {
+		this.storage = storage;
         isFlushed =  new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
         //self._last_packet_received = defaultdict(lambda: None)
@@ -107,20 +107,9 @@ public class BufferedReceivingData {
 	 *            Location to check retrieved from.
 	 * @return True if the number has been retrieved
 	 */
-	public boolean isEndBufferingSequenceNumberStored(CoreLocation location) {
-		return endBufferingSequenceNo.containsKey(location);
-	}
-
-	/**
-	 * Determine if the last sequence number has been retrieved.
-	 *
-	 * @param location
-	 *            Location to check retrieved from.
-	 * @return True if the number has been retrieved
-	 */
 	public boolean isEndBufferingSequenceNumberStored(
 			HasCoreLocation location) {
-		return isEndBufferingSequenceNumberStored(location.asCoreLocation());
+		return endBufferingSequenceNo.containsKey(location.asCoreLocation());
 	}
 
 	/**
@@ -129,24 +118,11 @@ public class BufferedReceivingData {
 	 * @param location
 	 *            The core retrieved from.
 	 * @param lastSequenceNumber
-	 *            he last sequence number
-	 */
-	public void storeEndBufferingSequenceNumber(CoreLocation location,
-			Integer lastSequenceNumber) {
-		endBufferingSequenceNo.put(location, lastSequenceNumber);
-	}
-
-	/**
-	 * Store the last sequence number sent by the core.
-	 *
-	 * @param location
-	 *            The core retrieved from.
-	 * @param lastSequenceNumber
-	 *            he last sequence number
+	 *            The last sequence number
 	 */
 	public void storeEndBufferingSequenceNumber(HasCoreLocation location,
-			Integer lastSequenceNumber) {
-		storeEndBufferingSequenceNumber(location.asCoreLocation(),
+			int lastSequenceNumber) {
+		endBufferingSequenceNo.put(location.asCoreLocation(),
 				lastSequenceNumber);
 	}
 
@@ -157,12 +133,12 @@ public class BufferedReceivingData {
 	 *            The core
 	 * @return The last sequence number.
 	 */
-	public Integer getEndBufferingSequenceNumber(CoreLocation location) {
+	public int getEndBufferingSequenceNumber(CoreLocation location) {
         if (endBufferingSequenceNo.containsKey(location)) {
             return endBufferingSequenceNo.get(location);
         }
         throw new IllegalArgumentException(
-                "no squence number know for " + location);
+                "no squence number known for " + location);
     }
 
 	/**
@@ -172,7 +148,7 @@ public class BufferedReceivingData {
 	 *            The core
 	 * @return The last sequence number.
 	 */
-	public Integer getEndBufferingSequenceNumber(HasCoreLocation location) {
+	public int getEndBufferingSequenceNumber(HasCoreLocation location) {
 		return getEndBufferingSequenceNumber(location.asCoreLocation());
 	}
 
@@ -233,7 +209,7 @@ public class BufferedReceivingData {
 	 * @return Last sequence number used
 	 */
 	public Integer lastSequenceNoForCore(CoreLocation location) {
-		return this.sequenceNo.get(location);
+		return sequenceNo.get(location);
 	}
 
 	/**
@@ -244,7 +220,7 @@ public class BufferedReceivingData {
 	 * @return Last sequence number used
 	 */
 	public Integer lastSequenceNoForCore(HasCoreLocation location) {
-		return this.sequenceNo.get(location.asCoreLocation());
+		return sequenceNo.get(location.asCoreLocation());
 	}
 
 	/**
@@ -260,8 +236,13 @@ public class BufferedReceivingData {
 	 */
 	public void storeDataInRegionBuffer(RegionLocation location,
 			ByteBuffer data) throws StorageException {
-		storage.appendRegionContents(location.asCoreLocation(), location.region,
-				data);
+		if (log.isInfoEnabled()) {
+			log.info("retrieved {} bytes from region {} of {}",
+					data.remaining(), location.region,
+					location.asCoreLocation());
+		}
+		storage.appendRecordingContents(
+				new Region(location, location.region, 0, 0), data);
 	}
 
 	/**
@@ -304,4 +285,4 @@ public class BufferedReceivingData {
     //BufferedDataStorage getRegionDataPointer(RegionLocation location) {
     //    throw new UnsupportedOperationException("Not supported yet.");
     //}
- }
+}

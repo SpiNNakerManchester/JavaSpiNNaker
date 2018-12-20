@@ -63,7 +63,7 @@ public class Chip implements HasChipLocation {
     /** boolean which defines if this chip is a virtual one. */
     public final boolean virtual;
 
-    /** List of SDP identifers available. */
+    /** List of SDP identifiers available. */
     private final List<Integer> tagIds;
 
     /** The nearest Ethernet coordinates or null if none known. */
@@ -191,7 +191,7 @@ public class Chip implements HasChipLocation {
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
      */
-     public Chip(ChipLocation location, Iterable<Processor> processors,
+    public Chip(ChipLocation location, Iterable<Processor> processors,
              Router router, InetAddress ipAddress,
              HasChipLocation nearestEthernet) {
         this(location, processors, router, MachineDefaults.SDRAM_PER_CHIP,
@@ -227,11 +227,11 @@ public class Chip implements HasChipLocation {
         this.ipAddress = ipAddress;
 
         this.virtual = false;
-            if (ipAddress == null) {
-                this.tagIds = emptyList();
-            } else {
-                this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
-            }
+        if (ipAddress == null) {
+            this.tagIds = emptyList();
+        } else {
+            this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
+        }
 
         this.nearestEthernet = nearestEthernet;
     }
@@ -275,7 +275,7 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> defaultUserProcessors() {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
-           processors.put(i, Processor.factory(i, false));
+            processors.put(i, Processor.factory(i, false));
         }
         return processors;
     }
@@ -289,7 +289,7 @@ public class Chip implements HasChipLocation {
     private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = 0; i < monitors; i++) {
-           processors.put(i, Processor.factory(i, true));
+            processors.put(i, Processor.factory(i, true));
         }
         return processors;
     }
@@ -298,7 +298,7 @@ public class Chip implements HasChipLocation {
             int monitors, int cores) {
         TreeMap<Integer, Processor> processors = new TreeMap<>();
         for (int i = monitors; i < cores; i++) {
-           processors.put(i, Processor.factory(i, false));
+            processors.put(i, Processor.factory(i, false));
         }
         return processors;
     }
@@ -319,24 +319,6 @@ public class Chip implements HasChipLocation {
     }
 
     /**
-     * Determines if a processor with the given ID exists in the chip.
-     * <p>
-     * This method will check both the user and monitor processors.
-     *
-     * @param processorId
-     *            Id of the potential processor.
-     * @return True if and only if there is a processor for this ID.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
-     */
-    @Deprecated
-    public boolean hasAnyProcessor(int processorId) {
-        return this.userProcessors.containsKey(processorId)
-                || this.monitorProcessors.containsKey(processorId);
-    }
-
-    /**
      * Determines if a user processor with the given ID exists in the chip.
      * <p>
      * Warning: If a Monitor processor exists with this ID this method will
@@ -348,46 +330,6 @@ public class Chip implements HasChipLocation {
      */
     public boolean hasUserProcessor(int processorId) {
         return this.userProcessors.containsKey(processorId);
-    }
-
-    /**
-     * Determines if a monitor processor with the given ID exists in the chip.
-     * <p>
-     * Warning: If a User processor exists with this ID this method will
-     *      return false. Use @see hasAnyProcessor()
-     *
-     * @param processorId
-     *            Id of the potential processor.
-     * @return True if and only if there is a processor for this ID.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
-     */
-    @Deprecated
-    public boolean hasMonitorProcessor(int processorId) {
-        return this.monitorProcessors.containsKey(processorId);
-    }
-
-    /**
-     * Obtains the Processor with this ID or returns null.
-     * <p>
-     * This method will check both the user and monitor processors.
-     *
-     * @param processorId
-     *            Id of the potential processor.
-     * @return The Processor or null if not is found.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
-     */
-    @Deprecated
-    public Processor getAnyProcessor(int processorId) {
-        if (this.userProcessors.containsKey(processorId)) {
-            return this.userProcessors.get(processorId);
-        } else {
-            // This also covers the return null if neither have it.
-            return this.monitorProcessors.get(processorId);
-        }
     }
 
     /**
@@ -405,24 +347,6 @@ public class Chip implements HasChipLocation {
     }
 
     /**
-     * Obtains the Monitor Processor with this ID or returns null.
-     * <p>
-     * This method will only check monitor processors
-     * so will return null even if a user processor exists with this id.
-     *
-     * @param processorId
-     *            Id of the potential processor.
-     * @return The Processor or null if not is found.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
-     */
-    @Deprecated
-    public Processor getMonitorProcessor(int processorId) {
-        return this.monitorProcessors.get(processorId);
-    }
-
-    /**
      * Return a list off all the Processors on this Chip
      * <p>
      * This method will check both the user and monitor processors.
@@ -435,11 +359,7 @@ public class Chip implements HasChipLocation {
      * Future implementations could return an unmodifiable list.
      *
      * @return A list of all the processors including both monitor and user.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
      */
-    @Deprecated
     public List<Processor> allProcessors() {
         ArrayList<Processor> all =
                 new ArrayList<>(this.monitorProcessors.values());
@@ -464,34 +384,10 @@ public class Chip implements HasChipLocation {
     }
 
     /**
-     * Return a view over the Monitor Processors on this Chip
-     * <p>
-     * User processors are not included so every Processor in the list is
-     *      guaranteed to have the property isMonitor == true!
-     * <p>
-     * The Processors will be ordered by ProcessorID which are guaranteed to all
-     * be different.
-     *
-     * @return A unmodifiable View over the processors.
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
-     */
-    @Deprecated
-    public Collection<Processor> monitorProcessors() {
-        return Collections.unmodifiableCollection(
-                this.monitorProcessors.values());
-    }
-
-    /**
      * The total number of processors.
      *
      * @return The size of the Processor Collection
-     * @deprecated
-     *            Keeping track of the Monitor(s) processors may be removed
-     *            unless a use case can be found.
      */
-    @Deprecated
     public int nProcessors() {
         return this.userProcessors.size() + this.monitorProcessors.size();
     }
@@ -517,42 +413,6 @@ public class Chip implements HasChipLocation {
     public Processor getFirstUserProcessor()
             throws NoSuchElementException {
         return this.userProcessors.get(this.userProcessors.firstKey());
-    }
-
-    // TODO: Work out if we can guarantee:
-    /*
-     * This method should ONLY be called via
-     * :py:meth:`spinn_machine.Machine.reserve_system_processors`
-     */
-    /**
-     * Sets one of the none monitor processors as a system processor.
-     * <p>
-     * This will reduce by one the result of nUserProcessors()
-     *
-     * @deprecated Will be removed if confirmed to never be called any more.
-     * @return ID of the processor converted to a monitor or -1 to report a
-     *         failure
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    int reserveASystemProcessor() throws IllegalStateException {
-        if (this.monitorProcessors == DEFAULT_MONITOR_PROCESSORS) {
-            this.monitorProcessors = (TreeMap<Integer, Processor>)
-                    DEFAULT_MONITOR_PROCESSORS.clone();
-            this.userProcessors = (TreeMap<Integer, Processor>)
-                    DEFAULT_USER_PROCESSORS.clone();
-        }
-        Integer firstKey;
-        try {
-           firstKey = this.userProcessors.firstKey();
-        } catch (NoSuchElementException ex) {
-            // This will very rarely happen so no need for pretime checking
-            return -1;
-        }
-        Processor mover = this.userProcessors.get(firstKey);
-        this.userProcessors.remove(firstKey);
-        this.monitorProcessors.put(firstKey, mover);
-        return mover.processorId;
     }
 
     /**
@@ -587,44 +447,59 @@ public class Chip implements HasChipLocation {
             System.out.println("type");
             return false;
         }
-        Chip that = (Chip) obj;
-        if (!location.equals(that.location)) {
-            System.out.println("location");
-            return false;
-        }
-        if (!monitorProcessors.equals(that.monitorProcessors)) {
-            System.out.println("monitorProcessors");
-            return false;
-        }
-        if (!userProcessors.equals(that.userProcessors)) {
-            System.out.println("userProcessors");
-            return false;
-        }
-        if (!router.equals(that.router)) {
-            System.out.println("router");
-            return false;
-        }
-        if (sdram != that.sdram) {
-            System.out.println("sdram");
-            return false;
-        }
-        if (!Objects.equals(ipAddress, that.ipAddress)) {
-            System.out.println("ipAddress");
-            return false;
-        }
-        if (virtual != that.virtual) {
-            System.out.println("virtual");
-            return false;
-        }
-        if (!tagIds.equals(that.tagIds)) {
-            System.out.println("tagIds " + tagIds + " != " + that.tagIds);
-            return false;
-        }
-        if (!nearestEthernet.equals(that.nearestEthernet)) {
-            System.out.println("router");
-            return false;
-        }
-        return true;
+        return difference((Chip) obj) == null;
     }
 
+    /**
+     * Describes one difference found between this machine and another machine.
+     *
+     * This method will always return null if no difference is found between
+     *      the two machines.
+     * So semantically is the same as Equals except that this works if other
+     *      is a super class of machine
+     *      in which case only the share variables are compared.
+     *
+     * This method returns as soon as it has found a difference so there may
+     *      be other not specified differences.
+     *
+     * Warning This method could change over time,
+     *     so there is no implied guarantee
+     *     to the order that variables are checked
+     *     or to the message that is returned.
+     *
+     * The only guarantee is that null is returned if no difference is detected.
+     *
+     * @param other Another chip to check if it has the same variables.
+     * @return null if no difference is detected otherwise a string.
+     */
+    public String difference(Chip other) {
+        if (!location.equals(other.location)) {
+            return "Location";
+        }
+        if (!monitorProcessors.equals(other.monitorProcessors)) {
+            return "Monitors";
+        }
+        if (!userProcessors.equals(other.userProcessors)) {
+            return "userProcessors";
+        }
+        if (!router.equals(other.router)) {
+            return "router";
+        }
+        if (sdram != other.sdram) {
+            return "sdram";
+        }
+        if (!Objects.equals(ipAddress, other.ipAddress)) {
+            return "ipAddress";
+        }
+        if (virtual != other.virtual) {
+            return "virtual";
+        }
+        if (!tagIds.equals(other.tagIds)) {
+            return "tagIds " + tagIds + " != " + other.tagIds;
+        }
+        if (!nearestEthernet.equals(other.nearestEthernet)) {
+            return "router";
+        }
+        return null;
+    }
 }

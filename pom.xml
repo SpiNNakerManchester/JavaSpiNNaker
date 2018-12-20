@@ -136,6 +136,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>sqlite-jdbc</artifactId>
 				<version>3.25.2</version>
 			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -259,10 +264,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>.travis.yml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
+							<exclude>**/*.txt</exclude>
+							<exclude>**/*.csv</exclude>
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
 							<exclude>README.md</exclude>
 						</excludes>
+						<consoleOutput>true</consoleOutput>
 					</configuration>
 				</plugin>
 			</plugins>

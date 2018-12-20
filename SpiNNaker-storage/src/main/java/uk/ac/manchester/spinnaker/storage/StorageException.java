@@ -32,7 +32,7 @@ public class StorageException extends Exception {
 	 * @param cause
 	 *            What caused the problem
 	 */
-	StorageException(String message, Throwable cause) {
+	public StorageException(String message, Throwable cause) {
 		super(message + ": " + cause.getMessage(), cause);
 	}
 }

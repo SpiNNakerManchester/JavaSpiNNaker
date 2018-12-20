@@ -22,11 +22,13 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.Iterator;
 import java.util.Set;
 
+import uk.ac.manchester.spinnaker.messages.model.AppID;
+
 /** A tracker of application IDs to make it easier to allocate new IDs. */
 public class AppIdTracker {
 	private static final int MIN_APP_ID = 17;
 	private static final int MAX_APP_ID = 254;
-	private final Set<Integer> freeIDs;
+	private final Set<AppID> freeIDs;
 	private final int maxID;
 	private final int minID;
 
@@ -55,7 +57,7 @@ public class AppIdTracker {
 	 * @param appIDsInUse
 	 *            The IDs that are already in use
 	 */
-	public AppIdTracker(Set<Integer> appIDsInUse) {
+	public AppIdTracker(Set<AppID> appIDsInUse) {
 		this(appIDsInUse, MIN_APP_ID, MAX_APP_ID);
 	}
 
@@ -69,9 +71,10 @@ public class AppIdTracker {
 	 * @param maxAppID
 	 *            The largest application ID to use
 	 */
-	public AppIdTracker(Set<Integer> appIDsInUse, int minAppID,
+	public AppIdTracker(Set<AppID> appIDsInUse, int minAppID,
 			int maxAppID) {
-		freeIDs = rangeClosed(minAppID, maxAppID).boxed().collect(toSet());
+		freeIDs = rangeClosed(minAppID, maxAppID).mapToObj(AppID::new)
+				.collect(toSet());
 		if (appIDsInUse != null) {
 			freeIDs.removeAll(appIDsInUse);
 		}
@@ -86,12 +89,12 @@ public class AppIdTracker {
 	 * @throws RuntimeException
 	 *             if there are no IDs available
 	 */
-	public int allocateNewID() {
-		Iterator<Integer> it = freeIDs.iterator();
+	public AppID allocateNewID() {
+		Iterator<AppID> it = freeIDs.iterator();
 		if (!it.hasNext()) {
 			throw new RuntimeException("no remaining free IDs");
 		}
-		int val = it.next();
+		AppID val = it.next();
 		it.remove();
 		return val;
 	}
@@ -104,7 +107,7 @@ public class AppIdTracker {
 	 * @throws IllegalArgumentException
 	 *             if the ID is not present
 	 */
-	public void allocateID(int id) {
+	public void allocateID(AppID id) {
 		if (!freeIDs.remove(id)) {
 			throw new IllegalArgumentException(
 					"id " + id + " was not available for allocation");
@@ -119,8 +122,8 @@ public class AppIdTracker {
 	 * @throws IllegalArgumentException
 	 *             if the ID is out of range
 	 */
-	public void freeID(int id) {
-		if (id < minID || id > maxID) {
+	public void freeID(AppID id) {
+		if (id.appID < minID || id.appID > maxID) {
 			throw new IllegalArgumentException(
 					"ID " + id + " out of allowed range of " + minID
 							+ " to " + maxID);

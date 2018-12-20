@@ -57,6 +57,24 @@ public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
+	 * @param numChannels
+	 *            The number of parallel communications to support
+	 * @param retryTracker
+	 *            Object used to track how many retries were used in an
+	 *            operation. May be {@code null} if no suck tracking is
+	 *            required.
+	 */
+	public WriteMemoryProcess(
+			ConnectionSelector<SCPConnection> connectionSelector,
+			int numChannels, RetryTracker retryTracker) {
+		super(connectionSelector, MultiConnectionProcess.DEFAULT_NUM_RETRIES,
+				MultiConnectionProcess.DEFAULT_TIMEOUT, numChannels,
+				Math.max(numChannels / 2, 1), retryTracker);
+	}
+
+	/**
+	 * @param connectionSelector
+	 *            How to select how to communicate.
 	 * @param numRetries
 	 *            The number of times to retry a communication.
 	 * @param timeout
