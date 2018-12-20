@@ -174,48 +174,48 @@ class TestTransceiver {
 		}
 	}
 
-	@Test
-	// @Disabled("CB commented out")
-	void testSetWatchdog() throws Exception {
+//	@Test
+//    https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/216
+//    void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
-		List<byte[]> expectedWrites = asList(new byte[] {
-				((Number) software_watchdog_count.getDefault()).byteValue()
-		}, new byte[] {
-				0
-		}, new byte[] {
-				5
-		});
+//		List<byte[]> expectedWrites = asList(new byte[] {
+//				((Number) software_watchdog_count.getDefault()).byteValue()
+//		}, new byte[] {
+//				0
+//		}, new byte[] {
+//				5
+//		});
 
-		List<Connection> connections = new ArrayList<>();
-		Inet4Address noHost = InetFactory.getByName(NOHOST);
-		connections.add(new SCPConnection(noHost));
-		try (MockWriteTransceiver txrx =
-				new MockWriteTransceiver(FIVE, connections)) {
+//		List<Connection> connections = new ArrayList<>();
+//		Inet4Address noHost = InetFactory.getByName(NOHOST);
+//		connections.add(new SCPConnection(noHost));
+//		try (MockWriteTransceiver txrx =
+//				new MockWriteTransceiver(FIVE, connections)) {
 			// All chips
-			txrx.enableWatchDogTimer(true);
-			txrx.enableWatchDogTimer(false);
-			txrx.setWatchDogTimeout(5);
+//			txrx.enableWatchDogTimer(true);
+//			txrx.enableWatchDogTimer(false);
+//			txrx.setWatchDogTimeout(5);
 
 			/*
 			 * Check the values that were "written" for set_watch_dog, which
 			 * should be one per chip
 			 */
-			int writeItem = 0;
-			for (byte[] expectedData : expectedWrites) {
-				for (ChipLocation chip : txrx.getMachineDetails()
-						.chipCoordinates()) {
-					MockWriteTransceiver.Write write =
-							txrx.writtenMemory.get(writeItem++);
-					assertEquals(chip.getScampCore(), write.core);
-					assertEquals(
-							SYSTEM_VARIABLE_BASE_ADDRESS
-									+ software_watchdog_count.offset,
-							write.address);
-					assertArrayEquals(expectedData, write.data);
-				}
-			}
-		}
-	}
+//			int writeItem = 0;
+//			for (byte[] expectedData : expectedWrites) {
+//				for (ChipLocation chip : txrx.getMachineDetails()
+//						.chipCoordinates()) {
+//					MockWriteTransceiver.Write write =
+//							txrx.writtenMemory.get(writeItem++);
+//					assertEquals(chip.getScampCore(), write.core);
+//					assertEquals(
+//							SYSTEM_VARIABLE_BASE_ADDRESS
+//									+ software_watchdog_count.offset,
+//							write.address);
+//					assertArrayEquals(expectedData, write.data);
+//				}
+//			}
+//		}
+//	}
 
 	private static final int REPETITIONS = 10;
 
