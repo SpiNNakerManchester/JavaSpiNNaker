@@ -92,7 +92,8 @@ public class TestUDPConnection {
 		assertEquals(result.getResult(), RC_OK);
 	}
 
-	@Test
+	/*@Test
+    https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/215
 	public void testSendSCPRequestToNonexistentHost()
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();
@@ -106,5 +107,5 @@ public class TestUDPConnection {
 				connection.receiveSCPResponse(2);
 			}
 		});
-	}
+	}*/
 }
