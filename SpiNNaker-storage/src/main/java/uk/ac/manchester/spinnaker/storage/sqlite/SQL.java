@@ -108,19 +108,19 @@ abstract class SQL {
 	// Data loading ----------------------------------------------------
 	// -----------------------------------------------------------------
 
-	/** List the boards described in the database. */
+	/** List the ethernets described in the database. */
 	@Parameters({})
-	@ResultColumns({"board_id", "ethernet_x", "ethernet_y", "ethernet_address"})
-	static final String LIST_BOARDS =
-			"SELECT DISTINCT board_id, ethernet_x, ethernet_y, ethernet_address"
+	@ResultColumns({"ethernet_id", "ethernet_x", "ethernet_y", "ip_address"})
+	static final String LIST_ETHERNETS =
+			"SELECT DISTINCT ethernet_id, ethernet_x, ethernet_y, ip_address"
 					+ " FROM core_view";
 
-	/** List the cores of a board with a data specification to run. */
-	@Parameters("board_id")
+	/** List the cores of a ethernets with a data specification to run. */
+	@Parameters("ethernet_id")
 	@ResultColumns({"core_id", "x", "y", "processor", "app_id", "content"})
 	static final String LIST_CORES_TO_LOAD =
 			"SELECT core_id, x, y, processor, app_id, content FROM core_view "
-					+ "WHERE board_id = ? AND start_address IS NULL AND "
+					+ "WHERE ethernet_id = ? AND start_address IS NULL AND "
 					+ "app_id IS NOT NULL AND content IS NOT NULL";
 
 	/**

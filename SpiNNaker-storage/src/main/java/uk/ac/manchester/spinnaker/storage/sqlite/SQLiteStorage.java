@@ -65,11 +65,11 @@ public class SQLiteStorage extends SQLiteConnectionManager
 
 	private static List<Board> listBoardsToLoad(Connection conn)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.LIST_BOARDS);
+		try (PreparedStatement s = conn.prepareStatement(SQL.LIST_ETHERNETS);
 				ResultSet rs = s.executeQuery()) {
 			List<Board> result = new ArrayList<>();
 			while (rs.next()) {
-				// board_id, ethernet_x, ethernet_y, ethernet_address
+				// ethernet_id, ethernet_x, ethernet_y, ip_address
 				result.add(new BoardImpl(rs.getInt(FIRST), rs.getInt(SECOND),
 						rs.getInt(THIRD), rs.getString(FOURTH)));
 			}
@@ -92,7 +92,7 @@ public class SQLiteStorage extends SQLiteConnectionManager
 			BoardImpl board) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
-			// board_id
+			// ethernet_id
 			s.setInt(FIRST, board.id);
 			try (ResultSet rs = s.executeQuery()) {
 				List<CoreToLoad> result = new ArrayList<>();

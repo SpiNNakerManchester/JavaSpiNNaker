@@ -67,7 +67,7 @@ public interface DSEStorage {
 			int memoryUsed, int memoryWritten) throws StorageException;
 
 	/**
-	 * A board which has data specifications to be loaded onto it.
+	 * A ethernet which allows data specifications to be loaded.
 	 *
 	 * @author Donal Fellows
 	 */
