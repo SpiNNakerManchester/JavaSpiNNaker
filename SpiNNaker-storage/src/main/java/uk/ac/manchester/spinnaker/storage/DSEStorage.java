@@ -29,25 +29,25 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
  */
 public interface DSEStorage {
 	/**
-	 * Get a list of all boards that need to have DSE loading done on them.
+	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *
-	 * @return The list of boards.
+	 * @return The list of ethernets.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
-	List<Board> listBoardsToLoad() throws StorageException;
+	List<Ethernet> listEthernetsToLoad() throws StorageException;
 
 	/**
 	 * Get a list of all DSE loading actions that need to be done for a
-	 * particular board.
+	 * particular ethernet.
 	 *
-	 * @param board
-	 *            The SpiNNaker board we're loading onto.
+	 * @param ethernet
+	 *            The ethernet we're loading onto.
 	 * @return The list of actions.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
-	List<CoreToLoad> listCoresToLoad(Board board) throws StorageException;
+	List<CoreToLoad> listCoresToLoad(Ethernet ethernet) throws StorageException;
 
 	/**
 	 * Record the results of loading a core.
@@ -71,14 +71,14 @@ public interface DSEStorage {
 	 *
 	 * @author Donal Fellows
 	 */
-	abstract class Board {
+	abstract class Ethernet {
 		/**
-		 * The virtual location of this board.
+		 * The virtual location of this ethernet.
 		 */
-		public final ChipLocation ethernet;
+		public final ChipLocation location;
 
 		/**
-		 * The network address of this board.
+		 * The network address of this ethernet.
 		 */
 		public final String ethernetAddress;
 
@@ -86,14 +86,14 @@ public interface DSEStorage {
 		 * Create an instance.
 		 *
 		 * @param ethernetX
-		 *            The X coordinate of the board's ethernet chip.
+		 *            The X coordinate of the ethernet chip.
 		 * @param ethernetY
-		 *            The Y coordinate of the board's ethernet chip.
+		 *            The Y coordinate of the ethernet chip.
 		 * @param address
-		 *            The IP address of the board.
+		 *            The IP address of the ethernet.
 		 */
-		protected Board(int ethernetX, int ethernetY, String address) {
-			this.ethernet = new ChipLocation(ethernetX, ethernetY);
+		protected Ethernet(int ethernetX, int ethernetY, String address) {
+			this.location = new ChipLocation(ethernetX, ethernetY);
 			this.ethernetAddress = address;
 		}
 	}

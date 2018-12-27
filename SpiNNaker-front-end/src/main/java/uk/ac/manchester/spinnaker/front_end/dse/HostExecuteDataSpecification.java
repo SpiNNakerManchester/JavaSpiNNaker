@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
-import uk.ac.manchester.spinnaker.storage.DSEStorage.Board;
+import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -104,7 +104,7 @@ public class HostExecuteDataSpecification {
 			IOException, ProcessException, ExecutionException,
 			InterruptedException, DataSpecificationException {
 		DSEStorage storage = connection.getDSEStorage();
-		List<Future<Exception>> tasks = storage.listBoardsToLoad().stream()
+		List<Future<Exception>> tasks = storage.listEthernetsToLoad().stream()
 				.map(board -> executor.submit(() -> {
 					try (BoardWorker worker = new BoardWorker(board, storage)) {
 						for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
@@ -135,10 +135,10 @@ public class HostExecuteDataSpecification {
 
 	private class BoardWorker implements AutoCloseable {
 		private final Transceiver txrx;
-		private final Board board;
+		private final Ethernet board;
 		private final DSEStorage storage;
 
-		BoardWorker(Board board, DSEStorage storage)
+		BoardWorker(Ethernet board, DSEStorage storage)
 				throws IOException, SpinnmanException, ProcessException {
 			txrx = new Transceiver(InetAddress.getByName(board.ethernetAddress),
 					null);
@@ -186,7 +186,7 @@ public class HostExecuteDataSpecification {
 			} catch (DataSpecificationException e) {
 				throw new DataSpecificationException(
 						"failed to execute data specification on core "
-								+ ctl.core + " of board " + board.ethernet
+								+ ctl.core + " of board " + board.location
 								+ " (" + board.ethernetAddress + ")",
 						e);
 			}

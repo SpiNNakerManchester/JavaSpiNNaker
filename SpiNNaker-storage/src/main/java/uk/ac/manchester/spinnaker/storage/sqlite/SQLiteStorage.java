@@ -59,18 +59,18 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	}
 
 	@Override
-	public List<Board> listBoardsToLoad() throws StorageException {
-		return callR(SQLiteStorage::listBoardsToLoad, "listing boards");
+	public List<Ethernet> listEthernetsToLoad() throws StorageException {
+		return callR(SQLiteStorage::listEthernetsToLoad, "listing ethernets");
 	}
 
-	private static List<Board> listBoardsToLoad(Connection conn)
+	private static List<Ethernet> listEthernetsToLoad(Connection conn)
 			throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(SQL.LIST_ETHERNETS);
 				ResultSet rs = s.executeQuery()) {
-			List<Board> result = new ArrayList<>();
+			List<Ethernet> result = new ArrayList<>();
 			while (rs.next()) {
 				// ethernet_id, ethernet_x, ethernet_y, ip_address
-				result.add(new BoardImpl(rs.getInt(FIRST), rs.getInt(SECOND),
+				result.add(new EthernetImpl(rs.getInt(FIRST), rs.getInt(SECOND),
 						rs.getInt(THIRD), rs.getString(FOURTH)));
 			}
 			return result;
@@ -78,22 +78,22 @@ public class SQLiteStorage extends SQLiteConnectionManager
 	}
 
 	@Override
-	public List<CoreToLoad> listCoresToLoad(Board board)
+	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet)
 			throws StorageException {
-		if (!(board instanceof BoardImpl)) {
+		if (!(ethernet instanceof EthernetImpl)) {
 			throw new IllegalArgumentException(
-					"can only list cores for boards described by this class");
+                "can only list cores for ethernets described by this class");
 		}
-		return callR(conn -> listCoresToLoad(conn, (BoardImpl) board),
+		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet),
 				"listing cores to load data onto");
 	}
 
 	private static List<CoreToLoad> listCoresToLoad(Connection conn,
-			BoardImpl board) throws SQLException {
+			EthernetImpl ethernet) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
 			// ethernet_id
-			s.setInt(FIRST, board.id);
+			s.setInt(FIRST, ethernet.id);
 			try (ResultSet rs = s.executeQuery()) {
 				List<CoreToLoad> result = new ArrayList<>();
 				while (rs.next()) {
@@ -294,21 +294,21 @@ public class SQLiteStorage extends SQLiteConnectionManager
 		}, "listing regions for a core");
 	}
 
-	private static final class BoardImpl extends Board {
+	private static final class EthernetImpl extends Ethernet {
 		/** The primary key. */
 		final int id;
 
-		private BoardImpl(int id, int etherx, int ethery, String addr) {
+		private EthernetImpl(int id, int etherx, int ethery, String addr) {
 			super(etherx, ethery, addr);
 			this.id = id;
 		}
 
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof BoardImpl)) {
+			if (!(other instanceof EthernetImpl)) {
 				return false;
 			}
-			BoardImpl b = (BoardImpl) other;
+			EthernetImpl b = (EthernetImpl) other;
 			return id == b.id;
 		}
 
