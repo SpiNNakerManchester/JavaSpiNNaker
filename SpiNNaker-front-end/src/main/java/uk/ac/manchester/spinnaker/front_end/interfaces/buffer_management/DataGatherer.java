@@ -92,13 +92,12 @@ public abstract class DataGatherer {
 	 */
 	private static final int TIMEOUT_PER_RECEIVE = 250;
 	/** What is the maximum number of <em>words</em> in a packet? */
-	private static final int DATA_PER_FULL_PACKET = 68;
+	private static final int WORDS_PER_PACKET = 68;
 	/**
 	 * What is the maximum number of payload <em>words</em> in a packet that
 	 * also has a sequence number?
 	 */
-	private static final int DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM =
-			DATA_PER_FULL_PACKET - 1;
+	private static final int DATA_WORDS_PER_PACKET = WORDS_PER_PACKET - 1;
 	/** How many bytes for the end-flag? */
 	private static final int END_FLAG_SIZE = WORD_SIZE;
 	/** How many bytes for the sequence number? */
@@ -108,15 +107,14 @@ public abstract class DataGatherer {
 	 * last in a stream.
 	 */
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
-	/**
-	 * An empty buffer. Used so we don't try to read zero bytes.
-	 */
+	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
-	/**
-	 * Message used to report problems.
-	 */
+	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
+	/** The traffic ID for this protocol. */
+	private static final TrafficIdentifier TRAFFIC_ID =
+			TrafficIdentifier.getInstance("DATA_SPEED_UP");
 
 	private final Transceiver txrx;
 	private final Machine machine;
@@ -282,8 +280,7 @@ public abstract class DataGatherer {
 			private void mainLoop() throws IOException, InterruptedException {
 				do {
 					try {
-						ByteBuffer recvd =
-								receive(TIMEOUT_PER_RECEIVE);
+						ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
 						if (recvd != null) {
 							messQueue.put(recvd);
 							log.debug("pushed");
@@ -448,7 +445,7 @@ public abstract class DataGatherer {
 			throws IOException, ProcessException {
 		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
 				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
-				TrafficIdentifier.getInstance("DATA_SPEED_UP"));
+				TRAFFIC_ID);
 		txrx.setIPTag(tag);
 	}
 
@@ -520,7 +517,7 @@ public abstract class DataGatherer {
 		private BitSet receivedSeqNums;
 		private int maxSeqNum;
 		private ByteBuffer dataReceiver;
-		private CoreLocation extraMonitor;
+		private CoreLocation monitorCore;
 
 		/**
 		 * Create an instance.
@@ -552,12 +549,12 @@ public abstract class DataGatherer {
 		 */
 		ByteBuffer doDownload(Placement extraMonitor, Region region)
 				throws IOException, FullFailureException {
-			this.extraMonitor = extraMonitor.asCoreLocation();
+			monitorCore = extraMonitor.asCoreLocation();
 			dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size,
-					DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE);
+					DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
-			conn.sendStart(this.extraMonitor, region.startAddress, region.size);
+			conn.sendStart(monitorCore, region.startAddress, region.size);
 			finished = false;
 			received = false;
 			try {
@@ -588,8 +585,7 @@ public abstract class DataGatherer {
 		 */
 		private void processOnePacket()
 				throws IOException, InterruptedException, FullFailureException {
-			ByteBuffer p =
-					queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
+			ByteBuffer p = queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
 			if (p != null && p.hasRemaining()) {
 				processData(p);
 				received = true;
@@ -620,8 +616,7 @@ public abstract class DataGatherer {
 			if (seqNum > maxSeqNum || seqNum < 0) {
 				throw new IllegalStateException("got insane sequence number");
 			}
-			int offset =
-					seqNum * DATA_PER_FULL_PACKET_WITH_SEQUENCE_NUM * WORD_SIZE;
+			int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
 			int trueDataLength = offset + data.limit() - SEQUENCE_NUMBER_SIZE;
 			if (trueDataLength > dataReceiver.capacity()) {
 				throw new IllegalStateException(
@@ -634,11 +629,7 @@ public abstract class DataGatherer {
 			}
 			receivedSeqNums.set(seqNum);
 			if (isEndOfStream) {
-				if (!checkAllReceived()) {
-					finished |= retransmitMissingSequences();
-				} else {
-					finished = true;
-				}
+				finished = retransmitMissingSequences();
 			}
 		}
 
@@ -665,17 +656,9 @@ public abstract class DataGatherer {
 			}
 		}
 
-		private boolean checkAllReceived() {
-			int recvsize = receivedSeqNums.length();
-			if (recvsize > maxSeqNum + 1) {
-				throw new IllegalStateException(
-						"received more data than expected");
-			}
-			return recvsize == maxSeqNum + 1;
-		}
-
 		/**
-		 * Request that the extra monitor core retransmit some packets.
+		 * Request that the extra monitor core retransmit some packets. Does
+		 * nothing if there are no packets missing.
 		 *
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
@@ -685,13 +668,20 @@ public abstract class DataGatherer {
 		 */
 		private boolean retransmitMissingSequences()
 				throws IOException, InterruptedException {
+			int numReceived = receivedSeqNums.cardinality();
+			if (numReceived > maxSeqNum + 1) {
+				throw new IllegalStateException(
+						"received more data than expected");
+			} else if (numReceived == maxSeqNum + 1) {
+				return true;
+			}
+			int numMissing = maxSeqNum - numReceived;
+
 			/*
-			 * Calculate number of missing sequences based on difference between
-			 * expected and received, then determine what they really are by
-			 * building a buffer of them.
+			 * Build a buffer containing the sequence numbers of all missing
+			 * packets.
 			 */
-			IntBuffer missingSeqs = IntBuffer
-					.allocate(maxSeqNum - receivedSeqNums.cardinality());
+			IntBuffer missingSeqs = IntBuffer.allocate(numMissing);
 			for (int i = 0; i < maxSeqNum; i++) {
 				if (!receivedSeqNums.get(i)) {
 					missingSeqs.put(i);
@@ -699,26 +689,28 @@ public abstract class DataGatherer {
 				}
 			}
 			missingSeqs.flip();
+			if (missingSeqs.limit() != numMissing) {
+				throw new IllegalStateException(
+						"computation of missing sequences failed; expected "
+								+ (maxSeqNum - numReceived) + " but got "
+								+ missingSeqs.limit());
+			}
 
 			if (log.isDebugEnabled()) {
 				IntBuffer ib = missingSeqs.asReadOnlyBuffer();
-				log.debug("missing " + ib.limit());
+				log.debug("missing " + missingSeqs + " sequence numbers");
 				while (ib.hasRemaining()) {
-					log.debug("missing seq " + ib.get());
+					log.debug("missing seq: " + ib.get());
 				}
 			}
 
-			if (missingSeqs.limit() == 0) {
-				// No missing sequences; transfer is complete
-				return true;
-			}
-			int numPackets = computeNumberOfPackets(missingSeqs.limit());
+			int numPackets = computeNumberOfPackets(numMissing);
 
 			// Transmit missing sequences as a new SDP Packet
-			conn.sendFirstMissing(extraMonitor, missingSeqs, numPackets);
+			conn.sendFirstMissing(monitorCore, missingSeqs, numPackets);
 			for (int i = 1; i < numPackets; i++) {
 				sleep(DELAY_PER_SEND);
-				conn.sendNextMissing(extraMonitor, missingSeqs);
+				conn.sendNextMissing(monitorCore, missingSeqs);
 			}
 			return false;
 		}
