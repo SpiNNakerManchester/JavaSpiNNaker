@@ -74,6 +74,7 @@ public abstract class DataGatherer {
 	 * Retrieves of data that is less than this many bytes are done via a normal
 	 * SCAMP memory read.
 	 */
+	// Should be 40000; THRESHOLD_WHERE_SDP_BETTER_THAN_DATA_EXTRACTOR_IN_BYTES
 	public static final int SMALL_RETRIEVE_THRESHOLD = 256; // TODO
 	/**
 	 * Maximum number of messages in the message queue. Per parallel download.
@@ -120,7 +121,7 @@ public abstract class DataGatherer {
 	private final Machine machine;
 	private final ExecutorService pool;
 	private int missCount;
-    private Exception caught;
+	private Exception caught;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -143,7 +144,7 @@ public abstract class DataGatherer {
 		this.machine = machine;
 		this.pool = newFixedThreadPool(PARALLEL_SIZE);
 		this.missCount = 0;
-        this.caught = null;
+		this.caught = null;
 	}
 
 	/**
@@ -155,11 +156,11 @@ public abstract class DataGatherer {
 	 *            should be downloaded.
 	 */
 	public void addTask(Gather gather) {
-        // No need to keep adding if there is already an exception
+		// No need to keep adding if there is already an exception
 		// Note: don't care about synchronisation; it's purely an optimisation
-        if (caught == null) {
-            pool.execute(() -> downloadBoard(gather));
-        }
+		if (caught == null) {
+			pool.execute(() -> downloadBoard(gather));
+		}
 	}
 
 	/**
@@ -222,7 +223,7 @@ public abstract class DataGatherer {
 
 		void sendStart(CoreLocation extraMonitorCore, int address, int length)
 				throws IOException {
-			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, length,
+			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, address,
 					length));
 		}
 
@@ -307,7 +308,7 @@ public abstract class DataGatherer {
 	 * @param gatherer
 	 *            The particular gatherer that identifies a board.
 	 */
-	private void downloadBoard(Gather gatherer)  {
+	private void downloadBoard(Gather gatherer) {
 		try {
 			List<Region> smallRetrieves = new ArrayList<>();
 			ChipLocation gathererLocation = gatherer.asChipLocation();
@@ -495,8 +496,7 @@ public abstract class DataGatherer {
 	 * @throws StorageException
 	 *             If the database doesn't like something.
 	 */
-	protected abstract List<Region> getRegion(Placement placement,
-			int regionID)
+	protected abstract List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException;
 
 	/**
@@ -571,8 +571,7 @@ public abstract class DataGatherer {
 			monitorCore = extraMonitor.asCoreLocation();
 			ByteBuffer receiverBuffer =
 					dataReceiver = ByteBuffer.allocate(region.size);
-			maxSeqNum = ceildiv(region.size,
-					DATA_WORDS_PER_PACKET * WORD_SIZE);
+			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			received = false;
@@ -725,7 +724,7 @@ public abstract class DataGatherer {
 
 			if (log.isDebugEnabled()) {
 				IntBuffer ib = missingSeqs.asReadOnlyBuffer();
-				log.debug("missing " + missingSeqs + " sequence numbers");
+				log.debug("missing " + numMissing + " sequence numbers");
 				while (ib.hasRemaining()) {
 					log.debug("missing seq: " + ib.get());
 				}
