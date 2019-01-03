@@ -246,6 +246,24 @@ public abstract class DataGatherer {
 			return messQueue;
 		}
 
+		private void unstick() {
+			synchronized (this) {
+				notifyAll();
+			}
+		}
+
+		private void waitForUnstick() throws InterruptedException {
+			synchronized (this) {
+				wait();
+			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			unstick();
+			super.close();
+		}
+
 		/**
 		 * The thread that listens for Data Speed Up messages.
 		 *
@@ -282,6 +300,7 @@ public abstract class DataGatherer {
 			 *             when trying to put a message on it. (unexpected)
 			 */
 			private void mainLoop() throws IOException, InterruptedException {
+				waitForUnstick();
 				do {
 					try {
 						ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
@@ -292,6 +311,7 @@ public abstract class DataGatherer {
 					} catch (SocketTimeoutException e) {
 						log.info("socket timed out");
 						messQueue.put(EMPTY_DATA);
+						waitForUnstick();
 					}
 				} while (!isClosed());
 			}
@@ -573,6 +593,7 @@ public abstract class DataGatherer {
 					dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
+			conn.unstick();
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			received = false;
 			try {
@@ -738,6 +759,7 @@ public abstract class DataGatherer {
 				snooze(DELAY_PER_SEND);
 				conn.sendNextMissing(monitorCore, missingSeqs);
 			}
+			conn.unstick();
 			return false;
 		}
 	}
