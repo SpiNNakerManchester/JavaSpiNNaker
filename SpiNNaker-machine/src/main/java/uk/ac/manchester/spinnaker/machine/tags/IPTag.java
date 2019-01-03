@@ -275,8 +275,8 @@ public final class IPTag extends Tag {
         if (getPort() != null) {
             sb.append(":").append(getPort());
         }
-        sb.append("} : ").append(trafficIdentifier);
-        sb.append(" : ").append(destination);
+        sb.append("} TRF:").append(trafficIdentifier.label);
+        sb.append(" ").append(destination);
         return sb.append(")").toString();
     }
 }
