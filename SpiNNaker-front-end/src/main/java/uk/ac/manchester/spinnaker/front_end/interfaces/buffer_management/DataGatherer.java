@@ -175,12 +175,15 @@ public abstract class DataGatherer {
 	 * @throws StorageException
 	 *             If DB access goes wrong.
 	 * @throws InterruptedException
-	 *             If the wait is interrupted.
+	 *             If the wait (for the internal thread pool to finish) is
+	 *             interrupted.
 	 */
 	public int waitForTasksToFinish() throws IOException, ProcessException,
 			StorageException, InterruptedException {
 		pool.shutdown();
-		pool.awaitTermination(1, TimeUnit.DAYS);
+		while (!pool.isTerminated()) {
+			pool.awaitTermination(1, TimeUnit.DAYS);
+		}
 		try {
 			if (caught != null) {
 				throw caught;
@@ -294,7 +297,7 @@ public abstract class DataGatherer {
 		}
 	}
 
-	private class FullFailureException extends Exception {
+	private final class FullFailureException extends Exception {
 		private static final long serialVersionUID = 1L;
 	}
 
@@ -357,8 +360,8 @@ public abstract class DataGatherer {
 	 */
 	private void doDownloads(Collection<Monitor> monitors,
 			List<Region> smallRetrieves, GatherDownloadConnection conn,
-			BlockingQueue<ByteBuffer> messQueue)
-			throws IOException, ProcessException, StorageException, FullFailureException {
+			BlockingQueue<ByteBuffer> messQueue) throws IOException,
+			ProcessException, StorageException, FullFailureException {
 		Downloader d = null;
 		for (Monitor mon : monitors) {
 			for (Placement place : mon.getPlacements()) {
@@ -414,6 +417,7 @@ public abstract class DataGatherer {
 				continue;
 			}
 			if (r.size < SMALL_RETRIEVE_THRESHOLD) {
+				// Do this immediately; order matters!
 				storeData(r, txrx.readMemory(r.core.asChipLocation(),
 						r.startAddress, r.size));
 			} else {
@@ -470,7 +474,14 @@ public abstract class DataGatherer {
 	}
 
 	/**
-	 * Work out exactly where is going to be downloaded.
+	 * Work out exactly where is going to be downloaded. The elements of the
+	 * list this method returns will end up directing what calls to
+	 * {@link #storeData(Region,ByteBuffer) storeData(...)} are done, and the
+	 * order in which they are done.
+	 * <p>
+	 * The recording region memory management scheme effectively requires this
+	 * to be a list of zero, one or two elements, but the {@link DataGatherer}
+	 * class does not care.
 	 *
 	 * @param placement
 	 *            The placement information.
@@ -489,7 +500,10 @@ public abstract class DataGatherer {
 			throws IOException, ProcessException, StorageException;
 
 	/**
-	 * Store the data retrieved from a region.
+	 * Store the data retrieved from a region. Called (at most) once for each
+	 * element in the list returned by {@link #getRegion(Placement,int)
+	 * getRegion(...)}, <i>in order</i>. No guarantee is made about which thread
+	 * will call this method.
 	 *
 	 * @param r
 	 *            Where the data came from.
@@ -511,8 +525,13 @@ public abstract class DataGatherer {
 		private final GatherDownloadConnection conn;
 		private final BlockingQueue<ByteBuffer> queue;
 
+		/**
+		 * Whether a packet has previously been received on this connection
+		 * since it was configured to talk to the current core; if not, it's
+		 * probably a dead connection or problem with the core causing the
+		 * failure.
+		 */
 		private boolean received;
-		private boolean finished;
 		private int timeoutcount = 0;
 		private BitSet receivedSeqNums;
 		private int maxSeqNum;
@@ -550,47 +569,63 @@ public abstract class DataGatherer {
 		ByteBuffer doDownload(Placement extraMonitor, Region region)
 				throws IOException, FullFailureException {
 			monitorCore = extraMonitor.asCoreLocation();
-			dataReceiver = ByteBuffer.allocate(region.size);
+			ByteBuffer receiverBuffer =
+					dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size,
 					DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.sendStart(monitorCore, region.startAddress, region.size);
-			finished = false;
 			received = false;
 			try {
+				boolean finished;
 				do {
-					processOnePacket();
-				} while (!finished && dataReceiver != null);
+					finished = processOnePacket(2 * TIMEOUT_PER_RECEIVE);
+				} while (!finished);
 			} catch (IOException e) {
 				throw e;
 			} catch (Exception e) {
-				finished = true;
-				dataReceiver = null;
+				log.error("problem with download", e);
+				if (!received) {
+					log.warn("never actually received any packets from "
+							+ "<{}> for {}", monitorCore, region);
+				}
+				throw new FullFailureException();
 			}
-			if (dataReceiver != null) {
-				return dataReceiver;
-			}
-			throw new FullFailureException();
+			return receiverBuffer;
 		}
 
 		/**
 		 * Take one message off the queue and process it.
 		 *
+		 * @param timeout
+		 *            How long to wait for the queue to deliver a packet, in
+		 *            milliseconds.
+		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If packet retransmission requesting fails.
-		 * @throws InterruptedException
-		 *             If any wait is interrupted.
 		 * @throws FullFailureException
 		 *             If we have a full failure.
 		 */
-		private void processOnePacket()
-				throws IOException, InterruptedException, FullFailureException {
-			ByteBuffer p = queue.poll(2 * TIMEOUT_PER_RECEIVE, MILLISECONDS);
+		private boolean processOnePacket(int timeout)
+				throws IOException, FullFailureException {
+			ByteBuffer p = getNextPacket(timeout);
 			if (p != null && p.hasRemaining()) {
-				processData(p);
 				received = true;
-			} else {
-				processTimeout();
+				return processData(p);
+			}
+			return processTimeout();
+		}
+
+		private ByteBuffer getNextPacket(int timeout) {
+			try {
+				return queue.poll(timeout, MILLISECONDS);
+			} catch (InterruptedException ignored) {
+				/*
+				 * This is in a thread that isn't ever interrupted, but IN
+				 * THEORY interruption is exactly like timing out as far as this
+				 * thread is concerned anyway.
+				 */
+				return null;
 			}
 		}
 
@@ -599,15 +634,13 @@ public abstract class DataGatherer {
 		 *
 		 * @param data
 		 *            The content of the packet.
+		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If the packet is an end-of-stream packet yet there are
-		 *             packets outstanding, and the retransmssion causes an
+		 *             packets outstanding, and the retransmission causes an
 		 *             error.
-		 * @throws InterruptedException
-		 *             If a wait is interrupted (unexpectedly)
 		 */
-		private void processData(ByteBuffer data)
-				throws IOException, InterruptedException {
+		private boolean processData(ByteBuffer data) throws IOException {
 			int firstPacketElement = data.getInt();
 			int seqNum = firstPacketElement & ~LAST_MESSAGE_FLAG_BIT_MASK;
 			boolean isEndOfStream =
@@ -628,32 +661,29 @@ public abstract class DataGatherer {
 				data.get(dataReceiver.array(), offset, trueDataLength - offset);
 			}
 			receivedSeqNums.set(seqNum);
-			if (isEndOfStream) {
-				finished = retransmitMissingSequences();
-			}
+			return isEndOfStream && retransmitMissingSequences();
 		}
 
 		/**
 		 * Process the fact that the message queue was in a timeout state.
 		 *
+		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If there are packets outstanding, and the retransmssion
 		 *             causes an error.
-		 * @throws InterruptedException
-		 *             If a wait is interrupted (unexpectedly)
 		 * @throws FullFailureException
 		 *             If we have a full failure.
 		 */
-		private void processTimeout()
-				throws IOException, InterruptedException, FullFailureException {
+		private boolean processTimeout()
+				throws IOException, FullFailureException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new FullFailureException();
-			} else if (!finished) {
-				// retransmit missing packets
-				log.debug("doing reinjection");
-				finished = retransmitMissingSequences();
 			}
+
+			// retransmit missing packets
+			log.debug("doing reinjection");
+			return retransmitMissingSequences();
 		}
 
 		/**
@@ -663,11 +693,8 @@ public abstract class DataGatherer {
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
 		 *             If there are failures.
-		 * @throws InterruptedException
-		 *             If a delay is interrupted (unexpectedly)
 		 */
-		private boolean retransmitMissingSequences()
-				throws IOException, InterruptedException {
+		private boolean retransmitMissingSequences() throws IOException {
 			int numReceived = receivedSeqNums.cardinality();
 			if (numReceived > maxSeqNum + 1) {
 				throw new IllegalStateException(
@@ -709,10 +736,28 @@ public abstract class DataGatherer {
 			// Transmit missing sequences as a new SDP Packet
 			conn.sendFirstMissing(monitorCore, missingSeqs, numPackets);
 			for (int i = 1; i < numPackets; i++) {
-				sleep(DELAY_PER_SEND);
+				snooze(DELAY_PER_SEND);
 				conn.sendNextMissing(monitorCore, missingSeqs);
 			}
 			return false;
+		}
+	}
+
+	/**
+	 * Have a quiet sleep.
+	 *
+	 * @param delay
+	 *            How long to sleep, in milliseconds.
+	 */
+	private static void snooze(int delay) {
+		try {
+			sleep(delay);
+		} catch (InterruptedException ignored) {
+			/*
+			 * This is only used in contexts where we don't actually interrupt
+			 * the thread, so this exception isn't actually ever going to be
+			 * thrown.
+			 */
 		}
 	}
 }
