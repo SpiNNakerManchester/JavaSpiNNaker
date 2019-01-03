@@ -472,6 +472,7 @@ public abstract class DataGatherer {
 				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
 				TRAFFIC_ID);
 		txrx.setIPTag(tag);
+		log.info("reconfigured {} to {}", iptag, tag);
 	}
 
 	/**
