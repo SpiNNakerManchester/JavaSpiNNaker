@@ -201,128 +201,6 @@ public abstract class DataGatherer {
 	}
 
 	/**
-	 * A connection for handling the Data Speed Up protocol.
-	 *
-	 * @author Donal Fellows
-	 */
-	private static class GatherDownloadConnection extends SCPConnection {
-		/**
-		 * Create an instance.
-		 *
-		 * @param location
-		 *            Where the connection is talking to.
-		 * @param iptag
-		 *            What IPtag the Data Speed Up protocol is working on.
-		 * @throws IOException
-		 *             If anything goes wrong with socket setup.
-		 */
-		GatherDownloadConnection(ChipLocation location, IPTag iptag)
-				throws IOException {
-			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
-		}
-
-		void sendStart(CoreLocation extraMonitorCore, int address, int length)
-				throws IOException {
-			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, address,
-					length));
-		}
-
-		void sendFirstMissing(CoreLocation extraMonitorCore,
-				IntBuffer missingSeqs, int numPackets) throws IOException {
-			sendSDPMessage(
-					createFirst(extraMonitorCore, missingSeqs, numPackets));
-		}
-
-		void sendNextMissing(CoreLocation extraMonitorCore,
-				IntBuffer missingSeqs) throws IOException {
-			sendSDPMessage(createNext(extraMonitorCore, missingSeqs));
-		}
-
-		BlockingQueue<ByteBuffer> launchReaderThread() {
-			BlockingQueue<ByteBuffer> messQueue =
-					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-			ReaderThread t = new ReaderThread(messQueue);
-			t.start();
-			return messQueue;
-		}
-
-		private void unstick() {
-			synchronized (this) {
-				notifyAll();
-			}
-		}
-
-		private void waitForUnstick() throws InterruptedException {
-			synchronized (this) {
-				wait();
-			}
-		}
-
-		@Override
-		public void close() throws IOException {
-			unstick();
-			super.close();
-		}
-
-		/**
-		 * The thread that listens for Data Speed Up messages.
-		 *
-		 * @author Donal Fellows
-		 */
-		private class ReaderThread extends Thread {
-			private final BlockingQueue<ByteBuffer> messQueue;
-
-			ReaderThread(BlockingQueue<ByteBuffer> messQueue) {
-				super("ReadThread");
-				setDaemon(true);
-				this.messQueue = messQueue;
-			}
-
-			@Override
-			public void run() {
-				// While socket is open add messages to the queue
-				try {
-					mainLoop();
-				} catch (InterruptedException e) {
-					log.error("failed to offer packet to queue");
-				} catch (IOException e) {
-					log.error("failed to receive packet", e);
-				}
-			}
-
-			/**
-			 * The main loop of the thread.
-			 *
-			 * @throws IOException
-			 *             If message reception fails.
-			 * @throws InterruptedException
-			 *             If the message queue is full and we get interrupted
-			 *             when trying to put a message on it. (unexpected)
-			 */
-			private void mainLoop() throws IOException, InterruptedException {
-				waitForUnstick();
-				do {
-					try {
-						ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
-						if (recvd != null) {
-							messQueue.put(recvd);
-							log.debug("pushed");
-						}
-					} catch (SocketTimeoutException e) {
-						log.info("socket timed out");
-						messQueue.put(EMPTY_DATA);
-						waitForUnstick();
-					}
-				} while (!isClosed());
-			}
-		}
-	}
-
-	private final class FullFailureException extends Exception {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
 	 * Do all the downloads for a board.
 	 *
 	 * @param gatherer
@@ -336,8 +214,7 @@ public abstract class DataGatherer {
 					gathererLocation, gatherer.getIptag())) {
 				reconfigureIPtag(gatherer.getIptag(), gathererLocation, conn);
 				configureBoardRouterTimeouts(gathererLocation, false);
-				doDownloads(gatherer.getMonitors(), smallRetrieves, conn,
-						conn.launchReaderThread());
+				doDownloads(gatherer.getMonitors(), smallRetrieves, conn);
 			} finally {
 				configureBoardRouterTimeouts(gathererLocation, true);
 			}
@@ -367,9 +244,7 @@ public abstract class DataGatherer {
 	 *            Where to store small retrieves for later handling (via usual
 	 *            SCP transfers).
 	 * @param conn
-	 *            The connection for talking to SpiNNaker
-	 * @param messQueue
-	 *            The queue of received Data Speed Up messages.
+	 *            The connection for talking to SpiNNaker.
 	 * @throws StorageException
 	 *             If the database rejects something.
 	 * @throws IOException
@@ -380,15 +255,15 @@ public abstract class DataGatherer {
 	 *             If things time out unrecoverably
 	 */
 	private void doDownloads(Collection<Monitor> monitors,
-			List<Region> smallRetrieves, GatherDownloadConnection conn,
-			BlockingQueue<ByteBuffer> messQueue) throws IOException,
+			List<Region> smallRetrieves, GatherDownloadConnection conn
+			) throws IOException,
 			ProcessException, StorageException, FullFailureException {
-		Downloader d = null;
+		Downloader dl = new Downloader(conn);
 		for (Monitor mon : monitors) {
 			for (Placement place : mon.getPlacements()) {
 				for (int regionID : place.getVertex().getRecordedRegionIds()) {
-					d = handleOneRecordingRegion(conn, messQueue,
-							smallRetrieves, d, place, regionID);
+					handleOneRecordingRegion(smallRetrieves, dl, place,
+							regionID);
 				}
 			}
 		}
@@ -397,22 +272,15 @@ public abstract class DataGatherer {
 	/**
 	 * Process a single (recording) region.
 	 *
-	 * @param conn
-	 *            The connection for talking to SpiNNaker
-	 * @param messQueue
-	 *            The queue of received Data Speed Up messages.
 	 * @param smallRetrieves
 	 *            Where to store small retrieves for later handling (via usual
 	 *            SCP transfers).
-	 * @param d
-	 *            The downloader object. May be {@code null} if it hasn't been
-	 *            allocated yet.
+	 * @param dl
+	 *            The downloader object.
 	 * @param place
 	 *            Where this region is.
 	 * @param regionID
 	 *            The ID (index) of this region.
-	 * @return The downloader object. May be {@code null} if it hasn't been
-	 *         allocated yet.
 	 * @throws StorageException
 	 *             If the database rejects something.
 	 * @throws IOException
@@ -422,15 +290,14 @@ public abstract class DataGatherer {
 	 * @throws FullFailureException
 	 *             If things time out unrecoverably
 	 */
-	private Downloader handleOneRecordingRegion(GatherDownloadConnection conn,
-			BlockingQueue<ByteBuffer> messQueue, List<Region> smallRetrieves,
-			Downloader d, Placement place, int regionID)
+	private void handleOneRecordingRegion(List<Region> smallRetrieves,
+			Downloader dl, Placement place, int regionID)
 			throws StorageException, IOException, ProcessException,
 			FullFailureException {
 		List<Region> rs = getRegion(place, regionID);
 		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
 			smallRetrieves.addAll(rs);
-			return d;
+			return;
 		}
 		for (Region r : rs) {
 			if (r.size < 1) {
@@ -442,13 +309,9 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory(r.core.asChipLocation(),
 						r.startAddress, r.size));
 			} else {
-				if (d == null) {
-					d = new Downloader(conn, messQueue);
-				}
-				storeData(r, d.doDownload(place, r));
+				storeData(r, dl.doDownload(place, r));
 			}
 		}
-		return d;
 	}
 
 	/**
@@ -537,6 +400,146 @@ public abstract class DataGatherer {
 			throws StorageException;
 
 	/**
+	 * Have a quiet sleep. Utility method.
+	 *
+	 * @param delay
+	 *            How long to sleep, in milliseconds.
+	 */
+	private static void snooze(int delay) {
+		try {
+			sleep(delay);
+		} catch (InterruptedException ignored) {
+			/*
+			 * This is only used in contexts where we don't actually interrupt
+			 * the thread, so this exception isn't actually ever going to be
+			 * thrown.
+			 */
+		}
+	}
+
+	/**
+	 * A connection for handling the Data Speed Up protocol.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static class GatherDownloadConnection extends SCPConnection {
+		/**
+		 * Create an instance.
+		 *
+		 * @param location
+		 *            Where the connection is talking to.
+		 * @param iptag
+		 *            What IPtag the Data Speed Up protocol is working on.
+		 * @throws IOException
+		 *             If anything goes wrong with socket setup.
+		 */
+		GatherDownloadConnection(ChipLocation location, IPTag iptag)
+				throws IOException {
+			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
+		}
+
+		void sendStart(CoreLocation extraMonitorCore, int address, int length)
+				throws IOException {
+			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, address,
+					length));
+		}
+
+		void sendFirstMissing(CoreLocation extraMonitorCore,
+				IntBuffer missingSeqs, int numPackets) throws IOException {
+			sendSDPMessage(
+					createFirst(extraMonitorCore, missingSeqs, numPackets));
+		}
+
+		void sendNextMissing(CoreLocation extraMonitorCore,
+				IntBuffer missingSeqs) throws IOException {
+			sendSDPMessage(createNext(extraMonitorCore, missingSeqs));
+		}
+
+		BlockingQueue<ByteBuffer> launchReaderThread() {
+			BlockingQueue<ByteBuffer> messQueue =
+					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+			ReaderThread t = new ReaderThread(messQueue);
+			t.start();
+			return messQueue;
+		}
+
+		private void unstick() {
+			synchronized (this) {
+				notifyAll();
+			}
+		}
+
+		private void waitForUnstick() throws InterruptedException {
+			synchronized (this) {
+				wait();
+			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			super.close();
+			unstick();
+		}
+
+		/**
+		 * The thread that listens for Data Speed Up messages.
+		 *
+		 * @author Donal Fellows
+		 */
+		private class ReaderThread extends Thread {
+			private final BlockingQueue<ByteBuffer> messQueue;
+
+			ReaderThread(BlockingQueue<ByteBuffer> messQueue) {
+				super("ReadThread");
+				setDaemon(true);
+				this.messQueue = messQueue;
+			}
+
+			@Override
+			public void run() {
+				// While socket is open add messages to the queue
+				try {
+					mainLoop();
+				} catch (InterruptedException e) {
+					log.error("failed to offer packet to queue");
+				} catch (IOException e) {
+					log.error("failed to receive packet", e);
+				}
+			}
+
+			/**
+			 * The main loop of the thread.
+			 *
+			 * @throws IOException
+			 *             If message reception fails.
+			 * @throws InterruptedException
+			 *             If the message queue is full and we get interrupted
+			 *             when trying to put a message on it. (unexpected)
+			 */
+			private void mainLoop() throws IOException, InterruptedException {
+				waitForUnstick();
+				do {
+					try {
+						ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
+						if (recvd != null) {
+							messQueue.put(recvd);
+							log.debug("pushed");
+						}
+					} catch (SocketTimeoutException e) {
+						log.info("socket timed out");
+						messQueue.put(EMPTY_DATA);
+						waitForUnstick();
+					}
+				} while (!isClosed());
+			}
+		}
+	}
+
+	private final class FullFailureException extends Exception {
+		private static final long serialVersionUID = 1L;
+	}
+
+	/**
 	 * Class used to manage a download. Every instance <em>must only</em> ever
 	 * be used from one thread.
 	 *
@@ -564,13 +567,10 @@ public abstract class DataGatherer {
 		 *
 		 * @param connection
 		 *            The connection used to send messages.
-		 * @param messageQueue
-		 *            The queue used to receive messages.
 		 */
-		private Downloader(GatherDownloadConnection connection,
-				BlockingQueue<ByteBuffer> messageQueue) {
+		private Downloader(GatherDownloadConnection connection) {
 			conn = connection;
-			queue = messageQueue;
+			queue = connection.launchReaderThread();
 		}
 
 		/**
@@ -762,24 +762,6 @@ public abstract class DataGatherer {
 			}
 			conn.unstick();
 			return false;
-		}
-	}
-
-	/**
-	 * Have a quiet sleep.
-	 *
-	 * @param delay
-	 *            How long to sleep, in milliseconds.
-	 */
-	private static void snooze(int delay) {
-		try {
-			sleep(delay);
-		} catch (InterruptedException ignored) {
-			/*
-			 * This is only used in contexts where we don't actually interrupt
-			 * the thread, so this exception isn't actually ever going to be
-			 * thrown.
-			 */
 		}
 	}
 }
