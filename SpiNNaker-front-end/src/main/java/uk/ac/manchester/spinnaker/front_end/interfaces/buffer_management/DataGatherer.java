@@ -96,13 +96,11 @@ public abstract class DataGatherer {
 	private static final int WORDS_PER_PACKET = 68;
 	/**
 	 * What is the maximum number of payload <em>words</em> in a packet that
-	 * also has a sequence number?
+	 * also has a sequence number? This is one less than the total maximum
+	 * number of words in an SDP packet; that extra word is the control word
+	 * which encodes the sequence number and the end-of-stream flag.
 	 */
 	private static final int DATA_WORDS_PER_PACKET = WORDS_PER_PACKET - 1;
-	/** How many bytes for the end-flag? */
-	private static final int END_FLAG_SIZE = WORD_SIZE;
-	/** How many bytes for the sequence number? */
-	private static final int SEQUENCE_NUMBER_SIZE = WORD_SIZE;
 	/**
 	 * Mask used to pick out the bit that says whether a sequence number is the
 	 * last in a stream.
@@ -212,11 +210,20 @@ public abstract class DataGatherer {
 			ChipLocation gathererLocation = gatherer.asChipLocation();
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
 					gathererLocation, gatherer.getIptag())) {
+				log.info("reconfiguring IPtag to point to receiving socket");
 				reconfigureIPtag(gatherer.getIptag(), gathererLocation, conn);
+				log.info("disabling router timeouts on board {}",
+						gathererLocation);
 				configureBoardRouterTimeouts(gathererLocation, false);
 				doDownloads(gatherer.getMonitors(), smallRetrieves, conn);
 			} finally {
+				log.info("enabling router timeouts on board {}",
+						gathererLocation);
 				configureBoardRouterTimeouts(gathererLocation, true);
+			}
+			if (!smallRetrieves.isEmpty()) {
+				log.info("performing additional retrievals of "
+						+ "small data blocks");
 			}
 			for (Region r : smallRetrieves) {
 				if (r.size > 0) {
@@ -228,8 +235,10 @@ public abstract class DataGatherer {
 			}
 		} catch (IOException | ProcessException | StorageException
 				| RuntimeException | FullFailureException e) {
-			log.warn("problem when downloading a board's data", e);
-			this.caught = e;
+			if (!(e instanceof FullFailureException)) {
+				log.warn("problem when downloading a board's data", e);
+			}
+			caught = e;
 		}
 	}
 
@@ -252,7 +261,7 @@ public abstract class DataGatherer {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws FullFailureException
-	 *             If things time out unrecoverably
+	 *             If things time out unrecoverably.
 	 */
 	private void doDownloads(Collection<Monitor> monitors,
 			List<Region> smallRetrieves, GatherDownloadConnection conn
@@ -261,6 +270,10 @@ public abstract class DataGatherer {
 		Downloader dl = new Downloader(conn);
 		for (Monitor mon : monitors) {
 			for (Placement place : mon.getPlacements()) {
+				if (log.isInfoEnabled()) {
+					log.info("downloading recording regions from {} via {}",
+							place.asCoreLocation(), mon.asCoreLocation());
+				}
 				for (int regionID : place.getVertex().getRecordedRegionIds()) {
 					handleOneRecordingRegion(smallRetrieves, dl, place,
 							regionID);
@@ -288,7 +301,7 @@ public abstract class DataGatherer {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws FullFailureException
-	 *             If things time out unrecoverably
+	 *             If things time out unrecoverably.
 	 */
 	private void handleOneRecordingRegion(List<Region> smallRetrieves,
 			Downloader dl, Placement place, int regionID)
@@ -300,8 +313,8 @@ public abstract class DataGatherer {
 			return;
 		}
 		for (Region r : rs) {
+			// Skip zero-sized retrieves
 			if (r.size < 1) {
-				smallRetrieves.add(r);
 				continue;
 			}
 			if (r.size < SMALL_RETRIEVE_THRESHOLD) {
@@ -438,23 +451,69 @@ public abstract class DataGatherer {
 			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
 		}
 
+		/**
+		 * Send a message asking the extra monitor core to read from a region of
+		 * SDRAM and send it to us (using the configured IPtag).
+		 *
+		 * @param extraMonitorCore
+		 *            The location of the monitor.
+		 * @param address
+		 *            Where to read from.
+		 * @param length
+		 *            How many bytes to read.
+		 * @throws IOException
+		 *             If message sending fails.
+		 */
 		void sendStart(CoreLocation extraMonitorCore, int address, int length)
 				throws IOException {
 			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, address,
 					length));
 		}
 
+		/**
+		 * Send a message asking the extra monitor core to ask it to resend some
+		 * data. This will be the first in a sequence of packets that form the
+		 * overall request.
+		 *
+		 * @param extraMonitorCore
+		 *            The location of the monitor.
+		 * @param missingSeqs
+		 *            Description of what sequence numbers are missing.
+		 * @param numPackets
+		 *            How many resend messages will be used.
+		 * @throws IOException
+		 *             If message sending fails.
+		 */
 		void sendFirstMissing(CoreLocation extraMonitorCore,
 				IntBuffer missingSeqs, int numPackets) throws IOException {
 			sendSDPMessage(
 					createFirst(extraMonitorCore, missingSeqs, numPackets));
 		}
 
+		/**
+		 * Send a message asking the extra monitor core to ask it to resend some
+		 * data. This will be the one of the subsequent messages in a sequence
+		 * of packets that form the overall request.
+		 *
+		 * @param extraMonitorCore
+		 *            The location of the monitor.
+		 * @param missingSeqs
+		 *            Description of what sequence numbers are missing.
+		 * @throws IOException
+		 *             If message sending fails.
+		 */
 		void sendNextMissing(CoreLocation extraMonitorCore,
 				IntBuffer missingSeqs) throws IOException {
 			sendSDPMessage(createNext(extraMonitorCore, missingSeqs));
 		}
 
+		/**
+		 * Start the reader thread.
+		 *
+		 * @return The queue containing the messages that will be received by
+		 *         the reader thread. Timeouts are described by empty messages,
+		 *         as SpiNNaker never sends those out.
+		 */
 		BlockingQueue<ByteBuffer> launchReaderThread() {
 			BlockingQueue<ByteBuffer> messQueue =
 					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
@@ -463,7 +522,11 @@ public abstract class DataGatherer {
 			return messQueue;
 		}
 
-		private void unstick() {
+		/**
+		 * Asks the reader thread to continue reading. Does nothing if the
+		 * reader thread isn't already waiting.
+		 */
+		void unstick() {
 			synchronized (this) {
 				notifyAll();
 			}
@@ -482,6 +545,39 @@ public abstract class DataGatherer {
 		}
 
 		/**
+		 * The main loop of the thread. While the socket is open, messages will
+		 * be added to the queue. When a timeout occurs, the reader pauses until
+		 * the consumer is ready to handle things once again.
+		 *
+		 * @param messQueue
+		 *            Where to store received messages. Timeouts are handled by
+		 *            putting in an empty message; SpiNNaker never sends out an
+		 *            empty message.
+		 * @throws IOException
+		 *             If message reception fails.
+		 * @throws InterruptedException
+		 *             If the message queue is full and we get interrupted when
+		 *             trying to put a message on it. (unexpected)
+		 */
+		private void mainLoop(BlockingQueue<ByteBuffer> messQueue)
+				throws IOException, InterruptedException {
+			waitForUnstick();
+			do {
+				try {
+					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
+					if (recvd != null) {
+						messQueue.put(recvd);
+						log.debug("pushed");
+					}
+				} catch (SocketTimeoutException e) {
+					log.info("socket timed out");
+					messQueue.put(EMPTY_DATA);
+					waitForUnstick();
+				}
+			} while (!isClosed());
+		}
+
+		/**
 		 * The thread that listens for Data Speed Up messages.
 		 *
 		 * @author Donal Fellows
@@ -492,6 +588,7 @@ public abstract class DataGatherer {
 			ReaderThread(BlockingQueue<ByteBuffer> messQueue) {
 				super("ReadThread");
 				setDaemon(true);
+				setPriority(MAX_PRIORITY);
 				this.messQueue = messQueue;
 			}
 
@@ -499,42 +596,22 @@ public abstract class DataGatherer {
 			public void run() {
 				// While socket is open add messages to the queue
 				try {
-					mainLoop();
+					mainLoop(messQueue);
 				} catch (InterruptedException e) {
 					log.error("failed to offer packet to queue");
 				} catch (IOException e) {
 					log.error("failed to receive packet", e);
 				}
 			}
-
-			/**
-			 * The main loop of the thread.
-			 *
-			 * @throws IOException
-			 *             If message reception fails.
-			 * @throws InterruptedException
-			 *             If the message queue is full and we get interrupted
-			 *             when trying to put a message on it. (unexpected)
-			 */
-			private void mainLoop() throws IOException, InterruptedException {
-				waitForUnstick();
-				do {
-					try {
-						ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
-						if (recvd != null) {
-							messQueue.put(recvd);
-							log.debug("pushed");
-						}
-					} catch (SocketTimeoutException e) {
-						log.info("socket timed out");
-						messQueue.put(EMPTY_DATA);
-						waitForUnstick();
-					}
-				} while (!isClosed());
-			}
 		}
 	}
 
+	/**
+	 * Exception that indicates a total (i.e., unrecoverable) failure to do a
+	 * download.
+	 *
+	 * @author Donal Fellows
+	 */
 	private final class FullFailureException extends Exception {
 		private static final long serialVersionUID = 1L;
 	}
@@ -585,13 +662,12 @@ public abstract class DataGatherer {
 		 * @throws IOException
 		 *             If anything unexpected goes wrong.
 		 * @throws FullFailureException
-		 *             If a download fails unrecoverably
+		 *             If a download fails unrecoverably.
 		 */
 		ByteBuffer doDownload(Placement extraMonitor, Region region)
 				throws IOException, FullFailureException {
 			monitorCore = extraMonitor.asCoreLocation();
-			ByteBuffer receiverBuffer =
-					dataReceiver = ByteBuffer.allocate(region.size);
+			dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.unstick();
@@ -602,17 +678,19 @@ public abstract class DataGatherer {
 				do {
 					finished = processOnePacket(2 * TIMEOUT_PER_RECEIVE);
 				} while (!finished);
-			} catch (IOException e) {
+			} catch (FullFailureException | IOException e) {
 				throw e;
 			} catch (Exception e) {
 				log.error("problem with download", e);
+				throw new FullFailureException();
+			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
 							+ "<{}> for {}", monitorCore, region);
 				}
-				throw new FullFailureException();
 			}
-			return receiverBuffer;
+			dataReceiver.position(0);
+			return dataReceiver;
 		}
 
 		/**
@@ -671,15 +749,14 @@ public abstract class DataGatherer {
 				throw new IllegalStateException("got insane sequence number");
 			}
 			int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
-			int trueDataLength = offset + data.limit() - SEQUENCE_NUMBER_SIZE;
-			if (trueDataLength > dataReceiver.capacity()) {
+			if (offset + data.remaining() > dataReceiver.limit()) {
 				throw new IllegalStateException(
 						"received more data than expected");
 			}
 
-			if (!isEndOfStream || data.limit() != END_FLAG_SIZE) {
-				data.position(SEQUENCE_NUMBER_SIZE);
-				data.get(dataReceiver.array(), offset, trueDataLength - offset);
+			if (!isEndOfStream || data.hasRemaining()) {
+				dataReceiver.position(offset);
+				dataReceiver.put(data);
 			}
 			receivedSeqNums.set(seqNum);
 			return isEndOfStream && retransmitMissingSequences();
@@ -746,9 +823,9 @@ public abstract class DataGatherer {
 
 			if (log.isDebugEnabled()) {
 				IntBuffer ib = missingSeqs.asReadOnlyBuffer();
-				log.debug("missing " + numMissing + " sequence numbers");
+				log.debug("missing {} sequence numbers", numMissing);
 				while (ib.hasRemaining()) {
-					log.debug("missing seq: " + ib.get());
+					log.debug("missing seq: {}", ib.get());
 				}
 			}
 

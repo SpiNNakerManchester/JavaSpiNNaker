@@ -22,32 +22,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
- * Prototype with minimum information needed.
+ * Vertex placement information.
  *
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 class Placement implements HasCoreLocation {
-
-    /** The x value of the core this placement is on. */
+    /** The X coordinate of the core this vertex is placed on. */
     final int x;
-    /** The y value of the core this placement is on. */
+    /** The Y coordinate of the core this vertex is placed on. */
     final int y;
-    /** The p value of the core this placement is on. */
+    /** The processor ID of the core this vertex is placed on. */
     final int p;
     /** Minimal vertex info. */
-    final Vertex vertex;
+	final Vertex vertex;
 
-    /**
-     * Constructor with minimum information needed.
-     *
-     * Could be called from an unmarsheller.
-     *
-     * @param x
-     * @param y
-     * @param p
-     * @param vertex
-     */
+	/**
+	 * Constructor with minimum information needed.
+	 * <p>
+	 * Could be called from an unmarshaller.
+	 *
+	 * @param x
+	 *            Vertex X coordinate.
+	 * @param y
+	 *            Vertex Y coordinate.
+	 * @param p
+	 *            Vertex processor ID.
+	 * @param vertex
+	 *            Vertex recording region information.
+	 */
     Placement(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
@@ -73,8 +76,8 @@ class Placement implements HasCoreLocation {
         return p;
     }
 
+    /** @return The information about the vertex. */
     Vertex getVertex() {
         return vertex;
     }
-
 }

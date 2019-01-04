@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
 /**
- * Prototype with minimum information needed.
+ * Data speed up packet gatherer description.
  *
  * @author Christian-B
  */
@@ -40,19 +40,28 @@ class Gather implements HasCoreLocation {
     final int p;
     /** The IPTag of the package gatherer. */
     private final IPTag iptag;
-
+    /** The extra monitor cores, and what to retrieve from them. */
     private final List<Monitor> monitors;
 
-    /**
-     * Constructor with minimum information needed.
-     *
-     * Could be called from an unmarsheller.
-     *
-     * @param x
-     * @param y
-     * @param p
-     * @param vertex
-     */
+	/**
+	 * Constructor with minimum information needed.
+	 * <p>
+	 * Could be called from an unmarshaller.
+	 *
+	 * @param x
+	 *            Gatherer X coordinate.
+	 * @param y
+	 *            Gatherer Y coordinate.
+	 * @param p
+	 *            Gatherer processor ID.
+	 * @param iptag
+	 *            Information about IPtag for the gatherer to use.
+	 * @param monitors
+	 *            What information to retrieve and from where. This should be
+	 *            information about the extra monitor cores that have been
+	 *            placed on the same board as this data speed up packet
+	 *            gatherer.
+	 */
     Gather(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
@@ -94,6 +103,4 @@ class Gather implements HasCoreLocation {
     public List<Monitor> getMonitors() {
         return Collections.unmodifiableList(monitors);
     }
-
-
 }

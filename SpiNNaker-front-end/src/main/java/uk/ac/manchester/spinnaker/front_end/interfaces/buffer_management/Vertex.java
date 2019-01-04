@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Prototype with minimum information needed.
+ * Vertex recording region information.
  *
  * @author Christian-B
  */
@@ -31,7 +31,15 @@ public class Vertex {
     /** Label as received from Python. */
     final String label;
 
-    /** Address at which to start recording. */
+	/**
+	 * Address at which to find recording metadata. This was allocated during
+	 * data specification execution, and contains a description of <i>all</i>
+	 * the recording regions owned by a vertex (it may well have several, e.g.,
+	 * spikes and voltages). This points to a structure that includes the
+	 * addresses of the per-region metadata, and those point in turn to the
+	 * actual buffers used to do the recording (which are <i>circular</i>
+	 * buffers).
+	 */
     final int recordingRegionBaseAddress;
 
     /** The IDs of the regions recording. */
@@ -43,9 +51,11 @@ public class Vertex {
 	 * @param label
 	 *            Label as received from Python.
 	 * @param recordingRegionBaseAddress
-	 *            Address at which to start recording.
+	 *            Address at which to find recording region metadata. This will
+	 *            have been originally allocated by the data specification
+	 *            execution process.
 	 * @param recordedRegionIds
-	 *            The IDs of the regions recording
+	 *            The IDs of the regions doing recording.
 	 */
     public Vertex(@JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "recordingRegionBaseAddress", required = true)
