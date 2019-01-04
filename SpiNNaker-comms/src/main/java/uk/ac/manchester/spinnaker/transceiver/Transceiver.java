@@ -1775,7 +1775,7 @@ public class Transceiver extends UDPTransceiver
 
 		for (SCPConnection connection : connections) {
 			// Convert the host string
-			InetAddress host = tag.getBoardAddress();
+			InetAddress host = tag.getIPAddress();
 			if (host == null || host.isAnyLocalAddress()
 					|| host.isLoopbackAddress()) {
 				host = connection.getLocalIPAddress();
