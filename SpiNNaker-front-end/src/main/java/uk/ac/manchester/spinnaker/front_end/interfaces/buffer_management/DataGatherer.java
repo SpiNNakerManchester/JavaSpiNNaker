@@ -332,7 +332,7 @@ public abstract class DataGatherer {
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
 		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
-				iptag.getTag(), conn.getLocalIPAddress(), conn.getLocalPort(),
+				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(),
 				true, TRAFFIC_ID);
 		txrx.setIPTag(tag);
 		log.info("reconfigured {} to {}", iptag, tag);
