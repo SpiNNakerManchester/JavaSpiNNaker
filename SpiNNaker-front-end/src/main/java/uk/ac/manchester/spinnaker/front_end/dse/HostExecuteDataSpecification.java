@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -32,6 +33,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
@@ -54,6 +57,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public class HostExecuteDataSpecification {
+	private static final Logger log = getLogger(HostExecuteDataSpecification.class);
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	/**
@@ -108,6 +112,7 @@ public class HostExecuteDataSpecification {
 				.map(board -> executor.submit(() -> {
 					try (BoardWorker worker = new BoardWorker(board, storage)) {
 						for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+							log.info("loading data onto {}", ctl.core);
 							worker.loadCore(ctl);
 						}
 						return null;

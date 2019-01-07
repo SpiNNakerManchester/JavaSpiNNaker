@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
@@ -49,10 +48,10 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 			int length) {
 		ByteBuffer payload =
 				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
-		IntBuffer msgPayload = payload.asIntBuffer();
-		msgPayload.put(START_SENDING_DATA.value);
-		msgPayload.put(address);
-		msgPayload.put(length);
+		payload.putInt(START_SENDING_DATA.value);
+		payload.putInt(address);
+		payload.putInt(length);
+		payload.flip();
 		return new StartSendingMessage(destination, payload);
 	}
 
