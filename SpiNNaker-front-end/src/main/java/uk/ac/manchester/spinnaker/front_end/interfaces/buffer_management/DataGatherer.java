@@ -269,19 +269,20 @@ public abstract class DataGatherer {
 	 *             If things time out unrecoverably.
 	 */
 	private void doDownloads(Collection<Monitor> monitors,
-			List<Region> smallRetrieves, GatherDownloadConnection conn
-			) throws IOException,
-			ProcessException, StorageException, FullFailureException {
+			List<Region> smallRetrieves, GatherDownloadConnection conn)
+			throws IOException, ProcessException, StorageException,
+			FullFailureException {
 		Downloader dl = new Downloader(conn);
 		for (Monitor mon : monitors) {
+			CoreLocation monitor = mon.asCoreLocation();
 			for (Placement place : mon.getPlacements()) {
 				if (log.isInfoEnabled()) {
 					log.info("downloading recording regions from {} via {}",
-							place.asCoreLocation(), mon.asCoreLocation());
+							place.asCoreLocation(), monitor);
 				}
 				for (int regionID : place.getVertex().getRecordedRegionIds()) {
 					handleOneRecordingRegion(smallRetrieves, dl, place,
-							regionID);
+							regionID, monitor);
 				}
 			}
 		}
@@ -299,6 +300,8 @@ public abstract class DataGatherer {
 	 *            Where this region is.
 	 * @param regionID
 	 *            The ID (index) of this region.
+	 * @param extraMonitor
+	 *            The monitor core to <i>actually</i> fetch the data from.
 	 * @throws StorageException
 	 *             If the database rejects something.
 	 * @throws IOException
@@ -309,9 +312,9 @@ public abstract class DataGatherer {
 	 *             If things time out unrecoverably.
 	 */
 	private void handleOneRecordingRegion(List<Region> smallRetrieves,
-			Downloader dl, Placement place, int regionID)
-			throws StorageException, IOException, ProcessException,
-			FullFailureException {
+			Downloader dl, Placement place, int regionID,
+			CoreLocation extraMonitor) throws StorageException, IOException,
+			ProcessException, FullFailureException {
 		List<Region> rs = getRegion(place, regionID);
 		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
 			smallRetrieves.addAll(rs);
@@ -327,7 +330,7 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory(r.core.asChipLocation(),
 						r.startAddress, r.size));
 			} else {
-				storeData(r, dl.doDownload(place, r));
+				storeData(r, dl.doDownload(extraMonitor, r));
 			}
 		}
 	}
@@ -672,9 +675,9 @@ public abstract class DataGatherer {
 		 * @throws FullFailureException
 		 *             If a download fails unrecoverably.
 		 */
-		ByteBuffer doDownload(Placement extraMonitor, Region region)
+		ByteBuffer doDownload(CoreLocation extraMonitor, Region region)
 				throws IOException, FullFailureException {
-			monitorCore = extraMonitor.asCoreLocation();
+			monitorCore = extraMonitor;
 			dataReceiver = ByteBuffer.allocate(region.size);
 			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
