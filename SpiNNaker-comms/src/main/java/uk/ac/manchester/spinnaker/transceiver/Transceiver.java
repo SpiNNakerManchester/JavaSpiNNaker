@@ -1779,6 +1779,8 @@ public class Transceiver extends UDPTransceiver
 			if (host == null || host.isAnyLocalAddress()
 					|| host.isLoopbackAddress()) {
 				host = connection.getLocalIPAddress();
+				log.warn("remapping host for tag from {} to {}",
+						tag.getIPAddress(), host);
 			}
 
 			simpleProcess().execute(

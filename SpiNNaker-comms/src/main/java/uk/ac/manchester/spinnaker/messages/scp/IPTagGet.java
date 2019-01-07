@@ -69,7 +69,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 		/** The port of the tag. */
 		public final int port;
 		/** The receive port of the tag. */
-		public final short rxPort;
+		public final int rxPort;
 		/**
 		 * The location of the core on the chip which the tag is defined on and
 		 * where the core that handles the tag's messages resides.
@@ -91,11 +91,11 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 			macAddress = new byte[MAC_BYTES];
 			buffer.get(macAddress);
 
-			port = buffer.getShort();
+			port = Short.toUnsignedInt(buffer.getShort());
 			timeout = IPTagTimeOutWaitTime.get(buffer.getShort());
 			flags = buffer.getShort();
 			count = buffer.getInt();
-			rxPort = buffer.getShort();
+			rxPort = Short.toUnsignedInt(buffer.getShort());
 			int y = Byte.toUnsignedInt(buffer.get());
 			int x = Byte.toUnsignedInt(buffer.get());
 			int pp = Byte.toUnsignedInt(buffer.get());

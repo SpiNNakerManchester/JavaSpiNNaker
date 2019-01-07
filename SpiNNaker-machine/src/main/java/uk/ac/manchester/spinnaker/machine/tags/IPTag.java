@@ -198,7 +198,7 @@ public final class IPTag extends Tag {
             this.stripSDP = stripSDP;
         }
         if (trafficIdentifier == null) {
-            this.trafficIdentifier = DEFAULT_TRAFFIC_IDENTIFIER;
+            this.trafficIdentifier = null;
         } else {
             this.trafficIdentifier =
                     TrafficIdentifier.getInstance(trafficIdentifier);
@@ -247,7 +247,6 @@ public final class IPTag extends Tag {
         }
         return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
                 && stripSDP == otherTag.stripSDP
-                && trafficIdentifier.equals(otherTag.trafficIdentifier)
                 && destination.equals(otherTag.destination);
     }
 
@@ -258,7 +257,6 @@ public final class IPTag extends Tag {
         if (stripSDP) {
             h ^= 1;
         }
-        h ^= rotateLeft(trafficIdentifier.hashCode(), 13);
         h ^= rotateLeft(destination.hashCode(), 19);
         return h;
     }
@@ -275,7 +273,10 @@ public final class IPTag extends Tag {
         if (getPort() != null) {
             sb.append(":").append(getPort());
         }
-        sb.append("} TRF:").append(trafficIdentifier.label);
+        sb.append("}");
+        if (trafficIdentifier != null) {
+            sb.append(" TRF:").append(trafficIdentifier.label);
+        }
         sb.append(" ").append(destination);
         return sb.append(")").toString();
     }
