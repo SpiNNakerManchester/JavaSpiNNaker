@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.BYTE_SHIFT;
@@ -65,7 +66,8 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument3(byte[] host) {
-		return range(0, host.length).map(i -> host[host.length - 1 - i])
+		return range(0, host.length)
+				.map(i -> toUnsignedInt(host[host.length - 1 - i]))
 				.reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
 	}
 
