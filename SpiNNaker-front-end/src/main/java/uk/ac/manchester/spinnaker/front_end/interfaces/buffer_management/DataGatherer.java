@@ -349,6 +349,9 @@ public abstract class DataGatherer {
 				true, TRAFFIC_ID);
 		txrx.setIPTag(tag);
 		log.info("reconfigured {} to {}", iptag, tag);
+		if (log.isDebugEnabled()) {
+			log.debug("all tags: {}", txrx.getTags());
+		}
 	}
 
 	/**
