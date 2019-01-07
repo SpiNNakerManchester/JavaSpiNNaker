@@ -91,7 +91,12 @@ public abstract class DataGatherer {
 	 * The timeout when receiving a message. In
 	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
 	 */
-	private static final int TIMEOUT_PER_RECEIVE = 250;
+	private static final int TIMEOUT_PER_RECEIVE = 1000;
+	/**
+	 * The <i>extra</i> timeout for processing the message queue. In
+	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 */
+	private static final int INTERNAL_DELAY = 100;
 	/** What is the maximum number of <em>words</em> in a packet? */
 	private static final int WORDS_PER_PACKET = 68;
 	/**
@@ -679,7 +684,7 @@ public abstract class DataGatherer {
 			try {
 				boolean finished;
 				do {
-					finished = processOnePacket(2 * TIMEOUT_PER_RECEIVE);
+					finished = processOnePacket(TIMEOUT_PER_RECEIVE);
 				} while (!finished);
 			} catch (FullFailureException | IOException e) {
 				throw e;
@@ -710,7 +715,7 @@ public abstract class DataGatherer {
 		 */
 		private boolean processOnePacket(int timeout)
 				throws IOException, FullFailureException {
-			ByteBuffer p = getNextPacket(timeout);
+			ByteBuffer p = getNextPacket(timeout + INTERNAL_DELAY);
 			if (p != null && p.hasRemaining()) {
 				received = true;
 				return processData(p);
