@@ -759,13 +759,12 @@ public abstract class DataGatherer {
 			if (seqNum > maxSeqNum || seqNum < 0) {
 				throw new IllegalStateException("got insane sequence number");
 			}
-			int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
-			if (offset + data.remaining() > dataReceiver.limit()) {
-				throw new IllegalStateException(
-						"received more data than expected");
-			}
-
 			if (!isEndOfStream || data.hasRemaining()) {
+				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
+				if (log.isDebugEnabled()) {
+					log.debug("storing {} bytes at position {} of {}",
+							data.remaining(), offset, dataReceiver.limit());
+				}
 				dataReceiver.position(offset);
 				dataReceiver.put(data);
 			}
