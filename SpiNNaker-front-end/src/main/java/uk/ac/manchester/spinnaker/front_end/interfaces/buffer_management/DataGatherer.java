@@ -294,7 +294,7 @@ public abstract class DataGatherer {
 	 * @param smallRetrieves
 	 *            Where to store small retrieves for later handling (via usual
 	 *            SCP transfers).
-	 * @param dl
+	 * @param downloader
 	 *            The downloader object.
 	 * @param place
 	 *            Where this region is.
@@ -312,7 +312,7 @@ public abstract class DataGatherer {
 	 *             If things time out unrecoverably.
 	 */
 	private void handleOneRecordingRegion(List<Region> smallRetrieves,
-			Downloader dl, Placement place, int regionID,
+			Downloader downloader, Placement place, int regionID,
 			CoreLocation extraMonitor) throws StorageException, IOException,
 			ProcessException, FullFailureException {
 		List<Region> rs = getRegion(place, regionID);
@@ -330,7 +330,7 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory(r.core.asChipLocation(),
 						r.startAddress, r.size));
 			} else {
-				storeData(r, dl.doDownload(extraMonitor, r));
+				storeData(r, downloader.doDownload(extraMonitor, r));
 			}
 		}
 	}
@@ -777,7 +777,7 @@ public abstract class DataGatherer {
 		 *
 		 * @return True if we have finished.
 		 * @throws IOException
-		 *             If there are packets outstanding, and the retransmssion
+		 *             If there are packets outstanding, and the retransmission
 		 *             causes an error.
 		 * @throws FullFailureException
 		 *             If we have a full failure.
