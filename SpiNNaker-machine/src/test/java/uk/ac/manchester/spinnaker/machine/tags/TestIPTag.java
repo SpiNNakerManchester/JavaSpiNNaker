@@ -23,7 +23,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 
@@ -170,9 +169,6 @@ public class TestIPTag {
         testNotEquals(tag1, new IPTag(
                 createInetAddress((byte)45), new ChipLocation(3, 3), 10,
                 createInetAddress((byte)55), 20, false, TrafficIdentifier.DEFAULT));
-        testNotEquals(tag1, new IPTag(
-                createInetAddress((byte)45), new ChipLocation(3, 3), 10,
-                createInetAddress((byte)55), 20, true, TrafficIdentifier.BUFFERED));
 
         assertNotEquals(tag1, "tag1");
         assertFalse(tag1.equals(null));
