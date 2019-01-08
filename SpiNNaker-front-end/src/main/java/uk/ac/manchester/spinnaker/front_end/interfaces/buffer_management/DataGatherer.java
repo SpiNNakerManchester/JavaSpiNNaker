@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
@@ -116,6 +117,8 @@ public abstract class DataGatherer {
 	/** The traffic ID for this protocol. */
 	private static final TrafficIdentifier TRAFFIC_ID =
 			TrafficIdentifier.getInstance("DATA_SPEED_UP");
+	private static final String SPINNAKER_COMPARE_DOWNLOAD =
+			System.getProperty("spinnaker.compare.download");
 
 	private final Transceiver txrx;
 	private final Machine machine;
@@ -327,7 +330,37 @@ public abstract class DataGatherer {
 				storeData(r, txrx.readMemory(r.core.asChipLocation(),
 						r.startAddress, r.size));
 			} else {
-				storeData(r, downloader.doDownload(extraMonitor, r));
+				ByteBuffer data = downloader.doDownload(extraMonitor, r);
+				if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+					compareDownloadWithSCP(r, data);
+				}
+				storeData(r, data);
+			}
+		}
+	}
+
+	private void compareDownloadWithSCP(Region r, ByteBuffer data)
+			throws IOException, ProcessException {
+		ByteBuffer data2 = txrx.readMemory(r.core.asChipLocation(),
+				r.startAddress, r.size);
+		if (data.remaining() != data2.remaining()) {
+			log.error("different buffer sizes: {} with gatherer, {} with SCP",
+					data.remaining(), data2.remaining());
+		}
+		if (!Arrays.equals(data.array(), data2.array())) {
+			log.error("downlaoded buffer contents different");
+			for (int i = 0; i < data.remaining(); i++) {
+				if (data.get(i) != data2.get(i)) {
+					log.warn(
+							"first differing index is {}: "
+									+ "(gatherer) {} != {} (SCP)",
+							i,
+							Integer.toHexString(
+									Byte.toUnsignedInt(data.get(i))),
+							Integer.toHexString(
+									Byte.toUnsignedInt(data2.get(i))));
+					break;
+				}
 			}
 		}
 	}
