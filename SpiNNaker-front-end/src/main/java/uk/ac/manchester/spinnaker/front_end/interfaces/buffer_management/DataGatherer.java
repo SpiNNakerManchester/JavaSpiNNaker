@@ -20,9 +20,7 @@ import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.computeNumberOfPackets;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createFirst;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createNext;
+import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
@@ -30,7 +28,6 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -483,8 +480,7 @@ public abstract class DataGatherer {
 
 		/**
 		 * Send a message asking the extra monitor core to ask it to resend some
-		 * data. This will be the first in a sequence of packets that form the
-		 * overall request.
+		 * data.
 		 *
 		 * @param extraMonitorCore
 		 *            The location of the monitor.
@@ -495,27 +491,8 @@ public abstract class DataGatherer {
 		 * @throws IOException
 		 *             If message sending fails.
 		 */
-		void sendFirstMissing(CoreLocation extraMonitorCore,
-				IntBuffer missingSeqs, int numPackets) throws IOException {
-			sendSDPMessage(
-					createFirst(extraMonitorCore, missingSeqs, numPackets));
-		}
-
-		/**
-		 * Send a message asking the extra monitor core to ask it to resend some
-		 * data. This will be the one of the subsequent messages in a sequence
-		 * of packets that form the overall request.
-		 *
-		 * @param extraMonitorCore
-		 *            The location of the monitor.
-		 * @param missingSeqs
-		 *            Description of what sequence numbers are missing.
-		 * @throws IOException
-		 *             If message sending fails.
-		 */
-		void sendNextMissing(CoreLocation extraMonitorCore,
-				IntBuffer missingSeqs) throws IOException {
-			sendSDPMessage(createNext(extraMonitorCore, missingSeqs));
+		void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
+			sendSDPMessage(msg);
 		}
 
 		/**
@@ -816,36 +793,26 @@ public abstract class DataGatherer {
 			 * Build a buffer containing the sequence numbers of all missing
 			 * packets.
 			 */
-			IntBuffer missingSeqs = IntBuffer.allocate(numMissing);
-			for (int i = 0; i < maxSeqNum; i++) {
+			int[] missingSeqs = new int[numMissing];
+			for (int i = 0, j = 0; i < maxSeqNum; i++) {
 				if (!receivedSeqNums.get(i)) {
-					missingSeqs.put(i);
+					missingSeqs[j++] = i;
 					missCount++;
 				}
 			}
-			missingSeqs.flip();
-			if (missingSeqs.limit() != numMissing) {
-				throw new IllegalStateException(
-						"computation of missing sequences failed; expected "
-								+ (maxSeqNum - numReceived) + " but got "
-								+ missingSeqs.limit());
-			}
 
 			if (log.isDebugEnabled()) {
-				IntBuffer ib = missingSeqs.asReadOnlyBuffer();
 				log.debug("missing {} sequence numbers", numMissing);
-				while (ib.hasRemaining()) {
-					log.debug("missing seq: {}", ib.get());
+				for (int seq : missingSeqs) {
+					log.debug("missing seq: {}", seq);
 				}
 			}
 
-			int numPackets = computeNumberOfPackets(numMissing);
-
 			// Transmit missing sequences as a new SDP Packet
-			conn.sendFirstMissing(monitorCore, missingSeqs, numPackets);
-			for (int i = 1; i < numPackets; i++) {
+			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
+					missingSeqs)) {
 				snooze(DELAY_PER_SEND);
-				conn.sendNextMissing(monitorCore, missingSeqs);
+				conn.sendMissing(msg);
 			}
 			conn.unstick();
 			return false;

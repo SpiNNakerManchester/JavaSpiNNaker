@@ -27,7 +27,9 @@ import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Iterator;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
@@ -36,17 +38,17 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** What is the maximum number of <i>words</i> in a packet? */
-	private static final int DATA_PER_FULL_PACKET = 68;
+	private static final int WORDS_PER_FULL_PACKET = 68;
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;
 	/** Number of words of overhead in a subsequent message. */
 	private static final int NEXT_OVERHEAD_WORDS = 1;
 	/** How many sequence numbers fit in the first message. */
 	private static final int MAX_FIRST_SIZE =
-			DATA_PER_FULL_PACKET - FIRST_OVERHEAD_WORDS;
+			WORDS_PER_FULL_PACKET - FIRST_OVERHEAD_WORDS;
 	/** How many sequence numbers fit in each subsequent message. */
 	private static final int MAX_NEXT_SIZE =
-			DATA_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
+			WORDS_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
 
 	/**
 	 * Compute the number of packets required to send a given count of sequence
@@ -56,7 +58,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 *            The number of sequence numbers to move.
 	 * @return The number of packets required.
 	 */
-	static int computeNumberOfPackets(int numSequenceNumbers) {
+	private static int computeNumberOfPackets(int numSequenceNumbers) {
 		int numPackets = 1;
 		int remainingSeqNums = numSequenceNumbers - MAX_FIRST_SIZE;
 		if (remainingSeqNums > 0) {
@@ -65,61 +67,65 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 		return numPackets;
 	}
 
-	private static ByteBuffer allocateWords(int dataWords, int overhead) {
-		return allocate(
-				min(DATA_PER_FULL_PACKET, dataWords + overhead) * WORD_SIZE)
-						.order(LITTLE_ENDIAN);
+	/**
+	 * Allocate a buffer of the right size.
+	 *
+	 * @param numDataWords
+	 *            The number of data words that we still want to transmit.
+	 * @param overhead
+	 *            The header overhead for the type of packet (in words).
+	 * @return The allocated little-endian buffer.
+	 */
+	private static ByteBuffer allocateWords(int numDataWords, int overhead) {
+		int numWords = min(WORDS_PER_FULL_PACKET, numDataWords + overhead);
+		return allocate(numWords * WORD_SIZE).order(LITTLE_ENDIAN);
 	}
 
 	/**
-	 * Create the first message describing a bunch of missing sequence numbers.
+	 * Create the messages describing a bunch of missing sequence numbers.
 	 *
 	 * @param destination
-	 *            Where to send the message
+	 *            Where to send the messages
 	 * @param missingSeqs
-	 *            The collection of missing sequence numbers. <i>Modified by
-	 *            this method.</i>
-	 * @param numPackets
-	 *            The total number of packets that will describe the collection.
-	 * @return First message to send.
+	 *            The collection of missing sequence numbers.
+	 * @return Iterable of the messages to send.
 	 */
-	static MissingSequenceNumbersMessage createFirst(
-			HasCoreLocation destination, IntBuffer missingSeqs,
-			int numPackets) {
-		ByteBuffer data =
-				allocateWords(missingSeqs.remaining(), FIRST_OVERHEAD_WORDS);
-		data.putInt(START_MISSING_SEQS.value);
-		data.putInt(numPackets);
-		return create(destination, missingSeqs, data);
-	}
+	static Iterable<MissingSequenceNumbersMessage> createMessages(
+			HasCoreLocation destination, int[] missingSeqs) {
+		int numPackets = computeNumberOfPackets(missingSeqs.length);
+		IntBuffer b = IntBuffer.wrap(missingSeqs);
+		CoreLocation dest = destination.asCoreLocation();
+		return () -> new Iterator<MissingSequenceNumbersMessage>() {
+			int pktNum = 0;
 
-	/**
-	 * Create a subsequent message describing a bunch of missing sequence
-	 * numbers.
-	 *
-	 * @param destination
-	 *            Where to send the message
-	 * @param missingSeqs
-	 *            The collection of missing sequence numbers. <i>Modified by
-	 *            this method.</i>
-	 * @return Subsequent message to send.
-	 */
-	static MissingSequenceNumbersMessage createNext(HasCoreLocation destination,
-			IntBuffer missingSeqs) {
-		ByteBuffer data =
-				allocateWords(missingSeqs.remaining(), NEXT_OVERHEAD_WORDS);
-		data.putInt(NEXT_MISSING_SEQS.value);
-		return create(destination, missingSeqs, data);
-	}
+			@Override
+			public boolean hasNext() {
+				return pktNum < numPackets;
+			}
 
-	private static MissingSequenceNumbersMessage create(
-			HasCoreLocation destination, IntBuffer missingSeqs,
-			ByteBuffer data) {
-		while (data.hasRemaining() || missingSeqs.hasRemaining()) {
-			data.putInt(missingSeqs.get());
-		}
-		data.flip();
-		return new MissingSequenceNumbersMessage(destination, data);
+			@Override
+			public MissingSequenceNumbersMessage next() {
+				ByteBuffer data;
+				// Allocate and write header
+				if (pktNum++ == 0) {
+					data = allocateWords(b.remaining(), FIRST_OVERHEAD_WORDS);
+					data.putInt(START_MISSING_SEQS.value);
+					data.putInt(numPackets);
+				} else {
+					data = allocateWords(b.remaining(), NEXT_OVERHEAD_WORDS);
+					data.putInt(NEXT_MISSING_SEQS.value);
+				}
+
+				// Write body
+				while (data.hasRemaining() && b.hasRemaining()) {
+					data.putInt(b.get());
+				}
+				data.flip();
+
+				// Package the message
+				return new MissingSequenceNumbersMessage(dest, data);
+			}
+		};
 	}
 
 	private MissingSequenceNumbersMessage(HasCoreLocation destination,
