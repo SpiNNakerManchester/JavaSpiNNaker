@@ -340,6 +340,12 @@ public abstract class DataGatherer {
 
 	private void compareDownloadWithSCP(Region r, ByteBuffer data)
 			throws IOException, ProcessException {
+		Integer limit = null;
+		try {
+			limit = Integer.parseInt(SPINNAKER_COMPARE_DOWNLOAD);
+		} catch (NumberFormatException ignored) {
+			// Just ignore it; default null value is good
+		}
 		ByteBuffer data2 = txrx.readMemory(r.core.asChipLocation(),
 				r.startAddress, r.size);
 		if (data.remaining() != data2.remaining()) {
@@ -347,7 +353,7 @@ public abstract class DataGatherer {
 					data.remaining(), data2.remaining());
 		}
 		boolean logged = false;
-		for (int i = 0; i < data.remaining(); i++) {
+		for (int i = 0, j = 0; i < data.remaining(); i++) {
 			if (data.get(i) != data2.get(i)) {
 				if (!logged) {
 					log.error("downloaded buffer contents different");
@@ -356,6 +362,9 @@ public abstract class DataGatherer {
 				log.warn("different at index {}: (gather) {} != {} (SCP)",
 						i, Integer.toHexString(Byte.toUnsignedInt(data.get(i))),
 						Integer.toHexString(Byte.toUnsignedInt(data2.get(i))));
+				if (limit != null && ++j >= limit) {
+					break;
+				}
 			}
 		}
 	}
@@ -756,15 +765,15 @@ public abstract class DataGatherer {
 		 *             error.
 		 */
 		private boolean processData(ByteBuffer data) throws IOException {
-			int firstPacketElement = data.getInt();
-			int seqNum = firstPacketElement & ~LAST_MESSAGE_FLAG_BIT_MASK;
+			int seqNum = data.getInt();
 			boolean isEndOfStream =
-					((firstPacketElement & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
+					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
+			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
 
-			if (seqNum > maxSeqNum || seqNum < 0) {
+			if (seqNum >= maxSeqNum || seqNum < 0) {
 				throw new IllegalStateException("got insane sequence number");
 			}
-			if (!isEndOfStream || data.hasRemaining()) {
+			if (data.hasRemaining()) {
 				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
 				if (log.isDebugEnabled()) {
 					log.debug("storing {} bytes at position {} of {}",
@@ -774,7 +783,10 @@ public abstract class DataGatherer {
 				dataReceiver.put(data);
 			}
 			receivedSeqNums.set(seqNum);
-			return isEndOfStream && retransmitMissingSequences();
+			if (!isEndOfStream) {
+				return false;
+			}
+			return retransmitMissingSequences();
 		}
 
 		/**
@@ -808,14 +820,10 @@ public abstract class DataGatherer {
 		 *             If there are failures.
 		 */
 		private boolean retransmitMissingSequences() throws IOException {
-			int numReceived = receivedSeqNums.cardinality();
-			if (numReceived > maxSeqNum + 1) {
-				throw new IllegalStateException(
-						"received more data than expected");
-			} else if (numReceived == maxSeqNum + 1) {
+			int numMissing = maxSeqNum - receivedSeqNums.cardinality();
+			if (numMissing == 0) {
 				return true;
 			}
-			int numMissing = maxSeqNum - numReceived;
 
 			/*
 			 * Build a buffer containing the sequence numbers of all missing
