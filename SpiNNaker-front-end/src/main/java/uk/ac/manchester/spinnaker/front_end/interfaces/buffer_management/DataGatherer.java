@@ -346,13 +346,16 @@ public abstract class DataGatherer {
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
 		}
+		boolean logged = false;
 		for (int i = 0; i < data.remaining(); i++) {
 			if (data.get(i) != data2.get(i)) {
-				log.error("downloaded buffer contents different");
-				log.warn("first differing index is {}: (gather) {} != {} (SCP)",
+				if (!logged) {
+					log.error("downloaded buffer contents different");
+					logged = true;
+				}
+				log.warn("different at index {}: (gather) {} != {} (SCP)",
 						i, Integer.toHexString(Byte.toUnsignedInt(data.get(i))),
 						Integer.toHexString(Byte.toUnsignedInt(data2.get(i))));
-				break;
 			}
 		}
 	}
