@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
@@ -347,20 +346,13 @@ public abstract class DataGatherer {
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
 		}
-		if (!Arrays.equals(data.array(), data2.array())) {
-			log.error("downlaoded buffer contents different");
-			for (int i = 0; i < data.remaining(); i++) {
-				if (data.get(i) != data2.get(i)) {
-					log.warn(
-							"first differing index is {}: "
-									+ "(gatherer) {} != {} (SCP)",
-							i,
-							Integer.toHexString(
-									Byte.toUnsignedInt(data.get(i))),
-							Integer.toHexString(
-									Byte.toUnsignedInt(data2.get(i))));
-					break;
-				}
+		for (int i = 0; i < data.remaining(); i++) {
+			log.error("downloaded buffer contents different");
+			if (data.get(i) != data2.get(i)) {
+				log.warn("first differing index is {}: (gather) {} != {} (SCP)",
+						i, Integer.toHexString(Byte.toUnsignedInt(data.get(i))),
+						Integer.toHexString(Byte.toUnsignedInt(data2.get(i))));
+				break;
 			}
 		}
 	}
