@@ -347,8 +347,8 @@ public abstract class DataGatherer {
 					data.remaining(), data2.remaining());
 		}
 		for (int i = 0; i < data.remaining(); i++) {
-			log.error("downloaded buffer contents different");
 			if (data.get(i) != data2.get(i)) {
+				log.error("downloaded buffer contents different");
 				log.warn("first differing index is {}: (gather) {} != {} (SCP)",
 						i, Integer.toHexString(Byte.toUnsignedInt(data.get(i))),
 						Integer.toHexString(Byte.toUnsignedInt(data2.get(i))));
