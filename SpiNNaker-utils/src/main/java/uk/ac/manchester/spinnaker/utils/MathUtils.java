@@ -41,4 +41,15 @@ public abstract class MathUtils {
 	public static final int ceildiv(int numerator, int denominator) {
 		return (int) ceil((float) numerator / (float) denominator);
 	}
+
+	/**
+	 * Converts a byte to its hexadecimal representation.
+	 *
+	 * @param value
+	 *            The byte to convert.
+	 * @return The (unsigned) hexadecimal representation of the byte.
+	 */
+	public static String hexbyte(byte value) {
+		return Integer.toHexString(Byte.toUnsignedInt(value));
+	}
 }

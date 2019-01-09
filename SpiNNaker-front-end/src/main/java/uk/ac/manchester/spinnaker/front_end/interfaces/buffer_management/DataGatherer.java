@@ -57,6 +57,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.MathUtils;
 
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
@@ -395,12 +396,8 @@ public abstract class DataGatherer {
 		return l;
 	}
 
-	private static String hexbyte(byte b) {
-		return Integer.toHexString(Byte.toUnsignedInt(b));
-	}
-
 	private static List<String> describeChunk(Chunk<Byte> chunk) {
-		return chunk.getLines().stream().map(DataGatherer::hexbyte)
+		return chunk.getLines().stream().map(MathUtils::hexbyte)
 				.collect(toList());
 	}
 

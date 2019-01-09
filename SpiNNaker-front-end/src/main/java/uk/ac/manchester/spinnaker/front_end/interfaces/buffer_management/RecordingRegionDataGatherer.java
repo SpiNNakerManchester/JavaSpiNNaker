@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,9 +141,10 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			timeBetweenTriggers = buffer.getInt();
 			lastSequenceNumber = buffer.getInt();
 			regionPointers = new int[numRegions];
-			buffer.asIntBuffer().get(regionPointers);
 			regionSizes = new int[numRegions];
-			buffer.asIntBuffer().get(regionSizes);
+			IntBuffer intBuffer = buffer.asIntBuffer();
+			intBuffer.get(regionPointers);
+			intBuffer.get(regionSizes);
 		}
 
 		private static final int REGION_POINTERS_START = 7;

@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.EOFException;
@@ -367,8 +368,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			data.duplicate().get(bytes);
 			log.debug("message data: {}",
 					IntStream.range(0, bytes.length)
-							.map(i -> Byte.toUnsignedInt(bytes[i]))
-							.mapToObj(Integer::toHexString)
+							.mapToObj(i -> hexbyte(bytes[i]))
 							.collect(Collectors.toList()));
 		}
 		int sent = channel.send(data, remoteAddress);
