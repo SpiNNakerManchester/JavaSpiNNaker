@@ -16,9 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
 
+import static difflib.DiffUtils.diff;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -39,6 +41,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
+import difflib.ChangeDelta;
+import difflib.Chunk;
+import difflib.DeleteDelta;
+import difflib.Delta;
+import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -340,33 +347,61 @@ public abstract class DataGatherer {
 
 	private void compareDownloadWithSCP(Region r, ByteBuffer data)
 			throws IOException, ProcessException {
-		Integer limit = null;
-		try {
-			limit = Integer.parseInt(SPINNAKER_COMPARE_DOWNLOAD);
-		} catch (NumberFormatException ignored) {
-			// Just ignore it; default null value is good
-		}
 		ByteBuffer data2 = txrx.readMemory(r.core.asChipLocation(),
 				r.startAddress, r.size);
 		if (data.remaining() != data2.remaining()) {
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
 		}
-		boolean logged = false;
-		for (int i = 0, j = 0; i < data.remaining(); i++) {
+		for (int i = 0; i < data.remaining(); i++) {
 			if (data.get(i) != data2.get(i)) {
-				if (!logged) {
-					log.error("downloaded buffer contents different");
-					logged = true;
+				log.error("downloaded buffer contents different");
+				for (Delta<Byte> delta : diff(list(data2), list(data))
+						.getDeltas()) {
+					if (delta instanceof ChangeDelta) {
+						Chunk<Byte> delete = delta.getOriginal();
+						Chunk<Byte> insert = delta.getRevised();
+						log.warn(
+								"swapped {} bytes (SCP) for {} (gather) "
+										+ "at {}->{}",
+								delete.getLines().size(),
+								insert.getLines().size(), delete.getPosition(),
+								insert.getPosition());
+						log.info("change {} -> {}", describeChunk(delete),
+								describeChunk(insert));
+					} else if (delta instanceof DeleteDelta) {
+						Chunk<Byte> delete = delta.getOriginal();
+						log.warn("gather deleted {} bytes at {}",
+								delete.getLines().size(), delete.getPosition());
+						log.info("delete {}", describeChunk(delete));
+					} else if (delta instanceof InsertDelta) {
+						Chunk<Byte> insert = delta.getRevised();
+						log.warn("gather inserted {} bytes at {}",
+								insert.getLines().size(), insert.getPosition());
+						log.info("insert {}", describeChunk(insert));
+					}
 				}
-				log.warn("different at index {}: (gather) {} != {} (SCP)",
-						i, Integer.toHexString(Byte.toUnsignedInt(data.get(i))),
-						Integer.toHexString(Byte.toUnsignedInt(data2.get(i))));
-				if (limit != null && ++j >= limit) {
-					break;
-				}
+				break;
 			}
 		}
+	}
+
+	private static List<Byte> list(ByteBuffer buffer) {
+		List<Byte> l = new ArrayList<>();
+		ByteBuffer b = buffer.asReadOnlyBuffer();
+		while (b.hasRemaining()) {
+			l.add(b.get());
+		}
+		return l;
+	}
+
+	private static String hexbyte(byte b) {
+		return Integer.toHexString(Byte.toUnsignedInt(b));
+	}
+
+	private static List<String> describeChunk(Chunk<Byte> chunk) {
+		return chunk.getLines().stream().map(DataGatherer::hexbyte)
+				.collect(toList());
 	}
 
 	/**
@@ -592,7 +627,7 @@ public abstract class DataGatherer {
 					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
 					if (recvd != null) {
 						messQueue.put(recvd);
-						log.debug("pushed");
+						log.debug("pushed message of {} bytes", recvd.limit());
 					}
 				} catch (SocketTimeoutException e) {
 					log.info("socket timed out");
@@ -772,6 +807,12 @@ public abstract class DataGatherer {
 
 			if (seqNum >= maxSeqNum || seqNum < 0) {
 				throw new IllegalStateException("got insane sequence number");
+			}
+			int len = data.remaining();
+			if (len != DATA_WORDS_PER_PACKET * WORD_SIZE
+					&& seqNum < maxSeqNum - 1) {
+				log.warn("short packet ({} bytes) in non-terminal position "
+						+ "(seq: {})", len, seqNum);
 			}
 			if (data.hasRemaining()) {
 				int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
