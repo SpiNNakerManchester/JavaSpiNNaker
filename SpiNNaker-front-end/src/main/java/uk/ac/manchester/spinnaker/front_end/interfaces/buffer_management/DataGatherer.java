@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -630,6 +631,10 @@ public abstract class DataGatherer {
 					log.info("socket timed out");
 					messQueue.put(EMPTY_DATA);
 					waitForUnstick();
+				} catch (EOFException e) {
+					// Race condition can occasionally close socket early
+					messQueue.put(null);
+					break;
 				}
 			} while (!isClosed());
 		}
@@ -765,23 +770,27 @@ public abstract class DataGatherer {
 		private boolean processOnePacket(int timeout)
 				throws IOException, FullFailureException {
 			ByteBuffer p = getNextPacket(timeout + INTERNAL_DELAY);
-			if (p != null && p.hasRemaining()) {
+			if (p.hasRemaining()) {
 				received = true;
 				return processData(p);
 			}
 			return processTimeout();
 		}
 
-		private ByteBuffer getNextPacket(int timeout) {
+		private ByteBuffer getNextPacket(int timeout) throws EOFException {
 			try {
-				return queue.poll(timeout, MILLISECONDS);
+				ByteBuffer b = queue.poll(timeout, MILLISECONDS);
+				if (b == null) {
+					throw new EOFException("queue reader has been drained");
+				}
+				return b;
 			} catch (InterruptedException ignored) {
 				/*
 				 * This is in a thread that isn't ever interrupted, but IN
 				 * THEORY interruption is exactly like timing out as far as this
 				 * thread is concerned anyway.
 				 */
-				return null;
+				return EMPTY_DATA;
 			}
 		}
 
