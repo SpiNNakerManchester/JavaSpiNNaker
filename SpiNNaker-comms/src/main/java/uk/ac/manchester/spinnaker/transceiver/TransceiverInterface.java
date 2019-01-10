@@ -79,6 +79,7 @@ import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
+import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
@@ -3082,4 +3083,198 @@ public interface TransceiverInterface {
 	 */
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
 			int size, DataType dataType) throws ProcessException, IOException;
+
+	/**
+	 * Clear the packet reinjection queues in a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void clearReinjectionQueues(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Clear the packet reinjection queues in some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void clearReinjectionQueues(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Get the packet reinjection status of a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @return The reinjection status.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Get the packet reinjection status of some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @return The reinjection statuses of the cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
+			CoreSubsets monitorCores) throws IOException, ProcessException;
+
+	/**
+	 * Reset the packet reinjection counters of a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void resetReinjectionCounters(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Reset the packet reinjection counters of some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void resetReinjectionCounters(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set what types of packets are to be reinjected.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param multicast
+	 *            True if multicast packets are to be reinjected.
+	 * @param pointToPoint
+	 *            True if point-to-point packets are to be reinjected.
+	 * @param fixedRoute
+	 *            True if fixed-route packets are to be reinjected.
+	 * @param nearestNeighbour
+	 *            True if nearest-neighbour packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionTypes(HasCoreLocation monitorCore, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set what types of packets are to be reinjected.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param multicast
+	 *            True if multicast packets are to be reinjected.
+	 * @param pointToPoint
+	 *            True if point-to-point packets are to be reinjected.
+	 * @param fixedRoute
+	 *            True if fixed-route packets are to be reinjected.
+	 * @param nearestNeighbour
+	 *            True if nearest-neighbour packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionTimeout(HasCoreLocation monitorCore, int timeoutMantissa,
+			int timeoutExponent) throws IOException, ProcessException;
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void setReinjectionTimeout(CoreSubsets monitorCores, int timeoutMantissa,
+			int timeoutExponent) throws IOException, ProcessException;
 }

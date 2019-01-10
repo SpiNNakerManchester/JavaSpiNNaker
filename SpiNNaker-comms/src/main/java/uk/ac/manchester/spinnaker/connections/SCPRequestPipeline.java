@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -223,7 +223,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The request's SCP command.
 		 */
-		private SCPCommand getCommand() {
+		private CommandCode getCommand() {
 			return request.scpRequestHeader.command;
 		}
 	}

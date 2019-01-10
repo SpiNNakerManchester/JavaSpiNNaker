@@ -52,9 +52,6 @@ public class UnexpectedResponseCodeException extends Exception {
 	 */
 	public UnexpectedResponseCodeException(String operation, SCPCommand command,
 			SCPResult response) {
-		super(format(
-				"Unexpected response %s while performing operation %s "
-						+ "using command %s",
-				response.name(), operation, command.name()));
+		this(operation, command.name(), response.name());
 	}
 }

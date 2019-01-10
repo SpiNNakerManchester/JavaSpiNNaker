@@ -167,7 +167,7 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The additional data. Starts at the <i>position</i> and goes to
 	 *            the <i>limit</i>.
 	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, int argument1,
+	protected SCPRequest(SDPHeader sdpHeader, CommandCode command, int argument1,
 			int argument2, int argument3, ByteBuffer data) {
 		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);

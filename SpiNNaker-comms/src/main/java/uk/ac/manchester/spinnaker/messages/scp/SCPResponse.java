@@ -68,4 +68,23 @@ public abstract class SCPResponse {
 					result);
 		}
 	}
+
+	/**
+	 * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
+	 * OK}.
+	 *
+	 * @param operation
+	 *            The overall operation that was being done.
+	 * @param command
+	 *            The particular command that this is a response to.
+	 * @throws UnexpectedResponseCodeException
+	 *             If the response was a failure.
+	 */
+	protected final void throwIfNotOK(String operation, String command)
+			throws UnexpectedResponseCodeException {
+		if (result != RC_OK) {
+			throw new UnexpectedResponseCodeException(operation, command,
+					result.name());
+		}
+	}
 }

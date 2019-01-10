@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** The SCP Command codes. */
-public enum SCPCommand {
+public enum SCPCommand implements CommandCode {
 	/** Get SCAMP Version. */
 	CMD_VER(0),
 	/**
@@ -112,11 +112,11 @@ public enum SCPCommand {
 	CMD_TUBE(64);
 
 	/** The SCAMP encoding. */
-	public final byte value;
-	private static final Map<Byte, SCPCommand> MAP = new HashMap<>();
+	public final short value;
+	private static final Map<Short, SCPCommand> MAP = new HashMap<>();
 
 	SCPCommand(int value) {
-		this.value = (byte) value;
+		this.value = (short) value;
 	}
 
 	static {
@@ -132,8 +132,13 @@ public enum SCPCommand {
 	 *            The value to convert
 	 * @return The enum element
 	 */
-	public static SCPCommand get(byte value) {
+	public static SCPCommand get(short value) {
 		return requireNonNull(MAP.get(value),
 				"unrecognised command value: " + value);
+	}
+
+	@Override
+	public short getValue() {
+		return value;
 	}
 }

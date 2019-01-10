@@ -124,6 +124,7 @@ import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
+import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
@@ -147,6 +148,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ClearQueueProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
@@ -163,9 +165,14 @@ import uk.ac.manchester.spinnaker.transceiver.processes.MallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadFixedRouteEntryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadIOBufProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ReadReinjectionStatusProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadRouterDiagnosticsProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ResetReinjectionCountersProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SetReinjectionPacketTypesProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterEmergencyTimeoutProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterTimeoutProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -1957,6 +1964,97 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER_ADDR, clearData);
+	}
+
+	@Override
+	public void clearReinjectionQueues(HasCoreLocation monitorCore)
+			throws IOException, ProcessException {
+		new ClearQueueProcess(scpSelector, this)
+				.clearQueue(monitorCore.asCoreLocation());
+	}
+
+	@Override
+	public void clearReinjectionQueues(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
+		new ClearQueueProcess(scpSelector, this).clearQueue(monitorCores);
+	}
+
+	@Override
+	public ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
+			throws IOException, ProcessException {
+		return new ReadReinjectionStatusProcess(scpSelector, this)
+				.getReinjectionStatus(monitorCore.asCoreLocation());
+	}
+
+	@Override
+	public Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
+			CoreSubsets monitorCores) throws IOException, ProcessException {
+		return new ReadReinjectionStatusProcess(scpSelector, this)
+				.getReinjectionStatus(monitorCores);
+	}
+
+	@Override
+	public void resetReinjectionCounters(HasCoreLocation monitorCore)
+			throws IOException, ProcessException {
+		new ResetReinjectionCountersProcess(scpSelector, this)
+				.resetCounters(monitorCore.asCoreLocation());
+	}
+
+	@Override
+	public void resetReinjectionCounters(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
+		new ResetReinjectionCountersProcess(scpSelector, this)
+				.resetCounters(monitorCores);
+	}
+
+	@Override
+	public void setReinjectionTypes(HasCoreLocation monitorCore,
+			boolean multicast, boolean pointToPoint, boolean fixedRoute,
+			boolean nearestNeighbour) throws IOException, ProcessException {
+		new SetReinjectionPacketTypesProcess(scpSelector, this).setPacketTypes(
+				monitorCore.asCoreLocation(), multicast, pointToPoint,
+				fixedRoute, nearestNeighbour);
+	}
+
+	@Override
+	public void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException {
+		new SetReinjectionPacketTypesProcess(scpSelector, this).setPacketTypes(
+				monitorCores, multicast, pointToPoint, fixedRoute,
+				nearestNeighbour);
+	}
+
+	@Override
+	public void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException {
+		new SetRouterEmergencyTimeoutProcess(scpSelector, this).setTimeout(
+				monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
+	}
+
+	@Override
+	public void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException {
+		new SetRouterEmergencyTimeoutProcess(scpSelector, this)
+				.setTimeout(monitorCores, timeoutMantissa, timeoutExponent);
+	}
+
+	@Override
+	public void setReinjectionTimeout(HasCoreLocation monitorCore,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException {
+		new SetRouterTimeoutProcess(scpSelector, this).setTimeout(
+				monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
+	}
+
+	@Override
+	public void setReinjectionTimeout(CoreSubsets monitorCores,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException {
+		new SetRouterTimeoutProcess(scpSelector, this).setTimeout(monitorCores,
+				timeoutMantissa, timeoutExponent);
 	}
 
 	@Override
