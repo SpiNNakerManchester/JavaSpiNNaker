@@ -25,6 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.EOFException;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +57,7 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
+import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -475,6 +478,7 @@ public abstract class DataGatherer {
 			txrx.setReinjectionTimeout(monitorCores, 15, 15);
 			txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
 		} else {
+			try {
 			txrx.setReinjectionEmergencyTimeout(monitorCores,
 					savedStatus.getRouterEmergencyTimeoutMantissa(),
 					savedStatus.getRouterEmergencyTimeoutExponent());
@@ -486,6 +490,22 @@ public abstract class DataGatherer {
 					savedStatus.isReinjectingPointToPoint(),
 					savedStatus.isReinjectingFixedRoute(),
 					savedStatus.isReinjectingNearestNeighbour());
+			} catch (IOException | ProcessException e) {
+				try {
+					log.error("Error resetting timeouts; "
+							+ "checking if the cores are OK...");
+					Map<CoreLocation, CPUInfo> errorCores =
+							txrx.getCoresNotInState(monitorCores, RUNNING);
+					if (!errorCores.isEmpty()) {
+						log.error("Cores in an unexpected state: {}",
+								errorCores);
+					}
+				} catch (Exception e2) {
+					// Correct behaviour here is to suppress the inner issue
+					e.addSuppressed(e2);
+				}
+				throw e;
+			}
 		}
 		for (Chip chip : machine
 				.iterChipsOnBoard(machine.getChipAt(boardEthernet))) {
