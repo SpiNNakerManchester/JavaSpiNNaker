@@ -239,17 +239,42 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		}
 	}
 
-	private Map<ChipLocation, RecordingRegionsDescriptor> descriptors =
+	private final class RRKey {
+		private final ChipLocation chip;
+		private final int baseAddr;
+
+		private RRKey(HasChipLocation chip, int baseAddress) {
+			this.chip = chip.asChipLocation();
+			this.baseAddr = baseAddress;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof RRKey) {
+				RRKey o = (RRKey) other;
+				return chip.equals(o.chip) && (o.baseAddr == baseAddr);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return baseAddr ^ chip.hashCode();
+		}
+	}
+
+	private Map<RRKey, RecordingRegionsDescriptor> descriptors =
 			new HashMap<>();
 
 	private synchronized RecordingRegionsDescriptor getDescriptor(
 			ChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
-		RecordingRegionsDescriptor rrd = descriptors.get(chip);
+		RRKey key = new RRKey(chip, baseAddress);
+		RecordingRegionsDescriptor rrd = descriptors.get(key);
 		if (rrd == null) {
 			rrd = new RecordingRegionsDescriptor(chip, baseAddress);
 			log.debug("got recording region info {}", rrd);
-			descriptors.put(chip, rrd);
+			descriptors.put(key, rrd);
 		}
 		return rrd;
 	}
