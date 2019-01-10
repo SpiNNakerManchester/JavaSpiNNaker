@@ -113,9 +113,29 @@ public class ReinjectionStatus {
 		return mantissa * (1 << exponent);
 	}
 
+	/** @return The mantissa of the WAIT1 timeout value. */
+	public int getRouterTimeoutMantissa() {
+		return (routerTimeout & MASK);
+	}
+
+	/** @return The exponent of the WAIT1 timeout value. */
+	public int getRouterTimeoutExponent() {
+		return (routerTimeout >> SHIFT) & MASK;
+	}
+
 	/** @return The WAIT1 timeout value of the router in cycles. */
 	public int getRouterTimeout() {
 		return decodeTimeout(routerTimeout);
+	}
+
+	/** @return The mantissa of the WAIT2 timeout value. */
+	public int getRouterEmergencyTimeoutMantissa() {
+		return (routerEmergencyTimeout & MASK);
+	}
+
+	/** @return The exponent of the WAIT2 timeout value. */
+	public int getRouterEmergencyTimeoutExponent() {
+		return (routerEmergencyTimeout >> SHIFT) & MASK;
 	}
 
 	/** @return The WAIT2 timeout value of the router in cycles. */
