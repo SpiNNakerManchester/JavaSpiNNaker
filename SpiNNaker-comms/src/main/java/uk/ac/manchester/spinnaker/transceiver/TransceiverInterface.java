@@ -81,6 +81,7 @@ import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
+import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
@@ -3229,6 +3230,24 @@ public interface TransceiverInterface {
 	/**
 	 * Set the emergency packet reinjection timeout.
 	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
+				timeout.exponent);
+	}
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
 	 * @param monitorCores
 	 *            The coordinates of some monitor cores.
 	 * @param timeoutMantissa
@@ -3243,6 +3262,24 @@ public interface TransceiverInterface {
 	void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
+				timeout.exponent);
+	}
 
 	/**
 	 * Set the packet reinjection timeout.
@@ -3264,6 +3301,23 @@ public interface TransceiverInterface {
 	/**
 	 * Set the packet reinjection timeout.
 	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void setReinjectionTimeout(HasCoreLocation monitorCore,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
+	}
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
 	 * @param monitorCores
 	 *            The coordinates of some monitor cores.
 	 * @param timeoutMantissa
@@ -3277,4 +3331,21 @@ public interface TransceiverInterface {
 	 */
 	void setReinjectionTimeout(CoreSubsets monitorCores, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException;
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void setReinjectionTimeout(CoreSubsets monitorCores,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+	}
 }

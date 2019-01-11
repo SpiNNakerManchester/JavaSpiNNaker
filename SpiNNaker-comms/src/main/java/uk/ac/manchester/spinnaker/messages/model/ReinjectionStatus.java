@@ -20,10 +20,10 @@ import java.nio.ByteBuffer;
 
 /** Represents a status information from dropped packet reinjection. */
 public class ReinjectionStatus {
-	private static final int MASK = 0xF;
-	private static final int SHIFT = 4;
-	private static final int MANTISSA_OFFSET = 16;
-	private static final int EXPONENT_OFFSET = 4;
+	/** Used to pick low nybble of value. */
+	static final int MASK = 0xF;
+	/** Used to move value by one nybble. */
+	static final int SHIFT = 4;
 
 	/**
 	 * How to convert a timeout from mantissa and exponent into a single 8-bit
@@ -40,10 +40,10 @@ public class ReinjectionStatus {
 	}
 
 	/** The WAIT1 timeout value of the router in cycles. */
-	private final int routerTimeout;
+	private final RouterTimeout routerTimeout;
 
 	/** The WAIT2 timeout value of the router in cycles. */
-	private final int routerEmergencyTimeout;
+	private final RouterTimeout routerEmergencyTimeout;
 
 	/**
 	 * The number of packets dropped by the router and received by the
@@ -85,8 +85,8 @@ public class ReinjectionStatus {
 	private final int flags;
 
 	public ReinjectionStatus(ByteBuffer buffer) {
-		this.routerTimeout = buffer.getInt();
-		this.routerEmergencyTimeout = buffer.getInt();
+		this.routerTimeout = new RouterTimeout(buffer.getInt());
+		this.routerEmergencyTimeout = new RouterTimeout(buffer.getInt());
 		this.numDroppedPackets = buffer.getInt();
 		this.numMissedDroppedPackets = buffer.getInt();
 		this.numDroppedPacketOverflows = buffer.getInt();
@@ -96,51 +96,14 @@ public class ReinjectionStatus {
 		this.flags = buffer.getInt();
 	}
 
-	/**
-	 * Get the timeout value of a router in ticks, given an 8-bit floating point
-	 * value stored in an int (!).
-	 *
-	 * @param value
-	 *            The value to convert.
-	 */
-	private static int decodeTimeout(int value) {
-		int mantissa = (value & MASK) + MANTISSA_OFFSET;
-		int exponent = (value >> SHIFT) & MASK;
-		if (exponent <= EXPONENT_OFFSET) {
-			return (mantissa - (1 << (EXPONENT_OFFSET - exponent)))
-					* (1 << exponent);
-		}
-		return mantissa * (1 << exponent);
-	}
-
-	/** @return The mantissa of the WAIT1 timeout value. */
-	public int getRouterTimeoutMantissa() {
-		return (routerTimeout & MASK);
-	}
-
-	/** @return The exponent of the WAIT1 timeout value. */
-	public int getRouterTimeoutExponent() {
-		return (routerTimeout >> SHIFT) & MASK;
-	}
-
 	/** @return The WAIT1 timeout value of the router in cycles. */
-	public int getRouterTimeout() {
-		return decodeTimeout(routerTimeout);
-	}
-
-	/** @return The mantissa of the WAIT2 timeout value. */
-	public int getRouterEmergencyTimeoutMantissa() {
-		return (routerEmergencyTimeout & MASK);
-	}
-
-	/** @return The exponent of the WAIT2 timeout value. */
-	public int getRouterEmergencyTimeoutExponent() {
-		return (routerEmergencyTimeout >> SHIFT) & MASK;
+	public RouterTimeout getTimeout() {
+		return routerTimeout;
 	}
 
 	/** @return The WAIT2 timeout value of the router in cycles. */
-	public int getRouterEmergencyTimeout() {
-		return decodeTimeout(routerEmergencyTimeout);
+	public RouterTimeout getEmergencyTimeout() {
+		return routerEmergencyTimeout;
 	}
 
 	/**

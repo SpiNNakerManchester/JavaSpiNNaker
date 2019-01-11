@@ -50,7 +50,6 @@ import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -59,6 +58,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
+import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -134,7 +134,6 @@ public abstract class DataGatherer {
 			System.getProperty("spinnaker.compare.download");
 
 	private final Transceiver txrx;
-	private final Machine machine;
 	private final ExecutorService pool;
 	private int missCount;
 	private Exception caught;
@@ -157,7 +156,6 @@ public abstract class DataGatherer {
 	public DataGatherer(Transceiver transceiver, Machine machine)
 			throws IOException, ProcessException {
 		this.txrx = transceiver;
-		this.machine = machine;
 		this.pool = newFixedThreadPool(PARALLEL_SIZE);
 		this.missCount = 0;
 		this.caught = null;
@@ -230,22 +228,21 @@ public abstract class DataGatherer {
 			for (Monitor monitor : gatherer.getMonitors()) {
 				monitorCores.addCore(monitor.asCoreLocation());
 			}
+
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
 					gathererLocation, gatherer.getIptag())) {
 				log.info("reconfiguring IPtag to point to receiving socket");
 				reconfigureIPtag(gatherer.getIptag(), gathererLocation, conn);
 				log.info("disabling router timeouts on board {}",
 						gathererLocation);
-				ReinjectionStatus resetNeeded;
-					resetNeeded = configureBoardRouterTimeouts(gathererLocation,
-							monitorCores, null);
+				ReinjectionStatus resetNeeded =
+						setBoardRouterTimeouts(monitorCores);
 				try {
 					doDownloads(gatherer.getMonitors(), smallRetrieves, conn);
 				} finally {
 					log.info("enabling router timeouts on board {}",
 							gathererLocation);
-					configureBoardRouterTimeouts(gathererLocation, monitorCores,
-							resetNeeded);
+					restoreBoardRouterTimeouts(monitorCores, resetNeeded);
 				}
 			}
 			if (!smallRetrieves.isEmpty()) {
@@ -444,74 +441,76 @@ public abstract class DataGatherer {
 	}
 
 	/**
-	 * Configure the routers and watchdog timers of the chips on a board.
+	 * Configure the routers of the chips on a board to never drop packets.
 	 *
-	 * @param boardEthernet
-	 *            The board, by its ethernet chip.
 	 * @param monitorCores
 	 *            The monitor cores on the board.
-	 * @param savedStatus
-	 *            The previously saved status. If {@code null}, we are setting things for non-standard operation
-	 * @return The reinjection status of the first monitor core; all other cores
-	 *         are assumed to be the same.
+	 * @return The saved reinjection status of the first monitor core; all other
+	 *         cores are assumed to be the same.
 	 * @throws IOException
 	 *             If message sending or reception fails.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private ReinjectionStatus configureBoardRouterTimeouts(
-			ChipLocation boardEthernet, CoreSubsets monitorCores,
+	private ReinjectionStatus setBoardRouterTimeouts(
+			CoreSubsets monitorCores) throws IOException, ProcessException {
+		ReinjectionStatus status = null;
+		// Store the last reinjection status for resetting
+		for (CoreLocation core : monitorCores) {
+			status = txrx.getReinjectionStatus(core);
+			break;
+		}
+		// Set to not inject dropped packets
+		txrx.setReinjectionTypes(monitorCores, false, false, false, false);
+		// Clear any outstanding packets from reinjection
+		txrx.clearReinjectionQueues(monitorCores);
+		// Set timeouts
+		txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
+		txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
+		return status;
+	}
+
+	/**
+	 * Configure the routers of the chips on a board to be what they were
+	 * previously.
+	 *
+	 * @param monitorCores
+	 *            The monitor cores on the board.
+	 * @param savedStatus
+	 *            The previously saved status.
+	 * @throws IOException
+	 *             If message sending or reception fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private void restoreBoardRouterTimeouts(CoreSubsets monitorCores,
 			ReinjectionStatus savedStatus)
 			throws IOException, ProcessException {
-		ReinjectionStatus status = null;
-		if (savedStatus == null) {
-			// Store the last reinjection status for resetting
-			for (CoreLocation core : monitorCores) {
-				status = txrx.getReinjectionStatus(core);
-				break;
-			}
-			// Set to not inject dropped packets
-			txrx.setReinjectionTypes(monitorCores, false, false, false, false);
-			// Clear any outstanding packets from reinjection
-			txrx.clearReinjectionQueues(monitorCores);
-			// Set timeouts
-			txrx.setReinjectionTimeout(monitorCores, 15, 15);
-			txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
-		} else {
-			try {
+		try {
 			txrx.setReinjectionEmergencyTimeout(monitorCores,
-					savedStatus.getRouterEmergencyTimeoutMantissa(),
-					savedStatus.getRouterEmergencyTimeoutExponent());
+					savedStatus.getEmergencyTimeout());
 			txrx.setReinjectionTimeout(monitorCores,
-					savedStatus.getRouterTimeoutMantissa(),
-					savedStatus.getRouterTimeoutExponent());
+					savedStatus.getTimeout());
 			txrx.setReinjectionTypes(monitorCores,
 					savedStatus.isReinjectingMulticast(),
 					savedStatus.isReinjectingPointToPoint(),
 					savedStatus.isReinjectingFixedRoute(),
 					savedStatus.isReinjectingNearestNeighbour());
-			} catch (IOException | ProcessException e) {
-				try {
-					log.error("Error resetting timeouts; "
-							+ "checking if the cores are OK...");
-					Map<CoreLocation, CPUInfo> errorCores =
-							txrx.getCoresNotInState(monitorCores, RUNNING);
-					if (!errorCores.isEmpty()) {
-						log.error("Cores in an unexpected state: {}",
-								errorCores);
-					}
-				} catch (Exception e2) {
-					// Correct behaviour here is to suppress the inner issue
-					e.addSuppressed(e2);
+		} catch (IOException | ProcessException e) {
+			try {
+				log.error("problem resetting router timeouts; "
+						+ "checking if the cores are OK...");
+				Map<CoreLocation, CPUInfo> errorCores =
+						txrx.getCoresNotInState(monitorCores, RUNNING);
+				if (!errorCores.isEmpty()) {
+					log.error("cores in an unexpected state: {}", errorCores);
 				}
-				throw e;
+			} catch (Exception e2) {
+				// Correct behaviour here is to suppress the inner issue
+				e.addSuppressed(e2);
 			}
+			throw e;
 		}
-		for (Chip chip : machine
-				.iterChipsOnBoard(machine.getChipAt(boardEthernet))) {
-			txrx.enableWatchDogTimerOnChip(chip, savedStatus != null);
-		}
-		return status;
 	}
 
 	/**
