@@ -124,6 +124,11 @@ public abstract class DataGatherer {
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
 	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
+	/**
+	 * An empty buffer used to mark the end of the stream. <i>Only check for
+	 * this by reference equality, not by calling any method.</i>
+	 */
+	private static final ByteBuffer EOF = ByteBuffer.allocate(0);
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
@@ -697,7 +702,7 @@ public abstract class DataGatherer {
 					waitForUnstick();
 				} catch (EOFException e) {
 					// Race condition can occasionally close socket early
-					messQueue.put(null);
+					messQueue.put(EOF);
 					break;
 				}
 			} while (!isClosed());
@@ -845,6 +850,9 @@ public abstract class DataGatherer {
 			try {
 				ByteBuffer b = queue.poll(timeout, MILLISECONDS);
 				if (b == null) {
+					return EMPTY_DATA;
+				}
+				if (b == EOF) {
 					throw new EOFException("queue reader has been drained");
 				}
 				return b;
