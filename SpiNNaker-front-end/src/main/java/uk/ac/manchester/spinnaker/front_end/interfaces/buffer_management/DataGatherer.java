@@ -339,6 +339,13 @@ public abstract class DataGatherer {
 			Downloader downloader, Placement place, int regionID,
 			CoreLocation extraMonitor) throws StorageException, IOException,
 			ProcessException, FullFailureException {
+		if (!place.onSameChipAs(extraMonitor)) {
+			throw new IllegalArgumentException(
+					"cannot gather from placement of " + place.vertex.label
+							+ " (X:" + place.x + "Y:" + place.y
+							+ ") via monitor on " + extraMonitor
+							+ ": different chip");
+		}
 		List<Region> rs = getRegion(place, regionID);
 		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
 			smallRetrieves.addAll(rs);
