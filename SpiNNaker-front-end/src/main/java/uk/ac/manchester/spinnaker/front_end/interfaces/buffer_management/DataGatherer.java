@@ -300,6 +300,13 @@ public abstract class DataGatherer {
 		for (Monitor mon : monitors) {
 			CoreLocation monitor = mon.asCoreLocation();
 			for (Placement place : mon.getPlacements()) {
+				if (!place.onSameChipAs(monitor)) {
+					throw new IllegalArgumentException(
+							"cannot gather from placement of "
+									+ place.vertex.label + " (X:" + place.x
+									+ "Y:" + place.y + ") via monitor on "
+									+ monitor + ": different chip");
+				}
 				if (log.isInfoEnabled()) {
 					log.info("downloading recording regions from {} via {}",
 							place.asCoreLocation(), monitor);
@@ -339,13 +346,6 @@ public abstract class DataGatherer {
 			Downloader downloader, Placement place, int regionID,
 			CoreLocation extraMonitor) throws StorageException, IOException,
 			ProcessException, FullFailureException {
-		if (!place.onSameChipAs(extraMonitor)) {
-			throw new IllegalArgumentException(
-					"cannot gather from placement of " + place.vertex.label
-							+ " (X:" + place.x + "Y:" + place.y
-							+ ") via monitor on " + extraMonitor
-							+ ": different chip");
-		}
 		List<Region> rs = getRegion(place, regionID);
 		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
 			smallRetrieves.addAll(rs);
