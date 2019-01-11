@@ -57,7 +57,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public class HostExecuteDataSpecification {
-	private static final Logger log = getLogger(HostExecuteDataSpecification.class);
+	private static final Logger log =
+			getLogger(HostExecuteDataSpecification.class);
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	/**
