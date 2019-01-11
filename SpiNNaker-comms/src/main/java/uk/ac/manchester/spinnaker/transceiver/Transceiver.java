@@ -258,11 +258,6 @@ public class Transceiver extends UDPTransceiver
 			new DefaultMap<>(new HashSet<>());
 
 	/**
-	 * The maximum core ID in any discovered machine. Requests for a "machine"
-	 * will only have core IDs up to and including this value.
-	 */
-	private final Integer maxCoreID;
-	/**
 	 * The max size each chip can say it has for SDRAM. (This is mainly used for
 	 * debugging purposes.)
 	 */
@@ -366,9 +361,6 @@ public class Transceiver extends UDPTransceiver
 	 *            An optional set of links to ignore in the machine. Requests
 	 *            for a "machine" will have these links excluded, as if they
 	 *            never existed.
-	 * @param maxCoreID
-	 *            The maximum core ID in any discovered machine. Requests for a
-	 *            "machine" will only have core IDs up to this value.
 	 * @param bmpConnectionData
 	 *            the details of the BMP connections used to boot multi-board
 	 *            systems
@@ -394,7 +386,7 @@ public class Transceiver extends UDPTransceiver
 			Integer numberOfBoards, List<ChipLocation> ignoredChips,
 			Map<ChipLocation, Collection<Integer>> ignoredCores,
 			Map<ChipLocation, Collection<Direction>> ignoredLinks,
-			Integer maxCoreID, boolean autodetectBMP,
+			boolean autodetectBMP,
 			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
@@ -445,7 +437,6 @@ public class Transceiver extends UDPTransceiver
 		if (ignoredLinks != null) {
 			ignoreLinks.putAll(ignoredLinks);
 		}
-		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
 
 		originalConnections.addAll(connections);
@@ -482,7 +473,7 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException, ProcessException {
 		this(hostname, version, null, 0, emptyList(), emptyMap(), emptyMap(),
-				null, false, null, null, null);
+				false, null, null, null);
 	}
 
 	/**
@@ -499,7 +490,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(MachineVersion version)
 			throws IOException, SpinnmanException, ProcessException {
-		this(version, null, null, null, null, null, null, null);
+		this(version, null, null, null, null, null, null);
 	}
 
 	/**
@@ -522,7 +513,7 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException, ProcessException {
-		this(version, connections, null, null, null, null, null, null);
+		this(version, connections, null, null, null, null, null);
 	}
 
 	/**
@@ -541,8 +532,6 @@ public class Transceiver extends UDPTransceiver
 	 *            Blacklisted cores.
 	 * @param ignoredLinks
 	 *            Blacklisted links.
-	 * @param maxCoreID
-	 *            If not {@code null}, the maximum core ID to allow.
 	 * @param scampConnections
 	 *            Descriptions of SCP connections to create.
 	 * @param maxSDRAMSize
@@ -559,7 +548,6 @@ public class Transceiver extends UDPTransceiver
 			Collection<ChipLocation> ignoredChips,
 			Map<ChipLocation, Collection<Integer>> ignoredCores,
 			Map<ChipLocation, Collection<Direction>> ignoredLinks,
-			Integer maxCoreID,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
@@ -573,7 +561,6 @@ public class Transceiver extends UDPTransceiver
 		if (ignoredLinks != null) {
 			ignoreLinks.putAll(ignoredLinks);
 		}
-		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
 
 		if (connections == null) {
@@ -859,7 +846,7 @@ public class Transceiver extends UDPTransceiver
 
 		// Get the details of all the chips
 		machine = new GetMachineProcess(scpSelector, ignoreChips, ignoreCores,
-				ignoreLinks, maxCoreID, maxSDRAMSize, this)
+				ignoreLinks, maxSDRAMSize, this)
 						.getMachineDetails(versionInfo.core, dimensions);
 
 		/*
