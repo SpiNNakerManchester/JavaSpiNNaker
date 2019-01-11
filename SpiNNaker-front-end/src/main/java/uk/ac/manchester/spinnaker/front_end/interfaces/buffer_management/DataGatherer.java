@@ -967,7 +967,7 @@ public abstract class DataGatherer {
 		 */
 		private boolean retransmitMissingSequences() throws IOException {
 			int numMissing = maxSeqNum - receivedSeqNums.cardinality();
-			if (numMissing == 0) {
+			if (numMissing < 1) {
 				return true;
 			}
 
