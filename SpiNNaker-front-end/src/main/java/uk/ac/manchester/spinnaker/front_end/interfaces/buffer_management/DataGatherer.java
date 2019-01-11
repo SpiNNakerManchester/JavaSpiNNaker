@@ -750,8 +750,25 @@ public abstract class DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class FullFailureException extends Exception {
+	private static final class FullFailureException extends Exception {
 		private static final long serialVersionUID = 1L;
+	}
+
+	/**
+	 * Exception that indicates a bad sequence number in a download.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static final class InsaneSequenceNumberException
+			extends IllegalStateException {
+		private static final long serialVersionUID = 2L;
+
+		private InsaneSequenceNumberException(int maxNum, int seqNum) {
+			super("got insane sequence number " + seqNum + ": expected maximum "
+					+ maxNum
+					+ (maxNum == seqNum ? " (non-empty terminal-only packet)"
+							: " (totally bad sequence)"));
+		}
 	}
 
 	/**
@@ -890,8 +907,11 @@ public abstract class DataGatherer {
 					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
 
-			if (seqNum >= maxSeqNum || seqNum < 0) {
-				throw new IllegalStateException("got insane sequence number");
+			if (seqNum > maxSeqNum || seqNum < 0) {
+				throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
+			}
+			if (seqNum == maxSeqNum && data.hasRemaining()) {
+				throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
 			}
 			int len = data.remaining();
 			if (len != DATA_WORDS_PER_PACKET * WORD_SIZE
