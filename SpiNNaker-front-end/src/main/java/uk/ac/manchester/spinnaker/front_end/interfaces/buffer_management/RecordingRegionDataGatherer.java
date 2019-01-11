@@ -127,6 +127,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 				throws IOException, ProcessException {
 			// Read the descriptor from SpiNNaker
 			int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
+			log.info("{} recording regions at {} of {}", nr, address, chip);
 			int size = WORD_SIZE * (REGION_POINTERS_START + 2 * nr);
 			ByteBuffer buffer = txrx.readMemory(chip, address, size);
 			this.chip = chip.asChipLocation();
