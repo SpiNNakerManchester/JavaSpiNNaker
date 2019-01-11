@@ -18,19 +18,19 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /** SCP Command codes for reinjection. */
 enum ReinjectorCommand implements CommandCode {
-	// TODO doc
+	/** Set the router's main timeout. */
 	SET_ROUTER_TIMEOUT(0),
-	// TODO doc
+	/** Set the router's emergency timeout. */
 	SET_ROUTER_EMERGENCY_TIMEOUT(1),
-	// TODO doc
+	/** Set what packet types are reinjected. */
 	SET_PACKET_TYPES(2),
-	// TODO doc
+	/** Get the status of the reinjector. */
 	GET_STATUS(3),
-	// TODO doc
+	/** Reset the counters inside the reinjector. */
 	RESET_COUNTERS(4),
-	// TODO doc
+	/** Stop the reinjector. */
 	EXIT(5),
-	// TODO doc
+	/** Clear the reinjector's queues. */
 	CLEAR(6);
 
 	/**

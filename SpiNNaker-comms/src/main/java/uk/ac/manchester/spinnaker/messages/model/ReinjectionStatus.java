@@ -18,7 +18,10 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import java.nio.ByteBuffer;
 
-/** Represents a status information from dropped packet reinjection. */
+/**
+ * Represents a status information message obtained from the dropped packet
+ * reinjection core (an "extra monitor" core).
+ */
 public class ReinjectionStatus {
 	/** Used to pick low nybble of value. */
 	static final int MASK = 0xF;
@@ -84,6 +87,10 @@ public class ReinjectionStatus {
 	/** The flags that states which types of packets were being recorded. */
 	private final int flags;
 
+	/**
+	 * @param buffer
+	 *            The message containing the status to parse.
+	 */
 	public ReinjectionStatus(ByteBuffer buffer) {
 		this.routerTimeout = new RouterTimeout(buffer.getInt());
 		this.routerEmergencyTimeout = new RouterTimeout(buffer.getInt());

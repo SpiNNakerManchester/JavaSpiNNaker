@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 public class GetReinjectionStatus
 		extends SCPRequest<GetReinjectionStatus.Response> {
 	/**
-	 * @param chip
+	 * @param core
 	 *            the monitor core to read from
 	 */
 	public GetReinjectionStatus(HasCoreLocation core) {

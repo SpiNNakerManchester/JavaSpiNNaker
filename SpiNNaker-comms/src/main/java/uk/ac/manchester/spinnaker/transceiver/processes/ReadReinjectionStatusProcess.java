@@ -79,7 +79,8 @@ public class ReadReinjectionStatusProcess
 	 *             If SpiNNaker rejects a message.
 	 */
 	public Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
-			CoreSubsets monitorCoreSubsets) throws IOException, ProcessException {
+			CoreSubsets monitorCoreSubsets)
+			throws IOException, ProcessException {
 		Map<CoreLocation, ReinjectionStatus> status = new HashMap<>();
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new GetReinjectionStatus(core),
