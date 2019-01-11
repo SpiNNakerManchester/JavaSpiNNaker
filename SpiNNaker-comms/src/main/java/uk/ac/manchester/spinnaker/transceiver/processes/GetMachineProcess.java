@@ -194,7 +194,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		ChipLocation location = chipInfo.chip.asChipLocation();
 		Collection<Integer> ignoreCores =
 				ignoreCoresMap.getOrDefault(location, emptyList());
-		for (int id = 0; id <= chipInfo.numCores; id++) {
+		for (int id = 0; id < chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
 			if (ignoreCores != null && !ignoreCores.contains(id)) {
 				if (id == 0) {
