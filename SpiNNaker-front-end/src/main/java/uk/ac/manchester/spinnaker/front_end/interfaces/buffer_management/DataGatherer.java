@@ -468,8 +468,8 @@ public abstract class DataGatherer {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private ReinjectionStatus setBoardRouterTimeouts(
-			CoreSubsets monitorCores) throws IOException, ProcessException {
+	private ReinjectionStatus setBoardRouterTimeouts(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
 		ReinjectionStatus status = null;
 		// Store the last reinjection status for resetting
 		for (CoreLocation core : monitorCores) {
@@ -505,8 +505,7 @@ public abstract class DataGatherer {
 		try {
 			txrx.setReinjectionEmergencyTimeout(monitorCores,
 					savedStatus.getEmergencyTimeout());
-			txrx.setReinjectionTimeout(monitorCores,
-					savedStatus.getTimeout());
+			txrx.setReinjectionTimeout(monitorCores, savedStatus.getTimeout());
 			txrx.setReinjectionTypes(monitorCores,
 					savedStatus.isReinjectingMulticast(),
 					savedStatus.isReinjectingPointToPoint(),
@@ -827,7 +826,17 @@ public abstract class DataGatherer {
 				throws IOException, FullFailureException {
 			monitorCore = extraMonitor;
 			dataReceiver = ByteBuffer.allocate(region.size);
-			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
+			/*
+			 * Tricky point: where an amount of data to be downloaded is exactly
+			 * a multiple of the number of payload words per packet, we need an
+			 * extra packet because the data gatherer executable sends the data
+			 * before it knows whether it has reached the end (and the extra
+			 * monitors don't know about the chunking).
+			 *
+			 * This translates into needing to add one here.
+			 */
+			maxSeqNum =
+					ceildiv(region.size + 1, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			receivedSeqNums = new BitSet(maxSeqNum);
 			conn.unstick();
 			conn.sendStart(monitorCore, region.startAddress, region.size);
@@ -912,9 +921,6 @@ public abstract class DataGatherer {
 			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
 
 			if (seqNum > maxSeqNum || seqNum < 0) {
-				throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
-			}
-			if (seqNum == maxSeqNum && data.hasRemaining()) {
 				throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
 			}
 			int len = data.remaining();
