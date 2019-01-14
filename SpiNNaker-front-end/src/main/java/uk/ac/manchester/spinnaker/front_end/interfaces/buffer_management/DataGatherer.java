@@ -979,19 +979,16 @@ public abstract class DataGatherer {
 			 * Build a buffer containing the sequence numbers of all missing
 			 * packets.
 			 */
-			int[] missingSeqs = new int[numMissing];
-			for (int i = 0, j = 0; i < maxSeqNum; i++) {
+			List<Integer> missingSeqs = new ArrayList<>(numMissing);
+			for (int i = 0; i < maxSeqNum; i++) {
 				if (!receivedSeqNums.get(i)) {
-					missingSeqs[j++] = i;
+					missingSeqs.add(i);
 					missCount++;
 				}
 			}
 
 			if (log.isDebugEnabled()) {
-				log.debug("missing {} sequence numbers", numMissing);
-				for (int seq : missingSeqs) {
-					log.debug("missing seq: {}", seq);
-				}
+				log.debug("missing sequence numbers: ", missingSeqs);
 			}
 
 			// Transmit missing sequences as a new SDP Packet

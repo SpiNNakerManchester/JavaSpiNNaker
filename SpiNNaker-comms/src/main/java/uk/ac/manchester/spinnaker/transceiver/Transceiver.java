@@ -387,9 +387,8 @@ public class Transceiver extends UDPTransceiver
 			Integer numberOfBoards, List<ChipLocation> ignoredChips,
 			Map<ChipLocation, Collection<Integer>> ignoredCores,
 			Map<ChipLocation, Collection<Direction>> ignoredLinks,
-			boolean autodetectBMP,
-			List<ConnectionDescriptor> scampConnections, Integer bootPortNumber,
-			Integer maxSDRAMSize)
+			boolean autodetectBMP, List<ConnectionDescriptor> scampConnections,
+			Integer bootPortNumber, Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
 		log.info("Creating transceiver for {}", requireNonNull(host,
 				"SpiNNaker machine host name must be not null"));

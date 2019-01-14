@@ -26,8 +26,8 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Iterator;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -91,12 +91,12 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 * @return Iterable of the messages to send.
 	 */
 	static Iterable<MissingSequenceNumbersMessage> createMessages(
-			HasCoreLocation destination, int[] missingSeqs) {
-		int numPackets = computeNumberOfPackets(missingSeqs.length);
-		IntBuffer b = IntBuffer.wrap(missingSeqs);
+			HasCoreLocation destination, List<Integer> missingSeqs) {
+		int numPackets = computeNumberOfPackets(missingSeqs.size());
 		CoreLocation dest = destination.asCoreLocation();
 		return () -> new Iterator<MissingSequenceNumbersMessage>() {
 			int pktNum = 0;
+			int index = 0;
 
 			@Override
 			public boolean hasNext() {
@@ -107,18 +107,19 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 			public MissingSequenceNumbersMessage next() {
 				ByteBuffer data;
 				// Allocate and write header
+				int remaining = missingSeqs.size() - index;
 				if (pktNum++ == 0) {
-					data = allocateWords(b.remaining(), FIRST_OVERHEAD_WORDS);
+					data = allocateWords(remaining, FIRST_OVERHEAD_WORDS);
 					data.putInt(START_MISSING_SEQS.value);
 					data.putInt(numPackets);
 				} else {
-					data = allocateWords(b.remaining(), NEXT_OVERHEAD_WORDS);
+					data = allocateWords(remaining, NEXT_OVERHEAD_WORDS);
 					data.putInt(NEXT_MISSING_SEQS.value);
 				}
 
 				// Write body
-				while (data.hasRemaining() && b.hasRemaining()) {
-					data.putInt(b.get());
+				while (data.hasRemaining() && index < missingSeqs.size()) {
+					data.putInt(missingSeqs.get(index++));
 				}
 				data.flip();
 
