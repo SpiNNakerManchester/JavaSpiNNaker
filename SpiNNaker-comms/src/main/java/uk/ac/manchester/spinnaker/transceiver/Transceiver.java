@@ -34,7 +34,6 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POST_POWER_ON_SLEEP_TIME;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_POWER_ON_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
@@ -53,6 +52,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +68,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
@@ -152,7 +151,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ClearQueueProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
@@ -164,6 +162,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.GetVersionProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.LoadFixedRouteEntryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.LoadMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.MallocSDRAMProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadFixedRouteEntryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadIOBufProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
@@ -533,13 +532,13 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(Machine machine)
 			throws IOException, SpinnmanException, ProcessException {
-		this(Objects.requireNonNull(machine, "need a real machine")
+		this(requireNonNull(machine, "need a real machine")
 				.getBootEthernetAddress(), machine.version, null, null, null,
 				null, null, false, generateScampConnections(machine), null,
 				null);
 		this.machine = machine;
 		if (scpSelector instanceof MachineAware) {
-			((MachineAware)scpSelector).setMachine(machine);
+			((MachineAware) scpSelector).setMachine(machine);
 		}
 	}
 
