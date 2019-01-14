@@ -21,24 +21,34 @@ import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiverRunner;
+import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification.Completion;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataGatherer;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.DataReceiver;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.Gather;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.Placement;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
+import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
@@ -54,7 +64,9 @@ public final class CommandLineInterface {
 	@SuppressWarnings("unused")
 	private static final String MAIN_CLASS;
 	private static final String VERSION;
+
 	private static final ObjectMapper MAPPER = createMapper();
+	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	static {
 		Class<?> cls = CommandLineInterface.class;
@@ -95,8 +107,9 @@ public final class CommandLineInterface {
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
-				DataReceiverRunner.gather(args[1], args[2], args[THIRD]);
+				gather(args[1], args[2], args[THIRD]);
 				System.exit(0);
+
 			case "download":
 				if (args.length != NUM_DOWNLOAD_ARGS) {
 					System.err.printf("wrong # args: must be \"java -jar %s "
@@ -105,14 +118,23 @@ public final class CommandLineInterface {
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
-				DataReceiverRunner.receive(args[1], args[2], args[THIRD]);
+				receive(args[1], args[2], args[THIRD]);
 				System.exit(0);
+
 			case "dse":
-				dseRun(args);
+				if (args.length != NUM_DSE_ARGS) {
+					System.err.printf("wrong # args: must be \"java -jar %s "
+							+ "dse <machineFile> <runFolder>\"\n", JAR_FILE);
+					System.exit(1);
+				}
+				setLoggerDir(args[2]);
+				dseRun(args[1], args[2]);
 				System.exit(0);
+
 			case "version":
 				System.out.println(VERSION);
 				System.exit(0);
+
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
 						args[0], "download, dse, gather, or version");
@@ -129,29 +151,144 @@ public final class CommandLineInterface {
 	private static final int NUM_DSE_ARGS = 3;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
 
-	private static void dseRun(String[] args)
-			throws UnknownHostException, IOException, SpinnmanException,
+	/**
+	 * Run the data specifications in parallel.
+	 *
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that holds the data specifications to execute).
+	 * @throws IOException
+	 *             If the communications fail.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database is in an illegal state.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
+	 * @throws DataSpecificationException
+	 *             If an invalid data specification file is executed.
+	 */
+	private static void dseRun(String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException,
 			ProcessException, StorageException, ExecutionException,
 			InterruptedException, DataSpecificationException {
-		if (args.length != NUM_DSE_ARGS) {
-			System.err.printf("wrong # args: must be \"java -jar %s "
-					+ "dse <machineFile> <runFolder>\"\n", JAR_FILE);
-			System.exit(1);
-		}
-		setLoggerDir(args[2]);
-		Machine machine = readMachineJson(args[1]);
-		File db = new File(args[2], DSE_DB_FILE);
+		Machine machine = getMachine(machineJsonFile);
+		DSEDatabaseEngine database =
+				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
 		HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine);
-		dseExec.loadAll(new DSEDatabaseEngine(db));
+		Completion c = dseExec.loadAll(database);
+		getLogger(CommandLineInterface.class)
+				.info("launched all DSE tasks; waiting for completion");
+		c.waitForCompletion();
 	}
 
-	private static Machine readMachineJson(String filename)
+	/**
+	 * Download data without using data gatherer cores.
+	 *
+	 * @param placementsJsonFile
+	 *            Name of file containing JSON description of placements.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that receives the output).
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             If the database is in an illegal state
+	 */
+	private static void receive(String placementsJsonFile,
+			String machineJsonFile, String runFolder) throws IOException,
+			SpinnmanException, StorageException, ProcessException {
+		List<Placement> placements = getPlacements(placementsJsonFile);
+		Machine machine = getMachine(machineJsonFile);
+		Transceiver trans = new Transceiver(machine);
+		BufferManagerStorage database = getDatabase(runFolder);
+
+		DataReceiver receiver = new DataReceiver(trans, database);
+		receiver.getDataForPlacements(placements, null);
+	}
+
+	/**
+	 * Download data using data gatherer cores.
+	 *
+	 * @param gatherersJsonFile
+	 *            Name of file containing JSON description of gatherers.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that receives the output).
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             If the database is in an illegal state
+	 * @throws InterruptedException
+	 *             If things are interrupted while waiting for all the downloads
+	 *             to be done
+	 */
+	private static void gather(String gatherersJsonFile, String machineJsonFile,
+			String runFolder) throws IOException, SpinnmanException,
+			ProcessException, StorageException, InterruptedException {
+		List<Gather> gathers = getGatherers(gatherersJsonFile);
+		Machine machine = getMachine(machineJsonFile);
+		Transceiver trans = new Transceiver(machine);
+		BufferManagerStorage database = getDatabase(runFolder);
+
+		DataGatherer runner =
+				new RecordingRegionDataGatherer(trans, machine, database);
+		for (Gather g : gathers) {
+			runner.addTask(g);
+		}
+		int misses = runner.waitForTasksToFinish();
+		getLogger(CommandLineInterface.class).info("total misses: {}", misses);
+	}
+
+	private static Machine getMachine(String filename)
 			throws JsonParseException, JsonMappingException, IOException {
 		try (FileReader machineReader = new FileReader(filename)) {
 			return new Machine(
 					MAPPER.readValue(machineReader, MachineBean.class));
 		}
+	}
+
+	private static List<Gather> getGatherers(String filename)
+			throws IOException, JsonParseException, JsonMappingException {
+		try (FileReader gatherReader = new FileReader(filename)) {
+			return MAPPER.readValue(gatherReader,
+					new TypeReference<List<Gather>>() {
+					});
+		}
+	}
+
+	private static List<Placement> getPlacements(String placementsFile)
+			throws IOException, JsonParseException, JsonMappingException,
+			FileNotFoundException {
+		try (FileReader placementReader = new FileReader(placementsFile)) {
+			return MAPPER.readValue(placementReader,
+					new TypeReference<List<Placement>>() {
+					});
+		}
+	}
+
+	private static BufferManagerStorage getDatabase(String runFolder) {
+		return new BufferManagerDatabaseEngine(
+				new File(runFolder, BUFFER_DB_FILE)).getBufferManagerStorage();
 	}
 }

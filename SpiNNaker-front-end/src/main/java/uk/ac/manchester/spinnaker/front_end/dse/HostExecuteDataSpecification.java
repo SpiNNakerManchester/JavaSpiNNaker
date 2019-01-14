@@ -22,13 +22,12 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
+import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -43,8 +42,8 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
-import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
+import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -61,17 +60,9 @@ public class HostExecuteDataSpecification {
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	/**
-	 * Maximum number of parallel threads that can execute and load data
-	 * specifications.
-	 */
-	private static final int PARALLEL_FACTOR = 4;
-
-	/**
 	 * Global thread pool for DSE execution.
 	 */
-	private static ExecutorService executor =
-			newFixedThreadPool(PARALLEL_FACTOR);
-
+	private final ExecutorService executor;
 	private final Machine machine;
 	private final Transceiver txrx;
 
@@ -87,6 +78,7 @@ public class HostExecuteDataSpecification {
 	 */
 	public HostExecuteDataSpecification(Machine machine)
 			throws IOException, ProcessException {
+		executor = newFixedThreadPool(PARALLEL_SIZE);
 		this.machine = machine;
 		try {
 			txrx = new Transceiver(machine);
@@ -103,50 +95,73 @@ public class HostExecuteDataSpecification {
 	 *
 	 * @param connection
 	 *            The handle to the database.
+	 * @return The future completion of the tasks.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
-	 * @throws InterruptedException
-	 *             If the executor is interrupted during use.
-	 * @throws IOException
-	 *             If the transceiver can't talk to its sockets.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws DataSpecificationException
-	 *             If a data specification in the database is invalid.
-	 * @throws ExecutionException
-	 *             If an unexpected exception occurs.
 	 */
-	public void loadAll(ConnectionProvider connection) throws StorageException,
-			IOException, ProcessException, ExecutionException,
-			InterruptedException, DataSpecificationException {
+	public Completion loadAll(ConnectionProvider connection) throws StorageException,
+			IOException, ProcessException, DataSpecificationException {
 		DSEStorage storage = connection.getDSEStorage();
 		List<Future<Exception>> tasks = storage.listEthernetsToLoad().stream()
-				.map(board -> executor.submit(() -> {
-					try (BoardWorker worker = new BoardWorker(board, storage)) {
-						for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
-							log.info("loading data onto {}", ctl.core);
-							worker.loadCore(ctl);
+				.map(board -> executor.submit(() -> loadBoard(board, storage)))
+				.collect(Collectors.toList());
+		return () -> {
+			try {
+				// Combine the possibly multiple exceptions into one
+				Exception ex = null;
+				for (Future<Exception> f : tasks) {
+					Exception e = f.get();
+					if (e != null) {
+						if (ex == null) {
+							ex = e;
+						} else {
+							ex.addSuppressed(e);
 						}
-						return null;
-					} catch (Exception e) {
-						return e;
 					}
-				})).collect(Collectors.toList());
-		List<Exception> fails = new ArrayList<>(tasks.size());
-		for (Future<Exception> f : tasks) {
-			fails.add(f.get());
-		}
-		try {
-			for (Exception e : fails) {
-				if (e != null) {
-					throw e;
 				}
+				if (ex != null) {
+					throw ex;
+				}
+			} catch (StorageException | IOException | ProcessException
+					| DataSpecificationException | RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new IllegalStateException("unexpected exception", e);
 			}
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
+		};
+	}
+
+	/**
+	 * Marks the future completion of the loading action.
+	 *
+	 * @author Donal Fellows
+	 */
+	public interface Completion {
+		/**
+		 * Wait for the scheduled tasks to all complete.
+		 *
+		 * @throws StorageException
+		 *             If the database can't be talked to.
+		 * @throws IOException
+		 *             If the transceiver can't talk to its sockets.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 * @throws DataSpecificationException
+		 *             If a data specification in the database is invalid.
+		 */
+		void waitForCompletion() throws StorageException, IOException,
+				ProcessException, DataSpecificationException;
+	}
+
+	private Exception loadBoard(Ethernet board, DSEStorage storage) {
+		try (BoardWorker worker = new BoardWorker(board, storage)) {
+			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+				log.info("loading data onto {}", ctl.core);
+				worker.loadCore(ctl);
+			}
+			return null;
 		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			return e;
 		}
 	}
 

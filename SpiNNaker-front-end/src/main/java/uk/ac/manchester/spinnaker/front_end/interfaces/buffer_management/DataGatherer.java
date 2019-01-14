@@ -22,6 +22,7 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -77,16 +78,10 @@ public abstract class DataGatherer {
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
 	/**
-	 * The number of parallel downloads that we do. The size of the thread pool
-	 * used to parallelise them.
-	 */
-	public static final int PARALLEL_SIZE = 1; // TODO
-	/**
 	 * Retrieves of data that is less than this many bytes are done via a normal
 	 * SCAMP memory read.
 	 */
-	// Should be 40000; THRESHOLD_WHERE_SDP_BETTER_THAN_DATA_EXTRACTOR_IN_BYTES
-	public static final int SMALL_RETRIEVE_THRESHOLD = 256; // TODO
+	public static final int SMALL_RETRIEVE_THRESHOLD = 40000;
 	/**
 	 * Maximum number of messages in the message queue. Per parallel download.
 	 */
@@ -142,6 +137,7 @@ public abstract class DataGatherer {
 	private final ExecutorService pool;
 	private int missCount;
 	private Exception caught;
+	private Machine machine;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -161,6 +157,7 @@ public abstract class DataGatherer {
 	public DataGatherer(Transceiver transceiver, Machine machine)
 			throws IOException, ProcessException {
 		this.txrx = transceiver;
+		this.machine = machine;
 		this.pool = newFixedThreadPool(PARALLEL_SIZE);
 		this.missCount = 0;
 		this.caught = null;
@@ -233,7 +230,10 @@ public abstract class DataGatherer {
 			for (Monitor monitor : gatherer.getMonitors()) {
 				monitorCores.addCore(monitor.asCoreLocation());
 			}
-
+			if (machine.getChipAt(gatherer).ipAddress == null) {
+				log.warn("gatherer on chip without IP address: {}",
+						gatherer.asChipLocation());
+			}
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
 					gathererLocation, gatherer.getIptag())) {
 				log.info("reconfiguring IPtag to point to receiving socket");
@@ -482,9 +482,14 @@ public abstract class DataGatherer {
 		txrx.clearReinjectionQueues(monitorCores);
 		// Set timeouts
 		txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
-		txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
+		txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
 		return status;
 	}
+
+	/**
+	 * Standard short timeout for emergency routing.
+	 */
+	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
 
 	/**
 	 * Configure the routers of the chips on a board to be what they were
