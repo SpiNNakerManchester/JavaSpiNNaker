@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Vertex {
 
     /** Label as received from Python. */
-    final String label;
+    private final String label;
 
 	/**
 	 * Address at which to find recording metadata. This was allocated during
@@ -40,7 +40,7 @@ public class Vertex {
 	 * actual buffers used to do the recording (which are <i>circular</i>
 	 * buffers).
 	 */
-    final int recordingRegionBaseAddress;
+    private final int recordingRegionBaseAddress;
 
     /** The IDs of the regions recording. */
     private final int[] recordedRegionIds;
@@ -83,7 +83,14 @@ public class Vertex {
      *
      * @return the base address of the recording region
      */
-    int getRecordingRegionBaseAddress() {
+    int getBaseAddress() {
         return recordingRegionBaseAddress;
+    }
+
+    /**
+     * @return The label, as received from Python.
+     */
+    public String getLabel() {
+    	return label;
     }
 }

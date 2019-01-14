@@ -38,7 +38,7 @@ public class TestPlacements {
         URL url = TestPlacements.class.getResource("/vertex.json");
         ObjectMapper mapper = MapperFactory.createMapper();
         Vertex fromJson = mapper.readValue(url, Vertex.class);
-        assertEquals(1612972372, fromJson.recordingRegionBaseAddress);
+        assertEquals(1612972372, fromJson.getBaseAddress());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestPlacements {
         URL url = TestPlacements.class.getResource("/placement.json");
         ObjectMapper mapper = MapperFactory.createMapper();
         Placement fromJson = mapper.readValue(url, Placement.class);
-        assertEquals(2, fromJson.y);
+        assertEquals(2, fromJson.getY());
     }
 
     @Test

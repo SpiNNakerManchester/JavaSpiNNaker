@@ -27,15 +27,15 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
-class Placement implements HasCoreLocation {
+public class Placement implements HasCoreLocation {
     /** The X coordinate of the core this vertex is placed on. */
-    final int x;
+	private final int x;
     /** The Y coordinate of the core this vertex is placed on. */
-    final int y;
+	private final int y;
     /** The processor ID of the core this vertex is placed on. */
-    final int p;
+	private final int p;
     /** Minimal vertex info. */
-	final Vertex vertex;
+	private final Vertex vertex;
 
 	/**
 	 * Constructor with minimum information needed.
@@ -77,7 +77,7 @@ class Placement implements HasCoreLocation {
     }
 
     /** @return The information about the vertex. */
-    Vertex getVertex() {
+    public Vertex getVertex() {
         return vertex;
     }
 }

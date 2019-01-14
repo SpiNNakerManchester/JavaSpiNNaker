@@ -98,7 +98,7 @@ public class DataReceiver {
 			throws IOException, StorageException, ProcessException {
 		// get data
 		for (Placement placement : placements) {
-			for (int recordingRegionId : placement.vertex
+			for (int recordingRegionId : placement.getVertex()
 					.getRecordedRegionIds()) {
 				getDataForPlacement(placement, recordingRegionId);
 				if (progress != null) {
@@ -111,7 +111,7 @@ public class DataReceiver {
 	private void getDataForPlacement(Placement placement, int recordingRegionId)
 			throws IOException, StorageException, ProcessException {
 		Vertex vertex = placement.getVertex();
-		int recordingDataAddress = vertex.getRecordingRegionBaseAddress();
+		int recordingDataAddress = vertex.getBaseAddress();
 		// Combine placement.x, placement.y, placement.p, recording_region_id
 		RegionLocation location =
 				new RegionLocation(placement, recordingRegionId);

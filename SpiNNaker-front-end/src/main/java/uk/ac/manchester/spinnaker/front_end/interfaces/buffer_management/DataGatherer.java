@@ -303,12 +303,16 @@ public abstract class DataGatherer {
 				if (!place.onSameChipAs(monitor)) {
 					throw new IllegalArgumentException(
 							"cannot gather from placement of "
-									+ place.vertex.label + " (X:" + place.x
-									+ "Y:" + place.y + ") via monitor on "
-									+ monitor + ": different chip");
+									+ place.getVertex().getLabel() + " ("
+									+ place.asChipLocation()
+									+ ") via monitor on " + monitor
+									+ ": different chip");
 				}
 				if (log.isInfoEnabled()) {
-					log.info("downloading recording regions from {} via {}",
+					log.info(
+							"downloading recording regions of vertex {} from "
+									+ "{} via {}",
+							place.getVertex().getLabel(),
 							place.asCoreLocation(), monitor);
 				}
 				for (int regionID : place.getVertex().getRecordedRegionIds()) {

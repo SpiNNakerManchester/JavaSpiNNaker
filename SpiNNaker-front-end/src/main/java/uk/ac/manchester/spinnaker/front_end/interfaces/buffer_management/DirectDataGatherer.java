@@ -103,9 +103,9 @@ public class DirectDataGatherer extends DataGatherer {
 			}
 		}
 		// Individual cores are only ever handled from one thread
-		ByteBuffer buffer = map.get(vertex.recordingRegionBaseAddress);
+		ByteBuffer buffer = map.get(vertex.getBaseAddress());
 		if (buffer == null) {
-			buffer = txrx.readMemory(core, vertex.recordingRegionBaseAddress,
+			buffer = txrx.readMemory(core, vertex.getBaseAddress(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
 			int word = buffer.getInt();
 			if (word != APPDATA_MAGIC_NUM) {
@@ -117,7 +117,7 @@ public class DirectDataGatherer extends DataGatherer {
 				throw new IllegalStateException(
 						String.format("unexpected DSE version: %08x", word));
 			}
-			map.put(vertex.recordingRegionBaseAddress, buffer);
+			map.put(vertex.getBaseAddress(), buffer);
 		}
 		return buffer.asIntBuffer();
 	}
@@ -126,7 +126,7 @@ public class DirectDataGatherer extends DataGatherer {
 	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
 		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
-				placement.vertex);
+				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
 		return Collections.singletonList(

@@ -29,13 +29,13 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
-class Monitor implements HasCoreLocation {
+public class Monitor implements HasCoreLocation {
     /** The X coordinate of the core this monitor is placed on. */
-    final int x;
+	private final int x;
     /** The Y coordinate of the core this monitor is placed on. */
-    final int y;
+	private final int y;
     /** The processor ID of the core this monitor is placed on. */
-    final int p;
+	private final int p;
     /** The vertex placements that this monitor will read. */
     private final List<Placement> placements;
 

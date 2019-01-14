@@ -30,14 +30,14 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
-class Gather implements HasCoreLocation {
+public class Gather implements HasCoreLocation {
 
     /** The x value of the core this placement is on. */
-    final int x;
+    private final int x;
     /** The y value of the core this placement is on. */
-    final int y;
+    private final int y;
     /** The p value of the core this placement is on. */
-    final int p;
+    private final int p;
     /** The IPTag of the package gatherer. */
     private final IPTag iptag;
     /** The extra monitor cores, and what to retrieve from them. */
