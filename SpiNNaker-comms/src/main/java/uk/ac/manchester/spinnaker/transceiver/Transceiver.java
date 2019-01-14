@@ -68,6 +68,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
@@ -532,9 +533,14 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(Machine machine)
 			throws IOException, SpinnmanException, ProcessException {
-		this(machine.getBootEthernetAddress(), machine.version, null, null,
-				null, null, null, false, generateScampConnections(machine),
-				null, null);
+		this(Objects.requireNonNull(machine, "need a real machine")
+				.getBootEthernetAddress(), machine.version, null, null, null,
+				null, null, false, generateScampConnections(machine), null,
+				null);
+		this.machine = machine;
+		if (scpSelector instanceof MachineAware) {
+			((MachineAware)scpSelector).setMachine(machine);
+		}
 	}
 
 	private static List<ConnectionDescriptor> generateScampConnections(
