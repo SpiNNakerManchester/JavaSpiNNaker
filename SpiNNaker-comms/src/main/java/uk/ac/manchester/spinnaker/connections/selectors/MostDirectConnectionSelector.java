@@ -16,9 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.connections.selectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -33,6 +37,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  */
 public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		implements ConnectionSelector<C>, MachineAware {
+	private static final Logger log =
+			getLogger(MostDirectConnectionSelector.class);
 	private static final ChipLocation ROOT = new ChipLocation(0, 0);
 	private final Map<ChipLocation, C> connections;
 	private final C defaultConnection;
@@ -67,8 +73,18 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		}
 		ChipLocation destination = request.sdpHeader.getDestination()
 				.asChipLocation();
-		C conn = connections.get(machine.getChipAt(destination).nearestEthernet
-				.asChipLocation());
+		ChipLocation routeVia =
+				machine.getChipAt(destination).nearestEthernet.asChipLocation();
+		C conn = connections.get(routeVia);
+		if (log.isDebugEnabled()) {
+			if (conn != null) {
+				log.debug("will route packets for {} via {}", destination,
+						routeVia);
+			} else {
+				log.debug("will route packets for {} via the "
+						+ "default connecttion", destination);
+			}
+		}
 		return (conn == null) ? defaultConnection : conn;
 	}
 
