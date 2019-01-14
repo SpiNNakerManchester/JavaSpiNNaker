@@ -25,6 +25,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import testconfig.BoardTestConfiguration;
@@ -92,20 +93,20 @@ public class TestUDPConnection {
 		assertEquals(result.getResult(), RC_OK);
 	}
 
-	/*@Test
-    https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/215
+	@Test
+	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/215")
 	public void testSendSCPRequestToNonexistentHost()
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();
 		assertThrows(SocketTimeoutException.class, () -> {
 			try (SCPConnection connection =
 					new SCPConnection(boardConfig.remotehost)) {
-				ReadMemory scp = new ReadMemory(
-                        ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
+				ReadMemory scp =
+						new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
 				connection.sendSCPRequest(scp);
 				connection.receiveSCPResponse(2);
 			}
 		});
-	}*/
+	}
 }
