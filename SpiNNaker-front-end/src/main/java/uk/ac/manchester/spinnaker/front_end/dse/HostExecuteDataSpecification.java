@@ -25,7 +25,6 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,15 +73,27 @@ public class HostExecuteDataSpecification {
 			newFixedThreadPool(PARALLEL_FACTOR);
 
 	private final Machine machine;
+	private final Transceiver txrx;
 
 	/**
 	 * Create a high-level DSE interface.
 	 *
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
-	public HostExecuteDataSpecification(Machine machine) {
+	public HostExecuteDataSpecification(Machine machine)
+			throws IOException, ProcessException {
 		this.machine = machine;
+		try {
+			txrx = new Transceiver(machine);
+		} catch (SpinnmanException e) {
+			throw new IllegalStateException("failed to talk to BMP, "
+					+ "but that shouldn't have happened at all", e);
+		}
 	}
 
 	/**
@@ -140,20 +151,17 @@ public class HostExecuteDataSpecification {
 	}
 
 	private class BoardWorker implements AutoCloseable {
-		private final Transceiver txrx;
 		private final Ethernet board;
 		private final DSEStorage storage;
 
 		BoardWorker(Ethernet board, DSEStorage storage)
 				throws IOException, SpinnmanException, ProcessException {
-			txrx = new Transceiver(InetAddress.getByName(board.ethernetAddress),
-					null);
 			this.board = board;
 			this.storage = storage;
 		}
 
 		/**
-		 * Excute a data specification and load the results onto a core.
+		 * Execute a data specification and load the results onto a core.
 		 *
 		 * @param ctl
 		 *            The definition of what to run and where to send the

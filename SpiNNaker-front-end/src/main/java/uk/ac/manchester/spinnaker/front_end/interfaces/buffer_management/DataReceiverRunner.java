@@ -76,8 +76,7 @@ public final class DataReceiverRunner {
 			SpinnmanException, StorageException, ProcessException {
 		List<Placement> placements = getPlacements(placementsJsonFile);
 		Machine machine = getMachine(machineJsonFile);
-		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
-				machine.version);
+		Transceiver trans = new Transceiver(machine);
 		BufferManagerStorage database = getDatabase(runFolder);
 
 		DataReceiver receiver = new DataReceiver(trans, database);
@@ -111,8 +110,7 @@ public final class DataReceiverRunner {
 			ProcessException, StorageException, InterruptedException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
-		Transceiver trans = new Transceiver(machine.getBootEthernetAddress(),
-				machine.version);
+		Transceiver trans = new Transceiver(machine);
 		BufferManagerStorage database = getDatabase(runFolder);
 
 		DataGatherer runner =

@@ -27,6 +27,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
@@ -514,6 +515,34 @@ public class Transceiver extends UDPTransceiver
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException, ProcessException {
 		this(version, connections, null, null, null, null, null);
+	}
+
+	/**
+	 * Given a machine, make a transceiver for talking to all boards of that
+	 * machine.
+	 *
+	 * @param machine
+	 *            The machine description
+	 * @throws IOException
+	 *             if networking fails
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 */
+	public Transceiver(Machine machine)
+			throws IOException, SpinnmanException, ProcessException {
+		this(machine.getBootEthernetAddress(), machine.version, null, null,
+				null, null, null, false, generateScampConnections(machine),
+				null, null);
+	}
+
+	private static List<ConnectionDescriptor> generateScampConnections(
+			Machine machine) {
+		return machine.ethernetConnectedChips().stream()
+				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
+						SCP_SCAMP_PORT, chip.asChipLocation()))
+				.collect(toList());
 	}
 
 	/**
