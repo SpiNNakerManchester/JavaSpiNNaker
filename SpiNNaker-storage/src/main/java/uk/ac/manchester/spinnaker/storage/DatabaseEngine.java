@@ -35,6 +35,8 @@ import org.sqlite.SQLiteConfig;
  */
 public abstract class DatabaseEngine implements ConnectionProvider {
 	private static final Logger log = getLogger(DatabaseEngine.class);
+	/** Busy timeout for SQLite, in milliseconds. */
+	private static final int BUSY_TIMEOUT = 500;
 
 	private String dbConnectionUrl;
 
@@ -63,6 +65,7 @@ public abstract class DatabaseEngine implements ConnectionProvider {
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		config.setSynchronous(OFF);
+		config.setBusyTimeout(BUSY_TIMEOUT);
 		Connection conn = DriverManager.getConnection(dbConnectionUrl,
 				config.toProperties());
 		try (Statement statement = conn.createStatement()) {

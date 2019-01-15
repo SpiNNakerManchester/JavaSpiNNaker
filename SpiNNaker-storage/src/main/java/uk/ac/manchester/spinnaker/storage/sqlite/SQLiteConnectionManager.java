@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.sqlite.SQLiteException;
+
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
@@ -95,6 +97,7 @@ abstract class SQLiteConnectionManager {
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
 			conn.setAutoCommit(false);
+			startTransaction(conn);
 			try {
 				T result = call.call(conn);
 				conn.commit();
@@ -121,7 +124,7 @@ abstract class SQLiteConnectionManager {
 	final void callV(CallWithoutResult call, String actionDescription)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
+			startTransaction(conn);
 			try {
 				call.call(conn);
 				conn.commit();
@@ -132,6 +135,28 @@ abstract class SQLiteConnectionManager {
 			}
 		} catch (SQLException | IllegalStateException e) {
 			throw new StorageException("while " + actionDescription, e);
+		}
+	}
+
+	private static final int ATTEMPTS = 5;
+
+	private void startTransaction(Connection conn) throws SQLException {
+		int tries = ATTEMPTS;
+		while (tries > 0) {
+			try {
+				conn.setAutoCommit(false);
+				conn.createStatement().execute("BEGIN IMMEDIATE TRANSACTION");
+				return;
+			} catch (SQLiteException e) {
+				switch (e.getResultCode()) {
+				case SQLITE_BUSY:
+				case SQLITE_LOCKED:
+					tries--;
+					break;
+				default:
+					throw e;
+				}
+			}
 		}
 	}
 }
