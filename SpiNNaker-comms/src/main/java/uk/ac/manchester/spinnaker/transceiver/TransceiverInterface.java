@@ -445,6 +445,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get information about some processors on the board.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code coreSubsets} only contains cores
+	 * on a single board.
 	 *
 	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the information. If
@@ -2551,7 +2555,8 @@ public interface TransceiverInterface {
 	 * Get all cores that are in a given state.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2572,7 +2577,8 @@ public interface TransceiverInterface {
 	 * Get all cores that are in a given set of states.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2600,7 +2606,8 @@ public interface TransceiverInterface {
 	 * Get all cores that are not in a given state.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2622,7 +2629,8 @@ public interface TransceiverInterface {
 	 * Get all cores that are not in a given set of states.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
