@@ -539,6 +539,8 @@ public class Transceiver extends UDPTransceiver
 		if (scpSelector instanceof MachineAware) {
 			((MachineAware) scpSelector).setMachine(machine);
 		}
+		log.info("known connections to this transceiver: {}",
+				udpScampConnections);
 	}
 
 	private static List<ConnectionDescriptor> generateScampConnections(
@@ -988,7 +990,7 @@ public class Transceiver extends UDPTransceiver
 	 *            The coordinates of the chip
 	 * @return connection or {@code null} if there is no such connection
 	 */
-	private SCPConnection searchForProxies(HasChipLocation chip) {
+	private SCPConnection searchForProxies(ChipLocation chip) {
 		for (SCPConnection connection : scampConnections) {
 			if (connection.getChip().equals(chip)) {
 				return connection;
