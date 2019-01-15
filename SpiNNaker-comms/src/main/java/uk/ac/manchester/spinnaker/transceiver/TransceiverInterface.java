@@ -127,6 +127,7 @@ public interface TransceiverInterface {
 	/**
 	 * @return The connection selector to use for SCP messages.
 	 */
+	@ParallelSafe
 	ConnectionSelector<SCPConnection> getScampConnectionSelector();
 
 	/**
@@ -139,6 +140,7 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException;
 
@@ -150,6 +152,7 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	default void sendSDPMessage(SDPMessage message) throws IOException {
 		sendSDPMessage(message, null);
 	}
@@ -164,6 +167,7 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException;
 
@@ -203,6 +207,7 @@ public interface TransceiverInterface {
 	 *
 	 * @return True if the board can be contacted, False otherwise
 	 */
+	@ParallelSafe
 	default boolean isConnected() {
 		return isConnected(null);
 	}
@@ -216,6 +221,7 @@ public interface TransceiverInterface {
 	 *            to be connected if any one connection works.
 	 * @return True if the board can be contacted, False otherwise
 	 */
+	@ParallelSafe
 	boolean isConnected(Connection connection);
 
 	/**
@@ -243,6 +249,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
@@ -260,6 +267,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getScampVersion(chip, getScampConnectionSelector());
@@ -279,6 +287,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException;
@@ -436,6 +445,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
@@ -473,6 +483,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser0RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_0_START_ADDRESS;
 	}
@@ -485,6 +496,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>0</sub> address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser0RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_0_START_ADDRESS;
 	}
@@ -498,6 +510,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser1RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_1_START_ADDRESS;
 	}
@@ -510,6 +523,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>1</sub> address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser1RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_1_START_ADDRESS;
 	}
@@ -523,6 +537,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>2</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser2RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_2_START_ADDRESS;
 	}
@@ -535,6 +550,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>2</sub> address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser2RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_2_START_ADDRESS;
 	}
@@ -563,6 +579,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
@@ -597,6 +614,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException;
 
@@ -612,6 +630,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watchdog)
 			throws IOException, ProcessException;
 
@@ -689,6 +708,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -717,6 +737,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -745,6 +766,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -776,6 +798,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -798,6 +821,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
@@ -823,6 +847,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -849,6 +874,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -877,6 +903,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -898,6 +925,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -923,6 +951,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -948,6 +977,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -975,6 +1005,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1545,6 +1576,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action, int board,
 			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(leds, action, singleton(board), cabinet, frame);
@@ -1569,6 +1601,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(int led, LEDAction action, Collection<Integer> board,
 			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, board, cabinet, frame);
@@ -1592,6 +1625,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(int led, LEDAction action, int board, int cabinet,
 			int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, singleton(board), cabinet, frame);
@@ -1618,6 +1652,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
 			int board) throws IOException, ProcessException;
 
@@ -1643,6 +1678,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
 			int frame, int board) throws IOException, ProcessException;
 
@@ -1661,6 +1697,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, ProcessException;
 
@@ -1700,6 +1737,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, ProcessException;
 
@@ -1722,6 +1760,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -1747,6 +1786,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
@@ -1768,6 +1808,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
@@ -1790,6 +1831,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
@@ -1809,6 +1851,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
@@ -1830,6 +1873,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
@@ -1853,6 +1897,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
@@ -1874,6 +1919,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(core, baseAddress, wrap(data));
@@ -1896,6 +1942,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, data);
@@ -1918,6 +1965,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
@@ -2358,6 +2406,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
 			int length) throws IOException, ProcessException {
 		return readMemory(chip.getScampCore(), baseAddress, length);
@@ -2381,6 +2430,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
 			throws IOException, ProcessException;
 
@@ -2401,6 +2451,7 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
+	@ParallelSafe
 	void readRegion(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
@@ -2686,6 +2737,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLEDs(HasChipLocation chip,
 			Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException {
@@ -2705,6 +2757,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException;
 
@@ -2716,6 +2769,7 @@ public interface TransceiverInterface {
 	 * @return A connection for the given IP address, or {@code null} if no such
 	 *         connection exists
 	 */
+	@ParallelSafe
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
 
 	/**
@@ -2729,6 +2783,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setIPTag(IPTag tag) throws IOException, ProcessException;
 
 	/**
@@ -2743,6 +2798,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setReverseIPTag(ReverseIPTag tag) throws IOException, ProcessException;
 
 	/**
@@ -2755,6 +2811,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearIPTag(Tag tag) throws IOException, ProcessException {
 		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
@@ -2790,6 +2847,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException;
 
@@ -2821,6 +2879,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException;
 
@@ -2837,6 +2896,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default int mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, AppID.DEFAULT, 0);
@@ -2857,6 +2917,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
@@ -2881,6 +2942,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException;
 
@@ -2896,6 +2958,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException;
 
@@ -2912,6 +2975,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
@@ -2928,6 +2992,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
 			throws IOException, ProcessException {
@@ -2948,6 +3013,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException;
@@ -2964,6 +3030,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
 		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
@@ -2983,6 +3050,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID) throws IOException, ProcessException;
 
@@ -2997,6 +3065,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return readFixedRoute(chip, AppID.DEFAULT);
@@ -3015,6 +3084,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
@@ -3029,6 +3099,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getMulticastRoutes(chip, null);
@@ -3047,6 +3118,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException;
 
@@ -3060,6 +3132,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException;
 
@@ -3074,6 +3147,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException;
 
@@ -3094,6 +3168,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setRouterDiagnosticFilter(HasChipLocation chip, int position,
 			DiagnosticFilter diagnosticFilter)
 			throws IOException, ProcessException;
@@ -3113,6 +3188,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, ProcessException;
 
@@ -3127,6 +3203,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
 			throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false,
@@ -3147,6 +3224,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, enable,
@@ -3168,6 +3246,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			Iterable<Integer> counterIDs) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false, counterIDs);
@@ -3188,6 +3267,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearRouterDiagnosticCounters(HasChipLocation chip, boolean enable,
 			Iterable<Integer> counterIDs) throws IOException, ProcessException;
 
@@ -3202,6 +3282,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getHeap(chip, sdram_heap_address);
@@ -3220,6 +3301,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, ProcessException;
 
@@ -3241,6 +3323,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size) throws ProcessException, IOException {
 		fillMemory(chip, baseAddress, repeatValue, size, WORD);
@@ -3266,6 +3349,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
 			int size, DataType dataType) throws ProcessException, IOException;
 
@@ -3279,6 +3363,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearReinjectionQueues(HasCoreLocation monitorCore)
 			throws IOException, ProcessException;
 
@@ -3292,6 +3377,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearReinjectionQueues(CoreSubsets monitorCores)
 			throws IOException, ProcessException;
 
@@ -3306,6 +3392,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
 			throws IOException, ProcessException;
 
@@ -3320,6 +3407,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCores) throws IOException, ProcessException;
 
@@ -3333,6 +3421,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void resetReinjectionCounters(HasCoreLocation monitorCore)
 			throws IOException, ProcessException;
 
@@ -3367,6 +3456,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setReinjectionTypes(HasCoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException;
@@ -3407,6 +3497,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException;
@@ -3423,6 +3514,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
 			RouterTimeout timeout) throws IOException, ProcessException {
 		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
@@ -3479,6 +3571,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setReinjectionTimeout(HasCoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException;
 
@@ -3494,6 +3587,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setReinjectionTimeout(HasCoreLocation monitorCore,
 			RouterTimeout timeout) throws IOException, ProcessException {
 		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
