@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.storage;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.OFF;
+import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 
 import java.io.File;
 import java.sql.Connection;
@@ -66,6 +67,7 @@ public abstract class DatabaseEngine implements ConnectionProvider {
 		config.enforceForeignKeys(true);
 		config.setSynchronous(OFF);
 		config.setBusyTimeout(BUSY_TIMEOUT);
+		config.setTransactionMode(IMMEDIATE);
 		Connection conn = DriverManager.getConnection(dbConnectionUrl,
 				config.toProperties());
 		try (Statement statement = conn.createStatement()) {
