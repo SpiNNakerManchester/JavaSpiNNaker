@@ -29,6 +29,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /**
  * A message used to request fast data transfer from SpiNNaker to Host.
  */
+@Deprecated
 final class StartSendingMessage extends ProtocolMessage {
 	private static final int NUM_WORDS = 3;
 

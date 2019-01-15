@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 /** Various constants used by the implementation. */
+@Deprecated
 abstract class Constants {
 	private Constants() {
 	}

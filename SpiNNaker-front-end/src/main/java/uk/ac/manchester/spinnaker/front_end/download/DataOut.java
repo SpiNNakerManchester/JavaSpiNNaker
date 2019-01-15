@@ -44,6 +44,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
  * @author Donal Fellows
  * @see HostDataReceiver
  */
+@Deprecated
 public class DataOut implements Callable<Boolean> {
 	/**
 	 * Used to describe the binding of positions in arguments to fields of the

@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * A message used to describe what sequence numbers are missing from a fast data
  * transfer stream so that they can be retransmitted.
  */
+@Deprecated
 final class MissingSequenceNumbersMessage extends ProtocolMessage {
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;

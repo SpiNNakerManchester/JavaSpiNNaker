@@ -98,7 +98,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 	 * @return True iff we can talk directly to it using a connection that this
 	 *         selector knows about.
 	 */
-	public final boolean hasDirectConnectionFor(Chip ethernetChip) {
+	public boolean hasDirectConnectionFor(Chip ethernetChip) {
 		return connections.containsKey(ethernetChip.asChipLocation());
 	}
 
@@ -111,7 +111,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 	 * @return True iff we can talk directly to the board using a connection
 	 *         that this selector knows about.
 	 */
-	public final boolean hasConnectionToBoardOf(Chip chip) {
+	public boolean hasConnectionToBoardOf(Chip chip) {
 		return hasDirectConnectionFor(machine.getChipAt(chip.nearestEthernet));
 	}
 

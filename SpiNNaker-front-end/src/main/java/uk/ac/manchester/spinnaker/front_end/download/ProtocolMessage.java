@@ -30,6 +30,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  *
  * @author Donal Fellows
  */
+@Deprecated
 public abstract class ProtocolMessage extends SDPMessage {
 	/**
 	 * Create a protocol message.

@@ -20,4 +20,5 @@
  * @author Alan Stokes
  * @author Donal Fellows
  */
+@Deprecated
 package uk.ac.manchester.spinnaker.front_end.download;

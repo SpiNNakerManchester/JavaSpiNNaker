@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 /** The various IDs of messages used in the fast download protocol. */
+@Deprecated
 public enum ProtocolID {
 	/** ID of message used to start sending data. */
 	START_SENDING_DATA(100),

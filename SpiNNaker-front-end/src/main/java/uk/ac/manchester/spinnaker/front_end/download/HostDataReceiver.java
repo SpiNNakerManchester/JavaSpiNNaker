@@ -58,6 +58,7 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * @author Alan Stokes
  * @author Donal Fellows
  */
+@Deprecated
 public class HostDataReceiver extends Thread {
 	private static final Logger log = getLogger(HostDataReceiver.class);
 
