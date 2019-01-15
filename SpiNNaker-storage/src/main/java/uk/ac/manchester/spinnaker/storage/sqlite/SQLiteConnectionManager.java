@@ -100,18 +100,20 @@ abstract class SQLiteConnectionManager {
 	 */
 	final <T> T callR(CallWithResult<T> call, String actionDescription)
 			throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			startTransaction(conn);
-			try {
-				T result = call.call(conn);
-				conn.commit();
-				return result;
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
+		synchronized (connProvider) {
+			try (Connection conn = connProvider.getConnection()) {
+				startTransaction(conn);
+				try {
+					T result = call.call(conn);
+					conn.commit();
+					return result;
+				} catch (Exception e) {
+					conn.rollback();
+					throw e;
+				}
+			} catch (SQLException | IllegalStateException e) {
+				throw new StorageException("while " + actionDescription, e);
 			}
-		} catch (SQLException | IllegalStateException e) {
-			throw new StorageException("while " + actionDescription, e);
 		}
 	}
 
@@ -127,18 +129,20 @@ abstract class SQLiteConnectionManager {
 	 */
 	final void callV(CallWithoutResult call, String actionDescription)
 			throws StorageException {
-		try (Connection conn = connProvider.getConnection()) {
-			startTransaction(conn);
-			try {
-				call.call(conn);
-				conn.commit();
-				return;
-			} catch (Exception e) {
-				conn.rollback();
-				throw e;
+		synchronized (connProvider) {
+			try (Connection conn = connProvider.getConnection()) {
+				startTransaction(conn);
+				try {
+					call.call(conn);
+					conn.commit();
+					return;
+				} catch (Exception e) {
+					conn.rollback();
+					throw e;
+				}
+			} catch (SQLException | IllegalStateException e) {
+				throw new StorageException("while " + actionDescription, e);
 			}
-		} catch (SQLException | IllegalStateException e) {
-			throw new StorageException("while " + actionDescription, e);
 		}
 	}
 
