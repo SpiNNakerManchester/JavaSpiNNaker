@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;

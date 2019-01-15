@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Vertex;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferedReceivingData;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferingOperation;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.ChannelBufferState;

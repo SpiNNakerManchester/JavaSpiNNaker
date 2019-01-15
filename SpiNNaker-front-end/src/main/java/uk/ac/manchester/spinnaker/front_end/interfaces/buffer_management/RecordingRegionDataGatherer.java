@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;

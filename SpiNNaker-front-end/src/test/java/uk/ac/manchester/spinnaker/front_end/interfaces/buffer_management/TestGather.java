@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+
+import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Gather;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 /**
