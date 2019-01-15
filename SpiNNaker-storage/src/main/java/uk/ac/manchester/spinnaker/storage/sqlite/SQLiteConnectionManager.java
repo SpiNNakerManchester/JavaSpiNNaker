@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.sqlite.SQLiteException;
-
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
@@ -138,25 +136,7 @@ abstract class SQLiteConnectionManager {
 		}
 	}
 
-	private static final int ATTEMPTS = 5;
-
 	private void startTransaction(Connection conn) throws SQLException {
-		int tries = ATTEMPTS;
-		while (tries > 0) {
-			try {
-				conn.setAutoCommit(false);
-				conn.createStatement().execute("BEGIN IMMEDIATE TRANSACTION");
-				return;
-			} catch (SQLiteException e) {
-				switch (e.getResultCode()) {
-				case SQLITE_BUSY:
-				case SQLITE_LOCKED:
-					tries--;
-					break;
-				default:
-					throw e;
-				}
-			}
-		}
+		conn.setAutoCommit(false);
 	}
 }
