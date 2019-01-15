@@ -99,8 +99,9 @@ public class HostExecuteDataSpecification {
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 */
-	public Completion loadAll(ConnectionProvider connection) throws StorageException,
-			IOException, ProcessException, DataSpecificationException {
+	public Completion loadAll(ConnectionProvider connection)
+			throws StorageException, IOException, ProcessException,
+			DataSpecificationException {
 		DSEStorage storage = connection.getDSEStorage();
 		List<Future<Exception>> tasks = storage.listEthernetsToLoad().stream()
 				.map(board -> executor.submit(() -> loadBoard(board, storage)))
