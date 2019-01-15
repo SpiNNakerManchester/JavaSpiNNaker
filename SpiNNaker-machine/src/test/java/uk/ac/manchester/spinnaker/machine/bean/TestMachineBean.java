@@ -64,4 +64,13 @@ public class TestMachineBean {
         assertEquals(12, machine.machineDimensions.width);
         assertNotNull(machine);
     }
+
+    public void testPop() throws IOException {
+        URL url = TestMachineBean.class.getResource("/h40w16.json");
+        ObjectMapper mapper = MapperFactory.createMapper();
+        MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+
+        Machine machine = new Machine(fromJson);
+        assertNotNull(machine);
+    }
 }

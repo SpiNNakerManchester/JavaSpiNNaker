@@ -629,7 +629,7 @@ public class Machine implements Iterable<Chip> {
         if (version.verticalWrap) {
             y = (y + machineDimensions.height) % machineDimensions.height;
         } else {
-            if (y < 0 || y >= this.machineDimensions.width) {
+            if (y < 0 || y >= this.machineDimensions.height) {
                 return null;
             }
         }
