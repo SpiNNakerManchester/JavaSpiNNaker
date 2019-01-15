@@ -51,6 +51,8 @@ import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -166,17 +168,28 @@ public abstract class DataGatherer {
 	/**
 	 * Request that a particular board be downloaded.
 	 *
-	 * @param gather
+	 * @param gatherer
 	 *            The reference to the speed up data gatherer for the board,
 	 *            together with the information about which bits on the board
 	 *            should be downloaded.
 	 */
-	public void addTask(Gather gather) {
-		// No need to keep adding if there is already an exception
-		// Note: don't care about synchronisation; it's purely an optimisation
-		if (caught == null) {
-			pool.execute(() -> downloadBoard(gather));
+	public void addTask(Gather gatherer) {
+		if (machine.getChipAt(gatherer).ipAddress == null) {
+			throw new IllegalStateException(
+					"gatherer on chip without IP address: "
+							+ gatherer.asChipLocation());
 		}
+		ConnectionSelector<?> sel = txrx.getScampConnectionSelector();
+		if (sel instanceof MostDirectConnectionSelector) {
+			MostDirectConnectionSelector<?> s =
+					(MostDirectConnectionSelector<?>) sel;
+			if (!s.hasDirectConnectionFor(machine.getChipAt(gatherer))) {
+				throw new IllegalStateException(
+						"gatherer at " + gatherer.asCoreLocation()
+								+ " without direct route in transceiver");
+			}
+		}
+		pool.execute(() -> downloadBoard(gatherer));
 	}
 
 	/**
@@ -230,10 +243,6 @@ public abstract class DataGatherer {
 			for (Monitor monitor : gatherer.getMonitors()) {
 				monitorCores.addCore(monitor.asCoreLocation());
 			}
-			if (machine.getChipAt(gatherer).ipAddress == null) {
-				log.warn("gatherer on chip without IP address: {}",
-						gatherer.asChipLocation());
-			}
 			try (GatherDownloadConnection conn = new GatherDownloadConnection(
 					gathererLocation, gatherer.getIptag())) {
 				log.info("reconfiguring IPtag to point to receiving socket");
@@ -265,9 +274,16 @@ public abstract class DataGatherer {
 		} catch (IOException | ProcessException | StorageException
 				| RuntimeException | FullFailureException e) {
 			if (!(e instanceof FullFailureException)) {
-				log.warn("problem when downloading a board's data", e);
+				log.warn("problem when downloading a board's data (at {})",
+						gatherer.asChipLocation(), e);
 			}
-			caught = e;
+			synchronized (this) {
+				if (caught == null) {
+					caught = e;
+				} else {
+					caught.addSuppressed(e);
+				}
+			}
 		}
 	}
 

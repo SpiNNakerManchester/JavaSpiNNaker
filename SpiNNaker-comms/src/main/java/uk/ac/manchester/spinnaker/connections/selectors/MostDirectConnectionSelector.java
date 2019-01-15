@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -86,6 +87,32 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 			}
 		}
 		return (conn == null) ? defaultConnection : conn;
+	}
+
+	/**
+	 * Tests if this connection selector will be able to make a direct
+	 * connection to the given ethernet chip.
+	 *
+	 * @param ethernetChip
+	 *            The ethernet chip that we are testing for direct routing to.
+	 * @return True iff we can talk directly to it using a connection that this
+	 *         selector knows about.
+	 */
+	public final boolean hasDirectConnectionFor(Chip ethernetChip) {
+		return connections.containsKey(ethernetChip.asChipLocation());
+	}
+
+	/**
+	 * Tests if this connection selector will be able to make a direct
+	 * connection to the board containing a given chip.
+	 *
+	 * @param chip
+	 *            A chip on the board that we are testing for direct routing to.
+	 * @return True iff we can talk directly to the board using a connection
+	 *         that this selector knows about.
+	 */
+	public final boolean hasConnectionToBoardOf(Chip chip) {
+		return hasDirectConnectionFor(machine.getChipAt(chip.nearestEthernet));
 	}
 
 	@Override
