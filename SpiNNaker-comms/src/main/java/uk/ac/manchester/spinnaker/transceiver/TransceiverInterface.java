@@ -176,7 +176,8 @@ public interface TransceiverInterface {
 	 * chips in the machine.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless previously called from a parallel-safe
+	 * situation.
 	 *
 	 * @return The dimensions of the machine
 	 * @throws IOException
@@ -184,6 +185,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException;
 
@@ -192,7 +194,8 @@ public interface TransceiverInterface {
 	 * are connected to each other.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context unless previously called from a parallel-safe
+	 * situation.
 	 *
 	 * @return A machine description
 	 * @throws IOException
@@ -200,6 +203,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Machine getMachineDetails() throws IOException, ProcessException;
 
 	/**
@@ -233,6 +237,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
 		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
@@ -304,6 +309,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void bootBoard() throws InterruptedException, IOException {
 		bootBoard(null);
 	}
@@ -322,6 +328,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException;
 
@@ -341,6 +348,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
@@ -364,6 +372,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException {
@@ -388,6 +397,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady(int numRetries)
 			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(numRetries, null);
@@ -413,6 +423,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException;
@@ -429,6 +440,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default Iterable<CPUInfo> getCPUInformation()
 			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
@@ -471,6 +483,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
@@ -564,6 +577,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default Iterable<IOBuffer> getIobuf() throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
 	}
@@ -599,6 +613,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
@@ -644,6 +659,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
@@ -662,6 +678,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
@@ -685,6 +702,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException;
 
@@ -1035,6 +1053,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -1068,6 +1087,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1095,6 +1115,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -1126,6 +1147,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1152,6 +1174,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -1182,6 +1205,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1208,6 +1232,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an unexpected state.
 	 */
+	@ParallelUnsafe
 	default void executeApplication(ExecutableTargets executableTargets,
 			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
@@ -1253,6 +1278,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void powerOnMachine()
 			throws InterruptedException, IOException, ProcessException;
 
@@ -1274,6 +1300,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOn(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, 0, frame);
@@ -1300,6 +1327,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, cabinet, frame);
@@ -1320,6 +1348,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, 0);
@@ -1343,6 +1372,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, frame);
@@ -1369,6 +1399,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), cabinet, frame);
@@ -1387,6 +1418,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void powerOffMachine()
 			throws InterruptedException, IOException, ProcessException;
 
@@ -1408,6 +1440,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOff(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, 0, frame);
@@ -1434,6 +1467,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, cabinet, frame);
@@ -1454,6 +1488,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, 0);
@@ -1477,6 +1512,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, frame);
@@ -1503,6 +1539,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), cabinet, frame);
@@ -1531,6 +1568,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException;
@@ -1554,6 +1592,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
 			throws IOException, ProcessException;
@@ -1717,6 +1756,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default VersionInfo readBMPVersion(Iterable<Integer> boards, int cabinet,
 			int frame) throws IOException, ProcessException {
 		return readBMPVersion(boards.iterator().next(), cabinet, frame);
@@ -1996,6 +2036,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -2031,6 +2072,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
@@ -2060,6 +2102,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
@@ -2092,6 +2135,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, ProcessException;
 
@@ -2119,6 +2163,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
@@ -2150,6 +2195,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
@@ -2182,6 +2228,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
@@ -2212,6 +2259,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
@@ -2242,6 +2290,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
@@ -2274,6 +2323,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException;
 
@@ -2297,6 +2347,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
@@ -2318,6 +2369,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
@@ -2338,6 +2390,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
@@ -2362,6 +2415,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemoryFlood(baseAddress, wrap(data));
@@ -2385,6 +2439,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
@@ -2479,6 +2534,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
@@ -2512,6 +2568,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, ProcessException;
 
@@ -2528,6 +2585,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void stopApplication(AppID appID) throws IOException, ProcessException;
 
 	/**
@@ -2553,6 +2611,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
+	@ParallelSafeWithCare
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets,
 			AppID appID, Set<CPUState> cpuStates) throws IOException,
 			ProcessException, InterruptedException, SpinnmanException {
@@ -2596,6 +2655,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
+	@ParallelSafeWithCare
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countsBetweenFullCheck)
@@ -2619,6 +2679,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
 		return getCoresInState(allCoreSubsets, singleton(state));
@@ -2641,6 +2702,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
 		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
@@ -2670,6 +2732,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
@@ -2693,6 +2756,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
@@ -2721,6 +2785,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException;
 
@@ -2829,6 +2894,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void clearIPTag(int tag) throws IOException, ProcessException {
 		clearIPTag(tag, null);
 	}
@@ -2864,6 +2930,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default List<Tag> getTags() throws IOException, ProcessException {
 		return getTags(null);
 	}
@@ -3435,6 +3502,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void resetReinjectionCounters(CoreSubsets monitorCores)
 			throws IOException, ProcessException;
 
@@ -3479,6 +3547,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException;
@@ -3535,6 +3604,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException;
@@ -3551,6 +3621,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
 			RouterTimeout timeout) throws IOException, ProcessException {
 		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
@@ -3607,6 +3678,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void setReinjectionTimeout(CoreSubsets monitorCores, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException;
 
@@ -3622,6 +3694,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void setReinjectionTimeout(CoreSubsets monitorCores,
 			RouterTimeout timeout) throws IOException, ProcessException {
 		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
