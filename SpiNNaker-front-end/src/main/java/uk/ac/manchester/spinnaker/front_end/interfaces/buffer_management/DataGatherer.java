@@ -468,7 +468,8 @@ public abstract class DataGatherer {
 		txrx.setIPTag(tag);
 		log.info("reconfigured {} to {}", iptag, tag);
 		if (log.isDebugEnabled()) {
-			log.debug("all tags: {}", txrx.getTags());
+			log.debug("all tags for board: {}", txrx.getTags(
+					txrx.locateSpinnakerConnection(tag.getBoardAddress())));
 		}
 	}
 

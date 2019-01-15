@@ -170,6 +170,9 @@ public interface TransceiverInterface {
 	/**
 	 * Get the maximum chip x-coordinate and maximum chip y-coordinate of the
 	 * chips in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return The dimensions of the machine
 	 * @throws IOException
@@ -183,6 +186,9 @@ public interface TransceiverInterface {
 	/**
 	 * Get the details of the machine made up of chips on a board and how they
 	 * are connected to each other.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return A machine description
 	 * @throws IOException
@@ -280,6 +286,9 @@ public interface TransceiverInterface {
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -293,6 +302,9 @@ public interface TransceiverInterface {
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param extraBootValues
 	 *            extra values to set during boot
@@ -308,6 +320,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return The version identifier
 	 * @throws IOException
@@ -326,6 +341,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param extraBootValues
 	 *            Any additional values to set during boot
@@ -347,6 +365,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param numRetries
 	 *            The number of times to retry booting
@@ -367,6 +388,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param numRetries
 	 *            The number of times to retry booting
@@ -386,6 +410,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get information about the processors on the board.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return An iterable of the CPU information for all cores.
 	 * @throws IOException
@@ -621,6 +648,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get a count of the number of cores which have a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application from which to get the count.
@@ -949,6 +979,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -977,6 +1010,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1005,6 +1041,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1031,6 +1070,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1057,6 +1099,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1082,6 +1127,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1108,6 +1156,9 @@ public interface TransceiverInterface {
 	 * specified cores, wait for them to be ready and then start all of the
 	 * binaries. Note this will get the binaries into {@code c_main()} but will
 	 * not signal the barrier.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param executableTargets
 	 *            The binaries to be executed and the cores to execute them on
@@ -1156,6 +1207,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on the whole machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -1169,6 +1223,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power on
@@ -1189,6 +1246,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power on
@@ -1212,6 +1272,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
@@ -1229,6 +1292,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power on
@@ -1249,6 +1315,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power on
@@ -1272,6 +1341,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off the whole machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -1285,6 +1357,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power off
@@ -1305,6 +1380,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power off
@@ -1328,6 +1406,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
@@ -1345,6 +1426,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off
@@ -1365,6 +1449,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off
@@ -1388,6 +1475,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Send a power request to the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param powerCommand
 	 *            The power command to send
@@ -1828,9 +1918,12 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1859,9 +1952,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1888,9 +1984,12 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1916,9 +2015,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1942,9 +2044,12 @@ public interface TransceiverInterface {
 			File dataFile) throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1969,9 +2074,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1999,9 +2107,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -2025,9 +2136,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -2052,9 +2166,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -2080,9 +2197,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -2107,6 +2227,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2126,6 +2250,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2143,6 +2271,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2163,6 +2295,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2181,6 +2317,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2264,6 +2404,9 @@ public interface TransceiverInterface {
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be read from
@@ -2291,6 +2434,9 @@ public interface TransceiverInterface {
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
 	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the chip whose neighbour is to be read
@@ -2316,6 +2462,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Sends a stop request for an application ID.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application to send to
@@ -2329,6 +2478,9 @@ public interface TransceiverInterface {
 	/**
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
@@ -2357,6 +2509,9 @@ public interface TransceiverInterface {
 	/**
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
@@ -2394,6 +2549,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are in a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2412,6 +2570,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are in a given set of states.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2437,6 +2598,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are not in a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2456,6 +2620,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are not in a given set of states.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2482,6 +2649,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Send a signal to an application.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application to send to
@@ -2583,6 +2753,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Clear the setting of an IP tag.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param tag
 	 *            The tag ID
@@ -2615,6 +2788,9 @@ public interface TransceiverInterface {
 	/**
 	 * Get the current set of tags that have been set on the board using all
 	 * SCPSender connections.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return An iterable of tags
 	 * @throws IOException
