@@ -16,8 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -28,6 +34,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  * @author Donal Fellows
  */
 abstract class SQLiteConnectionManager {
+	private static final Logger log = getLogger(SQLiteConnectionManager.class);
 	private final ConnectionProvider connProvider;
 
 	/**
@@ -94,7 +101,6 @@ abstract class SQLiteConnectionManager {
 	final <T> T callR(CallWithResult<T> call, String actionDescription)
 			throws StorageException {
 		try (Connection conn = connProvider.getConnection()) {
-			conn.setAutoCommit(false);
 			startTransaction(conn);
 			try {
 				T result = call.call(conn);
@@ -136,7 +142,21 @@ abstract class SQLiteConnectionManager {
 		}
 	}
 
+	private static final int TRIES = 50;
+
 	private void startTransaction(Connection conn) throws SQLException {
-		conn.setAutoCommit(false);
+		for (int i = 0 ; i<TRIES ; i++) {
+			try {
+				conn.setAutoCommit(false);
+				return;
+			} catch (SQLiteException e) {
+				if (e.getResultCode() == SQLITE_BUSY) {
+					log.debug("database busy; trying to relock");
+					continue;
+				}
+				throw e;
+			}
+		}
+		throw new SQLiteException("database very busy", SQLITE_BUSY);
 	}
 }
