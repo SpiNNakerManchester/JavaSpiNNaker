@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,9 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  * Wrapper that handles how to perform transactions.
  *
  * @author Donal Fellows
+ * @param <APIType>
+ *            The type of the connections used inside this class. Probably the
+ *            type of the concrete subclass of this class.
  */
 abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final Logger log = getLogger(SQLiteConnectionManager.class);

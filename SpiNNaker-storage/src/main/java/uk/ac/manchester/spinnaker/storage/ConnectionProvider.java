@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@ import java.sql.SQLException;
  * suitably-configured databases.
  *
  * @author Donal Fellows
+ * @param <APIType>
+ *            The type of the higher-level access interface that can be used to
+ *            work with the database this class makes connections to.
  */
 public interface ConnectionProvider<APIType extends DatabaseAPI> {
 	/**

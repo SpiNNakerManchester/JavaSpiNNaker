@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	@Override
 	public List<Ethernet> listEthernetsToLoad() throws StorageException {
-		return callR(SQLiteDataSpecStorage::listEthernetsToLoad, "listing ethernets");
+		return callR(SQLiteDataSpecStorage::listEthernetsToLoad,
+				"listing ethernets");
 	}
 
 	private static List<Ethernet> listEthernetsToLoad(Connection conn)
