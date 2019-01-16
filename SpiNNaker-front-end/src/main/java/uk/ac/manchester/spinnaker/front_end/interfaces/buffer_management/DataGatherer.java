@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -65,7 +64,6 @@ import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
-import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -196,7 +194,8 @@ public abstract class DataGatherer {
 		}
 
 		// Do the actual submissions
-		tasks = pool.submitTasks(gatherers.stream().map(g -> () -> downloadBoard(g)));
+		tasks = pool.submitTasks(
+				gatherers.stream().map(g -> () -> downloadBoard(g)));
 	}
 
 	/**
