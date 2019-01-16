@@ -44,7 +44,7 @@ public class BasicExecutor {
 	}
 
 	/**
-	 * Submit some tasks to the pool
+	 * Submit some tasks to the pool.
 	 *
 	 * @param tasks
 	 *            The tasks to submit. <em>Should not</em> be a parallel stream.
@@ -58,7 +58,7 @@ public class BasicExecutor {
 	}
 
 	/**
-	 * Submit some tasks to the pool
+	 * Submit some tasks to the pool.
 	 *
 	 * @param tasks
 	 *            The tasks to submit.
