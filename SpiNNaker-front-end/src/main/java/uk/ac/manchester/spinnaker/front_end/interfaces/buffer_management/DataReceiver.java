@@ -119,10 +119,13 @@ public class DataReceiver {
 			int parallelFactor)
 			throws IOException, StorageException, ProcessException {
 		BasicExecutor exec = new BasicExecutor(parallelFactor);
+		// Checkstyle gets the indentation rules wrong for the next statement.
+		// CHECKSTYLE:OFF
 		Tasks tasks = exec.submitTasks(
 				// get data on a by-the-board basis
 				partitionByBoard(placements)
 						.map(places -> () -> getDataForPlacements(places)));
+		// CHECKSTYLE:ON
 		try {
 			tasks.awaitAndCombineExceptions();
 		} catch (IOException | StorageException | ProcessException
