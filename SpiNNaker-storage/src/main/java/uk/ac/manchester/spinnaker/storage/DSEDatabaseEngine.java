@@ -22,12 +22,14 @@ import static org.apache.commons.io.IOUtils.resourceToString;
 import java.io.File;
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
+
 /**
  * A database interface for talking to the DSE database.
  *
  * @author Donal Fellows
  */
-public class DSEDatabaseEngine extends DatabaseEngine {
+public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	private static String sqlDDL;
 	static {
 		try {
@@ -57,5 +59,10 @@ public class DSEDatabaseEngine extends DatabaseEngine {
 	@Override
 	public String getDDL() {
 		return sqlDDL;
+	}
+
+	@Override
+	public DSEStorage getStorageInterface() {
+		return new SQLiteDataSpecStorage(this);
 	}
 }

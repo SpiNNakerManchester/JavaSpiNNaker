@@ -55,8 +55,8 @@ class TestSQLiteStorage {
 
 	@Test
 	void testBasicOps() throws StorageException {
-		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		BufferManagerStorage storage = engine.getBufferManagerStorage();
+		BufferManagerStorage storage =
+				new BufferManagerDatabaseEngine(db).getStorageInterface();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
@@ -72,8 +72,8 @@ class TestSQLiteStorage {
 
 	@Test
 	void testWithExisting() throws StorageException {
-		ConnectionProvider engine = new BufferManagerDatabaseEngine(db);
-		BufferManagerStorage storage = engine.getBufferManagerStorage();
+		BufferManagerStorage storage =
+				new BufferManagerDatabaseEngine(db).getStorageInterface();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// append creates

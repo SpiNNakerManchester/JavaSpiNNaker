@@ -22,12 +22,15 @@ import static org.apache.commons.io.IOUtils.resourceToString;
 import java.io.File;
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
+
 /**
  * A database interface for talking to the buffer manager database.
  *
  * @author Donal Fellows
  */
-public class BufferManagerDatabaseEngine extends DatabaseEngine {
+public class BufferManagerDatabaseEngine
+		extends DatabaseEngine<BufferManagerStorage> {
 	private static String sqlDDL;
 	static {
 		try {
@@ -57,5 +60,10 @@ public class BufferManagerDatabaseEngine extends DatabaseEngine {
 	@Override
 	public String getDDL() {
 		return sqlDDL;
+	}
+
+	@Override
+	public BufferManagerStorage getStorageInterface() {
+		return new SQLiteBufferStorage(this);
 	}
 }

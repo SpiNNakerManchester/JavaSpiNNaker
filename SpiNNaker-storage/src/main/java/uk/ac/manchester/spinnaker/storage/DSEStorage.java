@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
  *
  * @author Donal Fellows
  */
-public interface DSEStorage {
+public interface DSEStorage extends DatabaseAPI {
 	/**
 	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *

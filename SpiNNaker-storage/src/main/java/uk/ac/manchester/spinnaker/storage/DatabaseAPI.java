@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 /**
- * Indicates a class that can provide database connections to
- * suitably-configured databases.
+ * Interface that real database interfaces are subclasses of.
  *
  * @author Donal Fellows
  */
-public interface ConnectionProvider<APIType extends DatabaseAPI> {
-	/**
-	 * Get a connection to a database, creating it if needed.
-	 *
-	 * @return The configured connection to the database. The database will have
-	 *         been seeded with DDL if necessary.
-	 * @throws SQLException
-	 *             If anything goes wrong.
-	 */
-	Connection getConnection() throws SQLException;
-
-	/**
-	 * @return a storage interface that is suitable for providing support for a
-	 *         particular API.
-	 */
-	APIType getStorageInterface();
+public interface DatabaseAPI {
 }

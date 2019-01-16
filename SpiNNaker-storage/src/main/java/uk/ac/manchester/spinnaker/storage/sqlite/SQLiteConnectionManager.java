@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
+import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
@@ -33,16 +34,17 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-abstract class SQLiteConnectionManager {
+abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final Logger log = getLogger(SQLiteConnectionManager.class);
-	private final ConnectionProvider connProvider;
+	private final ConnectionProvider<APIType> connProvider;
 
 	/**
 	 * @param connProvider
 	 *            The source of database connections.
 	 * @see Connection
 	 */
-	protected SQLiteConnectionManager(ConnectionProvider connProvider) {
+	protected SQLiteConnectionManager(
+			ConnectionProvider<APIType> connProvider) {
 		this.connProvider = connProvider;
 	}
 

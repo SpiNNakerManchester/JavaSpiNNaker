@@ -289,6 +289,6 @@ public final class CommandLineInterface {
 
 	private static BufferManagerStorage getDatabase(String runFolder) {
 		return new BufferManagerDatabaseEngine(
-				new File(runFolder, BUFFER_DB_FILE)).getBufferManagerStorage();
+				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
 	}
 }
