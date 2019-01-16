@@ -149,7 +149,7 @@ abstract class SQLiteConnectionManager {
 	private static final int TRIES = 50;
 
 	private void startTransaction(Connection conn) throws SQLException {
-		for (int i = 0 ; i<TRIES ; i++) {
+		for (int i = 0; i < TRIES; i++) {
 			try {
 				conn.setAutoCommit(false);
 				return;
