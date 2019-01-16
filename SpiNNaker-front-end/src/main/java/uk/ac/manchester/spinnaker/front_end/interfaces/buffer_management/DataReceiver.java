@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,29 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Vertex;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferedReceivingData;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.BufferingOperation;
 import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects.ChannelBufferState;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
 /**
  * Stripped down version of the BufferManager for early testing.
@@ -52,15 +59,16 @@ public class DataReceiver {
 	// found in SpiNNFrontEndCommon/spinn_front_end_common/interface/
 	// buffer_management/recording_utilities.py
 	/** The offset of the last sequence number field in bytes. */
-	private static final int LAST_SEQUENCE_NUMBER_OFFSET = 4 * 6;
+	private static final int LAST_SEQUENCE_NUMBER_OFFSET = WORD_SIZE * 6;
 
 	// found in SpiNNFrontEndCommon/spinn_front_end_common/interface/
 	// buffer_management/recording_utilities.py
 	/** The offset of the memory addresses in bytes. */
-	private static final int FIRST_REGION_ADDRESS_OFFSET = 4 * 7;
+	private static final int FIRST_REGION_ADDRESS_OFFSET = WORD_SIZE * 7;
 
-	private final Transceiver transceiver;
+	private final Transceiver txrx;
 	private final BufferedReceivingData receivedData;
+	private final Machine machine;
 
 	private static final Logger log = getLogger(DataReceiver.class);
 
@@ -68,14 +76,61 @@ public class DataReceiver {
 	 * Creates a new mini Buffer Manager.
 	 *
 	 * @param tranceiver
-	 *            Transceiver to get data from.
+	 *            Transceiver to get data via.
+	 * @param machine
+	 *            The SpiNNaker system to get the data from.
 	 * @param storage
 	 *            How to talk to the database.
 	 */
-	public DataReceiver(Transceiver tranceiver, BufferManagerStorage storage) {
-		this.transceiver = tranceiver;
+	public DataReceiver(Transceiver tranceiver, Machine machine,
+			BufferManagerStorage storage) {
+		txrx = tranceiver;
 		// storage area for received data from cores
 		receivedData = new BufferedReceivingData(storage);
+		this.machine = machine;
+	}
+
+	private Stream<List<Placement>> partitionByBoard(
+			List<Placement> placements) {
+		Map<ChipLocation, List<Placement>> map = new HashMap<>();
+		for (Placement p : placements) {
+			map.computeIfAbsent(
+					machine.getChipAt(p).nearestEthernet.asChipLocation(),
+					cl -> new ArrayList<>()).add(p);
+		}
+		return map.values().stream();
+	}
+
+	/**
+	 * Gets the data for a list of placements in parallel.
+	 *
+	 * @param placements
+	 *            List of placements.
+	 * @param parallelFactor
+	 *            Number of threads to use.
+	 * @throws IOException
+	 *             if communications fail
+	 * @throws ProcessException
+	 *             if SpiNNaker rejects a message
+	 * @throws StorageException
+	 *             if database access fails
+	 */
+	public void getDataForPlacementsParallel(List<Placement> placements,
+			int parallelFactor)
+			throws IOException, StorageException, ProcessException {
+		BasicExecutor exec = new BasicExecutor(parallelFactor);
+		Tasks tasks = exec.submitTasks(
+				// get data on a by-the-board basis
+				partitionByBoard(placements)
+						.map(places -> () -> getDataForPlacements(places)));
+		try {
+			tasks.awaitAndCombineExceptions();
+		} catch (IOException | StorageException | ProcessException
+				| RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
+		}
 	}
 
 	/**
@@ -86,8 +141,6 @@ public class DataReceiver {
 	 *
 	 * @param placements
 	 *            List of placements.
-	 * @param progress
-	 *            progressBar if used
 	 * @throws IOException
 	 *             if communications fail
 	 * @throws ProcessException
@@ -95,17 +148,13 @@ public class DataReceiver {
 	 * @throws StorageException
 	 *             if database access fails
 	 */
-	public void getDataForPlacements(List<Placement> placements,
-			ProgressBar progress)
+	public void getDataForPlacements(List<Placement> placements)
 			throws IOException, StorageException, ProcessException {
 		// get data
 		for (Placement placement : placements) {
 			for (int recordingRegionId : placement.getVertex()
 					.getRecordedRegionIds()) {
 				getDataForPlacement(placement, recordingRegionId);
-				if (progress != null) {
-					progress.update();
-				}
 			}
 		}
 	}
@@ -132,7 +181,7 @@ public class DataReceiver {
 		// Read the end state of the recording for this region
 		ChannelBufferState endState;
 		if (!receivedData.isEndBufferingStateRecovered(location)) {
-			int regionPointer = this.getRegionPointer(placement,
+			int regionPointer = getRegionPointer(placement,
 					recordingDataAddress, recordingRegionId);
 			endState = generateEndBufferingStateFromMachine(placement,
 					regionPointer);
@@ -202,9 +251,8 @@ public class DataReceiver {
 	// buffer_management/recording_utilities.py
 	private int getLastSequenceNumber(Placement placement,
 			int recordingDataAddress) throws IOException, ProcessException {
-		ByteBuffer data = transceiver.readMemory(placement.getScampCore(),
-				recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET, WORD_SIZE);
-		return data.getInt();
+		int addr = recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET;
+		return requestData(placement, addr, WORD_SIZE).getInt();
 	}
 
 	// Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/
@@ -225,11 +273,9 @@ public class DataReceiver {
 	 */
 	private int getRegionPointer(Placement placement, int recordingDataAddress,
 			int region) throws IOException, ProcessException {
-		ByteBuffer data = transceiver.readMemory(
-				placement.getScampCore(), recordingDataAddress
-						+ FIRST_REGION_ADDRESS_OFFSET + (region * WORD_SIZE),
-				WORD_SIZE);
-		return data.getInt();
+		int addr = recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
+				+ (region * WORD_SIZE);
+		return requestData(placement, addr, WORD_SIZE).getInt();
 	}
 
 	private ChannelBufferState generateEndBufferingStateFromMachine(
@@ -242,10 +288,10 @@ public class DataReceiver {
 	}
 
 	/**
-	 * Uses the extra monitor cores for data extraction.
+	 * Read memory from SDRAM on SpiNNaker.
 	 *
 	 * @param placement
-	 *            The placement coords where data is to be extracted from.
+	 *            The coords where data is to be extracted from.
 	 * @param address
 	 *            The memory address to start at
 	 * @param length
@@ -256,6 +302,6 @@ public class DataReceiver {
 	 */
 	private ByteBuffer requestData(HasCoreLocation location, int address,
 			int length) throws IOException, ProcessException {
-		return transceiver.readMemory(location.getScampCore(), address, length);
+		return txrx.readMemory(location.getScampCore(), address, length);
 	}
 }

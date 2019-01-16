@@ -217,8 +217,8 @@ public final class CommandLineInterface {
 		Transceiver trans = new Transceiver(machine);
 		BufferManagerStorage database = getDatabase(runFolder);
 
-		DataReceiver receiver = new DataReceiver(trans, database);
-		receiver.getDataForPlacements(placements, null);
+		DataReceiver receiver = new DataReceiver(trans, machine, database);
+		receiver.getDataForPlacements(placements);
 	}
 
 	/**
