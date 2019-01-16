@@ -23,13 +23,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
-
 /**
  * Documents a transceiver operation that should not be used from multiple
  * threads in parallel at all. Such operations need to be called only from
  * single-threaded code as they can interfere with each other (whether inside
- * the {@link SCPConnection}, inside SCAMP, or on the hardware itself).
+ * the {@link uk.ac.manchester.spinnaker.connections.SCPConnection
+ * SCPConnection}, inside SCAMP, or on the hardware itself).
  *
  * @see TransceiverInterface
  * @author Donal Fellows

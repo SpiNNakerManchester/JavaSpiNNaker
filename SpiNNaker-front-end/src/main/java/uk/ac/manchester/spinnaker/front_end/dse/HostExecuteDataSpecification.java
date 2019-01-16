@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
@@ -27,16 +26,14 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -62,7 +59,7 @@ public class HostExecuteDataSpecification {
 	/**
 	 * Global thread pool for DSE execution.
 	 */
-	private final ExecutorService executor;
+	private final BasicExecutor executor;
 	private final Machine machine;
 	private final Transceiver txrx;
 
@@ -78,7 +75,7 @@ public class HostExecuteDataSpecification {
 	 */
 	public HostExecuteDataSpecification(Machine machine)
 			throws IOException, ProcessException {
-		executor = newFixedThreadPool(PARALLEL_SIZE);
+		executor = new BasicExecutor(PARALLEL_SIZE);
 		this.machine = machine;
 		try {
 			txrx = new Transceiver(machine);
@@ -98,31 +95,22 @@ public class HostExecuteDataSpecification {
 	 * @return The future completion of the tasks.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws DataSpecificationException
+	 *             If a data specification in the database is invalid.
 	 */
 	public Completion loadAll(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
 		DSEStorage storage = connection.getStorageInterface();
-		List<Future<Exception>> tasks = storage.listEthernetsToLoad().stream()
-				.map(board -> executor.submit(() -> loadBoard(board, storage)))
-				.collect(Collectors.toList());
+		Tasks tasks = executor.submitTasks(storage.listEthernetsToLoad()
+				.stream().map(board -> (() -> loadBoard(board, storage))));
 		return () -> {
 			try {
-				// Combine the possibly multiple exceptions into one
-				Exception ex = null;
-				for (Future<Exception> f : tasks) {
-					Exception e = f.get();
-					if (e != null) {
-						if (ex == null) {
-							ex = e;
-						} else {
-							ex.addSuppressed(e);
-						}
-					}
-				}
-				if (ex != null) {
-					throw ex;
-				}
+				tasks.awaitAndCombineExceptions();
 			} catch (StorageException | IOException | ProcessException
 					| DataSpecificationException | RuntimeException e) {
 				throw e;
@@ -154,15 +142,14 @@ public class HostExecuteDataSpecification {
 				ProcessException, DataSpecificationException;
 	}
 
-	private Exception loadBoard(Ethernet board, DSEStorage storage) {
+	private void loadBoard(Ethernet board, DSEStorage storage)
+			throws IOException, ProcessException, DataSpecificationException,
+			StorageException {
 		try (BoardWorker worker = new BoardWorker(board, storage)) {
 			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
 				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}
-			return null;
-		} catch (Exception e) {
-			return e;
 		}
 	}
 
@@ -170,8 +157,7 @@ public class HostExecuteDataSpecification {
 		private final Ethernet board;
 		private final DSEStorage storage;
 
-		BoardWorker(Ethernet board, DSEStorage storage)
-				throws IOException, SpinnmanException, ProcessException {
+		BoardWorker(Ethernet board, DSEStorage storage) {
 			this.board = board;
 			this.storage = storage;
 		}

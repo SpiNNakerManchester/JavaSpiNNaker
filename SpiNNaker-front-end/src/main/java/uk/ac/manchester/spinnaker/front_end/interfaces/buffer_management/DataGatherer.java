@@ -556,8 +556,8 @@ public abstract class DataGatherer {
 	/**
 	 * Work out exactly where is going to be downloaded. The elements of the
 	 * list this method returns will end up directing what calls to
-	 * {@link #storeData(Region,ByteBuffer) storeData(...)} are done, and the
-	 * order in which they are done.
+	 * {@link #storeData(BufferManagerStorage.Region,ByteBuffer) storeData(...)}
+	 * are done, and the order in which they are done.
 	 * <p>
 	 * The recording region memory management scheme effectively requires this
 	 * to be a list of zero, one or two elements, but the {@link DataGatherer}
