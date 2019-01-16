@@ -107,7 +107,7 @@ public class HostExecuteDataSpecification {
 			DataSpecificationException {
 		DSEStorage storage = connection.getStorageInterface();
 		Tasks tasks = executor.submitTasks(storage.listEthernetsToLoad()
-				.stream().map(board -> (() -> loadBoard(board, storage))));
+				.stream().map(board -> () -> loadBoard(board, storage)));
 		return () -> {
 			try {
 				tasks.awaitAndCombineExceptions();
