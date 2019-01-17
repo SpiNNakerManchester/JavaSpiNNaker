@@ -2842,14 +2842,33 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag to set up; note its board address can be {@code null},
-	 *            in which case, the tag will be assigned to all boards
+	 *            in which case, the tag will be assigned to all boards.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
-	void setIPTag(IPTag tag) throws IOException, ProcessException;
+	@ParallelSafeWithCare
+	default void setIPTag(IPTag tag) throws IOException, ProcessException {
+		setIPTag(tag, false);
+	}
+
+	/**
+	 * Set up an IP tag.
+	 *
+	 * @param tag
+	 *            The tag to set up; note its board address can be {@code null},
+	 *            in which case, the tag will be assigned to all boards.
+	 * @param useSender
+	 *            if the sender's IP address and port should be used.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void setIPTag(IPTag tag, boolean useSender)
+			throws IOException, ProcessException;
 
 	/**
 	 * Set up a reverse IP tag.

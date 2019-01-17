@@ -1784,7 +1784,8 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void setIPTag(IPTag tag) throws IOException, ProcessException {
+	public void setIPTag(IPTag tag, boolean useSender)
+			throws IOException, ProcessException {
 		// Check that the tag has a port assigned
 		if (tag.getPort() == null) {
 			throw new IllegalArgumentException(
@@ -1810,9 +1811,9 @@ public class Transceiver extends UDPTransceiver
 				host = connection.getLocalIPAddress();
 			}
 
-			simpleProcess().execute(
-					new IPTagSet(connection.getChip(), host.getAddress(),
-							tag.getPort(), tag.getTag(), tag.isStripSDP()));
+			simpleProcess().execute(new IPTagSet(connection.getChip(),
+					host.getAddress(), tag.getPort(), tag.getTag(),
+					tag.isStripSDP(), useSender));
 		}
 	}
 
