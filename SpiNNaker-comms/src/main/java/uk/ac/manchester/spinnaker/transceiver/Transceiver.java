@@ -188,6 +188,10 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * to the board, using multiple threads in this way may result in an increase in
  * the overall speed of operation, since the multiple calls may be made
  * separately over the set of given connections.
+ * <p>
+ * For details of thread safety, see the methods annotated with
+ * {@link ParallelSafe}, {@link ParallelSafeWithCare} and {@link ParallelUnsafe}
+ * in {@link TransceiverInterface}.
  */
 @SuppressWarnings("checkstyle:ParameterNumber")
 public class Transceiver extends UDPTransceiver
