@@ -20,6 +20,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -28,11 +29,13 @@ import java.lang.annotation.Target;
  * parallel provided those threads are accessing different boards, and care is
  * taken to use this method in a way that only accesses a single board via it.
  *
+ * @see Transceiver
  * @see TransceiverInterface
  * @see ParallelSafe
  * @author Donal Fellows
  */
 @Documented
+@Inherited
 @Retention(SOURCE)
 @Target(METHOD)
 public @interface ParallelSafeWithCare {

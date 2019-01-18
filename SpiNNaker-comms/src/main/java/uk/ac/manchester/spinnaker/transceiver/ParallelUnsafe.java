@@ -20,6 +20,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -30,10 +31,12 @@ import java.lang.annotation.Target;
  * the {@link uk.ac.manchester.spinnaker.connections.SCPConnection
  * SCPConnection}, inside SCAMP, or on the hardware itself).
  *
+ * @see Transceiver
  * @see TransceiverInterface
  * @author Donal Fellows
  */
 @Documented
+@Inherited
 @Retention(SOURCE)
 @Target(METHOD)
 public @interface ParallelUnsafe {

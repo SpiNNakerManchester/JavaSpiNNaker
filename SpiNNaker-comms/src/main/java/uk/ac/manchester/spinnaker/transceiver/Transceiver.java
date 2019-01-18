@@ -176,7 +176,6 @@ import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterEmergencyTimeou
 import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterTimeoutProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * An encapsulation of various communications with the SpiNNaker board.
@@ -253,14 +252,14 @@ public class Transceiver extends UDPTransceiver
 	 * have these cores excluded, as if they never existed.
 	 */
 	private final Map<ChipLocation, Collection<Integer>> ignoreCores =
-			new DefaultMap<>(new HashSet<>());
+			new HashMap<>();
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
 	private final Map<ChipLocation, Collection<Direction>> ignoreLinks =
-			new DefaultMap<>(new HashSet<>());
+			new HashMap<>();
 
 	/**
 	 * The max size each chip can say it has for SDRAM. (This is mainly used for
@@ -331,7 +330,7 @@ public class Transceiver extends UDPTransceiver
 	 * during an individual chip execute.
 	 */
 	private final Map<ChipLocation, Semaphore> chipExecuteLocks =
-			new DefaultMap<>(() -> new Semaphore(1));
+			new HashMap<>();
 	private final FloodLock executeFloodLock = new FloodLock();
 	private boolean machineOff = false;
 	private long retryCount = 0L;
@@ -1077,6 +1076,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException {
 		BootMessages bootMessages = new BootMessages(version, extraBootValues);
@@ -1125,6 +1125,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException {
@@ -1242,6 +1243,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
@@ -1262,6 +1264,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
@@ -1276,6 +1279,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException {
 		// build data holder
@@ -1289,6 +1293,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void enableWatchDogTimerOnChip(HasChipLocation chip,
 			boolean watchdog) throws IOException, ProcessException {
 		// build data holder
@@ -1304,6 +1309,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException {
 		return simpleProcess().execute(new CountState(appID, state)).count;
@@ -1371,7 +1377,8 @@ public class Transceiver extends UDPTransceiver
 		ExecuteLock(HasChipLocation chip) throws InterruptedException {
 			ChipLocation key = chip.asChipLocation();
 			synchronized (executeFloodLock) {
-				lock = chipExecuteLocks.get(key);
+				lock = chipExecuteLocks.computeIfAbsent(key,
+						k -> new Semaphore(1));
 			}
 			lock.acquire();
 			synchronized (executeFloodLock) {
@@ -1392,6 +1399,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -1407,6 +1415,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public final void execute(HasChipLocation chip,
 			Collection<Integer> processors, File executable, AppID appID,
 			boolean wait)
@@ -1423,6 +1432,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -1438,6 +1448,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -1455,6 +1466,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void executeFlood(CoreSubsets coreSubsets, File executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -1472,6 +1484,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -1489,6 +1502,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void powerOnMachine()
 			throws InterruptedException, IOException, ProcessException {
 		if (bmpConnections.isEmpty()) {
@@ -1501,6 +1515,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void powerOffMachine()
 			throws InterruptedException, IOException, ProcessException {
 		if (bmpConnections.isEmpty()) {
@@ -1526,6 +1541,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
@@ -1543,6 +1559,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
 			throws IOException, ProcessException {
@@ -1550,6 +1567,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public int readFPGARegister(int fpgaNumber, int register, int cabinet,
 			int frame, int board) throws IOException, ProcessException {
 		return bmpCall(cabinet, frame,
@@ -1557,6 +1575,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
 			int cabinet, int frame, int board)
 			throws IOException, ProcessException {
@@ -1565,12 +1584,14 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, ProcessException {
 		return bmpCall(cabinet, frame, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
+	@ParallelSafe
 	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, ProcessException {
 		return bmpCall(cabinet, frame, new GetBMPVersion(board)).versionInfo;
@@ -1591,6 +1612,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -1599,6 +1621,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeProcess(dataFile.length()).writeMemory(core, baseAddress,
@@ -1606,12 +1629,14 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeProcess(data.remaining()).writeMemory(core, baseAddress, data);
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -1620,6 +1645,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
@@ -1628,6 +1654,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
@@ -1635,6 +1662,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeMemoryFlood(int baseAddress, InputStream dataStream,
 			int numBytes) throws IOException, ProcessException {
 		WriteMemoryFloodProcess process =
@@ -1648,6 +1676,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		WriteMemoryFloodProcess process =
@@ -1661,6 +1690,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		WriteMemoryFloodProcess process =
@@ -1673,6 +1703,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public ByteBuffer readMemory(HasCoreLocation core, int baseAddress,
 			int length) throws IOException, ProcessException {
 		return new ReadMemoryProcess(scpSelector, this).readMemory(core,
@@ -1680,6 +1711,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void readRegion(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
@@ -1687,6 +1719,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return new ReadMemoryProcess(scpSelector, this).readLink(core, link,
@@ -1694,6 +1727,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void stopApplication(AppID appID)
 			throws IOException, ProcessException {
 		if (machineOff) {
@@ -1705,6 +1739,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countBetweenFullChecks)
@@ -1771,23 +1806,27 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelUnsafe
 	public void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException {
 		simpleProcess().execute(new SendSignal(appID, signal));
 	}
 
 	@Override
+	@ParallelSafe
 	public void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException {
 		simpleProcess().execute(new SetLED(core, ledStates));
 	}
 
 	@Override
+	@ParallelSafe
 	public SCPConnection locateSpinnakerConnection(InetAddress boardAddress) {
 		return udpScampConnections.get(boardAddress);
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void setIPTag(IPTag tag, boolean useSender)
 			throws IOException, ProcessException {
 		// Check that the tag has a port assigned
@@ -1822,6 +1861,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void setReverseIPTag(ReverseIPTag tag)
 			throws IOException, ProcessException {
 		if (requireNonNull(tag).getPort() == SCP_SCAMP_PORT
@@ -1851,6 +1891,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException {
 		for (SCPConnection conn : getConnectionList(boardAddress)) {
@@ -1859,6 +1900,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		List<Tag> allTags = new ArrayList<>();
@@ -1869,6 +1911,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
 		return new MallocSDRAMProcess(scpSelector, this).mallocSDRAM(chip, size,
@@ -1876,6 +1919,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
 		new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
@@ -1883,6 +1927,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
@@ -1890,6 +1935,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
@@ -1898,6 +1944,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID) throws IOException, ProcessException {
 		new LoadFixedRouteEntryProcess(scpSelector, this).loadFixedRoute(chip,
@@ -1905,6 +1952,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return new ReadFixedRouteEntryProcess(scpSelector, this)
@@ -1912,6 +1960,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException {
 		int address = (int) getSystemVariable(chip, router_table_copy_address);
@@ -1920,12 +1969,14 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException {
 		simpleProcess().execute(new RouterClear(chip));
 	}
 
 	@Override
+	@ParallelSafe
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return new ReadRouterDiagnosticsProcess(scpSelector, this)
@@ -1933,6 +1984,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setRouterDiagnosticFilter(HasChipLocation chip, int position,
 			DiagnosticFilter diagnosticFilter)
 			throws IOException, ProcessException {
@@ -1958,6 +2010,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, ProcessException {
 		if (position < 0 || position > NO_ROUTER_DIAGNOSTIC_FILTERS) {
@@ -1974,6 +2027,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable, Iterable<Integer> counterIDs)
 			throws IOException, ProcessException {
@@ -1994,6 +2048,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void clearReinjectionQueues(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
 		new ClearQueueProcess(scpSelector, this)
@@ -2001,12 +2056,14 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void clearReinjectionQueues(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
 		new ClearQueueProcess(scpSelector, this).clearQueue(monitorCores);
 	}
 
 	@Override
+	@ParallelSafe
 	public ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
 		return new ReadReinjectionStatusProcess(scpSelector, this)
@@ -2014,6 +2071,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCores) throws IOException, ProcessException {
 		return new ReadReinjectionStatusProcess(scpSelector, this)
@@ -2021,6 +2079,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void resetReinjectionCounters(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
 		new ResetReinjectionCountersProcess(scpSelector, this)
@@ -2028,6 +2087,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void resetReinjectionCounters(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
 		new ResetReinjectionCountersProcess(scpSelector, this)
@@ -2035,6 +2095,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setReinjectionTypes(HasCoreLocation monitorCore,
 			boolean multicast, boolean pointToPoint, boolean fixedRoute,
 			boolean nearestNeighbour) throws IOException, ProcessException {
@@ -2044,6 +2105,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException {
@@ -2053,6 +2115,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
@@ -2061,6 +2124,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
@@ -2069,6 +2133,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void setReinjectionTimeout(HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
@@ -2077,6 +2142,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
 	public void setReinjectionTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
@@ -2085,6 +2151,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
@@ -2092,6 +2159,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
 	public void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size, DataType dataType)
 			throws ProcessException, IOException {

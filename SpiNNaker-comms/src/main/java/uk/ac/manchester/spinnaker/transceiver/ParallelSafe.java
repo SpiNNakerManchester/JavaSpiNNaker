@@ -20,6 +20,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -27,10 +28,12 @@ import java.lang.annotation.Target;
  * Documents a transceiver operation that may be used from multiple threads in
  * parallel provided those threads are accessing different boards.
  *
+ * @see Transceiver
  * @see TransceiverInterface
  * @author Donal Fellows
  */
 @Documented
+@Inherited
 @Retention(SOURCE)
 @Target(METHOD)
 public @interface ParallelSafe {
