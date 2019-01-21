@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2019 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.front_end.iobuf;
 
 import static java.lang.Integer.parseUnsignedInt;
@@ -57,9 +73,12 @@ public class IobufRetriever {
 	/**
 	 * Create a IOBUF retriever.
 	 *
-	 * @param transceiver How to talk to the machine.
-	 * @param machine Description of the machine being talked to.
-	 * @param parallelSize How many tasks to do at once (at most).
+	 * @param transceiver
+	 *            How to talk to the machine.
+	 * @param machine
+	 *            Description of the machine being talked to.
+	 * @param parallelSize
+	 *            How many tasks to do at once (at most).
 	 */
 	public IobufRetriever(Transceiver transceiver, Machine machine,
 			int parallelSize) {
@@ -173,6 +192,8 @@ public class IobufRetriever {
 		private static final Pattern FORMAT_SEQUENCE =
 				Pattern.compile("%\\d*(?:\\.\\d+)?[cdfiksuxR]");
 		private static final String RS_TOKEN = "\u001e";
+		private static final int NUM_PARTS = 3;
+
 		private Map<String, Replacement> messages = new HashMap<>();
 
 		Replacer(File dictPointer) throws FileNotFoundException, IOException {
@@ -184,8 +205,8 @@ public class IobufRetriever {
 						new BufferedReader(new FileReader(dictPath))) {
 					String line;
 					while ((line = f.readLine()) != null) {
-						String[] parts = line.trim().split(",", 3);
-						if (parts.length != 3) {
+						String[] parts = line.trim().split(",", NUM_PARTS);
+						if (parts.length != NUM_PARTS) {
 							continue;
 						}
 						try {
