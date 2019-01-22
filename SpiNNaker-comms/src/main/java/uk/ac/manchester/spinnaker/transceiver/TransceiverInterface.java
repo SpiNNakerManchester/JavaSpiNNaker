@@ -618,6 +618,51 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
+	 * Clear the contents of the IOBUF buffer for all processors.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void clearIobuf() throws IOException, ProcessException {
+		clearIobuf((CoreSubsets) null);
+	}
+
+	/**
+	 * Clear the contents of the IOBUF buffer for a given core.
+	 *
+	 * @param core
+	 *            The coordinates of the processor to clear the IOBUF on.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void clearIobuf(HasCoreLocation core)
+			throws IOException, ProcessException {
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		clearIobuf(coreSubsets);
+	}
+
+	/**
+	 * Clear the contents of the IOBUF buffer for a collection of processors.
+	 *
+	 * @param coreSubsets
+	 *            A set of chips and cores on which to clear the buffers.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void clearIobuf(CoreSubsets coreSubsets)
+			throws IOException, ProcessException;
+
+	/**
 	 * Set the value of the watch dog timer on a specific chip.
 	 *
 	 * @param chip
