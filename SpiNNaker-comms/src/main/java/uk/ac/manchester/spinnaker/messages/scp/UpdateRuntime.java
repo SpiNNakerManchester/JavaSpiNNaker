@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.CLEAR_IOBUF;
+import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.NEW_RUNTIME_ID;
 
 import java.nio.ByteBuffer;
 
@@ -24,23 +24,32 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to clear the IOBUF on a core.
+ * An SCP Request to update the runtime info on a core.
  */
-public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
+public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core
-	 *            The core to clear the IOBUF of.
+	 *            The SpiNNaker core to update the runtime info of.
+	 * @param runTime
+	 *            The number of machine timesteps.
+	 * @param infiniteRun
+	 *            Whether we are doing infinite running.
 	 * @param expectResponse
 	 *            Whether we expect responses.
 	 */
-	public ClearIOBUF(HasCoreLocation core, boolean expectResponse) {
-		super(new RunningSDPHeader(core, expectResponse), CLEAR_IOBUF,
-				0, 0, expectResponse ? 1 : 0, null);
+	public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
+			boolean expectResponse) {
+		super(new RunningSDPHeader(core, expectResponse), NEW_RUNTIME_ID,
+				runTime, bool(infiniteRun), bool(expectResponse), null);
+	}
+
+	private static int bool(boolean value) {
+		return value ? 1 : 0;
 	}
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("clear iobuf", CLEAR_IOBUF, buffer);
+		return new CheckOKResponse("update runtime", NEW_RUNTIME_ID, buffer);
 	}
 }

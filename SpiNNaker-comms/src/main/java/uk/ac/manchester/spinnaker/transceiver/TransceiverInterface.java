@@ -1311,6 +1311,64 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Set the running time information for all processors.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void updateRuntime(Integer runTimesteps)
+			throws IOException, ProcessException {
+		updateRuntime(runTimesteps, (CoreSubsets) null);
+	}
+
+	/**
+	 * Set the running time information for a given core.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @param core
+	 *            The coordinates of the processor to clear the IOBUF on.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void updateRuntime(Integer runTimesteps, HasCoreLocation core)
+			throws IOException, ProcessException {
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		updateRuntime(runTimesteps, coreSubsets);
+	}
+
+	/**
+	 * Set the running time information for a collection of processors.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @param coreSubsets
+	 *            A set of chips and cores on which to clear the buffers.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException;
+
+	/**
 	 * Power on the whole machine.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a

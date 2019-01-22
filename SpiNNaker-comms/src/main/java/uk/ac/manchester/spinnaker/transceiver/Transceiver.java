@@ -175,6 +175,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProc
 import uk.ac.manchester.spinnaker.transceiver.processes.SetReinjectionPacketTypesProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterEmergencyTimeoutProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterTimeoutProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.UpdateRuntimeProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 
@@ -1300,6 +1301,20 @@ public class Transceiver extends UDPTransceiver
 
 		// read iobuf from machine
 		new ClearIOBufProcess(scpSelector, this).clearIOBUF(coreSubsets);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			coreSubsets = getAllCores();
+		}
+
+		// set the information
+		new UpdateRuntimeProcess(scpSelector, this).updateRuntime(runTimesteps,
+				coreSubsets);
 	}
 
 	@Override
