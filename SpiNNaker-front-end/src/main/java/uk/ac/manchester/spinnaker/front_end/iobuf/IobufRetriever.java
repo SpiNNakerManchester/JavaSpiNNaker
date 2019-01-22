@@ -25,19 +25,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -90,6 +88,54 @@ public class IobufRetriever {
 	/**
 	 * Retrieve and translate some IOBUFs.
 	 *
+	 * @param coresForBinaries
+	 *            Mapping from the full paths to the APLX files executing, to
+	 *            the cores on which those executables are running and which are
+	 *            to have their IOBUFs extracted. There must be a {@code .dict}
+	 *            file as a sibling to each APLX file.
+	 * @param provenanceDir
+	 *            The directory in which provenance data is written.
+	 * @param errorEntries
+	 *            Accumulate errors here. They are also written to the file on
+	 *            disk.
+	 * @param warnEntries
+	 *            Accumulate warnings here. They are also written to the file on
+	 *            disk.
+	 * @throws IOException
+	 *             If network IO fails or the mapping dictionary is absent.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	public void retrieveIobufContents(Map<String, CoreSubsets> coresForBinaries,
+			String provenanceDir, List<String> errorEntries,
+			List<String> warnEntries) throws IOException, ProcessException {
+		File provDir = new File(provenanceDir);
+		if (!provDir.isDirectory() || !provDir.canWrite()) {
+			throw new IOException(
+					"provenance location must be writable directory");
+		}
+		Tasks tasks = executor.submitTasks(
+				coresForBinaries.keySet().stream().flatMap(binary -> {
+					Replacer r = new Replacer(binary);
+					return partitionByBoard(coresForBinaries.get(binary))
+							.map(cores -> () -> retrieveIobufContents(cores, r,
+									provDir, errorEntries, warnEntries));
+				}));
+		try {
+			tasks.awaitAndCombineExceptions();
+		} catch (WrappedException e) {
+			e.rethrow();
+		} catch (IOException | ProcessException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
+		}
+		// TODO return the errors and warnings instead of accumulator arguments
+	}
+
+	/**
+	 * Retrieve and translate some IOBUFs.
+	 *
 	 * @param coreSubsets
 	 *            The cores from which the IOBUFs are to be extracted. They must
 	 *            be running the executable contained in {@code binaryFile} or
@@ -113,29 +159,37 @@ public class IobufRetriever {
 	public void retrieveIobufContents(CoreSubsets coreSubsets, File binaryFile,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		Replacer replacer = new Replacer(binaryFile);
-		Tasks tasks =
-				executor.submitTasks(partitionByBoard(coreSubsets).stream()
-						.map(boardSubset -> () -> retrieveIobufContents(
-								boardSubset, replacer, provenanceDir,
-								errorEntries, warnEntries)));
-		try {
-			tasks.awaitAndCombineExceptions();
-		} catch (IOException | ProcessException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected exception", e);
+		if (!provenanceDir.isDirectory() || !provenanceDir.canWrite()) {
+			throw new IOException(
+					"provenance location must be writable directory");
 		}
+		try {
+			Replacer replacer = new Replacer(binaryFile);
+			Tasks tasks = executor.submitTasks(partitionByBoard(coreSubsets)
+					.map(boardSubset -> () -> retrieveIobufContents(boardSubset,
+							replacer, provenanceDir, errorEntries,
+							warnEntries)));
+			try {
+				tasks.awaitAndCombineExceptions();
+			} catch (IOException | ProcessException | RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException("unexpected exception", e);
+			}
+		} catch (WrappedException e) {
+			e.rethrow();
+		}
+		// TODO return the errors and warnings instead of accumulator arguments
 	}
 
-	private Collection<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
+	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
 		Map<ChipLocation, CoreSubsets> map = new HashMap<>();
 		for (CoreLocation core : coreSubsets) {
 			map.computeIfAbsent(
 					machine.getChipAt(core).nearestEthernet.asChipLocation(),
 					cl -> new CoreSubsets()).addCore(core);
 		}
-		return map.values();
+		return map.values().stream();
 	}
 
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
@@ -147,33 +201,29 @@ public class IobufRetriever {
 		// write iobuf to file and check for errors for provenance
 		for (IOBuffer iobuf : ioBuffers) {
 			File file = getProvenanceFile(provenanceDir, iobuf);
-			try (PrintWriter w =
-					new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-							new FileOutputStream(file, true), UTF_8)))) {
-				for (String line : getLines(iobuf)) {
-					w.println(replacer.replace(line));
+			try (BufferedWriter w = openFileForAppending(file)) {
+				for (String originalLine : iobuf.getContentsString(ISO_8859_1)
+						.split("\n")) {
+					String line = replacer.replace(originalLine);
+					w.write(line);
+					w.newLine();
+					addValueIfMatch(ERROR_ENTRY, line, errorEntries, iobuf);
+					addValueIfMatch(WARNING_ENTRY, line, warnEntries, iobuf);
 				}
 			}
-			checkIobufForError(iobuf, errorEntries, warnEntries);
 		}
 	}
 
-	private File getProvenanceFile(File provenanceDir, IOBuffer iobuf) {
+	private static File getProvenanceFile(File provenanceDir, IOBuffer iobuf) {
 		return new File(provenanceDir,
 				String.format("iobuf_for_chip_%d_%d_processor_id_%d.txt",
 						iobuf.getX(), iobuf.getY(), iobuf.getP()));
 	}
 
-	private static String[] getLines(IOBuffer iobuf) {
-		return iobuf.getContentsString(ISO_8859_1).split("\n");
-	}
-
-	private void checkIobufForError(IOBuffer iobuf, List<String> errorEntries,
-			List<String> warnEntries) {
-		for (String line : getLines(iobuf)) {
-			addValueIfMatch(ERROR_ENTRY, line, errorEntries, iobuf);
-			addValueIfMatch(WARNING_ENTRY, line, warnEntries, iobuf);
-		}
+	private static BufferedWriter openFileForAppending(File file)
+			throws IOException {
+		return new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(file, true), UTF_8));
 	}
 
 	private static void addValueIfMatch(Pattern regex, String line,
@@ -196,10 +246,14 @@ public class IobufRetriever {
 
 		private Map<String, Replacement> messages = new HashMap<>();
 
-		Replacer(File dictPointer) throws FileNotFoundException, IOException {
-			String base = dictPointer.getAbsolutePath()
-					.replaceFirst("[.][^.\\/]+$", "");
-			File dictPath = new File(base + ".dict");
+		Replacer(String aplxFile) throws WrappedException {
+			this(new File(aplxFile));
+		}
+
+		Replacer(File aplxFile) throws WrappedException {
+			File dictPath = new File(
+					aplxFile.getAbsolutePath().replaceFirst("[.][^.\\/]+$", "")
+							+ ".dict");
 			if (dictPath.isFile()) {
 				try (BufferedReader f =
 						new BufferedReader(new FileReader(dictPath))) {
@@ -215,6 +269,8 @@ public class IobufRetriever {
 						} catch (NumberFormatException ignore) {
 						}
 					}
+				} catch (IOException e) {
+					throw new WrappedException(e);
 				}
 			} else {
 				log.error("Unable to find a dictionary file at {}", dictPath);
@@ -230,18 +286,18 @@ public class IobufRetriever {
 			StringBuilder replaced = r.getReplacementBuffer();
 
 			if (parts.length > 1) {
-				List<int[]> matches = r.getMatches();
+				List<Replacement.Pair> matches = r.getMatches();
 				if (matches.size() != parts.length - 1) {
 					// try removing any blanks due to double spacing
-					matches.removeIf(x -> x[0] == x[1]);
+					matches.removeIf(x -> x.start == x.end);
 				}
 				if (matches.size() != parts.length - 1) {
 					// wrong number of elements so not short after all
 					return shortLine;
 				}
 				for (int i = 0; i < matches.size(); i++) {
-					int[] match = matches.get(i);
-					replaced.replace(match[0], match[1], parts[i + 1]);
+					Replacement.Pair match = matches.get(i);
+					replaced.replace(match.start, match.end, parts[i + 1]);
 				}
 			}
 			return r.preface + replaced;
@@ -251,7 +307,16 @@ public class IobufRetriever {
 			final String key;
 			final String preface;
 			final String original;
-			final List<int[]> matches;
+			final List<Pair> matches;
+
+			private static final class Pair {
+				final int start;
+				final int end;
+				private Pair(Matcher m) {
+					start = m.start();
+					end = m.end();
+				}
+			}
 
 			Replacement(String[] parts) throws NumberFormatException {
 				key = parts[0];
@@ -261,9 +326,7 @@ public class IobufRetriever {
 				Matcher m = FORMAT_SEQUENCE.matcher(original);
 				matches = new ArrayList<>();
 				while (m.find()) {
-					matches.add(new int[] {
-						m.start(), m.end()
-					});
+					matches.add(new Pair(m));
 				}
 			}
 
@@ -271,9 +334,22 @@ public class IobufRetriever {
 				return new StringBuilder(unescapeJava(original));
 			}
 
-			List<int[]> getMatches() {
+			List<Pair> getMatches() {
 				return new ArrayList<>(matches);
 			}
+		}
+	}
+
+	private static final class WrappedException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		private final IOException e;
+
+		WrappedException(IOException e) {
+			this.e = e;
+		}
+
+		void rethrow() throws IOException {
+			throw new IOException(e.getMessage(), e);
 		}
 	}
 }
