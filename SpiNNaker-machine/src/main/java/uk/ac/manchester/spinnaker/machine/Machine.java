@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Collections.emptyList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.InetAddress;
@@ -201,8 +202,8 @@ public class Machine implements Iterable<Chip> {
      * @return A Machine (possibly the original one) without the
      *      ignore/abnormal bits.
      */
-    public Machine rebuild(Collection<ChipLocation> ignoreChips,
-            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+    public Machine rebuild(Set<ChipLocation> ignoreChips,
+            Map<ChipLocation, Set<Direction>> ignoreLinks) {
         if (ignoreChips == null) {
             ignoreChips = this.findAbnormalChips();
         }
@@ -726,31 +727,26 @@ public class Machine implements Iterable<Chip> {
      * @return All added FPGA link data items for this address.
      */
     public final Iterable<FPGALinkData> getFpgaLinks(InetAddress address) {
-        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-        byAddress = fpgaLinks.get(address);
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress = fpgaLinks
+                .get(address);
         if (byAddress == null) {
-            return Collections.<FPGALinkData>emptyList();
-        } else {
-            return new DoubleMapIterable<>(byAddress);
+            return emptyList();
         }
+        return new DoubleMapIterable<>(byAddress);
     }
 
     private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
-        for (FpgaEnum fpgaEnum:FpgaEnum.values()) {
+        for (FpgaEnum fpgaEnum : FpgaEnum.values()) {
             ChipLocation location = normalizedLocation(
                     rootX + fpgaEnum.getX(), rootY + fpgaEnum.getY());
             if (hasChipAt(location)
                     && !hasLinkAt(location, fpgaEnum.direction)) {
-                FPGALinkData fpgaLinkData = new FPGALinkData(
-                        fpgaEnum.id, fpgaEnum.fpgaId, location,
-                        fpgaEnum.direction, address);
-                Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-                byAddress = fpgaLinks.computeIfAbsent(
-                    address, k -> new HashMap<>());
-                Map<Integer, FPGALinkData> byId;
-                byId = byAddress.computeIfAbsent(
-                    fpgaEnum.fpgaId, k -> new HashMap<>());
-                byId.put(fpgaEnum.id, fpgaLinkData);
+                Map<Integer, FPGALinkData> byId = fpgaLinks
+                        .computeIfAbsent(address, k -> new HashMap<>())
+                        .computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>());
+                byId.put(fpgaEnum.id,
+                        new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId, location,
+                                fpgaEnum.direction, address));
             }
         }
     }
@@ -766,7 +762,7 @@ public class Machine implements Iterable<Chip> {
         if (version.isFourChip) {
             return;  // NO fpga links
         }
-        for (Chip ethernetConnectedChip: ethernetConnectedChips) {
+        for (Chip ethernetConnectedChip : ethernetConnectedChips) {
             addFpgaLinks(ethernetConnectedChip.getX(),
                     ethernetConnectedChip.getY(),
                     ethernetConnectedChip.ipAddress);
@@ -784,7 +780,7 @@ public class Machine implements Iterable<Chip> {
     public final String coresAndLinkOutputString() {
         int cores = 0;
         int everyLink = 0;
-        for (Chip chip:chips.values()) {
+        for (Chip chip : chips.values()) {
             cores += chip.nProcessors();
             everyLink += chip.router.size();
         }
@@ -846,7 +842,7 @@ public class Machine implements Iterable<Chip> {
      */
     public final int totalAvailableUserCores() {
         int count = 0;
-        for (Chip chip :chips.values()) {
+        for (Chip chip : chips.values()) {
             count += chip.nUserProcessors();
         }
         return count;
@@ -859,7 +855,7 @@ public class Machine implements Iterable<Chip> {
      */
     public final int totalCores() {
         int count = 0;
-        for (Chip chip :chips.values()) {
+        for (Chip chip : chips.values()) {
             count += chip.nProcessors();
         }
         return count;
@@ -906,11 +902,11 @@ public class Machine implements Iterable<Chip> {
      * @return A Map of ChipLocations to Direction (hopefully empty)
      *      which identifies links to remove
      */
-    public Map<ChipLocation, Collection<Direction>> findAbnormalLinks() {
-        Map<ChipLocation, Collection<Direction>> abnormalLinks =
-                new DefaultMap<>(ArrayList::new);
+    public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
+        Map<ChipLocation, Set<Direction>> abnormalLinks =
+                new DefaultMap<>(HashSet::new);
         for (Chip chip: chips.values()) {
-            for (Link link:chip.router) {
+            for (Link link: chip.router) {
                 if (!this.hasChipAt(link.destination)) {
                     abnormalLinks.get(link.source).add(
                             link.sourceLinkDirection);
@@ -936,11 +932,11 @@ public class Machine implements Iterable<Chip> {
      * <p>
      * Future implementations may add other tests for abnormal Chips.
      *
-     * @return A list (hopefully empty) of ChipLocations to remove.
+     * @return A set (hopefully empty) of ChipLocations to remove.
      */
-    public List<ChipLocation> findAbnormalChips() {
-        ArrayList<ChipLocation> abnormalCores = new ArrayList<>();
-        for (Chip chip: chips.values()) {
+    public Set<ChipLocation> findAbnormalChips() {
+        Set<ChipLocation> abnormalCores = new HashSet<>();
+        for (Chip chip : chips.values()) {
             if (chip.router.size() == 0) {
                 abnormalCores.add(chip.asChipLocation());
             }
@@ -1010,7 +1006,7 @@ public class Machine implements Iterable<Chip> {
             return "bootEthernetAddress " + bootEthernetAddress
                     + " != " + other.bootEthernetAddress;
         }
-        for (ChipLocation loc: chips.keySet()) {
+        for (ChipLocation loc : chips.keySet()) {
             Chip c1 = chips.get(loc);
             Chip c2 = other.chips.get(loc);
             if (!c1.equals(c2)) {

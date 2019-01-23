@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.List;
 
@@ -78,10 +79,7 @@ public final class Router implements Iterable<Link> {
     public Router(Iterable<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
         this(clockSpeed, nAvailableMulticastEntries);
-        for (Link link:links) {
-            addLink(link);
-        }
-
+        links.forEach(this::addLink);
     }
 
     /**
@@ -146,7 +144,7 @@ public final class Router implements Iterable<Link> {
      * @throws IllegalArgumentException Indicates another Link with this
      *     sourceLinkDirection has already been added.
      */
-    Router(Router router, ArrayList<Link> links) {
+    Router(Router router, Iterable<Link> links) {
         this(links, router.clockSpeed, router.nAvailableMulticastEntries);
     }
 
@@ -164,10 +162,10 @@ public final class Router implements Iterable<Link> {
      *      ignoredLinks
      */
     public Router(HasChipLocation source, int clockSpeed,
-                  int nAvailableMulticastEntries,
-                  Collection<Direction> ignoreDirections, Machine machine) {
+            int nAvailableMulticastEntries, Set<Direction> ignoreDirections,
+            Machine machine) {
         this(clockSpeed, nAvailableMulticastEntries);
-        for (Direction direction: Direction.values()) {
+        for (Direction direction : Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
                 ChipLocation destination = machine.normalizedLocation(
                         source.getX() + direction.xChange,
@@ -187,11 +185,11 @@ public final class Router implements Iterable<Link> {
      *     sourceLinkDirection has already been added.
      */
     public void addLink(Link link) throws IllegalArgumentException {
-        if (this.links.containsKey(link.sourceLinkDirection)) {
+        if (links.containsKey(link.sourceLinkDirection)) {
             throw new IllegalArgumentException(
                     "Link already exists: " + link);
         }
-        this.links.put(link.sourceLinkDirection, link);
+        links.put(link.sourceLinkDirection, link);
     }
 
     /**
@@ -272,8 +270,8 @@ public final class Router implements Iterable<Link> {
      * @return The destination locations
      */
     public List<ChipLocation> neighbouringChipsCoords() {
-        ArrayList<ChipLocation> neighbours = new ArrayList<>();
-        for (Link link: links.values()) {
+        List<ChipLocation> neighbours = new ArrayList<>();
+        for (Link link : links.values()) {
             neighbours.add(link.destination);
         }
         return neighbours;
@@ -282,13 +280,14 @@ public final class Router implements Iterable<Link> {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Router[");
-        for (Entry<Direction, Link> entry:links.entrySet()) {
+        String sep = "";
+        for (Entry<Direction, Link> entry : links.entrySet()) {
+            result.append(sep);
             result.append(entry.getKey());
             result.append(":");
             result.append(entry.getValue().destination);
-            result.append(" ");
+            sep = " ";
         }
-        result.setLength(result.length() - 1);
         result.append("]");
         return result.toString();
     }

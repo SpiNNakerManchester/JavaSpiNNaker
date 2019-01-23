@@ -24,6 +24,7 @@ import static java.net.InetAddress.getByAddress;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
@@ -251,14 +252,14 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final Map<ChipLocation, Collection<Integer>> ignoreCores =
+	private final Map<ChipLocation, Set<Integer>> ignoreCores =
 			new HashMap<>();
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
 	 * have these links excluded, as if they never existed.
 	 */
-	private final Map<ChipLocation, Collection<Direction>> ignoreLinks =
+	private final Map<ChipLocation, Set<Direction>> ignoreLinks =
 			new HashMap<>();
 
 	/**
@@ -387,9 +388,9 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
-			Integer numberOfBoards, List<ChipLocation> ignoredChips,
-			Map<ChipLocation, Collection<Integer>> ignoredCores,
-			Map<ChipLocation, Collection<Direction>> ignoredLinks,
+			Integer numberOfBoards, Set<ChipLocation> ignoredChips,
+			Map<ChipLocation, Set<Integer>> ignoredCores,
+			Map<ChipLocation, Set<Direction>> ignoredLinks,
 			boolean autodetectBMP, List<ConnectionDescriptor> scampConnections,
 			Integer bootPortNumber, Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
@@ -475,7 +476,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException, ProcessException {
-		this(hostname, version, null, 0, emptyList(), emptyMap(), emptyMap(),
+		this(hostname, version, null, 0, emptySet(), emptyMap(), emptyMap(),
 				false, null, null, null);
 	}
 
@@ -584,8 +585,8 @@ public class Transceiver extends UDPTransceiver
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections,
 			Collection<ChipLocation> ignoredChips,
-			Map<ChipLocation, Collection<Integer>> ignoredCores,
-			Map<ChipLocation, Collection<Direction>> ignoredLinks,
+			Map<ChipLocation, Set<Integer>> ignoredCores,
+			Map<ChipLocation, Set<Direction>> ignoredLinks,
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize)
 			throws IOException, SpinnmanException, ProcessException {
