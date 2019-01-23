@@ -62,7 +62,7 @@ public class MachineBean {
             ChipResources standardResources,
             @JsonProperty(value = "chips", required = true)
             List<ChipBean> chips) {
-        dimensions = new MachineDimensions(height, width);
+        dimensions = new MachineDimensions(width, height);
         this.root = root;
         this.chips = chips;
         this.ethernetResources = ethernetResources;
@@ -116,7 +116,7 @@ public class MachineBean {
         builder.append("\nethernet_resources: ").append(ethernetResources);
         builder.append("\nstandard_resources: ").append(standardResources);
         for (ChipBean bean : chips) {
-            builder.append("\n" + bean);
+            builder.append("\n").append(bean);
         }
         return builder.toString();
     }

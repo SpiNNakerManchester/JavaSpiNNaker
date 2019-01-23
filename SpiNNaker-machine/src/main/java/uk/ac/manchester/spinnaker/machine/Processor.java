@@ -131,10 +131,7 @@ public final class Processor implements Comparable<Processor> {
         if (this.isMonitor != other.isMonitor) {
             return false;
         }
-        if (this.dtcmAvailable != other.dtcmAvailable) {
-            return false;
-        }
-        return true;
+        return this.dtcmAvailable == other.dtcmAvailable;
     }
 
     @Override
@@ -145,7 +142,7 @@ public final class Processor implements Comparable<Processor> {
         if (this.processorId > other.processorId) {
             return 1;
         }
-        // Check the other parameters for consistentcy with equals.
+        // Check the other parameters for consistency with equals.
         if (this.isMonitor) {
             if (!other.isMonitor) {
                 return 1;
@@ -161,13 +158,7 @@ public final class Processor implements Comparable<Processor> {
         if (this.dtcmAvailable > other.dtcmAvailable) {
             return 1;
         }
-        if (this.clockSpeed < other.clockSpeed) {
-            return -1;
-        }
-        if (this.clockSpeed > other.clockSpeed) {
-            return 1;
-        }
-        return 0;
+        return Integer.compare(this.clockSpeed, other.clockSpeed);
     }
 
     /**

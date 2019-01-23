@@ -68,7 +68,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(1, txrx.getConnections().size());
 		}
@@ -81,7 +81,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
@@ -97,7 +97,7 @@ class TestTransceiver {
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			for (Connection c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
@@ -117,7 +117,7 @@ class TestTransceiver {
 		connections.add(
 				new BootConnection(null, null, boardConfig.remotehost, null));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			if (boardConfig.boardVersion.isFourChip) {
 				assertEquals(2, txrx.getMachineDimensions().width);
@@ -158,7 +158,7 @@ class TestTransceiver {
 		connections.add(orig);
 
 		// Create transceiver
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
@@ -263,7 +263,7 @@ class MockWriteTransceiver extends Transceiver {
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
 			uk.ac.manchester.spinnaker.transceiver.processes.ProcessException {
-		super(version, connections, null, null, null, null, null, null);
+		super(version, connections, null, null, null, null, null);
 	}
 
 	@Override

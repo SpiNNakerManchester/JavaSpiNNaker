@@ -64,10 +64,7 @@ public class InetIdTuple {
         if (this.id != other.id) {
             return false;
         }
-        if (!Objects.equals(this.address, other.address)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.address, other.address);
     }
 
 }

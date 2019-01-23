@@ -21,15 +21,15 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.TOP_BIT;
+import static uk.ac.manchester.spinnaker.messages.scp.Constants.APP_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_NNP;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.model.Signal;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** An SCP Request to stop an application. */
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
-	private static final int APP_MASK = 0xFF;
 	// TODO Better names for these constants
 	private static final int SHIFT = 28;
 	private static final int MAGIC1 = 0x3f;
@@ -40,9 +40,9 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 		return MAGIC1 << BYTE2;
 	}
 
-	private static int argument2(int appID, Signal signal) {
-		return (MAGIC2 << SHIFT) | (signal.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID << BYTE0);
+	private static int argument2(AppID appID) {
+		return (MAGIC2 << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
+				| (appID.appID << BYTE0);
 	}
 
 	private static int argument3() {
@@ -51,11 +51,11 @@ public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 
 	/**
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 */
-	public ApplicationStop(int appID) {
-		super(DEFAULT_MONITOR_CORE, CMD_NNP, argument1(),
-				argument2(appID, STOP), argument3());
+	public ApplicationStop(AppID appID) {
+		super(BOOT_MONITOR_CORE, CMD_NNP, argument1(), argument2(appID),
+				argument3());
 	}
 
 	@Override

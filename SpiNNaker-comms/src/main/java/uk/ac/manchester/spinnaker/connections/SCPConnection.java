@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.DEFAULT_CHIP;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -40,7 +40,7 @@ public class SCPConnection extends SDPConnection
 	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(InetAddress remoteHost) throws IOException {
-		this(DEFAULT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
+		this(BOOT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class SCPConnection extends SDPConnection
 	 */
 	public SCPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		this(DEFAULT_CHIP, localHost, localPort, remoteHost, remotePort);
+		this(BOOT_CHIP, localHost, localPort, remoteHost, remotePort);
 	}
 
 	/**

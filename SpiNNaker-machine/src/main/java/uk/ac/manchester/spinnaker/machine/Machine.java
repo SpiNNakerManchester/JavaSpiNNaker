@@ -505,7 +505,7 @@ public class Machine implements Iterable<Chip> {
         return machineDimensions.width - 1;
     }
 
-   /**
+    /**
      * The maximum possible y-coordinate of any chip in the board.
      * <p>
      * Currently no check is carried out to guarantee there is actually a
@@ -542,14 +542,6 @@ public class Machine implements Iterable<Chip> {
     public final Collection<SpinnakerLinkData> spinnakerLinks() {
         return Collections.unmodifiableCollection(spinnakerLinks.values());
     }
-
-    /**
-     * Get the a specific spynakker link if it exists.
-     *
-     * @return An unmodifiable unordered collection of
-     *      all the spinnaker links on this machine.
-     */
-
 
     /**
      * Get a SpiNNaker link with a given ID.
@@ -749,11 +741,12 @@ public class Machine implements Iterable<Chip> {
                     rootX + fpgaEnum.getX(), rootY + fpgaEnum.getY());
             if (hasChipAt(location)
                     && !hasLinkAt(location, fpgaEnum.direction)) {
-                fpgaLinks.computeIfAbsent(address, k -> new HashMap<>())
-                        .computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>())
-                        .put(fpgaEnum.id,
-                                new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId,
-                                        location, fpgaEnum.direction, address));
+                Map<Integer, FPGALinkData> byId = fpgaLinks
+                        .computeIfAbsent(address, k -> new HashMap<>())
+                        .computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>());
+                byId.put(fpgaEnum.id,
+                        new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId, location,
+                                fpgaEnum.direction, address));
             }
         }
     }
@@ -1003,7 +996,7 @@ public class Machine implements Iterable<Chip> {
             return "version " + version + " != " + version;
         }
         if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
-            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+            return "maxUserProcessorsOnAChip " + maxUserProssorsOnAChip
                     + " != " + other.maxUserProssorsOnAChip;
         }
         if (!boot.equals(other.boot)) {
@@ -1063,7 +1056,7 @@ public class Machine implements Iterable<Chip> {
             Set<ChipLocation> temp1 = new HashSet<>(setThis);
             temp1.removeAll(setThat);
             if (temp1.isEmpty()) {
-                return "No difference between chip ketsets found.";
+                return "No difference between chip key sets found.";
             }
             Set<ChipLocation> temp2 = new HashSet<>(setThat);
             temp2.removeAll(setThis);

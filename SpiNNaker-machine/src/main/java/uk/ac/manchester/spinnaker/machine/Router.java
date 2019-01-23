@@ -16,15 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
+import java.util.List;
 
 /**
  *
@@ -161,15 +162,16 @@ public final class Router implements Iterable<Link> {
      *      ignoredLinks
      */
     public Router(HasChipLocation source, int clockSpeed,
-            int nAvailableMulticastEntries,
-            Set<Direction> ignoreDirections, Machine machine) {
+            int nAvailableMulticastEntries, Set<Direction> ignoreDirections,
+            Machine machine) {
         this(clockSpeed, nAvailableMulticastEntries);
         for (Direction direction : Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
                 ChipLocation destination = machine.normalizedLocation(
                         source.getX() + direction.xChange,
                         source.getY() + direction.yChange);
-                addLink(new Link(source, direction, destination));
+                addLink(new Link(source, direction,
+                    Objects.requireNonNull(destination)));
             }
         }
     }
@@ -256,12 +258,7 @@ public final class Router implements Iterable<Link> {
      * @return A Stream over the destination locations.
      */
     public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
-        return new Iterable<ChipLocation>() {
-            @Override
-            public Iterator<ChipLocation> iterator() {
-                return new NeighbourIterator(links.values().iterator());
-            }
-        };
+        return () -> new NeighbourIterator(links.values().iterator());
     }
 
     /**
@@ -311,13 +308,8 @@ public final class Router implements Iterable<Link> {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Router)) {
-            return false;
-        }
-        Router that = (Router) obj;
-        // TODO compare this and that
-
-        return true;
+        // TODO compare internal states
+        return obj instanceof Router;
     }
 
 }

@@ -63,7 +63,7 @@ public class Chip implements HasChipLocation {
     /** boolean which defines if this chip is a virtual one. */
     public final boolean virtual;
 
-    /** List of SDP identifers available. */
+    /** List of SDP identifiers available. */
     private final List<Integer> tagIds;
 
     /** The nearest Ethernet coordinates or null if none known. */

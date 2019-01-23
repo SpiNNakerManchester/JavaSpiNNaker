@@ -33,9 +33,6 @@ public final class MachineDefaults {
     /** Default sdram per chip after scamp has reserved space for itself. */
     public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
 
-    /** Default number of IPTAgs on a chip. */
-    public static final int N_IPTAGS_PER_CHIP = 8;
-
     /** Clock speed in MHz of a standard Processor. */
     public static final int PROCESSOR_CLOCK_SPEED = 200 * 1000 * 1000;
 
@@ -82,7 +79,7 @@ public final class MachineDefaults {
 
     /**
       * Width of field of hashcode for holding (one dimension of the) chip
-      * cooordinate.
+      * co-ordinate.
       */
     public static final int COORD_SHIFT = 8;
 
@@ -111,10 +108,10 @@ public final class MachineDefaults {
     public static void validateChipLocation(int x, int y)
             throws IllegalArgumentException {
         if (x < 0 || x > MAX_X) {
-        	throw new IllegalArgumentException("bad X cooordinate: " + x);
+        	throw new IllegalArgumentException("bad X co-ordinate: " + x);
         }
         if (y < 0 || y > MAX_Y) {
-        	throw new IllegalArgumentException("bad Y cooordinate: " + y);
+        	throw new IllegalArgumentException("bad Y co-ordinate: " + y);
         }
     }
 

@@ -22,6 +22,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -57,7 +58,7 @@ public class LoadFixedRouteEntryProcess
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
-		loadFixedRoute(chip, fixedRoute, 0);
+		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class LoadFixedRouteEntryProcess
 	 *             If SpiNNaker rejects the message.
 	 */
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			int appID) throws IOException, ProcessException {
+			AppID appID) throws IOException, ProcessException {
 		int entry = fixedRoute.encode();
 		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
 	}

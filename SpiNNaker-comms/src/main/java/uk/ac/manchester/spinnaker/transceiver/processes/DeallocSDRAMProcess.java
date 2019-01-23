@@ -21,6 +21,7 @@ import java.io.IOException;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -46,14 +47,14 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
-	 *            The ID of the application, between 0 and 255
+	 *            The ID of the application
 	 * @return the number of blocks freed
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public int deallocSDRAM(HasChipLocation chip, int appID)
+	public int deallocSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return synchronousCall(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
 	}
@@ -63,8 +64,6 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            the chip to allocate on
-	 * @param appID
-	 *            The ID of the application, between 0 and 255 (ignored)
 	 * @param baseAddress
 	 *            The start address in SDRAM to which the block needs to be
 	 *            deallocated
@@ -73,8 +72,8 @@ public class DeallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void deallocSDRAM(HasChipLocation chip, int appID, int baseAddress)
+	public void deallocSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
-		synchronousCall(new SDRAMDeAlloc(chip, appID, baseAddress));
+		synchronousCall(new SDRAMDeAlloc(chip, baseAddress));
 	}
 }
