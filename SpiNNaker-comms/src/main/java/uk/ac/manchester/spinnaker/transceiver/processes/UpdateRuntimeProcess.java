@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
-import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
-import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
-import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
-/**
- * Get the CPU information structure for a set of processors.
- */
-public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
+/** Update the running time configuration on some cores. */
+public class UpdateRuntimeProcess
+		extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -46,35 +38,34 @@ public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetCPUInfoProcess(
+	public UpdateRuntimeProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
 
 	/**
-	 * Get CPU information.
+	 * Update the running time configuration of some cores.
 	 *
+	 * @param runTimesteps
+	 *            The number of machine timesteps to run for. {@code null}
+	 *            indicates an infinite run.
 	 * @param coreSubsets
-	 *            What processors to get the information from
-	 * @return The CPU information, in undetermined order.
+	 *            the cores to update the information of.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If SpiNNaker rejects the message.
 	 */
-	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		List<CPUInfo> cpuInfo = new ArrayList<>();
+		int runTime = (runTimesteps == null ? 0 : runTimesteps);
+		boolean infiniteRun = runTimesteps == null;
 		for (CoreLocation core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
-			sendRequest(
-					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
-							CPU_INFO_BYTES),
-					response -> cpuInfo.add(new CPUInfo(core, response.data)));
+			sendRequest(new UpdateRuntime(core, runTime, infiniteRun, true));
 		}
 		finish();
 		checkForError();
-		return unmodifiableList(cpuInfo);
 	}
 }

@@ -52,7 +52,25 @@ public class CheckOKResponse extends SCPResponse {
 	 * @throws UnexpectedResponseCodeException
 	 *             If the response wasn't OK.
 	 */
-	public CheckOKResponse(String operation, ReinjectorCommand command,
+	CheckOKResponse(String operation, ReinjectorCommand command,
+			ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		super(buffer);
+		this.throwIfNotOK(operation, command.name());
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param operation
+	 *            The overall operation that we are doing.
+	 * @param command
+	 *            The command that we are handling a response to.
+	 * @param buffer
+	 *            The buffer holding the response data.
+	 * @throws UnexpectedResponseCodeException
+	 *             If the response wasn't OK.
+	 */
+	CheckOKResponse(String operation, RunningCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
 		this.throwIfNotOK(operation, command.name());

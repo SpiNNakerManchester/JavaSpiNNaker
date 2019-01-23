@@ -150,6 +150,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.ClearIOBufProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ClearQueueProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
@@ -175,6 +176,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProc
 import uk.ac.manchester.spinnaker.transceiver.processes.SetReinjectionPacketTypesProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterEmergencyTimeoutProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterTimeoutProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.UpdateRuntimeProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 
@@ -1243,22 +1245,31 @@ public class Transceiver extends UDPTransceiver
 		return versionInfo;
 	}
 
+	private CoreSubsets getAllCores() throws IOException, ProcessException {
+		if (machine == null) {
+			updateMachine();
+		}
+		CoreSubsets coreSubsets = new CoreSubsets();
+		for (Chip chip : machine.chips()) {
+			if (chip.virtual) {
+				// Skip virtual chips; we can't talk to them
+				continue;
+			}
+			for (Processor processor : chip.allProcessors()) {
+				coreSubsets.addCore(new CoreLocation(chip.getX(), chip.getY(),
+						processor.processorId));
+			}
+		}
+		return coreSubsets;
+	}
+
 	@Override
 	@ParallelSafeWithCare
 	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
 		if (coreSubsets == null) {
-			if (machine == null) {
-				updateMachine();
-			}
-			coreSubsets = new CoreSubsets();
-			for (Chip chip : machine.chips()) {
-				for (Processor processor : chip.allProcessors()) {
-					coreSubsets.addCore(new CoreLocation(chip.getX(),
-							chip.getY(), processor.processorId));
-				}
-			}
+			coreSubsets = getAllCores();
 		}
 
 		return new GetCPUInfoProcess(scpSelector, this).getCPUInfo(coreSubsets);
@@ -1274,8 +1285,40 @@ public class Transceiver extends UDPTransceiver
 					SystemVariableDefinition.iobuf_size);
 		}
 
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			coreSubsets = getAllCores();
+		}
+
 		// read iobuf from machine
 		return new ReadIOBufProcess(scpSelector, this).readIOBuf(iobufSize,
+				coreSubsets);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void clearIobuf(CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			coreSubsets = getAllCores();
+		}
+
+		// read iobuf from machine
+		new ClearIOBufProcess(scpSelector, this).clearIOBUF(coreSubsets);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			coreSubsets = getAllCores();
+		}
+
+		// set the information
+		new UpdateRuntimeProcess(scpSelector, this).updateRuntime(runTimesteps,
 				coreSubsets);
 	}
 
