@@ -23,11 +23,13 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
@@ -50,10 +52,11 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -100,9 +103,9 @@ public class TransceiverITCase {
 	private static SpallocJob job;
 
 	static int numCores = 20;
-	static List<ChipLocation> downChips;
+	static Set<ChipLocation> downChips;
 	static CoreSubsets coreSubsets;
-	static Map<ChipLocation, Collection<Integer>> downCores;
+	static Map<ChipLocation, Set<Integer>> downCores;
 
 
 	@BeforeAll
@@ -114,9 +117,9 @@ public class TransceiverITCase {
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
 		downCores = new HashMap<>();
-		downCores.put(new ChipLocation(0, 0), singletonList(5));
+		downCores.put(new ChipLocation(0, 0), singleton(5));
 
-		downChips = new ArrayList<>();
+		downChips = new HashSet<>();
 		downChips.add(new ChipLocation(0, 1));
 	}
 

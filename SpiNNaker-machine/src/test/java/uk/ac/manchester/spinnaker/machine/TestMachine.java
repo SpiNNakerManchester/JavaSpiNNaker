@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.SortedMap;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -413,10 +415,10 @@ public class TestMachine {
         assertEquals("846 cores and 117.0 links",
                 instance.coresAndLinkOutputString());
 
-        Collection<ChipLocation> abnormalChips = instance.findAbnormalChips();
+        Set<ChipLocation> abnormalChips = instance.findAbnormalChips();
         assertEquals(0, abnormalChips.size());
 
-        Map<ChipLocation, Collection<Direction>> abnormalLinks =
+        Map<ChipLocation, Set<Direction>> abnormalLinks =
                 instance.findAbnormalLinks();
         assertEquals(6, abnormalLinks.size());
 
@@ -456,10 +458,10 @@ public class TestMachine {
         assertEquals("864 cores and 117.0 links",
                 instance.coresAndLinkOutputString());
 
-        Collection<ChipLocation> abnormalChips = instance.findAbnormalChips();
+        Set<ChipLocation> abnormalChips = instance.findAbnormalChips();
         assertThat(abnormalChips, contains(new ChipLocation(3, 3)));
 
-        Map<ChipLocation, Collection<Direction>> abnormalLinks =
+        Map<ChipLocation, Set<Direction>> abnormalLinks =
                 instance.findAbnormalLinks();
         // 6 as it also has only the invers links from 3,3
         assertEquals(6, abnormalLinks.size());
@@ -474,8 +476,8 @@ public class TestMachine {
 
     @Test
     public void testUnreachableIncomingChips() {
-        Map<ChipLocation, Collection<Direction>> ignoreLinks =
-                new DefaultMap<>(ArrayList::new);
+        Map<ChipLocation, Set<Direction>> ignoreLinks =
+                new DefaultMap<>(HashSet::new);
         ignoreLinks.get(new ChipLocation(2, 2)).add(Direction.NORTHEAST);
         ignoreLinks.get(new ChipLocation(2, 3)).add(Direction.EAST);
         ignoreLinks.get(new ChipLocation(3, 4)).add(Direction.SOUTH);
@@ -485,7 +487,7 @@ public class TestMachine {
 
         Machine instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, null, ignoreLinks);
-        Map<ChipLocation, Collection<Direction>> abnormal =
+        Map<ChipLocation, Set<Direction>> abnormal =
                 instance.findAbnormalLinks();
         assertEquals(1, abnormal.size());
     }
