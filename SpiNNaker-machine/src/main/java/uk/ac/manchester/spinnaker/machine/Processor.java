@@ -202,21 +202,28 @@ public final class Processor implements Comparable<Processor> {
      * @return A default Processor Object with this ID and monitor state
      */
     public static Processor factory(int processorId, boolean isMonitor) {
-        if (isMonitor) {
-            if (MONITOR[processorId] == null) {
-                MONITOR[processorId] =
-                    new Processor(processorId,
-                        MachineDefaults.PROCESSOR_CLOCK_SPEED,
-                        MachineDefaults.DTCM_AVAILABLE, isMonitor);
+        try{
+            if (isMonitor) {
+                if (MONITOR[processorId] == null) {
+                    MONITOR[processorId] =
+                        new Processor(processorId,
+                            MachineDefaults.PROCESSOR_CLOCK_SPEED,
+                            MachineDefaults.DTCM_AVAILABLE, isMonitor);
+                }
+                return MONITOR[processorId];
             }
-            return MONITOR[processorId];
+            if (NON_MONITOR[processorId] == null) {
+                NON_MONITOR[processorId] = new Processor(
+                    processorId, MachineDefaults.PROCESSOR_CLOCK_SPEED,
+                    MachineDefaults.DTCM_AVAILABLE, isMonitor);
+            }
+            return NON_MONITOR[processorId];
+        } catch (ArrayIndexOutOfBoundsException ex){
+            // Only happens in rare virtual chips
+            return new Processor(
+                    processorId, MachineDefaults.PROCESSOR_CLOCK_SPEED,
+                    MachineDefaults.DTCM_AVAILABLE, isMonitor);
         }
-        if (NON_MONITOR[processorId] == null) {
-            NON_MONITOR[processorId] = new Processor(
-                processorId, MachineDefaults.PROCESSOR_CLOCK_SPEED,
-                MachineDefaults.DTCM_AVAILABLE, isMonitor);
-        }
-        return NON_MONITOR[processorId];
     }
 
     /**

@@ -54,7 +54,7 @@ public class ChipDetails {
      */
     public ChipDetails(
             @JsonProperty(value = "cores", required = true) int cores,
-            @JsonProperty(value = "ethernet", required = true)
+            @JsonProperty(value = "ethernet", required = false)
             ChipLocation ethernet) {
         this.cores = cores;
         this.ethernet = ethernet;

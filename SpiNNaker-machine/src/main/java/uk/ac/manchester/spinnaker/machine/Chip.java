@@ -234,6 +234,11 @@ public class Chip implements HasChipLocation {
         }
 
         this.nearestEthernet = nearestEthernet;
+        if (this.virtual) {
+            assert this.nearestEthernet == null;
+        } else {
+            assert this.nearestEthernet != null;
+        }
     }
 
     Chip(Chip chip, Router newRouter) {
