@@ -52,15 +52,19 @@ public enum Direction {
     public final int yChange;
 
     /**
-     * The String representation for example used in json.
+     * The String representation for example used in JSON.
      */
     public final String label;
 
     /**
-     * Constructs the Enum.
-     * @param id ID of this Direction.
-     * @param xChange Typical change to X if moving in this Direction.
-     * @param yChange Typical change to Y if moving in this Direction.
+     * Constructs an element of the Enum.
+     *
+     * @param id
+     *            ID of this Direction.
+     * @param xChange
+     *            Typical change to X if moving in this Direction.
+     * @param yChange
+     *            Typical change to Y if moving in this Direction.
      */
     Direction(int id, int xChange, int yChange, String label) {
         this.id = id;
@@ -92,11 +96,13 @@ public enum Direction {
     }
 
     /**
-     * The Direction with this id when expressed as an int.
+     * The Direction with this ID when expressed as an int.
      *
-     * @param id ID of this Direction
-     * @return Direction with this id
-     * @throws ArrayIndexOutOfBoundsException if the id is not correct
+     * @param id
+     *            ID of this Direction
+     * @return Direction with this ID
+     * @throws ArrayIndexOutOfBoundsException
+     *             if the ID is not correct
      */
     public static Direction byId(int id) throws ArrayIndexOutOfBoundsException {
         return BY_ID[id];
@@ -105,10 +111,11 @@ public enum Direction {
     /**
      * The Direction with this label
      * <p>
-     * The current implementation assumes the labels are lowercase and
-     *      words are separated by underscore.
+     * The current implementation assumes the labels are lowercase and words are
+     * separated by underscore.
      *
-     * @param label Label of this Direction
+     * @param label
+     *            Label of this Direction
      * @return IllegalArgumentException If no direction is found.
      */
     public static Direction byLabel(String label) {
@@ -120,5 +127,4 @@ public enum Direction {
         throw new IllegalArgumentException(
                 "No direction found for \"" + label + "\"");
     }
-
 }

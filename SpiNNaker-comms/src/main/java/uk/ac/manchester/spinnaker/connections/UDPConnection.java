@@ -85,7 +85,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
 	/**
-	 * Main constructor any of which could null.
+	 * Main constructor, any argument of which could {@code null}.
 	 * <p>
 	 * No default constructors are provided as it would not be possible to
 	 * disambiguate between ones with only a local host/port like
@@ -93,15 +93,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * {@link BMPConnection}.
 	 *
 	 * @param localHost
-	 *            The local host to bind to. If not specified, it defaults to
-	 *            binding to all interfaces, unless remoteHost is specified, in
-	 *            which case binding is done to the IP address that will be used
-	 *            to send packets.
+	 *            The local host to bind to. If {@code null}, it defaults to
+	 *            binding to all interfaces, unless {@code remoteHost} is
+	 *            specified, in which case binding is done to the IP address
+	 *            that will be used to send packets.
 	 * @param localPort
-	 *            The local port to bind to, 0 or between 1025 and 65535.
+	 *            The local port to bind to, 0 (or {@code null}) or between 1025
+	 *            and 65535.
 	 * @param remoteHost
-	 *            The remote host name or IP address to send packets to. If not
-	 *            specified, the socket will be available for listening only,
+	 *            The remote host name or IP address to send packets to. If
+	 *            {@code null}, the socket will be available for listening only,
 	 *            and will throw and exception if used for sending.
 	 * @param remotePort
 	 *            The remote port to send packets to. If remoteHost is
@@ -246,7 +247,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Receive data from the connection.
 	 *
 	 * @param timeout
-	 *            The timeout in milliseconds, or null to wait forever
+	 *            The timeout in milliseconds, or {@code null} to wait forever
 	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
@@ -298,7 +299,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * was received from.
 	 *
 	 * @param timeout
-	 *            The timeout in milliseconds, or null to wait forever
+	 *            The timeout in milliseconds, or {@code null} to wait forever
 	 * @return The datagram packet received
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
@@ -405,7 +406,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @param data
 	 *            The data to be sent
 	 * @param address
-	 *            Where to send (must be non-null)
+	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
 	 * @throws IOException
@@ -423,7 +424,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @param data
 	 *            The data to be sent
 	 * @param address
-	 *            Where to send (must be non-null)
+	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
 	 * @throws IOException
@@ -440,7 +441,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @param data
 	 *            The data to be sent
 	 * @param address
-	 *            Where to send (must be non-null)
+	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
 	 * @throws IOException

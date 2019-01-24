@@ -22,7 +22,7 @@ import java.util.Iterator;
  *
  * @author Christian-B
  */
-public class NeighbourIterator implements Iterator<ChipLocation> {
+class NeighbourIterator implements Iterator<ChipLocation> {
 
     private Iterator<Link> linksIter;
 

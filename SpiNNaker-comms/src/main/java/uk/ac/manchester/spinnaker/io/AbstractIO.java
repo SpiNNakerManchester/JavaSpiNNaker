@@ -153,11 +153,12 @@ public interface AbstractIO extends AutoCloseable {
 	}
 
 	/**
-	 * Read a number of bytes, or the rest of the data if numBytes is null or
-	 * negative.
+	 * Read a number of bytes, or the rest of the data if {@code numBytes} is
+	 * {@code null} or negative.
 	 *
 	 * @param numBytes
-	 *            The number of bytes to read
+	 *            The number of bytes to read. A {@code null} or a negative
+	 *            value means to read all the remaining bytes.
 	 * @return The bytes that have been read.
 	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails

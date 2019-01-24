@@ -48,12 +48,15 @@ public final class Link {
     /**
      * Main Constructor which sets all parameters.
      * <p>
-     * Specifically there is NO check that the destination is the typical one
-     *    for this source and direction pair.
+     * Specifically there is <em>no</em> check that the destination is the
+     * typical one for this source and direction pair.
      *
-     * @param source The coordinates of the source chip of the link.
-     * @param destination The coordinate of the destination chip of the link.
-     * @param sourceLinkDirection The Direction of the link in the source chip.
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     * @param sourceLinkDirection
+     *            The Direction of the link in the source chip.
      */
     public Link(ChipLocation source, Direction sourceLinkDirection,
             ChipLocation destination) {
@@ -65,12 +68,15 @@ public final class Link {
     /**
      * Main Constructor which sets all parameters.
      * <p>
-     * Specifically there is NO check that the destination is the typical one
-     *    for this source and direction pair.
+     * Specifically there is <em>no</em> check that the destination is the
+     * typical one for this source and direction pair.
      *
-     * @param source The coordinates of the source chip of the link.
-     * @param destination The coordinate of the destination chip of the link.
-     * @param sourceLinkDirection The Direction of the link in the source chip.
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     * @param sourceLinkDirection
+     *            The Direction of the link in the source chip.
      */
     public Link(HasChipLocation source, Direction sourceLinkDirection,
             HasChipLocation destination) {
@@ -88,10 +94,12 @@ public final class Link {
     }
 
     /**
-     *
-     * @param source The coordinates of the source chip of the link.
-     * @param destination The coordinate of the destination chip of the link.
-     * @param sourceLinkId The ID of the link in the source chip.
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     * @param sourceLinkId
+     *            The ID of the link in the source chip.
      */
     public Link(HasChipLocation source, int sourceLinkId,
             HasChipLocation destination) {
@@ -125,5 +133,4 @@ public final class Link {
         return "Link{" + "source=" + source + ", source_link_id="
                 + sourceLinkDirection + ", destination=" + destination + '}';
     }
-
 }
