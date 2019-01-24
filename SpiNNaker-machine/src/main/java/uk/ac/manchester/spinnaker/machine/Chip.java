@@ -69,7 +69,7 @@ public class Chip implements HasChipLocation {
     /** List of SDP identifiers available. */
     private final List<Integer> tagIds;
 
-    /** The nearest Ethernet coordinates or null if none known. */
+    /** The nearest Ethernet coordinates, or {@code null} if none known. */
     public final HasChipLocation nearestEthernet;
 
     private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =
@@ -351,14 +351,14 @@ public class Chip implements HasChipLocation {
     }
 
     /**
-     * Obtains the User Processor with this ID or returns null.
+     * Obtains the User Processor with this ID, or returns {@code null}.
      * <p>
      * This method will only check user processors so will return {@code null}
      * even if a monitor processor exists with this id.
      *
      * @param processorId
      *            Id of the potential processor.
-     * @return The Processor or null if not is found.
+     * @return The Processor or {@code null} if not is found.
      */
     public Processor getUserProcessor(int processorId) {
         return userProcessors.get(processorId);
