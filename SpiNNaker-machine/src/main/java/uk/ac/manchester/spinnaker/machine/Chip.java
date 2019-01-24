@@ -266,7 +266,7 @@ public class Chip implements HasChipLocation {
                 resources.getMonitors(), details.cores);
 
         this.router = new Router(location, resources.getRouterClockSpeed(),
-            resources.getRouterEntries(), details.getDeadDirections(), machine);
+            resources.getRouterEntries(), details, machine);
 
         this.sdram = resources.getSdram();
         this.ipAddress = details.getIpAddress();

@@ -24,6 +24,9 @@ import java.net.URL;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.ac.manchester.spinnaker.machine.Chip;
+import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.Link;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
 
@@ -51,6 +54,26 @@ public class TestMachineBean {
 
         Machine machine = new Machine(fromJson);
         assertNotNull(machine);
+    }
+
+    @Test
+    public void testVirtual() throws IOException {
+        URL url = TestMachineBean.class.getResource("/with_virtual.json");
+        ObjectMapper mapper = MapperFactory.createMapper();
+        MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+
+        Machine machine = new Machine(fromJson);
+        Chip virtual = machine.getChipAt(0, 4);
+        assert (virtual.virtual);
+        Link fromVirtual= virtual.router.getLink(Direction.SOUTH);
+        assertEquals (2, fromVirtual.destination.getX());
+        assertEquals (5, fromVirtual.destination.getY());
+        Chip connect = machine.getChipAt(2, 5);
+        assert (!connect.virtual);
+        Link toVirtual= connect.router.getLink(Direction.NORTH);
+        assertEquals (0, toVirtual.destination.getX());
+        assertEquals (4, toVirtual.destination.getY());
+
     }
 
     @Test

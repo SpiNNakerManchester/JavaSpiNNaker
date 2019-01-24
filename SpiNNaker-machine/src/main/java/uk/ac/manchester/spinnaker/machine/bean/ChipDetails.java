@@ -29,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 
 /**
  *
@@ -42,6 +44,7 @@ public class ChipDetails {
     public final ChipLocation ethernet;
     private InetAddress ipAddress;
     private Set<Direction> deadDirections = emptySet();
+    private List<LinkBean> links;
 
     /**
      * Creates a Chip Details bean with the required fields leaving optional
@@ -55,9 +58,12 @@ public class ChipDetails {
     public ChipDetails(
             @JsonProperty(value = "cores", required = true) int cores,
             @JsonProperty(value = "ethernet", required = false)
-            ChipLocation ethernet) {
+            ChipLocation ethernet,
+            @JsonProperty(value = "links", required = false)
+            List<LinkBean> links) {
         this.cores = cores;
         this.ethernet = ethernet;
+        this.links = links;
     }
 
     /**
@@ -124,5 +130,18 @@ public class ChipDetails {
         builder.setLength(builder.length() - 2);
         builder.append("]");
         return builder.toString();
+    }
+
+    public ChipLocation getLinkDestination(
+            Direction direction, HasChipLocation source, Machine machine) {
+        if (links != null) {
+            for (LinkBean bean: links){
+                if (bean.sourceDirection == direction) {
+                    return bean.destination;
+                }
+            }
+        }
+        return machine.normalizedLocation(source.getX() + direction.xChange,
+                source.getY() + direction.yChange);
     }
 }

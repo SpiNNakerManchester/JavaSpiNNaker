@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.List;
+import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 
 /**
  *
@@ -162,14 +163,14 @@ public final class Router implements Iterable<Link> {
      *      ignoredLinks
      */
     public Router(HasChipLocation source, int clockSpeed,
-            int nAvailableMulticastEntries, Set<Direction> ignoreDirections,
+            int nAvailableMulticastEntries, ChipDetails details,
             Machine machine) {
         this(clockSpeed, nAvailableMulticastEntries);
+        Set<Direction> ignoreDirections = details.getDeadDirections();
         for (Direction direction : Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
-                ChipLocation destination = machine.normalizedLocation(
-                        source.getX() + direction.xChange,
-                        source.getY() + direction.yChange);
+                ChipLocation destination = details.getLinkDestination(
+                        direction, source, machine);
                 addLink(new Link(source, direction,
                     Objects.requireNonNull(destination)));
             }
