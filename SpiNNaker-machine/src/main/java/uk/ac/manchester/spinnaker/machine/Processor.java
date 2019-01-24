@@ -34,8 +34,10 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOH
  * @author Christian-B
  */
 public final class Processor implements Comparable<Processor> {
-    private static final Processor[] NON_MONITOR = new Processor[PROCESSORS_PER_CHIP];
-    private static final Processor[] MONITOR = new Processor[PROCESSORS_PER_CHIP];
+    private static final Processor[] NON_MONITOR =
+            new Processor[PROCESSORS_PER_CHIP];
+    private static final Processor[] MONITOR =
+            new Processor[PROCESSORS_PER_CHIP];
 
     /** The ID of the processor. */
     public final int processorId;

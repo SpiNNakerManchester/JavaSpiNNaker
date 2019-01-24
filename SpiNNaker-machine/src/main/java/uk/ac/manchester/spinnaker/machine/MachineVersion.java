@@ -132,8 +132,8 @@ public enum MachineVersion {
      *            Python ID for this version or {@code null} if no matching ID
      *            in python.
      * @param dimensions
-     *            The only possible dimensions for this version or {@code null} if
-     *            multiple sizes allowed
+     *            The only possible dimensions for this version or {@code null}
+     *            if multiple sizes allowed
      * @param isFourChip
      *            Indicates if this machine has exactly 4 chips is a 2 by 2
      *            layout.
