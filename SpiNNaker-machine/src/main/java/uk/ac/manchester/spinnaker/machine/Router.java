@@ -17,6 +17,10 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.Objects;
+
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_CLOCK_SPEED;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,9 +52,10 @@ public final class Router implements Iterable<Link> {
     /**
      * Default Constructor to add links later.
      *
-     * @param clockSpeed The router clock speed in cycles per second.
+     * @param clockSpeed
+     *            The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
-     *      The number of entries available in the routing table.
+     *            The number of entries available in the routing table.
      */
     public Router(int clockSpeed, int nAvailableMulticastEntries)
             throws IllegalArgumentException {
@@ -60,8 +65,7 @@ public final class Router implements Iterable<Link> {
 
     /**
      * Default Constructor to add links later using default values.
-     *
-      */
+     */
     public Router() throws IllegalArgumentException {
         this(MachineDefaults.ROUTER_CLOCK_SPEED,
                 MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
@@ -70,11 +74,13 @@ public final class Router implements Iterable<Link> {
     /**
      * Main Constructor that allows setting of all values.
      *
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
-     * @param clockSpeed The router clock speed in cycles per second.
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
+     * @param clockSpeed
+     *            The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
-     *      The number of entries available in the routing table.
+     *            The number of entries available in the routing table.
      */
     public Router(Iterable<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
@@ -85,11 +91,13 @@ public final class Router implements Iterable<Link> {
     /**
      * Main Constructor that allows setting of all values.
      *
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
-     * @param clockSpeed The router clock speed in cycles per second.
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
+     * @param clockSpeed
+     *            The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
-     *      The number of entries available in the routing table.
+     *            The number of entries available in the routing table.
      */
     public Router(Stream<Link> links, int clockSpeed,
             int nAvailableMulticastEntries) throws IllegalArgumentException {
@@ -100,49 +108,53 @@ public final class Router implements Iterable<Link> {
     /**
      * Pass through Constructor that uses default values.
      *
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
      */
     public Router(Iterable<Link> links) throws IllegalArgumentException {
-        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        this(links, ROUTER_CLOCK_SPEED, ROUTER_AVAILABLE_ENTRIES);
     }
 
     /**
      * Pass through Constructor that uses some default values.
      *
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
      * @param nAvailableMulticastEntries
-     *      The number of entries available in the routing table.
+     *            The number of entries available in the routing table.
      */
     public Router(Iterable<Link> links, int nAvailableMulticastEntries)
             throws IllegalArgumentException {
-        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                nAvailableMulticastEntries);
+        this(links, ROUTER_CLOCK_SPEED, nAvailableMulticastEntries);
     }
 
     /**
      * Pass through Constructor that uses default values.
      *
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
-     * @throws IllegalArgumentException Indicates another Link with this
-     *     sourceLinkDirection has already been added.
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
+     * @throws IllegalArgumentException
+     *             Indicates another Link with this {@code sourceLinkDirection}
+     *             has already been added.
      */
     public Router(Stream<Link> links) throws IllegalArgumentException {
-        this(links, MachineDefaults.ROUTER_CLOCK_SPEED,
-                MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+        this(links, ROUTER_CLOCK_SPEED, ROUTER_AVAILABLE_ENTRIES);
     }
 
     /**
      * Shallow copy of all values except the links.
      *
-     * @param router original to copy other parameters from.
-     * @param links Known Link(s) to add.
-     *      All must have unique sourceLinkDirection(s).
-     * @throws IllegalArgumentException Indicates another Link with this
-     *     sourceLinkDirection has already been added.
+     * @param router
+     *            original to copy other parameters from.
+     * @param links
+     *            Known Link(s) to add. All must have unique
+     *            {@code sourceLinkDirection}(s).
+     * @throws IllegalArgumentException
+     *             Indicates another Link with this {@code sourceLinkDirection}
+     *             has already been added.
      */
     Router(Router router, Iterable<Link> links) {
         this(links, router.clockSpeed, router.nAvailableMulticastEntries);
@@ -150,16 +162,21 @@ public final class Router implements Iterable<Link> {
 
     /**
      * Creates a new Router from this source with links in all but the missing
-     *      directions.
-     * @param source Chip which links are coming from
-     * @param clockSpeed The router clock speed in cycles per second.
+     * directions.
+     *
+     * @param source
+     *            Chip which links are coming from
+     * @param clockSpeed
+     *            The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
-     *      The number of entries available in the routing table.
-     * @param ignoreDirections Directions not to create links for.
-     * @param machine The Machine this chip will go on. Used for calculating
-     *      wrap arounds
-     * @throws NullPointerException if a none valid direction is not in
-     *      ignoredLinks
+     *            The number of entries available in the routing table.
+     * @param ignoreDirections
+     *            Directions not to create links for.
+     * @param machine
+     *            The Machine this chip will go on. Used for calculating
+     *            wrap-arounds
+     * @throws NullPointerException
+     *             if a none valid direction is not in ignoredLinks
      */
     public Router(HasChipLocation source, int clockSpeed,
             int nAvailableMulticastEntries, Set<Direction> ignoreDirections,
@@ -171,23 +188,24 @@ public final class Router implements Iterable<Link> {
                         source.getX() + direction.xChange,
                         source.getY() + direction.yChange);
                 addLink(new Link(source, direction,
-                    Objects.requireNonNull(destination)));
+                        Objects.requireNonNull(destination)));
             }
         }
     }
 
     /**
-     * Adds a link with a unique sourceLinkDirection to this router.
+     * Adds a link with a unique {@code sourceLinkDirection} to this router.
      *
-     * @param link Link to add,
-     *     which must have a sourceLinkDirection not yet used.
-     * @throws IllegalArgumentException Indicates another Link with this
-     *     sourceLinkDirection has already been added.
+     * @param link
+     *            Link to add, which must have a {@code sourceLinkDirection} not
+     *            yet used.
+     * @throws IllegalArgumentException
+     *             Indicates another Link with this {@code sourceLinkDirection}
+     *             has already been added.
      */
     public void addLink(Link link) throws IllegalArgumentException {
         if (links.containsKey(link.sourceLinkDirection)) {
-            throw new IllegalArgumentException(
-                    "Link already exists: " + link);
+            throw new IllegalArgumentException("Link already exists: " + link);
         }
         links.put(link.sourceLinkDirection, link);
     }
@@ -195,7 +213,8 @@ public final class Router implements Iterable<Link> {
     /**
      * Indicates if there is a Link going in this direction.
      *
-     * @param direction Direction to find link for.
+     * @param direction
+     *            Direction to find link for.
      * @return True if and only if there is a link in this direction,
      */
     public boolean hasLink(Direction direction) {
@@ -205,10 +224,11 @@ public final class Router implements Iterable<Link> {
     /**
      * Obtains a Link going in this direction.
      * <p>
-     * None is returned if no link found.
+     * {@code null} is returned if no link found.
      *
-     * @param direction Direction to find link for.
-     * @return The Link or none
+     * @param direction
+     *            Direction to find link for.
+     * @return The Link or {@code null}
      */
     public Link getLink(Direction direction) {
         return links.get(direction);
@@ -217,9 +237,10 @@ public final class Router implements Iterable<Link> {
     /**
      * Return a View over the links.
      * <p>
-     * Each Link is guaranteed to differ in at least the sourceLinkDirection.
+     * Each Link is guaranteed to differ in at least the
+     * {@code sourceLinkDirection}.
      *
-     * @return An unmodifiable Collection of Link(s).
+     * @return An unmodifiable collection of Link(s).
      */
     public Collection<Link> links() {
         return Collections.unmodifiableCollection(links.values());
@@ -228,10 +249,10 @@ public final class Router implements Iterable<Link> {
     /**
      * The size of the Router which is the number of Link(s).
      * <p>
-     * The number of NeighbouringChipsCoords will always be equal to the
-     *     number of links.
+     * The number of NeighbouringChipsCoords will always be equal to the number
+     * of links.
      *
-     * @return The number of Link(s) and therefor NeighbouringChipsCoords
+     * @return The number of Link(s) and therefore NeighbouringChipsCoords
      */
     public int size() {
         return links.size();
@@ -311,5 +332,4 @@ public final class Router implements Iterable<Link> {
         // TODO compare internal states
         return obj instanceof Router;
     }
-
 }
