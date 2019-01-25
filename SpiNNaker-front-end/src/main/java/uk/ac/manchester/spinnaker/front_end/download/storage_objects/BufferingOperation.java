@@ -14,7 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package uk.ac.manchester.spinnaker.front_end.download.storage_objects;
+
 /**
- * The buffer manager and support classes.
+ * Output buffering operations.
+ * <p>
+ * A listing of what SpiNNaker-specific EIEIO commands there are.
+ *
+ * @see <a href=
+ * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/utilities/constants.py">
+ * Python Version</a>
+ *
+ * @author Christian-B
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+public enum BufferingOperation {
+    /** Database handshake with external program. */
+    BUFFER_READ(0),
+    /** Host confirming data being read form SpiNNaker memory. */
+    BUFFER_WRITE(1);
+
+    /** Python value for this enum. */
+    public final int value;
+
+    BufferingOperation(int value) {
+        this.value = value;
+    }
+
+}

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Classes used to describe the JSON requests to the data transfer code.
- *
- * @author Donal Fellows
+ * The buffer manager and support classes.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request;
+package uk.ac.manchester.spinnaker.front_end.download;

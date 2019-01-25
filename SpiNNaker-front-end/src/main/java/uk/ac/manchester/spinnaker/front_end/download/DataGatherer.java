@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.Thread.sleep;
@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.MissingSequenceNumbersMessage.createMessages;
+import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
@@ -52,9 +52,9 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Gather;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Monitor;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
+import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
+import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;

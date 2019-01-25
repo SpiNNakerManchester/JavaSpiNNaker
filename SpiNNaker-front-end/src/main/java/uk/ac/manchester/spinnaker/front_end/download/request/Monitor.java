@@ -14,51 +14,54 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request;
+package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
+import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
- * Vertex placement information.
+ * Extra monitor core information.
  *
  * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
-public class Placement implements HasCoreLocation {
-    /** The X coordinate of the core this vertex is placed on. */
+public class Monitor implements HasCoreLocation {
+    /** The X coordinate of the core this monitor is placed on. */
 	private final int x;
-    /** The Y coordinate of the core this vertex is placed on. */
+    /** The Y coordinate of the core this monitor is placed on. */
 	private final int y;
-    /** The processor ID of the core this vertex is placed on. */
+    /** The processor ID of the core this monitor is placed on. */
 	private final int p;
-    /** Minimal vertex info. */
-	private final Vertex vertex;
+    /** The vertex placements that this monitor will read. */
+    private final List<Placement> placements;
 
-	/**
+    /**
 	 * Constructor with minimum information needed.
 	 * <p>
 	 * Could be called from an unmarshaller.
 	 *
 	 * @param x
-	 *            Vertex X coordinate.
+	 *            Monitor X coordinate.
 	 * @param y
-	 *            Vertex Y coordinate.
+	 *            Monitor Y coordinate.
 	 * @param p
-	 *            Vertex processor ID.
-	 * @param vertex
-	 *            Vertex recording region information.
+	 *            Monitor processor ID.
+	 * @param placements
+	 *            Vertex placement info handled by this monitor.
 	 */
-    Placement(@JsonProperty(value = "x", required = true) int x,
+    Monitor(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "vertex", required = true) Vertex vertex) {
+            @JsonProperty(value = "placements", required = true)
+                    List<Placement> placements) {
         this.x = x;
         this.y = y;
         this.p = p;
-        this.vertex = vertex;
+        this.placements = placements;
     }
 
     @Override
@@ -76,8 +79,10 @@ public class Placement implements HasCoreLocation {
         return p;
     }
 
-    /** @return The information about the vertex. */
-    public Vertex getVertex() {
-        return vertex;
+    /**
+     * @return the placements
+     */
+    public List<Placement> getPlacements() {
+        return Collections.unmodifiableList(placements);
     }
 }
