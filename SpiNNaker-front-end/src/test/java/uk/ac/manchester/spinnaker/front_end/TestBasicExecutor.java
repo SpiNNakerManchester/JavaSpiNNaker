@@ -20,6 +20,8 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +29,8 @@ import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 public class TestBasicExecutor {
+	private static final int SHORT = 50;
+	private static final int LONG = 500;
 
 	@Test
 	public void testRunOne() throws Exception {
@@ -55,20 +59,57 @@ public class TestBasicExecutor {
 	}
 
 	@Test
+	public void testRunThreeStream() throws Exception {
+		BasicExecutor exe = new BasicExecutor(1);
+		ValueHolder<Object> val1 = new ValueHolder<>();
+		ValueHolder<Object> val2 = new ValueHolder<>();
+		ValueHolder<Object> val3 = new ValueHolder<>();
+		val3.setValue(123);
+		Tasks t = exe.submitTasks(asList(val1, val2, val3).parallelStream()
+				.map(val -> () -> val.setValue(val == val1)));
+		t.awaitAndCombineExceptions();
+		assertEquals(true, val1.getValue());
+		assertEquals(false, val2.getValue());
+		assertEquals(false, val3.getValue());
+	}
+
+	@Test
 	public void testRunTwoParallel() throws Exception {
 		BasicExecutor exe = new BasicExecutor(2);
 		ValueHolder<Object> val1 = new ValueHolder<>();
 		ValueHolder<Object> val2 = new ValueHolder<>();
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(100);
+			Thread.sleep(SHORT);
 			val1.setValue(true);
 		}, () -> {
-			Thread.sleep(100);
+			Thread.sleep(SHORT);
 			val2.setValue(false);
 		}));
 		t.awaitAndCombineExceptions();
 		assertEquals(true, val1.getValue());
 		assertEquals(false, val2.getValue());
+	}
+
+	@Test
+	public void testRunTenParallel() throws Exception {
+		final int SCALE = 10;
+		BasicExecutor exe = new BasicExecutor(SCALE);
+		AtomicInteger sum = new AtomicInteger(0);
+
+		long before = System.currentTimeMillis();
+		Tasks t = exe.submitTasks(IntStream.range(0, SCALE).mapToObj(i -> () -> {
+			Thread.sleep(SHORT);
+			sum.addAndGet(i);
+		}));
+		t.awaitAndCombineExceptions();
+		long after = System.currentTimeMillis();
+
+		assertEquals(45, sum.get());
+		long delta = after - before;
+		long bound = SCALE * SHORT;
+		assertNull(delta < bound ? null
+				: "time taken (" + delta + "ms) was longer than " + bound
+						+ "ms");
 	}
 
 	@Test
@@ -100,7 +141,7 @@ public class TestBasicExecutor {
 	public void testRunTwoParallelAndThrow() throws Exception {
 		BasicExecutor exe = new BasicExecutor(2);
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(800);
+			Thread.sleep(LONG);
 			throw new IOException("hiya");
 		},() -> {
 			throw new RuntimeException("boo");
@@ -115,7 +156,7 @@ public class TestBasicExecutor {
 	public void testRunTwoOverParallelAndThrow() throws Exception {
 		BasicExecutor exe = new BasicExecutor(5);
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(800);
+			Thread.sleep(LONG);
 			throw new IOException("hiya");
 		},() -> {
 			throw new RuntimeException("boo");
@@ -131,7 +172,7 @@ public class TestBasicExecutor {
 		BasicExecutor exe = new BasicExecutor(2);
 
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(800);
+			Thread.sleep(LONG);
 			throw new IOException("hiya");
 		},() -> {
 			throw new RuntimeException("boo");
@@ -154,14 +195,14 @@ public class TestBasicExecutor {
 		BasicExecutor exe = new BasicExecutor(2);
 
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(800);
+			Thread.sleep(LONG);
 			throw new IOException("hiya");
 		},() -> {
 			throw new RuntimeException("boo");
 		}));
 		ValueHolder<Object> val = new ValueHolder<>();
 		Tasks t2 = exe.submitTasks(asList(() -> {
-			Thread.sleep(100);
+			Thread.sleep(SHORT);
 			val.setValue(true);
 		}));
 
@@ -178,20 +219,42 @@ public class TestBasicExecutor {
 		BasicExecutor exe = new BasicExecutor(2);
 
 		Tasks t = exe.submitTasks(asList(() -> {
-			Thread.sleep(800);
+			Thread.sleep(LONG);
 			throw new IOException("hiya");
 		},() -> {
 			throw new RuntimeException("boo");
 		}));
 		ValueHolder<Object> val = new ValueHolder<>();
 		Tasks t2 = exe.submitTasks(asList(() -> {
-			Thread.sleep(100);
+			Thread.sleep(SHORT);
 			val.setValue(true);
 		}));
 
 		Exception e = assertThrows(IOException.class,
 				() -> t.awaitAndCombineExceptions());
 		t2.awaitAndCombineExceptions();
+		assertEquals("hiya", e.getMessage());
+		assertEquals("boo", e.getSuppressed()[0].getMessage());
+		assertEquals(true, val.getValue());
+	}
+
+	@Test
+	public void testMixedSuccess() throws Exception {
+		BasicExecutor exe = new BasicExecutor(5);
+
+		ValueHolder<Object> val = new ValueHolder<>();
+		Tasks t = exe.submitTasks(asList(() -> {
+			Thread.sleep(LONG);
+			throw new IOException("hiya");
+		},() -> {
+			throw new RuntimeException("boo");
+		},() -> {
+			Thread.sleep(SHORT);
+			val.setValue(true);
+		}));
+
+		Exception e = assertThrows(IOException.class,
+				() -> t.awaitAndCombineExceptions());
 		assertEquals("hiya", e.getMessage());
 		assertEquals("boo", e.getSuppressed()[0].getMessage());
 		assertEquals(true, val.getValue());
