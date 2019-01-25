@@ -134,6 +134,17 @@ public class ChipDetails {
         return builder.toString();
     }
 
+    /**
+     * Gets where a link is really going.
+     *
+     * @param direction
+     *            Which direction the link is going in.
+     * @param source
+     *            Where the link is coming from.
+     * @param machine
+     *            The machine on which the link exists.
+     * @return The location of the destination of the link.
+     */
     public ChipLocation getLinkDestination(
             Direction direction, HasChipLocation source, Machine machine) {
         if (links != null) {
