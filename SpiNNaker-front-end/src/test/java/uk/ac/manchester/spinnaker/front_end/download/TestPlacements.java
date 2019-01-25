@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,8 +24,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Vertex;
+import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 /**

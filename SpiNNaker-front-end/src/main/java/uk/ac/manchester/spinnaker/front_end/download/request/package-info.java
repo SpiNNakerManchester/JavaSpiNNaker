@@ -19,4 +19,4 @@
  *
  * @author Donal Fellows
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request;
+package uk.ac.manchester.spinnaker.front_end.download.request;

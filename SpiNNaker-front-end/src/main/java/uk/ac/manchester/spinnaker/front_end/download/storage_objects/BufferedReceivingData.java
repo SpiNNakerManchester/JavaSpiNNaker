@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.storage_objects;
+package uk.ac.manchester.spinnaker.front_end.download.storage_objects;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

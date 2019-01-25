@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
-import static uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.GatherProtocolMessage.ID.START_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;

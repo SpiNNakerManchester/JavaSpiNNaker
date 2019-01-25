@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Vertex;
+import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;

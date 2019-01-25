@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Integer.toHexString;
 import static java.util.stream.Collectors.toList;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.front_end.interfaces.buffer_management.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
