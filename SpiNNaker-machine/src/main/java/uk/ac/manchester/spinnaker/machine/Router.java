@@ -163,7 +163,7 @@ public final class Router implements Iterable<Link> {
 
     /**
      * Creates a new Router from this source with links in all but the missing
-     * directions.
+     * directions. Used to build a router object from JSON.
      *
      * @param source
      *            Chip which links are coming from
@@ -171,8 +171,8 @@ public final class Router implements Iterable<Link> {
      *            The router clock speed in cycles per second.
      * @param nAvailableMulticastEntries
      *            The number of entries available in the routing table.
-     * @param ignoreDirections
-     *            Directions not to create links for.
+     * @param details
+     *            The description of the chip containing this router from JSON.
      * @param machine
      *            The Machine this chip will go on. Used for calculating
      *            wrap-arounds

@@ -30,8 +30,19 @@ public class LinkBean {
     public final ChipLocation destination;
     public final Direction sourceDirection;
 
+    /**
+     * Create a link description.
+     *
+     * @param sourceLinkId
+     *            What is the direction of the link?
+     * @param destinationX
+     *            Where is the link going to? X coordinate.
+     * @param destinationY
+     *            Where is the link going to? Y coordinate.
+     */
     @JsonCreator
-    public LinkBean(@JsonProperty(value = "sourceLinkId", required = true)
+    public LinkBean(
+            @JsonProperty(value = "sourceLinkId", required = true)
             int sourceLinkId,
             @JsonProperty(value = "destinationX", required = true)
             int destinationX,
@@ -40,5 +51,4 @@ public class LinkBean {
         destination = new ChipLocation(destinationX, destinationY);
         this.sourceDirection = Direction.byId(sourceLinkId);
     }
-
 }

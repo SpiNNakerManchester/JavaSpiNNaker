@@ -37,7 +37,6 @@ import uk.ac.manchester.spinnaker.machine.Machine;
  * @author Christian-B
  */
 public class ChipDetails {
-
     /** Total number of working core on this Chip. */
     public final int cores;
     /** Location of the nearest Ethernet Chip. */
@@ -54,6 +53,9 @@ public class ChipDetails {
      *            Total number of cores working cores including monitors.
      * @param ethernet
      *            Location of the nearest Ethernet Chip.
+     * @param links
+     *            Description of link information (only present when the links
+     *            are not a complete default set).
      */
     public ChipDetails(
             @JsonProperty(value = "cores", required = true) int cores,
@@ -135,7 +137,7 @@ public class ChipDetails {
     public ChipLocation getLinkDestination(
             Direction direction, HasChipLocation source, Machine machine) {
         if (links != null) {
-            for (LinkBean bean: links){
+            for (LinkBean bean : links) {
                 if (bean.sourceDirection == direction) {
                     return bean.destination;
                 }
