@@ -95,25 +95,23 @@ public class IobufRetriever {
 	 *            file as a sibling to each APLX file.
 	 * @param provenanceDir
 	 *            The directory in which provenance data is written.
-	 * @param errorEntries
-	 *            Accumulate errors here. They are also written to the file on
-	 *            disk.
-	 * @param warnEntries
-	 *            Accumulate warnings here. They are also written to the file on
-	 *            disk.
+	 * @return The errors and warnings that have been detected. The order of the
+	 *         messages is not determined.
 	 * @throws IOException
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void retrieveIobufContents(Map<String, CoreSubsets> coresForBinaries,
-			String provenanceDir, List<String> errorEntries,
-			List<String> warnEntries) throws IOException, ProcessException {
+	public NotableMessages retrieveIobufContents(
+			Map<String, CoreSubsets> coresForBinaries, String provenanceDir)
+			throws IOException, ProcessException {
 		File provDir = new File(provenanceDir);
 		if (!provDir.isDirectory() || !provDir.canWrite()) {
 			throw new IOException(
 					"provenance location must be writable directory");
 		}
+		List<String> errorEntries = new ArrayList<>();
+		List<String> warnEntries = new ArrayList<>();
 		Tasks tasks = executor.submitTasks(
 				coresForBinaries.keySet().stream().flatMap(binary -> {
 					Replacer r = new Replacer(binary);
@@ -130,7 +128,7 @@ public class IobufRetriever {
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		}
-		// TODO return the errors and warnings instead of accumulator arguments
+		return new NotableMessages(errorEntries, warnEntries);
 	}
 
 	/**
@@ -145,24 +143,22 @@ public class IobufRetriever {
 	 *            file as a sibling to it.
 	 * @param provenanceDir
 	 *            The directory in which provenance data is written.
-	 * @param errorEntries
-	 *            Accumulate errors here. They are also written to the file on
-	 *            disk.
-	 * @param warnEntries
-	 *            Accumulate warnings here. They are also written to the file on
-	 *            disk.
+	 * @return The errors and warnings that have been detected. The order of the
+	 *         messages is not determined.
 	 * @throws IOException
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void retrieveIobufContents(CoreSubsets coreSubsets, File binaryFile,
-			File provenanceDir, List<String> errorEntries,
-			List<String> warnEntries) throws IOException, ProcessException {
+	public NotableMessages retrieveIobufContents(CoreSubsets coreSubsets,
+			File binaryFile, File provenanceDir)
+			throws IOException, ProcessException {
 		if (!provenanceDir.isDirectory() || !provenanceDir.canWrite()) {
 			throw new IOException(
 					"provenance location must be writable directory");
 		}
+		List<String> errorEntries = new ArrayList<>();
+		List<String> warnEntries = new ArrayList<>();
 		try {
 			Replacer replacer = new Replacer(binaryFile);
 			Tasks tasks = executor.submitTasks(partitionByBoard(coreSubsets)
@@ -179,7 +175,7 @@ public class IobufRetriever {
 		} catch (WrappedException e) {
 			e.rethrow();
 		}
-		// TODO return the errors and warnings instead of accumulator arguments
+		return new NotableMessages(errorEntries, warnEntries);
 	}
 
 	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
