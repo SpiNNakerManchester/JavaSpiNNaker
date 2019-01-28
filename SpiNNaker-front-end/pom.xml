@@ -78,6 +78,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
 	</dependencies>
 	<description>The front-end interface. NB: not a GUI!</description>
 	<name>SpiNNaker Front End Interface</name>

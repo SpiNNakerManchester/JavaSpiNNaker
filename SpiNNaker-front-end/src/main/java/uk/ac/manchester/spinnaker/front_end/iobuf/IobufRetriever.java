@@ -16,17 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.iobuf;
 
-import static java.lang.Integer.parseUnsignedInt;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.text.StringEscapeUtils.unescapeJava;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -112,21 +108,23 @@ public class IobufRetriever {
 		}
 		List<String> errorEntries = new ArrayList<>();
 		List<String> warnEntries = new ArrayList<>();
-		Tasks tasks = executor.submitTasks(
-				coresForBinaries.keySet().stream().flatMap(binary -> {
-					Replacer r = new Replacer(binary);
-					return partitionByBoard(coresForBinaries.get(binary))
-							.map(cores -> () -> retrieveIobufContents(cores, r,
-									provDir, errorEntries, warnEntries));
-				}));
 		try {
-			tasks.awaitAndCombineExceptions();
-		} catch (WrappedException e) {
+			Tasks tasks = executor.submitTasks(
+					coresForBinaries.keySet().stream().flatMap(binary -> {
+						Replacer r = new Replacer(binary);
+						return partitionByBoard(coresForBinaries.get(binary))
+								.map(cores -> () -> retrieveIobufContents(cores,
+										r, provDir, errorEntries, warnEntries));
+					}));
+			try {
+				tasks.awaitAndCombineExceptions();
+			} catch (IOException | ProcessException | RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException("unexpected exception", e);
+			}
+		} catch (Replacer.WrappedException e) {
 			e.rethrow();
-		} catch (IOException | ProcessException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected exception", e);
 		}
 		return new NotableMessages(errorEntries, warnEntries);
 	}
@@ -172,7 +170,7 @@ public class IobufRetriever {
 			} catch (Exception e) {
 				throw new RuntimeException("unexpected exception", e);
 			}
-		} catch (WrappedException e) {
+		} catch (Replacer.WrappedException e) {
 			e.rethrow();
 		}
 		return new NotableMessages(errorEntries, warnEntries);
@@ -231,121 +229,6 @@ public class IobufRetriever {
 						core.getY(), core.getP(), match.group(ENTRY_TEXT),
 						match.group(ENTRY_FILE)));
 			}
-		}
-	}
-
-	private static class Replacer {
-		private static final Pattern FORMAT_SEQUENCE =
-				Pattern.compile("%\\d*(?:\\.\\d+)?[cdfiksuxR]");
-		private static final String RS_TOKEN = "\u001e";
-		private static final int NUM_PARTS = 3;
-
-		private Map<String, Replacement> messages = new HashMap<>();
-
-		Replacer(String aplxFile) throws WrappedException {
-			this(new File(aplxFile));
-		}
-
-		Replacer(File aplxFile) throws WrappedException {
-			File dictPath = new File(
-					aplxFile.getAbsolutePath().replaceFirst("[.][^.\\/]+$", "")
-							+ ".dict");
-			if (dictPath.isFile()) {
-				try (BufferedReader f =
-						new BufferedReader(new FileReader(dictPath))) {
-					String line;
-					while ((line = f.readLine()) != null) {
-						String[] parts = line.trim().split(",", NUM_PARTS);
-						if (parts.length != NUM_PARTS) {
-							continue;
-						}
-						try {
-							Replacement r = new Replacement(parts);
-							messages.put(r.key, r);
-						} catch (NumberFormatException ignore) {
-						}
-					}
-				} catch (IOException e) {
-					throw new WrappedException(e);
-				}
-			} else {
-				log.error("Unable to find a dictionary file at {}", dictPath);
-			}
-		}
-
-		public String replace(String shortLine) {
-			String[] parts = shortLine.split(RS_TOKEN);
-			if (!messages.containsKey(parts[0])) {
-				return shortLine;
-			}
-			Replacement r = messages.get(parts[0]);
-			StringBuilder replaced = r.getReplacementBuffer();
-
-			if (parts.length > 1) {
-				List<Replacement.Pair> matches = r.getMatches();
-				if (matches.size() != parts.length - 1) {
-					// try removing any blanks due to double spacing
-					matches.removeIf(x -> x.start == x.end);
-				}
-				if (matches.size() != parts.length - 1) {
-					// wrong number of elements so not short after all
-					return shortLine;
-				}
-				for (int i = 0; i < matches.size(); i++) {
-					Replacement.Pair match = matches.get(i);
-					replaced.replace(match.start, match.end, parts[i + 1]);
-				}
-			}
-			return r.preface + replaced;
-		}
-
-		private static final class Replacement {
-			final String key;
-			final String preface;
-			final String original;
-			final List<Pair> matches;
-
-			private static final class Pair {
-				final int start;
-				final int end;
-				private Pair(Matcher m) {
-					start = m.start();
-					end = m.end();
-				}
-			}
-
-			Replacement(String[] parts) throws NumberFormatException {
-				key = parts[0];
-				preface = parts[1];
-				original = parts[2];
-				parseUnsignedInt(key); // throws if fails
-				Matcher m = FORMAT_SEQUENCE.matcher(original);
-				matches = new ArrayList<>();
-				while (m.find()) {
-					matches.add(new Pair(m));
-				}
-			}
-
-			StringBuilder getReplacementBuffer() {
-				return new StringBuilder(unescapeJava(original));
-			}
-
-			List<Pair> getMatches() {
-				return new ArrayList<>(matches);
-			}
-		}
-	}
-
-	private static final class WrappedException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-		private final IOException e;
-
-		WrappedException(IOException e) {
-			this.e = e;
-		}
-
-		void rethrow() throws IOException {
-			throw new IOException(e.getMessage(), e);
 		}
 	}
 }
