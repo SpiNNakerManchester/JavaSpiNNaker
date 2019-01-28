@@ -141,8 +141,8 @@ public final class CommandLineInterface {
 							+ "<runFolder>\"\n", JAR_FILE);
 					System.exit(1);
 				}
-				setLoggerDir(args[3]);
-				iobufRun(args[1], args[2], args[3]);
+				setLoggerDir(args[THIRD]);
+				iobufRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
 			case "version":

@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 class Replacer {
 	private static final Pattern FORMAT_SEQUENCE =
 			Pattern.compile("%\\d*(?:\\.\\d+)?[cdfiksuxR]");
+	/** ASCII RS (record separator) token. */
 	private static final String RS_TOKEN = "\u001e";
 	private static final int NUM_PARTS = 3;
 
@@ -76,6 +77,15 @@ class Replacer {
 		}
 	}
 
+	/**
+	 * Given the short string read from SpiNNaker, convert it to what it should
+	 * have been if the dictionary-based contraction system had not been
+	 * applied.
+	 *
+	 * @param shortLine
+	 *            The line of data from SpiNNaker.
+	 * @return The fully expanded line.
+	 */
 	public String replace(String shortLine) {
 		String[] parts = shortLine.split(RS_TOKEN);
 		if (!messages.containsKey(parts[0])) {
