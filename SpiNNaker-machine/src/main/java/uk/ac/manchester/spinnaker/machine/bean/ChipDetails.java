@@ -63,7 +63,7 @@ public class ChipDetails {
      * @throws UnknownHostException
      *             If the ipAddress can not be converted to an InetAddress
      */
-    public ChipDetails (
+    public ChipDetails(
             @JsonProperty(value = "cores", required = true) int cores,
             @JsonProperty(value = "ethernet", required = false)
             ChipLocation ethernet,
@@ -87,7 +87,7 @@ public class ChipDetails {
                 this.deadDirections.add(Direction.byId(deadLink));
             }
         } else {
-           this.deadDirections = emptySet();
+            this.deadDirections = emptySet();
         }
     }
 
