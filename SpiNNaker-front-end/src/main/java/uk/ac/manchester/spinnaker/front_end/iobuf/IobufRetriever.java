@@ -84,7 +84,7 @@ public class IobufRetriever {
 	/**
 	 * Retrieve and translate some IOBUFs.
 	 *
-	 * @param coresForBinaries
+	 * @param request
 	 *            Mapping from the full paths to the APLX files executing, to
 	 *            the cores on which those executables are running and which are
 	 *            to have their IOBUFs extracted. There must be a {@code .dict}
@@ -98,9 +98,8 @@ public class IobufRetriever {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public NotableMessages retrieveIobufContents(
-			Map<String, CoreSubsets> coresForBinaries, String provenanceDir)
-			throws IOException, ProcessException {
+	public NotableMessages retrieveIobufContents(IobufRequest request,
+			String provenanceDir) throws IOException, ProcessException {
 		File provDir = new File(provenanceDir);
 		if (!provDir.isDirectory() || !provDir.canWrite()) {
 			throw new IOException(
@@ -109,10 +108,11 @@ public class IobufRetriever {
 		List<String> errorEntries = new ArrayList<>();
 		List<String> warnEntries = new ArrayList<>();
 		try {
-			Tasks tasks = executor.submitTasks(
-					coresForBinaries.keySet().stream().flatMap(binary -> {
+			Map<File, CoreSubsets> mapping = request.getRequestDetails();
+			Tasks tasks = executor
+					.submitTasks(mapping.keySet().stream().flatMap(binary -> {
 						Replacer r = new Replacer(binary);
-						return partitionByBoard(coresForBinaries.get(binary))
+						return partitionByBoard(mapping.get(binary))
 								.map(cores -> () -> retrieveIobufContents(cores,
 										r, provDir, errorEntries, warnEntries));
 					}));
