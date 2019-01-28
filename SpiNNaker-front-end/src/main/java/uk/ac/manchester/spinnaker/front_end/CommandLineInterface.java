@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +41,9 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification.Completion;
+import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
+import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
+import uk.ac.manchester.spinnaker.front_end.iobuf.NotableMessages;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
@@ -131,6 +134,17 @@ public final class CommandLineInterface {
 				dseRun(args[1], args[2]);
 				System.exit(0);
 
+			case "iobuf":
+				if (args.length != NUM_IOBUF_ARGS) {
+					System.err.printf("wrong # args: must be \"java -jar %s "
+							+ "iobuf <machineFile> <iobufMapFile> "
+							+ "<runFolder>\"\n", JAR_FILE);
+					System.exit(1);
+				}
+				setLoggerDir(args[3]);
+				iobufRun(args[1], args[2], args[3]);
+				System.exit(0);
+
 			case "version":
 				System.out.println(VERSION);
 				System.exit(0);
@@ -150,6 +164,7 @@ public final class CommandLineInterface {
 	private static final int THIRD = 3;
 	private static final int NUM_DSE_ARGS = 3;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
+	private static final int NUM_IOBUF_ARGS = 4;
 
 	/**
 	 * Run the data specifications in parallel.
@@ -188,6 +203,37 @@ public final class CommandLineInterface {
 		getLogger(CommandLineInterface.class)
 				.info("launched all DSE tasks; waiting for completion");
 		c.waitForCompletion();
+	}
+
+	/**
+	 * Retrieve IOBUFs in parallel.
+	 *
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param iobufMapFile
+	 *            Name of file containing mapping from APLX executable names
+	 *            (full paths) to what cores are running those executables.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that holds the data specifications to execute).
+	 * @throws IOException
+	 *             If the communications fail.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private static void iobufRun(String machineJsonFile, String iobufMapFile,
+			String runFolder)
+			throws IOException, SpinnmanException, ProcessException {
+		Machine machine = getMachine(machineJsonFile);
+		IobufRequest request = getIobufRequest(iobufMapFile);
+
+		IobufRetriever retriever = new IobufRetriever(new Transceiver(machine),
+				machine, PARALLEL_SIZE);
+		NotableMessages result =
+				retriever.retrieveIobufContents(request, runFolder);
+		MAPPER.writeValue(System.out, result);
 	}
 
 	/**
@@ -266,8 +312,15 @@ public final class CommandLineInterface {
 		}
 	}
 
+	private static IobufRequest getIobufRequest(String filename)
+			throws IOException {
+		try (FileReader gatherReader = new FileReader(filename)) {
+			return MAPPER.readValue(gatherReader, IobufRequest.class);
+		}
+	}
+
 	private static List<Gather> getGatherers(String filename)
-			throws IOException, JsonParseException, JsonMappingException {
+			throws IOException {
 		try (FileReader gatherReader = new FileReader(filename)) {
 			return MAPPER.readValue(gatherReader,
 					new TypeReference<List<Gather>>() {
@@ -276,8 +329,7 @@ public final class CommandLineInterface {
 	}
 
 	private static List<Placement> getPlacements(String placementsFile)
-			throws IOException, JsonParseException, JsonMappingException,
-			FileNotFoundException {
+			throws IOException {
 		try (FileReader placementReader = new FileReader(placementsFile)) {
 			return MAPPER.readValue(placementReader,
 					new TypeReference<List<Placement>>() {
