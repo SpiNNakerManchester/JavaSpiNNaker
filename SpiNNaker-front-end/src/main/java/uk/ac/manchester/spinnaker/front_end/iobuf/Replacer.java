@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.iobuf;
 import static java.lang.Integer.parseUnsignedInt;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.apache.commons.text.StringEscapeUtils.unescapeJava;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +34,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
 /**
  * Replacement management engine for compacted IOBUFs.
  *
  * @author Donal Fellows
  */
 class Replacer {
+	private static final Logger log = getLogger(Replacer.class);
 	private static final Pattern FORMAT_SEQUENCE =
 			Pattern.compile("%\\d*(?:\\.\\d+)?[cdfiksuxR]");
 	/** ASCII RS (record separator) token. */
@@ -46,12 +50,15 @@ class Replacer {
 	private static final int NUM_PARTS = 3;
 
 	private Map<String, Replacement> messages = new HashMap<>();
+	/** Where the APLX file is that this replacer is working on. */
+	final File origin;
 
 	Replacer(String aplxFile) throws Replacer.WrappedException {
 		this(new File(aplxFile));
 	}
 
 	Replacer(File aplxFile) throws Replacer.WrappedException {
+		origin = aplxFile.getAbsoluteFile();
 		Path dictPath = Paths
 				.get(removeExtension(aplxFile.getAbsolutePath()) + ".dict");
 		if (dictPath.toFile().isFile()) {
@@ -61,8 +68,7 @@ class Replacer {
 				throw new WrappedException(e);
 			}
 		} else {
-			IobufRetriever.log.error("Unable to find a dictionary file at {}",
-					dictPath);
+			log.error("Unable to find a dictionary file at {}", dictPath);
 		}
 	}
 

@@ -52,7 +52,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public class IobufRetriever {
-	protected static final Logger log = getLogger(IobufRetriever.class);
+	private static final Logger log = getLogger(IobufRetriever.class);
 	private static final Pattern ERROR_ENTRY =
 			Pattern.compile("\\[ERROR\\]\\s+\\((.*)\\):\\s+(.*)");
 	private static final Pattern WARNING_ENTRY =
@@ -196,6 +196,8 @@ public class IobufRetriever {
 		for (IOBuffer iobuf : ioBuffers) {
 			File file = getProvenanceFile(provenanceDir, iobuf);
 			try (BufferedWriter w = openFileForAppending(file)) {
+				log.info("storing iobuf from {} (running {}) in {}",
+						iobuf.asCoreLocation(), replacer.origin, file);
 				for (String originalLine : iobuf.getContentsString(ISO_8859_1)
 						.split("\n")) {
 					String line = replacer.replace(originalLine);
