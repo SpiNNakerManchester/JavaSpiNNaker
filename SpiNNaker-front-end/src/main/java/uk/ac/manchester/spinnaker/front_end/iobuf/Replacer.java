@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -44,12 +45,12 @@ import org.slf4j.Logger;
 class Replacer {
 	private static final Logger log = getLogger(Replacer.class);
 	private static final Pattern FORMAT_SEQUENCE =
-			Pattern.compile("%\\d*(?:\\.\\d+)?[cdfiksuxR]");
+			Pattern.compile("%\\d*(?:\\.\\d+)?([cdfiksuxR])");
 	/** ASCII RS (record separator) token. */
 	private static final String RS_TOKEN = "\u001e";
 	private static final int NUM_PARTS = 3;
 
-	private Map<String, Replacement> messages = new HashMap<>();
+	private Map<String, Template> messages = new HashMap<>();
 	/** Where the APLX file is that this replacer is working on. */
 	final File origin;
 
@@ -76,8 +77,8 @@ class Replacer {
 		String[] parts = line.trim().split(",", NUM_PARTS);
 		if (parts.length == NUM_PARTS) {
 			try {
-				Replacement r = new Replacement(parts);
-				messages.put(r.key, r);
+				Template tmpl = new Template(parts);
+				messages.put(tmpl.key, tmpl);
 			} catch (NumberFormatException ignore) {
 			}
 		}
@@ -97,61 +98,62 @@ class Replacer {
 		if (!messages.containsKey(parts[0])) {
 			return shortLine;
 		}
-		Replacement r = messages.get(parts[0]);
-		StringBuilder replaced = r.getReplacementBuffer();
+		Template tmpl = messages.get(parts[0]);
+		StringBuilder replaced = tmpl.getReplacementBuffer();
 
 		if (parts.length > 1) {
-			List<Pair> matches = r.getMatches();
-			if (matches.size() != parts.length - 1) {
-				// try removing any blanks due to double spacing
-				matches.removeIf(x -> x.start == x.end);
-			}
-			if (matches.size() != parts.length - 1) {
+			if (tmpl.matches.size() != parts.length - 1) {
 				// wrong number of elements so not short after all
 				return shortLine;
 			}
-			for (int i = parts.length - 1; i >= 0; i--) {
-				Pair match = matches.get(i);
-				replaced.replace(match.start, match.end, parts[i + 1]);
+			tmpl.applyReplacements(replaced, parts);
+		}
+		return tmpl.prefix + replaced;
+	}
+
+	private static final class Template {
+		private final String key;
+		private final String prefix;
+		private final String unescaped;
+		private final List<Replacement> matches;
+
+		private Template(String[] parts) throws NumberFormatException {
+			key = parts[0];
+			prefix = parts[1];
+			String original = parts[2];
+			unescaped = unescapeJava(original);
+			parseUnsignedInt(key); // throws if fails
+
+			// Get the regions to replace
+			Matcher m = FORMAT_SEQUENCE.matcher(original);
+			matches = new ArrayList<>();
+			int index = 0;
+			while (m.find()) {
+				matches.add(new Replacement(m.toMatchResult(), ++index));
 			}
 		}
-		return r.preface + replaced;
+
+		private StringBuilder getReplacementBuffer() {
+			return new StringBuilder(unescaped);
+		}
+
+		private void applyReplacements(StringBuilder buffer, String[] parts) {
+			matches.forEach(match -> match.replace(buffer, parts));
+		}
 	}
 
 	private static final class Replacement {
-		final String key;
-		final String preface;
-		final String original;
-		final List<Pair> matches;
+		private final String match;
+		private final int index;
 
-		Replacement(String[] parts) throws NumberFormatException {
-			key = parts[0];
-			preface = parts[1];
-			original = parts[2];
-			parseUnsignedInt(key); // throws if fails
-			Matcher m = FORMAT_SEQUENCE.matcher(original);
-			matches = new ArrayList<>();
-			while (m.find()) {
-				matches.add(new Pair(m));
-			}
+		private Replacement(MatchResult m, int index) {
+			match = m.group();
+			this.index = index;
 		}
 
-		StringBuilder getReplacementBuffer() {
-			return new StringBuilder(unescapeJava(original));
-		}
-
-		List<Pair> getMatches() {
-			return new ArrayList<>(matches);
-		}
-	}
-
-	private static final class Pair {
-		final int start;
-		final int end;
-
-		private Pair(Matcher m) {
-			start = m.start();
-			end = m.end();
+		void replace(StringBuilder buffer, String[] parts) {
+			int from = buffer.indexOf(match);
+			buffer.replace(from, from + match.length(), parts[index]);
 		}
 	}
 
@@ -161,7 +163,7 @@ class Replacer {
 	 *
 	 * @author Donal Fellows
 	 */
-	static final class WrappedException extends RuntimeException {
+	public static final class WrappedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 		private final IOException e;
 
