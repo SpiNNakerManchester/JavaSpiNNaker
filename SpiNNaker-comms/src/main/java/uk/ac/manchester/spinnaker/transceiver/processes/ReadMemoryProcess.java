@@ -52,14 +52,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		super(connectionSelector, retryTracker);
 	}
 
-	/**
-	 * How much data do we want to hit the database with in one go? This is
-	 * applied only for database writes because the database is more efficiently
-	 * written that way; when going to a memory buffer or random access file,
-	 * there's not really any point.
-	 */
-	private static final int DATABASE_WAIT_CHUNK = 0x20000;
-
 	private static class Accumulator {
 		private final ByteBuffer buffer;
 		private boolean done = false;
@@ -432,19 +424,13 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			throws IOException, ProcessException, StorageException {
 		DBAccumulator a = new DBAccumulator(storage, region);
 		int chunk;
-		for (int offset = 0, finishPoint = 0; offset < region.size; offset +=
-				chunk) {
+		for (int offset = 0; offset < region.size; offset += chunk) {
 			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(
 					new ReadMemory(region.core.asChipLocation(),
 							region.startAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
-			// Apply wait chunking
-			if (offset > finishPoint + DATABASE_WAIT_CHUNK) {
-				finish();
-				finishPoint = offset;
-			}
 		}
 		finish();
 		checkForError();
