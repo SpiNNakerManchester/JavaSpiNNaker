@@ -112,6 +112,7 @@ public class SCPRequestPipeline {
 	 * if no such tracking is required.
 	 */
 	private final RetryTracker retryTracker;
+	private long nextSendTime;
 
 	/**
 	 * Per message record.
@@ -120,6 +121,10 @@ public class SCPRequestPipeline {
 	 *            The type of response expected to the request in the message.
 	 */
 	private final class Request<T extends SCPResponse> {
+		/**
+		 * Packet minimum send interval, in <em>nanoseconds</em>.
+		 */
+		private static final int THROTTLE = 10000;
 		/** Request in progress. */
 		private final SCPRequest<T> request;
 		/** Payload of request in progress. */
@@ -154,7 +159,16 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			log.info("sending msg at exactly " + System.nanoTime());
+			long now = System.nanoTime();
+			if (now < nextSendTime) {
+				try {
+					Thread.sleep(0, (int) (now - nextSendTime));
+				} catch (InterruptedException ignored) {
+				}
+				nextSendTime = System.nanoTime() + THROTTLE;
+			} else {
+				nextSendTime = now + THROTTLE;
+			}
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
