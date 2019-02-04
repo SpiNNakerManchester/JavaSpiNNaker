@@ -121,6 +121,8 @@ public class SCPRequestPipeline {
 	 *            The type of response expected to the request in the message.
 	 */
 	private final class Request<T extends SCPResponse> {
+		/** Nanoseconds per millisecond. */
+		private static final int NS_PER_MS = 1000000;
 		/**
 		 * Packet minimum send interval, in <em>nanoseconds</em>.
 		 */
@@ -162,7 +164,8 @@ public class SCPRequestPipeline {
 			long now = System.nanoTime();
 			if (now < nextSendTime) {
 				try {
-					Thread.sleep(0, (int) (now - nextSendTime));
+					int delta = (int) (now - nextSendTime);
+					Thread.sleep(delta / NS_PER_MS, delta % NS_PER_MS);
 				} catch (InterruptedException ignored) {
 				}
 				nextSendTime = System.nanoTime() + THROTTLE;
