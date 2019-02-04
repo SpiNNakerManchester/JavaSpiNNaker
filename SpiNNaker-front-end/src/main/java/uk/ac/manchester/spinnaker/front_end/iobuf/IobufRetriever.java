@@ -198,6 +198,7 @@ public class IobufRetriever {
 			try (BufferedWriter w = openFileForAppending(file)) {
 				log.info("storing iobuf from {} (running {}) in {}",
 						iobuf.asCoreLocation(), replacer.origin, file);
+				// ISO 8859-1: bytes are zero-extended to chars
 				for (String originalLine : iobuf.getContentsString(ISO_8859_1)
 						.split("\n")) {
 					String line = replacer.replace(originalLine);
