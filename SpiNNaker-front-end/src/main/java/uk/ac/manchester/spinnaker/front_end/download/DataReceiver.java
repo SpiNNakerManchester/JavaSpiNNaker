@@ -305,6 +305,9 @@ public class DataReceiver {
 	 */
 	private ByteBuffer requestData(HasCoreLocation location, int address,
 			int length) throws IOException, ProcessException {
+		if (length == 0) {
+			return ByteBuffer.allocate(0);
+		}
 		return txrx.readMemory(location.getScampCore(), address, length);
 	}
 }
