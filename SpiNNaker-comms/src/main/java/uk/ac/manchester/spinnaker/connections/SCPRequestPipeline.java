@@ -154,6 +154,7 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
+			log.info("sending msg at exactly " + System.nanoTime());
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
