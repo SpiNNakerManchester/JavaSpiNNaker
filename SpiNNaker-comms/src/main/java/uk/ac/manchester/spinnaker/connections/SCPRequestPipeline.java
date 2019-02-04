@@ -378,7 +378,9 @@ public class SCPRequestPipeline {
 		// Receive the next response
 		log.debug("waiting for message...");
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
-		log.debug("received message {}", msg.getResult());
+        if (log.isDebugEnabled()) {
+    		log.debug("received message {}", msg.getResult());
+        }
 		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests

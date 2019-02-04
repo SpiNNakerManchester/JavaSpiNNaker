@@ -117,8 +117,10 @@ abstract class OperationMapper {
 						format("bad Operation annotation on method %s of %s",
 								m.getName(), cls));
 			}
-			log.debug("discovered operation {} on {} is implemented by {}()",
+            if (log.isDebugEnabled()) {
+    			log.debug("discovered operation {} on {} is implemented by {}()",
 					c.name(), cls, m.getName());
+            }
 			ops.put(c, m);
 		}
 		OPS_MAP.put(cls, ops);
@@ -135,8 +137,9 @@ abstract class OperationMapper {
 			throws DataSpecificationException {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
-		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
-
+		if (log.isDebugEnabled()) {
+    		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+        }
 		try {
 			try {
 				if (method.getReturnType().equals(Void.TYPE)) {

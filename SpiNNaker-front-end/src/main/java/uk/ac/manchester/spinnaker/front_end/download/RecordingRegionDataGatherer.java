@@ -86,7 +86,9 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		RecordingRegionsDescriptor rrd = descriptors.get(key);
 		if (rrd == null) {
 			rrd = new RecordingRegionsDescriptor(txrx, chip, baseAddress);
-			log.debug("got recording region info {}", rrd);
+            if (log.isDebugEnabled()) {
+    			log.debug("got recording region info {}", rrd);
+            }
 			descriptors.put(key, rrd);
 		}
 		return rrd;

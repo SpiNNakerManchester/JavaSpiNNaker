@@ -66,7 +66,9 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		log.debug("opening database connection {}", dbConnectionUrl);
+        if (log.isDebugEnabled()) {
+    		log.debug("opening database connection {}", dbConnectionUrl);
+        }
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		config.setSynchronous(OFF);

@@ -244,8 +244,10 @@ public class DataReceiver {
 
 	private void readSomeData(RegionLocation location, int address, int length)
 			throws IOException, StorageException, ProcessException {
-		log.debug("< Reading " + length + " bytes from " + location + " at "
-				+ address);
+        if (log.isDebugEnabled()) {
+    		log.debug("< Reading " + length + " bytes from " + location
+                    + " at " + address);
+        }
 		ByteBuffer data = requestData(location, address, length);
 		receivedData.flushingDataFromRegion(location, data);
 	}

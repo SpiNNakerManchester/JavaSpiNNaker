@@ -740,7 +740,10 @@ public abstract class DataGatherer {
 					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
 					if (recvd != null) {
 						messQueue.put(recvd);
-						log.debug("pushed message of {} bytes", recvd.limit());
+                        if (log.isDebugEnabled()) {
+    						log.debug("pushed message of {} bytes",
+                                    recvd.limit());
+                        }
 					}
 				} catch (SocketTimeoutException e) {
 					log.info("socket timed out");
