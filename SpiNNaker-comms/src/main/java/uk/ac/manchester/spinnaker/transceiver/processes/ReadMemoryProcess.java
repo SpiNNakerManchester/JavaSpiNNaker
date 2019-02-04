@@ -150,14 +150,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			this.buffer = ByteBuffer.allocate(region.size);
 		}
 
-		int bookSlot(int offset) {
-			if (done) {
-				throw new IllegalStateException(
-						"writing to fully written buffer");
-			}
-			return offset;
-		}
-
 		void add(int offset, ByteBuffer data) {
 			if (done) {
 				throw new IllegalStateException(
@@ -443,15 +435,15 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		for (int offset = 0, finishPoint = 0; offset < region.size; offset +=
 				chunk) {
 			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = a.bookSlot(offset);
+			int thisOffset = offset;
 			sendRequest(
 					new ReadMemory(region.core.asChipLocation(),
 							region.startAddress + offset, chunk),
 					response -> a.add(thisOffset, response.data));
 			// Apply wait chunking
-			if (thisOffset > finishPoint + DATABASE_WAIT_CHUNK) {
+			if (offset > finishPoint + DATABASE_WAIT_CHUNK) {
 				finish();
-				finishPoint = thisOffset;
+				finishPoint = offset;
 			}
 		}
 		finish();
