@@ -162,7 +162,7 @@ public class SCPRequestPipeline {
 
 		private void send() throws IOException {
 			long now = System.nanoTime();
-			if (now < nextSendTime) {
+			if (now < nextSendTime && nextSendTime != 0) {
 				try {
 					int delta = (int) (now - nextSendTime);
 					Thread.sleep(delta / NS_PER_MS, delta % NS_PER_MS);
