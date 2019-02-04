@@ -112,7 +112,7 @@ public class SCPRequestPipeline {
 	 * if no such tracking is required.
 	 */
 	private final RetryTracker retryTracker;
-	private long nextSendTime;
+	private long nextSendTime = 0;
 
 	/**
 	 * Per message record.
@@ -163,10 +163,16 @@ public class SCPRequestPipeline {
 		private void send() throws IOException {
 			long now = System.nanoTime();
 			if (now < nextSendTime && nextSendTime != 0) {
-				try {
-					int delta = (int) (now - nextSendTime);
-					Thread.sleep(delta / NS_PER_MS, delta % NS_PER_MS);
-				} catch (InterruptedException ignored) {
+				int delta = (int) (now - nextSendTime);
+				int wait = delta / NS_PER_MS;
+				if (delta % NS_PER_MS >= NS_PER_MS / 2) {
+					wait++;
+				}
+				if (wait > 0) {
+					try {
+						Thread.sleep(wait);
+					} catch (InterruptedException ignored) {
+					}
 				}
 				nextSendTime = System.nanoTime() + THROTTLE;
 			} else {
