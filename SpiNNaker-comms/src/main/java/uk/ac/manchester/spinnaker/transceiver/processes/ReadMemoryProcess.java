@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
@@ -143,59 +139,37 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class DBAccumulator {
 		private final BufferManagerStorage storage;
 		private final BufferManagerStorage.Region region;
-		private final Map<Integer, ByteBuffer> writes;
 		private boolean done = false;
-		private StorageException exception;
+		private final ByteBuffer buffer;
+
 
 		DBAccumulator(BufferManagerStorage storage,
 				BufferManagerStorage.Region region) {
 			this.storage = storage;
 			this.region = region;
-			this.writes = new LinkedHashMap<>();
+			this.buffer = ByteBuffer.allocate(region.size);
 		}
 
-		synchronized int bookSlot(int offset) {
+		int bookSlot(int offset) {
 			if (done) {
 				throw new IllegalStateException(
 						"writing to fully written buffer");
 			}
-			writes.put(offset, null);
 			return offset;
 		}
 
-		synchronized void add(int offset, ByteBuffer data) {
+		void add(int offset, ByteBuffer data) {
 			if (done) {
 				throw new IllegalStateException(
 						"writing to fully written buffer");
 			}
-			writes.put(offset, data);
-			Iterator<Entry<Integer, ByteBuffer>> entries =
-					writes.entrySet().iterator();
-			while (entries.hasNext()) {
-				Entry<Integer, ByteBuffer> ent = entries.next();
-				if (ent.getValue() == null) {
-					break;
-				}
-				try {
-					store(ent.getValue());
-				} catch (StorageException e) {
-					if (exception == null) {
-						exception = e;
-					}
-				}
-				entries.remove();
-			}
+			buffer.position(offset);
+			buffer.put(data);
 		}
 
-		private void store(ByteBuffer buffer) throws StorageException {
-			storage.appendRecordingContents(region, buffer);
-		}
-
-		synchronized void finish() throws StorageException {
+		void finish() throws StorageException {
 			done = true;
-			if (exception != null) {
-				throw exception;
-			}
+			storage.appendRecordingContents(region, buffer);
 		}
 	}
 
