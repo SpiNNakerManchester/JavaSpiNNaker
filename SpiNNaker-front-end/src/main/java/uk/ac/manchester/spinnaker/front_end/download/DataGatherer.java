@@ -1014,6 +1014,7 @@ public abstract class DataGatherer {
 			if (numMissing < 1) {
 				return true;
 			}
+			log.info("there are {} missing packets", numMissing);
 
 			/*
 			 * Build a buffer containing the sequence numbers of all missing
@@ -1028,7 +1029,7 @@ public abstract class DataGatherer {
 			}
 
 			if (log.isDebugEnabled()) {
-				log.debug("missing sequence numbers: ", missingSeqs);
+				log.debug("missing sequence numbers: {}", missingSeqs);
 			}
 
 			// Transmit missing sequences as a new SDP Packet

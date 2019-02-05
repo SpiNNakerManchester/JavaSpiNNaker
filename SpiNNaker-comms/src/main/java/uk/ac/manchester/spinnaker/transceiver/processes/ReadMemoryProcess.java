@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver.processes;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
@@ -59,6 +60,10 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 
 		Accumulator(int size) {
 			buffer = allocate(size);
+		}
+
+		Accumulator(byte[] receivingBuffer) {
+			buffer = wrap(receivingBuffer);
 		}
 
 		Accumulator(ByteBuffer receivingBuffer) {
@@ -125,35 +130,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				throw exception;
 			}
 			file.seek(initOffset);
-		}
-	}
-
-	private static class DBAccumulator {
-		private final BufferManagerStorage storage;
-		private final BufferManagerStorage.Region region;
-		private boolean done = false;
-		private final ByteBuffer buffer;
-
-
-		DBAccumulator(BufferManagerStorage storage,
-				BufferManagerStorage.Region region) {
-			this.storage = storage;
-			this.region = region;
-			this.buffer = ByteBuffer.allocate(region.size);
-		}
-
-		void add(int offset, ByteBuffer data) {
-			if (done) {
-				throw new IllegalStateException(
-						"writing to fully written buffer");
-			}
-			buffer.position(offset);
-			buffer.put(data);
-		}
-
-		void finish() throws StorageException {
-			done = true;
-			storage.appendRecordingContents(region, buffer);
 		}
 	}
 
@@ -422,7 +398,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	public void readMemory(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
-		DBAccumulator a = new DBAccumulator(storage, region);
+		byte[] buffer = new byte[region.size];
+		Accumulator a = new Accumulator(buffer);
 		int chunk;
 		for (int offset = 0; offset < region.size; offset += chunk) {
 			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -435,5 +412,6 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		finish();
 		checkForError();
 		a.finish();
+		storage.appendRecordingContents(region, buffer);
 	}
 }
