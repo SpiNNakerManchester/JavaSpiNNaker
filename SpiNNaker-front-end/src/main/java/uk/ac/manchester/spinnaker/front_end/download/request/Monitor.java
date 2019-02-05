@@ -19,10 +19,10 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import static java.util.Collections.emptyList;
 import java.util.Collections;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-
 /**
  * Extra monitor core information.
  *
@@ -56,12 +56,16 @@ public class Monitor implements HasCoreLocation {
     Monitor(@JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
             @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "placements", required = true)
+            @JsonProperty(value = "placements", required = false)
                     List<Placement> placements) {
         this.x = x;
         this.y = y;
         this.p = p;
-        this.placements = placements;
+        if (placements == null) {
+            this.placements = emptyList();
+        } else {
+            this.placements = placements;
+        }
     }
 
     @Override
