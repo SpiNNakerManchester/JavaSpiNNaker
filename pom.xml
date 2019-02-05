@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<junit.version>5.2.0</junit.version>
-	</properties>
+  	</properties>
 
 	<dependencyManagement>
 		<dependencies>
@@ -272,6 +272,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>.github/*</exclude>
 							<exclude>.travis/*</exclude>
 							<exclude>.travis.yml</exclude>
+							<exclude>nbactions.xml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
 							<exclude>**/*.txt</exclude>
