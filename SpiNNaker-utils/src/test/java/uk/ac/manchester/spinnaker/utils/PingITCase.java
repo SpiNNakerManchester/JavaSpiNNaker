@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
-public class TestPing {
+public class PingITCase {
     @Test
     public void testPingSpalloc() throws UnknownHostException {
         InetAddress spalloc = InetAddress.getByName("spinnaker.cs.man.ac.uk");
