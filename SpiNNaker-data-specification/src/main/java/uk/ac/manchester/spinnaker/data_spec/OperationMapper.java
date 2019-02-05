@@ -118,8 +118,9 @@ abstract class OperationMapper {
 								m.getName(), cls));
 			}
             if (log.isDebugEnabled()) {
-    			log.debug("discovered operation {} on {} is implemented by {}()",
-					c.name(), cls, m.getName());
+				log.debug(
+						"discovered operation {} on {} is implemented by {}()",
+						c.name(), cls, m.getName());
             }
 			ops.put(c, m);
 		}
