@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.String.format;
+import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
+import static java.lang.Thread.yield;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -78,6 +80,10 @@ public class SCPRequestPipeline {
 	 */
 	public static final int RETRY_DELAY_MS = 100;
 	private static final String REASON_TIMEOUT = "timeout";
+	/**
+	 * Packet minimum send interval, in <em>nanoseconds</em>.
+	 */
+	private static final int INTER_SEND_INTERVAL_NS = 60000;
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
@@ -121,10 +127,6 @@ public class SCPRequestPipeline {
 	 *            The type of response expected to the request in the message.
 	 */
 	private final class Request<T extends SCPResponse> {
-		/**
-		 * Packet minimum send interval, in <em>nanoseconds</em>.
-		 */
-		private static final int THROTTLE = 60000;
 		/** Request in progress. */
 		private final SCPRequest<T> request;
 		/** Payload of request in progress. */
@@ -159,12 +161,12 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			long now = System.nanoTime();
+			long now = nanoTime();
 			while (now < nextSendTime) {
-                Thread.yield();
-                now = System.nanoTime();
+                yield();
+                now = nanoTime();
 			}
-            nextSendTime = now + THROTTLE;
+            nextSendTime = now + INTER_SEND_INTERVAL_NS;
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
