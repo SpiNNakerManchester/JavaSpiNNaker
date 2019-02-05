@@ -121,12 +121,10 @@ public class SCPRequestPipeline {
 	 *            The type of response expected to the request in the message.
 	 */
 	private final class Request<T extends SCPResponse> {
-		/** Nanoseconds per millisecond. */
-		private static final int NS_PER_MS = 1000000;
 		/**
 		 * Packet minimum send interval, in <em>nanoseconds</em>.
 		 */
-		private static final int THROTTLE = 10000;
+		private static final int THROTTLE = 60000;
 		/** Request in progress. */
 		private final SCPRequest<T> request;
 		/** Payload of request in progress. */
@@ -162,22 +160,11 @@ public class SCPRequestPipeline {
 
 		private void send() throws IOException {
 			long now = System.nanoTime();
-			if (now < nextSendTime && nextSendTime != 0) {
-				int delta = (int) (now - nextSendTime);
-				int wait = delta / NS_PER_MS;
-				if (delta % NS_PER_MS >= NS_PER_MS / 2) {
-					wait++;
-				}
-				if (wait > 0) {
-					try {
-						Thread.sleep(wait);
-					} catch (InterruptedException ignored) {
-					}
-				}
-				nextSendTime = System.nanoTime() + THROTTLE;
-			} else {
-				nextSendTime = now + THROTTLE;
+			while (now < nextSendTime) {
+                Thread.yield();
+                now = System.nanoTime();
 			}
+            nextSendTime = now + THROTTLE;
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
