@@ -16,8 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
+import static java.lang.Integer.getInteger;
+import static java.lang.Math.max;
+
 /** Miscellaneous constants. */
 public abstract class Constants {
+	/**
+	 * The name of the system property defining the number of parallel tasks
+	 * that should be executed at once. The fundamental unit of parallelisation
+	 * is the SpiNNaker board, as there's a strict limit on just how much
+	 * trickery can be pushed through a SCAMP process.
+	 * <p>
+	 * This is used to set the scaling size of various thread pool executors,
+	 * and should be set so as to keep the network reasonably busy with a large
+	 * job.
+	 * <p>
+	 * If a property with this name is absent, a default is used ({@code 4}).
+	 */
+	public static final String PARALLEL_PROPERTY = "spinnaker.parallel_tasks";
+	/**
+	 * Default value of {@link #PARALLEL_SIZE}.
+	 */
+	private static final int PARALLEL_DEFAULT = 4;
 	/**
 	 * The number of parallel tasks that should be executed at once. The
 	 * fundamental unit of parallelisation is the SpiNNaker board, as there's a
@@ -28,5 +48,7 @@ public abstract class Constants {
 	 * and should be set so as to keep the network reasonably busy with a large
 	 * job.
 	 */
-	public static final int PARALLEL_SIZE = 4;
+	public static final int PARALLEL_SIZE =
+			// Zero or less make no sense at all
+			max(1, getInteger(PARALLEL_PROPERTY, PARALLEL_DEFAULT));
 }
