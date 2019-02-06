@@ -162,7 +162,7 @@ public class SCPRequestPipeline {
 
 		private void send() throws IOException {
 			long now = nanoTime();
-			while (now < nextSendTime) {
+			while (now - nextSendTime < 0) {
                 yield();
                 now = nanoTime();
 			}
