@@ -1043,6 +1043,7 @@ public abstract class DataGatherer {
 					throw new TimeoutException();
 				}
 			}
+			lastRequested = missingSeqs;
 
 			// Transmit missing sequences as a new SDP Packet
 			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
