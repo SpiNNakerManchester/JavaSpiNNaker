@@ -831,7 +831,8 @@ public abstract class DataGatherer {
 		 */
 		private boolean received;
 		private int timeoutcount = 0;
-		private BitSet receivedSeqNums;
+		/** A flag for each packet sequence number that is expected. */
+		private BitSet expectedSeqNums;
 		private int maxSeqNum;
 		private ByteBuffer dataReceiver;
 		private CoreLocation monitorCore;
@@ -876,7 +877,8 @@ public abstract class DataGatherer {
 			 */
 			maxSeqNum =
 					ceildiv(region.size + 1, DATA_WORDS_PER_PACKET * WORD_SIZE);
-			receivedSeqNums = new BitSet(maxSeqNum);
+			expectedSeqNums = new BitSet(maxSeqNum);
+			expectedSeqNums.set(0, maxSeqNum - 1);
 			conn.unstick();
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			received = false;
@@ -959,7 +961,7 @@ public abstract class DataGatherer {
 			}
 			int len = data.remaining();
 			if (len != DATA_WORDS_PER_PACKET * WORD_SIZE
-					&& seqNum < maxSeqNum - 1) {
+					&& len != 0 && seqNum < maxSeqNum - 1) {
 				log.warn("short packet ({} bytes) in non-terminal position "
 						+ "(seq: {})", len, seqNum);
 			}
@@ -971,8 +973,8 @@ public abstract class DataGatherer {
 				}
 				dataReceiver.position(offset);
 				dataReceiver.put(data);
+				expectedSeqNums.clear(seqNum);
 			}
-			receivedSeqNums.set(seqNum);
 			if (!isEndOfStream) {
 				return false;
 			}
@@ -1010,23 +1012,16 @@ public abstract class DataGatherer {
 		 *             If there are failures.
 		 */
 		private boolean retransmitMissingSequences() throws IOException {
-			int numMissing = maxSeqNum - receivedSeqNums.cardinality();
+			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
 			}
 			log.info("there are {} missing packets", numMissing);
 
-			/*
-			 * Build a buffer containing the sequence numbers of all missing
-			 * packets.
-			 */
-			List<Integer> missingSeqs = new ArrayList<>(numMissing);
-			for (int i = 0; i < maxSeqNum; i++) {
-				if (!receivedSeqNums.get(i)) {
-					missingSeqs.add(i);
-					missCount++;
-				}
-			}
+			// Build a list of the sequence numbers of all missing packets
+			List<Integer> missingSeqs =
+					expectedSeqNums.stream().boxed().collect(toList());
+			missCount += numMissing;
 
 			if (log.isDebugEnabled()) {
 				log.debug("missing sequence numbers: {}", missingSeqs);
