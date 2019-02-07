@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -64,6 +65,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -828,6 +830,7 @@ public abstract class DataGatherer {
 		private int maxSeqNum;
 		private ByteBuffer dataReceiver;
 		private CoreLocation monitorCore;
+		private List<Integer> lastRequested;
 
 		/**
 		 * Create an instance.
@@ -871,6 +874,7 @@ public abstract class DataGatherer {
 					ceildiv(region.size + 1, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			expectedSeqNums = new BitSet(maxSeqNum);
 			expectedSeqNums.set(0, maxSeqNum - 1);
+			lastRequested = expectedSeqNums.stream().boxed().collect(toList());
 			conn.unstick();
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			received = false;
@@ -899,7 +903,8 @@ public abstract class DataGatherer {
 		 * @throws IOException
 		 *             If packet retransmission requesting fails.
 		 * @throws TimeoutException
-		 *             If we have a full timeout.
+		 *             If we have a full timeout, or if we are flailing around,
+		 *             making no progress.
 		 */
 		private boolean processOnePacket(int timeout)
 				throws IOException, TimeoutException {
@@ -941,8 +946,11 @@ public abstract class DataGatherer {
 		 *             If the packet is an end-of-stream packet yet there are
 		 *             packets outstanding, and the retransmission causes an
 		 *             error.
+		 * @throws TimeoutException
+		 *             If we are flailing around, making no progress.
 		 */
-		private boolean processData(ByteBuffer data) throws IOException {
+		private boolean processData(ByteBuffer data)
+				throws IOException, TimeoutException {
 			int seqNum = data.getInt();
 			boolean isEndOfStream =
 					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
@@ -1002,8 +1010,11 @@ public abstract class DataGatherer {
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
 		 *             If there are failures.
+		 * @throws TimeoutException
+		 *             If we are flailing around, making no progress.
 		 */
-		private boolean retransmitMissingSequences() throws IOException {
+		private boolean retransmitMissingSequences()
+				throws IOException, TimeoutException {
 			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
@@ -1017,6 +1028,20 @@ public abstract class DataGatherer {
 
 			if (log.isDebugEnabled()) {
 				log.debug("missing sequence numbers: {}", missingSeqs);
+			}
+			if (numMissing == lastRequested.size()) {
+				boolean workToDo = false;
+				for (int i = 0; i<numMissing;i++) {
+					if (!missingSeqs.get(i).equals(lastRequested.get(i))) {
+						workToDo = true;
+						break;
+					}
+				}
+				if (!workToDo) {
+					log.info("retransmission cycle made no progress; "
+							+ "bailing out to slow transfer mode");
+					throw new TimeoutException();
+				}
 			}
 
 			// Transmit missing sequences as a new SDP Packet
