@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
+import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
@@ -467,7 +468,7 @@ public abstract class DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	private class DoNotDropPackets implements AutoCloseable {
+	private final class DoNotDropPackets implements AutoCloseable {
 		/** The location of the ethernet for the board. For logging. */
 		private final ChipLocation gathererChip;
 		/** The monitor cores on the board. */
@@ -628,7 +629,8 @@ public abstract class DataGatherer {
 	 *
 	 * @author Donal Fellows
 	 */
-	private static class GatherDownloadConnection extends SCPConnection {
+	private static final class GatherDownloadConnection extends SCPConnection {
+		private boolean paused;
 		/**
 		 * Create an instance.
 		 *
@@ -642,6 +644,7 @@ public abstract class DataGatherer {
 		GatherDownloadConnection(ChipLocation location, IPTag iptag)
 				throws IOException {
 			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
+			paused = false;
 		}
 
 		/**
@@ -690,24 +693,41 @@ public abstract class DataGatherer {
 		BlockingQueue<ByteBuffer> launchReaderThread() {
 			BlockingQueue<ByteBuffer> messQueue =
 					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-			ReaderThread t = new ReaderThread(messQueue);
+			// The thread that listens for Data Speed Up messages.
+			Thread t = new Thread(() -> {
+				// While socket is open add messages to the queue
+				try {
+					mainLoop(messQueue);
+				} catch (InterruptedException e) {
+					log.error("failed to offer packet to queue");
+				} catch (IOException e) {
+					log.error("failed to receive packet", e);
+				}
+			}, "ReadThread");
+			t.setDaemon(true);
+			t.setPriority(MAX_PRIORITY);
 			t.start();
 			return messQueue;
 		}
 
 		/**
-		 * Asks the reader thread to continue reading. Does nothing if the
-		 * reader thread isn't already waiting.
+		 * Asks the system to start pausing timeouts.
+		 *
+		 * @return Whether the system was paused; if not, there's a timeout to
+		 *         deliver.
 		 */
-		void unstick() {
+		private boolean pause() {
 			synchronized (this) {
-				notifyAll();
+				boolean p = paused;
+				paused = true;
+				return p;
 			}
 		}
 
-		private void waitForUnstick() throws InterruptedException {
+		/** Asks the reader thread to continue delivering timeouts. */
+		void unstick() {
 			synchronized (this) {
-				wait();
+				paused = false;
 			}
 		}
 
@@ -734,7 +754,6 @@ public abstract class DataGatherer {
 		 */
 		private void mainLoop(BlockingQueue<ByteBuffer> messQueue)
 				throws IOException, InterruptedException {
-			waitForUnstick();
 			do {
 				try {
 					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
@@ -746,43 +765,16 @@ public abstract class DataGatherer {
                         }
 					}
 				} catch (SocketTimeoutException e) {
-					log.info("socket timed out");
-					messQueue.put(EMPTY_DATA);
-					waitForUnstick();
+					if (!pause()) {
+						messQueue.put(EMPTY_DATA);
+						log.info("socket timed out");
+					}
 				} catch (EOFException e) {
 					// Race condition can occasionally close socket early
 					messQueue.put(EOF);
 					break;
 				}
 			} while (!isClosed());
-		}
-
-		/**
-		 * The thread that listens for Data Speed Up messages.
-		 *
-		 * @author Donal Fellows
-		 */
-		private class ReaderThread extends Thread {
-			private final BlockingQueue<ByteBuffer> messQueue;
-
-			ReaderThread(BlockingQueue<ByteBuffer> messQueue) {
-				super("ReadThread");
-				setDaemon(true);
-				setPriority(MAX_PRIORITY);
-				this.messQueue = messQueue;
-			}
-
-			@Override
-			public void run() {
-				// While socket is open add messages to the queue
-				try {
-					mainLoop(messQueue);
-				} catch (InterruptedException e) {
-					log.error("failed to offer packet to queue");
-				} catch (IOException e) {
-					log.error("failed to receive packet", e);
-				}
-			}
 		}
 	}
 
