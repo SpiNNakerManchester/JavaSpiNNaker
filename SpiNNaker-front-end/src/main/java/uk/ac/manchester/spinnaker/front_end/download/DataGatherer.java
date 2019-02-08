@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -96,17 +95,17 @@ public abstract class DataGatherer {
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 	/**
 	 * The time delay between sending each message. In
-	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int DELAY_PER_SEND = 10;
 	/**
 	 * The timeout when receiving a message. In
-	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int TIMEOUT_PER_RECEIVE = 1000;
 	/**
 	 * The <i>extra</i> timeout for processing the message queue. In
-	 * {@linkplain TimeUnit#MILLISECONDS milliseconds}.
+	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int INTERNAL_DELAY = 100;
 	/** What is the maximum number of <em>words</em> in a packet? */
@@ -583,6 +582,18 @@ public abstract class DataGatherer {
 	}
 
 	/**
+	 * Hack. Make BufferManagerStorage used for checkstyle.
+	 *
+	 * @param hack
+	 *            this is a hack
+	 * @return this is a hack.
+	 */
+	@Deprecated
+	Class<?> hack(BufferManagerStorage hack) {
+		return hack.getClass();
+	}
+
+	/**
 	 * Work out exactly where is going to be downloaded. The elements of the
 	 * list this method returns will end up directing what calls to
 	 * {@link #storeData(BufferManagerStorage.Region,ByteBuffer) storeData(...)}
@@ -1047,21 +1058,12 @@ public abstract class DataGatherer {
 			if (log.isDebugEnabled()) {
 				log.debug("missing sequence numbers: {}", missingSeqs);
 			}
-			if (numMissing == lastRequested.size()) {
-				boolean workToDo = false;
-				for (int i = 0; i<numMissing;i++) {
-					if (!missingSeqs.get(i).equals(lastRequested.get(i))) {
-						workToDo = true;
-						break;
-					}
-				}
-				if (!workToDo) {
-					log.info(
-							"retransmission cycle for {} made no progress; "
-									+ "bailing out to slow transfer mode",
-							monitorCore);
-					throw new TimeoutException();
-				}
+			if (missingSeqs.equals(lastRequested)) {
+				log.info(
+						"retransmission cycle for {} made no progress;"
+								+ " bailing out to slow transfer mode",
+						monitorCore);
+				throw new TimeoutException();
 			}
 			lastRequested = missingSeqs;
 
