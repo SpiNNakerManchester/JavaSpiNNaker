@@ -246,7 +246,11 @@ public abstract class DataGatherer {
 		}
 		try (GatherDownloadConnection conn = new GatherDownloadConnection(
 				gathererChip, gatherer.getIptag())) {
-			log.info("reconfiguring IPtag to point to receiving socket");
+			log.info(
+					"reconfiguring IPtag on {} to point to receiving "
+							+ "socket {}:{}",
+					gathererChip, conn.getLocalIPAddress(),
+					conn.getLocalPort());
 			reconfigureIPtag(gatherer.getIptag(), gathererChip, conn);
 			try (DoNotDropPackets dnd =
 					new DoNotDropPackets(gathererChip, monitorCores)) {
@@ -255,7 +259,7 @@ public abstract class DataGatherer {
 		}
 		if (!smallRetrieves.isEmpty()) {
 			log.info("performing additional retrievals of "
-					+ "small data blocks");
+					+ "small data blocks from {}", gathererChip);
 		}
 		for (Region r : smallRetrieves) {
 			if (r.size > 0) {
@@ -498,7 +502,18 @@ public abstract class DataGatherer {
 			log.info("disabling router timeouts on board based at {}",
 					gathererChip);
 			this.gathererChip = gathererChip;
-			this.monitorCores = monitorCores;
+			this.monitorCores = new CoreSubsets();
+			for (CoreLocation core:monitorCores) {
+				if (machine.getChipAt(core).nearestEthernet
+						.onSameChipAs(gathererChip)) {
+					this.monitorCores.addCore(core);
+				} else {
+					log.warn(
+							"extra monitor ({}) not on same board as "
+									+ "gatherer ({}); removing from control",
+							core, gathererChip);
+				}
+			}
 
 			// Store the last reinjection status for resetting
 			savedStatus = saveRouterStatus();
@@ -543,8 +558,8 @@ public abstract class DataGatherer {
 						savedStatus.isReinjectingFixedRoute(),
 						savedStatus.isReinjectingNearestNeighbour());
 			} catch (IOException | ProcessException e) {
-				log.error("problem resetting router timeouts; "
-						+ "checking if the cores are OK...");
+				log.error("problem resetting router timeouts on board of {}; "
+						+ "checking if the cores are OK...", gathererChip);
 				checkCores(monitorCores, e);
 				throw e;
 			}
@@ -701,9 +716,10 @@ public abstract class DataGatherer {
 				try {
 					mainLoop(messQueue);
 				} catch (InterruptedException e) {
-					log.error("failed to offer packet to queue");
+					log.error("failed to offer packet from {} to queue",
+							getChip());
 				} catch (IOException e) {
-					log.error("failed to receive packet", e);
+					log.error("failed to receive packet from {}", getChip(), e);
 				}
 			}, "ReadThread");
 			t.setDaemon(true);
@@ -769,7 +785,8 @@ public abstract class DataGatherer {
 				} catch (SocketTimeoutException e) {
 					if (!pause()) {
 						messQueue.put(EMPTY_DATA);
-						log.info("socket timed out");
+						log.info("socket timed out receiving from {}",
+								getChip());
 					}
 				} catch (EOFException e) {
 					// Race condition can occasionally close socket early
@@ -1019,7 +1036,8 @@ public abstract class DataGatherer {
 			if (numMissing < 1) {
 				return true;
 			}
-			log.info("there are {} missing packets", numMissing);
+			log.info("there are {} missing packets in message from {}",
+					numMissing, monitorCore);
 
 			// Build a list of the sequence numbers of all missing packets
 			List<Integer> missingSeqs =
@@ -1038,8 +1056,10 @@ public abstract class DataGatherer {
 					}
 				}
 				if (!workToDo) {
-					log.info("retransmission cycle made no progress; "
-							+ "bailing out to slow transfer mode");
+					log.info(
+							"retransmission cycle for {} made no progress; "
+									+ "bailing out to slow transfer mode",
+							monitorCore);
 					throw new TimeoutException();
 				}
 			}
