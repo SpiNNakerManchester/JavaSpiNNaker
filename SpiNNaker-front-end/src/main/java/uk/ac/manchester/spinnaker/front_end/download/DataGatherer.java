@@ -37,10 +37,12 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -53,6 +55,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
@@ -169,12 +172,276 @@ public abstract class DataGatherer {
 	}
 
 	/**
+	 * Download he contents of the regions that are described through the data
+	 * gatherers.
+	 *
+	 * @param gatherers
+	 *            The data gatherer information for the boards.
+	 * @return The total number of missed packets. Misses are retried, so this
+	 *         is just an assessment of data transfer quality.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
+	 */
+	public int gather(List<Gather> gatherers)
+			throws IOException, ProcessException, StorageException {
+		sanityCheck(gatherers);
+		Map<ChipLocation, List<WorkItems>> work = discoverActualWork(gatherers);
+		Map<ChipLocation, GatherDownloadConnection> conns =
+				createConnections(gatherers, work);
+		Map<ChipLocation, List<Region>> smallWork = new HashMap<>();
+		try (DoNotDropPackets p = new DoNotDropPackets(gatherers)) {
+			log.info("launching {} parallel high-speed download tasks",
+					work.size());
+			parallel(work.keySet().stream()
+					.map(key -> () -> fastDownload(work.get(key),
+							conns.get(key), smallWork)));
+		} finally {
+			log.info("shutting down high-speed download connections");
+			for (GatherDownloadConnection c : conns.values()) {
+				c.close();
+			}
+		}
+		log.info("launching {} parallel low-speed download tasks",
+				smallWork.size());
+		parallel(smallWork.values().stream()
+				.map(regions -> () -> slowDownload(regions)));
+		return missCount;
+	}
+
+	/**
+	 * Trivial POJO holding the pairing of monitor and list of lists of memory
+	 * blocks.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static final class WorkItems {
+		/**
+		 * Monitor that is used to download the regions.
+		 */
+		private final Monitor monitor;
+		/**
+		 * List of information about where to download. The inner sub-lists are
+		 * ordered, and are either one or two items long to represent what
+		 * pieces of memory should really be downloaded. The outer list could
+		 * theoretically be done in any order... but needs to be processed
+		 * single-threaded anyway.
+		 */
+		private final List<List<Region>> regions;
+
+		public WorkItems(Monitor m, List<List<Region>> region) {
+			this.monitor = m;
+			this.regions = region;
+		}
+	}
+
+	/**
+	 * Query the machine to discover what actual pieces of memory the recording
+	 * region IDs of the placements of the vertices attached to the monitors
+	 * associated with the data speed up packet gatherers are.
+	 *
+	 * @param gatherers
+	 *            The gatherer information.
+	 * @return What each board (as represented by the chip location of its data
+	 *         speed up packet gatherer) has to be downloaded.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
+	 */
+	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
+			List<Gather> gatherers)
+			throws IOException, ProcessException, StorageException {
+		log.info("discovering regions to download");
+		Map<ChipLocation, List<WorkItems>> work = new HashMap<>();
+		int count = 0;
+		for (Gather g : gatherers) {
+			List<WorkItems> workitems = new ArrayList<>();
+			for (Monitor m : g.getMonitors()) {
+				for (Placement p : m.getPlacements()) {
+					List<List<Region>> regions = new ArrayList<>();
+					for (int id : p.getVertex().getRecordedRegionIds()) {
+						List<Region> r = getRegion(p, id);
+						if (!r.isEmpty()) {
+							regions.add(r);
+							count += r.size();
+						}
+					}
+					if (!regions.isEmpty()) {
+						workitems.add(new WorkItems(m, regions));
+					}
+				}
+			}
+			// Totally empty boards can be ignored
+			if (!workitems.isEmpty()) {
+				work.put(g.asChipLocation(), workitems);
+			}
+		}
+		log.info("found {} regions to download", count);
+		return work;
+	}
+
+	/**
+	 * Build the connections to the gatherers and reprogram the IP tags on the
+	 * machine to talk to them.
+	 *
+	 * @param gatherers
+	 *            The data speed up gatherer descriptions.
+	 * @param work
+	 *            What work has been found to do. Used to filter out connections
+	 *            to boards with nothing to do.
+	 * @return The map from the location of the gatherer to the connection to
+	 *         talk and listen to it.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private Map<ChipLocation, GatherDownloadConnection> createConnections(
+			List<Gather> gatherers, Map<ChipLocation, ?> work)
+			throws IOException, ProcessException {
+		log.info("building high-speed data connections and configuring IPtags");
+		Map<ChipLocation, GatherDownloadConnection> connections =
+				new HashMap<>();
+		for (Gather g : gatherers) {
+			ChipLocation gathererChip = g.asChipLocation();
+			if (!work.containsKey(gathererChip)) {
+				continue;
+			}
+			GatherDownloadConnection conn =
+					new GatherDownloadConnection(gathererChip, g.getIptag());
+			reconfigureIPtag(g.getIptag(), gathererChip, conn);
+			connections.put(gathererChip, conn);
+		}
+		return connections;
+	}
+
+	/**
+	 * Wrapper around the thread pool to sanitise the exceptions.
+	 *
+	 * @param tasks
+	 *            The tasks to run in the pool.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
+	 */
+	private void parallel(Stream<SimpleCallable> tasks)
+			throws IOException, ProcessException, StorageException {
+		try {
+			pool.submitTasks(tasks).awaitAndCombineExceptions();
+		} catch (IOException | StorageException | ProcessException
+				| RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
+		}
+	}
+
+	/**
+	 * Do the fast downloads for a particular board.
+	 *
+	 * @param work
+	 *            The items to be downloaded for that board.
+	 * @param conn
+	 *            The connection for talking to the board.
+	 * @param smallWork
+	 *            Where to store any small or problem downloads; they're going
+	 *            to be processed later via SCP READs. <em>The order of items in
+	 *            the inner list may matter.</em>
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
+	 */
+	private void fastDownload(List<WorkItems> work,
+			GatherDownloadConnection conn,
+			Map<ChipLocation, List<Region>> smallWork)
+			throws IOException, StorageException {
+		log.info("processing fast downloads on board rooted at {}",
+				conn.getChip());
+		Downloader dl = new Downloader(conn);
+		for (WorkItems item : work) {
+			for (List<Region> regionsOnCore : item.regions) {
+				/*
+				 * Once there's something too small, all subsequent retrieves
+				 * for that recording region have to be done the same way to get
+				 * the data in the DB in the right order.
+				 */
+				boolean addToSmall = false;
+				for (Region region : regionsOnCore) {
+					if (region.size < SMALL_RETRIEVE_THRESHOLD) {
+						addToSmall = true;
+					}
+					if (addToSmall) {
+						log.info("moving {} to low-speed download system",
+								region);
+						synchronized (smallWork) {
+							smallWork.computeIfAbsent(conn.getChip(),
+									x -> new ArrayList<>()).add(region);
+						}
+						continue;
+					}
+					try {
+						storeData(region, dl.doDownload(
+								item.monitor.asCoreLocation(), region));
+					} catch (TimeoutException e) {
+						addToSmall = true;
+						log.info("moving {} to low-speed download system"
+								+ " due to timeout", region);
+						smallWork.computeIfAbsent(conn.getChip(),
+								x -> new ArrayList<>()).add(region);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Do the slow downloads for a particular board.
+	 *
+	 * @param regions
+	 *            The regions to be processed on that board. <em>The order may
+	 *            be significant.</em>
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If DB access goes wrong.
+	 */
+	private void slowDownload(List<Region> regions)
+			throws IOException, ProcessException, StorageException {
+		log.info("processing {} slow downloads on board rooted at {}",
+				regions.size(),
+				machine.getChipAt(regions.get(0).core).nearestEthernet);
+		for (Region region : regions) {
+			storeData(region, txrx.readMemory(region.core.getScampCore(),
+					region.startAddress, region.size));
+		}
+	}
+
+	/**
 	 * Request that a collection of boards be downloaded.
 	 *
 	 * @param gatherers
 	 *            The data gatherer information for the boards.
 	 */
 	public void addTasks(List<Gather> gatherers) {
+		sanityCheck(gatherers);
+		// Do the actual submissions
+		tasks = pool.submitTasks(
+				gatherers.stream().map(g -> () -> downloadBoard(g)));
+	}
+
+	private void sanityCheck(List<Gather> gatherers) {
 		ConnectionSelector<?> sel = txrx.getScampConnectionSelector();
 		MostDirectConnectionSelector<?> s = null;
 		if (sel instanceof MostDirectConnectionSelector) {
@@ -194,10 +461,6 @@ public abstract class DataGatherer {
 								+ " without direct route in transceiver");
 			}
 		}
-
-		// Do the actual submissions
-		tasks = pool.submitTasks(
-				gatherers.stream().map(g -> () -> downloadBoard(g)));
 	}
 
 	/**
@@ -503,7 +766,7 @@ public abstract class DataGatherer {
 					gathererChip);
 			this.gathererChip = gathererChip;
 			this.monitorCores = new CoreSubsets();
-			for (CoreLocation core:monitorCores) {
+			for (CoreLocation core : monitorCores) {
 				if (machine.getChipAt(core).nearestEthernet
 						.onSameChipAs(gathererChip)) {
 					this.monitorCores.addCore(core);
@@ -512,6 +775,40 @@ public abstract class DataGatherer {
 							"extra monitor ({}) not on same board as "
 									+ "gatherer ({}); removing from control",
 							core, gathererChip);
+				}
+			}
+
+			// Store the last reinjection status for resetting
+			savedStatus = saveRouterStatus();
+			// Set to not inject dropped packets
+			txrx.setReinjectionTypes(monitorCores, false, false, false, false);
+			// Clear any outstanding packets from reinjection
+			txrx.clearReinjectionQueues(monitorCores);
+			// Set timeouts
+			txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
+			txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
+		}
+
+		/**
+		 * Configure the routers of the chips on a machine to never drop
+		 * packets.
+		 *
+		 * @param gatherers
+		 *            The information about where the gatherers are. Used for
+		 *            the lists of where the monitors are.
+		 * @throws IOException
+		 *             If message sending or reception fails.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 */
+		DoNotDropPackets(List<Gather> gatherers)
+				throws IOException, ProcessException {
+			log.info("disabling router timeouts on whole machine");
+			gathererChip = null;
+			monitorCores = new CoreSubsets();
+			for (Gather g : gatherers) {
+				for (Monitor m : g.getMonitors()) {
+					monitorCores.addCore(m.asCoreLocation());
 				}
 			}
 
@@ -536,8 +833,8 @@ public abstract class DataGatherer {
 		}
 
 		/**
-		 * Configure the routers of the chips on a board to be what they were
-		 * previously.
+		 * Configure the routers of the chips on a board or machine to be what
+		 * they were previously.
 		 *
 		 * @throws IOException
 		 *             If message sending or reception fails.
@@ -546,7 +843,11 @@ public abstract class DataGatherer {
 		 */
 		@Override
 		public void close() throws IOException, ProcessException {
-			log.info("enabling router timeouts on board {}", gathererChip);
+			if (gathererChip == null) {
+				log.info("enabling router timeouts across whole machine");
+			} else {
+				log.info("enabling router timeouts on board {}", gathererChip);
+			}
 			try {
 				txrx.setReinjectionEmergencyTimeout(monitorCores,
 						savedStatus.getEmergencyTimeout());
@@ -558,8 +859,15 @@ public abstract class DataGatherer {
 						savedStatus.isReinjectingFixedRoute(),
 						savedStatus.isReinjectingNearestNeighbour());
 			} catch (IOException | ProcessException e) {
-				log.error("problem resetting router timeouts on board of {}; "
-						+ "checking if the cores are OK...", gathererChip);
+				if (gathererChip == null) {
+					log.error("problem resetting router timeouts on machine; "
+							+ "checking if the cores are OK...");
+				} else {
+					log.error(
+							"problem resetting router timeouts on board of {}; "
+									+ "checking if the cores are OK...",
+							gathererChip);
+				}
 				checkCores(monitorCores, e);
 				throw e;
 			}

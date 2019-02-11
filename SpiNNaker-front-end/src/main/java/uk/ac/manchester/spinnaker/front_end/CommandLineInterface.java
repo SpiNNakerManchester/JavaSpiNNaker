@@ -299,8 +299,7 @@ public final class CommandLineInterface {
 
 		DataGatherer runner =
 				new RecordingRegionDataGatherer(trans, machine, database);
-		runner.addTasks(gathers);
-		int misses = runner.waitForTasksToFinish();
+		int misses = runner.gather(gathers);
 		getLogger(CommandLineInterface.class).info("total misses: {}", misses);
 	}
 
