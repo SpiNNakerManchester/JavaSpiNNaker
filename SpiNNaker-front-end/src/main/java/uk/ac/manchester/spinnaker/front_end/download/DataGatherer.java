@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
+import static java.lang.String.format;
 import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -809,33 +810,6 @@ public abstract class DataGatherer {
 	}
 
 	/**
-	 * Exception that indicates a total (i.e., unrecoverable) failure to do a
-	 * download.
-	 *
-	 * @author Donal Fellows
-	 */
-	private static final class TimeoutException extends Exception {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
-	 * Exception that indicates a bad sequence number in a download.
-	 *
-	 * @author Donal Fellows
-	 */
-	private static final class InsaneSequenceNumberException
-			extends IllegalStateException {
-		private static final long serialVersionUID = 2L;
-
-		private InsaneSequenceNumberException(int maxNum, int seqNum) {
-			super("got insane sequence number " + seqNum + ": expected maximum "
-					+ maxNum
-					+ (maxNum == seqNum ? " (non-empty terminal-only packet)"
-							: " (totally bad sequence)"));
-		}
-	}
-
-	/**
 	 * Class used to manage a download. Every instance <em>must only</em> ever
 	 * be used from one thread.
 	 *
@@ -1076,5 +1050,32 @@ public abstract class DataGatherer {
 			conn.unstick();
 			return false;
 		}
+	}
+}
+
+/**
+ * Exception that indicates a total (i.e., unrecoverable) failure to do a
+ * download.
+ *
+ * @author Donal Fellows
+ */
+final class TimeoutException extends Exception {
+	private static final long serialVersionUID = 1L;
+}
+
+/**
+ * Exception that indicates a bad sequence number in a download.
+ *
+ * @author Donal Fellows
+ */
+final class InsaneSequenceNumberException extends IllegalStateException {
+	private static final long serialVersionUID = 2L;
+	private static final String TMPL =
+			"got insane sequence number %d: expected maximum %d (%s)";
+	private static final String MID = "totally bad sequence";
+	private static final String END = "non-empty terminal-only packet";
+
+	InsaneSequenceNumberException(int maxNum, int seqNum) {
+		super(format(TMPL, seqNum, maxNum, (maxNum == seqNum ? END : MID)));
 	}
 }
