@@ -81,11 +81,9 @@ public class SetRouterTimeoutProcess
 			int timeoutExponent) throws IOException, ProcessException {
 		for (ChipLocation chip : monitorCoreSubsets.getChips()) {
 			for (Integer p : monitorCoreSubsets.pByChip(chip)) {
-				sendRequest(new SetRouterTimeout(new CoreLocation(chip, p),
+				synchronousCall(new SetRouterTimeout(new CoreLocation(chip, p),
 						timeoutMantissa, timeoutExponent));
 			}
 		}
-		finish();
-		checkForError();
 	}
 }

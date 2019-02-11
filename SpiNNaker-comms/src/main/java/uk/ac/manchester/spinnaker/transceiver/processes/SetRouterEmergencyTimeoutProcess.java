@@ -82,12 +82,10 @@ public class SetRouterEmergencyTimeoutProcess
 			throws IOException, ProcessException {
 		for (ChipLocation chip : monitorCoreSubsets.getChips()) {
 			for (Integer p : monitorCoreSubsets.pByChip(chip)) {
-				sendRequest(
+				synchronousCall(
 						new SetRouterEmergencyTimeout(new CoreLocation(chip, p),
 								timeoutMantissa, timeoutExponent));
 			}
 		}
-		finish();
-		checkForError();
 	}
 }
