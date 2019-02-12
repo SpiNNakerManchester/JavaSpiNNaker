@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.ResetReinjectionCounters;
@@ -70,13 +69,8 @@ public class ResetReinjectionCountersProcess
 	 */
 	public void resetCounters(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : coreSubsets.getChips()) {
-			for (Integer p : coreSubsets.pByChip(chip)) {
-				sendRequest(new ResetReinjectionCounters(
-						new CoreLocation(chip, p)));
-			}
+		for (CoreLocation core : coreSubsets) {
+			synchronousCall(new ResetReinjectionCounters(core));
 		}
-		finish();
-		checkForError();
 	}
 }

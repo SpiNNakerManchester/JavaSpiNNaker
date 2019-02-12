@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.SetReinjectionPacketTypes;
@@ -89,14 +88,9 @@ public class SetReinjectionPacketTypesProcess
 	public void setPacketTypes(CoreSubsets monitorCoreSubsets,
 			boolean multicast, boolean pointToPoint, boolean fixedRoute,
 			boolean nearestNeighbour) throws IOException, ProcessException {
-		for (ChipLocation chip : monitorCoreSubsets.getChips()) {
-			for (Integer p : monitorCoreSubsets.pByChip(chip)) {
-				sendRequest(new SetReinjectionPacketTypes(
-						new CoreLocation(chip, p), multicast, pointToPoint,
-						fixedRoute, nearestNeighbour));
-			}
+		for (CoreLocation core : monitorCoreSubsets) {
+			synchronousCall(new SetReinjectionPacketTypes(core, multicast,
+					pointToPoint, fixedRoute, nearestNeighbour));
 		}
-		finish();
-		checkForError();
 	}
 }

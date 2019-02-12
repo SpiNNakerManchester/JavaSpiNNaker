@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterEmergencyTimeout;
@@ -80,12 +79,9 @@ public class SetRouterEmergencyTimeoutProcess
 	public void setTimeout(CoreSubsets monitorCoreSubsets,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : monitorCoreSubsets.getChips()) {
-			for (Integer p : monitorCoreSubsets.pByChip(chip)) {
-				synchronousCall(
-						new SetRouterEmergencyTimeout(new CoreLocation(chip, p),
-								timeoutMantissa, timeoutExponent));
-			}
+		for (CoreLocation core : monitorCoreSubsets) {
+			synchronousCall(new SetRouterEmergencyTimeout(core, timeoutMantissa,
+					timeoutExponent));
 		}
 	}
 }

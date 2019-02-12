@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.scp.ClearReinjectionQueue;
@@ -69,13 +68,8 @@ public class ClearQueueProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public void clearQueue(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : monitorCoreSubsets.getChips()) {
-			for (Integer p : monitorCoreSubsets.pByChip(chip)) {
-				sendRequest(
-						new ClearReinjectionQueue(new CoreLocation(chip, p)));
-			}
+		for (CoreLocation core : monitorCoreSubsets) {
+			synchronousCall(new ClearReinjectionQueue(core));
 		}
-		finish();
-		checkForError();
 	}
 }
