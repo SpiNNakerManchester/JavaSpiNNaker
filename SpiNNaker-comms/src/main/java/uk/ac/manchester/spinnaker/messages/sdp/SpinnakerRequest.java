@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.sdp;
 
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
+//import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.nio.ByteBuffer;
@@ -62,11 +62,11 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 		// Set ready for sending
 		sdpHeader.setTag(SDP_TAG);
 		sdpHeader.setSourcePort(SDP_SOURCE_PORT);
-		if (sdpHeader.getFlags() == REPLY_EXPECTED) {
-			sdpHeader.setSource(new SDPSource(originatingChip));
-		} else {
-			sdpHeader.setSource(new SDPSource());
-		}
+		// if (sdpHeader.getFlags() == REPLY_EXPECTED) {
+		sdpHeader.setSource(new SDPSource(originatingChip));
+		// } else {
+		// 	sdpHeader.setSource(new SDPSource());
+		// }
 
 		// Serialize
 		ByteBuffer buffer = newMessageBuffer();
@@ -86,11 +86,11 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	private static class SDPSource implements HasCoreLocation {
 		private final int x, y;
 
-		/** Source for one-way sending. */
-		SDPSource() {
-			x = 0;
-			y = 0;
-		}
+		// /** Source for one-way sending. */
+		// SDPSource() {
+		// 	x = 0;
+		// 	y = 0;
+		// }
 
 		/** Source for nominated location sending, needed for replies. */
 		SDPSource(HasChipLocation chip) {
