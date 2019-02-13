@@ -68,6 +68,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -968,6 +969,12 @@ public abstract class DataGatherer {
 	 */
 	private static final class GatherDownloadConnection extends SCPConnection {
 		private boolean paused;
+		private long lastSend = 0L;
+		/**
+		 * Packet minimum send interval, in <em>nanoseconds</em>.
+		 */
+		private static final int INTER_SEND_INTERVAL_NS = 60000;
+
 		/**
 		 * Create an instance.
 		 *
@@ -982,6 +989,14 @@ public abstract class DataGatherer {
 				throws IOException {
 			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
 			paused = false;
+		}
+
+		private void sendMsg(SDPMessage msg) throws IOException {
+			while (System.nanoTime() < lastSend + INTER_SEND_INTERVAL_NS) {
+				Thread.yield();
+			}
+			lastSend = System.nanoTime();
+			sendSDPMessage(msg);
 		}
 
 		/**
@@ -999,7 +1014,7 @@ public abstract class DataGatherer {
 		 */
 		void sendStart(CoreLocation extraMonitorCore, int address, int length)
 				throws IOException {
-			sendSDPMessage(StartSendingMessage.create(extraMonitorCore, address,
+			sendMsg(StartSendingMessage.create(extraMonitorCore, address,
 					length));
 		}
 
@@ -1017,7 +1032,7 @@ public abstract class DataGatherer {
 		 *             If message sending fails.
 		 */
 		void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
-			sendSDPMessage(msg);
+			sendMsg(msg);
 		}
 
 		/**
