@@ -49,9 +49,9 @@ public class TestIobufRequest {
 		IobufRequest req = mapper.readValue(input, IobufRequest.class);
 		Map<File, CoreSubsets> details = req.getRequestDetails();
 
-		File f1 = new File("/some/path/abc.aplx");
-		File f2 = new File("/some/path/def.aplx");
-		File f3 = new File("/some/path/ghi.aplx");
+		File f1 = (new File("/some/path/abc.aplx")).getAbsoluteFile();
+		File f2 = (new File("/some/path/def.aplx")).getAbsoluteFile();
+		File f3 = (new File("/some/path/ghi.aplx")).getAbsoluteFile();
 		assertEquals(new HashSet<>(asList(f1, f2, f3)), details.keySet());
 		assertEquals(new HashSet<>(asList(new ChipLocation(0, 0))),
 				details.get(f1).getChips());
