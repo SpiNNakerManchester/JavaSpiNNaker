@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -44,6 +45,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import difflib.ChangeDelta;
 import difflib.Chunk;
@@ -61,7 +63,6 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
@@ -344,6 +345,8 @@ public abstract class DataGatherer {
 		}
 	}
 
+	private static final String BOARD_ROOT = "boardRoot";
+
 	/**
 	 * Do the fast downloads for a particular board.
 	 *
@@ -364,51 +367,54 @@ public abstract class DataGatherer {
 			GatherDownloadConnection conn,
 			Map<ChipLocation, List<Region>> smallWork)
 			throws IOException, StorageException {
-		log.info("processing fast downloads on board rooted at {}",
-				conn.getChip());
-		Downloader dl = new Downloader(conn);
-		for (WorkItems item : work) {
-			for (List<Region> regionsOnCore : item.regions) {
-				/*
-				 * Once there's something too small, all subsequent retrieves
-				 * for that recording region have to be done the same way to get
-				 * the data in the DB in the right order.
-				 */
-				boolean addToSmall = false;
-				for (Region region : regionsOnCore) {
-					if (region.size < SMALL_RETRIEVE_THRESHOLD) {
-						addToSmall = true;
-					}
-					if (addToSmall) {
-						log.info("moving {} to low-speed download system",
-								region);
-						synchronized (smallWork) {
+		try (Closeable c = MDC.putCloseable(BOARD_ROOT, "("
+				+ conn.getChip().getX() + "," + conn.getChip().getY() + ")")) {
+			log.info("processing fast downloads", conn.getChip());
+			Downloader dl = new Downloader(conn);
+			for (WorkItems item : work) {
+				for (List<Region> regionsOnCore : item.regions) {
+					/*
+					 * Once there's something too small, all subsequent
+					 * retrieves for that recording region have to be done the
+					 * same way to get the data in the DB in the right order.
+					 */
+					boolean addToSmall = false;
+					for (Region region : regionsOnCore) {
+						if (region.size < SMALL_RETRIEVE_THRESHOLD) {
+							addToSmall = true;
+						}
+						if (addToSmall) {
+							log.info("moving {} to low-speed download system",
+									region);
+							synchronized (smallWork) {
+								smallWork
+										.computeIfAbsent(conn.getChip(),
+												x -> new ArrayList<>())
+										.add(region);
+							}
+							continue;
+						}
+						try {
+							ByteBuffer data = dl.doDownload(
+									item.monitor.asCoreLocation(), region);
+							if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+								compareDownloadWithSCP(region, data);
+							}
+							storeData(region, data);
+						} catch (TimeoutException e) {
+							addToSmall = true;
+							log.info("moving {} to low-speed download system"
+									+ " due to timeout", region);
+							smallWork.computeIfAbsent(conn.getChip(),
+									x -> new ArrayList<>()).add(region);
+						} catch (ProcessException e) {
+							addToSmall = true;
+							log.info("moving {} to low-speed download system"
+									+ " due to failure in comparison code",
+									region, e);
 							smallWork.computeIfAbsent(conn.getChip(),
 									x -> new ArrayList<>()).add(region);
 						}
-						continue;
-					}
-					try {
-						ByteBuffer data = dl.doDownload(
-								item.monitor.asCoreLocation(), region);
-						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-							compareDownloadWithSCP(region, data);
-						}
-						storeData(region, data);
-					} catch (TimeoutException e) {
-						addToSmall = true;
-						log.info("moving {} to low-speed download system"
-								+ " due to timeout", region);
-						smallWork.computeIfAbsent(conn.getChip(),
-								x -> new ArrayList<>()).add(region);
-					} catch (ProcessException e) {
-						addToSmall = true;
-						log.info(
-								"moving {} to low-speed download system"
-										+ " due to failure in comparison code",
-								region, e);
-						smallWork.computeIfAbsent(conn.getChip(),
-								x -> new ArrayList<>()).add(region);
 					}
 				}
 			}
@@ -430,16 +436,18 @@ public abstract class DataGatherer {
 	 */
 	private void slowDownload(List<Region> regions)
 			throws IOException, ProcessException, StorageException {
-		HasChipLocation localroot =
+		ChipLocation localroot =
 				machine.getChipAt(regions.get(0).core).nearestEthernet
 						.asChipLocation();
-		log.info("processing {} slow downloads on board rooted at {}",
-				regions.size(), localroot);
-		for (Region region : regions) {
-			log.info("processing slow download from {} via {}", region,
-					localroot);
-			storeData(region, txrx.readMemory(region.core.getScampCore(),
-					region.startAddress, region.size));
+		try (Closeable c = MDC.putCloseable(BOARD_ROOT,
+				"(" + localroot.getX() + "," + localroot.getY() + ")")) {
+			log.info("processing {} slow downloads",
+					regions.size());
+			for (Region region : regions) {
+				log.info("processing slow download from {}", region);
+				storeData(region, txrx.readMemory(region.core.getScampCore(),
+						region.startAddress, region.size));
+			}
 		}
 	}
 
@@ -560,8 +568,6 @@ public abstract class DataGatherer {
 	 * @author Donal Fellows
 	 */
 	private final class DoNotDropPackets implements AutoCloseable {
-		/** The location of the ethernet for the board. For logging. */
-		private final ChipLocation gathererChip;
 		/** The monitor cores on the board. */
 		private final CoreSubsets monitorCores;
 		/**
@@ -585,7 +591,6 @@ public abstract class DataGatherer {
 		DoNotDropPackets(List<Gather> gatherers)
 				throws IOException, ProcessException {
 			log.info("disabling router timeouts on whole machine");
-			gathererChip = null;
 			monitorCores = new CoreSubsets();
 			for (Gather g : gatherers) {
 				for (Monitor m : g.getMonitors()) {
@@ -624,11 +629,7 @@ public abstract class DataGatherer {
 		 */
 		@Override
 		public void close() throws IOException, ProcessException {
-			if (gathererChip == null) {
-				log.info("enabling router timeouts across whole machine");
-			} else {
-				log.info("enabling router timeouts on board {}", gathererChip);
-			}
+			log.info("enabling router timeouts across whole machine");
 			try {
 				txrx.setReinjectionEmergencyTimeout(monitorCores,
 						savedStatus.getEmergencyTimeout());
@@ -640,15 +641,8 @@ public abstract class DataGatherer {
 						savedStatus.isReinjectingFixedRoute(),
 						savedStatus.isReinjectingNearestNeighbour());
 			} catch (IOException | ProcessException e) {
-				if (gathererChip == null) {
-					log.error("problem resetting router timeouts on machine; "
-							+ "checking if the cores are OK...");
-				} else {
-					log.error(
-							"problem resetting router timeouts on board of {}; "
-									+ "checking if the cores are OK...",
-							gathererChip);
-				}
+				log.error("problem resetting router timeouts on machine; "
+						+ "checking if the cores are OK...");
 				checkCores(monitorCores, e);
 				throw e;
 			}
@@ -826,16 +820,16 @@ public abstract class DataGatherer {
 		BlockingQueue<ByteBuffer> launchReaderThread() {
 			BlockingQueue<ByteBuffer> messQueue =
 					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+			String boardRoot = MDC.get(BOARD_ROOT);
 			// The thread that listens for Data Speed Up messages.
 			Thread t = new Thread(() -> {
 				// While socket is open add messages to the queue
-				try {
+				try (Closeable c = MDC.putCloseable(BOARD_ROOT, boardRoot)) {
 					mainLoop(messQueue);
 				} catch (InterruptedException e) {
-					log.error("failed to offer packet from {} to queue",
-							getChip());
+					log.error("failed to offer packet to queue");
 				} catch (IOException e) {
-					log.error("failed to receive packet from {}", getChip(), e);
+					log.error("failed to receive packet", e);
 				}
 			}, "ReadThread");
 			t.setDaemon(true);
@@ -910,8 +904,7 @@ public abstract class DataGatherer {
 							continue;
 						}
 						messQueue.put(EMPTY_DATA);
-						log.info("socket timed out receiving from {}",
-								getChip());
+						log.info("socket timed out while receiving");
 					}
 				} catch (EOFException e) {
 					// Race condition can occasionally close socket early

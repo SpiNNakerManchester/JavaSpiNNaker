@@ -25,6 +25,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
+import uk.ac.manchester.spinnaker.front_end.download.DataGatherer;
 
 /**
  * Utilities for working with the log. <em>This should be the only place in our
@@ -35,6 +36,7 @@ import uk.ac.manchester.spinnaker.connections.UDPConnection;
 public abstract class LogControl {
 	private static final String LOG_FILE = "jspin.log";
 	private static final String LOGGER_NAME = "tofile";
+	private static final String GATHER_LOGGER_NAME = "gatherlog";
 	private static final String LOGGING_LEVEL_NAME = "logging.level";
 	private static final String UDP_LOGGING = "logging.udp";
 
@@ -52,6 +54,14 @@ public abstract class LogControl {
 		File logfile = new File(dir, LOG_FILE);
 		FileAppender a =
 				(FileAppender) getRootLogger().getAppender(LOGGER_NAME);
+		if (System.getProperty(LOGGING_LEVEL_NAME) == null) {
+			a.setThreshold(Level.INFO);
+		}
+		a.setFile(logfile.getAbsolutePath());
+		a.activateOptions();
+
+		a = (FileAppender) Logger.getLogger(DataGatherer.class)
+				.getAppender(GATHER_LOGGER_NAME);
 		if (System.getProperty(LOGGING_LEVEL_NAME) == null) {
 			a.setThreshold(Level.INFO);
 		}
