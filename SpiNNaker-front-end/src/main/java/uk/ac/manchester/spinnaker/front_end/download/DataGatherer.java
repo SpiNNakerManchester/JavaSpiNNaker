@@ -36,7 +36,6 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,13 +55,13 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
@@ -147,7 +146,6 @@ public abstract class DataGatherer {
 	private final BasicExecutor pool;
 	private int missCount;
 	private Machine machine;
-	private Tasks tasks;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
@@ -391,12 +389,24 @@ public abstract class DataGatherer {
 						continue;
 					}
 					try {
-						storeData(region, dl.doDownload(
-								item.monitor.asCoreLocation(), region));
+						ByteBuffer data = dl.doDownload(
+								item.monitor.asCoreLocation(), region);
+						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+							compareDownloadWithSCP(region, data);
+						}
+						storeData(region, data);
 					} catch (TimeoutException e) {
 						addToSmall = true;
 						log.info("moving {} to low-speed download system"
 								+ " due to timeout", region);
+						smallWork.computeIfAbsent(conn.getChip(),
+								x -> new ArrayList<>()).add(region);
+					} catch (ProcessException e) {
+						addToSmall = true;
+						log.info(
+								"moving {} to low-speed download system"
+										+ " due to failure in comparison code",
+								region, e);
 						smallWork.computeIfAbsent(conn.getChip(),
 								x -> new ArrayList<>()).add(region);
 					}
@@ -420,26 +430,17 @@ public abstract class DataGatherer {
 	 */
 	private void slowDownload(List<Region> regions)
 			throws IOException, ProcessException, StorageException {
+		HasChipLocation localroot =
+				machine.getChipAt(regions.get(0).core).nearestEthernet
+						.asChipLocation();
 		log.info("processing {} slow downloads on board rooted at {}",
-				regions.size(),
-				machine.getChipAt(regions.get(0).core).nearestEthernet);
+				regions.size(), localroot);
 		for (Region region : regions) {
+			log.info("processing slow download from {} via {}", region,
+					localroot);
 			storeData(region, txrx.readMemory(region.core.getScampCore(),
 					region.startAddress, region.size));
 		}
-	}
-
-	/**
-	 * Request that a collection of boards be downloaded.
-	 *
-	 * @param gatherers
-	 *            The data gatherer information for the boards.
-	 */
-	public void addTasks(List<Gather> gatherers) {
-		sanityCheck(gatherers);
-		// Do the actual submissions
-		tasks = pool.submitTasks(
-				gatherers.stream().map(g -> () -> downloadBoard(g)));
 	}
 
 	private void sanityCheck(List<Gather> gatherers) {
@@ -460,186 +461,6 @@ public abstract class DataGatherer {
 				throw new IllegalStateException(
 						"gatherer at " + g.asCoreLocation()
 								+ " without direct route in transceiver");
-			}
-		}
-	}
-
-	/**
-	 * Indicates that all tasks have been submitted and waits for them all to
-	 * finish (up to a day).
-	 *
-	 * @return The total number of missed packets. Misses are retried, so this
-	 *         is just an assessment of data transfer quality.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If DB access goes wrong.
-	 * @throws InterruptedException
-	 *             If the wait (for the internal thread pool to finish) is
-	 *             interrupted.
-	 */
-	public int waitForTasksToFinish() throws IOException, ProcessException,
-			StorageException, InterruptedException {
-		try {
-			tasks.awaitAndCombineExceptions();
-		} catch (IOException | ProcessException | StorageException
-				| RuntimeException e) {
-			throw e;
-		} catch (TimeoutException e) {
-			System.exit(1);
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected exception", e);
-		}
-		return missCount;
-	}
-
-	/**
-	 * Do all the downloads for a board.
-	 *
-	 * @param gatherer
-	 *            The particular gatherer that identifies a board.
-	 */
-	private void downloadBoard(Gather gatherer) throws Exception {
-		List<Region> smallRetrieves = new ArrayList<>();
-		ChipLocation gathererChip = gatherer.asChipLocation();
-		CoreSubsets monitorCores = new CoreSubsets();
-		for (Monitor monitor : gatherer.getMonitors()) {
-			monitorCores.addCore(monitor.asCoreLocation());
-		}
-		try (GatherDownloadConnection conn = new GatherDownloadConnection(
-				gathererChip, gatherer.getIptag())) {
-			log.info(
-					"reconfiguring IPtag on {} to point to receiving "
-							+ "socket {}:{}",
-					gathererChip, conn.getLocalIPAddress(),
-					conn.getLocalPort());
-			reconfigureIPtag(gatherer.getIptag(), gathererChip, conn);
-			try (DoNotDropPackets dnd =
-					new DoNotDropPackets(gathererChip, monitorCores)) {
-				doDownloads(gatherer.getMonitors(), smallRetrieves, conn);
-			}
-		}
-		if (!smallRetrieves.isEmpty()) {
-			log.info("performing additional retrievals of "
-					+ "small data blocks from {}", gathererChip);
-		}
-		for (Region r : smallRetrieves) {
-			if (r.size > 0) {
-				storeData(r, txrx.readMemory(r.core.asChipLocation(),
-						r.startAddress, r.size));
-			} else {
-				storeData(r, EMPTY_DATA);
-			}
-		}
-	}
-
-	/**
-	 * Process all the Data Speed Up activity for a board.
-	 *
-	 * @param monitors
-	 *            The information about what downloads are wanted for a
-	 *            particular Data Speed Up Packet Gatherer, by Extra Monitor
-	 *            Core.
-	 * @param smallRetrieves
-	 *            Where to store small retrieves for later handling (via usual
-	 *            SCP transfers).
-	 * @param conn
-	 *            The connection for talking to SpiNNaker.
-	 * @throws StorageException
-	 *             If the database rejects something.
-	 * @throws IOException
-	 *             If IO on the network fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws TimeoutException
-	 *             If things time out unrecoverably.
-	 */
-	private void doDownloads(Collection<Monitor> monitors,
-			List<Region> smallRetrieves, GatherDownloadConnection conn)
-			throws IOException, ProcessException, StorageException,
-			TimeoutException {
-		Downloader dl = new Downloader(conn);
-		for (Monitor mon : monitors) {
-			CoreLocation monitor = mon.asCoreLocation();
-			for (Placement place : mon.getPlacements()) {
-				if (!place.onSameChipAs(monitor)) {
-					throw new IllegalArgumentException(
-							"cannot gather from placement of "
-									+ place.getVertex().getLabel() + " ("
-									+ place.asChipLocation()
-									+ ") via monitor on " + monitor
-									+ ": different chip");
-				}
-				if (log.isInfoEnabled()) {
-					log.info(
-							"downloading recording regions of vertex {} from "
-									+ "{} via {}",
-							place.getVertex().getLabel(),
-							place.asCoreLocation(), monitor);
-				}
-				for (int regionID : place.getVertex().getRecordedRegionIds()) {
-					handleOneRecordingRegion(smallRetrieves, dl, place,
-							regionID, monitor);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Process a single (recording) region.
-	 *
-	 * @param smallRetrieves
-	 *            Where to store small retrieves for later handling (via usual
-	 *            SCP transfers).
-	 * @param downloader
-	 *            The downloader object.
-	 * @param place
-	 *            Where this region is.
-	 * @param regionID
-	 *            The ID (index) of this region.
-	 * @param extraMonitor
-	 *            The monitor core to <i>actually</i> fetch the data from.
-	 * @throws StorageException
-	 *             If the database rejects something.
-	 * @throws IOException
-	 *             If IO on the network fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws TimeoutException
-	 *             If things time out unrecoverably.
-	 */
-	private void handleOneRecordingRegion(List<Region> smallRetrieves,
-			Downloader downloader, Placement place, int regionID,
-			CoreLocation extraMonitor) throws StorageException, IOException,
-			ProcessException, TimeoutException {
-		List<Region> rs = getRegion(place, regionID);
-		if (rs.stream().allMatch(r -> r.size < SMALL_RETRIEVE_THRESHOLD)) {
-			smallRetrieves.addAll(rs);
-			return;
-		}
-		boolean haveTimedOut = false;
-		for (Region r : rs) {
-			// Skip zero-sized retrieves
-			if (r.size < 1) {
-				continue;
-			}
-			if (r.size < SMALL_RETRIEVE_THRESHOLD || haveTimedOut) {
-				// Do this immediately; order matters!
-				storeData(r, txrx.readMemory(r.core.asChipLocation(),
-						r.startAddress, r.size));
-			} else {
-				try {
-					ByteBuffer data = downloader.doDownload(extraMonitor, r);
-					if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-						compareDownloadWithSCP(r, data);
-					}
-					storeData(r, data);
-				} catch (TimeoutException e) {
-					smallRetrieves.add(r);
-					haveTimedOut = true;
-				}
 			}
 		}
 	}
@@ -748,47 +569,6 @@ public abstract class DataGatherer {
 		 * cores are assumed to be the same.
 		 */
 		private ReinjectionStatus savedStatus;
-
-		/**
-		 * Configure the routers of the chips on a board to never drop packets.
-		 *
-		 * @param gathererChip
-		 *            The location of the ethernet for the board.
-		 * @param monitorCores
-		 *            The monitor cores on the board.
-		 * @throws IOException
-		 *             If message sending or reception fails.
-		 * @throws ProcessException
-		 *             If SpiNNaker rejects a message.
-		 */
-		DoNotDropPackets(ChipLocation gathererChip, CoreSubsets monitorCores)
-				throws IOException, ProcessException {
-			log.info("disabling router timeouts on board based at {}",
-					gathererChip);
-			this.gathererChip = gathererChip;
-			this.monitorCores = new CoreSubsets();
-			for (CoreLocation core : monitorCores) {
-				if (machine.getChipAt(core).nearestEthernet
-						.onSameChipAs(gathererChip)) {
-					this.monitorCores.addCore(core);
-				} else {
-					log.warn(
-							"extra monitor ({}) not on same board as "
-									+ "gatherer ({}); removing from control",
-							core, gathererChip);
-				}
-			}
-
-			// Store the last reinjection status for resetting
-			savedStatus = saveRouterStatus();
-			// Set to not inject dropped packets
-			txrx.setReinjectionTypes(monitorCores, false, false, false, false);
-			// Clear any outstanding packets from reinjection
-			txrx.clearReinjectionQueues(monitorCores);
-			// Set timeouts
-			txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
-			txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
-		}
 
 		/**
 		 * Configure the routers of the chips on a machine to never drop
@@ -970,6 +750,7 @@ public abstract class DataGatherer {
 	private static final class GatherDownloadConnection extends SCPConnection {
 		private boolean paused;
 		private long lastSend = 0L;
+		private long recvStart = 0L;
 		/**
 		 * Packet minimum send interval, in <em>nanoseconds</em>.
 		 */
@@ -1081,6 +862,7 @@ public abstract class DataGatherer {
 		void unstick() {
 			synchronized (this) {
 				paused = false;
+				recvStart = System.currentTimeMillis();
 			}
 		}
 
@@ -1109,6 +891,9 @@ public abstract class DataGatherer {
 				throws IOException, InterruptedException {
 			do {
 				try {
+					synchronized (this) {
+						recvStart = System.currentTimeMillis();
+					}
 					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
 					if (recvd != null) {
 						messQueue.put(recvd);
@@ -1119,6 +904,11 @@ public abstract class DataGatherer {
 					}
 				} catch (SocketTimeoutException e) {
 					if (!pause()) {
+						if (System.currentTimeMillis()
+								- recvStart < TIMEOUT_PER_RECEIVE) {
+							// Fake timeout
+							continue;
+						}
 						messQueue.put(EMPTY_DATA);
 						log.info("socket timed out receiving from {}",
 								getChip());
@@ -1199,9 +989,9 @@ public abstract class DataGatherer {
 					ceildiv(region.size + 1, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			expectedSeqNums = new BitSet(maxSeqNum);
 			expectedSeqNums.set(0, maxSeqNum - 1);
-			lastRequested = expectedSeqNums.stream().boxed().collect(toList());
-			conn.unstick();
+			lastRequested = expectedSeqs();
 			conn.sendStart(monitorCore, region.startAddress, region.size);
+			conn.unstick();
 			received = false;
 			try {
 				boolean finished;
@@ -1348,8 +1138,7 @@ public abstract class DataGatherer {
 					numMissing, monitorCore);
 
 			// Build a list of the sequence numbers of all missing packets
-			List<Integer> missingSeqs =
-					expectedSeqNums.stream().boxed().collect(toList());
+			List<Integer> missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
 			if (log.isDebugEnabled()) {
@@ -1372,6 +1161,13 @@ public abstract class DataGatherer {
 			}
 			conn.unstick();
 			return false;
+		}
+
+		/**
+		 * @return The expected sequence numbers, as an ordered list.
+		 */
+		private List<Integer> expectedSeqs() {
+			return expectedSeqNums.stream().boxed().collect(toList());
 		}
 	}
 }
