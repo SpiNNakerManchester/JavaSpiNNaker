@@ -188,7 +188,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/** @return The local IP address to which the connection is bound. */
 	@Override
-	public InetAddress getLocalIPAddress() {
+	public final InetAddress getLocalIPAddress() {
 		try {
 			return getLocalAddress().getAddress();
 		} catch (IOException e) {
@@ -198,7 +198,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/** @return The local port to which the connection is bound. */
 	@Override
-	public int getLocalPort() {
+	public final int getLocalPort() {
 		try {
 			return getLocalAddress().getPort();
 		} catch (IOException e) {
@@ -211,7 +211,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         {@code null} if it is not connected.
 	 */
 	@Override
-	public InetAddress getRemoteIPAddress() {
+	public final InetAddress getRemoteIPAddress() {
 		try {
 			return getRemoteAddress().getAddress();
 		} catch (IOException e) {
@@ -224,7 +224,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         it is not connected.
 	 */
 	@Override
-	public int getRemotePort() {
+	public final int getRemotePort() {
 		try {
 			return getRemoteAddress().getPort();
 		} catch (IOException e) {
@@ -241,7 +241,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public ByteBuffer receive() throws SocketTimeoutException, IOException {
+	public final ByteBuffer receive()
+			throws SocketTimeoutException, IOException {
 		return receive(null);
 	}
 
@@ -278,6 +279,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new SocketTimeoutException("no packet available");
 		}
 		buffer.flip();
+		logRecv(buffer, addr);
 		return buffer.order(LITTLE_ENDIAN);
 	}
 
@@ -291,7 +293,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public DatagramPacket receiveWithAddress()
+	public final DatagramPacket receiveWithAddress()
 			throws SocketTimeoutException, IOException {
 		return receiveWithAddress(null);
 	}
@@ -329,6 +331,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (addr == null) {
 			throw new SocketTimeoutException();
 		}
+		logRecv(buffer, addr);
 		return new DatagramPacket(buffer.array(), 0, buffer.position(), addr);
 	}
 
@@ -340,7 +343,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void send(DatagramPacket data) throws IOException {
+	public final void send(DatagramPacket data) throws IOException {
 		doSend(wrap(data.getData(), data.getOffset(), data.getLength()));
 	}
 
@@ -365,14 +368,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 					"data buffer must have bytes to send");
 		}
 		if (log.isDebugEnabled()) {
-			log.debug("sending data of length {} to {}", data.remaining(),
-					getRemoteAddress());
-			byte[] bytes = new byte[data.remaining()];
-			data.duplicate().get(bytes);
-			log.debug("message data: {}",
-					IntStream.range(0, bytes.length)
-							.mapToObj(i -> hexbyte(bytes[i]))
-							.collect(Collectors.toList()));
+			logSend(data, getRemoteAddress());
 		}
 		int sent = channel.send(data, remoteAddress);
 		log.debug("sent {} bytes", sent);
@@ -386,7 +382,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void send(byte[] data) throws IOException {
+	public final void send(byte[] data) throws IOException {
 		doSend(wrap(data));
 	}
 
@@ -398,7 +394,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void send(ByteBuffer data) throws IOException {
+	public final void send(ByteBuffer data) throws IOException {
 		doSend(data);
 	}
 
@@ -414,7 +410,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void sendTo(DatagramPacket data, InetAddress address, int port)
+	public final void sendTo(DatagramPacket data, InetAddress address, int port)
 			throws IOException {
 		sendTo(wrap(data.getData(), data.getOffset(), data.getLength()),
 				address, port);
@@ -432,7 +428,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void sendTo(byte[] data, InetAddress address, int port)
+	public final void sendTo(byte[] data, InetAddress address, int port)
 			throws IOException {
 		sendTo(wrap(data, 0, data.length), address, port);
 	}
@@ -462,11 +458,38 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IllegalStateException(
 					"data buffer must have bytes to send");
 		}
-		channel.send(data, new InetSocketAddress(address, port));
+		InetSocketAddress addr = new InetSocketAddress(address, port);
+		if (log.isDebugEnabled()) {
+			logSend(data, addr);
+		}
+		int sent = channel.send(data, addr);
+		log.debug("sent {} bytes", sent);
+	}
+
+	private void logSend(ByteBuffer data, SocketAddress addr) {
+		log.debug("sending data of length {} to {}", data.remaining(),
+				addr);
+		byte[] bytes = new byte[data.remaining()];
+		data.duplicate().get(bytes);
+		log.debug("message data: {}",
+				IntStream.range(0, bytes.length)
+						.mapToObj(i -> hexbyte(bytes[i]))
+						.collect(Collectors.toList()));
+	}
+
+	private void logRecv(ByteBuffer data, SocketAddress addr) {
+		log.debug("received data of length {} from {}", data.remaining(),
+				addr);
+		byte[] bytes = new byte[data.remaining()];
+		data.duplicate().get(bytes);
+		log.debug("message data: {}",
+				IntStream.range(0, bytes.length)
+						.mapToObj(i -> hexbyte(bytes[i]))
+						.collect(Collectors.toList()));
 	}
 
 	@Override
-	public boolean isConnected() {
+	public final boolean isConnected() {
 		if (!canSend) {
 			return false;
 		}
@@ -489,12 +512,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public boolean isClosed() {
+	public final boolean isClosed() {
 		return !channel.isOpen();
 	}
 
 	@Override
-	public boolean isReadyToReceive(Integer timeout) throws IOException {
+	public final boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
 			return false;
 		}
@@ -538,7 +561,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
-	public void sendPortTriggerMessage(InetAddress host) throws IOException {
+	public final void sendPortTriggerMessage(InetAddress host)
+			throws IOException {
 		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
