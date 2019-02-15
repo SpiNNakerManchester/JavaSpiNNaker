@@ -63,6 +63,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
@@ -347,6 +348,10 @@ public abstract class DataGatherer {
 
 	private static final String BOARD_ROOT = "boardRoot";
 
+	private String root(HasChipLocation chip) {
+		return "(board:" + chip.getX() + "," + chip.getY() + ")";
+	}
+
 	/**
 	 * Do the fast downloads for a particular board.
 	 *
@@ -367,8 +372,7 @@ public abstract class DataGatherer {
 			GatherDownloadConnection conn,
 			Map<ChipLocation, List<Region>> smallWork)
 			throws IOException, StorageException {
-		try (Closeable c = MDC.putCloseable(BOARD_ROOT, "("
-				+ conn.getChip().getX() + "," + conn.getChip().getY() + ")")) {
+		try (Closeable c = MDC.putCloseable(BOARD_ROOT, root(conn.getChip()))) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
 			for (WorkItems item : work) {
@@ -436,11 +440,8 @@ public abstract class DataGatherer {
 	 */
 	private void slowDownload(List<Region> regions)
 			throws IOException, ProcessException, StorageException {
-		ChipLocation localroot =
-				machine.getChipAt(regions.get(0).core).nearestEthernet
-						.asChipLocation();
 		try (Closeable c = MDC.putCloseable(BOARD_ROOT,
-				"(" + localroot.getX() + "," + localroot.getY() + ")")) {
+				root(machine.getChipAt(regions.get(0).core).nearestEthernet))) {
 			log.info("processing {} slow downloads",
 					regions.size());
 			for (Region region : regions) {
