@@ -20,6 +20,7 @@ import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
 import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
+import static java.util.Collections.unmodifiableList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -999,7 +1000,11 @@ public abstract class DataGatherer {
 				}
 			}
 			dataReceiver.position(0);
-			return dataReceiver;
+			try {
+				return dataReceiver;
+			} finally {
+				dataReceiver = null;
+			}
 		}
 
 		/**
@@ -1135,15 +1140,18 @@ public abstract class DataGatherer {
 			List<Integer> missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
-			if (log.isDebugEnabled()) {
-				log.debug("missing sequence numbers: {}", missingSeqs);
-			}
+			log.debug("missing sequence numbers: {}", missingSeqs);
 			if (missingSeqs.equals(lastRequested)) {
 				log.info(
 						"retransmission cycle for {} made no progress;"
 								+ " bailing out to slow transfer mode",
 						monitorCore);
 				throw new TimeoutException();
+			}
+			if (missingSeqs.size() == lastRequested.size()) {
+				log.warn("what is going on?");
+				log.warn("last:{}", lastRequested);
+				log.warn("this:{}", missingSeqs);
 			}
 			lastRequested = missingSeqs;
 
@@ -1161,7 +1169,8 @@ public abstract class DataGatherer {
 		 * @return The expected sequence numbers, as an ordered list.
 		 */
 		private List<Integer> expectedSeqs() {
-			return expectedSeqNums.stream().boxed().collect(toList());
+			return unmodifiableList(
+					expectedSeqNums.stream().boxed().collect(toList()));
 		}
 	}
 }
