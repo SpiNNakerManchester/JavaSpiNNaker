@@ -1149,7 +1149,7 @@ public abstract class DataGatherer {
 						monitorCore);
 				throw new TimeoutException();
 			}
-			if (missingSeqs.size() == lastRequested.size()) {
+			if (missingSeqs.size() >= lastRequested.size()) {
 				log.warn("what is going on?");
 				log.warn("last:{}", lastRequested);
 				log.warn("this:{}", missingSeqs);

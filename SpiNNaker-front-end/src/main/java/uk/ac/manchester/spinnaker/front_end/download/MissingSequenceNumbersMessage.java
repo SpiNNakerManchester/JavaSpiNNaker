@@ -49,6 +49,17 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** How many sequence numbers fit in each subsequent message. */
 	private static final int MAX_NEXT_SIZE =
 			WORDS_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
+	/**
+	 * Max number of <em>next</em> packets to send in one go when asking for
+	 * retransmission.
+	 */
+	private static final int RETRANSMIT_EXTRA_COUNT = 7;
+	/**
+	 * Max number of sequence numbers to send in one go when asking for
+	 * retransmission.
+	 */
+	private static final int MAX_REQ_LOAD =
+			MAX_FIRST_SIZE + RETRANSMIT_EXTRA_COUNT * MAX_NEXT_SIZE;
 
 	/**
 	 * Compute the number of packets required to send a given count of sequence
@@ -92,7 +103,8 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 */
 	static Iterable<MissingSequenceNumbersMessage> createMessages(
 			HasCoreLocation destination, List<Integer> missingSeqs) {
-		int numPackets = computeNumberOfPackets(missingSeqs.size());
+		List<Integer> work = reduce(missingSeqs);
+		int numPackets = computeNumberOfPackets(work.size());
 		CoreLocation dest = destination.asCoreLocation();
 		return () -> new Iterator<MissingSequenceNumbersMessage>() {
 			int pktNum = 0;
@@ -107,7 +119,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 			public MissingSequenceNumbersMessage next() {
 				ByteBuffer data;
 				// Allocate and write header
-				int remaining = missingSeqs.size() - index;
+				int remaining = work.size() - index;
 				if (pktNum++ == 0) {
 					data = allocateWords(remaining, FIRST_OVERHEAD_WORDS);
 					data.putInt(START_MISSING_SEQS.value);
@@ -118,8 +130,8 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 				}
 
 				// Write body
-				while (data.hasRemaining() && index < missingSeqs.size()) {
-					data.putInt(missingSeqs.get(index++));
+				while (data.hasRemaining() && index < work.size()) {
+					data.putInt(work.get(index++));
 				}
 				data.flip();
 
@@ -127,6 +139,13 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 				return new MissingSequenceNumbersMessage(dest, data);
 			}
 		};
+	}
+
+	private static List<Integer> reduce(List<Integer> missingSeqs) {
+		if (missingSeqs.size() > MAX_REQ_LOAD) {
+			return missingSeqs.subList(0, MAX_REQ_LOAD);
+		}
+		return missingSeqs;
 	}
 
 	private MissingSequenceNumbersMessage(HasCoreLocation destination,
