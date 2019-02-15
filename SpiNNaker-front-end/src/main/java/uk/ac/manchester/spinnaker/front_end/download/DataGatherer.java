@@ -934,7 +934,7 @@ public abstract class DataGatherer {
 		 * failure.
 		 */
 		private boolean received;
-		private int timeoutcount = 0;
+		private int timeoutcount;
 		/** A flag for each packet sequence number that is expected. */
 		private BitSet expectedSeqNums;
 		private int maxSeqNum;
@@ -985,9 +985,10 @@ public abstract class DataGatherer {
 			expectedSeqNums = new BitSet(maxSeqNum);
 			expectedSeqNums.set(0, maxSeqNum - 1);
 			lastRequested = expectedSeqs();
+			received = false;
+			timeoutcount = 0;
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			conn.unstick();
-			received = false;
 			try {
 				boolean finished;
 				do {
