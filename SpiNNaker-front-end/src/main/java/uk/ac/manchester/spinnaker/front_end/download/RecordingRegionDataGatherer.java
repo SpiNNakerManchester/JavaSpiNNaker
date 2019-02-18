@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Integer.toHexString;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -29,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -44,7 +44,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * A data gatherer that pulls the data from a recording region.
@@ -59,7 +58,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	private final BufferManagerStorage database;
 	private Map<RRKey, RecordingRegionsDescriptor> descriptors =
 			new HashMap<>();
-	private final ExecutorService dbWorker = Executors.newSingleThreadExecutor();
+	private final ExecutorService dbWorker = newSingleThreadExecutor();
+	private int numWrites = 0;
 
 	/**
 	 * Create a data gatherer.
@@ -158,6 +158,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 				try {
 					database.appendRecordingContents(new RecordingRegion(
 							placement, index, state.start, 0), new byte[0]);
+					numWrites++;
 				} catch (StorageException e) {
 					log.error("failed to write to database", e);
 				}
@@ -179,6 +180,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 					data.remaining());
 			try {
 				database.appendRecordingContents(r, data);
+				numWrites++;
 			} catch (StorageException e) {
 				log.error("failed to write to database", e);
 			}
@@ -187,20 +189,10 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	public void close() throws InterruptedException {
-		ValueHolder<Boolean> down = new ValueHolder<>(false);
-		dbWorker.submit(() -> {
-			synchronized (down) {
-				down.setValue(true);
-				down.notifyAll();
-			}
-		});
+		log.info("waiting for database usage to complete");
 		dbWorker.shutdown();
-		synchronized (down) {
-			while (!down.getValue()) {
-				down.wait();
-			}
-		}
-		dbWorker.awaitTermination(1, TimeUnit.SECONDS);
+		dbWorker.awaitTermination(1, MINUTES);
+		log.info("total of {} database writes done", numWrites);
 	}
 }
 

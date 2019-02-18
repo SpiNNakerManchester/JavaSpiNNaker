@@ -52,6 +52,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
@@ -72,6 +73,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
@@ -159,6 +161,9 @@ public abstract class DataGatherer {
 		this.missCount = 0;
 	}
 
+	private static final String FAST_LABEL = "high-speed transfers";
+	private static final String SLOW_LABEL = "slow-speed transfers";
+
 	/**
 	 * Download he contents of the regions that are described through the data
 	 * gatherers.
@@ -177,16 +182,19 @@ public abstract class DataGatherer {
 	public int gather(List<Gather> gatherers)
 			throws IOException, ProcessException, StorageException {
 		sanityCheck(gatherers);
-		Map<ChipLocation, List<WorkItems>> work = discoverActualWork(gatherers);
+		ValueHolder<Integer> workSize = new ValueHolder<>(0);
+		Map<ChipLocation, List<WorkItems>> work =
+				discoverActualWork(gatherers, workSize);
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
 		Map<ChipLocation, List<Region>> smallWork = new HashMap<>();
-		try (DoNotDropPackets p = new DoNotDropPackets(gatherers)) {
+		try (DoNotDropPackets p = new DoNotDropPackets(gatherers);
+				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
 			parallel(work.keySet().stream()
 					.map(key -> () -> fastDownload(work.get(key),
-							conns.get(key), smallWork)));
+							conns.get(key), smallWork, bar)));
 		} finally {
 			log.info("shutting down high-speed download connections");
 			for (GatherDownloadConnection c : conns.values()) {
@@ -195,8 +203,12 @@ public abstract class DataGatherer {
 		}
 		log.info("launching {} parallel low-speed download tasks",
 				smallWork.size());
-		parallel(smallWork.values().stream()
-				.map(regions -> () -> slowDownload(regions)));
+		try (Progress bar = new Progress(
+				smallWork.values().stream().mapToInt(List::size).sum(),
+				SLOW_LABEL)) {
+			parallel(smallWork.values().stream()
+					.map(regions -> () -> slowDownload(regions, bar)));
+		}
 		return missCount;
 	}
 
@@ -233,6 +245,8 @@ public abstract class DataGatherer {
 	 *
 	 * @param gatherers
 	 *            The gatherer information.
+	 * @param workSize
+	 *            Where to write how much work there is to actually do.
 	 * @return What each board (as represented by the chip location of its data
 	 *         speed up packet gatherer) has to be downloaded.
 	 * @throws IOException
@@ -243,7 +257,7 @@ public abstract class DataGatherer {
 	 *             If DB access goes wrong.
 	 */
 	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
-			List<Gather> gatherers)
+			List<Gather> gatherers, ValueHolder<Integer> workSize)
 			throws IOException, ProcessException, StorageException {
 		log.info("discovering regions to download");
 		Map<ChipLocation, List<WorkItems>> work = new HashMap<>();
@@ -257,8 +271,8 @@ public abstract class DataGatherer {
 						List<Region> r = getRegion(p, id);
 						if (!r.isEmpty()) {
 							regions.add(r);
-							count += r.size();
 						}
+						count += r.size();
 					}
 					if (!regions.isEmpty()) {
 						workitems.add(new WorkItems(m, regions));
@@ -271,6 +285,7 @@ public abstract class DataGatherer {
 			}
 		}
 		log.info("found {} regions to download", count);
+		workSize.setValue(count);
 		return work;
 	}
 
@@ -350,6 +365,8 @@ public abstract class DataGatherer {
 	 *            Where to store any small or problem downloads; they're going
 	 *            to be processed later via SCP READs. <em>The order of items in
 	 *            the inner list may matter.</em>
+	 * @param bar
+	 *            The progress bar.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws StorageException
@@ -357,7 +374,7 @@ public abstract class DataGatherer {
 	 */
 	private void fastDownload(List<WorkItems> work,
 			GatherDownloadConnection conn,
-			Map<ChipLocation, List<Region>> smallWork)
+			Map<ChipLocation, List<Region>> smallWork, Progress bar)
 			throws IOException, StorageException {
 		try (Closeable c = MDC.putCloseable(BOARD_ROOT, root(conn.getChip()))) {
 			log.info("processing fast downloads", conn.getChip());
@@ -377,12 +394,8 @@ public abstract class DataGatherer {
 						if (addToSmall) {
 							log.info("moving {} to low-speed download system",
 									region);
-							synchronized (smallWork) {
-								smallWork
-										.computeIfAbsent(conn.getChip(),
-												x -> new ArrayList<>())
-										.add(region);
-							}
+							postpone(conn, smallWork, region);
+							bar.update();
 							continue;
 						}
 						try {
@@ -392,23 +405,32 @@ public abstract class DataGatherer {
 								compareDownloadWithSCP(region, data);
 							}
 							storeData(region, data);
+							bar.update();
 						} catch (TimeoutException e) {
 							addToSmall = true;
 							log.info("moving {} to low-speed download system"
 									+ " due to timeout", region);
-							smallWork.computeIfAbsent(conn.getChip(),
-									x -> new ArrayList<>()).add(region);
+							postpone(conn, smallWork, region);
+							bar.update();
 						} catch (ProcessException e) {
 							addToSmall = true;
 							log.info("moving {} to low-speed download system"
 									+ " due to failure in comparison code",
 									region, e);
-							smallWork.computeIfAbsent(conn.getChip(),
-									x -> new ArrayList<>()).add(region);
+							postpone(conn, smallWork, region);
+							bar.update();
 						}
 					}
 				}
 			}
+		}
+	}
+
+	private void postpone(GatherDownloadConnection conn,
+			Map<ChipLocation, List<Region>> smallWork, Region region) {
+		synchronized (smallWork) {
+			smallWork.computeIfAbsent(conn.getChip(), x -> new ArrayList<>())
+					.add(region);
 		}
 	}
 
@@ -418,6 +440,8 @@ public abstract class DataGatherer {
 	 * @param regions
 	 *            The regions to be processed on that board. <em>The order may
 	 *            be significant.</em>
+	 * @param bar
+	 *            The progress bar.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws ProcessException
@@ -425,16 +449,16 @@ public abstract class DataGatherer {
 	 * @throws StorageException
 	 *             If DB access goes wrong.
 	 */
-	private void slowDownload(List<Region> regions)
+	private void slowDownload(List<Region> regions, Progress bar)
 			throws IOException, ProcessException, StorageException {
 		try (Closeable c = MDC.putCloseable(BOARD_ROOT,
 				root(machine.getChipAt(regions.get(0).core).nearestEthernet))) {
-			log.info("processing {} slow downloads",
-					regions.size());
+			log.info("processing {} slow downloads", regions.size());
 			for (Region region : regions) {
 				log.info("processing slow download from {}", region);
 				storeData(region, txrx.readMemory(region.core.getScampCore(),
 						region.startAddress, region.size));
+				bar.update();
 			}
 		}
 	}
@@ -943,8 +967,8 @@ public abstract class DataGatherer {
 				throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
 			}
 			int len = data.remaining();
-			if (len != DATA_WORDS_PER_PACKET * WORD_SIZE
-					&& len != 0 && seqNum < maxSeqNum - 1) {
+			if (len != DATA_WORDS_PER_PACKET * WORD_SIZE && len != 0
+					&& seqNum < maxSeqNum - 1) {
 				log.warn("short packet ({} bytes) in non-terminal position "
 						+ "(seq: {})", len, seqNum);
 			}
@@ -974,8 +998,7 @@ public abstract class DataGatherer {
 		 * @throws TimeoutException
 		 *             If we have a full timeout.
 		 */
-		private boolean processTimeout()
-				throws IOException, TimeoutException {
+		private boolean processTimeout() throws IOException, TimeoutException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
