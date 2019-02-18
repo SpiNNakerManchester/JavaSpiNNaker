@@ -28,8 +28,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -43,20 +44,22 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * A data gatherer that pulls the data from a recording region.
  *
  * @author Donal Fellows
  */
-public class RecordingRegionDataGatherer extends DataGatherer {
+public class RecordingRegionDataGatherer extends DataGatherer
+		implements AutoCloseable {
 	protected static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
 	private final Transceiver txrx;
 	private final BufferManagerStorage database;
 	private Map<RRKey, RecordingRegionsDescriptor> descriptors =
 			new HashMap<>();
-	private final Executor dbWorker = Executors.newSingleThreadExecutor();
+	private final ExecutorService dbWorker = Executors.newSingleThreadExecutor();
 
 	/**
 	 * Create a data gatherer.
@@ -180,6 +183,24 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 				log.error("failed to write to database", e);
 			}
 		});
+	}
+
+	@Override
+	public void close() throws InterruptedException {
+		ValueHolder<Boolean> down = new ValueHolder<>(false);
+		dbWorker.submit(() -> {
+			synchronized (down) {
+				down.setValue(true);
+				down.notifyAll();
+			}
+		});
+		dbWorker.shutdown();
+		synchronized (down) {
+			while (!down.getValue()) {
+				down.wait();
+			}
+		}
+		dbWorker.awaitTermination(1, TimeUnit.SECONDS);
 	}
 }
 

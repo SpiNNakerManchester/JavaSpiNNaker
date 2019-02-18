@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-import uk.ac.manchester.spinnaker.front_end.download.DataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -110,7 +109,7 @@ public final class CommandLineInterface {
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
-				gather(args[1], args[2], args[THIRD]);
+				gatherRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
 			case "download":
@@ -121,13 +120,15 @@ public final class CommandLineInterface {
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
-				receive(args[1], args[2], args[THIRD]);
+				downloadRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
 			case "dse":
 				if (args.length != NUM_DSE_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "dse <machineFile> <runFolder>\"\n", JAR_FILE);
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s "
+									+ "dse <machineFile> <runFolder>\"\n",
+							JAR_FILE);
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
@@ -189,10 +190,10 @@ public final class CommandLineInterface {
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
 	 */
-	private static void dseRun(String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException,
-			ProcessException, StorageException, ExecutionException,
-			InterruptedException, DataSpecificationException {
+	public static void dseRun(String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, ExecutionException, InterruptedException,
+			DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
@@ -223,7 +224,7 @@ public final class CommandLineInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private static void iobufRun(String machineJsonFile, String iobufMapFile,
+	public static void iobufRun(String machineJsonFile, String iobufMapFile,
 			String runFolder)
 			throws IOException, SpinnmanException, ProcessException {
 		Machine machine = getMachine(machineJsonFile);
@@ -255,7 +256,7 @@ public final class CommandLineInterface {
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 */
-	private static void receive(String placementsJsonFile,
+	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
 			SpinnmanException, StorageException, ProcessException {
 		List<Placement> placements = getPlacements(placementsJsonFile);
@@ -289,18 +290,21 @@ public final class CommandLineInterface {
 	 *             If things are interrupted while waiting for all the downloads
 	 *             to be done
 	 */
-	private static void gather(String gatherersJsonFile, String machineJsonFile,
-			String runFolder) throws IOException, SpinnmanException,
-			ProcessException, StorageException, InterruptedException {
+	public static void gatherRun(String gatherersJsonFile,
+			String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, InterruptedException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine);
 		BufferManagerStorage database = getDatabase(runFolder);
 
-		DataGatherer runner =
-				new RecordingRegionDataGatherer(trans, machine, database);
-		int misses = runner.gather(gathers);
-		getLogger(CommandLineInterface.class).info("total misses: {}", misses);
+		try (RecordingRegionDataGatherer runner =
+				new RecordingRegionDataGatherer(trans, machine, database)) {
+			int misses = runner.gather(gathers);
+			getLogger(CommandLineInterface.class).info("total misses: {}",
+					misses);
+		}
 	}
 
 	private static Machine getMachine(String filename)
