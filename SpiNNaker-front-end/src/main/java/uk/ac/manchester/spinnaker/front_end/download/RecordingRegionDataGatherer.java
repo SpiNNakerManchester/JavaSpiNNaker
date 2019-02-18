@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 
@@ -52,6 +54,9 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			getLogger(RecordingRegionDataGatherer.class);
 	private final Transceiver txrx;
 	private final BufferManagerStorage database;
+	private Map<RRKey, RecordingRegionsDescriptor> descriptors =
+			new HashMap<>();
+	private final Executor dbWorker = Executors.newSingleThreadExecutor();
 
 	/**
 	 * Create a data gatherer.
@@ -75,9 +80,6 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		this.txrx = transceiver;
 		this.database = database;
 	}
-
-	private Map<RRKey, RecordingRegionsDescriptor> descriptors =
-			new HashMap<>();
 
 	private synchronized RecordingRegionsDescriptor getDescriptor(
 			ChipLocation chip, int baseAddress)
@@ -157,16 +159,22 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected void storeData(Region r, ByteBuffer data)
-			throws StorageException {
+	protected void storeData(Region r, ByteBuffer data) {
 		if (data == null) {
 			log.warn("failed to download data for {}:{} from {}:{}", r.core,
 					r.regionIndex, r.startAddress, r.size);
 			return;
 		}
-		log.info("storing region data for {}:{} from {}:{} as {} bytes", r.core,
-				r.regionIndex, r.startAddress, r.size, data.remaining());
-		database.appendRecordingContents(r, data);
+		dbWorker.execute(() -> {
+			log.info("storing region data for {}:{} from {}:{} as {} bytes",
+					r.core, r.regionIndex, r.startAddress, r.size,
+					data.remaining());
+			try {
+				database.appendRecordingContents(r, data);
+			} catch (StorageException e) {
+				log.error("failed to write to database", e);
+			}
+		});
 	}
 }
 
