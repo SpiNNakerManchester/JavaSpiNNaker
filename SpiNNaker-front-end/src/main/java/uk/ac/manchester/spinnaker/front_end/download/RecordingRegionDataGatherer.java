@@ -122,7 +122,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 
 	@Override
 	protected List<Region> getRegion(Placement placement, int index)
-			throws IOException, ProcessException, StorageException {
+			throws IOException, ProcessException {
 		ChannelBufferState state = getState(placement, index);
 		if (log.isInfoEnabled()) {
 			log.info("got state of {}:{} as {}", placement.asCoreLocation(),
@@ -151,9 +151,14 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		 * that it has definitely a record for the current region.
 		 */
 		if (regionPieces.isEmpty()) {
-			database.appendRecordingContents(
-					new RecordingRegion(placement, index, state.start, 0),
-					new byte[0]);
+			dbWorker.execute(() -> {
+				try {
+					database.appendRecordingContents(new RecordingRegion(
+							placement, index, state.start, 0), new byte[0]);
+				} catch (StorageException e) {
+					log.error("failed to write to database", e);
+				}
+			});
 		}
 		return regionPieces;
 	}
