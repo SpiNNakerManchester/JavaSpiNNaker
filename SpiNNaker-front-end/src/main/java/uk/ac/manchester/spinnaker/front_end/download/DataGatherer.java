@@ -18,10 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
-import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.unmodifiableList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
@@ -32,7 +30,6 @@ import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.Closeable;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -41,8 +38,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -94,10 +89,6 @@ public abstract class DataGatherer {
 	 * SCAMP memory read.
 	 */
 	public static final int SMALL_RETRIEVE_THRESHOLD = 40000;
-	/**
-	 * Maximum number of messages in the message queue. Per parallel download.
-	 */
-	private static final int QUEUE_CAPACITY = 1024;
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 	/**
@@ -131,11 +122,6 @@ public abstract class DataGatherer {
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
 	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
-	/**
-	 * An empty buffer used to mark the end of the stream. <i>Only check for
-	 * this by reference equality, not by calling any method.</i>
-	 */
-	private static final ByteBuffer EOF = ByteBuffer.allocate(0);
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
@@ -744,9 +730,7 @@ public abstract class DataGatherer {
 	 * @author Donal Fellows
 	 */
 	private static final class GatherDownloadConnection extends SCPConnection {
-		private boolean paused;
 		private long lastSend = 0L;
-		private long recvStart = 0L;
 		/**
 		 * Packet minimum send interval, in <em>nanoseconds</em>.
 		 */
@@ -765,7 +749,6 @@ public abstract class DataGatherer {
 		GatherDownloadConnection(ChipLocation location, IPTag iptag)
 				throws IOException {
 			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
-			paused = false;
 		}
 
 		private void sendMsg(SDPMessage msg) throws IOException {
@@ -811,110 +794,6 @@ public abstract class DataGatherer {
 		void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
 			sendMsg(msg);
 		}
-
-		/**
-		 * Start the reader thread.
-		 *
-		 * @return The queue containing the messages that will be received by
-		 *         the reader thread. Timeouts are described by empty messages,
-		 *         as SpiNNaker never sends those out.
-		 */
-		BlockingQueue<ByteBuffer> launchReaderThread() {
-			BlockingQueue<ByteBuffer> messQueue =
-					new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-			String boardRoot = MDC.get(BOARD_ROOT);
-			// The thread that listens for Data Speed Up messages.
-			Thread t = new Thread(() -> {
-				// While socket is open add messages to the queue
-				try (Closeable c = MDC.putCloseable(BOARD_ROOT, boardRoot)) {
-					mainLoop(messQueue);
-				} catch (InterruptedException e) {
-					log.error("failed to offer packet to queue");
-				} catch (IOException e) {
-					log.error("failed to receive packet", e);
-				}
-			}, "ReadThread");
-			t.setDaemon(true);
-			t.setPriority(MAX_PRIORITY);
-			t.start();
-			return messQueue;
-		}
-
-		/**
-		 * Asks the system to start pausing timeouts.
-		 *
-		 * @return Whether the system was paused; if not, there's a timeout to
-		 *         deliver.
-		 */
-		private boolean pause() {
-			synchronized (this) {
-				boolean p = paused;
-				paused = true;
-				return p;
-			}
-		}
-
-		/** Asks the reader thread to continue delivering timeouts. */
-		void unstick() {
-			synchronized (this) {
-				paused = false;
-				recvStart = System.currentTimeMillis();
-			}
-		}
-
-		@Override
-		public void close() throws IOException {
-			super.close();
-			unstick();
-		}
-
-		/**
-		 * The main loop of the thread. While the socket is open, messages will
-		 * be added to the queue. When a timeout occurs, the reader pauses until
-		 * the consumer is ready to handle things once again.
-		 *
-		 * @param messQueue
-		 *            Where to store received messages. Timeouts are handled by
-		 *            putting in an empty message; SpiNNaker never sends out an
-		 *            empty message.
-		 * @throws IOException
-		 *             If message reception fails.
-		 * @throws InterruptedException
-		 *             If the message queue is full and we get interrupted when
-		 *             trying to put a message on it. (unexpected)
-		 */
-		private void mainLoop(BlockingQueue<ByteBuffer> messQueue)
-				throws IOException, InterruptedException {
-			do {
-				try {
-					synchronized (this) {
-						recvStart = System.currentTimeMillis();
-					}
-					ByteBuffer recvd = receive(TIMEOUT_PER_RECEIVE);
-					if (recvd != null) {
-						messQueue.put(recvd);
-                        if (log.isDebugEnabled()) {
-    						log.debug("pushed message of {} bytes",
-                                    recvd.limit());
-                        }
-					}
-				} catch (SocketTimeoutException e) {
-					if (!pause()) {
-						if (System.currentTimeMillis()
-								- recvStart < TIMEOUT_PER_RECEIVE) {
-							// Fake timeout
-							continue;
-						}
-						messQueue.put(EMPTY_DATA);
-						log.info("socket timed out while receiving");
-					}
-				} catch (EOFException e) {
-					// Race condition can occasionally close socket early
-					messQueue.put(EOF);
-					break;
-				}
-			} while (!isClosed());
-		}
 	}
 
 	/**
@@ -925,7 +804,6 @@ public abstract class DataGatherer {
 	 */
 	private final class Downloader {
 		private final GatherDownloadConnection conn;
-		private final BlockingQueue<ByteBuffer> queue;
 
 		/**
 		 * Whether a packet has previously been received on this connection
@@ -950,7 +828,6 @@ public abstract class DataGatherer {
 		 */
 		private Downloader(GatherDownloadConnection connection) {
 			conn = connection;
-			queue = connection.launchReaderThread();
 		}
 
 		/**
@@ -988,7 +865,6 @@ public abstract class DataGatherer {
 			received = false;
 			timeoutcount = 0;
 			conn.sendStart(monitorCore, region.startAddress, region.size);
-			conn.unstick();
 			try {
 				boolean finished;
 				do {
@@ -1031,22 +907,14 @@ public abstract class DataGatherer {
 			return processTimeout();
 		}
 
-		private ByteBuffer getNextPacket(int timeout) throws EOFException {
+		private ByteBuffer getNextPacket(int timeout) throws IOException {
 			try {
-				ByteBuffer b = queue.poll(timeout, MILLISECONDS);
+				ByteBuffer b = conn.receive(timeout);
 				if (b == null) {
 					return EMPTY_DATA;
 				}
-				if (b == EOF) {
-					throw new EOFException("queue reader has been drained");
-				}
 				return b;
-			} catch (InterruptedException ignored) {
-				/*
-				 * This is in a thread that isn't ever interrupted, but IN
-				 * THEORY interruption is exactly like timing out as far as this
-				 * thread is concerned anyway.
-				 */
+			} catch (SocketTimeoutException ignored) {
 				return EMPTY_DATA;
 			}
 		}
@@ -1162,7 +1030,6 @@ public abstract class DataGatherer {
 				snooze(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
-			conn.unstick();
 			return false;
 		}
 
