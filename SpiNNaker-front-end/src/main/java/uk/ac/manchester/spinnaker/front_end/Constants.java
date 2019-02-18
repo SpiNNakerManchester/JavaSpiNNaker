@@ -51,4 +51,24 @@ public abstract class Constants {
 	public static final int PARALLEL_SIZE =
 			// Zero or less make no sense at all
 			max(1, getInteger(PARALLEL_PROPERTY, PARALLEL_DEFAULT));
+
+	/**
+	 * The name of the system property defining the number of <em>next
+	 * messages</em> that should be used in the data speed up gatherer
+	 * protocol's retransmission mode.
+	 * <p>
+	 * If a property with this name is absent, a default is used ({@code 7}).
+	 */
+	public static final String NEXT_MSGS_PROPERTY = "spinnaker.next_messages";
+	/**
+	 * Default value of {@link #PARALLEL_SIZE}.
+	 */
+	private static final int NEXT_MSGS_DEFAULT = 7;
+	/**
+	 * The number of <em>next messages</em> that should be used in the data
+	 * speed up gatherer protocol's retransmission mode.
+	 */
+	public static final int NEXT_MESSAGES_COUNT =
+			// Zero or less make no sense at all
+			max(0, getInteger(NEXT_MSGS_PROPERTY, NEXT_MSGS_DEFAULT));
 }

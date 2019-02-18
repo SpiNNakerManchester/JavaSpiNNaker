@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.front_end.Constants.NEXT_MESSAGES_COUNT;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -50,16 +51,11 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	private static final int MAX_NEXT_SIZE =
 			WORDS_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
 	/**
-	 * Max number of <em>next</em> packets to send in one go when asking for
-	 * retransmission.
-	 */
-	private static final int RETRANSMIT_EXTRA_COUNT = 7;
-	/**
 	 * Max number of sequence numbers to send in one go when asking for
 	 * retransmission.
 	 */
 	private static final int MAX_REQ_LOAD =
-			MAX_FIRST_SIZE + RETRANSMIT_EXTRA_COUNT * MAX_NEXT_SIZE;
+			MAX_FIRST_SIZE + NEXT_MESSAGES_COUNT * MAX_NEXT_SIZE;
 
 	/**
 	 * Compute the number of packets required to send a given count of sequence
