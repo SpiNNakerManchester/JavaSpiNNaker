@@ -161,6 +161,7 @@ public abstract class DataGatherer {
 		this.missCount = 0;
 	}
 
+	private static final String META_LABEL = "reading region metadata";
 	private static final String FAST_LABEL = "high-speed transfers";
 	private static final String SLOW_LABEL = "slow-speed transfers";
 
@@ -183,8 +184,11 @@ public abstract class DataGatherer {
 			throws IOException, ProcessException, StorageException {
 		sanityCheck(gatherers);
 		ValueHolder<Integer> workSize = new ValueHolder<>(0);
-		Map<ChipLocation, List<WorkItems>> work =
-				discoverActualWork(gatherers, workSize);
+		Map<ChipLocation, List<WorkItems>> work;
+		try (Progress bar =
+				new Progress(countPlacements(gatherers), META_LABEL)) {
+			work = discoverActualWork(gatherers, workSize, bar);
+		}
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
 		Map<ChipLocation, List<Region>> smallWork = new HashMap<>();
@@ -210,6 +214,11 @@ public abstract class DataGatherer {
 					.map(regions -> () -> slowDownload(regions, bar)));
 		}
 		return missCount;
+	}
+
+	private int countPlacements(List<Gather> gatherers) {
+		return gatherers.parallelStream().mapToInt(g -> g.getMonitors().stream()
+				.mapToInt(m -> m.getPlacements().size()).sum()).sum();
 	}
 
 	/**
@@ -247,6 +256,8 @@ public abstract class DataGatherer {
 	 *            The gatherer information.
 	 * @param workSize
 	 *            Where to write how much work there is to actually do.
+	 * @param bar
+	 *            The progress bar.
 	 * @return What each board (as represented by the chip location of its data
 	 *         speed up packet gatherer) has to be downloaded.
 	 * @throws IOException
@@ -257,7 +268,7 @@ public abstract class DataGatherer {
 	 *             If DB access goes wrong.
 	 */
 	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
-			List<Gather> gatherers, ValueHolder<Integer> workSize)
+			List<Gather> gatherers, ValueHolder<Integer> workSize, Progress bar)
 			throws IOException, ProcessException, StorageException {
 		log.info("discovering regions to download");
 		Map<ChipLocation, List<WorkItems>> work = new HashMap<>();
@@ -277,7 +288,9 @@ public abstract class DataGatherer {
 					if (!regions.isEmpty()) {
 						workitems.add(new WorkItems(m, regions));
 					}
+					bar.update();
 				}
+
 			}
 			// Totally empty boards can be ignored
 			if (!workitems.isEmpty()) {
