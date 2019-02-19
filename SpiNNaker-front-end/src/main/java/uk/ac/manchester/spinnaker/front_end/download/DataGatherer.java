@@ -23,15 +23,14 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.Constants.SMALL_RETRIEVE_THRESHOLD;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -48,7 +47,6 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
@@ -66,7 +64,6 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -86,11 +83,6 @@ public abstract class DataGatherer {
 	 * Logger for the gatherer.
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
-	/**
-	 * Retrieves of data that is less than this many bytes are done via a normal
-	 * SCAMP memory read.
-	 */
-	public static final int SMALL_RETRIEVE_THRESHOLD = 40000;
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 	/**
@@ -122,8 +114,6 @@ public abstract class DataGatherer {
 	 * last in a stream.
 	 */
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
-	/** An empty buffer. Used so we don't try to read zero bytes. */
-	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
@@ -762,78 +752,6 @@ public abstract class DataGatherer {
 	}
 
 	/**
-	 * A connection for handling the Data Speed Up protocol.
-	 *
-	 * @author Donal Fellows
-	 */
-	private static final class GatherDownloadConnection extends SCPConnection {
-		private long lastSend = 0L;
-		/**
-		 * Packet minimum send interval, in <em>nanoseconds</em>.
-		 */
-		private static final int INTER_SEND_INTERVAL_NS = 60000;
-
-		/**
-		 * Create an instance.
-		 *
-		 * @param location
-		 *            Where the connection is talking to.
-		 * @param iptag
-		 *            What IPtag the Data Speed Up protocol is working on.
-		 * @throws IOException
-		 *             If anything goes wrong with socket setup.
-		 */
-		GatherDownloadConnection(ChipLocation location, IPTag iptag)
-				throws IOException {
-			super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
-		}
-
-		private void sendMsg(SDPMessage msg) throws IOException {
-			while (System.nanoTime() < lastSend + INTER_SEND_INTERVAL_NS) {
-				Thread.yield();
-			}
-			lastSend = System.nanoTime();
-			sendSDPMessage(msg);
-		}
-
-		/**
-		 * Send a message asking the extra monitor core to read from a region of
-		 * SDRAM and send it to us (using the configured IPtag).
-		 *
-		 * @param extraMonitorCore
-		 *            The location of the monitor.
-		 * @param address
-		 *            Where to read from.
-		 * @param length
-		 *            How many bytes to read.
-		 * @throws IOException
-		 *             If message sending fails.
-		 */
-		void sendStart(CoreLocation extraMonitorCore, int address, int length)
-				throws IOException {
-			sendMsg(StartSendingMessage.create(extraMonitorCore, address,
-					length));
-		}
-
-		/**
-		 * Send a message asking the extra monitor core to ask it to resend some
-		 * data.
-		 *
-		 * @param extraMonitorCore
-		 *            The location of the monitor.
-		 * @param missingSeqs
-		 *            Description of what sequence numbers are missing.
-		 * @param numPackets
-		 *            How many resend messages will be used.
-		 * @throws IOException
-		 *             If message sending fails.
-		 */
-		void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
-			sendMsg(msg);
-		}
-	}
-
-	/**
 	 * Class used to manage a download. Every instance <em>must only</em> ever
 	 * be used from one thread.
 	 *
@@ -929,31 +847,19 @@ public abstract class DataGatherer {
 		 *            milliseconds.
 		 * @return True if we have finished.
 		 * @throws IOException
-		 *             If packet retransmission requesting fails.
+		 *             If packet reception or retransmission requesting fails.
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
 		 */
 		private boolean processOnePacket(int timeout)
 				throws IOException, TimeoutException {
-			ByteBuffer p = getNextPacket(timeout + INTERNAL_DELAY);
+			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
 				return processData(p);
 			}
 			return processTimeout();
-		}
-
-		private ByteBuffer getNextPacket(int timeout) throws IOException {
-			try {
-				ByteBuffer b = conn.receive(timeout);
-				if (b == null) {
-					return EMPTY_DATA;
-				}
-				return b;
-			} catch (SocketTimeoutException ignored) {
-				return EMPTY_DATA;
-			}
 		}
 
 		/**

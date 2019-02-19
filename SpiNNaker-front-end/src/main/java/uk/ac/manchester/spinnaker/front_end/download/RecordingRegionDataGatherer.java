@@ -16,16 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static java.lang.Integer.toHexString;
+import static java.lang.String.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +51,11 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  */
 public class RecordingRegionDataGatherer extends DataGatherer
 		implements AutoCloseable {
+	/**
+	 * How long a termination delay has to be to be worth reporting, in
+	 * milliseconds.
+	 */
+	private static final int TERMINATION_REPORT_THRESHOLD = 250;
 	protected static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
 	private final Transceiver txrx;
@@ -91,9 +95,9 @@ public class RecordingRegionDataGatherer extends DataGatherer
 		RecordingRegionsDescriptor rrd = descriptors.get(key);
 		if (rrd == null) {
 			rrd = new RecordingRegionsDescriptor(txrx, chip, baseAddress);
-            if (log.isDebugEnabled()) {
-    			log.debug("got recording region info {}", rrd);
-            }
+			if (log.isDebugEnabled()) {
+				log.debug("got recording region info {}", rrd);
+			}
 			descriptors.put(key, rrd);
 		}
 		return rrd;
@@ -102,25 +106,11 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	private ChannelBufferState getState(Placement placement,
 			int recordingRegionIndex) throws IOException, ProcessException {
 		ChipLocation chip = placement.asChipLocation();
-		RecordingRegionsDescriptor descriptor = getDescriptor(chip,
-				placement.getVertex().getBaseAddress());
+		RecordingRegionsDescriptor descriptor =
+				getDescriptor(chip, placement.getVertex().getBaseAddress());
 		return new ChannelBufferState(txrx.readMemory(chip,
 				descriptor.regionPointers[recordingRegionIndex],
 				ChannelBufferState.SIZE));
-	}
-
-	private static class RecordingRegion extends Region {
-		RecordingRegion(HasCoreLocation core, int regionIndex,
-				long from, long to) {
-			super(core, regionIndex, (int) from, (int) (to - from));
-		}
-
-		@Override
-		public String toString() {
-			return "RegionRead(@" + core + ":" + regionIndex + ")=0x"
-					+ toHexString(startAddress) + "[0x" + toHexString(size)
-					+ "]";
-		}
 	}
 
 	@Override
@@ -190,205 +180,63 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	@Override
 	public void close() throws InterruptedException {
 		log.info("waiting for database usage to complete");
+		long start = System.currentTimeMillis();
 		dbWorker.shutdown();
+		// It really shouldn't take a minute to finish
 		dbWorker.awaitTermination(1, MINUTES);
+		long end = System.currentTimeMillis();
 		log.info("total of {} database writes done", numWrites);
+		if (end - start > TERMINATION_REPORT_THRESHOLD) {
+			double diff = (end - start) / (double) MSEC_PER_SEC;
+			log.info("DB shutdown took {}s", format("%.2f", diff));
+		}
 	}
-}
-
-/**
- * Describes locations in a recording region. Must match
- * {@code recording_data_t} in {@code recording.c} in SpiNNFrontEndCommon.
- * If the correct branch is merged there. Otherwise, it is defined by
- * pseudo-structure done with offsets into an array of integers. Yay.
- *
- * @author Donal Fellows
- */
-final class RecordingRegionsDescriptor {
-	/** Number of recording regions. */
-	final int numRegions;
-	/** Tag for sending buffered output. */
-	final int tag;
-	/** Destination for sending buffered output. */
-	final int tagDestination;
-	/** SDP port for receiving buffering messages. */
-	final int sdpPort;
-	/** Minimum size of data to start buffering out at. */
-	final int bufferSizeBeforeRequest;
-	/** Minimum interval between buffering out actions. */
-	final int timeBetweenTriggers;
-	/** Last sequence number used when buffering out. */
-	final int lastSequenceNumber;
-	/**
-	 * Array of addresses of recording regions. This actually points to the
-	 * channel's buffer state. Size, {@link #numRegions} entries.
-	 */
-	final int[] regionPointers;
-	/**
-	 * Array of sizes of recording regions. Size, {@link #numRegions}
-	 * entries.
-	 */
-	final int[] regionSizes;
-	private final ChipLocation chip;
-	private final int addr;
 
 	/**
-	 * Get an instance of this descriptor from SpiNNaker.
+	 * A printable region descriptor.
 	 *
-	 * @param txtx
-	 *            The transceiver to use for communications.
-	 * @param chip
-	 *            The chip to read from.
-	 * @param address
-	 *            Where on the chip to read the region data from.
-	 * @throws IOException
-	 *             If I/O fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 * @author Donal Fellows
 	 */
-	RecordingRegionsDescriptor(Transceiver txrx, HasChipLocation chip,
-			int address) throws IOException, ProcessException {
-		// Read the descriptor from SpiNNaker
-		int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
-		RecordingRegionDataGatherer.log.info("{} recording regions at {} of {}",
-				nr, address, chip);
-		int size = WORD_SIZE * (REGION_POINTERS_START + 2 * nr);
-		ByteBuffer buffer = txrx.readMemory(chip, address, size);
-		this.chip = chip.asChipLocation();
-		this.addr = address;
-
-		// Unpack the contents of the descriptor
-		numRegions = buffer.getInt();
-		tag = buffer.getInt();
-		tagDestination = buffer.getInt();
-		sdpPort = buffer.getInt();
-		bufferSizeBeforeRequest = buffer.getInt();
-		timeBetweenTriggers = buffer.getInt();
-		lastSequenceNumber = buffer.getInt();
-		regionPointers = new int[numRegions];
-		regionSizes = new int[numRegions];
-		IntBuffer intBuffer = buffer.asIntBuffer();
-		intBuffer.get(regionPointers);
-		intBuffer.get(regionSizes);
-	}
-
-	private static final int REGION_POINTERS_START = 7;
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder("RecordingRegions:")
-				.append(chip).append("@0x").append(toHexString(addr))
-				.append("{");
-		sb.append("#").append(numRegions);
-		sb.append(",tag=").append(tag);
-		sb.append(",dst=0x").append(toHexString(tagDestination));
-		sb.append(",sdp=0x").append(toHexString(sdpPort));
-		sb.append(",min=0x").append(toHexString(bufferSizeBeforeRequest));
-		sb.append(",trg=").append(timeBetweenTriggers);
-		sb.append(",seq=").append(lastSequenceNumber);
-		sb.append("}:[0x");
-		String sep = "";
-		for (int i = 0; i < numRegions; i++) {
-			sb.append(sep).append(toHexString(regionPointers[i]))
-					.append(":0x").append(toHexString(regionSizes[i]));
-			sep = ", 0x";
+	private static final class RecordingRegion extends Region {
+		RecordingRegion(HasCoreLocation core, int regionIndex, long from,
+				long to) {
+			super(core, regionIndex, (int) from, (int) (to - from));
 		}
-		return sb.append("]").toString();
-	}
-}
 
-/**
- * Describes a recording region. Must match {@code recording_channel_t} in
- * {@code recording.c} in SpiNNFrontEndCommon.
- *
- * @author Donal Fellows
- */
-class ChannelBufferState {
-	/** Size of this structure in bytes. */
-	static final int SIZE = 24;
-	/** The start buffering area memory address. (32 bits) */
-	long start;
-	/** The address where data was last written. (32 bits) */
-	long currentWrite;
-	/** The address where the DMA write got up to. (32 bits) */
-	long dmaCurrentWrite;
-	/** The address where data was last read. (32 bits) */
-	long currentRead;
-	/** The address of first byte after the buffer. (32 bits) */
-	long end;
-	/** The ID of the region. (8 bits) */
-	byte regionId;
-	/** True if the region overflowed during the simulation. (8 bits) */
-	boolean missingInfo;
-	/** Last operation performed on the buffer. Read or write (8 bits) */
-	boolean lastBufferOperationWasWrite;
+		@Override
+		public String toString() {
+			return format("RegionRead(@%d,%d,%d:%d)=0x%08x[0x%x]",
+					core.getX(), core.getY(), core.getP(), regionIndex,
+					startAddress, size);
+		}
+	}
 
 	/**
-	 * Deserialize an instance of this class.
+	 * A simple key class that comprises a chip and a base address.
 	 *
-	 * @param buffer
-	 *            Little-endian buffer to read from. Must be (at least) 24
-	 *            bytes long.
+	 * @author Donal Fellows
 	 */
-	ChannelBufferState(ByteBuffer buffer) {
-		start = Integer.toUnsignedLong(buffer.getInt());
-		currentWrite = Integer.toUnsignedLong(buffer.getInt());
-		dmaCurrentWrite = Integer.toUnsignedLong(buffer.getInt());
-		currentRead = Integer.toUnsignedLong(buffer.getInt());
-		end = Integer.toUnsignedLong(buffer.getInt());
-		regionId = buffer.get();
-		missingInfo = (buffer.get() != 0);
-		lastBufferOperationWasWrite = (buffer.get() != 0);
-		buffer.get(); // padding
-	}
+	private static final class RRKey {
+		private final ChipLocation chip;
+		private final int baseAddr;
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder("Channel #").append(regionId)
-				.append(":{");
-		sb.append("start:0x").append(Long.toHexString(start))
-				.append(",currentWrite:0x")
-				.append(Long.toHexString(currentWrite))
-				.append(",dmaCurrentWrite:0x")
-				.append(Long.toHexString(dmaCurrentWrite))
-				.append(",currentRead:0x")
-				.append(Long.toHexString(currentRead)).append(",end:0x")
-				.append(Long.toHexString(end));
-		if (missingInfo) {
-			sb.append(",missingInfo");
+		RRKey(HasChipLocation chip, int baseAddress) {
+			this.chip = chip.asChipLocation();
+			this.baseAddr = baseAddress;
 		}
-		if (lastBufferOperationWasWrite) {
-			sb.append(",lastWasWrite");
+
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof RRKey) {
+				RRKey o = (RRKey) other;
+				return chip.equals(o.chip) && (o.baseAddr == baseAddr);
+			}
+			return false;
 		}
-		return sb.append("}").toString();
-	}
-}
 
-/**
- * A simple key class that comprises a chip and a base address.
- *
- * @author Donal Fellows
- */
-final class RRKey {
-	private final ChipLocation chip;
-	private final int baseAddr;
-
-	RRKey(HasChipLocation chip, int baseAddress) {
-		this.chip = chip.asChipLocation();
-		this.baseAddr = baseAddress;
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof RRKey) {
-			RRKey o = (RRKey) other;
-			return chip.equals(o.chip) && (o.baseAddr == baseAddr);
+		@Override
+		public int hashCode() {
+			return baseAddr ^ chip.hashCode();
 		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return baseAddr ^ chip.hashCode();
 	}
 }
