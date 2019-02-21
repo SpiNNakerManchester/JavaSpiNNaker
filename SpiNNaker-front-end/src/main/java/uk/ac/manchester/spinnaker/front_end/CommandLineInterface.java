@@ -265,7 +265,7 @@ public final class CommandLineInterface {
 		BufferManagerStorage database = getDatabase(runFolder);
 
 		DataReceiver receiver = new DataReceiver(trans, machine, database);
-		receiver.getDataForPlacements(placements);
+		receiver.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
 	}
 
 	/**
