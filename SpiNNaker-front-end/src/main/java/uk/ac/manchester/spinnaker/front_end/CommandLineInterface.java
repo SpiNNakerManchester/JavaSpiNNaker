@@ -197,9 +197,10 @@ public final class CommandLineInterface {
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
-		HostExecuteDataSpecification dseExec =
-				new HostExecuteDataSpecification(machine);
-		dseExec.loadAll(database);
+		try (HostExecuteDataSpecification dseExec =
+				new HostExecuteDataSpecification(machine)) {
+			dseExec.loadAll(database);
+		}
 	}
 
 	/**

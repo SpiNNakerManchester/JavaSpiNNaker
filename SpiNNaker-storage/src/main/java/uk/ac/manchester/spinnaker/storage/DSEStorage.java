@@ -29,6 +29,15 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
  */
 public interface DSEStorage extends DatabaseAPI {
 	/**
+	 * See how many DSE loading actions have to be done.
+	 *
+	 * @return The number of data specifications remaining to be executed.
+	 * @throws StorageException
+	 *             If the database access fails.
+	 */
+	int countWorkRequired() throws StorageException;
+
+	/**
 	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *
 	 * @return The list of ethernets.

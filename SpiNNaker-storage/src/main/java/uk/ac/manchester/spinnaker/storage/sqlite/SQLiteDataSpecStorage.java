@@ -53,6 +53,23 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	}
 
 	@Override
+	public int countWorkRequired() throws StorageException {
+		return callR(SQLiteDataSpecStorage::countWorkRequired,
+				"listing ethernets");
+	}
+
+	private static int countWorkRequired(Connection conn) throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(SQL.COUNT_WORK);
+				ResultSet rs = s.executeQuery()) {
+			while (rs.next()) {
+				// count_content
+				return rs.getInt(FIRST);
+			}
+		}
+		return 0; // If we get here, nothing to count
+	}
+
+	@Override
 	public List<Ethernet> listEthernetsToLoad() throws StorageException {
 		return callR(SQLiteDataSpecStorage::listEthernetsToLoad,
 				"listing ethernets");

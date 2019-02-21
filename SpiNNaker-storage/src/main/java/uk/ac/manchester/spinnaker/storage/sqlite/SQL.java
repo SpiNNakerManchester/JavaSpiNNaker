@@ -108,6 +108,13 @@ abstract class SQL {
 	// Data loading ----------------------------------------------------
 	// -----------------------------------------------------------------
 
+	@Parameters({})
+	@ResultColumns({"count_content"})
+	public static final String COUNT_WORK =
+			"SELECT count(content) AS count_content FROM core_view "
+					+ "WHERE start_address IS NULL AND "
+					+ "app_id IS NOT NULL AND content IS NOT NULL";
+
 	/** List the ethernets described in the database. */
 	@Parameters({})
 	@ResultColumns({"ethernet_id", "ethernet_x", "ethernet_y", "ip_address"})

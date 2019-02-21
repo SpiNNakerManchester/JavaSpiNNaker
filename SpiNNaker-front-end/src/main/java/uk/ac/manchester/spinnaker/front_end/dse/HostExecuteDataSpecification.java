@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -33,6 +34,7 @@ import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -50,7 +52,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  *
  * @author Donal Fellows
  */
-public class HostExecuteDataSpecification {
+public class HostExecuteDataSpecification implements AutoCloseable {
+	private static final String LOADING_MSG = "loading data specifications onto SpiNNaker";
 	private static final Logger log =
 			getLogger(HostExecuteDataSpecification.class);
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
@@ -104,9 +107,11 @@ public class HostExecuteDataSpecification {
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
 		DSEStorage storage = connection.getStorageInterface();
-		try {
-			executor.submitTasks(storage.listEthernetsToLoad().stream()
-					.map(board -> () -> loadBoard(board, storage)))
+		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		int opsToRun = storage.countWorkRequired();
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
+			executor.submitTasks(ethernets.stream()
+					.map(board -> () -> loadBoard(board, storage, bar)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -116,24 +121,36 @@ public class HostExecuteDataSpecification {
 		}
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage)
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
-		try (BoardWorker worker = new BoardWorker(board, storage)) {
-			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
-				log.info("loading data onto {}", ctl.core);
-				worker.loadCore(ctl);
-			}
+		BoardWorker worker = new BoardWorker(board, storage, bar);
+		for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+			log.info("loading data onto {}", ctl.core);
+			worker.loadCore(ctl);
 		}
 	}
 
-	private class BoardWorker implements AutoCloseable {
+	@Override
+	public void close() throws IOException {
+		try {
+			txrx.close();
+		} catch (IOException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalStateException("unexpected failure in close", e);
+		}
+	}
+
+	private class BoardWorker {
 		private final Ethernet board;
 		private final DSEStorage storage;
+		private final Progress bar;
 
-		BoardWorker(Ethernet board, DSEStorage storage) {
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar) {
 			this.board = board;
 			this.storage = storage;
+			this.bar = bar;
 		}
 
 		/**
@@ -156,23 +173,20 @@ public class HostExecuteDataSpecification {
 			try (Executor executor = new Executor(ctl.dataSpec,
 					machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
-				int bytesUsed = executor.getConstructedDataSize();
-				int startAddress = txrx.mallocSDRAM(ctl.core, bytesUsed,
-						new AppID(ctl.appID));
-				int bytesWritten =
-						writeHeader(ctl.core, executor, startAddress);
+				int size = executor.getConstructedDataSize();
+				int start = malloc(ctl, size);
+				int written = writeHeader(ctl.core, executor, start);
 
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
-						bytesWritten +=
-								writeRegion(ctl.core, r, r.getRegionBase());
+						written += writeRegion(ctl.core, r, r.getRegionBase());
 					}
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core, user0, startAddress);
-				storage.saveLoadingMetadata(ctl, startAddress, bytesUsed,
-						bytesWritten);
+				txrx.writeMemory(ctl.core, user0, start);
+				bar.update();
+				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
 				throw new DataSpecificationException(
 						"failed to execute data specification on core "
@@ -180,6 +194,11 @@ public class HostExecuteDataSpecification {
 								+ " (" + board.ethernetAddress + ")",
 						e);
 			}
+		}
+
+		private int malloc(CoreToLoad ctl, int bytesUsed)
+				throws IOException, ProcessException {
+			return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
 		}
 
 		/**
@@ -236,18 +255,6 @@ public class HostExecuteDataSpecification {
 			int written = data.remaining();
 			txrx.writeMemory(core, baseAddress, data);
 			return written;
-		}
-
-		@Override
-		public void close() throws IOException {
-			try {
-				txrx.close();
-			} catch (IOException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new IllegalStateException("unexpected failure in close",
-						e);
-			}
 		}
 	}
 
