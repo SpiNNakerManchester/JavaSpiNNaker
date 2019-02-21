@@ -186,9 +186,15 @@ public abstract class DataGatherer {
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
+			/*
+			 * Checkstyle gets the indentation rules wrong for the next
+			 * statement.
+			 */
+			// CHECKSTYLE:OFF
 			parallel(work.keySet().stream()
 					.map(key -> () -> fastDownload(work.get(key),
 							conns.get(key), smallWork, bar)));
+			// CHECKSTYLE:ON
 		} finally {
 			log.info("shutting down high-speed download connections");
 			for (GatherDownloadConnection c : conns.values()) {
@@ -200,15 +206,20 @@ public abstract class DataGatherer {
 		try (Progress bar = new Progress(
 				smallWork.values().stream().mapToInt(List::size).sum(),
 				SLOW_LABEL)) {
+			// CHECKSTYLE:OFF
 			parallel(smallWork.values().stream()
 					.map(regions -> () -> slowDownload(regions, bar)));
+			// CHECKSTYLE:ON
 		}
 		return missCount;
 	}
 
 	private int countPlacements(List<Gather> gatherers) {
-		return gatherers.parallelStream().mapToInt(g -> g.getMonitors().stream()
-				.mapToInt(m -> m.getPlacements().size()).sum()).sum();
+		// Checkstyle gets the indentation rules wrong for the next statement.
+		// CHECKSTYLE:OFF
+		return gatherers.parallelStream().flatMap(g -> g.getMonitors().stream())
+				.mapToInt(m -> m.getPlacements().size()).sum();
+		// CHECKSTYLE:ON
 	}
 
 	/**
@@ -231,7 +242,7 @@ public abstract class DataGatherer {
 		 */
 		private final List<List<Region>> regions;
 
-		public WorkItems(Monitor m, List<List<Region>> region) {
+		WorkItems(Monitor m, List<List<Region>> region) {
 			this.monitor = m;
 			this.regions = region;
 		}

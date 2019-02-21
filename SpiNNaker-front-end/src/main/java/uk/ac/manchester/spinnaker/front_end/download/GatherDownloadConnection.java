@@ -88,12 +88,9 @@ final class GatherDownloadConnection extends SDPConnection {
 	 * Send a message asking the extra monitor core to ask it to resend some
 	 * data.
 	 *
-	 * @param extraMonitorCore
-	 *            The location of the monitor.
-	 * @param missingSeqs
-	 *            Description of what sequence numbers are missing.
-	 * @param numPackets
-	 *            How many resend messages will be used.
+	 * @param msg
+	 *            The message to send, built as part of a sequence of such
+	 *            messages.
 	 * @throws IOException
 	 *             If message sending fails.
 	 */

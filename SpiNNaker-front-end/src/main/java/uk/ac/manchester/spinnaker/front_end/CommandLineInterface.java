@@ -39,7 +39,6 @@ import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
-import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification.Completion;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
 import uk.ac.manchester.spinnaker.front_end.iobuf.NotableMessages;
@@ -200,10 +199,7 @@ public final class CommandLineInterface {
 
 		HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine);
-		Completion c = dseExec.loadAll(database);
-		getLogger(CommandLineInterface.class)
-				.info("launched all DSE tasks; waiting for completion");
-		c.waitForCompletion();
+		dseExec.loadAll(database);
 	}
 
 	/**

@@ -33,7 +33,6 @@ import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -92,7 +91,6 @@ public class HostExecuteDataSpecification {
 	 *
 	 * @param connection
 	 *            The handle to the database.
-	 * @return The future completion of the tasks.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException
@@ -102,44 +100,20 @@ public class HostExecuteDataSpecification {
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
 	 */
-	public Completion loadAll(ConnectionProvider<DSEStorage> connection)
+	public void loadAll(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
 		DSEStorage storage = connection.getStorageInterface();
-		Tasks tasks = executor.submitTasks(storage.listEthernetsToLoad()
-				.stream().map(board -> () -> loadBoard(board, storage)));
-		return () -> {
-			try {
-				tasks.awaitAndCombineExceptions();
-			} catch (StorageException | IOException | ProcessException
-					| DataSpecificationException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new IllegalStateException("unexpected exception", e);
-			}
-		};
-	}
-
-	/**
-	 * Marks the future completion of the loading action.
-	 *
-	 * @author Donal Fellows
-	 */
-	public interface Completion {
-		/**
-		 * Wait for the scheduled tasks to all complete.
-		 *
-		 * @throws StorageException
-		 *             If the database can't be talked to.
-		 * @throws IOException
-		 *             If the transceiver can't talk to its sockets.
-		 * @throws ProcessException
-		 *             If SpiNNaker rejects a message.
-		 * @throws DataSpecificationException
-		 *             If a data specification in the database is invalid.
-		 */
-		void waitForCompletion() throws StorageException, IOException,
-				ProcessException, DataSpecificationException;
+		try {
+			executor.submitTasks(storage.listEthernetsToLoad().stream()
+					.map(board -> () -> loadBoard(board, storage)))
+					.awaitAndCombineExceptions();
+		} catch (StorageException | IOException | ProcessException
+				| DataSpecificationException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalStateException("unexpected exception", e);
+		}
 	}
 
 	private void loadBoard(Ethernet board, DSEStorage storage)

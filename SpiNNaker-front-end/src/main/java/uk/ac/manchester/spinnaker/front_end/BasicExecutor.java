@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
  *
  * @author Donal Fellows
  */
-public class BasicExecutor {
+public class BasicExecutor implements AutoCloseable {
 	private final ExecutorService executor;
 
 	/**
@@ -78,6 +79,12 @@ public class BasicExecutor {
 		} catch (Exception e) {
 			return e;
 		}
+	}
+
+	@Override
+	public void close() throws InterruptedException {
+		executor.shutdown();
+		executor.awaitTermination(1, TimeUnit.DAYS);
 	}
 
 	/**
