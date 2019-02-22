@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
+import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -51,7 +52,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  *
  * @author Donal Fellows
  */
-public class IobufRetriever {
+public class IobufRetriever extends BoardLocalSupport {
 	private static final Logger log = getLogger(IobufRetriever.class);
 	private static final Pattern ERROR_ENTRY =
 			Pattern.compile("\\[ERROR\\]\\s+\\((.*)\\):\\s+(.*)");
@@ -76,6 +77,7 @@ public class IobufRetriever {
 	 */
 	public IobufRetriever(Transceiver transceiver, Machine machine,
 			int parallelSize) {
+		super(machine);
 		txrx = transceiver;
 		this.machine = machine;
 		executor = new BasicExecutor(parallelSize);
@@ -189,23 +191,26 @@ public class IobufRetriever {
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		// extract iobuf
-		Iterable<IOBuffer> ioBuffers = txrx.getIobuf(cores);
+		try (BoardLocal bl = new BoardLocal(cores.iterator().next())) {
+			// extract iobuf
+			Iterable<IOBuffer> ioBuffers = txrx.getIobuf(cores);
 
-		// write iobuf to file and check for errors for provenance
-		for (IOBuffer iobuf : ioBuffers) {
-			File file = getProvenanceFile(provenanceDir, iobuf);
-			try (BufferedWriter w = openFileForAppending(file)) {
-				log.info("storing iobuf from {} (running {}) in {}",
-						iobuf.asCoreLocation(), replacer.origin, file);
-				// ISO 8859-1: bytes are zero-extended to chars
-				for (String originalLine : iobuf.getContentsString(ISO_8859_1)
-						.split("\n")) {
-					String line = replacer.replace(originalLine);
-					w.write(line);
-					w.newLine();
-					addValueIfMatch(ERROR_ENTRY, line, errorEntries, iobuf);
-					addValueIfMatch(WARNING_ENTRY, line, warnEntries, iobuf);
+			// write iobuf to file and check for errors for provenance
+			for (IOBuffer iobuf : ioBuffers) {
+				File file = getProvenanceFile(provenanceDir, iobuf);
+				try (BufferedWriter w = openFileForAppending(file)) {
+					log.info("storing iobuf from {} (running {}) in {}",
+							iobuf.asCoreLocation(), replacer.origin, file);
+					// ISO 8859-1: bytes are zero-extended to chars
+					for (String originalLine : iobuf
+							.getContentsString(ISO_8859_1).split("\n")) {
+						String line = replacer.replace(originalLine);
+						w.write(line);
+						w.newLine();
+						addValueIfMatch(ERROR_ENTRY, line, errorEntries, iobuf);
+						addValueIfMatch(WARNING_ENTRY, line, warnEntries,
+								iobuf);
+					}
 				}
 			}
 		}

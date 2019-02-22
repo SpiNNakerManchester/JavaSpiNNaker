@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -52,8 +53,10 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  *
  * @author Donal Fellows
  */
-public class HostExecuteDataSpecification implements AutoCloseable {
-	private static final String LOADING_MSG = "loading data specifications onto SpiNNaker";
+public class HostExecuteDataSpecification extends BoardLocalSupport
+		implements AutoCloseable {
+	private static final String LOADING_MSG =
+			"loading data specifications onto SpiNNaker";
 	private static final Logger log =
 			getLogger(HostExecuteDataSpecification.class);
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
@@ -77,6 +80,7 @@ public class HostExecuteDataSpecification implements AutoCloseable {
 	 */
 	public HostExecuteDataSpecification(Machine machine)
 			throws IOException, ProcessException {
+		super(machine);
 		executor = new BasicExecutor(PARALLEL_SIZE);
 		this.machine = machine;
 		try {
@@ -124,10 +128,12 @@ public class HostExecuteDataSpecification implements AutoCloseable {
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
-		BoardWorker worker = new BoardWorker(board, storage, bar);
-		for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
-			log.info("loading data onto {}", ctl.core);
-			worker.loadCore(ctl);
+		try (BoardLocal c = new BoardLocal(board.location)) {
+			BoardWorker worker = new BoardWorker(board, storage, bar);
+			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+				log.info("loading data onto {}", ctl.core);
+				worker.loadCore(ctl);
+			}
 		}
 	}
 

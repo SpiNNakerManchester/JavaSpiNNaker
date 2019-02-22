@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
+import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.front_end.download.storage_objects.BufferedReceivingData;
@@ -55,7 +56,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  *
  * @author Christian-B
  */
-public class DataReceiver {
+public class DataReceiver extends BoardLocalSupport {
 	// found in SpiNNFrontEndCommon/spinn_front_end_common/interface/
 	// buffer_management/recording_utilities.py
 	/** The offset of the last sequence number field in bytes. */
@@ -84,6 +85,7 @@ public class DataReceiver {
 	 */
 	public DataReceiver(Transceiver tranceiver, Machine machine,
 			BufferManagerStorage storage) {
+		super(machine);
 		txrx = tranceiver;
 		// storage area for received data from cores
 		receivedData = new BufferedReceivingData(storage);
@@ -155,10 +157,12 @@ public class DataReceiver {
 	public void getDataForPlacements(List<Placement> placements)
 			throws IOException, StorageException, ProcessException {
 		// get data
-		for (Placement placement : placements) {
-			for (int recordingRegionId : placement.getVertex()
-					.getRecordedRegionIds()) {
-				getDataForPlacement(placement, recordingRegionId);
+		try (BoardLocal c = new BoardLocal(placements.get(0))) {
+			for (Placement placement : placements) {
+				for (int recordingRegionId : placement.getVertex()
+						.getRecordedRegionIds()) {
+					getDataForPlacement(placement, recordingRegionId);
+				}
 			}
 		}
 	}

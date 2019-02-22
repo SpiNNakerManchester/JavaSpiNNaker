@@ -29,7 +29,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
-import org.slf4j.MDC;
 
 import difflib.ChangeDelta;
 import difflib.Chunk;
@@ -52,13 +50,13 @@ import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSele
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
+import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
@@ -69,6 +67,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -78,7 +77,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public abstract class DataGatherer {
+public abstract class DataGatherer extends BoardLocalSupport {
 	/**
 	 * Logger for the gatherer.
 	 */
@@ -145,6 +144,7 @@ public abstract class DataGatherer {
 	 */
 	public DataGatherer(Transceiver transceiver, Machine machine)
 			throws IOException, ProcessException {
+		super(machine);
 		this.txrx = transceiver;
 		this.machine = machine;
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
@@ -181,7 +181,8 @@ public abstract class DataGatherer {
 		}
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
-		Map<ChipLocation, List<Region>> smallWork = new HashMap<>();
+		Map<ChipLocation, List<Region>> smallWork =
+				new DefaultMap<>(ArrayList::new);
 		try (DoNotDropPackets p = new DoNotDropPackets(gatherers);
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
@@ -362,12 +363,6 @@ public abstract class DataGatherer {
 		}
 	}
 
-	private static final String BOARD_ROOT = "boardRoot";
-
-	private String root(HasChipLocation chip) {
-		return "(board:" + chip.getX() + "," + chip.getY() + ")";
-	}
-
 	/**
 	 * Do the fast downloads for a particular board.
 	 *
@@ -390,7 +385,47 @@ public abstract class DataGatherer {
 			GatherDownloadConnection conn,
 			Map<ChipLocation, List<Region>> smallWork, Progress bar)
 			throws IOException, StorageException {
-		try (Closeable c = MDC.putCloseable(BOARD_ROOT, root(conn.getChip()))) {
+		/**
+		 * A class that manages how to postpone work for doing the slow way.
+		 * This is a little tricky because the order of download regions for a
+		 * single recording region (could be up to two) needs to be preserved so
+		 * that they're concatenated in the DB correctly.
+		 *
+		 * @author Donal Fellows
+		 */
+		class PostponeControl {
+			boolean addToSmall = false;
+
+			boolean shouldPostpone(Region region) {
+				return addToSmall || (region.size < SMALL_RETRIEVE_THRESHOLD);
+			}
+
+			private void doPostpone(Region region) {
+				addToSmall = true;
+				synchronized (smallWork) {
+					smallWork.get(conn.getChip()).add(region);
+				}
+			}
+
+			void postpone(Region region) {
+				log.info("moving {} to low-speed download system", region);
+				doPostpone(region);
+			}
+
+			void postpone(Region region, String reason) {
+				log.info("moving {} to low-speed download system{}{}", region,
+						" due to ", reason);
+				doPostpone(region);
+			}
+
+			void postpone(Region region, String locus, Exception e) {
+				log.info("moving {} to low-speed download system{}{}", region,
+						" due to failure in ", locus, e);
+				doPostpone(region);
+			}
+		}
+
+		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
 			for (WorkItems item : work) {
@@ -400,51 +435,29 @@ public abstract class DataGatherer {
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
-					boolean addToSmall = false;
+					PostponeControl ctl = new PostponeControl();
 					for (Region region : regionsOnCore) {
-						if (region.size < SMALL_RETRIEVE_THRESHOLD) {
-							addToSmall = true;
-						}
-						if (addToSmall) {
-							log.info("moving {} to low-speed download system",
-									region);
-							postpone(conn, smallWork, region);
-							bar.update();
-							continue;
-						}
 						try {
-							ByteBuffer data = dl.doDownload(
-									item.monitor.asCoreLocation(), region);
-							if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-								compareDownloadWithSCP(region, data);
+							if (ctl.shouldPostpone(region)) {
+								ctl.postpone(region);
+							} else {
+								ByteBuffer data = dl.doDownload(
+										item.monitor.asCoreLocation(), region);
+								if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+									compareDownloadWithSCP(region, data);
+								}
+								storeData(region, data);
 							}
-							storeData(region, data);
-							bar.update();
 						} catch (TimeoutException e) {
-							addToSmall = true;
-							log.info("moving {} to low-speed download system"
-									+ " due to timeout", region);
-							postpone(conn, smallWork, region);
-							bar.update();
+							ctl.postpone(region, "timeout");
 						} catch (ProcessException e) {
-							addToSmall = true;
-							log.info("moving {} to low-speed download system"
-									+ " due to failure in comparison code",
-									region, e);
-							postpone(conn, smallWork, region);
+							ctl.postpone(region, "comparison code", e);
+						} finally {
 							bar.update();
 						}
 					}
 				}
 			}
-		}
-	}
-
-	private void postpone(GatherDownloadConnection conn,
-			Map<ChipLocation, List<Region>> smallWork, Region region) {
-		synchronized (smallWork) {
-			smallWork.computeIfAbsent(conn.getChip(), x -> new ArrayList<>())
-					.add(region);
 		}
 	}
 
@@ -465,8 +478,7 @@ public abstract class DataGatherer {
 	 */
 	private void slowDownload(List<Region> regions, Progress bar)
 			throws IOException, ProcessException, StorageException {
-		try (Closeable c = MDC.putCloseable(BOARD_ROOT,
-				root(machine.getChipAt(regions.get(0).core).nearestEthernet))) {
+		try (BoardLocal c = new BoardLocal(regions.get(0).core)) {
 			log.info("processing {} slow downloads", regions.size());
 			for (Region region : regions) {
 				log.info("processing slow download from {}", region);
