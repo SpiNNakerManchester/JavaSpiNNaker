@@ -16,12 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import uk.ac.manchester.spinnaker.storage.GeneratesID;
+import uk.ac.manchester.spinnaker.storage.Parameters;
+import uk.ac.manchester.spinnaker.storage.ResultColumns;
 
 /**
  * The actual queries used by the data access layer.
@@ -108,9 +105,10 @@ abstract class SQL {
 	// Data loading ----------------------------------------------------
 	// -----------------------------------------------------------------
 
+	/** Count the data specifications in the DB that are still to be run. */
 	@Parameters({})
 	@ResultColumns({"count_content"})
-	public static final String COUNT_WORK =
+	static final String COUNT_WORK =
 			"SELECT count(content) AS count_content FROM core_view "
 					+ "WHERE start_address IS NULL AND "
 					+ "app_id IS NOT NULL AND content IS NOT NULL";
@@ -140,50 +138,4 @@ abstract class SQL {
 	static final String ADD_LOADING_METADATA = "UPDATE core "
 			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
 			+ "WHERE core_id = ?";
-
-	/**
-	 * Used to document what parameters are present in the DQL/DML.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Retention(SOURCE)
-	@Target(FIELD)
-	@Documented
-	@interface Parameters {
-		/**
-		 * Describes what parameters are supported by the statement once it is
-		 * prepared.
-		 *
-		 * @return List of parameter names.
-		 */
-		String[] value();
-	}
-
-	/**
-	 * Used to document what columns are supposed to be returned by the DQL.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Retention(SOURCE)
-	@Target(FIELD)
-	@Documented
-	@interface ResultColumns {
-		/**
-		 * Describes what columns are expected in the result.
-		 *
-		 * @return List of column names.
-		 */
-		String[] value();
-	}
-
-	/**
-	 * Used to document that some DML is expected to generate an ID.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Retention(SOURCE)
-	@Target(FIELD)
-	@Documented
-	@interface GeneratesID {
-	}
 }
