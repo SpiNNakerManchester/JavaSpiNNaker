@@ -216,11 +216,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	private int countPlacements(List<Gather> gatherers) {
-		// Checkstyle gets the indentation rules wrong for the next statement.
-		// CHECKSTYLE:OFF
-		return gatherers.parallelStream().flatMap(g -> g.getMonitors().stream())
-				.mapToInt(m -> m.getPlacements().size()).sum();
-		// CHECKSTYLE:ON
+		Stream<Gather> gaths = gatherers.parallelStream();
+		Stream<Monitor> mons = gaths.flatMap(g -> g.getMonitors().stream());
+		return mons.mapToInt(m -> m.getPlacements().size()).sum();
 	}
 
 	/**
@@ -407,20 +405,44 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				}
 			}
 
+			/**
+			 * Postpone a region.
+			 *
+			 * @param region
+			 *            The region to postpone.
+			 */
 			void postpone(Region region) {
 				log.info("moving {} to low-speed download system", region);
 				doPostpone(region);
 			}
 
+			/**
+			 * Postpone a region.
+			 *
+			 * @param region
+			 *            The region to postpone.
+			 * @param reason
+			 *            Why it is being postponed.
+			 */
 			void postpone(Region region, String reason) {
 				log.info("moving {} to low-speed download system{}{}", region,
 						" due to ", reason);
 				doPostpone(region);
 			}
 
-			void postpone(Region region, String locus, Exception e) {
+			/**
+			 * Postpone a region because of a failure.
+			 *
+			 * @param region
+			 *            The region to postpone.
+			 * @param locus
+			 *            Where the failure was.
+			 * @param exn
+			 *            What the failure was.
+			 */
+			void postpone(Region region, String locus, Exception exn) {
 				log.info("moving {} to low-speed download system{}{}", region,
-						" due to failure in ", locus, e);
+						" due to failure in ", locus, exn);
 				doPostpone(region);
 			}
 		}
