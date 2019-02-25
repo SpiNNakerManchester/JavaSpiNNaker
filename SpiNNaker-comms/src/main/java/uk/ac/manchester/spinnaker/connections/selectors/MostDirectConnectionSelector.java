@@ -74,8 +74,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		}
 		ChipLocation destination = request.sdpHeader.getDestination()
 				.asChipLocation();
-		ChipLocation routeVia =
-				machine.getChipAt(destination).nearestEthernet.asChipLocation();
+		ChipLocation routeVia = machine.getChipAt(destination).nearestEthernet;
 		C conn = connections.get(routeVia);
 		if (log.isDebugEnabled()) {
 			if (conn != null) {

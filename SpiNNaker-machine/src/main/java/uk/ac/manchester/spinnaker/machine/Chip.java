@@ -70,7 +70,7 @@ public class Chip implements HasChipLocation {
     private final List<Integer> tagIds;
 
     /** The nearest Ethernet coordinates, or {@code null} if none known. */
-    public final HasChipLocation nearestEthernet;
+    public final ChipLocation nearestEthernet;
 
     private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =
             defaultUserProcessors();
@@ -115,7 +115,7 @@ public class Chip implements HasChipLocation {
     @SuppressWarnings("checkstyle:parameternumber")
     public Chip(ChipLocation location, Iterable<Processor> processors,
             Router router, int sdram, InetAddress ipAddress, boolean virtual,
-            List<Integer> tagIds, HasChipLocation nearestEthernet) {
+            List<Integer> tagIds, ChipLocation nearestEthernet) {
         this.location = location;
         this.monitorProcessors = new TreeMap<>();
         this.userProcessors =  new TreeMap<>();
@@ -175,7 +175,7 @@ public class Chip implements HasChipLocation {
      */
     public Chip(ChipLocation location, Iterable<Processor> processors,
             Router router, int sdram, InetAddress ipAddress,
-            HasChipLocation nearestEthernet) {
+            ChipLocation nearestEthernet) {
         this(location, processors, router, sdram, ipAddress, false, null,
                 nearestEthernet);
     }
@@ -204,7 +204,7 @@ public class Chip implements HasChipLocation {
      */
     public Chip(ChipLocation location, Iterable<Processor> processors,
             Router router, InetAddress ipAddress,
-            HasChipLocation nearestEthernet) {
+            ChipLocation nearestEthernet) {
         this(location, processors, router, SDRAM_PER_CHIP, ipAddress, false,
                 null, nearestEthernet);
     }
@@ -230,7 +230,7 @@ public class Chip implements HasChipLocation {
      *             has already been added.
      */
     public Chip(ChipLocation location, Router router, InetAddress ipAddress,
-            HasChipLocation nearestEthernet) {
+            ChipLocation nearestEthernet) {
         this.location = location;
         this.monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
         this.userProcessors =  DEFAULT_USER_PROCESSORS;

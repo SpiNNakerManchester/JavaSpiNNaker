@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -46,6 +45,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * Stripped down version of the BufferManager for early testing.
@@ -94,11 +94,10 @@ public class DataReceiver extends BoardLocalSupport {
 
 	private Stream<List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		Map<ChipLocation, List<Placement>> map = new HashMap<>();
+		Map<ChipLocation, List<Placement>> map =
+				new DefaultMap<>(ArrayList::new);
 		for (Placement p : placements) {
-			map.computeIfAbsent(
-					machine.getChipAt(p).nearestEthernet.asChipLocation(),
-					cl -> new ArrayList<>()).add(p);
+			map.get(machine.getChipAt(p).nearestEthernet).add(p);
 		}
 		return map.values().stream();
 	}

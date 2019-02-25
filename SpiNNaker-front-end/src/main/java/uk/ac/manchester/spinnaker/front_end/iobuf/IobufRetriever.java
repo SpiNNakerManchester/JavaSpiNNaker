@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -46,6 +45,7 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * Retrieves and processes IOBUFs.
@@ -179,11 +179,9 @@ public class IobufRetriever extends BoardLocalSupport {
 	}
 
 	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
-		Map<ChipLocation, CoreSubsets> map = new HashMap<>();
+		Map<ChipLocation, CoreSubsets> map = new DefaultMap<>(CoreSubsets::new);
 		for (CoreLocation core : coreSubsets) {
-			map.computeIfAbsent(
-					machine.getChipAt(core).nearestEthernet.asChipLocation(),
-					cl -> new CoreSubsets()).addCore(core);
+			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
 		}
 		return map.values().stream();
 	}
