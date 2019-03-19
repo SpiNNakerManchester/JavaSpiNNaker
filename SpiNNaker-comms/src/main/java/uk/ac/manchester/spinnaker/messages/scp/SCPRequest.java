@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -31,13 +32,18 @@ import uk.ac.manchester.spinnaker.messages.sdp.SpinnakerRequest;
  */
 public abstract class SCPRequest<T extends SCPResponse>
 		extends SpinnakerRequest {
-	private static final int DEFAULT_DEST_X_COORD = 255;
-	private static final int DEFAULT_DEST_Y_COORD = 255;
+	private static final int BOOT_DEST_X = 255;
+	private static final int BOOT_DEST_Y = 255;
 	/**
 	 * The location of the default SCAMP.
 	 */
-	static final CoreLocation DEFAULT_MONITOR_CORE =
-			new CoreLocation(DEFAULT_DEST_X_COORD, DEFAULT_DEST_Y_COORD, 0);
+	public static final CoreLocation BOOT_MONITOR_CORE =
+			new CoreLocation(BOOT_DEST_X, BOOT_DEST_Y, 0);
+	/**
+	 * The pseudo-location of the default chip.
+	 */
+	public static final ChipLocation BOOT_CHIP =
+			BOOT_MONITOR_CORE.asChipLocation();
 
 	/** The first argument. */
 	public final int argument1;
@@ -161,8 +167,8 @@ public abstract class SCPRequest<T extends SCPResponse>
 	 *            The additional data. Starts at the <i>position</i> and goes to
 	 *            the <i>limit</i>.
 	 */
-	protected SCPRequest(SDPHeader sdpHeader, SCPCommand command, int argument1,
-			int argument2, int argument3, ByteBuffer data) {
+	protected SCPRequest(SDPHeader sdpHeader, CommandCode command,
+			int argument1, int argument2, int argument3, ByteBuffer data) {
 		super(sdpHeader);
 		this.scpRequestHeader = new SCPRequestHeader(command);
 		this.argument1 = argument1;

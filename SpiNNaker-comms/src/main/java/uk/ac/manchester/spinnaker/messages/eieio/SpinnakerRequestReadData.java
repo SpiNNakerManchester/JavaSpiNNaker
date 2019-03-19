@@ -96,13 +96,13 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	public SpinnakerRequestReadData(HasCoreLocation core, int sequenceNum,
 			int channel, int regionID, int startAddress, int spaceRead) {
 		this(core, sequenceNum, (byte) 1, new int[] {
-				channel
+			channel
 		}, new int[] {
-				regionID
+			regionID
 		}, new int[] {
-				startAddress
+			startAddress
 		}, new int[] {
-				spaceRead
+			spaceRead
 		});
 	}
 

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Collections.emptyList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.InetAddress;
@@ -41,7 +42,6 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.Counter;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
@@ -49,16 +49,12 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 /**
  * A representation of a SpiNNaker Machine with a number of Chips.
  * <p>
- * Machine is also iterable, providing ((x, y), chip) where:
- * x is the x-coordinate of a chip.
- * y is the y-coordinate of a chip.
- * chip is the chip with the given x, y coordinates.
+ * Machine is also iterable, providing the chips within the machine.
  *
- * <p>
  * @see <a
  * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
  * Python Version</a>
-
+ *
  * @author Christian-B
  */
 public class Machine implements Iterable<Chip> {
@@ -76,14 +72,12 @@ public class Machine implements Iterable<Chip> {
     // This may change to a map of maps
     private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
 
-    // Map of map of map implementation done to allow access to submaps.
+    /** Map of map of map implementation done to allow access to submaps. */
     // If never required this could be changed to single map with tuple key.
     private final HashMap<InetAddress, Map<FpgaId, Map<Integer, FPGALinkData>>>
             fpgaLinks;
 
-    /**
-     * The x and coordinates of the chip used to boot the machine.
-     */
+    /** The coordinates of the chip used to boot the machine. */
     public final ChipLocation boot;
 
     // Not final as currently could come from a chip added later.
@@ -95,12 +89,13 @@ public class Machine implements Iterable<Chip> {
     /** The version of the Machine based on its height and Width. */
     public final MachineVersion version;
 
-     /**
+    /**
      * Creates an empty machine.
      *
      * @param machineDimensions
-     *      Size of the machine along the x and y axes in Chips.
-     * @param boot The x and y coordinates of the chip used to boot the machine.
+     *            Size of the machine along the x and y axes, in Chips.
+     * @param boot
+     *            The coordinates of the chip used to boot the machine.
      */
     public Machine(MachineDimensions machineDimensions, HasChipLocation boot) {
         this.machineDimensions = machineDimensions;
@@ -122,11 +117,13 @@ public class Machine implements Iterable<Chip> {
      * Creates a machine starting with the supplied chips.
      *
      * @param machineDimensions
-     *      Size of the machine along the x and y axes in Chips.
-     * @param chips An iterable of chips in the machine.
-     * @param boot The x and y coordinates of the chip used to boot the machine.
+     *            Size of the machine along the x and y axes, in Chips.
+     * @param chips
+     *            An iterable of chips in the machine.
+     * @param boot
+     *            The coordinates of the chip used to boot the machine.
      * @throws IllegalArgumentException
-     *      On an attempt to add a second Chip with the same location.
+     *             On an attempt to add a second Chip with the same location.
      */
     public Machine(MachineDimensions machineDimensions, Iterable<Chip> chips,
             HasChipLocation boot) {
@@ -137,7 +134,8 @@ public class Machine implements Iterable<Chip> {
     /**
      * Creates a Machine from a Bean.
      *
-     * @param bean Bean holding the Values to set.
+     * @param bean
+     *            Bean holding the Values to set.
      */
     public Machine(MachineBean bean) {
         this(bean.getMachineDimensions(), bean.getRoot());
@@ -155,11 +153,10 @@ public class Machine implements Iterable<Chip> {
      * This may be the original machine or it may be a shallow near copy.
      * <p>
      * Once this method is run it is expected that the original Machine is no
-     *      longer used.
-     * The original internal objects are reused whenever possible.
+     * longer used. The original internal objects are reused whenever possible.
      * Changes made to the original Machine may or may not effect the new
-     *      Machine. This includes changes made to the chips, their routers
-     *      or their processors.
+     * Machine. This includes changes made to the chips, their routers or their
+     * processors.
      * <p>
      * For what makes up an abnormal link see {@link #findAbnormalLinks()}.
      * <p>
@@ -177,33 +174,31 @@ public class Machine implements Iterable<Chip> {
      * This may be the original machine or it may be a shallow near copy.
      * <p>
      * Once this method is run it is expected that the original Machine is no
-     *      longer used.
-     * The original internal objects are reused whenever possible.
+     * longer used. The original internal objects are reused whenever possible.
      * Changes made to the original Machine may or may not effect the new
-     *      Machine. This includes changes made to the chips, their routers
-     *      or their processors.
+     * Machine. This includes changes made to the chips, their routers or their
+     * processors.
      *
-     * @param ignoreChips The locations of the chips (if any)
-     *      that should not be in the rebuilt machine.
-     *      Chips not specified to be ignore or not checked in any way.
-     *      If this parameter is null the result of
-     *      {@link #findAbnormalLinks()} is used.
-     *      If this parameter is empty it is ignored as are any location that
-     *      do not represent a chip in the machine.
-     *
-     * @param ignoreLinks A mapping of Locations to Directions of links that
-     *      should be in the rebuilt machine.
-     *      Links not specified to be ignored are not checked in any way.
-     *      If this parameter is null the result of
-     *      {@link #findAbnormalChips()} is used.
-     *      If this parameter is empty it is ignored as are any location that
-     *      do not represent a chip in the machine,
-     *      or direction that do not represent an existing link.
-     * @return A Machine (possibly the original one) without the
-     *      ignore/abnormal bits.
+     * @param ignoreChips
+     *            The locations of the chips (if any) that should not be in the
+     *            rebuilt machine. Chips not specified to be ignore or not
+     *            checked in any way. If this parameter is {@code null} the
+     *            result of {@link #findAbnormalLinks()} is used. If this
+     *            parameter is empty it is ignored as are any location that do
+     *            not represent a chip in the machine.
+     * @param ignoreLinks
+     *            A mapping of Locations to Directions of links that should be
+     *            in the rebuilt machine. Links not specified to be ignored are
+     *            not checked in any way. If this parameter is {@code null} the
+     *            result of {@link #findAbnormalChips()} is used. If this
+     *            parameter is empty it is ignored as are any location that do
+     *            not represent a chip in the machine, or direction that do not
+     *            represent an existing link.
+     * @return A Machine (possibly the original one) without the ignore/abnormal
+     *         bits.
      */
-    public Machine rebuild(Collection<ChipLocation> ignoreChips,
-            Map<ChipLocation, Collection<Direction>> ignoreLinks) {
+    public Machine rebuild(Set<ChipLocation> ignoreChips,
+            Map<ChipLocation, Set<Direction>> ignoreLinks) {
         if (ignoreChips == null) {
             ignoreChips = this.findAbnormalChips();
         }
@@ -243,9 +238,10 @@ public class Machine implements Iterable<Chip> {
     /**
      * Add a chip to the machine.
      *
-     * @param chip The chip to add to the machine.
+     * @param chip
+     *            The chip to add to the machine.
      * @throws IllegalArgumentException
-     *      On an attempt to add a second Chip with the same location.
+     *             On an attempt to add a second Chip with the same location.
      */
     public final void addChip(Chip chip) {
         ChipLocation location = chip.asChipLocation();
@@ -260,7 +256,7 @@ public class Machine implements Iterable<Chip> {
                     + machineDimensions.width);
         }
         if (chip.getY() >= machineDimensions.height) {
-           throw new IllegalArgumentException("Chip y: " + chip.getY()
+            throw new IllegalArgumentException("Chip y: " + chip.getY()
                    + " is too high for a machine with height "
                    + machineDimensions.height + " " + chip);
         }
@@ -309,7 +305,7 @@ public class Machine implements Iterable<Chip> {
     }
 
     @Override
-   /**
+    /**
      * Returns an iterator over the Chips in this Machine.
      * <p>
      * The Chips will be returned in the natural order of their ChipLocation.
@@ -354,10 +350,12 @@ public class Machine implements Iterable<Chip> {
     /**
      * Get the chip at a specific (x, y) location.
      * <p>
-     * Will return null if hasChipAt for the same location returns null.
+     * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
+     * for the same location returns {@code false}.
      *
-     * @param location x and y cooridinates of the requested chip.
-     * @return A Chip or null if no Chip found at that location.
+     * @param location
+     *            coordinates of the requested chip.
+     * @return A Chip or {@code null} if no Chip found at that location.
      */
     public final Chip getChipAt(ChipLocation location) {
         return chips.get(location);
@@ -366,10 +364,12 @@ public class Machine implements Iterable<Chip> {
     /**
      * Get the chip at a specific (x, y) location.
      * <p>
-     * Will return null if hasChipAt for the same location returns null.
+     * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
+     * for the same location returns {@code false}.
      *
-     * @param location x and y cooridinates of the requested chip.
-     * @return A Chip or null if no Chip found at that location.
+     * @param location
+     *            coordinates of the requested chip.
+     * @return A Chip or {@code null} if no Chip found at that location.
      */
     public final Chip getChipAt(HasChipLocation location) {
         return chips.get(location.asChipLocation());
@@ -378,13 +378,16 @@ public class Machine implements Iterable<Chip> {
     /**
      * Get the chip at a specific (x, y) location.
      * <p>
-     * Will return null if hasChipAt for the same location returns null.
+     * Will return {@code null} if {@link #hasChipAt(ChipLocation) hasChipAt}
+     * for the same location returns {@code false}.
      *
-     * @param x The x-coordinate of the requested chip
-     * @param y The y-coordinate of the requested chip
-     * @return A Chip or null if no Chip found at that location.
+     * @param x
+     *            The x-coordinate of the requested chip
+     * @param y
+     *            The y-coordinate of the requested chip
+     * @return A Chip or {@code null} if no Chip found at that location.
      * @throws IllegalArgumentException
-     *      Thrown is either x or y is negative or too big.
+     *             Thrown is either x or y is negative or too big.
      */
     public final Chip getChipAt(int x, int y) {
         ChipLocation location = new ChipLocation(x, y);
@@ -394,7 +397,8 @@ public class Machine implements Iterable<Chip> {
     /**
      * Determine if a chip exists at the given coordinates.
      *
-     * @param location x and y coordinates of the requested chip.
+     * @param location
+     *            coordinates of the requested chip.
      * @return True if and only if the machine has a Chip at that location.
      */
     public final boolean hasChipAt(ChipLocation location) {
@@ -407,7 +411,8 @@ public class Machine implements Iterable<Chip> {
     /**
      * Determine if a chip exists at the given coordinates.
      *
-     * @param location x and y coordinates of the requested chip.
+     * @param location
+     *            coordinates of the requested chip.
      * @return True if and only if the machine has a Chip at that location.
      */
     public final boolean hasChipAt(HasChipLocation location) {
@@ -420,11 +425,13 @@ public class Machine implements Iterable<Chip> {
     /**
      * Determine if a chip exists at the given coordinates.
      *
-     * @param x The x-coordinate of the requested chip
-     * @param y The y-coordinate of the requested chip
+     * @param x
+     *            The x-coordinate of the requested chip
+     * @param y
+     *            The y-coordinate of the requested chip
      * @return True if and only if the machine has a Chip at that location.
      * @throws IllegalArgumentException
-     *      Thrown is either x or y is negative or too big.
+     *             Thrown is either x or y is negative or too big.
      */
     public final boolean hasChipAt(int x, int y) {
         ChipLocation location = new ChipLocation(x, y);
@@ -441,35 +448,37 @@ public class Machine implements Iterable<Chip> {
     /**
      * Determine if a link exists at the given coordinates.
      *
-     * @param source The x and y coordinates of the source of the link.
-     * @param link The direction of the link.
+     * @param source
+     *            The coordinates of the source of the link.
+     * @param link
+     *            The direction of the link.
      * @return True if and only if the Machine/Chip has a link as specified.
      */
     public final boolean hasLinkAt(ChipLocation source, Direction link) {
         Chip chip = chips.get(source);
         if (chip == null) {
             return false;
-        } else {
-            return chip.router.hasLink(link);
         }
+        return chip.router.hasLink(link);
     }
 
     /**
-     * Get the x and y coordinates of a possible chip over the given link.
+     * Get the coordinates of a possible chip over the given link.
      * <p>
-     * This method will take wrap arounds into account if appropriate.
+     * This method will take wrap-arounds into account if appropriate.
      * <p>
-     * This method intentionally does NOT check if a Chip at the resulting
-     *      location already exists.
+     * This method intentionally <em>does not</em> check if a Chip at the
+     * resulting location already exists.
      *
-     * @param source The x and y coordinates of the source of the link.
-     * @param direction The Direction of the link to traverse
+     * @param source
+     *            The coordinates of the source of the link.
+     * @param direction
+     *            The Direction of the link to traverse
      * @return Location of a possible chip that would be connected by this link.
      */
-    public final ChipLocation getLocationOverLink(
-            HasChipLocation source, Direction direction) {
-        return this.normalizedLocation(
-                source.getX() + direction.xChange,
+    public final ChipLocation getLocationOverLink(HasChipLocation source,
+            Direction direction) {
+        return this.normalizedLocation(source.getX() + direction.xChange,
                 source.getY() + direction.yChange);
     }
 
@@ -477,27 +486,29 @@ public class Machine implements Iterable<Chip> {
      * Get the existing Chip over the given link.
      * <p>
      * This method is just a combination of getLocationOverLink and getChipAt.
-     * It therefor takes wraparound into account and does check for the
-     *      existence of the destination chip.
+     * It therefore takes wrap-around into account and does check for the
+     * existence of the destination chip.
+     * <p>
+     * This method returns the destination chip WITHOUT checking if the physical
+     * link is active.
      *
-     * This method returns the destination chip WITHOUT checking if the
-     *      physical link is active.
-     *
-     * @param source The x and y coordinates of the source of the link.
-     * @param direction The Direction of the link to traverse
+     * @param source
+     *            The coordinates of the source of the link.
+     * @param direction
+     *            The Direction of the link to traverse
      * @return The Destination Chip connected by this (possible) link. or
-     *      null if it does not exist.
+     *         {@code null} if it does not exist.
      */
-    public final Chip getChipOverLink(
-            HasChipLocation source, Direction direction) {
+    public final Chip getChipOverLink(HasChipLocation source,
+            Direction direction) {
         return getChipAt(getLocationOverLink(source, direction));
     }
 
     /**
      * The maximum possible x-coordinate of any chip in the board.
      * <p>
-     * Currently no check is carried out to guarantee there is actually a
-     *      Chip with this x value.
+     * Currently no check is carried out to guarantee there is actually a Chip
+     * with this x value.
      *
      * @return The maximum possible x-coordinate.
      */
@@ -505,11 +516,11 @@ public class Machine implements Iterable<Chip> {
         return machineDimensions.width - 1;
     }
 
-   /**
+    /**
      * The maximum possible y-coordinate of any chip in the board.
      * <p>
-     * Currently no check is carried out to guarantee there is actually a
-     *      Chip with this y value.
+     * Currently no check is carried out to guarantee there is actually a Chip
+     * with this y value.
      *
      * @return The maximum possible y-coordinate.
      */
@@ -519,11 +530,10 @@ public class Machine implements Iterable<Chip> {
 
     /**
      * The chips in the machine that have an Ethernet connection.
+     * These are defined as the Chip that have a non-{@code null} INET address.
      * <p>
-     * These are defined as the Chip that have a none null INET address.
-     * <p>
-     * While these are typically the bottom left Chip of each board
-     *      this is not guaranteed.
+     * While these are typically the bottom-left Chip of each board, this is not
+     * guaranteed.
      * <p>
      * There is no guarantee regarding the order of the Chips.
      *
@@ -536,31 +546,25 @@ public class Machine implements Iterable<Chip> {
     /**
      * Collection of the spinnaker links on this machine.
      *
-     * @return An unmodifiable unordered collection of
-     *      all the spinnaker links on this machine.
+     * @return An unmodifiable unordered collection of all the spinnaker links
+     *         on this machine.
      */
     public final Collection<SpinnakerLinkData> spinnakerLinks() {
         return Collections.unmodifiableCollection(spinnakerLinks.values());
     }
 
     /**
-     * Get the a specific spynakker link if it exists.
-     *
-     * @return An unmodifiable unordered collection of
-     *      all the spinnaker links on this machine.
-     */
-
-
-    /**
      * Get a SpiNNaker link with a given ID.
      *
-     * @param id The ID of the link
-     * @param address The board address that this SpiNNaker link
-     *      is associated with. If null the boot inetaddress will be used.
-     * @return The associated SpinnakeLink or null if not found.
+     * @param id
+     *            The ID of the link
+     * @param address
+     *            The board address that this SpiNNaker link is associated with.
+     *            If {@code null} the boot INET address will be used.
+     * @return The associated SpinnakerLink or {@code null} if not found.
      */
-    public final SpinnakerLinkData getSpinnakerLink(
-            int id, InetAddress address) {
+    public final SpinnakerLinkData getSpinnakerLink(int id,
+            InetAddress address) {
         InetIdTuple key;
         if (address == null) {
             key = new InetIdTuple(bootEthernetAddress, id);
@@ -573,8 +577,9 @@ public class Machine implements Iterable<Chip> {
     /**
      * Get a SpiNNaker link with a given ID on the boot chip.
      *
-     * @param id The ID of the link
-     * @return The associated SpinnakeLink or null if not found.
+     * @param id
+     *            The ID of the link
+     * @return The associated SpinnakerLink or {@code null} if not found.
      */
     public final SpinnakerLinkData getBootSpinnakerLink(int id) {
         InetIdTuple key = new InetIdTuple(bootEthernetAddress, id);
@@ -582,11 +587,11 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Add SpiNNaker links that are on a given machine depending on the
-     *      height and width and therefor version of the board.
+     * Add SpiNNaker links that are on a given machine depending on the height
+     * and width and therefore version of the board.
      * <p>
-     * If a link already exists the original link is retain and that
-     *      spinnaker link is not added.
+     * If a link already exists the original link is retain and that spinnaker
+     * link is not added.
      */
     public final void addSpinnakerLinks() {
         if (version.isFourChip) {
@@ -615,32 +620,30 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Converts x and y to a chip location.
-     *
-     * If required (and applicable) adjusting for wrap around.
+     * Converts x and y to a chip location, if required (and applicable)
+     * adjusting for wrap around.
      * <p>
      * The only check that the coordinates are valid is to check they are
-     *      greater than zero. Otherwise null is returned.
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @return A ChipLocation based on X and Y with possible wrap around,
-     *  or null if either coordinate is less than zero
-     *       or greater than the dimensions of the machine.
+     * greater than zero. Otherwise {@code null} is returned.
+     *
+     * @param x
+     *            X coordinate
+     * @param y
+     *            Y coordinate
+     * @return A ChipLocation based on X and Y with possible wrap around, or
+     *         {@code null} if either coordinate is less than zero or greater
+     *         than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(int x, int y) {
         if (version.horizontalWrap) {
             x = (x + machineDimensions.width) % machineDimensions.width;
-        } else {
-            if (x < 0 || x >=  this.machineDimensions.width) {
-                return null;
-            }
+        } else if (x < 0 || x >= this.machineDimensions.width) {
+            return null;
         }
         if (version.verticalWrap) {
             y = (y + machineDimensions.height) % machineDimensions.height;
-        } else {
-            if (y < 0 || y >= this.machineDimensions.width) {
-                return null;
-            }
+        } else if (y < 0 || y >= this.machineDimensions.height) {
+            return null;
         }
         if (x < 0 || y < 0) {
             return null;
@@ -649,19 +652,18 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * Returns the location you would get to from the source if you move in
-     *      this direction.
-     *
-     * If required (and applicable) adjusting for wrap around.
+     * Returns the location you would get to from the source if you move in this
+     * direction, if required (and applicable) adjusting for wrap-around.
      * <p>
      * No check is done to see if there is actually a chip at that location.
      *
-     * @param source the original x and y coordinates.
-     * @param direction which way to move.
-     * @return A ChipLocation based on a move in this direction
-     *  with possible wrap around,
-     *  or null if either coordinate is less than zero
-     *       or greater than the dimensions of the machine.
+     * @param source
+     *            the original x and y coordinates.
+     * @param direction
+     *            which way to move.
+     * @return A ChipLocation based on a move in this direction with possible
+     *         wrap around, or {@code null} if either coordinate is less than
+     *         zero or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedMove(
             HasChipLocation source, Direction direction) {
@@ -671,31 +673,31 @@ public class Machine implements Iterable<Chip> {
 
 
     /**
-     * Returns this location adjusted for wrap arounds.
-     *
+     * Returns this location adjusted for wrap-arounds.
      * <p>
      * No check is done to see if there is actually a chip at that location.
      *
      * @param location
-     *     A location which may need to be corrected for wrap arounds.
-     * @return
-     *     A ChipLocation based on a move in this direction
-     *         with possible wrap around,
-     *         or null if either coordinate is less than zero
-     *         or greater than the dimensions of the machine.
+     *            A location which may need to be corrected for wrap-arounds.
+     * @return A ChipLocation based on a move in this direction with possible
+     *         wrap around, or {@code null} if either coordinate is less than
+     *         zero or greater than the dimensions of the machine.
      */
     public final ChipLocation normalizedLocation(HasChipLocation location) {
         return normalizedLocation(location.getX(), location.getY());
     }
 
     /**
-     * Get an FPGA link data item that corresponds to the FPGA and FPGA link
-     *      for a given board address.
+     * Get an FPGA link data item that corresponds to the FPGA and FPGA link for
+     * a given board address.
      *
-     * @param fpgaId The ID of the FPGA that the data is going through.
-     * @param fpgaLinkId The link ID of the FPGA.
-     * @param address The board address that this FPGA link is associated with.
-     * @return FPGA link data or null if no such link has been added.
+     * @param fpgaId
+     *            The ID of the FPGA that the data is going through.
+     * @param fpgaLinkId
+     *            The link ID of the FPGA.
+     * @param address
+     *            The board address that this FPGA link is associated with.
+     * @return FPGA link data, or {@code null} if no such link has been added.
      */
     public final FPGALinkData getFpgaLink(
             FpgaId fpgaId, int fpgaLinkId, InetAddress address) {
@@ -712,9 +714,8 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * An iterable over all the added FPGA link data items.
-     * <p>
-     * The Iterable may be empty.
+     * An iterable over all the added FPGA link data items. The Iterable may be
+     * empty.
      * <p>
      * No Guarantee of order is provided.
      *
@@ -725,63 +726,52 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * An iterable over all the added FPGA link data items for this address.
-     * <p>
-     * The Iterable may be empty.
+     * An iterable over all the added FPGA link data items for this address. The
+     * Iterable may be empty.
      * <p>
      * No Guarantee of order is provided.
      *
-     * @param address The board address that this FPGA link is associated with.
+     * @param address
+     *            The board address that this FPGA link is associated with.
      * @return All added FPGA link data items for this address.
      */
     public final Iterable<FPGALinkData> getFpgaLinks(InetAddress address) {
-        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-        byAddress = fpgaLinks.get(address);
+        Map<FpgaId, Map<Integer, FPGALinkData>> byAddress = fpgaLinks
+                .get(address);
         if (byAddress == null) {
-            return Collections.<FPGALinkData>emptyList();
-        } else {
-            return new DoubleMapIterable<>(byAddress);
+            return emptyList();
         }
+        return new DoubleMapIterable<>(byAddress);
     }
 
     private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
-        for (FpgaEnum fpgaEnum:FpgaEnum.values()) {
+        for (FpgaEnum fpgaEnum : FpgaEnum.values()) {
             ChipLocation location = normalizedLocation(
                     rootX + fpgaEnum.getX(), rootY + fpgaEnum.getY());
             if (hasChipAt(location)
                     && !hasLinkAt(location, fpgaEnum.direction)) {
-                FPGALinkData fpgaLinkData = new FPGALinkData(
-                        fpgaEnum.id, fpgaEnum.fpgaId, location,
-                        fpgaEnum.direction, address);
-                Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-                byAddress = fpgaLinks.get(address);
-                if (byAddress == null) {
-                    byAddress = new HashMap<>();
-                    fpgaLinks.put(address, byAddress);
-                }
-                Map<Integer, FPGALinkData> byId;
-                byId = byAddress.get(fpgaEnum.fpgaId);
-                if (byId == null) {
-                    byId = new HashMap<>();
-                    byAddress.put(fpgaEnum.fpgaId, byId);
-                }
-                byId.put(fpgaEnum.id, fpgaLinkData);
+                Map<Integer, FPGALinkData> byId = fpgaLinks
+                        .computeIfAbsent(address, k -> new HashMap<>())
+                        .computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>());
+                byId.put(fpgaEnum.id,
+                        new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId, location,
+                                fpgaEnum.direction, address));
             }
         }
     }
 
     /**
-     * Add FPGA links that are on a given machine depending on the version
-     *      of the board.
+     * Add FPGA links that are on a given machine depending on the version of
+     * the board.
      * <p>
-     * Note: This implementation assumes the Ethernet Chip is the 0, 0 chip
-     *      on each board
+     * Note: This implementation assumes the Ethernet Chip is the 0, 0 chip on
+     * each board
      */
     public final void addFpgaLinks() {
         if (version.isFourChip) {
-            return;  // NO fpga links
+            return; // NO fpga links
         }
-        for (Chip ethernetConnectedChip: ethernetConnectedChips) {
+        for (Chip ethernetConnectedChip : ethernetConnectedChips) {
             addFpgaLinks(ethernetConnectedChip.getX(),
                     ethernetConnectedChip.getY(),
                     ethernetConnectedChip.ipAddress);
@@ -791,16 +781,15 @@ public class Machine implements Iterable<Chip> {
     /**
      * Get a string detailing the number of cores and links.
      * <p>
-     * Warning the current implementation makes the simplification assumption
-     *      that every link exists in both directions.
+     * Warning: the current implementation makes the simplification assumption
+     * that every link exists in both directions.
      *
      * @return A quick description of the machine.
      */
-    @SuppressWarnings("deprecation")
     public final String coresAndLinkOutputString() {
         int cores = 0;
         int everyLink = 0;
-        for (Chip chip:chips.values()) {
+        for (Chip chip : chips.values()) {
             cores += chip.nProcessors();
             everyLink += chip.router.size();
         }
@@ -808,16 +797,14 @@ public class Machine implements Iterable<Chip> {
     }
 
     /**
-     * The x and y coordinate of the chip used to boot the machine.
-     * <p>
-     * While this is typically Chip zero zero there is no guarantee.
-     * <p>
-     * While this Chip will typically have an associated InetAddress there
-     *      is no guarantee.
+     * The coordinates of the chip used to boot the machine. This is typically
+     * Chip (zero, zero), and will typically have an associated InetAddress, but
+     * there is no guarantee of either of these facts.
      * <p>
      * If not Chip has been added to the machine at the boot location this
-     *      method returns null.
-     * @return The Chip at the location specified as boot or null.
+     * method returns {@code null}.
+     *
+     * @return The Chip at the location specified as boot or {@code null}.
      */
     public final Chip bootChip() {
         return chips.get(boot);
@@ -826,10 +813,11 @@ public class Machine implements Iterable<Chip> {
     /**
      * Iterable over the destinations of each link.
      * <p>
-     * There will be exactly one destination for each Link.
-     * While normally all destinations will be unique the is no guarantee.
+     * There will be exactly one destination for each Link. While normally all
+     * destinations will be unique the is no guarantee.
      *
-     * @param chip x and y coordinates for any chip on the board
+     * @param chip
+     *            x and y coordinates for any chip on the board
      * @return A Stream over the destination locations.
      */
     public final Iterable<Chip> iterChipsOnBoard(Chip chip) {
@@ -841,88 +829,15 @@ public class Machine implements Iterable<Chip> {
         };
     }
 
-    /**
-     * Reserves (if possible) one extra processor on each Chip as a monitor.
-     * <p>
-     * Chips where this was not possible are added as failedChips.
-     *
-     * @return Locations of the new monitor processors and the failed chips.
-     * @deprecated Will be removed if confirmed to never be called any more.
-     */
-    @Deprecated
-    public final CoreSubsetsFailedChipsTuple reserveSystemProcessors() {
-        maxUserProssorsOnAChip = 0;
-        CoreSubsetsFailedChipsTuple result = new CoreSubsetsFailedChipsTuple();
-
-        this.chips.forEach((location, chip) -> {
-            @SuppressWarnings("deprecation")
-            int p = chip.reserveASystemProcessor();
-            if (p == -1) {
-                result.addFailedChip(chip);
-            } else {
-                result.addCore(location, p);
-            }
-            if (chip.nUserProcessors() > maxUserProssorsOnAChip) {
-                maxUserProssorsOnAChip = chip.nUserProcessors();
-            }
-        });
-        return result;
-    }
-
-    /**
+     /**
      * The maximum number of user cores on any chip.
      * <p>
      * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
      *
      * @return Maximum for at at least one core.
      */
     public final int maximumUserCoresOnChip() {
         return maxUserProssorsOnAChip;
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      forEach so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores1() {
-        Counter count = new Counter();
-        this.chips.forEach((location, chip) -> {
-            count.add(chip.nUserProcessors());
-        });
-        return count.get();
-    }
-
-    /**
-     * The maximum number of user cores on any chip.
-     * <p>
-     * A user core is defined as one that has not been reserved as a monitor.
-     * <p>
-     * Warning the accuracy of this method is not guaranteed if
-     *      Chip.reserveASystemProcessor() is called directly.
-     *
-     * @return Maximum for at at least one core.
-     * @deprecated
-     *      This method is purely to demonstrate/test the usage of
-     *      stream so can be remove at any moment,
-     */
-    @Deprecated
-    int totalAvailableUserCores2() {
-        return chips.values().stream().map(Chip::nUserProcessors).
-                mapToInt(Integer::intValue).sum();
-
     }
 
     /**
@@ -932,7 +847,7 @@ public class Machine implements Iterable<Chip> {
      */
     public final int totalAvailableUserCores() {
         int count = 0;
-        for (Chip chip :chips.values()) {
+        for (Chip chip : chips.values()) {
             count += chip.nUserProcessors();
         }
         return count;
@@ -943,28 +858,30 @@ public class Machine implements Iterable<Chip> {
      *
      * @return The number of cores over all Chips.
      */
-    @SuppressWarnings("deprecation")
     public final int totalCores() {
         int count = 0;
-        for (Chip chip :chips.values()) {
+        for (Chip chip : chips.values()) {
             count += chip.nProcessors();
         }
         return count;
     }
 
     /**
-     * Check if the inverse link to the one described exists.
+     * Check if the inverse link to the one described exists. This check is in
+     * two stages.
+     * <ol>
+     * <li>Check that there is actually a second chip in the given direction
+     * from the input chip. There need not be an actual working link.
+     * <li>Check that the second chip does have a working link back. (Inverse
+     * direction)
+     * </ol>
      *
-     * This check is in two stages.
-     * 1. Check that there is actually a second chip in the given direction
-     *      from the input chip. There need not be an actual working link.
-     * 2. Check that the second chip does have a working link back.
-     *      (Inverse direction)
-     *
-     * @param chip Starting Chip which will be the Target of the actual
-     *      link checked.
-     * @param direction Original direction.
-     *      This is the inverse of the direction in the link actually checked.
+     * @param chip
+     *            Starting Chip which will be the Target of the actual link
+     *            checked.
+     * @param direction
+     *            Original direction. This is the inverse of the direction in
+     *            the link actually checked.
      * @return True if and only if there is a active inverse link
      */
     public boolean hasInverseLinkAt(ChipLocation chip, Direction direction) {
@@ -985,19 +902,19 @@ public class Machine implements Iterable<Chip> {
      * Returns a list of the abnormal links that are recommended for removal.
      * <p>
      * The current implementation identifies the Links where there is no
-     *      matching reverse link as abnormal.
-     * This includes case where the whole destination chip is missing.
+     * matching reverse link as abnormal. This includes case where the whole
+     * destination chip is missing.
      * <p>
      * Future implementations may add other tests for abnormal Chips.
      *
-     * @return A Map of ChipLocations to Direction (hopefully empty)
-     *      which identifies links to remove
+     * @return A Map of ChipLocations to Direction (hopefully empty) which
+     *         identifies links to remove
      */
-    public Map<ChipLocation, Collection<Direction>> findAbnormalLinks() {
-        Map<ChipLocation, Collection<Direction>> abnormalLinks =
-                new DefaultMap<>(ArrayList::new);
+    public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
+        Map<ChipLocation, Set<Direction>> abnormalLinks =
+                new DefaultMap<>(HashSet::new);
         for (Chip chip: chips.values()) {
-            for (Link link:chip.router) {
+            for (Link link: chip.router) {
                 if (!this.hasChipAt(link.destination)) {
                     abnormalLinks.get(link.source).add(
                             link.sourceLinkDirection);
@@ -1019,15 +936,15 @@ public class Machine implements Iterable<Chip> {
      * Returns a list of the abnormal Chips that are recommended for removal.
      * <p>
      * The current implementation identifies Chips with no outgoing links as
-     *      abnormal.
+     * abnormal.
      * <p>
      * Future implementations may add other tests for abnormal Chips.
      *
-     * @return A list (hopefully empty) of ChipLocations to remove.
+     * @return A set (hopefully empty) of ChipLocations to remove.
      */
-    public List<ChipLocation> findAbnormalChips() {
-        ArrayList<ChipLocation> abnormalCores = new ArrayList<>();
-        for (Chip chip: chips.values()) {
+    public Set<ChipLocation> findAbnormalChips() {
+        Set<ChipLocation> abnormalCores = new HashSet<>();
+        for (Chip chip : chips.values()) {
             if (chip.router.size() == 0) {
                 abnormalCores.add(chip.asChipLocation());
             }
@@ -1040,7 +957,6 @@ public class Machine implements Iterable<Chip> {
         throw new UnsupportedOperationException(
                 "hashCode not supported as equals implemented.");
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -1055,29 +971,29 @@ public class Machine implements Iterable<Chip> {
 
     /**
      * Describes one difference found between this machine and another machine.
+     * <p>
+     * This method will always return {@code null} if no difference is found
+     * between the two machines. So semantically is the same as Equals except
+     * that this works if other is a super class of machine in which case only
+     * the share variables are compared.
+     * <p>
+     * This method returns as soon as it has found a difference so there may be
+     * other not specified differences.
+     * <p>
+     * Warning: This method could change over time, so there is no implied
+     * guarantee to the order that variables are checked or to the message that
+     * is returned.
+     * <p>
+     * The only guarantee is that {@code null} is returned if no difference is
+     * detected.
      *
-     * This method will always return null if no difference is found between
-     *      the two machines.
-     * So semantically is the same as Equals except that this works if other
-     *      is a super class of machine
-     *      in which case only the share variables are compared.
-     *
-     * This method returns as soon as it has found a difference so there may
-     *      be other not specified differences.
-     *
-     * Warning This method could change over time,
-     *     so there is no implied guarantee
-     *     to the order that variables are checked
-     *     or to the message that is returned.
-     *
-     * The only guarantee is that null is returned if no difference is detected.
-     *
-     * @param other Another machine to check if it has the same variables.
-     * @return null if no difference is detected otherwise a string.
+     * @param other
+     *            Another machine to check if it has the same variables.
+     * @return {@code null} if no difference is detected otherwise a string.
      */
     public String difference(Machine other) {
         if (!machineDimensions.equals(other.machineDimensions)) {
-             return "machineDimensions " + machineDimensions
+            return "machineDimensions " + machineDimensions
                      + " != " + other.machineDimensions;
         }
         if (!chips.keySet().equals(other.chips.keySet())) {
@@ -1087,7 +1003,7 @@ public class Machine implements Iterable<Chip> {
             return "version " + version + " != " + version;
         }
         if (maxUserProssorsOnAChip != other.maxUserProssorsOnAChip) {
-            return "maxUserProssorsOnAChip " + maxUserProssorsOnAChip
+            return "maxUserProcessorsOnAChip " + maxUserProssorsOnAChip
                     + " != " + other.maxUserProssorsOnAChip;
         }
         if (!boot.equals(other.boot)) {
@@ -1097,7 +1013,7 @@ public class Machine implements Iterable<Chip> {
             return "bootEthernetAddress " + bootEthernetAddress
                     + " != " + other.bootEthernetAddress;
         }
-        for (ChipLocation loc: chips.keySet()) {
+        for (ChipLocation loc : chips.keySet()) {
             Chip c1 = chips.get(loc);
             Chip c2 = other.chips.get(loc);
             if (!c1.equals(c2)) {
@@ -1105,7 +1021,7 @@ public class Machine implements Iterable<Chip> {
             }
         }
         if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
-           return "ethernetConnectedChips " + ethernetConnectedChips
+            return "ethernetConnectedChips " + ethernetConnectedChips
                    + " != " + other.ethernetConnectedChips;
         }
         if (!spinnakerLinks.equals(other.spinnakerLinks)) {
@@ -1120,16 +1036,18 @@ public class Machine implements Iterable<Chip> {
 
     /**
      * Describes the difference between chip location between two machines.
-     *
-     * This method is expected to only be called then there is a detected
-     *      or expected difference between the two chip locations
-     *      so will always return a message
-     *
+     * <p>
+     * This method is expected to only be called then there is a detected or
+     * expected difference between the two chip locations so will always return
+     * a message
+     * <p>
      * Warning: As this method is mainly a support method for
-     *      {@link difference} the returned result can be changed at any time.
+     * {@link #difference(Machine)}, the returned result can be changed at any
+     * time.
      *
-     * @param that Another machine with suspected difference in the location of
-     *      Chips.
+     * @param that
+     *            Another machine with suspected difference in the location of
+     *            Chips.
      * @return Some useful human readable information.
      */
     public String chipLocationDifference(Machine that) {
@@ -1147,7 +1065,7 @@ public class Machine implements Iterable<Chip> {
             Set<ChipLocation> temp1 = new HashSet<>(setThis);
             temp1.removeAll(setThat);
             if (temp1.isEmpty()) {
-                return "No difference between chip ketsets found.";
+                return "No difference between chip key sets found.";
             }
             Set<ChipLocation> temp2 = new HashSet<>(setThat);
             temp2.removeAll(setThis);
@@ -1159,7 +1077,7 @@ public class Machine implements Iterable<Chip> {
     /**
      * Obtains the Boot Ethernet IP Address.
      *
-     * @return Th Ip Address of the boot chip (typically 0, 0)
+     * @return The IPv4 Address of the boot chip (typically 0, 0)
      */
     public InetAddress getBootEthernetAddress() {
         return this.bootEthernetAddress;
@@ -1208,4 +1126,4 @@ public class Machine implements Iterable<Chip> {
         }
     }
 
- }
+}

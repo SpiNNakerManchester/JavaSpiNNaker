@@ -152,7 +152,7 @@ public class SDPHeader implements SerializableMessage {
 
 			@Override
 			public boolean equals(Object other) {
-				if (other == null || !(other instanceof HasCoreLocation)) {
+				if (!(other instanceof HasCoreLocation)) {
 					return false;
 				}
 				HasCoreLocation c = (HasCoreLocation) other;
@@ -261,7 +261,7 @@ public class SDPHeader implements SerializableMessage {
 	}
 
 	public void setTag(byte tag) {
-		this.tag = tag;
+		this.tag = Byte.toUnsignedInt(tag);
 	}
 
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */

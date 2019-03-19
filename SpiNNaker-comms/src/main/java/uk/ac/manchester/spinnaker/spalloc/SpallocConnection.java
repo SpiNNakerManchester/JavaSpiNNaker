@@ -310,7 +310,9 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
-		log.debug("sending a {}", command.getClass());
+		if (log.isDebugEnabled()) {
+    		log.debug("sending a {}", command.getClass());
+        }
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line

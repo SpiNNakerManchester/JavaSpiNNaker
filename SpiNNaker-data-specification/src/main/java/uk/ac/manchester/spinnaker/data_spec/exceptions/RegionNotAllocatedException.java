@@ -22,8 +22,9 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
  * An exception which occurs when trying to write to an unallocated region of
  * memory.
  */
-@SuppressWarnings("serial")
 public class RegionNotAllocatedException extends DataSpecificationException {
+	private static final long serialVersionUID = 7075946109066864639L;
+
 	/**
 	 * Create an instance.
 	 *
@@ -34,7 +35,7 @@ public class RegionNotAllocatedException extends DataSpecificationException {
 	 */
 	public RegionNotAllocatedException(int currentRegion, Commands command) {
 		super("Region " + currentRegion
-				+ " has not been allocated during execution of command "
-				+ command);
+            + " has not been allocated during execution of command "
+            + command);
 	}
 }

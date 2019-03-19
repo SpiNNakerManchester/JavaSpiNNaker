@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,16 @@ import java.sql.SQLException;
 
 /**
  * Indicates a class that can provide database connections to
- * suitably-configured SQLite databases.
+ * suitably-configured databases.
  *
  * @author Donal Fellows
+ * @param <APIType>
+ *            The type of the higher-level access interface that can be used to
+ *            work with the database this class makes connections to.
  */
-public interface ConnectionProvider {
+public interface ConnectionProvider<APIType extends DatabaseAPI> {
 	/**
-	 * Get a connection to an SQLite database, creating it if needed.
+	 * Get a connection to a database, creating it if needed.
 	 *
 	 * @return The configured connection to the database. The database will have
 	 *         been seeded with DDL if necessary.
@@ -35,4 +38,10 @@ public interface ConnectionProvider {
 	 *             If anything goes wrong.
 	 */
 	Connection getConnection() throws SQLException;
+
+	/**
+	 * @return a storage interface that is suitable for providing support for a
+	 *         particular API.
+	 */
+	APIType getStorageInterface();
 }

@@ -17,10 +17,14 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -47,14 +51,14 @@ public final class SpiNNakerTriadGeometry {
     public final int triadWidth;
 
     /** Bottom Left corner Chips. Typically the Ethernet Chip */
-    private final ArrayList<ChipLocation> roots;
+    private final Iterable<ChipLocation> roots;
 
-    private final HashMap<ChipLocation, ChipLocation> localChipCoordinates;
+    private final Map<ChipLocation, ChipLocation> localChipCoordinates;
 
-    private final ArrayList<ChipLocation> singleBoardCoordinates;
+    private final Collection<ChipLocation> singleBoardCoordinates;
 
-    private final float xCenterer;
-    private final float yCenterer;
+    private final float xCentre;
+    private final float yCentre;
 
     /**
      * Constructor is private to force reuse of statically held Object(s).
@@ -65,13 +69,13 @@ public final class SpiNNakerTriadGeometry {
      *            Width of a triad in chips.
      * @param roots
      *            Bottom Left corner chips within the triad
-     * @param xCenterer
+     * @param xCentre
      *            Magic number to adjust X to find the nearest root.
-     * @param yCenterer
+     * @param yCentre
      *            Magic number to adjust Y to find the nearest root.
      */
     private SpiNNakerTriadGeometry(int triadHeight, int triadWidth,
-            ArrayList<ChipLocation> roots, float xCenterer, float yCenterer) {
+            Iterable<ChipLocation> roots, float xCentre, float yCentre) {
         this.triadHeight = triadHeight;
         this.triadWidth = triadWidth;
         this.roots = roots;
@@ -90,8 +94,8 @@ public final class SpiNNakerTriadGeometry {
                         new Location(root.getX(), root.getY() - triadWidth));
             }
         }
-        this.xCenterer = xCenterer;
-        this.yCenterer = yCenterer;
+        this.xCentre = xCentre;
+        this.yCentre = yCentre;
 
         localChipCoordinates = new HashMap<>();
         singleBoardCoordinates = new ArrayList<>();
@@ -99,10 +103,10 @@ public final class SpiNNakerTriadGeometry {
         for (int x = 0; x < triadHeight; x++) {
             for (int y = 0; y < triadWidth; y++) {
                 Location bestCalc = locateNearestRoot(x, y,
-                        calulationEthernets);
+                    calulationEthernets);
                 ChipLocation key = new ChipLocation(x, y);
                 localChipCoordinates.put(key,
-                        new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
+                    new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
                 if (bestCalc.x == 0 && bestCalc.y == 0) {
                     singleBoardCoordinates.add(key);
                 }
@@ -136,7 +140,7 @@ public final class SpiNNakerTriadGeometry {
         float dx = x - xCentre;
         float dy = y - yCentre;
         return Math.max(Math.abs(dx),
-                Math.max(Math.abs(dy), Math.abs(dx - dy)));
+            Math.max(Math.abs(dy), Math.abs(dx - dy)));
     }
 
     /**
@@ -164,8 +168,8 @@ public final class SpiNNakerTriadGeometry {
         float bestDistance = Float.MAX_VALUE;
         for (Location ethernet : roots) {
             float calc = hexagonalMetricDistance(x, y,
-                    ethernet.x + (float) xCenterer,
-                    ethernet.y + (float) yCenterer);
+                ethernet.x + (float) xCentre,
+                ethernet.y + (float) yCentre);
             if (calc < bestDistance) {
                 bestDistance = calc;
                 bestCalc = ethernet;
@@ -192,12 +196,12 @@ public final class SpiNNakerTriadGeometry {
     public ChipLocation getRootChip(HasChipLocation chip, int width,
             int height) {
         ChipLocation adjusted = new ChipLocation(chip.getX() % triadHeight,
-                chip.getY() % triadWidth);
+            chip.getY() % triadWidth);
         ChipLocation localChip = localChipCoordinates.get(adjusted);
 
         return new ChipLocation(
-                (chip.getX() - localChip.getX() + height) % height,
-                (chip.getY() - localChip.getY() + width) % width);
+            (chip.getX() - localChip.getX() + height) % height,
+            (chip.getY() - localChip.getY() + width) % width);
     }
 
     /**
@@ -210,7 +214,7 @@ public final class SpiNNakerTriadGeometry {
      */
     public ChipLocation getLocalChipCoordinate(HasChipLocation chip) {
         if (chip.getX() < triadWidth && chip.getY() < triadHeight) {
-            return localChipCoordinates.get(chip);
+            return localChipCoordinates.get(chip.asChipLocation());
         }
 
         int x = chip.getX() % triadWidth;
@@ -233,9 +237,9 @@ public final class SpiNNakerTriadGeometry {
      * @return List of the root ChipLocation that would be there is all possible
      *         boards in the width and height are present.
      */
-    public ArrayList<ChipLocation> getPotentialRootChips(
+    public Set<ChipLocation> getPotentialRootChips(
             MachineDimensions dimensions) {
-        ArrayList<ChipLocation> results = new ArrayList<>();
+        Set<ChipLocation> results = new LinkedHashSet<>();
         int maxWidth;
         int maxHeight;
         if (dimensions.width % triadWidth == 0
@@ -244,9 +248,9 @@ public final class SpiNNakerTriadGeometry {
             maxHeight = dimensions.height;
         } else {
             maxWidth = dimensions.width
-                    - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
+                - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
             maxHeight = dimensions.height
-                    - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+                - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
             if (maxWidth < 0 || maxHeight < 0) {
                 results.add(ChipLocation.ZERO_ZERO);
                 return results;
@@ -268,7 +272,7 @@ public final class SpiNNakerTriadGeometry {
      * @return An unmodifiable Collection of the Locations on one board.
      */
     public Collection<ChipLocation> singleBoard() {
-        return Collections.unmodifiableList(singleBoardCoordinates);
+        return Collections.unmodifiableCollection(singleBoardCoordinates);
     }
 
 
@@ -281,6 +285,12 @@ public final class SpiNNakerTriadGeometry {
         return singleBoardCoordinates.iterator();
     }
 
+    /**
+     * Allows forEach to be called on all ChipLocations in
+     *      SingleBoardCoordinates.
+     *
+     * @param action The action to be performed for each element
+     */
     public void singleBoardForEach(Consumer<ChipLocation> action) {
         singleBoardCoordinates.forEach(action);
     }
@@ -295,12 +305,13 @@ public final class SpiNNakerTriadGeometry {
      */
     public static SpiNNakerTriadGeometry getSpinn5Geometry() {
         if (spinn5TriadGeometry == null) {
-            ArrayList<ChipLocation> roots = new ArrayList<>();
-            roots.add(new ChipLocation(0, 0));
-            roots.add(new ChipLocation(MachineDefaults.HALF_SIZE,
-                    MachineDefaults.SIZE_Y_OF_ONE_BOARD));
-            roots.add(new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
-                    MachineDefaults.HALF_SIZE));
+            Collection<ChipLocation> roots = Arrays.asList(
+                    new ChipLocation(0, 0),
+                    new ChipLocation(MachineDefaults.HALF_SIZE,
+                            MachineDefaults.SIZE_Y_OF_ONE_BOARD),
+                    new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
+                            MachineDefaults.HALF_SIZE));
+
             spinn5TriadGeometry = new SpiNNakerTriadGeometry(
                     MachineDefaults.TRIAD_HEIGHT, MachineDefaults.TRIAD_WIDTH,
                     roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
@@ -323,9 +334,9 @@ public final class SpiNNakerTriadGeometry {
             this.y = y;
         }
 
-        // @Override
-        // public String toString(){
-        // return ("(" + x + ", " + y + ")");
-        // }
+        @Override
+        public String toString() {
+            return ("(" + x + ", " + y + ")");
+        }
     }
 }

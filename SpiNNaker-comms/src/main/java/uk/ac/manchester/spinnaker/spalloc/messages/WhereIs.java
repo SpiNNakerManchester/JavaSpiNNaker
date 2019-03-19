@@ -202,7 +202,7 @@ public class WhereIs {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o != null && o instanceof WhereIs) {
+		if (o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
 			return Objects.equals(jobChip, other.jobChip)
                     && jobId == other.jobId

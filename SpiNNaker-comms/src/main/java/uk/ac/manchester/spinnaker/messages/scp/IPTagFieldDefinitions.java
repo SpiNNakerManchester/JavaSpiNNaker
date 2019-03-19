@@ -21,6 +21,8 @@ abstract class IPTagFieldDefinitions {
 	private IPTagFieldDefinitions() {
 	}
 
+	/** The index of the use sender bit in argument 1. */
+	static final int USE_SENDER_BIT = 30;
 	/** The index of the reverse flag bit in argument 1. */
 	static final int REVERSE_FIELD_BIT = 29;
 	/** The index of the strip SDP flag bit in argument 1. */

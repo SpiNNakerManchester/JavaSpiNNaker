@@ -66,7 +66,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, byte[] data, int offset, int length) {
-		super(DEFAULT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
+		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
 				argument2(blockNumber, length), baseAddress,
 				ByteBuffer.wrap(data, offset, length));
 	}
@@ -85,7 +85,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			int baseAddress, ByteBuffer data) {
-		super(DEFAULT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
+		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
 				argument2(blockNumber, data.remaining()), baseAddress, data);
 	}
 

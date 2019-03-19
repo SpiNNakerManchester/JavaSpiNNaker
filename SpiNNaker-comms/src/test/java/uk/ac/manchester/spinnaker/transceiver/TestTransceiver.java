@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -67,7 +68,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(1, txrx.getConnections().size());
 		}
@@ -80,7 +81,7 @@ class TestTransceiver {
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
@@ -96,7 +97,7 @@ class TestTransceiver {
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			for (Connection c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
@@ -116,7 +117,7 @@ class TestTransceiver {
 		connections.add(
 				new BootConnection(null, null, boardConfig.remotehost, null));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			if (boardConfig.boardVersion.isFourChip) {
 				assertEquals(2, txrx.getMachineDimensions().width);
@@ -157,7 +158,7 @@ class TestTransceiver {
 		connections.add(orig);
 
 		// Create transceiver
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null, null,
+		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
@@ -174,15 +175,15 @@ class TestTransceiver {
 	}
 
 	@Test
-	// @Disabled("CB commented out")
+	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/216")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
-				((Number) software_watchdog_count.getDefault()).byteValue()
+			((Number) software_watchdog_count.getDefault()).byteValue()
 		}, new byte[] {
-				0
+			0
 		}, new byte[] {
-				5
+			5
 		});
 
 		List<Connection> connections = new ArrayList<>();
@@ -262,7 +263,7 @@ class MockWriteTransceiver extends Transceiver {
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
 			uk.ac.manchester.spinnaker.transceiver.processes.ProcessException {
-		super(version, connections, null, null, null, null, null, null);
+		super(version, connections, null, null, null, null, null);
 	}
 
 	@Override
@@ -272,7 +273,14 @@ class MockWriteTransceiver extends Transceiver {
 
 	@Override
 	void updateMachine() {
-		this.machine = getMachineDetails();
+		Machine details = getMachineDetails();
+		try {
+			Field machineField = Transceiver.class.getField("machine");
+			machineField.setAccessible(true);
+			machineField.set(this, details);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

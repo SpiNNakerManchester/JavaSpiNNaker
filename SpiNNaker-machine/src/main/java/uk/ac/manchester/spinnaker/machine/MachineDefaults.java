@@ -33,9 +33,6 @@ public final class MachineDefaults {
     /** Default sdram per chip after scamp has reserved space for itself. */
     public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
 
-    /** Default number of IPTAgs on a chip. */
-    public static final int N_IPTAGS_PER_CHIP = 8;
-
     /** Clock speed in MHz of a standard Processor. */
     public static final int PROCESSOR_CLOCK_SPEED = 200 * 1000 * 1000;
 
@@ -82,7 +79,7 @@ public final class MachineDefaults {
 
     /**
       * Width of field of hashcode for holding (one dimension of the) chip
-      * cooordinate.
+      * co-ordinate.
       */
     public static final int COORD_SHIFT = 8;
 
@@ -92,7 +89,7 @@ public final class MachineDefaults {
     /** Width of field of hashcode for holding processor ID. */
     public static final int CORE_SHIFT = 5;
 
-  /** Width of field of hashcode for holding region ID. */
+    /** Width of field of hashcode for holding region ID. */
     public static final int REGION_SHIFT = 4;
 
     /** Ignore Links info for a four chip board. */
@@ -111,10 +108,10 @@ public final class MachineDefaults {
     public static void validateChipLocation(int x, int y)
             throws IllegalArgumentException {
         if (x < 0 || x > MAX_X) {
-        	throw new IllegalArgumentException("bad X cooordinate: " + x);
+        	throw new IllegalArgumentException("bad X co-ordinate: " + x);
         }
         if (y < 0 || y > MAX_Y) {
-        	throw new IllegalArgumentException("bad Y cooordinate: " + y);
+        	throw new IllegalArgumentException("bad Y co-ordinate: " + y);
         }
     }
 
@@ -159,26 +156,4 @@ public final class MachineDefaults {
                 Collections.unmodifiableSet(directions));
         return Collections.unmodifiableMap(result);
     }
-
-
-    /*
-        MAX_BANDWIDTH_PER_ETHERNET_CONNECTED_CHIP = 10 * 256
-    MAX_CORES_PER_CHIP  use MAX_NUM_CORES
-    MAX_CHIPS_PER_48_BOARD = 48
-    MAX_CHIPS_PER_4_CHIP_BOARD = 4
-    BOARD_VERSION_FOR_48_CHIPS = Use BoardVersion Enum
-    BOARD_VERSION_FOR_4_CHIPS = Use BoardVersion Enum
-
-    # other useful magic numbers for machines
-    MAX_CHIP_X_ID_ON_ONE_BOARD = 7
-    MAX_CHIP_Y_ID_ON_ONE_BOARD = 7
-
-    LINK_ADD_TABLE Uses Direction.typicalMove
-
-    BOARD_48_CHIP_GAPS = {
-        (0, 4), (0, 5), (0, 6), (0, 7), (1, 5), (1, 6), (1, 7), (2, 6), (2, 7),
-        (3, 7), (5, 0), (6, 0), (6, 1), (7, 0), (7, 1), (7, 2)
-    }
-
-    */
 }

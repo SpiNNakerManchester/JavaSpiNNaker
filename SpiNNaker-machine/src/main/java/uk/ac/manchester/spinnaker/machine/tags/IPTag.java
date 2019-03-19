@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.machine.tags;
 import static java.lang.Integer.rotateLeft;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -28,8 +31,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public final class IPTag extends Tag {
     /** Default traffic identifier. */
-    public static final TrafficIdentifer DEFAULT_TRAFFIC_IDENTIFIER =
-            TrafficIdentifer.DEFAULT;
+    public static final TrafficIdentifier DEFAULT_TRAFFIC_IDENTIFIER =
+            TrafficIdentifier.DEFAULT;
     private static final boolean DEFAULT_STRIP_SDP = false;
     private static final Integer DEFAULT_PORT = null;
 
@@ -38,7 +41,7 @@ public final class IPTag extends Tag {
     /** Indicates whether the SDP header should be removed. */
     private final boolean stripSDP;
     /** The identifier for traffic transmitted using this tag. */
-    private final TrafficIdentifer trafficIdentifier;
+    private final TrafficIdentifier trafficIdentifier;
     /** The coordinates where users of this tag should send packets to. */
     private final ChipLocation destination;
 
@@ -50,7 +53,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      */
@@ -68,7 +71,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -87,7 +90,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param stripSDP
@@ -105,7 +108,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -126,7 +129,7 @@ public final class IPTag extends Tag {
      * @param destination
      *            The coordinates where users of this tag should send packets to
      * @param tagID
-     *            The tag of the SDP packet
+     *            The ID of the tag (0..7)
      * @param targetAddress
      *            The IP address to which SDP packets with the tag will be sent
      * @param port
@@ -139,12 +142,67 @@ public final class IPTag extends Tag {
      */
     public IPTag(InetAddress boardAddress, ChipLocation destination, int tagID,
             InetAddress targetAddress, Integer port, boolean stripSDP,
-            TrafficIdentifer trafficIdentifier) {
+            TrafficIdentifier trafficIdentifier) {
         super(boardAddress, tagID, port);
         this.destination = destination;
         this.ipAddress = targetAddress;
         this.stripSDP = stripSDP;
         this.trafficIdentifier = trafficIdentifier;
+    }
+
+    /**
+     * Constructor for JSON deserialization.
+     *
+     * @param boardAddress
+     *            The IP address of the board on which the tag is allocated
+     * @param tagID
+     *            The ID of the tag (0..7)
+     * @param x
+     *            The X coordinate of the destination.
+     * @param y
+     *            The Y coordinate of the destination.
+     * @param targetAddress
+     *            The IP address to which SDP packets with the tag will be sent
+     * @param port
+     *            The port to which the SDP packets with the tag will be sent,
+     *            or {@code null} if not yet assigned.
+     * @param stripSDP
+     *            Indicates whether the SDP header should be removed
+     * @param trafficIdentifier
+     *            The identifier for traffic transmitted using this tag
+     * @throws UnknownHostException
+     *             If an IP address doesn't resolve.
+     */
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public IPTag(
+            @JsonProperty(value = "boardAddress", required = true)
+                    String boardAddress,
+            @JsonProperty(value = "tagID", required = true) int tagID,
+            @JsonProperty(value = "x", required = true) int x,
+            @JsonProperty(value = "y", required = true) int y,
+            @JsonProperty(value = "targetAddress", required = true)
+                    String targetAddress,
+            @JsonProperty(value = "port", required = false) Integer port,
+            @JsonProperty(value = "stripSDP", required = false)
+                    Boolean stripSDP,
+            @JsonProperty(value = "trafficIdentifier", required = false)
+                    String trafficIdentifier)
+            throws UnknownHostException {
+        super(InetAddress.getByName(boardAddress), tagID,
+                (port == null ? DEFAULT_PORT : port));
+        this.destination =  new ChipLocation(x, y);
+        this.ipAddress = InetAddress.getByName(targetAddress);
+        if (stripSDP == null) {
+            this.stripSDP = DEFAULT_STRIP_SDP;
+        } else {
+            this.stripSDP = stripSDP;
+        }
+        if (trafficIdentifier == null) {
+            this.trafficIdentifier = null;
+        } else {
+            this.trafficIdentifier =
+                    TrafficIdentifier.getInstance(trafficIdentifier);
+        }
     }
 
     /**
@@ -160,7 +218,7 @@ public final class IPTag extends Tag {
     }
 
     /** @return The identifier of traffic using this tag. */
-    public TrafficIdentifer getTrafficIdentifier() {
+    public TrafficIdentifier getTrafficIdentifier() {
         return trafficIdentifier;
     }
 
@@ -173,10 +231,7 @@ public final class IPTag extends Tag {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof IPTag) {
-            return equals((IPTag) o);
-        }
-        return false;
+        return (o instanceof IPTag) && equals((IPTag) o);
     }
 
     /**
@@ -192,7 +247,6 @@ public final class IPTag extends Tag {
         }
         return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
                 && stripSDP == otherTag.stripSDP
-                && trafficIdentifier.equals(otherTag.trafficIdentifier)
                 && destination.equals(otherTag.destination);
     }
 
@@ -203,8 +257,27 @@ public final class IPTag extends Tag {
         if (stripSDP) {
             h ^= 1;
         }
-        h ^= rotateLeft(trafficIdentifier.hashCode(), 13);
         h ^= rotateLeft(destination.hashCode(), 19);
         return h;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("IPTag(");
+        sb.append(getTag()).append(" {").append(getBoardAddress());
+        sb.append("} -");
+        if (stripSDP) {
+            sb.append("strip");
+        }
+        sb.append("-> {").append(getIPAddress());
+        if (getPort() != null) {
+            sb.append(":").append(getPort());
+        }
+        sb.append("}");
+        if (trafficIdentifier != null) {
+            sb.append(" TRF:").append(trafficIdentifier.label);
+        }
+        sb.append(" ").append(destination);
+        return sb.append(")").toString();
     }
 }

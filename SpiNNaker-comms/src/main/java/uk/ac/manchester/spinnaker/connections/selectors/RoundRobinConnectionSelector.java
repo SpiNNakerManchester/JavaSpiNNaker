@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,10 @@ public final class RoundRobinConnectionSelector<T extends Connection>
 
 	@Override
 	public T getNextConnection(SCPRequest<?> request) {
-		int idx = next;
-		next = (idx + 1) % connections.size();
-		return connections.get(idx);
+		try {
+			return connections.get(next);
+		} finally {
+			next = (next + 1) % connections.size();
+		}
 	}
 }

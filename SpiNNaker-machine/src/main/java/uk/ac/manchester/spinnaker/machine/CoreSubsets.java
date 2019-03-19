@@ -64,11 +64,14 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the Core Location.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      * <p>
-     * @param core Location (x, y, p) to add.
-     * @throws IllegalStateException If the subsets have been set immutable.
-     *      For example because a hashcode has been generated,
+     *
+     * @param core
+     *            Location (x, y, p) to add.
+     * @throws IllegalStateException
+     *             If the subsets have been set immutable. For example because a
+     *             hashcode has been generated,
      */
     public void addCore(CoreLocation core) {
         if (immutable) {
@@ -84,13 +87,17 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the Core Location, creating a new subset if required.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      *
-     * @param x x coordinate of chip
-     * @param y y coordinate of chip
-     * @param p p coordinate/ processor id
-     * @throws IllegalStateException If the subsets have been set immutable.
-     *      For example because a hashcode has been generated,
+     * @param x
+     *            x coordinate of chip
+     * @param y
+     *            y coordinate of chip
+     * @param p
+     *            p coordinate/ processor id
+     * @throws IllegalStateException
+     *             If the subsets have been set immutable. For example because a
+     *             hashcode has been generated,
      */
     public void addCore(int x, int y, int p) {
         ChipLocation chip = new ChipLocation(x, y);
@@ -101,12 +108,15 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the processor for this chip, creating a new subset if required.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      *
-     * @param chip Chip key of CoreSubset to add to.
-     * @param p p coordinate/ processor id.
-     * @throws IllegalStateException If the subsets have been set immutable.
-     *      For example because a hashcode has been generated,
+     * @param chip
+     *            Chip key of CoreSubset to add to.
+     * @param p
+     *            p coordinate/ processor id.
+     * @throws IllegalStateException
+     *             If the subsets have been set immutable. For example because a
+     *             hashcode has been generated,
      */
     public void addCore(ChipLocation chip, int p) {
         if (immutable) {
@@ -122,12 +132,15 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the processors for this chip, creating a new subset if required.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      *
-     * @param chip Chip key of CoreSubset to add to.
-     * @param processors p coordinates/ processor ids.
-     * @throws IllegalStateException If the subsets have been set immutable.
-     *      For example because a hashcode has been generated,
+     * @param chip
+     *            Chip key of CoreSubset to add to.
+     * @param processors
+     *            p coordinates/ processor IDs.
+     * @throws IllegalStateException
+     *             If the subsets have been set immutable. For example because a
+     *             hashcode has been generated,
      */
     public void addCores(ChipLocation chip, Iterable<Integer> processors) {
         if (immutable) {
@@ -145,13 +158,17 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the processors for this chip, creating a new subset if required.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      *
-     * @param x x coordinate of chip
-     * @param y y coordinate of chip
-     * @param processors p coordinates/ processor ids.
-     * @throws IllegalStateException If the subsets have been set immutable.
-     *      For example because a hashcode has been generated,
+     * @param x
+     *            x coordinate of chip
+     * @param y
+     *            y coordinate of chip
+     * @param processors
+     *            p coordinates/ processor IDs.
+     * @throws IllegalStateException
+     *             If the subsets have been set immutable. For example because a
+     *             hashcode has been generated,
      */
     public void addCores(int x, int y, Iterable<Integer> processors) {
         ChipLocation chip = new ChipLocation(x, y);
@@ -162,12 +179,13 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      * Adds the locations into this one.
      * <p>
      * This method uses set semantics so attempts to add a Core/Processor that
-     *      is already in the subset are silently ignored.
+     * is already in the subset are silently ignored.
      *
-     * @param locations the locations to add.
+     * @param locations
+     *            the locations to add.
      */
     public void addCores(Iterable<CoreLocation> locations) {
-        for (CoreLocation location:locations) {
+        for (CoreLocation location : locations) {
             addCore(location);
         }
     }
@@ -175,8 +193,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     /**
      * Obtain the CoreSubset for this Chip.
      *
-     * @param chip Coordinates of a chip
-     * @return The core subset of a chip or null if there is no subset.
+     * @param chip
+     *            Coordinates of a chip
+     * @return The core subset of a chip or {@code null} if there is no subset.
      */
     private TreeMap<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
         if (!locations.containsKey(chip)) {
@@ -192,18 +211,19 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      */
     public int size() {
         int count = 0;
-        for (TreeMap<Integer, CoreLocation> subset:locations.values()) {
+        for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
             count += subset.size();
         }
         return count;
     }
 
-     /**
+    /**
      * Determine if the chip with coordinates (x, y) is in the subset.
      * <p>
      * Note: An empty subset mapped to the Chip is ignored.
      *
-     * @param chip x and y Coordinates to check
+     * @param chip
+     *            Coordinates to check
      * @return True if and only if there is a none empty Subset for this Chip.
      */
     public boolean isChip(ChipLocation chip) {
@@ -215,9 +235,11 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     }
 
     /**
-     * Determine if there is a chip with coordinates (x, y) in the subset,
-     *      which has a core with the given id in the subset.
-     * @param core x, y and p coordinates
+     * Determine if there is a chip with coordinates (x, y) in the subset, which
+     * has a core with the given id in the subset.
+     *
+     * @param core
+     *            x, y and p coordinates
      * @return True if and only if there is a core with these coordinates
      */
     public boolean isCore(CoreLocation core) {
@@ -225,24 +247,23 @@ public class CoreSubsets implements Iterable<CoreLocation> {
                 core.asChipLocation());
         if (subset == null) {
             return false;
-        } else {
-            return subset.containsValue(core);
         }
+        return subset.containsValue(core);
     }
 
-    @Override
     /**
      * Generate a hashcode for these subsets.
      * <p>
-     * Two CoreSubsets that have the same subsets
-     *      (and are therefor considered equals)
-     *      will generate the same hashcode.
+     * Two CoreSubsets that have the same subsets (and are therefore considered
+     * equals) will generate the same hashcode.
      * <p>
-     * To guarantee consistency over time once a hashcode is requested
-     *      the CoreSubsets and all its subsets will be made immutable
-     *      and any farther add calls will raise an exception.
-     * @return interger to use as the hashcode.
+     * To guarantee consistency over time, once a hashcode is requested the
+     * CoreSubsets and all its subsets will be made immutable and any further
+     * add calls will raise an exception.
+     *
+     * @return integer to use as the hashcode.
      */
+    @Override
     public final int hashCode() {
         immutable = true;
         int hash = 7;
@@ -254,17 +275,20 @@ public class CoreSubsets implements Iterable<CoreLocation> {
         return hash;
     }
 
-    @Override
     /**
-      * Indicates whether some other object is "equal to" this one.
-      * It is reflexive, symmetric and transitive.
-      * It is consistent provided no core or subset has been added.
-      * <p>
-      * Unlike hashcode() a call to equals does NOT effect mutability.
-      * @param obj Other Object to compare to.
-      * @return True if and only if obj is another CoreSubsets
-      *      with exactly the same subsets.
+     * Indicates whether some other object is "equal to" this one. It is
+     * reflexive, symmetric and transitive. It is consistent provided no core or
+     * subset has been added.
+     * <p>
+     * Unlike {@link #hashCode()}, a call to equals does <em>not</em> effect
+     * mutability.
+     *
+     * @param obj
+     *            Other Object to compare to.
+     * @return True if and only if {@code obj} is another CoreSubsets with
+     *         exactly the same subsets.
      */
+    @Override
     public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -276,10 +300,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return false;
         }
         final CoreSubsets other = (CoreSubsets) obj;
-        if (!Objects.equals(this.locations, other.locations)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.locations, other.locations);
     }
 
     @Override
@@ -290,20 +311,21 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     /**
      * Returns a new CoreSubsets which is an intersect of this and the other.
      *
-     * @param other A second CoreSubsets with possibly overlapping cores.
+     * @param other
+     *            A second CoreSubsets with possibly overlapping cores.
      * @return A new Coresubsets Objects with only the cores present in both.
-     *      Therefor the result may be empty.
+     *         Therefore the result may be empty.
      */
     public CoreSubsets intersection(CoreSubsets other) {
         CoreSubsets results = new CoreSubsets();
         for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry
                 :locations.entrySet()) {
             if (other.locations.containsKey(entry.getKey())) {
-                TreeMap<Integer, CoreLocation> othersubset =
+                TreeMap<Integer, CoreLocation> otherSubset =
                         other.locations.get(entry.getKey());
-                if (othersubset != null) {
+                if (otherSubset != null) {
                     for (CoreLocation location:entry.getValue().values()) {
-                        if (othersubset.containsValue(location)) {
+                        if (otherSubset.containsValue(location)) {
                             results.addCore(location);
                         }
                     }
@@ -315,11 +337,11 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 
     /**
      * Returns the ChipLocations for which there is at least one CoreLocations
-     *      in the Subsets.
+     * in the Subsets.
      * <p>
      * The order of the locations is guaranteed to be the natural order.
-
-     * @return An ordered set of
+     *
+     * @return An ordered set of chips.
      */
     public Set<ChipLocation> getChips() {
         return Collections.unmodifiableSet(locations.keySet());
@@ -333,9 +355,11 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     /**
      * Provides the CoreLocations for just a single Chip.
      * <p>
-     * This will be an empty list when isChip(chip) returns false.
+     * This will be an empty list when {@link #isChip(ChipLocation)} returns
+     * {@code false}.
      *
-     * @param chip x y coordinates
+     * @param chip
+     *            coordinates of the chip
      * @return Unmodifiable (possibly empty) collection of CoreLocation
      */
     public Collection<CoreLocation> coreByChip(ChipLocation chip) {
@@ -350,9 +374,11 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     /**
      * Provides the CoreLocations for just a single Chip.
      * <p>
-     * This will be an empty list when isChip(chip) returns false.
+     * This will be an empty list when {@link #isChip(ChipLocation)} returns
+     * {@code false}.
      *
-     * @param chip x y coordinates
+     * @param chip
+     *            coordinates of the chip
      * @return Unmodifiable (possibly empty) collection of CoreLocation
      */
     public Set<Integer> pByChip(ChipLocation chip) {
@@ -363,5 +389,4 @@ public class CoreSubsets implements Iterable<CoreLocation> {
             return new HashSet<>();
         }
     }
-
 }

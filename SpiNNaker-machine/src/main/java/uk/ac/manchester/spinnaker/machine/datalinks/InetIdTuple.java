@@ -25,7 +25,7 @@ import java.util.Objects;
  */
 public class InetIdTuple {
 
-    /** The InetAddress of this tuple which may be null. */
+    /** The InetAddress of this tuple which may be {@code null}. */
     public final InetAddress address;
 
     /** The id of this tuple. */
@@ -33,8 +33,11 @@ public class InetIdTuple {
 
     /**
      * The main Constructor which sets all values.
-     * @param address The InetAddress of this tuple which may be null.
-     * @param id  The id of this tuple.
+     *
+     * @param address
+     *            The InetAddress of this tuple which may be {@code null}.
+     * @param id
+     *            The id of this tuple.
      */
     public InetIdTuple(InetAddress address, int id) {
         this.address = address;
@@ -64,10 +67,7 @@ public class InetIdTuple {
         if (this.id != other.id) {
             return false;
         }
-        if (!Objects.equals(this.address, other.address)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.address, other.address);
     }
 
 }

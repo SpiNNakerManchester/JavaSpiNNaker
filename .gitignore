@@ -29,4 +29,7 @@ hs_err_pid*
 .project
 .classpath
 .settings
+
+#netbeans metadata
 nbproject
+nbactions.xml

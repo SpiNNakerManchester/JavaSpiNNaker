@@ -22,6 +22,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
@@ -87,7 +88,7 @@ public class ApplicationRunProcess
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void run(int appID, CoreSubsets coreSubsets, boolean wait)
+	public void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
 			throws ProcessException, IOException {
 		for (ChipLocation chip : coreSubsets.getChips()) {
 			sendRequest(new ApplicationRun(appID, chip,

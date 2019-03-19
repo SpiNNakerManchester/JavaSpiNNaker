@@ -21,8 +21,9 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
 /**
  * An exception that indicates that a memory region has not been selected.
  */
-@SuppressWarnings("serial")
 public class NoRegionSelectedException extends DataSpecificationException {
+	private static final long serialVersionUID = -3704038507680648327L;
+
 	/**
 	 * Create an instance.
 	 *

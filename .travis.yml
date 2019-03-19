@@ -11,11 +11,12 @@ before_install:
   - python support/travis_blocking_stdout.py
   - unset _JAVA_OPTIONS
 install:
-  - mvn dependency:resolve dependency:resolve-plugins
+  # Not a critical failure for this to fail
+  - mvn -B dependency:resolve dependency:resolve-plugins || true
 script:
-  - mvn apache-rat:check --settings .travis/travis-settings.xml -B -V || (cat target/rat*.txt; exit 1)
-  - mvn install --settings .travis/travis-settings.xml -DskipTests=true -Dmaven.javadoc.skip=true -B
-  - mvn verify --settings .travis/travis-settings.xml -B -Dmaven.javadoc.skip=true jacoco:report
+  - mvn apache-rat:check --settings .travis/travis-settings.xml -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
+  - mvn install --settings .travis/travis-settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
+  - mvn verify --settings .travis/travis-settings.xml -Dmaven.javadoc.skip=true jacoco:report
   - mvn checkstyle:check --settings .travis/travis-settings.xml -Dmaven.javadoc.skip=true
   - mvn javadoc:aggregate --settings .travis/travis-settings.xml
 after_success:

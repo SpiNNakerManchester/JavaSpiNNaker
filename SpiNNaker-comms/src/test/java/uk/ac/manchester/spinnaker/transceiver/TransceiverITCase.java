@@ -23,11 +23,13 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
@@ -50,10 +52,11 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -73,6 +76,7 @@ import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
@@ -99,9 +103,9 @@ public class TransceiverITCase {
 	private static SpallocJob job;
 
 	static int numCores = 20;
-	static List<ChipLocation> downChips;
+	static Set<ChipLocation> downChips;
 	static CoreSubsets coreSubsets;
-	static Map<ChipLocation, Collection<Integer>> downCores;
+	static Map<ChipLocation, Set<Integer>> downCores;
 
 
 	@BeforeAll
@@ -113,9 +117,9 @@ public class TransceiverITCase {
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
 		downCores = new HashMap<>();
-		downCores.put(new ChipLocation(0, 0), singletonList(5));
+		downCores.put(new ChipLocation(0, 0), singleton(5));
 
-		downChips = new ArrayList<>();
+		downChips = new HashSet<>();
 		downChips.add(new ChipLocation(0, 1));
 	}
 
@@ -212,7 +216,7 @@ public class TransceiverITCase {
 		System.out.printf("%x\n", readData.getInt());
 	}
 
-	private void execFlood(Transceiver txrx, int appID) throws Exception {
+	private void execFlood(Transceiver txrx, AppID appID) throws Exception {
 		txrx.executeFlood(coreSubsets, new File("hello.aplx"), appID);
 		int count = 0;
 		while (count < 20) {
@@ -239,7 +243,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void sync(Transceiver txrx, int appID) throws Exception {
+	private void sync(Transceiver txrx, AppID appID) throws Exception {
 		txrx.sendSignal(appID, Signal.SYNC0);
 		int count = 0;
 		while (count < 20) {
@@ -255,7 +259,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void stop(Transceiver txrx, int appID) throws Exception {
+	private void stop(Transceiver txrx, AppID appID) throws Exception {
 		txrx.sendSignal(appID, STOP);
 		sleep(500);
 		List<CPUInfo> cpuInfos = getCPUInfo(txrx, coreSubsets);
@@ -284,7 +288,7 @@ public class TransceiverITCase {
 		}
 	}
 
-	private void routes(Transceiver txrx, int appID) throws Exception {
+	private void routes(Transceiver txrx, AppID appID) throws Exception {
 		List<MulticastRoutingEntry> routes;
 
 		routes = singletonList(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
@@ -369,11 +373,11 @@ public class TransceiverITCase {
 		try (Transceiver txrx =
 				new Transceiver(boardConfig.remotehost, boardConfig.boardVersion,
 						boardConfig.bmpNames, null, downChips, downCores, null,
-						null, boardConfig.autoDetectBMP, null, null, null)) {
+						boardConfig.autoDetectBMP, null, null, null)) {
 
 			section("Version Information", () -> boardReady(txrx));
 
-			int appID = txrx.getAppIdTracker().allocateNewID();
+			AppID appID = txrx.getAppIdTracker().allocateNewID();
 
 			section("Discovering other connections to the machine",
 					() -> findConnections(txrx));

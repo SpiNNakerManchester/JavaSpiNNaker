@@ -33,8 +33,8 @@ public class TestRawConfigParser {
     public void testSimple() {
         URL url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
         RawConfigParser parser = new RawConfigParser(url);
-        assertEquals((Integer)5, parser.getint("Machine", "version"));
-        assertTrue(parser.getboolean("Other", "alan_is_scotish"));
+        assertEquals((Integer)5, parser.getInt("Machine", "version"));
+        assertTrue(parser.getBoolean("Other", "alan_is_scotish"));
     }
 
 

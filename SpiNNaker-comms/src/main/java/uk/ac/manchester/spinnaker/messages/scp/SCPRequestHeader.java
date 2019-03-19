@@ -20,7 +20,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.getNextSequenceNumber;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
+import java.util.Set;
 
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 
@@ -32,18 +32,18 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  */
 public class SCPRequestHeader implements SerializableMessage {
 	/** The command of the SCP packet. */
-	public final SCPCommand command;
+	public final CommandCode command;
 	/** The sequence number of the packet, between 0 and 65535. */
 	private short sequence;
 	private boolean sequenceSet;
 
-	public SCPRequestHeader(SCPCommand command) {
+	public SCPRequestHeader(CommandCode command) {
 		this.command = command;
 	}
 
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
-		buffer.putShort(command.value);
+		buffer.putShort(command.getValue());
 		if (!sequenceSet) {
 			throw new IllegalStateException("sequence number not set");
 		}
@@ -59,7 +59,7 @@ public class SCPRequestHeader implements SerializableMessage {
 	 *            used.
 	 * @return The number that was issued.
 	 */
-	public short issueSequenceNumber(Collection<Integer> inFlight) {
+	public short issueSequenceNumber(Set<Integer> inFlight) {
 		if (sequenceSet) {
 			throw new IllegalStateException(
 					"a message can only have its sequence number set once");

@@ -19,8 +19,9 @@ package uk.ac.manchester.spinnaker.data_spec.exceptions;
 /**
  * An exception that indicates that a region has already been allocated.
  */
-@SuppressWarnings("serial")
 public class RegionInUseException extends DataSpecificationException {
+	private static final long serialVersionUID = 5490046026344412303L;
+
 	/**
 	 * State that a particular region is in use.
 	 *

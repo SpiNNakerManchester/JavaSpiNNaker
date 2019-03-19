@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.String.format;
+import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
+import static java.lang.Thread.yield;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -37,7 +39,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -73,8 +75,15 @@ public class SCPRequestPipeline {
 	 * error is triggered.
 	 */
 	public static final int DEFAULT_RETRIES = 3;
-	private static final int RETRY_DELAY_MS = 100;
+	/**
+	 * How long to wait between retries, in milliseconds.
+	 */
+	public static final int RETRY_DELAY_MS = 100;
 	private static final String REASON_TIMEOUT = "timeout";
+	/**
+	 * Packet minimum send interval, in <em>nanoseconds</em>.
+	 */
+	private static final int INTER_SEND_INTERVAL_NS = 60000;
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
@@ -109,6 +118,7 @@ public class SCPRequestPipeline {
 	 * if no such tracking is required.
 	 */
 	private final RetryTracker retryTracker;
+	private long nextSendTime = 0;
 
 	/**
 	 * Per message record.
@@ -124,11 +134,11 @@ public class SCPRequestPipeline {
 		/** Callback function for response. */
 		private final Consumer<T> callback;
 		/** Callback function for errors. */
-		final SCPErrorHandler errorCallback;
+		private final SCPErrorHandler errorCallback;
 		/** Retry reasons. */
-		final List<String> retryReason;
+		private final List<String> retryReason;
 		/** Number of retries for the packet. */
-		int retries;
+		private int retries;
 
 		/**
 		 * Make a record.
@@ -140,7 +150,7 @@ public class SCPRequestPipeline {
 		 * @param errorCallback
 		 *            The failure callback.
 		 */
-		Request(SCPRequest<T> request, Consumer<T> callback,
+		private Request(SCPRequest<T> request, Consumer<T> callback,
 				SCPErrorHandler errorCallback) {
 			this.request = request;
 			this.requestData = request.getMessageData(connection.getChip());
@@ -151,6 +161,12 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
+			long now = nanoTime();
+			while (now - nextSendTime < 0) {
+                yield();
+                now = nanoTime();
+			}
+            nextSendTime = now + INTER_SEND_INTERVAL_NS;
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
@@ -162,7 +178,7 @@ public class SCPRequestPipeline {
 		 * @throws IOException
 		 *             If the connection throws.
 		 */
-		void resend(Object reason) throws IOException {
+		private void resend(Object reason) throws IOException {
 			retries--;
 			retryReason.add(reason.toString());
 			if (retryTracker != null) {
@@ -172,14 +188,12 @@ public class SCPRequestPipeline {
 		}
 
 		/**
-		 * Tests whether the reasons for resending are consistent.
+		 * Tests whether the reasons for resending are consistently timeouts.
 		 *
-		 * @param reason
-		 *            The particular reason being checked for.
-		 * @return True if all reasons are that reason.
+		 * @return True if all reasons are timeouts.
 		 */
-		boolean allOneReason(String reason) {
-			return retryReason.stream().allMatch(r -> reason.equals(r));
+		private boolean allTimeoutFailures() {
+			return retryReason.stream().allMatch(REASON_TIMEOUT::equals);
 		}
 
 		/**
@@ -188,7 +202,8 @@ public class SCPRequestPipeline {
 		 * @param responseData
 		 *            the content of the message, in a little-endian buffer.
 		 */
-		void parseReceivedResponse(SCPResultMessage msg) throws Exception {
+		private void parseReceivedResponse(SCPResultMessage msg)
+				throws Exception {
 			T response = msg.parsePayload(request);
 			if (callback != null) {
 				callback.accept(response);
@@ -200,7 +215,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The core location.
 		 */
-		HasCoreLocation getDestination() {
+		private HasCoreLocation getDestination() {
 			return request.sdpHeader.getDestination();
 		}
 
@@ -210,7 +225,7 @@ public class SCPRequestPipeline {
 		 * @param exception
 		 *            The problem that is being reported.
 		 */
-		void handleError(Throwable exception) {
+		private void handleError(Throwable exception) {
 			if (errorCallback != null) {
 				errorCallback.handleError(request, exception);
 			}
@@ -221,7 +236,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The request's SCP command.
 		 */
-		SCPCommand getCommand() {
+		private CommandCode getCommand() {
 			return request.scpRequestHeader.command;
 		}
 	}
@@ -376,7 +391,9 @@ public class SCPRequestPipeline {
 		// Receive the next response
 		log.debug("waiting for message...");
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
-		log.debug("received message {}", msg.getResult());
+        if (log.isDebugEnabled()) {
+    		log.debug("received message {}", msg.getResult());
+        }
 		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests
@@ -432,13 +449,13 @@ public class SCPRequestPipeline {
 			}
 		}
 
-		toRemove.stream().forEach(seq -> requests.remove(seq));
+		toRemove.stream().forEach(requests::remove);
 	}
 
 	private void resend(Request<?> req, Object reason) throws IOException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
-			if (req.allOneReason(REASON_TIMEOUT)) {
+			if (req.allTimeoutFailures()) {
 				throw new SendTimedOutException(req, packetTimeout);
 			}
 
@@ -454,8 +471,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request timed out.
 	 */
-	@SuppressWarnings("serial")
 	static class SendTimedOutException extends SocketTimeoutException {
+		private static final long serialVersionUID = -7911020002602751941L;
+
 		/**
 		 * Instantiate.
 		 *
@@ -473,8 +491,9 @@ public class SCPRequestPipeline {
 	/**
 	 * Indicates that a request could not be sent.
 	 */
-	@SuppressWarnings("serial")
 	static class SendFailedException extends IOException {
+		private static final long serialVersionUID = -5555562816486761027L;
+
 		/**
 		 * Instantiate.
 		 *

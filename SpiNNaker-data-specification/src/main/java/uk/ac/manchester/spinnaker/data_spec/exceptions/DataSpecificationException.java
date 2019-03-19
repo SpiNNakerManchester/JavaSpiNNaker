@@ -19,11 +19,14 @@ package uk.ac.manchester.spinnaker.data_spec.exceptions;
 /**
  * Exceptions thrown by the Data Specification code.
  */
-@SuppressWarnings("serial")
 public class DataSpecificationException extends Exception {
+	private static final long serialVersionUID = 6442679259006679916L;
+
 	/**
 	 * Create an exception.
-	 * @param msg The message in the exception.
+	 *
+	 * @param msg
+	 *            The message in the exception.
 	 */
 	public DataSpecificationException(String msg) {
 		super(msg);
@@ -33,5 +36,18 @@ public class DataSpecificationException extends Exception {
 	 * Create an exception.
 	 */
 	DataSpecificationException() {
+	}
+
+	/**
+	 * Create an exception.
+	 *
+	 * @param msg
+	 *            The message in the exception.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	public DataSpecificationException(String msg,
+			Throwable cause) {
+		super(msg, cause);
 	}
 }

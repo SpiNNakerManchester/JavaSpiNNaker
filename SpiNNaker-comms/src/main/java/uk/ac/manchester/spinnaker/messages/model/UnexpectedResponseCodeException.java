@@ -25,8 +25,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
  * Indicate that a response code returned from the board was unexpected for the
  * current operation.
  */
-@SuppressWarnings("serial")
 public class UnexpectedResponseCodeException extends Exception {
+	private static final long serialVersionUID = 7864690081287752744L;
+
 	/**
 	 * @param operation
 	 *            The operation being performed
@@ -51,9 +52,6 @@ public class UnexpectedResponseCodeException extends Exception {
 	 */
 	public UnexpectedResponseCodeException(String operation, SCPCommand command,
 			SCPResult response) {
-		super(format(
-				"Unexpected response %s while performing operation %s "
-						+ "using command %s",
-				response.name(), operation, command.name()));
+		this(operation, command.name(), response.name());
 	}
 }

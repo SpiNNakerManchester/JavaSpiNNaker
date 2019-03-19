@@ -23,9 +23,10 @@ import uk.ac.manchester.spinnaker.data_spec.Commands;
 /**
  * An exception which occurs when trying to execute an unimplemented command.
  */
-@SuppressWarnings("serial")
 public class UnimplementedDSECommandException
 		extends UnsupportedOperationException {
+	private static final long serialVersionUID = -2215740111501788733L;
+
 	/**
 	 * Create an instance.
 	 *
@@ -36,7 +37,7 @@ public class UnimplementedDSECommandException
 	 */
 	public UnimplementedDSECommandException(int index, Commands command) {
 		super(format("Command %s (at index %d) in the data specification "
-				+ "executor has not yet been implemented", command, index));
+            + "executor has not yet been implemented", command, index));
 	}
 
 	/**

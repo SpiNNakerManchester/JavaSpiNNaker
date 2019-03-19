@@ -32,6 +32,10 @@ public class ChipBean {
     public final ChipLocation location;
     /** The details for this Chip. */
     public final ChipDetails details;
+    /** The resources for this Chip.
+     *
+     * Not final as will be filled in with the defaults.
+     */
     private ChipResources resources;
 
     /**

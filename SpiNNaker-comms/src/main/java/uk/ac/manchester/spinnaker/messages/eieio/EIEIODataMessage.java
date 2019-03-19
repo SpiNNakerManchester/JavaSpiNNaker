@@ -74,7 +74,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	 * @param keyPrefix
 	 *            Any key prefix to apply to the data components.
 	 * @param payloadPrefix
-	 *            The prefix to apply. Overridden by a non-null timestamp.
+	 *            The prefix to apply. Overridden by a non-{@code null}
+	 *            timestamp.
 	 * @param timestamp
 	 *            The timestamp base to apply.
 	 * @param prefixType
@@ -304,8 +305,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			return (b >>> bit) & 1;
 		}
 
-		private static int bits(byte b, int bitbase) {
-			return (b >>> bitbase) & TWO_BITS_MASK;
+		private static int bits(byte b, int bitBase) {
+			return (b >>> bitBase) & TWO_BITS_MASK;
 		}
 
 		/**

@@ -77,7 +77,7 @@ public abstract class Reports {
     }
 
     private static void writeHeader(PrintWriter f, String timestamp,
-            Machine machine, Collection<?> connections) throws IOException {
+            Machine machine, Collection<?> connections) {
         f.println("\t\tTarget SpiNNaker Machine Structure");
         f.println("\t\t==================================");
         f.printf("\nGenerated: %s for target machine '%s'\n\n", timestamp,
@@ -89,7 +89,7 @@ public abstract class Reports {
     }
 
     private static void writeChipRouterReport(PrintWriter f, Machine machine,
-            int x, int y) throws IOException {
+            int x, int y) {
         Chip chip = machine.getChipAt(new ChipLocation(x, y));
         if (chip != null) {
             f.printf("\nInformation for chip %d:%d\n", chip.getX(),

@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.io;
 
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
-import static uk.ac.manchester.spinnaker.io.Constants.BYTE_MASK;
+import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -153,11 +153,12 @@ public interface AbstractIO extends AutoCloseable {
 	}
 
 	/**
-	 * Read a number of bytes, or the rest of the data if numBytes is null or
-	 * negative.
+	 * Read a number of bytes, or the rest of the data if {@code numBytes} is
+	 * {@code null} or negative.
 	 *
 	 * @param numBytes
-	 *            The number of bytes to read
+	 *            The number of bytes to read. A {@code null} or a negative
+	 *            value means to read all the remaining bytes.
 	 * @return The bytes that have been read.
 	 * @throws ProcessException
 	 *             If the communications with SpiNNaker fails

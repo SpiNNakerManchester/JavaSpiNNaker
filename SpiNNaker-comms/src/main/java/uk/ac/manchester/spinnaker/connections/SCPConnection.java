@@ -18,12 +18,12 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -31,9 +31,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 /** A UDP connection to SC&amp;MP on the board. */
 public class SCPConnection extends SDPConnection
 		implements SCPSenderReceiver {
-	private static final HasChipLocation DEFAULT_CHIP = new ChipLocation(255,
-			255);
-
 	/**
 	 * Create a connection to a particular instance of SCAMP.
 	 *
@@ -43,23 +40,7 @@ public class SCPConnection extends SDPConnection
 	 *             If anything goes wrong with socket setup.
 	 */
 	public SCPConnection(InetAddress remoteHost) throws IOException {
-		this(DEFAULT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
-	}
-
-	/**
-	 * Create a connection to a particular instance of SCAMP.
-	 *
-	 * @param remoteHost
-	 *            The remote host to send messages to.
-	 * @param remotePort
-	 *            The optional remote port number to send messages to. If
-	 *            {@code null}, the default remote port is used.
-	 * @throws IOException
-	 *             If anything goes wrong with socket setup.
-	 */
-	public SCPConnection(InetAddress remoteHost, Integer remotePort)
-			throws IOException {
-		this(DEFAULT_CHIP, null, null, remoteHost, remotePort);
+		this(BOOT_CHIP, null, null, remoteHost, SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -82,7 +63,7 @@ public class SCPConnection extends SDPConnection
 	 */
 	public SCPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		this(DEFAULT_CHIP, localHost, localPort, remoteHost, remotePort);
+		this(BOOT_CHIP, localHost, localPort, remoteHost, remotePort);
 	}
 
 	/**

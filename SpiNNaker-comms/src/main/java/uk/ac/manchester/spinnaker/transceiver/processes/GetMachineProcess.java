@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.lang.Math.min;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
@@ -29,10 +29,10 @@ import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnByt
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
@@ -58,14 +58,13 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	/** A dictionary of (x, y) -> ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
-	private final Collection<ChipLocation> ignoreChips;
-	private final Map<ChipLocation, Collection<Integer>> ignoreCoresMap;
-	private final Map<ChipLocation, Collection<Direction>> ignoreLinksMap;
-	private final Integer maxCoreID;
+	private final Set<ChipLocation> ignoreChips;
+	private final Map<ChipLocation, Set<Integer>> ignoreCoresMap;
+	private final Map<ChipLocation, Set<Direction>> ignoreLinksMap;
 	private final Integer maxSDRAMSize;
 
-	private static <T> Collection<T> def(Collection<T> c) {
-		return c == null ? emptyList() : c;
+	private static <T> Set<T> def(Set<T> c) {
+		return c == null ? emptySet() : c;
 	}
 
 	private static <K, V> Map<K, V> def(Map<K, V> m) {
@@ -92,9 +91,6 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            The core blacklist.
 	 * @param ignoreLinksMap
 	 *            The link blacklist.
-	 * @param maxCoreID
-	 *            The maximum core ID, or {@code null} for the system's standard
-	 *            limit. For debugging.
 	 * @param maxSDRAMSize
 	 *            The maximum SDRAM size, or {@code null} for the system's
 	 *            standard limit. For debugging.
@@ -105,17 +101,15 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	public GetMachineProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
-			Collection<ChipLocation> ignoreChips,
-			Map<ChipLocation, Collection<Integer>> ignoreCoresMap,
-			Map<ChipLocation, Collection<Direction>> ignoreLinksMap,
-			Integer maxCoreID, Integer maxSDRAMSize,
-			RetryTracker retryTracker) {
+			Set<ChipLocation> ignoreChips,
+			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
+			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
+			Integer maxSDRAMSize, RetryTracker retryTracker) {
 		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
 				THROTTLED, THROTTLED - 1, retryTracker);
 		this.ignoreChips = def(ignoreChips);
 		this.ignoreCoresMap = def(ignoreCoresMap);
 		this.ignoreLinksMap = def(ignoreLinksMap);
-		this.maxCoreID = maxCoreID;
 		this.maxSDRAMSize = maxSDRAMSize;
 		this.chipInfo = new HashMap<>();
 	}
@@ -145,7 +139,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 									+ getColumnOffset(column),
 							getNumColumnBytes(size.height)),
 					response -> p2pColumnData.add(response.data));
-			// TODO work out why mutiple calls is a problem
+			// TODO work out why multiple calls is a problem
 			finish();
 		}
 		checkForError();
@@ -197,17 +191,12 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private Chip makeChip(MachineDimensions size, ChipSummaryInfo chipInfo) {
 		// Create the processor list
 		List<Processor> processors = new ArrayList<>();
-		int maxCore = clamp(chipInfo.numCores - 1, maxCoreID);
 		ChipLocation location = chipInfo.chip.asChipLocation();
-		Collection<Integer> ignoreCores;
-		if (ignoreCoresMap.containsKey(location)) {
-			ignoreCores = ignoreCoresMap.get(location);
-		} else {
-			ignoreCores = emptyList();
-		}
-		for (int id = 0; id <= maxCore; id++) {
+		Set<Integer> ignoreCores =
+				ignoreCoresMap.getOrDefault(location, emptySet());
+		for (int id = 0; id < chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
-			if (!ignoreCores.contains(id)) {
+			if (ignoreCores != null && !ignoreCores.contains(id)) {
 				if (id == 0) {
 					processors.add(Processor.factory(id, true));
 				} else if (chipInfo.coreStates.get(id) == IDLE) {
@@ -234,7 +223,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
-			MachineDimensions size, Collection<Direction> ignoreLinks) {
+			MachineDimensions size, Set<Direction> ignoreLinks) {
 		HasChipLocation chip = chipInfo.chip;
 		List<Link> links = new ArrayList<>();
 		for (Direction link : chipInfo.workingLinks) {

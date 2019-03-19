@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
@@ -65,7 +66,8 @@ public class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
-		for (CoreLocation core : coreSubsets) {
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
 			sendRequest(
 					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
 							CPU_INFO_BYTES),
