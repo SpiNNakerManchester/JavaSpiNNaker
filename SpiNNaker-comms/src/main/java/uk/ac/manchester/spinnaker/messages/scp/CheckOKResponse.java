@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,5 +38,41 @@ public class CheckOKResponse extends SCPResponse {
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
 		this.throwIfNotOK(operation, command);
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param operation
+	 *            The overall operation that we are doing.
+	 * @param command
+	 *            The command that we are handling a response to.
+	 * @param buffer
+	 *            The buffer holding the response data.
+	 * @throws UnexpectedResponseCodeException
+	 *             If the response wasn't OK.
+	 */
+	CheckOKResponse(String operation, ReinjectorCommand command,
+			ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		super(buffer);
+		this.throwIfNotOK(operation, command.name());
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param operation
+	 *            The overall operation that we are doing.
+	 * @param command
+	 *            The command that we are handling a response to.
+	 * @param buffer
+	 *            The buffer holding the response data.
+	 * @throws UnexpectedResponseCodeException
+	 *             If the response wasn't OK.
+	 */
+	CheckOKResponse(String operation, RunningCommand command,
+			ByteBuffer buffer) throws UnexpectedResponseCodeException {
+		super(buffer);
+		this.throwIfNotOK(operation, command.name());
 	}
 }

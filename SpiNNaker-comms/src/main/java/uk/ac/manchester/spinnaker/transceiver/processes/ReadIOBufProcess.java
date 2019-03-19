@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver.processes;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_IOBUF_ADDRESS_OFFSET;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
@@ -89,7 +90,8 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
-		for (CoreLocation core : cores) {
+		for (CoreLocation core : requireNonNull(cores,
+				"must have actual core subset to iterate over")) {
 			sendRequest(new ReadMemory(core.getScampCore(),
 					CPU_IOBUF_ADDRESS_OFFSET + getVcpuAddress(core), WORD),
 					response -> issueReadForIOBufHead(core, 0,

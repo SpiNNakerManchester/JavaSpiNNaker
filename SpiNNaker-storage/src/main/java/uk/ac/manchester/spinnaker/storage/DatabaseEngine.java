@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.OFF;
+import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -35,18 +33,15 @@ import org.sqlite.SQLiteConfig;
  * The database engine interface. Based on SQLite.
  *
  * @author Donal Fellows
+ * @param <APIType>
+ *            The type of the higher-level access interface that can be used to
+ *            work with the database this class makes connections to.
  */
-public class DatabaseEngine implements ConnectionProvider {
+public abstract class DatabaseEngine<APIType extends DatabaseAPI>
+		implements ConnectionProvider<APIType> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
-	private static String sqlDDL;
-	static {
-		try {
-			sqlDDL = resourceToString("/db.sql", UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("failed to read database definition SQL",
-					e);
-		}
-	}
+	/** Busy timeout for SQLite, in milliseconds. */
+	private static final int BUSY_TIMEOUT = 500;
 
 	private String dbConnectionUrl;
 
@@ -71,15 +66,24 @@ public class DatabaseEngine implements ConnectionProvider {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		log.debug("opening database connection {}", dbConnectionUrl);
+        if (log.isDebugEnabled()) {
+    		log.debug("opening database connection {}", dbConnectionUrl);
+        }
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		config.setSynchronous(OFF);
+		config.setBusyTimeout(BUSY_TIMEOUT);
+		config.setTransactionMode(IMMEDIATE);
 		Connection conn = DriverManager.getConnection(dbConnectionUrl,
 				config.toProperties());
 		try (Statement statement = conn.createStatement()) {
-			statement.executeUpdate(sqlDDL);
+			statement.executeUpdate(getDDL());
 		}
 		return conn;
 	}
+
+	/**
+	 * @return The DDL for initialising this kind of database.
+	 */
+	public abstract String getDDL();
 }

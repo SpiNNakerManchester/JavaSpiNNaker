@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.String.format;
+import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
+import static java.lang.Thread.yield;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -37,7 +39,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -78,6 +80,10 @@ public class SCPRequestPipeline {
 	 */
 	public static final int RETRY_DELAY_MS = 100;
 	private static final String REASON_TIMEOUT = "timeout";
+	/**
+	 * Packet minimum send interval, in <em>nanoseconds</em>.
+	 */
+	private static final int INTER_SEND_INTERVAL_NS = 60000;
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
@@ -112,6 +118,7 @@ public class SCPRequestPipeline {
 	 * if no such tracking is required.
 	 */
 	private final RetryTracker retryTracker;
+	private long nextSendTime = 0;
 
 	/**
 	 * Per message record.
@@ -154,6 +161,12 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
+			long now = nanoTime();
+			while (now - nextSendTime < 0) {
+                yield();
+                now = nanoTime();
+			}
+            nextSendTime = now + INTER_SEND_INTERVAL_NS;
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
@@ -223,7 +236,7 @@ public class SCPRequestPipeline {
 		 *
 		 * @return The request's SCP command.
 		 */
-		private SCPCommand getCommand() {
+		private CommandCode getCommand() {
 			return request.scpRequestHeader.command;
 		}
 	}
@@ -378,7 +391,9 @@ public class SCPRequestPipeline {
 		// Receive the next response
 		log.debug("waiting for message...");
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
-		log.debug("received message {}", msg.getResult());
+        if (log.isDebugEnabled()) {
+    		log.debug("received message {}", msg.getResult());
+        }
 		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests

@@ -74,7 +74,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	 * @param keyPrefix
 	 *            Any key prefix to apply to the data components.
 	 * @param payloadPrefix
-	 *            The prefix to apply. Overridden by a non-null timestamp.
+	 *            The prefix to apply. Overridden by a non-{@code null}
+	 *            timestamp.
 	 * @param timestamp
 	 *            The timestamp base to apply.
 	 * @param prefixType

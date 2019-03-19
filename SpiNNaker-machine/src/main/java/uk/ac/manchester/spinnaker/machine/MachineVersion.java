@@ -16,6 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
+
 /**
  *
  * @author Christian-B
@@ -41,55 +47,53 @@ public enum MachineVersion {
     /** Assumed Combination of 1200 common style 48 chips boards. */
     ONE_THOUSAND_TWO_HUNDRED_BOARD(240, 240),
     /**
-     * Combination of multiple common style 48 chips boards
-     *      but made up of Triads without wrap arounds.
+     * Combination of multiple common style 48 chips boards but made up of
+     * Triads without wrap-arounds.
      * <p>
-     * This is typically what spalloc provides when returning part of a
-     *      larger machine.
+     * This is typically what spalloc provides when returning part of a larger
+     * machine.
      */
     TRIAD_NO_WRAPAROUND(false, false, true),
     /**
-     * Unknown combination of common style 48 chips boards
-     *      but made up of Triads with both wrap arounds.
+     * Unknown combination of common style 48 chips boards but made up of Triads
+     * with both wrap-arounds.
      * <p>
-     * All known machine sizes with both wrap arounds have unique
-     *      MachineVersions.
+     * All known machine sizes with both wrap-arounds have unique
+     * {@code MachineVersion}s.
      * <p>
-     * Note: While this is physically possible with standards boards there is
-     *      no known case then such a machine would be obtained.
-     * The assumption that this version has wraparounds
-     *      is purely based on the size.
+     * Note: While this is physically possible with standards boards there is no
+     * known case then such a machine would be obtained. The assumption that
+     * this version has wrap-arounds is purely based on the size.
      */
     TRIAD_WITH_WRAPAROUND(true, true, true),
     /**
-     * Combination of multiple common style 48 chips boards
-     *      but made up of Triads
-     *      which only wrap arounds on the Horizontal / X axis.
+     * Combination of multiple common style 48 chips boards but made up of
+     * Triads which only wrap-arounds on the Horizontal / X axis.
      * <p>
      * This is possible when spalloc returns a large part of a machine.
      */
     TRIAD_WITH_HORIZONTAL_WRAP(true, false, true),
     /**
-     * Combination of multiple common style 48 chips boards
-     *      but made up of Triads
-     *      which only wrap arounds on the Vertical / Y axis.
+     * Combination of multiple common style 48 chips boards but made up of
+     * Triads which only wrap-arounds on the Vertical / Y axis.
      * <p>
      * This is possible when spalloc returns a large part of a machine.
      */
     TRIAD_WITH_VERTICAL_WRAP(false, true, true),
 
     /**
-     * Unexpected combination of common style 48 chips boards
-     *      not in made up of standard Triads.
+     * Unexpected combination of common style 48 chips boards not in made up of
+     * standard Triads.
      * <p>
-     * Note: While this is physically possible with standards boards there is
-     *      no known case then such a machine would be obtained.
-     * The assumption that this version does not have wraparounds
-     *      is purely based on the size.
+     * Note: While this is physically possible with standards boards there is no
+     * known case then such a machine would be obtained. The assumption that
+     * this version does not have wrap-arounds is purely based on the size.
      */
     NONE_TRIAD_LARGE(false, false, false);
 
-    /** Python Id for this version or null if no matching id in python. */
+    /**
+     * Python ID for this version or {@code null} if no matching ID in python.
+     */
     public final Integer id;
 
     /** Indicates if this machine has exactly 4 chips is a 2 by 2 layout. */
@@ -99,23 +103,23 @@ public enum MachineVersion {
     public final boolean isFourtyeightChip;
 
     /**
-     * Indicates if this machine is expected to have wrap arounds
-     * on the X axis.
+     * Indicates if this machine is expected to have wrap-arounds on the X axis.
      */
     public final boolean horizontalWrap;
     /**
-     * Indicates if this machine is expected to have wrap arounds
-     * on the Y axis.
+     * Indicates if this machine is expected to have wrap-arounds on the Y axis.
      */
     public final boolean verticalWrap;
 
-    /** Indicates if this board is made up of triads,
-     *      ie one or more groups of three boards in the typical layout. */
+    /**
+     * Indicates if this board is made up of triads, i.e., one or more groups of
+     * three boards in the typical layout.
+     */
     public final boolean isTriad;
 
     /**
-     * The only possible dimensions for this version
-     * or null if multiple sizes allowed.
+     * The only possible dimensions for this version or {@code null} if multiple
+     * sizes allowed.
      */
     public final MachineDimensions machineDimensions;
 
@@ -123,21 +127,24 @@ public enum MachineVersion {
 
     /**
      * Main constructor.
+     *
      * @param id
-     *      Python Id for this version or null if no matching id in python.
+     *            Python ID for this version or {@code null} if no matching ID
+     *            in python.
      * @param dimensions
-     *      The only possible dimensions for this version
-     *      or null if multiple sizes allowed
+     *            The only possible dimensions for this version or {@code null}
+     *            if multiple sizes allowed
      * @param isFourChip
-     *      Indicates if this machine has exactly 4 chips is a 2 by 2 layout.
+     *            Indicates if this machine has exactly 4 chips is a 2 by 2
+     *            layout.
      * @param isFourtyeightChip
-     *      Indicates if this machine has exactly one 48 chip board.
+     *            Indicates if this machine has exactly one 48 chip board.
      * @param horizontalWrap
-     *      Indicates if this machine is expected to have wrap arounds.
+     *            Indicates if this machine is expected to have wrap-arounds.
      * @param verticalWrap
-     *      Indicates if this machine is expected to have wrap arounds.
+     *            Indicates if this machine is expected to have wrap-arounds.
      * @param isTriad
-     *      Indicates if this board is made up of triads,
+     *            Indicates if this board is made up of triads,
      */
     @SuppressWarnings("checkstyle:ParameterNumber")
     MachineVersion(Integer id, MachineDimensions dimensions,
@@ -155,13 +162,14 @@ public enum MachineVersion {
     /**
      * Multi board constructor based purely on size.
      *
-     * @param width Number of columns in chips.
-     * @param height Number of rows in chips.
+     * @param width
+     *            Number of columns in chips.
+     * @param height
+     *            Number of rows in chips.
      */
     MachineVersion(int width, int height) {
         this(null, new MachineDimensions(width, height), false, false,
-                (width % MachineDefaults.TRIAD_HEIGHT == 0),
-                (height % MachineDefaults.TRIAD_WIDTH == 0),
+                (width % TRIAD_HEIGHT == 0), (height % TRIAD_WIDTH == 0),
                 isTriad(width, height));
     }
 
@@ -169,17 +177,21 @@ public enum MachineVersion {
      * Single board constructor.
      *
      * @param id
-     *      Python Id for this version or null if no matching id in python.
-     * @param width Number of columns in chips.
-     * @param height Number of rows in chips.
+     *            Python ID for this version or {@code null} if no matching ID
+     *            in python.
+     * @param width
+     *            Number of columns in chips.
+     * @param height
+     *            Number of rows in chips.
      * @param isFourChip
-     *      Indicates if this machine has exactly 4 chips is a 2 by 2 layout.
+     *            Indicates if this machine has exactly 4 chips is a 2 by 2
+     *            layout.
      * @param isFortyEightChip
-     *      Indicates if this machine has exactly one 48 chip board.
+     *            Indicates if this machine has exactly one 48 chip board.
      * @param wrapAround
-     *      Indicates if this machine is expected to have wrap a-rounds.
+     *            Indicates if this machine is expected to have wrap-arounds.
      * @param isTriad
-     *      Indicates if this board is made up of triads,
+     *            Indicates if this board is made up of triads.
      */
     @SuppressWarnings("checkstyle:ParameterNumber")
     MachineVersion(Integer id, int width, int height,
@@ -193,9 +205,9 @@ public enum MachineVersion {
      * Unspecified size constructor, assumed to be multi-board.
      *
      * @param wrapAround
-     *      Indicates if this machine is expected to have wrap a-rounds.
+     *            Indicates if this machine is expected to have wrap-arounds.
      * @param isTriad
-     *      Indicates if this board is made up of triads,
+     *            Indicates if this board is made up of triads,
      */
     MachineVersion(boolean horizontalWrap, boolean verticalWrap,
             boolean isTriad) {
@@ -205,11 +217,12 @@ public enum MachineVersion {
     /**
      * Converts a python board id into a MachineVersion.
      *
-     * @param id Python board version.
+     * @param id
+     *            Python board version.
      * @return Machine version assuming just a single board.
      */
     public static MachineVersion byId(Integer id) {
-        for (MachineVersion possible: MachineVersion.values()) {
+        for (MachineVersion possible : MachineVersion.values()) {
             if (possible.id != null && possible.id.equals(id)) {
                 return possible;
             }
@@ -225,7 +238,8 @@ public enum MachineVersion {
      * @param height
      *            The height of the machine to find the version for.
      * @return A Board version.
-     * @throws IllegalArgumentException if the size is not valid.
+     * @throws IllegalArgumentException
+     *             if the size is not valid.
      */
     public static MachineVersion bySize(int width, int height) {
         return bySize(new MachineDimensions(width, height));
@@ -237,68 +251,64 @@ public enum MachineVersion {
      * @param dimensions
      *            The width and height of the machine to find the version for.
      * @return A Board version.
-     * @throws IllegalArgumentException if the size is not valid.
+     * @throws IllegalArgumentException
+     *             if the size is not valid.
      */
     public static MachineVersion bySize(MachineDimensions dimensions) {
-        if (MachineVersion.THREE.machineDimensions.equals(dimensions)) {
-            return MachineVersion.THREE;
+        if (THREE.machineDimensions.equals(dimensions)) {
+            return THREE;
         }
-        if (MachineVersion.FIVE.machineDimensions.equals(dimensions)) {
-            return MachineVersion.FIVE;
+        if (FIVE.machineDimensions.equals(dimensions)) {
+            return FIVE;
         }
         for (MachineVersion possible: MachineVersion.values()) {
             if (dimensions.equals(possible.machineDimensions)) {
                 return possible;
             }
         }
-        if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_WITH_WRAPAROUND;
+        if ((dimensions.width % TRIAD_HEIGHT == 0)
+                && (dimensions.height % TRIAD_WIDTH == 0)) {
+            return TRIAD_WITH_WRAPAROUND;
         }
-        if (((dimensions.width - MachineDefaults.HALF_SIZE)
-                % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((dimensions.height - MachineDefaults.HALF_SIZE)
-                        % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_NO_WRAPAROUND;
+        if (((dimensions.width - HALF_SIZE) % TRIAD_HEIGHT == 0)
+                && ((dimensions.height - HALF_SIZE) % TRIAD_WIDTH == 0)) {
+            return TRIAD_NO_WRAPAROUND;
         }
-        // Having eliminated a single 4 chip and 48 chip board
-        // as well as a three board toroid we need at least two board
-        // on top of each other or next to each other
-        if (dimensions.width < MachineDefaults.SIZE_X_OF_ONE_BOARD * 2) {
-            if (dimensions.height < MachineDefaults.SIZE_Y_OF_ONE_BOARD * 2) {
+        /*
+         * Having eliminated a single 4 chip and 48 chip board as well as a
+         * three board toroid we need at least two board on top of each other or
+         * next to each other
+         */
+        if (dimensions.width < SIZE_X_OF_ONE_BOARD * 2) {
+            if (dimensions.height < SIZE_Y_OF_ONE_BOARD * 2) {
                 throw new IllegalArgumentException(
                     "Dimensions " + dimensions + "too small!");
             }
         }
-        if ((dimensions.width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((dimensions.height - MachineDefaults.HALF_SIZE)
-                        % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP;
+        if ((dimensions.width % TRIAD_HEIGHT == 0)
+                && ((dimensions.height - HALF_SIZE) % TRIAD_WIDTH == 0)) {
+            return TRIAD_WITH_HORIZONTAL_WRAP;
         }
-        if (((dimensions.width - MachineDefaults.HALF_SIZE)
-                % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (dimensions.height % MachineDefaults.TRIAD_WIDTH == 0)) {
-            return MachineVersion.TRIAD_WITH_VERTICAL_WRAP;
+        if (((dimensions.width - HALF_SIZE) % TRIAD_HEIGHT == 0)
+                && (dimensions.height % TRIAD_WIDTH == 0)) {
+            return TRIAD_WITH_VERTICAL_WRAP;
         }
-        if (dimensions.width % MachineDefaults.HALF_SIZE == 0
-                && dimensions.height % MachineDefaults.HALF_SIZE == 0) {
-            return MachineVersion.NONE_TRIAD_LARGE;
+        if (dimensions.width % HALF_SIZE == 0
+                && dimensions.height % HALF_SIZE == 0) {
+            return NONE_TRIAD_LARGE;
         }
         throw new IllegalArgumentException(
             "Dimensions " + dimensions + "not possible with current boards!");
     }
 
     private static boolean hasWrapArounds(int width, int height) {
-        return (width % MachineDefaults.TRIAD_HEIGHT == 0)
-                && (height % MachineDefaults.TRIAD_WIDTH == 0);
+        return (width % TRIAD_HEIGHT == 0) && (height % TRIAD_WIDTH == 0);
     }
 
     private static boolean isTriad(int width, int height) {
         return hasWrapArounds(width, height)
-            || (((width - MachineDefaults.HALF_SIZE)
-                % MachineDefaults.TRIAD_HEIGHT == 0)
-                && ((height - MachineDefaults.HALF_SIZE)
-                        % MachineDefaults.TRIAD_WIDTH == 0));
+                || (((width - HALF_SIZE) % TRIAD_HEIGHT == 0)
+                        && ((height - HALF_SIZE) % TRIAD_WIDTH == 0));
     }
 
     /**

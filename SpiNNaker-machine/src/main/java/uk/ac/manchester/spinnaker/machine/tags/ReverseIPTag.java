@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,5 +113,19 @@ public final class ReverseIPTag extends Tag {
         h ^= rotateLeft(sdpPort, 11);
         h ^= rotateLeft(destination.hashCode(), 19);
         return h;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ReverseIPTag(");
+        sb.append(getTag()).append(" {").append(getBoardAddress());
+        if (getPort() != null) {
+            sb.append(":").append(getPort());
+        }
+        sb.append("} <-- {?:?}");
+        sb.append(" : ").append(sdpPort);
+        sb.append(" : ").append(destination);
+        return sb.append(")").toString();
     }
 }

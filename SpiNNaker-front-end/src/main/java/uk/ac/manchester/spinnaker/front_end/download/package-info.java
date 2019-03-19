@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Code for downloading data very quickly from SpiNNaker.
- *
- * @author Alan Stokes
- * @author Donal Fellows
+ * The buffer manager and support classes.
  */
 package uk.ac.manchester.spinnaker.front_end.download;

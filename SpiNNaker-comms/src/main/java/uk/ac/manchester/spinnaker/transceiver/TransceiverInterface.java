@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,13 +79,15 @@ import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
+import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
+import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.Storage;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
@@ -125,6 +127,7 @@ public interface TransceiverInterface {
 	/**
 	 * @return The connection selector to use for SCP messages.
 	 */
+	@ParallelSafe
 	ConnectionSelector<SCPConnection> getScampConnectionSelector();
 
 	/**
@@ -137,6 +140,7 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException;
 
@@ -148,6 +152,7 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	default void sendSDPMessage(SDPMessage message) throws IOException {
 		sendSDPMessage(message, null);
 	}
@@ -162,12 +167,17 @@ public interface TransceiverInterface {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
+	@ParallelSafe
 	void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException;
 
 	/**
 	 * Get the maximum chip x-coordinate and maximum chip y-coordinate of the
 	 * chips in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless previously called from a parallel-safe
+	 * situation.
 	 *
 	 * @return The dimensions of the machine
 	 * @throws IOException
@@ -175,12 +185,17 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException;
 
 	/**
 	 * Get the details of the machine made up of chips on a board and how they
 	 * are connected to each other.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless previously called from a parallel-safe
+	 * situation.
 	 *
 	 * @return A machine description
 	 * @throws IOException
@@ -188,6 +203,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Machine getMachineDetails() throws IOException, ProcessException;
 
 	/**
@@ -195,6 +211,7 @@ public interface TransceiverInterface {
 	 *
 	 * @return True if the board can be contacted, False otherwise
 	 */
+	@ParallelSafe
 	default boolean isConnected() {
 		return isConnected(null);
 	}
@@ -208,6 +225,7 @@ public interface TransceiverInterface {
 	 *            to be connected if any one connection works.
 	 * @return True if the board can be contacted, False otherwise
 	 */
+	@ParallelSafe
 	boolean isConnected(Connection connection);
 
 	/**
@@ -219,6 +237,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
 		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
@@ -235,6 +254,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
@@ -252,6 +272,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default VersionInfo getScampVersion(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getScampVersion(chip, getScampConnectionSelector());
@@ -271,6 +292,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException;
@@ -278,12 +300,16 @@ public interface TransceiverInterface {
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void bootBoard() throws InterruptedException, IOException {
 		bootBoard(null);
 	}
@@ -291,6 +317,9 @@ public interface TransceiverInterface {
 	/**
 	 * Attempt to boot the board. No check is performed to see if the board is
 	 * already booted.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param extraBootValues
 	 *            extra values to set during boot
@@ -299,6 +328,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void bootBoard(Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException;
 
@@ -306,6 +336,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return The version identifier
 	 * @throws IOException
@@ -315,6 +348,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
@@ -324,6 +358,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param extraBootValues
 	 *            Any additional values to set during boot
@@ -335,6 +372,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException {
@@ -345,6 +383,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param numRetries
 	 *            The number of times to retry booting
@@ -356,6 +397,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default VersionInfo ensureBoardIsReady(int numRetries)
 			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(numRetries, null);
@@ -365,6 +407,9 @@ public interface TransceiverInterface {
 	 * Ensure that the board is ready to interact with this version of the
 	 * transceiver. Boots the board if not already booted and verifies that the
 	 * version of SCAMP running is compatible with this transceiver.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param numRetries
 	 *            The number of times to retry booting
@@ -378,12 +423,16 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	VersionInfo ensureBoardIsReady(int numRetries,
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
 	 * Get information about the processors on the board.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return An iterable of the CPU information for all cores.
 	 * @throws IOException
@@ -391,6 +440,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default Iterable<CPUInfo> getCPUInformation()
 			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
@@ -407,6 +457,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
@@ -416,6 +467,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get information about some processors on the board.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code coreSubsets} only contains cores
+	 * on a single board.
 	 *
 	 * @param coreSubsets
 	 *            A set of chips and cores from which to get the information. If
@@ -428,6 +483,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
@@ -440,6 +496,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser0RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_0_START_ADDRESS;
 	}
@@ -452,6 +509,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>0</sub> address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser0RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_0_START_ADDRESS;
 	}
@@ -465,6 +523,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser1RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_1_START_ADDRESS;
 	}
@@ -477,6 +536,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>1</sub> address for
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser1RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_1_START_ADDRESS;
 	}
@@ -490,6 +550,7 @@ public interface TransceiverInterface {
 	 *            address for
 	 * @return The address for user<sub>2</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser2RegisterAddress(HasCoreLocation core) {
 		return getVcpuAddress(core) + CPU_USER_2_START_ADDRESS;
 	}
@@ -502,6 +563,7 @@ public interface TransceiverInterface {
 	 *            the processor ID to get the user<sub>2</sub> address for
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
+	@ParallelSafe
 	default int getUser2RegisterAddress(int p) {
 		return getVcpuAddress(p) + CPU_USER_2_START_ADDRESS;
 	}
@@ -515,6 +577,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default Iterable<IOBuffer> getIobuf() throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
 	}
@@ -530,6 +593,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
@@ -549,7 +613,53 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+			throws IOException, ProcessException;
+
+	/**
+	 * Clear the contents of the IOBUF buffer for all processors.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void clearIobuf() throws IOException, ProcessException {
+		clearIobuf((CoreSubsets) null);
+	}
+
+	/**
+	 * Clear the contents of the IOBUF buffer for a given core.
+	 *
+	 * @param core
+	 *            The coordinates of the processor to clear the IOBUF on.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void clearIobuf(HasCoreLocation core)
+			throws IOException, ProcessException {
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		clearIobuf(coreSubsets);
+	}
+
+	/**
+	 * Clear the contents of the IOBUF buffer for a collection of processors.
+	 *
+	 * @param coreSubsets
+	 *            A set of chips and cores on which to clear the buffers.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void clearIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
@@ -564,6 +674,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException;
 
@@ -579,6 +690,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void enableWatchDogTimerOnChip(HasChipLocation chip, boolean watchdog)
 			throws IOException, ProcessException;
 
@@ -592,6 +704,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
@@ -610,6 +723,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, ProcessException {
 		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
@@ -619,6 +733,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get a count of the number of cores which have a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application from which to get the count.
@@ -630,6 +747,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException;
 
@@ -653,6 +771,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -681,6 +800,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -709,6 +829,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -740,6 +861,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			InputStream executable, int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -762,6 +884,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
 		execute(core, singleton(core.getP()), executable, appID, false);
@@ -787,6 +910,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -813,6 +937,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -841,6 +966,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			File executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -862,6 +988,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -887,6 +1014,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -912,6 +1040,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
@@ -939,6 +1068,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafe
 	void execute(HasChipLocation chip, Collection<Integer> processors,
 			ByteBuffer executable, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -947,6 +1077,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -965,6 +1098,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -975,6 +1109,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -995,6 +1132,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1003,6 +1141,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1019,6 +1160,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, File executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -1029,6 +1171,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1047,6 +1192,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1055,6 +1201,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1070,6 +1219,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
@@ -1080,6 +1230,9 @@ public interface TransceiverInterface {
 	 * Start an executable running on multiple places on the board. This will be
 	 * optimised based on the selected cores, but it may still require a number
 	 * of communications with the board to execute.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param coreSubsets
 	 *            Which cores on which chips to start the executable
@@ -1097,6 +1250,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	void executeFlood(CoreSubsets coreSubsets, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException;
@@ -1106,6 +1260,9 @@ public interface TransceiverInterface {
 	 * specified cores, wait for them to be ready and then start all of the
 	 * binaries. Note this will get the binaries into {@code c_main()} but will
 	 * not signal the barrier.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param executableTargets
 	 *            The binaries to be executed and the cores to execute them on
@@ -1120,6 +1277,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an unexpected state.
 	 */
+	@ParallelUnsafe
 	default void executeApplication(ExecutableTargets executableTargets,
 			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
@@ -1153,7 +1311,68 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Set the running time information for all processors.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void updateRuntime(Integer runTimesteps)
+			throws IOException, ProcessException {
+		updateRuntime(runTimesteps, (CoreSubsets) null);
+	}
+
+	/**
+	 * Set the running time information for a given core.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @param core
+	 *            The coordinates of the processor to clear the IOBUF on.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void updateRuntime(Integer runTimesteps, HasCoreLocation core)
+			throws IOException, ProcessException {
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		updateRuntime(runTimesteps, coreSubsets);
+	}
+
+	/**
+	 * Set the running time information for a collection of processors.
+	 *
+	 * @param runTimesteps
+	 *            How many machine timesteps will the run last. {@code null} is
+	 *            used to indicate an infinite (unbounded until explicitly
+	 *            stopped) run.
+	 * @param coreSubsets
+	 *            A set of chips and cores on which to clear the buffers.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException;
+
+	/**
 	 * Power on the whole machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -1162,11 +1381,15 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void powerOnMachine()
 			throws InterruptedException, IOException, ProcessException;
 
 	/**
 	 * Power on a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power on
@@ -1180,6 +1403,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOn(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, 0, frame);
@@ -1187,6 +1411,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power on
@@ -1203,6 +1430,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, boards, cabinet, frame);
@@ -1210,6 +1438,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
@@ -1220,6 +1451,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, 0);
@@ -1227,6 +1459,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power on
@@ -1240,6 +1475,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), 0, frame);
@@ -1247,6 +1483,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power on a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power on
@@ -1263,6 +1502,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOn(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, singleton(board), cabinet, frame);
@@ -1270,6 +1510,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off the whole machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -1278,11 +1521,15 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void powerOffMachine()
 			throws InterruptedException, IOException, ProcessException;
 
 	/**
 	 * Power off a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power off
@@ -1296,6 +1543,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOff(Collection<Integer> boards, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, 0, frame);
@@ -1303,6 +1551,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a set of boards in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param boards
 	 *            The board or boards to power off
@@ -1319,6 +1570,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, boards, cabinet, frame);
@@ -1326,6 +1578,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off (in cabinet 0, frame 0)
@@ -1336,6 +1591,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, 0);
@@ -1343,6 +1599,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off
@@ -1356,6 +1615,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), 0, frame);
@@ -1363,6 +1623,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Power off a board in the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param board
 	 *            The board to power off
@@ -1379,6 +1642,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelSafeWithCare
 	default void powerOff(int board, int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, singleton(board), cabinet, frame);
@@ -1386,6 +1650,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Send a power request to the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param powerCommand
 	 *            The power command to send
@@ -1404,6 +1671,7 @@ public interface TransceiverInterface {
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 */
+	@ParallelUnsafe
 	void power(PowerCommand powerCommand, Collection<Integer> boards,
 			int cabinet, int frame)
 			throws InterruptedException, IOException, ProcessException;
@@ -1427,6 +1695,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
 			throws IOException, ProcessException;
@@ -1449,6 +1718,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action, int board,
 			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(leds, action, singleton(board), cabinet, frame);
@@ -1473,6 +1743,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(int led, LEDAction action, Collection<Integer> board,
 			int cabinet, int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, board, cabinet, frame);
@@ -1496,6 +1767,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLED(int led, LEDAction action, int board, int cabinet,
 			int frame) throws IOException, ProcessException {
 		setLED(singleton(led), action, singleton(board), cabinet, frame);
@@ -1522,6 +1794,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
 			int board) throws IOException, ProcessException;
 
@@ -1547,6 +1820,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
 			int frame, int board) throws IOException, ProcessException;
 
@@ -1565,6 +1839,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, ProcessException;
 
@@ -1584,6 +1859,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default VersionInfo readBMPVersion(Iterable<Integer> boards, int cabinet,
 			int frame) throws IOException, ProcessException {
 		return readBMPVersion(boards.iterator().next(), cabinet, frame);
@@ -1604,6 +1880,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, ProcessException;
 
@@ -1626,6 +1903,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -1651,6 +1929,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
@@ -1672,6 +1951,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
@@ -1694,6 +1974,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
@@ -1713,6 +1994,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
@@ -1734,6 +2016,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
@@ -1757,6 +2040,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
@@ -1778,6 +2062,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(core, baseAddress, wrap(data));
@@ -1800,6 +2085,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, data);
@@ -1822,13 +2108,17 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1849,6 +2139,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
@@ -1857,9 +2148,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1881,14 +2175,18 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1907,6 +2205,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
@@ -1914,9 +2213,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1936,13 +2238,17 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, ProcessException;
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -1960,6 +2266,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
@@ -1967,9 +2274,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -1988,6 +2298,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
@@ -1997,9 +2308,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -2017,15 +2331,19 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -2044,15 +2362,19 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
@@ -2071,6 +2393,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
@@ -2078,9 +2401,12 @@ public interface TransceiverInterface {
 	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_READ SCP command.
-	 * If sent to a BMP, this command can be used to communicate with the FPGAs'
-	 * debug registers.
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
@@ -2100,11 +2426,16 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2119,11 +2450,16 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2136,11 +2472,16 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2152,6 +2493,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
@@ -2161,6 +2503,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2172,6 +2518,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemoryFlood(baseAddress, wrap(data));
@@ -2179,6 +2526,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
 	 *
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
@@ -2191,6 +2542,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
@@ -2212,6 +2564,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
 			int length) throws IOException, ProcessException {
 		return readMemory(chip.getScampCore(), baseAddress, length);
@@ -2235,25 +2588,20 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
 			throws IOException, ProcessException;
 
 	/**
-	 * Read some areas of SDRAM from a core of a chip on the board.
+	 * Read an area associated with a <em>recording region</em> from SDRAM from
+	 * a core of a chip on the board.
 	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
-	 *            from
 	 * @param region
-	 *            The region of the core that is being read. Used to organise
-	 *            the data in the database.
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
+	 *            The recording region that is being read. Describes which core
+	 *            produced the data, what <em>DSE index</em> the data came from,
+	 *            and where in memory to actually read.
 	 * @param storage
-	 *            The database to write to
-	 * @param length
-	 *            The length of the data to be read in bytes
+	 *            The database to write to.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2261,13 +2609,17 @@ public interface TransceiverInterface {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	void readMemory(HasCoreLocation core, int region, int baseAddress,
-			int length, Storage storage)
+	@ParallelSafe
+	void readRegion(BufferManagerStorage.Region region,
+			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be read from
@@ -2285,6 +2637,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
@@ -2295,6 +2648,9 @@ public interface TransceiverInterface {
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
 	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param core
 	 *            The coordinates of the chip whose neighbour is to be read
@@ -2315,11 +2671,15 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, ProcessException;
 
 	/**
 	 * Sends a stop request for an application ID.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application to send to
@@ -2328,11 +2688,15 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void stopApplication(AppID appID) throws IOException, ProcessException;
 
 	/**
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
@@ -2350,6 +2714,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
+	@ParallelSafeWithCare
 	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets,
 			AppID appID, Set<CPUState> cpuStates) throws IOException,
 			ProcessException, InterruptedException, SpinnmanException {
@@ -2361,6 +2726,9 @@ public interface TransceiverInterface {
 	/**
 	 * Waits for the specified cores running the given application to be in some
 	 * target state or states. Handles failures.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
@@ -2390,6 +2758,7 @@ public interface TransceiverInterface {
 	 * @throws SpinnmanException
 	 *             If some cores enter an error state.
 	 */
+	@ParallelSafeWithCare
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countsBetweenFullCheck)
@@ -2398,6 +2767,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are in a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2409,6 +2782,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
 		return getCoresInState(allCoreSubsets, singleton(state));
@@ -2416,6 +2790,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are in a given set of states.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2427,6 +2805,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
 		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
@@ -2441,6 +2820,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are not in a given state.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2452,6 +2835,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
@@ -2460,6 +2844,10 @@ public interface TransceiverInterface {
 
 	/**
 	 * Get all cores that are not in a given set of states.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context unless the {@code allCoreSubsets} only contains
+	 * cores on a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            The cores to filter
@@ -2471,6 +2859,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafeWithCare
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
@@ -2486,6 +2875,9 @@ public interface TransceiverInterface {
 
 	/**
 	 * Send a signal to an application.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param appID
 	 *            The ID of the application to send to
@@ -2496,6 +2888,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	void sendSignal(AppID appID, Signal signal)
 			throws IOException, ProcessException;
 
@@ -2512,6 +2905,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void setLEDs(HasChipLocation chip,
 			Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException {
@@ -2531,6 +2925,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setLEDs(HasCoreLocation core, Map<Integer, LEDAction> ledStates)
 			throws IOException, ProcessException;
 
@@ -2542,6 +2937,7 @@ public interface TransceiverInterface {
 	 * @return A connection for the given IP address, or {@code null} if no such
 	 *         connection exists
 	 */
+	@ParallelSafe
 	SCPConnection locateSpinnakerConnection(InetAddress boardAddress);
 
 	/**
@@ -2549,13 +2945,33 @@ public interface TransceiverInterface {
 	 *
 	 * @param tag
 	 *            The tag to set up; note its board address can be {@code null},
-	 *            in which case, the tag will be assigned to all boards
+	 *            in which case, the tag will be assigned to all boards.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void setIPTag(IPTag tag) throws IOException, ProcessException;
+	@ParallelSafeWithCare
+	default void setIPTag(IPTag tag) throws IOException, ProcessException {
+		setIPTag(tag, false);
+	}
+
+	/**
+	 * Set up an IP tag.
+	 *
+	 * @param tag
+	 *            The tag to set up; note its board address can be {@code null},
+	 *            in which case, the tag will be assigned to all boards.
+	 * @param useSender
+	 *            if the sender's IP address and port should be used.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void setIPTag(IPTag tag, boolean useSender)
+			throws IOException, ProcessException;
 
 	/**
 	 * Set up a reverse IP tag.
@@ -2569,6 +2985,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setReverseIPTag(ReverseIPTag tag) throws IOException, ProcessException;
 
 	/**
@@ -2581,12 +2998,16 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearIPTag(Tag tag) throws IOException, ProcessException {
 		clearIPTag(tag.getTag(), tag.getBoardAddress());
 	}
 
 	/**
 	 * Clear the setting of an IP tag.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @param tag
 	 *            The tag ID
@@ -2595,6 +3016,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default void clearIPTag(int tag) throws IOException, ProcessException {
 		clearIPTag(tag, null);
 	}
@@ -2613,12 +3035,16 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException;
 
 	/**
 	 * Get the current set of tags that have been set on the board using all
 	 * SCPSender connections.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
 	 *
 	 * @return An iterable of tags
 	 * @throws IOException
@@ -2626,6 +3052,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelUnsafe
 	default List<Tag> getTags() throws IOException, ProcessException {
 		return getTags(null);
 	}
@@ -2641,6 +3068,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException;
 
@@ -2657,6 +3085,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default int mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, AppID.DEFAULT, 0);
@@ -2677,6 +3106,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
@@ -2701,6 +3131,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException;
 
@@ -2716,6 +3147,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException;
 
@@ -2732,6 +3164,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
@@ -2748,6 +3181,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
 			throws IOException, ProcessException {
@@ -2768,6 +3202,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException;
@@ -2784,6 +3219,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
 		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
@@ -2803,6 +3239,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID) throws IOException, ProcessException;
 
@@ -2817,6 +3254,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return readFixedRoute(chip, AppID.DEFAULT);
@@ -2835,6 +3273,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
@@ -2849,6 +3288,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getMulticastRoutes(chip, null);
@@ -2867,6 +3307,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException;
 
@@ -2880,6 +3321,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException;
 
@@ -2894,6 +3336,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException;
 
@@ -2914,6 +3357,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void setRouterDiagnosticFilter(HasChipLocation chip, int position,
 			DiagnosticFilter diagnosticFilter)
 			throws IOException, ProcessException;
@@ -2933,6 +3377,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, ProcessException;
 
@@ -2947,6 +3392,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip)
 			throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false,
@@ -2967,6 +3413,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			boolean enable) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, enable,
@@ -2988,6 +3435,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void clearRouterDiagnosticCounters(HasChipLocation chip,
 			Iterable<Integer> counterIDs) throws IOException, ProcessException {
 		clearRouterDiagnosticCounters(chip, false, counterIDs);
@@ -3008,6 +3456,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void clearRouterDiagnosticCounters(HasChipLocation chip, boolean enable,
 			Iterable<Integer> counterIDs) throws IOException, ProcessException;
 
@@ -3022,6 +3471,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getHeap(chip, sdram_heap_address);
@@ -3040,6 +3490,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, ProcessException;
 
@@ -3061,6 +3512,7 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	default void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size) throws ProcessException, IOException {
 		fillMemory(chip, baseAddress, repeatValue, size, WORD);
@@ -3086,6 +3538,287 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@ParallelSafe
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
 			int size, DataType dataType) throws ProcessException, IOException;
+
+	/**
+	 * Clear the packet reinjection queues in a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void clearReinjectionQueues(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Clear the packet reinjection queues in some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void clearReinjectionQueues(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Get the packet reinjection status of a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @return The reinjection status.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Get the packet reinjection status of some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @return The reinjection statuses of the cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
+			CoreSubsets monitorCores) throws IOException, ProcessException;
+
+	/**
+	 * Reset the packet reinjection counters of a monitor process.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void resetReinjectionCounters(HasCoreLocation monitorCore)
+			throws IOException, ProcessException;
+
+	/**
+	 * Reset the packet reinjection counters of some monitor processes.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of the monitor cores.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void resetReinjectionCounters(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set what types of packets are to be reinjected.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param multicast
+	 *            True if multicast packets are to be reinjected.
+	 * @param pointToPoint
+	 *            True if point-to-point packets are to be reinjected.
+	 * @param fixedRoute
+	 *            True if fixed-route packets are to be reinjected.
+	 * @param nearestNeighbour
+	 *            True if nearest-neighbour packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void setReinjectionTypes(HasCoreLocation monitorCore, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set what types of packets are to be reinjected.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param multicast
+	 *            True if multicast packets are to be reinjected.
+	 * @param pointToPoint
+	 *            True if point-to-point packets are to be reinjected.
+	 * @param fixedRoute
+	 *            True if fixed-route packets are to be reinjected.
+	 * @param nearestNeighbour
+	 *            True if nearest-neighbour packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
+				timeout.exponent);
+	}
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			int timeoutMantissa, int timeoutExponent)
+			throws IOException, ProcessException;
+
+	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
+				timeout.exponent);
+	}
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void setReinjectionTimeout(HasCoreLocation monitorCore, int timeoutMantissa,
+			int timeoutExponent) throws IOException, ProcessException;
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjectionTimeout(HasCoreLocation monitorCore,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
+	}
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeoutMantissa
+	 *            The mantissa of the timeout value, between 0 and 15.
+	 * @param timeoutExponent
+	 *            The exponent of the timeout value, between 0 and 15.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void setReinjectionTimeout(CoreSubsets monitorCores, int timeoutMantissa,
+			int timeoutExponent) throws IOException, ProcessException;
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param timeout
+	 *            The timeout value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void setReinjectionTimeout(CoreSubsets monitorCores,
+			RouterTimeout timeout) throws IOException, ProcessException {
+		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+	}
 }

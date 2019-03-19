@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.HashMap;
-import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
@@ -75,7 +73,7 @@ public class TestRegionLocation {
         greater(r0022, r0012);
         greater(r1145, r1142);
         assertEquals(0, r0012.compareTo(r0012));
-        assertEquals(0, r0012.compareTo(r0012));
+        assertEquals(0, r0012.compareTo(r0012a));
     }
 
 }

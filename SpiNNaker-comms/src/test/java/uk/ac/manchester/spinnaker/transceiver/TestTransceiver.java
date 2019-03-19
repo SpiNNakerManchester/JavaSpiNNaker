@@ -175,15 +175,15 @@ class TestTransceiver {
 	}
 
 	@Test
-	// @Disabled("CB commented out")
+	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/216")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
-				((Number) software_watchdog_count.getDefault()).byteValue()
+			((Number) software_watchdog_count.getDefault()).byteValue()
 		}, new byte[] {
-				0
+			0
 		}, new byte[] {
-				5
+			5
 		});
 
 		List<Connection> connections = new ArrayList<>();

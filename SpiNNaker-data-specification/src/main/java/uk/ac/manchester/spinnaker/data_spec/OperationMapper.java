@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -39,6 +40,12 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationExceptio
  */
 abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
+	/** Cache of what methods implement operations in a class. */
+	private static final Map<Class<? extends FunctionAPI>,
+			Map<Commands, Method>> OPS_MAP = new HashMap<>();
+	/**
+	 * Cache of callables for a particular operation on a particular executor.
+	 */
 	private static final Map<FunctionAPI, Map<Commands, Callable>> MAP =
 			new WeakHashMap<>();
 
@@ -73,32 +80,52 @@ abstract class OperationMapper {
 			 * weak reference for all the method wrappers that we create.
 			 */
 			WeakReference<FunctionAPI> objref = new WeakReference<>(funcs);
-
-			for (Method m : funcs.getClass().getMethods()) {
-				// Skip methods without the annotation. They're no problem.
-				if (!m.isAnnotationPresent(Operation.class)) {
-					continue;
-				}
-				Commands c = m.getAnnotation(Operation.class).value();
-
-				/*
-				 * If there are any arguments, or the method has a return type
-				 * that isn't void or int, or the annotation value is null,
-				 * that's an error.
-				 */
-				if (m.getParameterCount() != 0
-						|| !(m.getReturnType().equals(Void.TYPE)
-								|| m.getReturnType().equals(Integer.TYPE))
-						|| c == null) {
-					throw new IllegalArgumentException(format(
-							"bad Operation annotation on method %s of %s",
-							m.getName(), funcs));
-				}
-
+			Map<Commands, Method> ops = getOperations(funcs.getClass());
+			for (Entry<Commands, Method> e : ops.entrySet()) {
+				Commands c = e.getKey();
+				Method m = e.getValue();
 				map.put(c, cmd -> doCall(objref.get(), m, c, cmd));
 			}
 		}
 		return map.get(opcode);
+	}
+
+	private static Map<Commands, Method> getOperations(
+			Class<? extends FunctionAPI> cls) {
+		Map<Commands, Method> ops = OPS_MAP.get(cls);
+		if (ops != null) {
+			return ops;
+		}
+		ops = new HashMap<>();
+		for (Method m : cls.getMethods()) {
+			// Skip methods without the annotation. They're no problem.
+			if (!m.isAnnotationPresent(Operation.class)) {
+				continue;
+			}
+			Commands c = m.getAnnotation(Operation.class).value();
+
+			/*
+			 * If there are any arguments, or the method has a return type that
+			 * isn't void or int, or the annotation value is null, that's an
+			 * error.
+			 */
+			if (m.getParameterCount() != 0
+					|| !(m.getReturnType().equals(Void.TYPE)
+							|| m.getReturnType().equals(Integer.TYPE))
+					|| c == null) {
+				throw new IllegalArgumentException(
+						format("bad Operation annotation on method %s of %s",
+								m.getName(), cls));
+			}
+            if (log.isDebugEnabled()) {
+				log.debug(
+						"discovered operation {} on {} is implemented by {}()",
+						c.name(), cls, m.getName());
+            }
+			ops.put(c, m);
+		}
+		OPS_MAP.put(cls, ops);
+		return ops;
 	}
 
 	/**
@@ -111,8 +138,9 @@ abstract class OperationMapper {
 			throws DataSpecificationException {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
-		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
-
+		if (log.isDebugEnabled()) {
+    		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+        }
 		try {
 			try {
 				if (method.getReturnType().equals(Void.TYPE)) {

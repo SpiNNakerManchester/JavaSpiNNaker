@@ -41,6 +41,7 @@ public class ManualSpalloc {
         }
         int two = 2;
         System.out.println(3/two);
+        client.close();
     }
 
 }
