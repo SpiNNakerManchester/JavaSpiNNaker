@@ -11,7 +11,8 @@ before_install:
   - python support/travis_blocking_stdout.py
   - unset _JAVA_OPTIONS
 install:
-  - mvn -B dependency:resolve dependency:resolve-plugins
+  # Not a critical failure for this to fail
+  - mvn -B dependency:resolve dependency:resolve-plugins || true
 script:
   - mvn apache-rat:check --settings .travis/travis-settings.xml -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
   - mvn install --settings .travis/travis-settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
