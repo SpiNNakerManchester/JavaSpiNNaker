@@ -72,7 +72,8 @@ class TestMessage {
 
 	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 566);
 
-	@Test
+	// @Test
+    // https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/222
 	void testBootMessagesSerialize() {
 		BootMessages bm = new BootMessages(FIVE);
 		for (BootMessage b : bm.getMessages().collect(Collectors.toList())) {
