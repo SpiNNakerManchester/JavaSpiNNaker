@@ -119,7 +119,17 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
-	byte[] getDataSpec(CoreToLoad core) throws StorageException {
+	/**
+	 * Gets the actual data specification data.
+	 *
+	 * @param core
+	 *            What core to load from.
+	 * @return The contents of the data spec.
+	 * @throws StorageException
+	 *             If anything fails with the database, or if the core doesn't
+	 *             have a data spec.
+	 */
+	ByteBuffer getDataSpec(CoreToLoad core) throws StorageException {
 		if (!(core instanceof CoreToLoadImpl)) {
 			throw new IllegalArgumentException(
 					"can only read data specs for cores described by "
@@ -129,14 +139,15 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 				"reading data specification for core");
 	}
 
-	private static byte[] getDataSpec(Connection conn, CoreToLoadImpl core)
+	private static ByteBuffer getDataSpec(Connection conn, CoreToLoadImpl core)
 			throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.GET_CORE_DATA_SPEC)) {
 			s.setInt(FIRST, core.id);
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getBytes(FIRST);
+					return ByteBuffer.wrap(rs.getBytes(FIRST))
+							.asReadOnlyBuffer();
 				}
 			}
 			throw new IllegalStateException(
@@ -218,8 +229,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 		@Override
 		public ByteBuffer getDataSpec() throws StorageException {
-			return ByteBuffer
-					.wrap(SQLiteDataSpecStorage.this.getDataSpec(this));
+			return SQLiteDataSpecStorage.this.getDataSpec(this);
 		}
 	}
 }
