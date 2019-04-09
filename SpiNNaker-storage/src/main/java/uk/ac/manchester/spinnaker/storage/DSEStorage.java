@@ -119,9 +119,11 @@ public interface DSEStorage extends DatabaseAPI {
 		public final CoreLocation core;
 
 		/**
-		 * The data specification to execute for this core.
+		 * @return The data specification to execute for this core.
+		 * @throws StorageException
+		 *             If anything goes wrong when reading the data spec itself.
 		 */
-		public final ByteBuffer dataSpec;
+		public abstract ByteBuffer getDataSpec() throws StorageException;
 
 		/**
 		 * The application identifier associated with a core.
@@ -139,12 +141,9 @@ public interface DSEStorage extends DatabaseAPI {
 		 *            The P coordinate of the core.
 		 * @param appID
 		 *            The application identifier.
-		 * @param dataSpec
-		 *            The data specification to execute.
 		 */
-		protected CoreToLoad(int x, int y, int p, int appID, byte[] dataSpec) {
+		protected CoreToLoad(int x, int y, int p, int appID) {
 			this.core = new CoreLocation(x, y, p);
-			this.dataSpec = ByteBuffer.wrap(dataSpec);
 			this.appID = appID;
 		}
 	}

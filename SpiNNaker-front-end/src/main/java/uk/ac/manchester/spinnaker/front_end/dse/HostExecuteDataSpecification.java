@@ -176,8 +176,18 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		 */
 		void loadCore(CoreToLoad ctl) throws IOException, ProcessException,
 				DataSpecificationException, StorageException {
-			try (Executor executor = new Executor(ctl.dataSpec,
-					machine.getChipAt(ctl.core).sdram)) {
+			ByteBuffer ds;
+			try {
+				ds = ctl.getDataSpec();
+			} catch (StorageException e) {
+				throw new DataSpecificationException(
+						"failed to read data specification on core "
+								+ ctl.core + " of board " + board.location
+								+ " (" + board.ethernetAddress + ")",
+						e);
+			}
+			try (Executor executor =
+					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int size = executor.getConstructedDataSize();
 				int start = malloc(ctl, size);
