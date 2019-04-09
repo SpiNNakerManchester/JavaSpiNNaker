@@ -82,7 +82,7 @@ public class BufferedReceivingData {
 	 */
 	public BufferedReceivingData(BufferManagerStorage storage) {
 		this.storage = storage;
-        isFlushed =  new DefaultMap<>(false);
+        isFlushed = new DefaultMap<>(false);
         sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
         //self._last_packet_received = defaultdict(lambda: None)
         //lastPacketSent = new HashMap<>();
@@ -122,8 +122,10 @@ public class BufferedReceivingData {
 	 */
 	public void storeEndBufferingSequenceNumber(HasCoreLocation location,
 			int lastSequenceNumber) {
-		endBufferingSequenceNo.put(location.asCoreLocation(),
-				lastSequenceNumber);
+		synchronized (endBufferingSequenceNo) {
+			endBufferingSequenceNo.put(location.asCoreLocation(),
+					lastSequenceNumber);
+		}
 	}
 
 	/**
@@ -134,12 +136,13 @@ public class BufferedReceivingData {
 	 * @return The last sequence number.
 	 */
 	public int getEndBufferingSequenceNumber(CoreLocation location) {
-        if (endBufferingSequenceNo.containsKey(location)) {
-            return endBufferingSequenceNo.get(location);
-        }
-        throw new IllegalArgumentException(
-                "no squence number known for " + location);
-    }
+		Integer value = endBufferingSequenceNo.get(location);
+		if (value == null) {
+			throw new IllegalArgumentException(
+					"no squence number known for " + location);
+		}
+		return value;
+	}
 
 	/**
 	 * Get the last sequence number sent by the core.
@@ -184,7 +187,9 @@ public class BufferedReceivingData {
 	 */
 	public void storeEndBufferingState(RegionLocation location,
 			ChannelBufferState state) {
-		endBufferingState.put(location, state);
+		synchronized (endBufferingState) {
+			endBufferingState.put(location, state);
+		}
 	}
 
 	/**
@@ -195,10 +200,11 @@ public class BufferedReceivingData {
 	 * @return The end state
 	 */
 	public ChannelBufferState getEndBufferingState(RegionLocation location) {
-		if (endBufferingState.containsKey(location)) {
-			return endBufferingState.get(location);
+		ChannelBufferState value = endBufferingState.get(location);
+		if (value == null) {
+			throw new IllegalArgumentException("no state know for " + location);
 		}
-		throw new IllegalArgumentException("no state know for " + location);
+		return value;
 	}
 
 	/**
@@ -262,7 +268,7 @@ public class BufferedReceivingData {
 		isFlushed.put(location, true);
 	}
 
-    /**
+    /* *
      * Get the last packet received for a given core.
      *
      * @param location The Core
@@ -272,7 +278,7 @@ public class BufferedReceivingData {
         return lastPacketSent.get(location);
     }*/
 
-    /**
+    /* *
      * Get the last packet received for a given core.
      *
      * @param location The Core
