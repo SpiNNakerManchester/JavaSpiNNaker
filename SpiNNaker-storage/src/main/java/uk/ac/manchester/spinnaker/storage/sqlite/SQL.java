@@ -125,8 +125,8 @@ abstract class SQL {
 	@ResultColumns({"core_id", "x", "y", "processor", "app_id"})
 	static final String LIST_CORES_TO_LOAD =
 			"SELECT core_id, x, y, processor, app_id FROM core_view "
-					+ "WHERE ethernet_id = ? AND start_address IS NULL AND "
-					+ "app_id IS NOT NULL AND content IS NOT NULL";
+					+ "WHERE ethernet_id = ? AND app_id IS NOT NULL "
+					+ "AND content IS NOT NULL";
 
 	/** Get the data specification to run for a particular core. */
 	@Parameters("core_id")
