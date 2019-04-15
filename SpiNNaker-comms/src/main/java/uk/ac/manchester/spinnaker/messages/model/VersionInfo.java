@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Instant.ofEpochSecond;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.ofInstant;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
@@ -107,4 +111,13 @@ public final class VersionInfo {
 	private static final int FULL_BITS = 3;
 	private static final int NAME_BITS = 2;
 	private static final int MAGIC_VERSION = 0xFFFF;
+
+	@Override
+	public String toString() {
+		return "VersionInfo(" + core + " (phys:" + physicalCPUID
+				+ "), version: " + versionNumber + ", " + name + "/" + hardware
+				+ ", " + ofInstant(ofEpochSecond(buildDate, 0), UTC)
+						.format(ISO_INSTANT)
+				+ ")";
+	}
 }
