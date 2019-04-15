@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +40,6 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
 	private static final int FIFTH = 5;
-	private static final int SIXTH = 6;
 
 	/**
 	 * Create an instance.
@@ -100,7 +100,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 				"listing cores to load data onto");
 	}
 
-	private static List<CoreToLoad> listCoresToLoad(Connection conn,
+	private List<CoreToLoad> listCoresToLoad(Connection conn,
 			EthernetImpl ethernet) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
@@ -112,11 +112,46 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getBytes(SIXTH)));
+							rs.getInt(FOURTH), rs.getInt(FIFTH)));
 				}
 				return result;
 			}
+		}
+	}
+
+	/**
+	 * Gets the actual data specification data.
+	 *
+	 * @param core
+	 *            What core to load from.
+	 * @return The contents of the data spec.
+	 * @throws StorageException
+	 *             If anything fails with the database, or if the core doesn't
+	 *             have a data spec.
+	 */
+	ByteBuffer getDataSpec(CoreToLoad core) throws StorageException {
+		if (!(core instanceof CoreToLoadImpl)) {
+			throw new IllegalArgumentException(
+					"can only read data specs for cores described by "
+							+ "this class");
+		}
+		return callR(conn -> getDataSpec(conn, (CoreToLoadImpl) core),
+				"reading data specification for core");
+	}
+
+	private static ByteBuffer getDataSpec(Connection conn, CoreToLoadImpl core)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.GET_CORE_DATA_SPEC)) {
+			s.setInt(FIRST, core.id);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					return ByteBuffer.wrap(rs.getBytes(FIRST))
+							.asReadOnlyBuffer();
+				}
+			}
+			throw new IllegalStateException(
+					"could not read data spec for core known to have one");
 		}
 	}
 
@@ -169,13 +204,12 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
-	private static final class CoreToLoadImpl extends CoreToLoad {
+	private final class CoreToLoadImpl extends CoreToLoad {
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
-				byte[] bytes) {
-			super(x, y, p, appID, bytes);
+		private CoreToLoadImpl(int id, int x, int y, int p, int appID) {
+			super(x, y, p, appID);
 			this.id = id;
 		}
 
@@ -191,6 +225,11 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		@Override
 		public int hashCode() {
 			return id ^ 187043;
+		}
+
+		@Override
+		public ByteBuffer getDataSpec() throws StorageException {
+			return SQLiteDataSpecStorage.this.getDataSpec(this);
 		}
 	}
 }
