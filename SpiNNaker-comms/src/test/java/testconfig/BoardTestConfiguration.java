@@ -17,6 +17,7 @@
 package testconfig;
 
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
@@ -147,6 +148,8 @@ public class BoardTestConfiguration {
 		localport = PORT;
 		remotehost = InetFactory.getByName(NOHOST);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
+		assumeFalse(hostIsReachable(remotehost),
+				() -> "unreachable host (" + remotehost + ") appears to be up");
 	}
 
 	private static boolean hostIsReachable(String remotehost) {

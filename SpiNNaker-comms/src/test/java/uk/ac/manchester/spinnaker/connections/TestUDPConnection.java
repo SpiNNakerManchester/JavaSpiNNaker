@@ -94,7 +94,7 @@ public class TestUDPConnection {
 	}
 
 	@Test
-	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/215")
+	@Disabled("host reachability; issue #215")
 	public void testSendSCPRequestToNonexistentHost()
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();

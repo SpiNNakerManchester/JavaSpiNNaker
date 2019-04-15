@@ -19,10 +19,12 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
+import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -148,11 +150,13 @@ class TestTransceiver {
 
 	/** Tests the creation of listening sockets. */
 	@Test
-	@Disabled("CB commented out")
+	@Disabled("host reachability; issue #215")
 	void testListenerCreation() throws Exception {
 		// Create board connections
-		List<Connection> connections = new ArrayList<>();
 		Inet4Address noHost = InetFactory.getByName(NOHOST);
+		assumeFalse(ping(noHost) == 0,
+				() -> "unreachable host (" + noHost + ") appears to be up");
+		List<Connection> connections = new ArrayList<>();
 		connections.add(new SCPConnection(null, (Integer) null, noHost, null));
 		EIEIOConnection orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
@@ -175,7 +179,7 @@ class TestTransceiver {
 	}
 
 	@Test
-	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/216")
+	@Disabled("host reachability; issue #215")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
 		List<byte[]> expectedWrites = asList(new byte[] {
