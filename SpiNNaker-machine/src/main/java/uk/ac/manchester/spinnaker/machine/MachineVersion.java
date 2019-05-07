@@ -80,7 +80,6 @@ public enum MachineVersion {
      * This is possible when spalloc returns a large part of a machine.
      */
     TRIAD_WITH_VERTICAL_WRAP(false, true, true),
-
     /**
      * Unexpected combination of common style 48 chips boards not in made up of
      * standard Triads.
@@ -89,7 +88,12 @@ public enum MachineVersion {
      * known case then such a machine would be obtained. The assumption that
      * this version does not have wrap-arounds is purely based on the size.
      */
-    NONE_TRIAD_LARGE(false, false, false);
+    NONE_TRIAD_LARGE(false, false, false),
+    /**
+     * Unexpected small board probably created by adding a virtual chip
+     * to a 2 by 2 board.
+     */
+    EXTENDED_SMALL(true, true, false);
 
     /**
      * Python ID for this version or {@code null} if no matching ID in python.
@@ -273,6 +277,12 @@ public enum MachineVersion {
         if (((dimensions.width - HALF_SIZE) % TRIAD_HEIGHT == 0)
                 && ((dimensions.height - HALF_SIZE) % TRIAD_WIDTH == 0)) {
             return TRIAD_NO_WRAPAROUND;
+        }
+        // Handle 4 chip board extended with virtual_chips
+        if (dimensions.width < SIZE_X_OF_ONE_BOARD) {
+            if (dimensions.height < SIZE_Y_OF_ONE_BOARD) {
+                return EXTENDED_SMALL;
+            }
         }
         /*
          * Having eliminated a single 4 chip and 48 chip board as well as a

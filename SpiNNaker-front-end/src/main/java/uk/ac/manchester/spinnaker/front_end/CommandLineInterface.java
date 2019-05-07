@@ -92,6 +92,7 @@ public final class CommandLineInterface {
 	 *            The command line arguments.
 	 */
 	public static void main(String... args) {
+        System.out.println("in main");
 		if (args.length < 1) {
 			System.err.printf(
 					"wrong # args: must be \"java -jar %s <command> ...\"\n",
@@ -193,10 +194,13 @@ public final class CommandLineInterface {
 			throws IOException, SpinnmanException, ProcessException,
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException {
+        System.out.println("dseRun");
 		Machine machine = getMachine(machineJsonFile);
+        System.out.println("machine");
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
+        System.out.println("database");
 		try (HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine)) {
 			dseExec.loadAll(database);

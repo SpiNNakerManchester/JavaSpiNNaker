@@ -72,6 +72,8 @@ public class TestMachineVersion {
                 new MachineDimensions(16, 24)));
         assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP,  MachineVersion.bySize(
                 new MachineDimensions(48, 16)));
+        assertEquals(MachineVersion.EXTENDED_SMALL,  MachineVersion.bySize(
+                new MachineDimensions(3, 2)));
         assertThrows(IllegalArgumentException.class, () -> {
             @SuppressWarnings("unused")
             MachineVersion v  = MachineVersion.bySize(new MachineDimensions(13, 16));
