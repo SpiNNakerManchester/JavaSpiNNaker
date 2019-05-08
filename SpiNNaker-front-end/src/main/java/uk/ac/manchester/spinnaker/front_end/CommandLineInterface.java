@@ -92,7 +92,7 @@ public final class CommandLineInterface {
 	 *            The command line arguments.
 	 */
 	public static void main(String... args) {
-        System.out.println("in main");
+		System.out.println("in main");
 		if (args.length < 1) {
 			System.err.printf(
 					"wrong # args: must be \"java -jar %s <command> ...\"\n",
@@ -101,7 +101,7 @@ public final class CommandLineInterface {
 		}
 		try {
 			switch (args[0]) {
-			case "gather":
+			case CLICommands.GATHER:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
 					System.err.printf("wrong # args: must be \"java -jar %s "
 							+ "gather <gatherFile> <machineFile> "
@@ -112,7 +112,7 @@ public final class CommandLineInterface {
 				gatherRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "download":
+			case CLICommands.DOWNLOAD:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
 					System.err.printf("wrong # args: must be \"java -jar %s "
 							+ "download <placementFile> <machineFile> "
@@ -123,7 +123,7 @@ public final class CommandLineInterface {
 				downloadRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "dse":
+			case CLICommands.DSE:
 				if (args.length != NUM_DSE_ARGS) {
 					System.err.printf(
 							"wrong # args: must be \"java -jar %s "
@@ -132,10 +132,38 @@ public final class CommandLineInterface {
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
-				dseRun(args[1], args[2]);
+				dseRun(args[1], args[2], null);
 				System.exit(0);
 
-			case "iobuf":
+			case CLICommands.DSE_SYS:
+				if (args.length != NUM_DSE_ARGS) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s "
+									+ "dse_sys <machineFile> <runFolder>\"\n",
+							JAR_FILE);
+					System.exit(1);
+				}
+				setLoggerDir(args[2]);
+				dseRun(args[1], args[2], false);
+				System.exit(0);
+
+			case CLICommands.DSE_APP:
+				if (args.length != NUM_DSE_ARGS) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s "
+									+ "dse_app <machineFile> <runFolder>\"\n",
+							JAR_FILE);
+					System.exit(1);
+				}
+				setLoggerDir(args[2]);
+				dseRun(args[1], args[2], true);
+				System.exit(0);
+
+			case CLICommands.DSE_APP_MON:
+				System.err.println("NOT YET IMPLEMENTED"); // FIXME
+				System.exit(2);
+
+			case CLICommands.IOBUF:
 				if (args.length != NUM_IOBUF_ARGS) {
 					System.err.printf("wrong # args: must be \"java -jar %s "
 							+ "iobuf <machineFile> <iobufMapFile> "
@@ -146,13 +174,13 @@ public final class CommandLineInterface {
 				iobufRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "version":
+			case CLICommands.VERSION:
 				System.out.println(VERSION);
 				System.exit(0);
 
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], "download, dse, gather, or version");
+						args[0], CLICommands.list());
 				System.exit(1);
 			}
 		} catch (Throwable t) {
@@ -175,6 +203,10 @@ public final class CommandLineInterface {
 	 * @param runFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
+	 * @param filterSystem
+	 *            If <tt>true</tt>, only run the DSE for application vertices.
+	 *            If <tt>false</tt>, only run the DSE for system vertices. If
+	 *            <tt>null</tt>, run the DSE for all vertices.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -190,20 +222,23 @@ public final class CommandLineInterface {
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
 	 */
-	public static void dseRun(String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, ExecutionException, InterruptedException,
-			DataSpecificationException {
-        System.out.println("dseRun");
+	public static void dseRun(String machineJsonFile, String runFolder,
+			Boolean filterSystem) throws IOException, SpinnmanException,
+			ProcessException, StorageException, ExecutionException,
+			InterruptedException, DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
-        System.out.println("machine");
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
-        System.out.println("database");
 		try (HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine)) {
-			dseExec.loadAll(database);
+			if (filterSystem == null) {
+				dseExec.loadAllCores(database);
+			} else if (filterSystem) {
+				dseExec.loadApplicationCores(database);
+			} else {
+				dseExec.loadSystemCores(database);
+			}
 		}
 	}
 
@@ -344,5 +379,33 @@ public final class CommandLineInterface {
 	private static BufferManagerStorage getDatabase(String runFolder) {
 		return new BufferManagerDatabaseEngine(
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+	}
+}
+
+interface CLICommands {
+	String GATHER = "gather";
+	String DOWNLOAD = "download";
+	String DSE = "dse";
+	String DSE_SYS = "dse_sys";
+	String DSE_APP = "dse_app";
+	String DSE_APP_MON = "dse_app_mon";
+	String IOBUF = "iobuf";
+	String VERSION = "version";
+	String[] ALL = {
+		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, VERSION
+	};
+
+	static String list() {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (String item : ALL) {
+			sb.append(sep);
+			sep = ", ";
+			if (item == VERSION) {
+				sb.append("or ");
+			}
+			sb.append(item);
+		}
+		return sb.toString();
 	}
 }

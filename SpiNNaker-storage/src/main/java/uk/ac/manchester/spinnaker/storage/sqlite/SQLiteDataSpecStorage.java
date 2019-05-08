@@ -119,6 +119,38 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
+	@Override
+	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet,
+			boolean loadSystemCores) throws StorageException {
+		if (!(ethernet instanceof EthernetImpl)) {
+			throw new IllegalArgumentException(
+					"can only list cores for ethernets described by this class");
+		}
+		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet,
+				loadSystemCores), "listing cores to load data onto");
+	}
+
+	private List<CoreToLoad> listCoresToLoad(Connection conn,
+			EthernetImpl ethernet, boolean loadSystemCores)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD_FILTERED)) {
+			// ethernet_id
+			s.setInt(FIRST, ethernet.id);
+			s.setBoolean(SECOND, loadSystemCores);
+			try (ResultSet rs = s.executeQuery()) {
+				List<CoreToLoad> result = new ArrayList<>();
+				while (rs.next()) {
+					// core_id, x, y, processor, content
+					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
+							rs.getInt(SECOND), rs.getInt(THIRD),
+							rs.getInt(FOURTH), rs.getInt(FIFTH)));
+				}
+				return result;
+			}
+		}
+	}
+
 	/**
 	 * Gets the actual data specification data.
 	 *

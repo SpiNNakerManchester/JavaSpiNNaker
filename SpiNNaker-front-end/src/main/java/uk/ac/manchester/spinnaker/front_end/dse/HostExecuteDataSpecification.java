@@ -107,7 +107,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
 	 */
-	public void loadAll(ConnectionProvider<DSEStorage> connection)
+	public void loadAllCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
 		DSEStorage storage = connection.getStorageInterface();
@@ -125,12 +125,92 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
+	/**
+	 * Execute all application data specifications that a particular connection
+	 * knows about, storing back in the database the information collected about
+	 * those executions.
+	 *
+	 * @param connection
+	 *            The handle to the database.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws DataSpecificationException
+	 *             If a data specification in the database is invalid.
+	 */
+	public void loadApplicationCores(ConnectionProvider<DSEStorage> connection)
+			throws StorageException, IOException, ProcessException,
+			DataSpecificationException {
+		DSEStorage storage = connection.getStorageInterface();
+		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		int opsToRun = storage.countWorkRequired();
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
+			executor.submitTasks(ethernets.stream()
+					.map(board -> () -> loadBoard(board, storage, bar, false)))
+					.awaitAndCombineExceptions();
+		} catch (StorageException | IOException | ProcessException
+				| DataSpecificationException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalStateException("unexpected exception", e);
+		}
+	}
+
+	/**
+	 * Execute all system data specifications that a particular connection knows
+	 * about, storing back in the database the information collected about those
+	 * executions.
+	 *
+	 * @param connection
+	 *            The handle to the database.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws DataSpecificationException
+	 *             If a data specification in the database is invalid.
+	 */
+	public void loadSystemCores(ConnectionProvider<DSEStorage> connection)
+			throws StorageException, IOException, ProcessException,
+			DataSpecificationException {
+		DSEStorage storage = connection.getStorageInterface();
+		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		int opsToRun = storage.countWorkRequired();
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
+			executor.submitTasks(ethernets.stream()
+					.map(board -> () -> loadBoard(board, storage, bar, true)))
+					.awaitAndCombineExceptions();
+		} catch (StorageException | IOException | ProcessException
+				| DataSpecificationException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalStateException("unexpected exception", e);
+		}
+	}
+
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
 		try (BoardLocal c = new BoardLocal(board.location)) {
 			BoardWorker worker = new BoardWorker(board, storage, bar);
 			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+				log.info("loading data onto {}", ctl.core);
+				worker.loadCore(ctl);
+			}
+		}
+	}
+
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
+			boolean system) throws IOException, ProcessException,
+			DataSpecificationException, StorageException {
+		try (BoardLocal c = new BoardLocal(board.location)) {
+			BoardWorker worker = new BoardWorker(board, storage, bar);
+			for (CoreToLoad ctl : storage.listCoresToLoad(board, system)) {
 				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}

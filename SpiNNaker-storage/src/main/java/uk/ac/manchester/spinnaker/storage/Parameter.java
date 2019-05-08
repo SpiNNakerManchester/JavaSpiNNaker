@@ -20,22 +20,25 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Used to document what columns are supposed to be returned by the DQL.
+ * Used to document a parameter that is present in the DQL/DML.
  *
  * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)
 @Documented
-public @interface ResultColumns {
+@Repeatable(Parameters.class)
+public @interface Parameter {
 	/**
-	 * Describes what columns are expected in the result.
+	 * Describes a parameter supported by the statement once it is
+	 * prepared.
 	 *
-	 * @return List of column names.
+	 * @return A parameter name.
 	 */
-	ResultColumn[] value();
+	String value();
 }

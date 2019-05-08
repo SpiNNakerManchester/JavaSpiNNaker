@@ -17,8 +17,9 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
+import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.Parameters;
-import uk.ac.manchester.spinnaker.storage.ResultColumns;
+import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 /**
  * The actual queries used by the data access layer.
@@ -34,51 +35,53 @@ abstract class SQL {
 	// -----------------------------------------------------------------
 
 	/** Create an (x,y,p) record. */
-	@Parameters({
-		"x", "y", "processor"
-	})
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("processor")
 	@GeneratesID
 	static final String INSERT_LOCATION =
 			"INSERT INTO core(x, y, processor) VALUES(?, ?, ?)";
 
 	/** Find an existing (x,y,p) record. */
-	@Parameters({
-		"x", "y", "processor"
-	})
-	@ResultColumns("core_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("processor")
+	@ResultColumn("core_id")
 	static final String GET_LOCATION = "SELECT core_id FROM core"
 			+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
 
 	/** Create an empty region record. */
-	@Parameters({
-		"core_id", "local_region_index", "address"
-	})
+	@Parameter("core_id")
+	@Parameter("local_region_index")
+	@Parameter("address")
 	@GeneratesID
 	static final String INSERT_REGION =
 			"INSERT INTO region(core_id, local_region_index, address) "
 					+ "VALUES (?, ?, ?)";
 
 	/** Find an existing region record. */
-	@Parameters({
-		"core_id", "local_region_index"
-	})
-	@ResultColumns("region_id")
+	@Parameter("core_id")
+	@Parameter("local_region_index")
+	@ResultColumn("region_id")
 	static final String GET_REGION = "SELECT region_id FROM region WHERE "
 			+ "core_id = ? AND local_region_index = ? LIMIT 1";
 
 	/** Append content to a region record. */
-	@Parameters({
-		"content_to_append", "append_time", "region_id"
-	})
+	@Parameter("content_to_append")
+	@Parameter("append_time")
+	@Parameter("region_id")
 	static final String APPEND_CONTENT =
 			"UPDATE region SET content = content || ?, fetches = fetches + 1,"
 					+ " append_time = ? WHERE region_id = ?";
 
 	/** Fetch the current variable state of a region record. */
-	@Parameters({
-		"x", "y", "processor", "local_region_index"
-	})
-	@ResultColumns({"content", "fetches", "append_time"})
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("processor")
+	@Parameter("local_region_index")
+	@ResultColumn("content")
+	@ResultColumn("fetches")
+	@ResultColumn("append_time")
 	static final String FETCH_RECORDING =
 			"SELECT content, fetches, append_time FROM region_view"
 					+ " WHERE x = ? AND y = ? AND processor = ?"
@@ -86,16 +89,18 @@ abstract class SQL {
 
 	/** List the cores with storage. */
 	@Parameters({})
-	@ResultColumns({"x", "y", "processor"})
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("processor")
 	static final String GET_CORES_WITH_STORAGE =
 			"SELECT DISTINCT x, y, processor FROM region_view"
 					+ " ORDER BY x, y, processor";
 
 	/** List the regions of a core with storage. */
-	@Parameters({
-		"x", "y", "processor"
-	})
-	@ResultColumns("local_region_index")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("processor")
+	@ResultColumn("local_region_index")
 	static final String GET_REGIONS_WITH_STORAGE =
 			"SELECT DISTINCT local_region_index FROM region_view"
 					+ " WHERE x = ? AND y = ? AND processor = ?"
@@ -107,7 +112,7 @@ abstract class SQL {
 
 	/** Count the data specifications in the DB that are still to be run. */
 	@Parameters({})
-	@ResultColumns({"count_content"})
+	@ResultColumn("count_content")
 	static final String COUNT_WORK =
 			"SELECT count(content) AS count_content FROM core_view "
 					+ "WHERE start_address IS NULL AND "
@@ -115,22 +120,42 @@ abstract class SQL {
 
 	/** List the ethernets described in the database. */
 	@Parameters({})
-	@ResultColumns({"ethernet_id", "ethernet_x", "ethernet_y", "ip_address"})
+	@ResultColumn("ethernet_id")
+	@ResultColumn("ethernet_x")
+	@ResultColumn("ethernet_y")
+	@ResultColumn("ip_address")
 	static final String LIST_ETHERNETS =
 			"SELECT DISTINCT ethernet_id, ethernet_x, ethernet_y, ip_address"
 					+ " FROM core_view";
 
 	/** List the cores of a ethernets with a data specification to run. */
-	@Parameters("ethernet_id")
-	@ResultColumns({"core_id", "x", "y", "processor", "app_id"})
+	@Parameter("ethernet_id")
+	@ResultColumn("core_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("processor")
+	@ResultColumn("app_id")
 	static final String LIST_CORES_TO_LOAD =
 			"SELECT core_id, x, y, processor, app_id FROM core_view "
 					+ "WHERE ethernet_id = ? AND app_id IS NOT NULL "
 					+ "AND content IS NOT NULL";
 
+	/** List the cores of a ethernets with a data specification to run. */
+	@Parameter("ethernet_id")
+	@Parameter("is_system")
+	@ResultColumn("core_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("processor")
+	@ResultColumn("app_id")
+	static final String LIST_CORES_TO_LOAD_FILTERED =
+			"SELECT core_id, x, y, processor, app_id FROM core_view "
+					+ "WHERE ethernet_id = ? AND is_system = ? "
+					+ "AND app_id IS NOT NULL AND content IS NOT NULL";
+
 	/** Get the data specification to run for a particular core. */
-	@Parameters("core_id")
-	@ResultColumns("content")
+	@Parameter("core_id")
+	@ResultColumn("content")
 	static final String GET_CORE_DATA_SPEC =
 			"SELECT content FROM core_view WHERE core_id = ? LIMIT 1";
 
@@ -138,9 +163,10 @@ abstract class SQL {
 	 * Store the metadata about the loaded data generated by data specification
 	 * execution.
 	 */
-	@Parameters({
-		"start_address", "memory_used", "memory_written", "core_id"
-	})
+	@Parameter("start_address")
+	@Parameter("memory_used")
+	@Parameter("memory_written")
+	@Parameter("core_id")
 	static final String ADD_LOADING_METADATA = "UPDATE core "
 			+ "SET start_address = ?, memory_used = ?, memory_written = ? "
 			+ "WHERE core_id = ?";
