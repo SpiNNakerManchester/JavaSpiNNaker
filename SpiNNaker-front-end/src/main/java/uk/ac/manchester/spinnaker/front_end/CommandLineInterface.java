@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
@@ -160,8 +161,17 @@ public final class CommandLineInterface {
 				System.exit(0);
 
 			case CLICommands.DSE_APP_MON:
-				System.err.println("NOT YET IMPLEMENTED"); // FIXME
-				System.exit(2);
+				if (args.length != NUM_DSE_APP_MON_ARGS) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s "
+									+ "dse_app_mon <gatherFile> "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE);
+					System.exit(1);
+				}
+				setLoggerDir(args[THIRD]);
+				dseAppMonRun(args[1], args[2], args[THIRD]);
+				System.exit(0);
 
 			case CLICommands.IOBUF:
 				if (args.length != NUM_IOBUF_ARGS) {
@@ -192,6 +202,7 @@ public final class CommandLineInterface {
 	private static final int NUM_DOWNLOAD_ARGS = 4;
 	private static final int THIRD = 3;
 	private static final int NUM_DSE_ARGS = 3;
+	private static final int NUM_DSE_APP_MON_ARGS = 4;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
 	private static final int NUM_IOBUF_ARGS = 4;
 
@@ -203,7 +214,7 @@ public final class CommandLineInterface {
 	 * @param runFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
-	 * @param filterSystem
+	 * @param filterSystemCores
 	 *            If <tt>true</tt>, only run the DSE for application vertices.
 	 *            If <tt>false</tt>, only run the DSE for system vertices. If
 	 *            <tt>null</tt>, run the DSE for all vertices.
@@ -223,7 +234,7 @@ public final class CommandLineInterface {
 	 *             If an invalid data specification file is executed.
 	 */
 	public static void dseRun(String machineJsonFile, String runFolder,
-			Boolean filterSystem) throws IOException, SpinnmanException,
+			Boolean filterSystemCores) throws IOException, SpinnmanException,
 			ProcessException, StorageException, ExecutionException,
 			InterruptedException, DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
@@ -232,13 +243,54 @@ public final class CommandLineInterface {
 
 		try (HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine)) {
-			if (filterSystem == null) {
+			if (filterSystemCores == null) {
 				dseExec.loadAllCores(database);
-			} else if (filterSystem) {
+			} else if (filterSystemCores) {
 				dseExec.loadApplicationCores(database);
 			} else {
 				dseExec.loadSystemCores(database);
 			}
+		}
+	}
+
+	/**
+	 * Run the data specifications in parallel.
+	 *
+	 * @param gatherersJsonFile
+	 *            Name of file containing JSON description of gatherers.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that holds the data specifications to execute).
+	 * @throws IOException
+	 *             If the communications fail.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database is in an illegal state.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
+	 * @throws DataSpecificationException
+	 *             If an invalid data specification file is executed.
+	 */
+	public static void dseAppMonRun(String gatherersJsonFile,
+			String machineJsonFile, String runFolder)
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, ExecutionException, InterruptedException,
+			DataSpecificationException {
+		List<Gather> gathers = getGatherers(gatherersJsonFile);
+		Machine machine = getMachine(machineJsonFile);
+		DSEDatabaseEngine database =
+				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+
+		try (FastExecuteDataSpecification dseExec =
+				new FastExecuteDataSpecification(machine, gathers)) {
+			dseExec.loadCores(database);
 		}
 	}
 
