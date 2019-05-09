@@ -22,10 +22,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 
-import java.io.Closeable;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +36,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
@@ -43,10 +47,16 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
+import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -63,26 +73,33 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
-	private static final int DIRECT_TRANSFER_THRESHOLD = 0; // FIXME
+	private static final int DIRECT_TRANSFER_THRESHOLD = 250; // TODO real size
 
 	private final Transceiver txrx;
-	private final Map<ChipLocation, Gather> gatherForChip;
+	private final Map<ChipLocation, Gather> gathererForChip;
 	private final Map<ChipLocation, Monitor> monitorForChip;
+	private final Map<ChipLocation, CoreSubsets> monitorsForBoard;
 	private final BasicExecutor executor;
 	private final Machine machine;
 
-	public FastExecuteDataSpecification(Machine machine, List<Gather> gathers)
+	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers)
 			throws IOException, ProcessException {
 		super(machine);
 		this.machine = machine;
 		executor = new BasicExecutor(PARALLEL_SIZE);
-		gatherForChip = new HashMap<>();
+		gathererForChip = new HashMap<>();
 		monitorForChip = new HashMap<>();
-		for (Gather g : gathers) {
-			gatherForChip.put(g.asChipLocation(), g);
+		monitorsForBoard = new HashMap<>();
+		for (Gather g : gatherers) {
+			ChipLocation gathererChip = g.asChipLocation();
+			gathererForChip.put(gathererChip, g);
+			CoreSubsets boardMonitorCores = monitorsForBoard
+					.computeIfAbsent(gathererChip, x -> new CoreSubsets());
 			for (Monitor m : g.getMonitors()) {
-				gatherForChip.put(m.asChipLocation(), g);
-				monitorForChip.put(m.asChipLocation(), m);
+				ChipLocation monitorChip = m.asChipLocation();
+				gathererForChip.put(monitorChip, g);
+				monitorForChip.put(monitorChip, m);
+				boardMonitorCores.addCore(m.asCoreLocation());
 			}
 		}
 		try {
@@ -114,8 +131,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
-		try (BoardLocal c = new BoardLocal(board.location)) {
-			BoardWorker worker = new BoardWorker(board, storage, bar);
+		try (BoardLocal c = new BoardLocal(board.location);
+				BoardWorker worker = new BoardWorker(board, storage, bar)) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
 			try (uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification.BoardWorker.HighSpeedContext context =
 					worker.highSpeedContext()) {
@@ -142,17 +159,58 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
 	}
 
-	private class BoardWorker {
-		private IPTag iptag;
+	private class BoardWorker implements AutoCloseable {
 		private Ethernet board;
 		private DSEStorage storage;
 		private Progress bar;
+		private SCPConnection connection;
 
-		public BoardWorker(Ethernet board, DSEStorage storage, Progress bar) {
-			iptag = gatherForChip.get(board.location).getIptag();
+		public BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
+				throws IOException {
 			this.board = board;
 			this.storage = storage;
 			this.bar = bar;
+			InetAddress addr = InetAddress.getByName(board.ethernetAddress);
+			connection =
+					new SCPConnection(board.location, addr, SCP_SCAMP_PORT);
+			try {
+				reprogramTag(addr,
+						gathererForChip.get(board.location).getIptag());
+			} catch (UnexpectedResponseCodeException e) {
+				throw new IOException("failed to reprogram IPtag", e);
+			}
+		}
+
+		private void reprogramTag(InetAddress addr, IPTag iptag)
+				throws IOException, UnexpectedResponseCodeException {
+			IPTagSet tagSet = new IPTagSet(board.location, new byte[4], 0,
+					iptag.getTag(), true, true);
+			ByteBuffer data = connection.getSCPData(tagSet);
+			SocketTimeoutException e = null;
+			for (int i = 0; i < 3; i++) {
+				try {
+					connection.send(data);
+					SCPResultMessage resultMessage =
+							connection.receiveSCPResponse(1);
+					resultMessage.parsePayload(tagSet);
+					return;
+				} catch (SocketTimeoutException timeout) {
+					e = timeout;
+				} catch (IOException | RuntimeException
+						| UnexpectedResponseCodeException ex) {
+					throw ex;
+				} catch (Exception ex) {
+					throw new RuntimeException("unexpected exception", e);
+				}
+			}
+			if (e != null) {
+				throw e;
+			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.connection.close();
 		}
 
 		/**
@@ -265,36 +323,85 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			data.flip();
 			int written = data.remaining();
-			fastWrite(core, baseAddress, data);
+			if (data.remaining() < DIRECT_TRANSFER_THRESHOLD || core
+					.onSameChipAs(gathererForChip.get(core.asChipLocation()))) {
+				/*
+				 * Faster to use SCP to SCAMP when on the ethernet chip or when
+				 * the data is "small".
+				 */
+				txrx.writeMemory(core.getScampCore(), baseAddress, data);
+			} else {
+				fastWrite(core, baseAddress, data);
+			}
 			return written;
 		}
 
 		class HighSpeedContext implements AutoCloseable {
-			HighSpeedContext() {
-				throw new RuntimeException("NOT YET IMPLEMENTED"); // FIXME
+			private ReinjectionStatus lastStatus;
+			private final CoreSubsets monitorCores;
 
+			HighSpeedContext(CoreSubsets monitorCores)
+					throws IOException, ProcessException {
+				this.monitorCores = monitorCores;
+				// Store the last reinjection status for resetting
+				// NOTE: This assumes the status is the same on all cores
+				CoreLocation firstCore = monitorCores.iterator().next();
+				lastStatus = txrx.getReinjectionStatus(firstCore);
+				// Set to not inject dropped packets
+				txrx.setReinjectionTypes(monitorCores, false, false, false,
+						false);
+				// Clear any outstanding packets from reinjection
+				txrx.clearReinjectionQueues(monitorCores);
+				// Set time outs
+				txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
+				txrx.setReinjectionTimeout(monitorCores, 15, 15);
 			}
 
 			@Override
-			public void close() throws IOException {
-				// TODO Auto-generated method stub
+			public void close() throws IOException, ProcessException {
+				// Set the routers to temporary values so we can use SDP
+				txrx.setReinjectionTimeout(monitorCores, 15, 4);
+				txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
 
+				try {
+					// Do the real reset
+					txrx.setReinjectionTimeout(monitorCores,
+							lastStatus.getTimeout());
+					txrx.setReinjectionEmergencyTimeout(monitorCores,
+							lastStatus.getEmergencyTimeout());
+					txrx.setReinjectionTypes(monitorCores,
+							lastStatus.isReinjectingMulticast(),
+							lastStatus.isReinjectingPointToPoint(),
+							lastStatus.isReinjectingFixedRoute(),
+							lastStatus.isReinjectingNearestNeighbour());
+					return;
+				} catch (Exception e) {
+					log.error("error resetting router timeouts", e);
+				}
+				try {
+					log.error("checking to see of the cores are OK...");
+					Map<CoreLocation, CPUInfo> errorCores =
+							txrx.getCoresNotInState(monitorCores, RUNNING);
+					if (!errorCores.isEmpty()) {
+						log.error("cores in an unexpected state: {}",
+								errorCores);
+					}
+				} catch (Exception e) {
+					log.error("couldn't get core state", e);
+				}
 			}
 
 		}
 
-		HighSpeedContext highSpeedContext() { // FIXME better type
-			return new HighSpeedContext();
+		HighSpeedContext highSpeedContext()
+				throws IOException, ProcessException {
+			return new HighSpeedContext(monitorsForBoard.get(board.location));
 		}
 
 		private void fastWrite(CoreLocation core, int baseAddress,
 				ByteBuffer data) throws IOException, ProcessException {
-			if (data.remaining() < DIRECT_TRANSFER_THRESHOLD || core
-					.onSameChipAs(gatherForChip.get(core.asChipLocation()))) {
-				txrx.writeMemory(core, baseAddress, data);
-				return;
-			}
 			// FIXME Auto-generated method stub
+			throw new RuntimeException("NOT YET IMPLEMENTED");
 		}
 
 	}
