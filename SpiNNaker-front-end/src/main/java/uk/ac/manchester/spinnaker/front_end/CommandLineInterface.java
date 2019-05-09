@@ -287,9 +287,10 @@ public final class CommandLineInterface {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		File reportDir = null;//new File(runFolder);//FIXME
 
 		try (FastExecuteDataSpecification dseExec =
-				new FastExecuteDataSpecification(machine, gathers)) {
+				new FastExecuteDataSpecification(machine, gathers, reportDir)) {
 			dseExec.loadCores(database);
 		}
 	}
