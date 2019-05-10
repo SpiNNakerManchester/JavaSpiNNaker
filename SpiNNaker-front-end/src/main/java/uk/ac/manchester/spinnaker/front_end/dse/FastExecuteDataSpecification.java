@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
@@ -41,8 +42,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -92,10 +93,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.txt";
+	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
 	/** items of data a SDP packet can hold when SCP header removed */
-	private static final int DATA_PER_FULL_PACKET = 68 * WORD_SIZE;
+	private static final int DATA_PER_FULL_PACKET =
+			SDP_PAYLOAD_WORDS * WORD_SIZE;
 	/*
 	 * 272 bytes as removed SCP header
 	 */
@@ -220,7 +223,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	public synchronized void writeReport(HasCoreLocation core, long timeDiff,
-			int size, int baseAddress, List<List<Integer>> missingNumbers)
+			int size, int baseAddress, List<?> missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
 			try (PrintWriter w = open(reportPath, false)) {
@@ -255,6 +258,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private DSEStorage storage;
 		private Progress bar;
 		private Connection connection;
+		private LinkedList<LinkedList<Integer>> missingSequenceNumbers =
+				new LinkedList<>();
 
 		public BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException {
@@ -400,7 +405,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				long end = System.currentTimeMillis();
 				if (writeReports) {
 					writeReport(core, end - start, data.limit(), baseAddress,
-							missingSequenceNumbersLog);
+							missingSequenceNumbers);
 				}
 			}
 			return written;
@@ -470,92 +475,116 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private void fastWrite(CoreLocation core, int baseAddress,
 				ByteBuffer data) throws IOException, InterruptedException {
-			GathererProtocol protocol = new GathererProtocol(core);
-			ByteBuffer duplicate = data.asReadOnlyBuffer();
-			int numPackets = ceildiv(
-					max(duplicate.remaining()
-							- DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
-					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
-			connection.send(protocol.firstMessage(core, baseAddress, duplicate,
-					numPackets));
-			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
-				connection.send(protocol.payloadMessage(duplicate, seqNum));
-			}
-			connection.send(protocol.finalMessage());
-
-			boolean receivedConfirmation = false;
+			boolean haveMissing = false;
+			int remainingMissingPackets = 0;
 			int timeoutCount = 0;
-			do {
-				try {
-					ByteBuffer received = connection.receive();
-					timeoutCount = 0;
-					receivedConfirmation =
-							processResponse(protocol, received, data);
-				} catch (SocketTimeoutException e) {
-					if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-						throw e;
+			LinkedList<Integer> seqNums = null;
+			GathererProtocol protocol = new GathererProtocol(core);
+
+			outerLoop: while (true) {
+				// Do the initial blast of data
+				int numPackets = ceildiv(
+						max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS,
+								0),
+						DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
+				sendInitialPackets(core, baseAddress, data, protocol,
+						numPackets);
+
+				// Wait for confirmation and do required retransmits
+				while (true) {
+					// Whether to do a reset of our internal state
+					boolean resetState = false;
+					try {
+						ByteBuffer received = connection.receive();
+						timeoutCount = 0; // Reset the timeout counter
+
+						// Decide what to do with the packet
+						switch (CommandID.forValue(received.getInt())) {
+						case RECEIVE_FINISHED_DATA_IN:
+							// We're done!
+							break outerLoop;
+
+						case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
+							remainingMissingPackets = received.getInt();
+							haveMissing = true;
+							break;
+						case RECEIVE_MISSING_SEQ_DATA_IN:
+							remainingMissingPackets--;
+							break;
+						default:
+							throw new RuntimeException(
+									"unexpected response code: "
+											+ received.getInt(0));
+						}
+
+						/*
+						 * The currently received packet has missing sequence
+						 * numbers. Accumulate and dispatch when we've got them
+						 * all.
+						 */
+
+						if (seqNums == null) {
+							seqNums = new LinkedList<>();
+							missingSequenceNumbers.addLast(seqNums);
+						}
+						while (received.hasRemaining()) {
+							seqNums.add(received.getInt());
+						}
+						if ((haveMissing && remainingMissingPackets == 0)
+								|| (!seqNums.isEmpty() && seqNums
+										.peekLast() == MISSING_SEQ_NUMS_END_FLAG)) {
+							retransmitMissingPackets(protocol, data, seqNums);
+							resetState = true;
+						}
+					} catch (SocketTimeoutException e) {
+						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
+							throw e;
+						}
+						connection.restart();
+						if (seqNums == null) {
+							if (missingSequenceNumbers.isEmpty()) {
+								/*
+								 * Timeout when waiting for first reply! Have to
+								 * completely restart.
+								 */
+								continue outerLoop;
+							}
+							seqNums = missingSequenceNumbers.peekLast();
+						}
+						retransmitMissingPackets(protocol, data, seqNums);
+						resetState = true;
 					}
-					connection.restart();
-					retransmitMissingPackets(protocol, data);
+					if (resetState) {
+						seqNums = null;
+						remainingMissingPackets = 0;
+						haveMissing = false;
+					}
 				}
-			} while (!receivedConfirmation);
+			}
 		}
 
-		private int totalExpectedMissingSeqPackets;
-		private boolean haveReceivedMissingSeqCountPacket;
-		private List<Integer> missingSequenceNumbers;
-		private List<List<Integer>> missingSequenceNumbersLog =
-				new ArrayList<>();
-
-		private boolean processResponse(GathererProtocol protocol,
-				ByteBuffer received, ByteBuffer dataToSend)
+		private void sendInitialPackets(CoreLocation core, int baseAddress,
+				ByteBuffer data, GathererProtocol protocol, int numPackets)
 				throws IOException, InterruptedException {
-			switch (CommandID.forValue(received.getInt())) {
-			case RECEIVE_FINISHED_DATA_IN:
-				return true;
-			case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
-				totalExpectedMissingSeqPackets = received.getInt();
-				haveReceivedMissingSeqCountPacket = true;
-				break;
-			case RECEIVE_MISSING_SEQ_DATA_IN:
-				totalExpectedMissingSeqPackets--;
-				break;
-			default:
-				throw new RuntimeException(
-						"unexpected response code: " + received.getInt(0));
+			ByteBuffer duplicate = data.asReadOnlyBuffer();
+			connection.send(protocol.dataToLocation(core, baseAddress,
+					duplicate, numPackets));
+			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
+				connection.send(protocol.seqData(duplicate, seqNum));
 			}
-
-			// There are missing sequence numbers to receive
-
-			if (missingSequenceNumbers == null) {
-				missingSequenceNumbers = new ArrayList<>();
-				missingSequenceNumbersLog.add(missingSequenceNumbers);
-			}
-			while (received.hasRemaining()) {
-				missingSequenceNumbers.add(received.getInt());
-			}
-			int lastIdx = missingSequenceNumbers.size() - 1;
-			if (missingSequenceNumbers
-					.get(lastIdx) == MISSING_SEQ_NUMS_END_FLAG) {
-				missingSequenceNumbers.remove(lastIdx);
-				retransmitMissingPackets(protocol, dataToSend);
-			} else if (haveReceivedMissingSeqCountPacket
-					&& totalExpectedMissingSeqPackets == 0) {
-				retransmitMissingPackets(protocol, dataToSend);
-			}
-			return false;
+			connection.send(protocol.lastDataIn());
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
-				ByteBuffer dataToSend)
+				ByteBuffer dataToSend, List<Integer> missingSeqNums)
 				throws IOException, InterruptedException {
-			for (int seqNum : missingSequenceNumbers) {
-				connection.send(protocol.payloadMessage(dataToSend, seqNum));
+			for (int seqNum : missingSeqNums) {
+				if (seqNum == MISSING_SEQ_NUMS_END_FLAG) {
+					continue;
+				}
+				connection.send(protocol.seqData(dataToSend, seqNum));
 			}
-			missingSequenceNumbers = null;
-			totalExpectedMissingSeqPackets = 0;
-			haveReceivedMissingSeqCountPacket = false;
-			connection.send(protocol.finalMessage());
+			connection.send(protocol.lastDataIn());
 		}
 	}
 
@@ -575,7 +604,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					SDPPort.GATHERER_DATA_SPEED_UP.value);
 		}
 
-		SDPMessage firstMessage(CoreLocation core, int baseAddress,
+		SDPMessage dataToLocation(CoreLocation core, int baseAddress,
 				ByteBuffer data, int numPackets) {
 			ChipLocation boardDestination = calculateFakeChipID(core);
 
@@ -593,7 +622,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return new SDPMessage(header(), payload);
 		}
 
-		SDPMessage payloadMessage(ByteBuffer data, int seqNum) {
+		SDPMessage seqData(ByteBuffer data, int seqNum) {
 			ByteBuffer payload =
 					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 			int position = calculatePositionFromSequenceNumber(seqNum);
@@ -623,7 +652,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
 		}
 
-		SDPMessage finalMessage() {
+		SDPMessage lastDataIn() {
 			ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 			payload.putInt(CommandID.SEND_LAST_DATA_IN.value);
 			payload.flip();
@@ -750,8 +779,8 @@ class Connection implements Closeable {
 		long waited = System.nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-			while (System.nanoTime() - lastSend < THROTTLE_NS)
-				;
+			while (System.nanoTime() - lastSend < THROTTLE_NS) {
+			}
 		}
 		connection.sendSDPMessage(message);
 		lastSend = System.nanoTime();

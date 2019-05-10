@@ -22,6 +22,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.Constants.NEXT_MESSAGES_COUNT;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
@@ -38,18 +39,16 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * transfer stream so that they can be retransmitted.
  */
 public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
-	/** What is the maximum number of <i>words</i> in a packet? */
-	private static final int WORDS_PER_FULL_PACKET = 68;
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 2;
 	/** Number of words of overhead in a subsequent message. */
 	private static final int NEXT_OVERHEAD_WORDS = 1;
 	/** How many sequence numbers fit in the first message. */
 	private static final int MAX_FIRST_SIZE =
-			WORDS_PER_FULL_PACKET - FIRST_OVERHEAD_WORDS;
+			SDP_PAYLOAD_WORDS - FIRST_OVERHEAD_WORDS;
 	/** How many sequence numbers fit in each subsequent message. */
 	private static final int MAX_NEXT_SIZE =
-			WORDS_PER_FULL_PACKET - NEXT_OVERHEAD_WORDS;
+			SDP_PAYLOAD_WORDS - NEXT_OVERHEAD_WORDS;
 	/**
 	 * Max number of sequence numbers to send in one go when asking for
 	 * retransmission.
@@ -84,7 +83,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 * @return The allocated little-endian buffer.
 	 */
 	private static ByteBuffer allocateWords(int numDataWords, int overhead) {
-		int numWords = min(WORDS_PER_FULL_PACKET, numDataWords + overhead);
+		int numWords = min(SDP_PAYLOAD_WORDS, numDataWords + overhead);
 		return allocate(numWords * WORD_SIZE).order(LITTLE_ENDIAN);
 	}
 

@@ -25,6 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.SMALL_RETRIEVE_THRESHOLD;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
+import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
@@ -99,15 +100,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int INTERNAL_DELAY = 100;
-	/** What is the maximum number of <em>words</em> in a packet? */
-	private static final int WORDS_PER_PACKET = 68;
 	/**
 	 * What is the maximum number of payload <em>words</em> in a packet that
 	 * also has a sequence number? This is one less than the total maximum
 	 * number of words in an SDP packet; that extra word is the control word
 	 * which encodes the sequence number and the end-of-stream flag.
 	 */
-	private static final int DATA_WORDS_PER_PACKET = WORDS_PER_PACKET - 1;
+	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 1;
 	/**
 	 * Mask used to pick out the bit that says whether a sequence number is the
 	 * last in a stream.
