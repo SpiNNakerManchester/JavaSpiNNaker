@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import static java.lang.Math.ceil;
-
 /**
  * Miscellaneous mathematical functions.
  *
@@ -39,7 +37,13 @@ public abstract class MathUtils {
 	 *         remainder <i>up</i>.
 	 */
 	public static final int ceildiv(int numerator, int denominator) {
-		return (int) ceil((float) numerator / (float) denominator);
+		/*
+		 * Measured as faster than:
+		 *
+		 * return (int) Math.ceil((float) numerator / (float) denominator);
+		 */
+		return (numerator / denominator)
+				+ (numerator % denominator != 0 ? 1 : 0);
 	}
 
 	/**
