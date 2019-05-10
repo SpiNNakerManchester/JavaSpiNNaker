@@ -392,6 +392,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			data.flip();
 			int written = data.remaining();
+			long start = System.currentTimeMillis();
 			if (data.remaining() < DATA_IN_FULL_PACKET_WITH_ADDRESS || core
 					.onSameChipAs(gathererForChip.get(core.asChipLocation()))) {
 				/*
@@ -400,13 +401,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				 */
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
-				long start = System.currentTimeMillis();
 				fastWrite(core, baseAddress, data);
-				long end = System.currentTimeMillis();
-				if (writeReports) {
-					writeReport(core, end - start, data.limit(), baseAddress,
-							missingSequenceNumbers);
-				}
+			}
+			long end = System.currentTimeMillis();
+			if (writeReports) {
+				writeReport(core, end - start, data.limit(), baseAddress,
+						missingSequenceNumbers);
 			}
 			return written;
 		}
@@ -542,6 +542,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 						connection.restart();
 						if (seqNums == null) {
+							/*
+							 * Nothing received since last timeout, so we're
+							 * going to try to send our last message batch
+							 * again.
+							 */
 							if (missingSequenceNumbers.isEmpty()) {
 								/*
 								 * Timeout when waiting for first reply! Have to
