@@ -101,8 +101,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 */
 
 	/**
-	 * offset where data in starts on first command (command, base_address,
-	 * x&y, max_seq_number), in bytes.
+	 * offset where data in starts on first command (command, base_address, x&y,
+	 * max_seq_number), in bytes.
 	 */
 	private static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 16;
 
@@ -478,7 +478,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
 			connection.send(protocol.firstMessage(core, baseAddress, duplicate,
 					numPackets));
-			sendDataMessages(protocol, numPackets, duplicate);
+			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
+				connection.send(protocol.payloadMessage(duplicate, seqNum));
+			}
+			connection.send(protocol.finalMessage());
 
 			boolean receivedConfirmation = false;
 			int timeoutCount = 0;
@@ -554,103 +557,97 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			haveReceivedMissingSeqCountPacket = false;
 			connection.send(protocol.finalMessage());
 		}
+	}
 
-		private void sendDataMessages(GathererProtocol protocol, int numPackets,
-				ByteBuffer data) throws IOException, InterruptedException {
-			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
-				connection.send(protocol.payloadMessage(data, seqNum));
-			}
-			connection.send(protocol.finalMessage());
+	/** Manufactures Fast Data In protocol messages. */
+	class GathererProtocol {
+		private final HasCoreLocation gathererCore;
+		private final HasChipLocation boardRoot;
+
+		GathererProtocol(HasChipLocation chip) {
+			ChipLocation chipLoc = chip.asChipLocation();
+			gathererCore = gathererForChip.get(chipLoc);
+			boardRoot = monitorForChip.get(chipLoc);
 		}
 
-		/** Manufactures Fast Data In protocol messages. */
-		class GathererProtocol {
-			final HasCoreLocation gathererCore;
+		private SDPHeader header() {
+			return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
+					SDPPort.GATHERER_DATA_SPEED_UP.value);
+		}
 
-			GathererProtocol(HasChipLocation chip) {
-				gathererCore = gathererForChip.get(chip.asChipLocation());
+		SDPMessage firstMessage(CoreLocation core, int baseAddress,
+				ByteBuffer data, int numPackets) {
+			ChipLocation boardDestination = calculateFakeChipID(core);
+
+			ByteBuffer payload =
+					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+			payload.putInt(CommandID.SEND_DATA_TO_LOCATION.value);
+			payload.putInt(baseAddress);
+			payload.putShort((short) boardDestination.getY());
+			payload.putShort((short) boardDestination.getX());
+			payload.putInt(numPackets);
+			while (payload.hasRemaining() && data.hasRemaining()) {
+				payload.put(data.get());
 			}
+			payload.flip();
+			return new SDPMessage(header(), payload);
+		}
 
-			private SDPHeader header() {
-				return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
-						SDPPort.GATHERER_DATA_SPEED_UP.value);
+		SDPMessage payloadMessage(ByteBuffer data, int seqNum) {
+			ByteBuffer payload =
+					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+			int position = calculatePositionFromSequenceNumber(seqNum);
+			if (position >= data.limit()) {
+				throw new RuntimeException(
+						"attempt to write off end of buffer due to "
+								+ "over-large sequence number (" + seqNum
+								+ ") given that only " + data.limit()
+								+ " bytes are to be sent");
 			}
-
-			SDPMessage firstMessage(CoreLocation core, int baseAddress,
-					ByteBuffer data, int numPackets) {
-				ChipLocation boardDestination = calculateFakeChipID(core);
-
-				ByteBuffer payload = ByteBuffer.allocate(DATA_PER_FULL_PACKET)
-						.order(LITTLE_ENDIAN);
-				payload.putInt(CommandID.SEND_DATA_TO_LOCATION.value);
-				payload.putInt(baseAddress);
-				payload.putShort((short) boardDestination.getY());
-				payload.putShort((short) boardDestination.getX());
-				payload.putInt(numPackets);
-				while (payload.hasRemaining() && data.hasRemaining()) {
-					payload.put(data.get());
-				}
-				payload.flip();
-				return new SDPMessage(header(), payload);
+			payload.putInt(CommandID.SEND_SEQ_DATA.value);
+			payload.putInt(seqNum);
+			ByteBuffer dupe = data.duplicate();
+			dupe.position(position);
+			while (payload.hasRemaining() && dupe.hasRemaining()) {
+				payload.put(dupe.get());
 			}
+			payload.flip();
+			return new SDPMessage(header(), payload);
+		}
 
-			SDPMessage payloadMessage(ByteBuffer data, int seqNum) {
-				ByteBuffer payload = ByteBuffer.allocate(DATA_PER_FULL_PACKET)
-						.order(LITTLE_ENDIAN);
-				int position = calculatePositionFromSequenceNumber(seqNum);
-				if (position >= data.limit()) {
-					throw new RuntimeException(
-							"attempt to write off end of buffer due to "
-									+ "over-large sequence number (" + seqNum
-									+ ") given that only " + data.limit()
-									+ " bytes are to be sent");
-				}
-				payload.putInt(CommandID.SEND_SEQ_DATA.value);
-				payload.putInt(seqNum);
-				ByteBuffer dupe = data.duplicate();
-				dupe.position(position);
-				while (payload.hasRemaining() && dupe.hasRemaining()) {
-					payload.put(dupe.get());
-				}
-				payload.flip();
-				return new SDPMessage(header(), payload);
+		private int calculatePositionFromSequenceNumber(int seqNum) {
+			if (seqNum < 1) {
+				return 0;
 			}
+			return DATA_IN_FULL_PACKET_WITH_ADDRESS
+					+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
+		}
 
-			private int calculatePositionFromSequenceNumber(int seqNum) {
-				if (seqNum < 1) {
-					return 0;
-				}
-				return DATA_IN_FULL_PACKET_WITH_ADDRESS
-						+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
-			}
+		SDPMessage finalMessage() {
+			ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+			payload.putInt(CommandID.SEND_LAST_DATA_IN.value);
+			payload.flip();
+			return new SDPMessage(header(), payload);
+		}
 
-			SDPMessage finalMessage() {
-				ByteBuffer payload =
-						ByteBuffer.allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-				payload.putInt(CommandID.SEND_LAST_DATA_IN.value);
-				payload.flip();
-				return new SDPMessage(header(), payload);
+		/**
+		 * Converts between real and board based fake chip IDs.
+		 *
+		 * @param chip
+		 *            the real chip coordinates in the real machine
+		 * @return chip coordinates for the real chip as if it was 1 board
+		 *         machine
+		 */
+		private ChipLocation calculateFakeChipID(HasChipLocation chip) {
+			int fakeX = chip.getX() - boardRoot.getX();
+			if (fakeX < 0) {
+				fakeX += machine.maxChipX() + 1;
 			}
-
-			/**
-			 * Converts between real and board based fake chip IDs.
-			 *
-			 * @param chip
-			 *            the real chip coordinates in the real machine
-			 * @return chip coordinates for the real chip as if it was 1 board
-			 *         machine
-			 */
-			private ChipLocation calculateFakeChipID(HasChipLocation chip) {
-				int fakeX = chip.getX() - board.location.getX();
-				if (fakeX < 0) {
-					fakeX += machine.maxChipX() + 1;
-				}
-				int fakeY = chip.getY() - board.location.getY();
-				if (fakeY < 0) {
-					fakeY += machine.maxChipY() + 1;
-				}
-				return new ChipLocation(fakeX, fakeY);
+			int fakeY = chip.getY() - boardRoot.getY();
+			if (fakeY < 0) {
+				fakeY += machine.maxChipY() + 1;
 			}
+			return new ChipLocation(fakeX, fakeY);
 		}
 	}
 }
