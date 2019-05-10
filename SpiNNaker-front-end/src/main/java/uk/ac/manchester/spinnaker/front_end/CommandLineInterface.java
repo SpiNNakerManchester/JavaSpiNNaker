@@ -104,9 +104,9 @@ public final class CommandLineInterface {
 			switch (args[0]) {
 			case CLICommands.GATHER:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "gather <gatherFile> <machineFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf("wrong # args: must be \"java -jar %s %s "
+							+ "<gatherFile> <machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.GATHER);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
@@ -115,9 +115,11 @@ public final class CommandLineInterface {
 
 			case CLICommands.DOWNLOAD:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "download <placementFile> <machineFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<placementFile> <machineFile> "
+									+ "<runFolder>\"\n",
+							JAR_FILE, CLICommands.DOWNLOAD);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
@@ -127,9 +129,9 @@ public final class CommandLineInterface {
 			case CLICommands.DSE:
 				if (args.length != NUM_DSE_ARGS) {
 					System.err.printf(
-							"wrong # args: must be \"java -jar %s "
-									+ "dse <machineFile> <runFolder>\"\n",
-							JAR_FILE);
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE);
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
@@ -139,9 +141,9 @@ public final class CommandLineInterface {
 			case CLICommands.DSE_SYS:
 				if (args.length != NUM_DSE_ARGS) {
 					System.err.printf(
-							"wrong # args: must be \"java -jar %s "
-									+ "dse_sys <machineFile> <runFolder>\"\n",
-							JAR_FILE);
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE_SYS);
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
@@ -151,9 +153,9 @@ public final class CommandLineInterface {
 			case CLICommands.DSE_APP:
 				if (args.length != NUM_DSE_ARGS) {
 					System.err.printf(
-							"wrong # args: must be \"java -jar %s "
-									+ "dse_app <machineFile> <runFolder>\"\n",
-							JAR_FILE);
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE_APP);
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
@@ -161,23 +163,28 @@ public final class CommandLineInterface {
 				System.exit(0);
 
 			case CLICommands.DSE_APP_MON:
-				if (args.length != NUM_DSE_APP_MON_ARGS) {
+				if (args.length != NUM_DSE_APP_MON_ARGS
+						&& args.length != NUM_DSE_APP_MON_ARGS + 1) {
 					System.err.printf(
-							"wrong # args: must be \"java -jar %s "
-									+ "dse_app_mon <gatherFile> "
-									+ "<machineFile> <runFolder>\"\n",
-							JAR_FILE);
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<gatherFile> <machineFile> "
+									+ "<runFolder> ?<reportFolder>?\"\n",
+							JAR_FILE, CLICommands.DSE_APP_MON);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
-				dseAppMonRun(args[1], args[2], args[THIRD]);
+				dseAppMonRun(args[1], args[2], args[THIRD],
+						args.length > NUM_DSE_APP_MON_ARGS ? args[FOURTH]
+								: null);
 				System.exit(0);
 
 			case CLICommands.IOBUF:
 				if (args.length != NUM_IOBUF_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "iobuf <machineFile> <iobufMapFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <iobufMapFile> "
+									+ "<runFolder>\"\n",
+							JAR_FILE, CLICommands.IOBUF);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
@@ -201,6 +208,7 @@ public final class CommandLineInterface {
 
 	private static final int NUM_DOWNLOAD_ARGS = 4;
 	private static final int THIRD = 3;
+	private static final int FOURTH = 4;
 	private static final int NUM_DSE_ARGS = 3;
 	private static final int NUM_DSE_APP_MON_ARGS = 4;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
@@ -263,6 +271,9 @@ public final class CommandLineInterface {
 	 * @param runFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
+	 * @param reportFolder
+	 *            Name of directory containing reports. If <tt>null</tt>, no
+	 *            report will be written.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -279,7 +290,7 @@ public final class CommandLineInterface {
 	 *             If an invalid data specification file is executed.
 	 */
 	public static void dseAppMonRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder)
+			String machineJsonFile, String runFolder, String reportFolder)
 			throws IOException, SpinnmanException, ProcessException,
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException {
@@ -287,7 +298,7 @@ public final class CommandLineInterface {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
-		File reportDir = null;//new File(runFolder);//FIXME
+		File reportDir = reportFolder == null ? null : new File(reportFolder);
 
 		try (FastExecuteDataSpecification dseExec =
 				new FastExecuteDataSpecification(machine, gathers, reportDir)) {
