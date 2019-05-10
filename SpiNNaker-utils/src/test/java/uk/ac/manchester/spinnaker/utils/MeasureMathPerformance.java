@@ -3,6 +3,10 @@ package uk.ac.manchester.spinnaker.utils;
 public class MeasureMathPerformance {
 	static final long ITER = 100000000;
 
+	public static int ceildiv1(int numerator, int denominator) {
+		return (int) Math.ceil((float) numerator / (float) denominator);
+	}
+
 	public static int ceildiv2(int numerator, int denominator) {
 		return (numerator / denominator)
 				+ (numerator % denominator != 0 ? 1 : 0);
@@ -31,12 +35,12 @@ public class MeasureMathPerformance {
 	public static long test1(int a, int b, long iter) {
 		long total = 0;
 		for (long i = 0; i < iter; i++) {
-			total += MathUtils.ceildiv(a, b);
+			total += ceildiv1(a, b);
 		}
 		long total2 = 0;
 		long start = System.nanoTime();
 		for (long i = 0; i < iter; i++) {
-			total2 += MathUtils.ceildiv(a, b);
+			total2 += ceildiv1(a, b);
 		}
 		long end = System.nanoTime();
 		if (total != total2)
