@@ -449,12 +449,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			outerLoop: while (true) {
 				// Do the initial blast of data
-				int numPackets = ceildiv(
-						max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS,
-								0),
-						DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
-				sendInitialPackets(core, baseAddress, data, protocol,
-						numPackets);
+				sendInitialPackets(core, baseAddress, data, protocol);
 
 				// Wait for confirmation and do required retransmits
 				while (true) {
@@ -477,6 +472,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							break;
 						case RECEIVE_MISSING_SEQ_DATA_IN:
 							remainingMissingPackets--;
+							if (remainingMissingPackets < 0) {
+								log.warn("crazy number of missing packets: {}",
+										remainingMissingPackets);
+							}
 							break;
 						default:
 							throw new RuntimeException(
@@ -497,7 +496,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						while (received.hasRemaining()) {
 							seqNums.add(received.getInt());
 						}
-						if ((haveMissing && remainingMissingPackets == 0)
+						if ((haveMissing && remainingMissingPackets <= 0)
 								|| (!seqNums.isEmpty() && seqNums
 										.peekLast() == MISSING_SEQ_NUMS_END_FLAG)) {
 							retransmitMissingPackets(protocol, data, seqNums);
@@ -536,8 +535,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		private void sendInitialPackets(CoreLocation core, int baseAddress,
-				ByteBuffer data, GathererProtocol protocol, int numPackets)
+				ByteBuffer data, GathererProtocol protocol)
 				throws IOException, InterruptedException {
+			int numPackets = ceildiv(
+					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
+					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
 			ByteBuffer duplicate = data.asReadOnlyBuffer();
 			connection.send(protocol.dataToLocation(core, baseAddress,
 					duplicate, numPackets));
