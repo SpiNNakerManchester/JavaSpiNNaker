@@ -3629,6 +3629,86 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
+	 * Set whether packets (of all types) are to be reinjected.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param reinject
+	 *            True if all packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjection(HasCoreLocation monitorCore, boolean reinject)
+			throws IOException, ProcessException {
+		setReinjectionTypes(monitorCore, reinject, reinject, reinject,
+				reinject);
+	}
+
+	/**
+	 * Set whether packets (of all types) are to be reinjected.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param reinject
+	 *            True if all packets are to be reinjected.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjection(CoreSubsets monitorCores, boolean reinject)
+			throws IOException, ProcessException {
+		setReinjectionTypes(monitorCores, reinject, reinject, reinject,
+				reinject);
+	}
+
+	/**
+	 * Restore whether packets are to be reinjected to a previously saved state.
+	 *
+	 * @param monitorCore
+	 *            The coordinates of the monitor core.
+	 * @param status
+	 *            The saved reinjection status to restore.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjection(HasCoreLocation monitorCore,
+			ReinjectionStatus status) throws IOException, ProcessException {
+		setReinjectionTypes(monitorCore, status.isReinjectingMulticast(),
+				status.isReinjectingPointToPoint(),
+				status.isReinjectingFixedRoute(),
+				status.isReinjectingNearestNeighbour());
+	}
+
+	/**
+	 * Restore whether packets are to be reinjected to a previously saved state.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param status
+	 *            The saved reinjection status to restore.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setReinjection(CoreSubsets monitorCores,
+			ReinjectionStatus status) throws IOException, ProcessException {
+		setReinjectionTypes(monitorCores, status.isReinjectingMulticast(),
+				status.isReinjectingPointToPoint(),
+				status.isReinjectingFixedRoute(),
+				status.isReinjectingNearestNeighbour());
+	}
+
+	/**
 	 * Set what types of packets are to be reinjected.
 	 *
 	 * @param monitorCore

@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.SMALL_RETRIEVE_THRE
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
@@ -49,20 +48,18 @@ import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
+import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
+import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
-import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
-import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -182,7 +179,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				createConnections(gatherers, work);
 		Map<ChipLocation, List<Region>> smallWork =
 				new DefaultMap<>(ArrayList::new);
-		try (DoNotDropPackets p = new DoNotDropPackets(gatherers);
+		try (NoDropPacketContext p = new NoDropPacketContext(txrx,
+				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
@@ -612,115 +610,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		if (log.isDebugEnabled()) {
 			log.debug("all tags for board: {}", txrx.getTags(
 					txrx.locateSpinnakerConnection(tag.getBoardAddress())));
-		}
-	}
-
-	/**
-	 * Standard short timeout for emergency routing.
-	 */
-	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
-
-	/**
-	 * Configures the routers of the chips on a board to never drop packets
-	 * while an instance of this class is active.
-	 *
-	 * @author Donal Fellows
-	 */
-	private final class DoNotDropPackets implements AutoCloseable {
-		/** The monitor cores on the board. */
-		private final CoreSubsets monitorCores;
-		/**
-		 * The saved reinjection status of the first monitor core; all other
-		 * cores are assumed to be the same.
-		 */
-		private ReinjectionStatus savedStatus;
-
-		/**
-		 * Configure the routers of the chips on a machine to never drop
-		 * packets.
-		 *
-		 * @param gatherers
-		 *            The information about where the gatherers are. Used for
-		 *            the lists of where the monitors are.
-		 * @throws IOException
-		 *             If message sending or reception fails.
-		 * @throws ProcessException
-		 *             If SpiNNaker rejects a message.
-		 */
-		DoNotDropPackets(List<Gather> gatherers)
-				throws IOException, ProcessException {
-			log.info("disabling router timeouts on whole machine");
-			monitorCores = new CoreSubsets();
-			for (Gather g : gatherers) {
-				for (Monitor m : g.getMonitors()) {
-					monitorCores.addCore(m.asCoreLocation());
-				}
-			}
-
-			// Store the last reinjection status for resetting
-			savedStatus = saveRouterStatus();
-			// Set to not inject dropped packets
-			txrx.setReinjectionTypes(monitorCores, false, false, false, false);
-			// Clear any outstanding packets from reinjection
-			txrx.clearReinjectionQueues(monitorCores);
-			// Set timeouts
-			txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
-			txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
-		}
-
-		private ReinjectionStatus saveRouterStatus()
-				throws IOException, ProcessException {
-			for (CoreLocation core : monitorCores) {
-				return txrx.getReinjectionStatus(core);
-			}
-			throw new IllegalArgumentException(
-					"no monitors could save their status");
-		}
-
-		/**
-		 * Configure the routers of the chips on a board or machine to be what
-		 * they were previously.
-		 *
-		 * @throws IOException
-		 *             If message sending or reception fails.
-		 * @throws ProcessException
-		 *             If SpiNNaker rejects a message.
-		 */
-		@Override
-		public void close() throws IOException, ProcessException {
-			log.info("enabling router timeouts across whole machine");
-			try {
-				txrx.setReinjectionEmergencyTimeout(monitorCores,
-						savedStatus.getEmergencyTimeout());
-				txrx.setReinjectionTimeout(monitorCores,
-						savedStatus.getTimeout());
-				txrx.setReinjectionTypes(monitorCores,
-						savedStatus.isReinjectingMulticast(),
-						savedStatus.isReinjectingPointToPoint(),
-						savedStatus.isReinjectingFixedRoute(),
-						savedStatus.isReinjectingNearestNeighbour());
-			} catch (IOException | ProcessException e) {
-				log.error("problem resetting router timeouts on machine; "
-						+ "checking if the cores are OK...");
-				checkCores(monitorCores, e);
-				throw e;
-			}
-		}
-
-		private void checkCores(CoreSubsets monitorCores, Exception mainExn) {
-			try {
-				Map<?, ?> errorCores =
-						txrx.getCoresNotInState(monitorCores, RUNNING);
-				if (!errorCores.isEmpty()) {
-					log.error("cores in an unexpected state: {}", errorCores);
-				}
-			} catch (Exception e) {
-				/*
-				 * Correct behaviour here is to suppress the inner issue; this
-				 * logs in the main exception that it occurred.
-				 */
-				mainExn.addSuppressed(e);
-			}
 		}
 	}
 

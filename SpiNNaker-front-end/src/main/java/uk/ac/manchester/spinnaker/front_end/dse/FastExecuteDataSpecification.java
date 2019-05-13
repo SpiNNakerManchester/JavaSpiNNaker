@@ -24,22 +24,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_LAST_DATA_IN;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -49,12 +48,12 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
+import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
@@ -64,13 +63,8 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
-import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
-import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
@@ -140,13 +134,26 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		super(machine);
 		this.machine = machine;
 		executor = new BasicExecutor(PARALLEL_SIZE);
-		gathererForChip = new HashMap<>();
-		monitorForChip = new HashMap<>();
-		monitorsForBoard = new HashMap<>();
+
 		if (reportDir != null) {
 			writeReports = true;
 			reportPath = new File(reportDir, IN_REPORT_NAME);
 		}
+
+		gathererForChip = new HashMap<>();
+		monitorForChip = new HashMap<>();
+		monitorsForBoard = new HashMap<>();
+		buildMaps(gatherers);
+
+		try {
+			txrx = new Transceiver(machine);
+		} catch (SpinnmanException e) {
+			throw new IllegalStateException("failed to talk to BMP, "
+					+ "but that shouldn't have happened at all", e);
+		}
+	}
+
+	private void buildMaps(List<Gather> gatherers) {
 		for (Gather g : gatherers) {
 			ChipLocation gathererChip = g.asChipLocation();
 			gathererForChip.put(gathererChip, g);
@@ -158,12 +165,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				monitorForChip.put(monitorChip, m);
 				boardMonitorCores.addCore(m.asCoreLocation());
 			}
-		}
-		try {
-			txrx = new Transceiver(machine);
-		} catch (SpinnmanException e) {
-			throw new IllegalStateException("failed to talk to BMP, "
-					+ "but that shouldn't have happened at all", e);
 		}
 	}
 
@@ -187,12 +188,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
-			StorageException, InterruptedException {
-		try (BoardLocal c = new BoardLocal(board.location);
-				BoardWorker worker = new BoardWorker(board, storage, bar)) {
+			StorageException {
+		try (BoardWorker worker = new BoardWorker(board, storage, bar)) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
-			try (BoardWorker.HighSpeedContext context =
-					worker.highSpeedContext()) {
+			try (NoDropPacketContext context = worker.dontDropPackets()) {
 				for (CoreToLoad ctl : cores) {
 					log.info("loading data onto {}", ctl.core);
 					worker.loadCore(ctl);
@@ -257,16 +256,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private Ethernet board;
 		private DSEStorage storage;
 		private Progress bar;
-		private Connection connection;
+		private ThrottledConnection connection;
 		private LinkedList<LinkedList<Integer>> missingSequenceNumbers =
 				new LinkedList<>();
+		private BoardLocal logContext;
 
 		public BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException {
 			this.board = board;
+			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
-			connection = new Connection(board);
+			connection = new ThrottledConnection(board);
 			try {
 				connection.reprogramTag(
 						gathererForChip.get(board.location).getIptag());
@@ -277,7 +278,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		@Override
 		public void close() throws IOException {
-			this.connection.close();
+			connection.close();
+			logContext.close();
 		}
 
 		/**
@@ -295,18 +297,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws StorageException
 		 *             If the database access fails.
 		 */
-		public void loadCore(CoreToLoad ctl) throws IOException,
-				ProcessException, DataSpecificationException, StorageException,
-				InterruptedException {
+		protected void loadCore(CoreToLoad ctl) throws IOException,
+				ProcessException, DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
 				ds = ctl.getDataSpec();
 			} catch (StorageException e) {
-				throw new DataSpecificationException(
-						"failed to read data specification on core " + ctl.core
-								+ " of board " + board.location + " ("
-								+ board.ethernetAddress + ")",
-						e);
+				throw new DataSpecificationException(String.format(
+						"failed to read data specification on "
+								+ "core %s of board %s (%s)",
+						ctl.core, board.location, board.ethernetAddress), e);
 			}
 			try (Executor executor =
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
@@ -326,11 +326,20 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
-				throw new DataSpecificationException(
-						"failed to execute data specification on core "
-								+ ctl.core + " of board " + board.location
-								+ " (" + board.ethernetAddress + ")",
-						e);
+				throw new DataSpecificationException(String.format(
+						"failed to execute data specification on "
+								+ "core %s of board %s (%s)",
+						ctl.core, board.location, board.ethernetAddress), e);
+			} catch (IOException e) {
+				throw new IOException(String.format(
+						"failed to upload built data to "
+								+ "core %s of board %s (%s)",
+						ctl.core, board.location, board.ethernetAddress), e);
+			} catch (StorageException e) {
+				throw new StorageException(String.format(
+						"failed to record results of data specification for "
+								+ "core %s of board %s (%s)",
+						ctl.core, board.location, board.ethernetAddress), e);
 			}
 		}
 
@@ -386,8 +395,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
-				int baseAddress)
-				throws IOException, ProcessException, InterruptedException {
+				int baseAddress) throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
 			data.flip();
@@ -401,7 +409,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				 */
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
-				fastWrite(core, baseAddress, data);
+				try {
+					fastWrite(core, baseAddress, data);
+				} catch (InterruptedException e) {
+					throw new ProcessException(core, e);
+				}
 			}
 			long end = System.currentTimeMillis();
 			if (writeReports) {
@@ -411,68 +423,22 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return written;
 		}
 
-		class HighSpeedContext implements AutoCloseable {
-			private ReinjectionStatus lastStatus;
-			private final CoreSubsets monitorCores;
-
-			HighSpeedContext(CoreSubsets monitorCores)
-					throws IOException, ProcessException {
-				this.monitorCores = monitorCores;
-				// Store the last reinjection status for resetting
-				// NOTE: This assumes the status is the same on all cores
-				CoreLocation firstCore = monitorCores.iterator().next();
-				lastStatus = txrx.getReinjectionStatus(firstCore);
-				// Set to not inject dropped packets
-				txrx.setReinjectionTypes(monitorCores, false, false, false,
-						false);
-				// Clear any outstanding packets from reinjection
-				txrx.clearReinjectionQueues(monitorCores);
-				// Set time outs
-				txrx.setReinjectionEmergencyTimeout(monitorCores, 1, 1);
-				txrx.setReinjectionTimeout(monitorCores, 15, 15);
-			}
-
-			@Override
-			public void close() throws IOException, ProcessException {
-				// Set the routers to temporary values so we can use SDP
-				txrx.setReinjectionTimeout(monitorCores, 15, 4);
-				txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
-
-				try {
-					// Do the real reset
-					txrx.setReinjectionTimeout(monitorCores,
-							lastStatus.getTimeout());
-					txrx.setReinjectionEmergencyTimeout(monitorCores,
-							lastStatus.getEmergencyTimeout());
-					txrx.setReinjectionTypes(monitorCores,
-							lastStatus.isReinjectingMulticast(),
-							lastStatus.isReinjectingPointToPoint(),
-							lastStatus.isReinjectingFixedRoute(),
-							lastStatus.isReinjectingNearestNeighbour());
-					return;
-				} catch (Exception e) {
-					log.error("error resetting router timeouts", e);
-				}
-				try {
-					log.error("checking to see of the cores are OK...");
-					Map<CoreLocation, CPUInfo> errorCores =
-							txrx.getCoresNotInState(monitorCores, RUNNING);
-					if (!errorCores.isEmpty()) {
-						log.error("cores in an unexpected state: {}",
-								errorCores);
-					}
-				} catch (Exception e) {
-					log.error("couldn't get core state", e);
-				}
-			}
-
-		}
-
-		HighSpeedContext highSpeedContext()
+		NoDropPacketContext dontDropPackets()
 				throws IOException, ProcessException {
-			return new HighSpeedContext(monitorsForBoard.get(board.location));
+			return new NoDropPacketContext(txrx,
+					monitorsForBoard.get(board.location));
 		}
 
+		/**
+		 * This is the implementation of the actual fast data in protocol.
+		 *
+		 * @param core
+		 *            Where the data is going to.
+		 * @param baseAddress
+		 * @param data
+		 * @throws IOException
+		 * @throws InterruptedException
+		 */
 		private void fastWrite(CoreLocation core, int baseAddress,
 				ByteBuffer data) throws IOException, InterruptedException {
 			boolean haveMissing = false;
@@ -499,7 +465,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						timeoutCount = 0; // Reset the timeout counter
 
 						// Decide what to do with the packet
-						switch (CommandID.forValue(received.getInt())) {
+						switch (FastDataInCommandID
+								.forValue(received.getInt())) {
 						case RECEIVE_FINISHED_DATA_IN:
 							// We're done!
 							break outerLoop;
@@ -609,13 +576,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					SDPPort.GATHERER_DATA_SPEED_UP.value);
 		}
 
-		SDPMessage dataToLocation(CoreLocation core, int baseAddress,
+		SDPMessage dataToLocation(HasChipLocation core, int baseAddress,
 				ByteBuffer data, int numPackets) {
 			ChipLocation boardDestination = calculateFakeChipID(core);
 
 			ByteBuffer payload =
 					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
-			payload.putInt(CommandID.SEND_DATA_TO_LOCATION.value);
+			payload.putInt(SEND_DATA_TO_LOCATION.value);
 			payload.putInt(baseAddress);
 			payload.putShort((short) boardDestination.getY());
 			payload.putShort((short) boardDestination.getX());
@@ -638,7 +605,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ ") given that only " + data.limit()
 								+ " bytes are to be sent");
 			}
-			payload.putInt(CommandID.SEND_SEQ_DATA.value);
+			payload.putInt(SEND_SEQ_DATA.value);
 			payload.putInt(seqNum);
 			ByteBuffer dupe = data.duplicate();
 			dupe.position(position);
@@ -659,7 +626,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		SDPMessage lastDataIn() {
 			ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-			payload.putInt(CommandID.SEND_LAST_DATA_IN.value);
+			payload.putInt(SEND_LAST_DATA_IN.value);
 			payload.flip();
 			return new SDPMessage(header(), payload);
 		}
@@ -683,116 +650,5 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 			return new ChipLocation(fakeX, fakeY);
 		}
-	}
-}
-
-/** command IDs for the SDP packets for data in */
-enum CommandID {
-	/** Host to Gatherer: start accepting data bound for location. */
-	SEND_DATA_TO_LOCATION(200),
-	/** Host to Gatherer: more data with sequence number. */
-	SEND_SEQ_DATA(2000),
-	/** Host to Gatherer: all data transmitted. */
-	SEND_LAST_DATA_IN(2002),
-	/** Gatherer to host: there are missing sequence numbers. */
-	RECEIVE_FIRST_MISSING_SEQ_DATA_IN(2003),
-	/**
-	 * Gatherer to host: here are more missing sequence numbers. Sequence number
-	 * <tt>-1</tt> marks the end.
-	 */
-	RECEIVE_MISSING_SEQ_DATA_IN(2004),
-	/** Gatherer to host: all present and correct. */
-	RECEIVE_FINISHED_DATA_IN(2005);
-	private static final Map<Integer, CommandID> map = new HashMap<>();
-	final int value;
-
-	private CommandID(int value) {
-		this.value = value;
-	}
-
-	public static CommandID forValue(int value) {
-		if (map.isEmpty()) {
-			for (CommandID c : values()) {
-				map.put(c.value, c);
-			}
-		}
-		return map.get(value);
-	}
-}
-
-class Connection implements Closeable {
-	private static final int TIMEOUT_SECONDS = 1000;
-	private static final int THROTTLE_NS = 1000;
-
-	private final InetAddress addr;
-	private final Ethernet board;
-	private SCPConnection connection;
-	private long lastSend;
-
-	Connection(Ethernet board) throws IOException {
-		this.board = board;
-		addr = InetAddress.getByName(board.ethernetAddress);
-		connection = new SCPConnection(board.location, addr, SCP_SCAMP_PORT);
-	}
-
-	ByteBuffer receive() throws SocketTimeoutException, IOException {
-		return connection.receive(TIMEOUT_SECONDS);
-	}
-
-	void reprogramTag(IPTag iptag)
-			throws IOException, UnexpectedResponseCodeException {
-		IPTagSet tagSet = new IPTagSet(board.location, new byte[4], 0,
-				iptag.getTag(), true, true);
-		ByteBuffer data = connection.getSCPData(tagSet);
-		SocketTimeoutException e = null;
-		for (int i = 0; i < 3; i++) {
-			try {
-				connection.send(data);
-				lastSend = System.nanoTime();
-				SCPResultMessage resultMessage =
-						connection.receiveSCPResponse(1);
-				resultMessage.parsePayload(tagSet);
-				return;
-			} catch (SocketTimeoutException timeout) {
-				e = timeout;
-			} catch (IOException | RuntimeException
-					| UnexpectedResponseCodeException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				throw new RuntimeException("unexpected exception", e);
-			}
-		}
-		if (e != null) {
-			throw e;
-		}
-	}
-
-	/**
-	 * Shut down and reopen the connection. It sometimes unsticks things
-	 * apparently.
-	 */
-	void restart() throws IOException {
-		InetAddress localAddr = connection.getLocalIPAddress();
-		int localPort = connection.getLocalPort();
-		connection.close();
-		connection = new SCPConnection(board.location, localAddr, localPort,
-				addr, SCP_SCAMP_PORT);
-	}
-
-	/** Throttled send. */
-	void send(SDPMessage message) throws IOException, InterruptedException {
-		long waited = System.nanoTime() - lastSend;
-		if (waited < THROTTLE_NS) {
-			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-			while (System.nanoTime() - lastSend < THROTTLE_NS) {
-			}
-		}
-		connection.sendSDPMessage(message);
-		lastSend = System.nanoTime();
-	}
-
-	@Override
-	public void close() throws IOException {
-		this.connection.close();
 	}
 }
