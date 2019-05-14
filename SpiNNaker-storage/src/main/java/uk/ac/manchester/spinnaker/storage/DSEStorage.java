@@ -71,7 +71,7 @@ public interface DSEStorage extends DatabaseAPI {
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
-	List<CoreToLoad> listCoresToLoad(Ethernet board, boolean loadSystemCores)
+	List<CoreToLoad> listCoresToLoad(Ethernet ethernet, boolean loadSystemCores)
 			throws StorageException;
 
 	/**

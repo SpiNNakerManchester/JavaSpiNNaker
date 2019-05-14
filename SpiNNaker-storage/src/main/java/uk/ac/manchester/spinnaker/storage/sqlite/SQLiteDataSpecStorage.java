@@ -94,7 +94,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			throws StorageException {
 		if (!(ethernet instanceof EthernetImpl)) {
 			throw new IllegalArgumentException(
-                "can only list cores for ethernets described by this class");
+					"can only list cores for ethernets described by this class");
 		}
 		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet),
 				"listing cores to load data onto");
@@ -124,7 +124,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			boolean loadSystemCores) throws StorageException {
 		if (!(ethernet instanceof EthernetImpl)) {
 			throw new IllegalArgumentException(
-					"can only list cores for ethernets described by this class");
+					"can only list cores for ethernets "
+							+ "described by this class");
 		}
 		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet,
 				loadSystemCores), "listing cores to load data onto");
