@@ -89,14 +89,26 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
+	private static EthernetImpl sanitise(Ethernet ethernet) {
+		if (!(ethernet instanceof EthernetImpl)) {
+			throw new IllegalArgumentException("can only list cores"
+					+ " for ethernets described by this class");
+		}
+		return (EthernetImpl) ethernet;
+	}
+
+	private static CoreToLoadImpl sanitise(CoreToLoad core, String desc) {
+		if (!(core instanceof CoreToLoadImpl)) {
+			throw new IllegalArgumentException(
+					"can only " + desc + " for cores described by this class");
+		}
+		return (CoreToLoadImpl) core;
+	}
+
 	@Override
 	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet)
 			throws StorageException {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException(
-					"can only list cores for ethernets described by this class");
-		}
-		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet),
+		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet)),
 				"listing cores to load data onto");
 	}
 
@@ -122,12 +134,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	@Override
 	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet,
 			boolean loadSystemCores) throws StorageException {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException(
-					"can only list cores for ethernets "
-							+ "described by this class");
-		}
-		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet,
+		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet),
 				loadSystemCores), "listing cores to load data onto");
 	}
 
@@ -163,12 +170,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	 *             have a data spec.
 	 */
 	ByteBuffer getDataSpec(CoreToLoad core) throws StorageException {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only read data specs for cores described by "
-							+ "this class");
-		}
-		return callR(conn -> getDataSpec(conn, (CoreToLoadImpl) core),
+		return callR(
+				conn -> getDataSpec(conn, sanitise(core, "read data specs")),
 				"reading data specification for core");
 	}
 
@@ -191,11 +194,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	@Override
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only save metadata for cores described by this class");
-		}
-		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core,
+		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
 				startAddress, memoryUsed, memoryWritten),
 				"saving data loading metadata");
 	}
