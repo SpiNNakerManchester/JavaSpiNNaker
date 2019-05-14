@@ -19,8 +19,12 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Command IDs for the SDP packets for data in. */
-enum FastDataInCommandID {
+/**
+ * Command IDs for the SDP packets for data in.
+ *
+ * @author Donal Fellows
+ */
+public enum FastDataInCommandID {
 	/** Host to Gatherer: start accepting data bound for location. */
 	SEND_DATA_TO_LOCATION(200),
 	/** Host to Gatherer: more data with sequence number. */
@@ -36,20 +40,29 @@ enum FastDataInCommandID {
 	RECEIVE_MISSING_SEQ_DATA_IN(2004),
 	/** Gatherer to host: all present and correct. */
 	RECEIVE_FINISHED_DATA_IN(2005);
-	private static final Map<Integer, FastDataInCommandID> map =
+	private static final Map<Integer, FastDataInCommandID> MAP =
 			new HashMap<>();
-	final int value;
+	/** The protocol ID of this constant. */
+	public final int value;
 
-	private FastDataInCommandID(int value) {
+	FastDataInCommandID(int value) {
 		this.value = value;
 	}
 
+	/**
+	 * Get a constant by its protocol ID.
+	 *
+	 * @param value
+	 *            The protocol ID
+	 * @return The matching constant, or <tt>null</tt> if the value is
+	 *         unrecognised.
+	 */
 	public static FastDataInCommandID forValue(int value) {
-		if (map.isEmpty()) {
+		if (MAP.isEmpty()) {
 			for (FastDataInCommandID c : values()) {
-				map.put(c.value, c);
+				MAP.put(c.value, c);
 			}
 		}
-		return map.get(value);
+		return MAP.get(value);
 	}
 }

@@ -446,19 +446,36 @@ public final class CommandLineInterface {
 	}
 }
 
+/**
+ * The names of supported commands.
+ *
+ * @author Donal Fellows
+ */
 interface CLICommands {
+	/** The fast-data-out download command name. */
 	String GATHER = "gather";
+	/** The SCP-based download command name. */
 	String DOWNLOAD = "download";
+	/** The basic DSE command name. */
 	String DSE = "dse";
+	/** The system DSE command name. */
 	String DSE_SYS = "dse_sys";
+	/** The application DSE command name. */
 	String DSE_APP = "dse_app";
+	/** The application DSE (with fast-data-in) command name. */
 	String DSE_APP_MON = "dse_app_mon";
+	/** The IOBUF-retrieval command name. */
 	String IOBUF = "iobuf";
+	/** The version command name. */
 	String VERSION = "version";
+	/** All the command names. Sorted. */
 	String[] ALL = {
 		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, VERSION
 	};
 
+	/**
+	 * @return A human-readable list of all command names.
+	 */
 	static String list() {
 		StringBuilder sb = new StringBuilder();
 		String sep = "";

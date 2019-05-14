@@ -78,6 +78,12 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
+/**
+ * Implementation of the Data Specification Executor that uses the Fast Data In
+ * protocol to upload the results to a SpiNNaker machine.
+ *
+ * @author Donal Fellows
+ */
 public class FastExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
 	private static final String LOADING_MSG =
@@ -90,7 +96,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
-	/** items of data a SDP packet can hold when SCP header removed */
+	/** Items of data a SDP packet can hold when SCP header removed. */
 	private static final int DATA_PER_FULL_PACKET =
 			SDP_PAYLOAD_WORDS * WORD_SIZE;
 	/*
@@ -98,27 +104,28 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 */
 
 	/**
-	 * offset where data in starts on first command (command, base_address, x&y,
-	 * max_seq_number), in bytes.
+	 * Offset where data in starts on first command (command, base_address,
+	 * x&amp;y, max_seq_number), in bytes.
 	 */
 	private static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 16;
 
 	/**
-	 * offset where data starts after a command id and seq number, in bytes.
+	 * Offset where data starts after a command id and seq number, in bytes.
 	 */
 	private static final int OFFSET_AFTER_COMMAND_AND_SEQUENCE = 8;
 
-	/** size for data to store when first packet with command and address */
+	/** Size for data to store when first packet with command and address. */
 	private static final int DATA_IN_FULL_PACKET_WITH_ADDRESS =
 			DATA_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_ADDRESS;
 
-	/** size for data in to store when not first packet */
+	/** Size for data in to store when not first packet. */
 	private static final int DATA_IN_FULL_PACKET_WITHOUT_ADDRESS =
 			DATA_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_SEQUENCE;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 
-	private static final int MISSING_SEQ_NUMS_END_FLAG = -1;
+	/** Sequence number that marks the end of a sequence number stream. */
+	private static final int MISSING_SEQS_END = -1;
 
 	private final Transceiver txrx;
 	private final Map<ChipLocation, Gather> gathererForChip;
@@ -129,6 +136,21 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private boolean writeReports = false;
 	private File reportPath = null;
 
+	/**
+	 * Create an instance of this class.
+	 *
+	 * @param machine
+	 *            The SpiNNaker machine description.
+	 * @param gatherers
+	 *            The description of where the gatherers and monitors are.
+	 * @param reportDir
+	 *            Where to write reports, or <tt>null</tt> if no reports are to
+	 *            be written.
+	 * @throws IOException
+	 *             If IO goes wrong.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
 		super(machine);
@@ -168,6 +190,22 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
+	/**
+	 * Execute all application data specifications that a particular connection
+	 * knows about, storing back in the database the information collected about
+	 * those executions. Data is transferred using the Fast Data In protocol.
+	 *
+	 * @param connection
+	 *            The handle to the database.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws DataSpecificationException
+	 *             If a data specification in the database is invalid.
+	 */
 	public void loadCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
@@ -221,6 +259,23 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				new FileOutputStream(file, append), UTF_8)));
 	}
 
+	/**
+	 * Writes (part of) the report describing what data transfer rates were
+	 * achieved.
+	 *
+	 * @param core
+	 *            Which core was the data bound for?
+	 * @param timeDiff
+	 *            How long did the transfer take, in milliseconds.
+	 * @param size
+	 *            How many bytes were transferred?
+	 * @param baseAddress
+	 *            Where were the bytes written to?
+	 * @param missingNumbers
+	 *            What were the missing sequence numbers at each stage.
+	 * @throws IOException
+	 *             If IO fails.
+	 */
 	public synchronized void writeReport(HasCoreLocation core, long timeDiff,
 			int size, int baseAddress, List<?> missingNumbers)
 			throws IOException {
@@ -261,7 +316,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				new LinkedList<>();
 		private BoardLocal logContext;
 
-		public BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
@@ -352,7 +407,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * Writes the header section.
 		 *
 		 * @param core
-		 *            Which core to write to.
+		 *            Which core to write to. Does not need to refer to a
+		 *            monitor core.
 		 * @param executor
 		 *            The executor which generates the header.
 		 * @param startAddress
@@ -383,7 +439,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * this method has work to do.
 		 *
 		 * @param core
-		 *            Which core to write to.
+		 *            Which core to write to. Does not need to refer to a
+		 *            monitor core.
 		 * @param region
 		 *            The region to write.
 		 * @param baseAddress
@@ -401,7 +458,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			data.flip();
 			int written = data.remaining();
 			long start = System.currentTimeMillis();
-			if (data.remaining() < DATA_IN_FULL_PACKET_WITH_ADDRESS || core
+			if (written < DATA_IN_FULL_PACKET_WITH_ADDRESS || core
 					.onSameChipAs(gathererForChip.get(core.asChipLocation()))) {
 				/*
 				 * Faster to use SCP to SCAMP when on the ethernet chip or when
@@ -435,9 +492,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @param core
 		 *            Where the data is going to.
 		 * @param baseAddress
+		 *            Whether the data will be written.
 		 * @param data
+		 *            The data to be written.
 		 * @throws IOException
+		 *             If IO fails.
 		 * @throws InterruptedException
+		 *             If the thread is interrupted. (Unlikely.)
 		 */
 		private void fastWrite(CoreLocation core, int baseAddress,
 				ByteBuffer data) throws IOException, InterruptedException {
@@ -449,7 +510,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			outerLoop: while (true) {
 				// Do the initial blast of data
-				sendInitialPackets(core, baseAddress, data, protocol);
+				sendInitialPackets(baseAddress, data, protocol);
 
 				// Wait for confirmation and do required retransmits
 				while (true) {
@@ -498,7 +559,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 						if ((haveMissing && remainingMissingPackets <= 0)
 								|| (!seqNums.isEmpty() && seqNums
-										.peekLast() == MISSING_SEQ_NUMS_END_FLAG)) {
+										.peekLast() == MISSING_SEQS_END)) {
 							retransmitMissingPackets(protocol, data, seqNums);
 							resetState = true;
 						}
@@ -534,15 +595,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
-		private void sendInitialPackets(CoreLocation core, int baseAddress,
-				ByteBuffer data, GathererProtocol protocol)
+		private void sendInitialPackets(int baseAddress, ByteBuffer data,
+				GathererProtocol protocol)
 				throws IOException, InterruptedException {
 			int numPackets = ceildiv(
 					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
 					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
 			ByteBuffer duplicate = data.asReadOnlyBuffer();
-			connection.send(protocol.dataToLocation(core, baseAddress,
-					duplicate, numPackets));
+			connection.send(protocol.dataToLocation(baseAddress, duplicate,
+					numPackets));
 			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
 				connection.send(protocol.seqData(duplicate, seqNum));
 			}
@@ -553,7 +614,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				ByteBuffer dataToSend, List<Integer> missingSeqNums)
 				throws IOException, InterruptedException {
 			for (int seqNum : missingSeqNums) {
-				if (seqNum == MISSING_SEQ_NUMS_END_FLAG) {
+				if (seqNum == MISSING_SEQS_END) {
 					continue;
 				}
 				connection.send(protocol.seqData(dataToSend, seqNum));
@@ -565,12 +626,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** Manufactures Fast Data In protocol messages. */
 	class GathererProtocol {
 		private final HasCoreLocation gathererCore;
-		private final HasChipLocation boardRoot;
+		private final HasChipLocation monitorCore;
 
 		GathererProtocol(HasChipLocation chip) {
 			ChipLocation chipLoc = chip.asChipLocation();
 			gathererCore = gathererForChip.get(chipLoc);
-			boardRoot = monitorForChip.get(chipLoc);
+			monitorCore = monitorForChip.get(chipLoc);
 		}
 
 		private SDPHeader header() {
@@ -578,9 +639,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					SDPPort.GATHERER_DATA_SPEED_UP.value);
 		}
 
-		SDPMessage dataToLocation(HasChipLocation core, int baseAddress,
-				ByteBuffer data, int numPackets) {
-			ChipLocation boardDestination = calculateFakeChipID(core);
+		/**
+		 * @param baseAddress
+		 *            Where the data is to be written.
+		 * @param data
+		 *            The overall data to be transmitted.
+		 * @param numPackets
+		 *            How many SDP packets will be sent.
+		 * @return The message indicating the start of the data.
+		 */
+		SDPMessage dataToLocation(int baseAddress, ByteBuffer data,
+				int numPackets) {
+			HasChipLocation boardDestination = calculateFakeChipID(monitorCore);
 
 			ByteBuffer payload =
 					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
@@ -596,6 +666,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return new SDPMessage(header(), payload);
 		}
 
+		/**
+		 * @param data
+		 *            The overall data to be transmitted.
+		 * @param seqNum
+		 *            The sequence number of this chunk.
+		 * @return The message containing a chunk of the data.
+		 */
 		SDPMessage seqData(ByteBuffer data, int seqNum) {
 			ByteBuffer payload =
 					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
@@ -626,6 +703,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
 		}
 
+		/**
+		 * @return The message indicating the end of the data.
+		 */
 		SDPMessage lastDataIn() {
 			ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 			payload.putInt(SEND_LAST_DATA_IN.value);
@@ -642,11 +722,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *         machine
 		 */
 		private ChipLocation calculateFakeChipID(HasChipLocation chip) {
-			int fakeX = chip.getX() - boardRoot.getX();
+			int fakeX = chip.getX() - gathererCore.getX();
 			if (fakeX < 0) {
 				fakeX += machine.maxChipX() + 1;
 			}
-			int fakeY = chip.getY() - boardRoot.getY();
+			int fakeY = chip.getY() - gathererCore.getY();
 			if (fakeY < 0) {
 				fakeY += machine.maxChipY() + 1;
 			}

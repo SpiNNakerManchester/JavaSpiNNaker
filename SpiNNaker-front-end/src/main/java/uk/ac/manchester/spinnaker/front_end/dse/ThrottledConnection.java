@@ -31,9 +31,17 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 
-class ThrottledConnection implements Closeable {
-	private static final int TIMEOUT_SECONDS = 1000;
-	private static final int THROTTLE_NS = 1000;
+/**
+ * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
+ * that this does not bother to implement the full connection API.
+ *
+ * @author Donal Fellows
+ */
+public class ThrottledConnection implements Closeable {
+	/** The minimum interval between messages, in <em>nanoseconds</em>. */
+	public static final int THROTTLE_NS = 1000;
+	/** The {@link #receive()} timeout, in milliseconds. */
+	private static final int TIMEOUT_MS = 1000;
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1;
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
 
@@ -42,14 +50,31 @@ class ThrottledConnection implements Closeable {
 	private SCPConnection connection;
 	private long lastSend;
 
-	ThrottledConnection(Ethernet board) throws IOException {
+	/**
+	 * Create a throttled connection for talking to a board.
+	 *
+	 * @param board
+	 *            The board to talk to.
+	 * @throws IOException
+	 *             If IO fails.
+	 */
+	public ThrottledConnection(Ethernet board) throws IOException {
 		this.board = board;
 		addr = InetAddress.getByName(board.ethernetAddress);
 		connection = new SCPConnection(board.location, addr, SCP_SCAMP_PORT);
 	}
 
-	ByteBuffer receive() throws SocketTimeoutException, IOException {
-		return connection.receive(TIMEOUT_SECONDS);
+	/**
+	 * Get a message from the connection.
+	 *
+	 * @return The content of the message.
+	 * @throws SocketTimeoutException
+	 *             If no message is received by the timeout.
+	 * @throws IOException
+	 *             If IO fails.
+	 */
+	public ByteBuffer receive() throws SocketTimeoutException, IOException {
+		return connection.receive(TIMEOUT_MS);
 	}
 
 	private static final byte[] INADDR_ANY = new byte[] {
@@ -57,7 +82,18 @@ class ThrottledConnection implements Closeable {
 	};
 	private static final int ANY_PORT = 0;
 
-	void reprogramTag(IPTag iptag)
+	/**
+	 * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
+	 * up to the caller to ensure that the tag is allocated in the first place.
+	 *
+	 * @param iptag
+	 *            The tag to reprogram.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws UnexpectedResponseCodeException
+	 *             If a weird message is received.
+	 */
+	public void reprogramTag(IPTag iptag)
 			throws IOException, UnexpectedResponseCodeException {
 		IPTagSet tagSet = new IPTagSet(board.location, INADDR_ANY, ANY_PORT,
 				iptag.getTag(), true, true);
@@ -88,7 +124,7 @@ class ThrottledConnection implements Closeable {
 	 * Shut down and reopen the connection. It sometimes unsticks things
 	 * apparently.
 	 */
-	void restart() throws IOException {
+	public void restart() throws IOException {
 		InetAddress localAddr = connection.getLocalIPAddress();
 		int localPort = connection.getLocalPort();
 		connection.close();
@@ -96,16 +132,27 @@ class ThrottledConnection implements Closeable {
 				addr, SCP_SCAMP_PORT);
 	}
 
-	/** Throttled send. */
-	void send(SDPMessage message) throws IOException, InterruptedException {
+	/**
+	 * Throttled send.
+	 *
+	 * @param message
+	 *            The message to send.
+	 */
+	public void send(SDPMessage message)
+			throws IOException, InterruptedException {
 		long waited = System.nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
 			while (System.nanoTime() - lastSend < THROTTLE_NS) {
+				doNothing();
 			}
 		}
 		connection.sendSDPMessage(message);
 		lastSend = System.nanoTime();
+	}
+
+	private static void doNothing() {
+		// Do nothing
 	}
 
 	@Override
