@@ -466,11 +466,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				 */
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
-				try {
-					fastWrite(core, baseAddress, data);
-				} catch (InterruptedException e) {
-					throw new ProcessException(core, e);
-				}
+				fastWrite(core, baseAddress, data);
 			}
 			long end = System.currentTimeMillis();
 			if (writeReports) {
@@ -497,11 +493,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The data to be written.
 		 * @throws IOException
 		 *             If IO fails.
-		 * @throws InterruptedException
-		 *             If the thread is interrupted. (Unlikely.)
 		 */
 		private void fastWrite(CoreLocation core, int baseAddress,
-				ByteBuffer data) throws IOException, InterruptedException {
+				ByteBuffer data) throws IOException {
 			boolean haveMissing = false;
 			int remainingMissingPackets = 0;
 			int timeoutCount = 0;
@@ -596,8 +590,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		private void sendInitialPackets(int baseAddress, ByteBuffer data,
-				GathererProtocol protocol)
-				throws IOException, InterruptedException {
+				GathererProtocol protocol) throws IOException {
 			int numPackets = ceildiv(
 					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
 					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
@@ -612,7 +605,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
 				ByteBuffer dataToSend, List<Integer> missingSeqNums)
-				throws IOException, InterruptedException {
+				throws IOException {
 			for (int seqNum : missingSeqNums) {
 				if (seqNum == MISSING_SEQS_END) {
 					continue;

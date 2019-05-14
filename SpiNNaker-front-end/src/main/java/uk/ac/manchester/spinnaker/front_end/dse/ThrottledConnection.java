@@ -123,6 +123,9 @@ public class ThrottledConnection implements Closeable {
 	/**
 	 * Shut down and reopen the connection. It sometimes unsticks things
 	 * apparently.
+	 *
+	 * @throws IOException
+	 *             If IO fails
 	 */
 	public void restart() throws IOException {
 		InetAddress localAddr = connection.getLocalIPAddress();
@@ -137,9 +140,10 @@ public class ThrottledConnection implements Closeable {
 	 *
 	 * @param message
 	 *            The message to send.
+	 * @throws IOException
+	 *             If IO fails.
 	 */
-	public void send(SDPMessage message)
-			throws IOException, InterruptedException {
+	public void send(SDPMessage message) throws IOException {
 		long waited = System.nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
