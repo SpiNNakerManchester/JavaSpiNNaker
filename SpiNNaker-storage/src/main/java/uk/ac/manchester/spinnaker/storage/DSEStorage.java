@@ -65,7 +65,7 @@ public interface DSEStorage extends DatabaseAPI {
 	 * @param ethernet
 	 *            The ethernet we're loading onto.
 	 * @param loadSystemCores
-	 *            If <tt>true</tt>, just list system cores. If <tt>false</tt>,
+	 *            If {@code true}, just list system cores. If {@code false},
 	 *            just list application (non-system) cores.
 	 * @return The list of actions.
 	 * @throws StorageException

@@ -144,7 +144,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * @param gatherers
 	 *            The description of where the gatherers and monitors are.
 	 * @param reportDir
-	 *            Where to write reports, or <tt>null</tt> if no reports are to
+	 *            Where to write reports, or {@code null} if no reports are to
 	 *            be written.
 	 * @throws IOException
 	 *             If IO goes wrong.

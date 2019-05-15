@@ -223,9 +223,9 @@ public final class CommandLineInterface {
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
 	 * @param filterSystemCores
-	 *            If <tt>true</tt>, only run the DSE for application vertices.
-	 *            If <tt>false</tt>, only run the DSE for system vertices. If
-	 *            <tt>null</tt>, run the DSE for all vertices.
+	 *            If {@code true}, only run the DSE for application vertices.
+	 *            If {@code false}, only run the DSE for system vertices. If
+	 *            {@code null}, run the DSE for all vertices.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -272,7 +272,7 @@ public final class CommandLineInterface {
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
 	 * @param reportFolder
-	 *            Name of directory containing reports. If <tt>null</tt>, no
+	 *            Name of directory containing reports. If {@code null}, no
 	 *            report will be written.
 	 * @throws IOException
 	 *             If the communications fail.

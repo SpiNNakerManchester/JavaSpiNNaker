@@ -35,7 +35,7 @@ public enum FastDataInCommandID {
 	RECEIVE_FIRST_MISSING_SEQ_DATA_IN(2003),
 	/**
 	 * Gatherer to host: here are more missing sequence numbers. Sequence number
-	 * <tt>-1</tt> marks the end.
+	 * {@code -1} marks the end.
 	 */
 	RECEIVE_MISSING_SEQ_DATA_IN(2004),
 	/** Gatherer to host: all present and correct. */
@@ -54,7 +54,7 @@ public enum FastDataInCommandID {
 	 *
 	 * @param value
 	 *            The protocol ID
-	 * @return The matching constant, or <tt>null</tt> if the value is
+	 * @return The matching constant, or {@code null} if the value is
 	 *         unrecognised.
 	 */
 	public static FastDataInCommandID forValue(int value) {
