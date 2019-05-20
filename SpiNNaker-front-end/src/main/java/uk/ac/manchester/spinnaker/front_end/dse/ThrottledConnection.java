@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.util.Collections.emptySet;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.Closeable;
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -38,8 +42,9 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
  * @author Donal Fellows
  */
 public class ThrottledConnection implements Closeable {
+	private static final Logger log = getLogger(ThrottledConnection.class);
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final int THROTTLE_NS = 1000;
+	public static final int THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1;
@@ -95,8 +100,11 @@ public class ThrottledConnection implements Closeable {
 	 */
 	public void reprogramTag(IPTag iptag)
 			throws IOException, UnexpectedResponseCodeException {
+		log.debug("reprogramming tag {} to point to {}:{}", iptag.getTag(),
+				connection.getLocalIPAddress(), connection.getLocalPort());
 		IPTagSet tagSet = new IPTagSet(board.location, INADDR_ANY, ANY_PORT,
 				iptag.getTag(), true, true);
+		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
 		ByteBuffer data = connection.getSCPData(tagSet);
 		SocketTimeoutException e = null;
 		for (int i = 0; i < IPTAG_REPROGRAM_ATTEMPTS; i++) {
@@ -128,6 +136,7 @@ public class ThrottledConnection implements Closeable {
 	 *             If IO fails
 	 */
 	public void restart() throws IOException {
+		log.info("restarting UDP connection");
 		InetAddress localAddr = connection.getLocalIPAddress();
 		int localPort = connection.getLocalPort();
 		connection.close();
@@ -144,6 +153,7 @@ public class ThrottledConnection implements Closeable {
 	 *             If IO fails.
 	 */
 	public void send(SDPMessage message) throws IOException {
+		log.debug("about to send {} bytes", message.getData().remaining());
 		long waited = System.nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -299,7 +300,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			mbs = String.format("%f", megabits / timeTaken);
 		}
 		try (PrintWriter w = open(reportPath, true)) {
-			w.printf("%d\t\t %d\t\t %#08x\t\t %u\t\t\t\t %f\t\t\t %s\t\t %s\n",
+			w.printf("%d\t\t %d\t\t %#08x\t\t %d\t\t\t\t %f\t\t\t %s\t\t %s\n",
 					core.getX(), core.getY(),
 					Integer.toUnsignedLong(baseAddress),
 					Integer.toUnsignedLong(size), timeTaken, mbs,
@@ -367,6 +368,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int size = executor.getConstructedDataSize();
+				log.info("generated {} bytes to load onto {}", size, ctl.core);
 				int start = malloc(ctl, size);
 				int written = writeHeader(ctl.core, executor, start);
 
@@ -594,24 +596,30 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int numPackets = ceildiv(
 					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
 					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
-			ByteBuffer duplicate = data.asReadOnlyBuffer();
-			connection.send(protocol.dataToLocation(baseAddress, duplicate,
-					numPackets));
-			for (int seqNum = 1; seqNum <= numPackets; seqNum++) {
-				connection.send(protocol.seqData(duplicate, seqNum));
+			log.info("sending {} packets", numPackets);
+			log.debug("sending packet #{}", 0);
+			connection.send(
+					protocol.dataToLocation(baseAddress, data, numPackets));
+			for (int seqNum = 1; seqNum < numPackets; seqNum++) {
+				log.debug("sending packet #{}", seqNum);
+				connection.send(protocol.seqData(data, seqNum));
 			}
+			log.debug("sending terminating packet");
 			connection.send(protocol.lastDataIn());
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
 				ByteBuffer dataToSend, List<Integer> missingSeqNums)
 				throws IOException {
+			log.info("retransmitting {} packets", missingSeqNums.size());
 			for (int seqNum : missingSeqNums) {
 				if (seqNum == MISSING_SEQS_END) {
 					continue;
 				}
+				log.debug("resending packet #{}", seqNum);
 				connection.send(protocol.seqData(dataToSend, seqNum));
 			}
+			log.debug("sending terminating packet");
 			connection.send(protocol.lastDataIn());
 		}
 	}
@@ -651,11 +659,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			payload.putInt(baseAddress);
 			payload.putShort((short) boardDestination.getY());
 			payload.putShort((short) boardDestination.getX());
-			payload.putInt(numPackets);
-			while (payload.hasRemaining() && data.hasRemaining()) {
-				payload.put(data.get());
-			}
-			payload.flip();
+			payload.putInt(numPackets - 1);
+			putBuffer(data, 0, payload);
 			return new SDPMessage(header(), payload);
 		}
 
@@ -679,13 +684,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 			payload.putInt(SEND_SEQ_DATA.value);
 			payload.putInt(seqNum);
-			ByteBuffer dupe = data.duplicate();
-			dupe.position(position);
-			while (payload.hasRemaining() && dupe.hasRemaining()) {
-				payload.put(dupe.get());
-			}
-			payload.flip();
+			putBuffer(data, position, payload);
 			return new SDPMessage(header(), payload);
+		}
+
+		private int putBuffer(ByteBuffer data, int position,
+				ByteBuffer payload) {
+			ByteBuffer tmp = data.asReadOnlyBuffer();
+			tmp.position(position);
+			ByteBuffer slice = tmp.slice();
+			slice.limit(min(slice.limit(), payload.remaining()));
+			payload.put(slice).flip();
+			return slice.position();
 		}
 
 		private int calculatePositionFromSequenceNumber(int seqNum) {
