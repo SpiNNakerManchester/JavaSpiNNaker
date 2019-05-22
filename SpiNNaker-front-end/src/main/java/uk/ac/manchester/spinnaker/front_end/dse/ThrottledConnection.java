@@ -109,7 +109,7 @@ public class ThrottledConnection implements Closeable {
 		SocketTimeoutException e = null;
 		for (int i = 0; i < IPTAG_REPROGRAM_ATTEMPTS; i++) {
 			try {
-				connection.send(data);
+				connection.send(data.duplicate());
 				lastSend = System.nanoTime();
 				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
 						.parsePayload(tagSet);
