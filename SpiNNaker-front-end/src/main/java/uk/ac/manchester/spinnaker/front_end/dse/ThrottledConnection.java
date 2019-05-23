@@ -19,12 +19,15 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static java.util.Collections.emptySet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 
@@ -154,6 +157,13 @@ public class ThrottledConnection implements Closeable {
 	 */
 	public void send(SDPMessage message) throws IOException {
 		log.debug("about to send {} bytes", message.getData().remaining());
+		if (log.isDebugEnabled()) {
+			ByteBuffer payload = message.getData();
+			log.debug("message payload data: {}",
+					IntStream.range(0, payload.remaining())
+							.mapToObj(i -> hexbyte(payload.get(i)))
+							.collect(Collectors.toList()));
+		}
 		long waited = System.nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832

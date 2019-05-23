@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -49,6 +50,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	private ReinjectionStatus lastStatus;
 	private final CoreSubsets monitorCores;
 	private final Transceiver txrx;
+	private final ChipLocation firstChip;
 
 	/**
 	 * Standard short timeout for emergency routing.
@@ -77,7 +79,9 @@ public class NoDropPacketContext implements AutoCloseable {
 		// Store the last reinjection status for resetting
 		// NOTE: This assumes the status is the same on all cores
 		CoreLocation firstCore = monitorCores.iterator().next();
+		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
+		log.info("switching board at {} to non-drop mode", firstChip);
 		// Set to not inject dropped packets
 		txrx.setReinjection(monitorCores, false);
 		// Clear any outstanding packets from reinjection
@@ -151,6 +155,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 */
 	@Override
 	public void close() throws IOException, ProcessException {
+		log.info("switching board at {} to standard mode", firstChip);
 		// Set the routers to temporary values so we can use SDP
 		txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
 		txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
@@ -161,6 +166,7 @@ public class NoDropPacketContext implements AutoCloseable {
 			txrx.setReinjectionEmergencyTimeout(monitorCores,
 					lastStatus.getEmergencyTimeout());
 			txrx.setReinjection(monitorCores, lastStatus);
+			log.info("switched board at {} to standard mode", firstChip);
 			return;
 		} catch (Exception e) {
 			log.error("error resetting router timeouts", e);

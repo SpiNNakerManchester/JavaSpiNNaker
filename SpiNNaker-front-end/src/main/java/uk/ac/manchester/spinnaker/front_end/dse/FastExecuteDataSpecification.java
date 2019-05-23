@@ -98,11 +98,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final int ONE_KI = 1024;
 
 	/** Items of data a SDP packet can hold when SCP header removed. */
-	private static final int DATA_PER_FULL_PACKET =
+	private static final int BYTES_PER_FULL_PACKET =
 			SDP_PAYLOAD_WORDS * WORD_SIZE;
-	/*
-	 * 272 bytes as removed SCP header
-	 */
+	// 272 bytes as removed SCP header
 
 	/**
 	 * Offset where data in starts on first command (command, base_address,
@@ -117,11 +115,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	/** Size for data to store when first packet with command and address. */
 	private static final int DATA_IN_FULL_PACKET_WITH_ADDRESS =
-			DATA_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_ADDRESS;
+			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_ADDRESS;
 
 	/** Size for data in to store when not first packet. */
 	private static final int DATA_IN_FULL_PACKET_WITHOUT_ADDRESS =
-			DATA_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_SEQUENCE;
+			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_SEQUENCE;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 
@@ -264,10 +262,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * Writes (part of) the report describing what data transfer rates were
 	 * achieved.
 	 *
-	 * @param core
-	 *            Which core was the data bound for?
+	 * @param chip
+	 *            Which chip was the data bound for?
 	 * @param timeDiff
-	 *            How long did the transfer take, in milliseconds.
+	 *            How long did the transfer take, in nanoseconds.
 	 * @param size
 	 *            How many bytes were transferred?
 	 * @param baseAddress
@@ -277,7 +275,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * @throws IOException
 	 *             If IO fails.
 	 */
-	public synchronized void writeReport(HasCoreLocation core, long timeDiff,
+	public synchronized void writeReport(HasChipLocation chip, long timeDiff,
 			int size, int baseAddress, List<?> missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
@@ -291,7 +289,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
-		float timeTaken = timeDiff / (float) UnitConstants.MSEC_PER_SEC;
+		float timeTaken = timeDiff / (float) UnitConstants.NSEC_PER_SEC;
 		float megabits = (size * (long) NBBY) / (float) (ONE_KI * ONE_KI);
 		String mbs;
 		if (timeDiff == 0) {
@@ -301,7 +299,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 		try (PrintWriter w = open(reportPath, true)) {
 			w.printf("%d\t\t %d\t\t %#08x\t\t %d\t\t\t\t %f\t\t\t %s\t\t %s\n",
-					core.getX(), core.getY(),
+					chip.getX(), chip.getY(),
 					Integer.toUnsignedLong(baseAddress),
 					Integer.toUnsignedLong(size), timeTaken, mbs,
 					missingNumbers);
@@ -309,12 +307,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	private class BoardWorker implements AutoCloseable {
+		/**
+		 * We don't report writes below this size because they add a lot of
+		 * noise and very little information.
+		 */
+		private static final int VERY_SMALL_WRITE_THRESHOLD = 256;//64;
 		private Ethernet board;
 		private DSEStorage storage;
 		private Progress bar;
 		private ThrottledConnection connection;
-		private LinkedList<LinkedList<Integer>> missingSequenceNumbers =
-				new LinkedList<>();
+		private LinkedList<LinkedList<Integer>> missingSequenceNumbers;
 		private BoardLocal logContext;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
@@ -459,22 +461,20 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			data.flip();
 			int written = data.remaining();
-			long start = System.currentTimeMillis();
-			if (written < DATA_IN_FULL_PACKET_WITH_ADDRESS || core
-					.onSameChipAs(gathererForChip.get(core.asChipLocation()))) {
-				/*
-				 * Faster to use SCP to SCAMP when on the ethernet chip or when
-				 * the data is "small".
-				 */
+			long start = System.nanoTime();
+			missingSequenceNumbers = new LinkedList<>();
+			if (written < VERY_SMALL_WRITE_THRESHOLD) {
+				// Faster to use SCP to SCAMP when the data is "small".
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
 				fastWrite(core, baseAddress, data);
 			}
-			long end = System.currentTimeMillis();
-			if (writeReports) {
+			long end = System.nanoTime();
+			if (writeReports && written >= VERY_SMALL_WRITE_THRESHOLD) {
 				writeReport(core, end - start, data.limit(), baseAddress,
 						missingSequenceNumbers);
 			}
+			missingSequenceNumbers = null;
 			return written;
 		}
 
@@ -506,12 +506,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			outerLoop: while (true) {
 				// Do the initial blast of data
-				sendInitialPackets(baseAddress, data, protocol);
+				int expectedMax = sendInitialPackets(baseAddress, data, protocol);
 
 				// Wait for confirmation and do required retransmits
 				while (true) {
-					// Whether to do a reset of our internal state
-					boolean resetState = false;
 					try {
 						ByteBuffer received = connection.receive();
 						timeoutCount = 0; // Reset the timeout counter
@@ -525,10 +523,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 						case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
 							remainingMissingPackets = received.getInt();
+							log.info(
+									"expecting {} packets of missing sequence"
+											+ " numbers",
+									remainingMissingPackets);
 							haveMissing = true;
 							break;
 						case RECEIVE_MISSING_SEQ_DATA_IN:
 							remainingMissingPackets--;
+							log.info(
+									"another packet of missing sequence "
+											+ "numbers; {} left to go",
+									remainingMissingPackets);
 							if (remainingMissingPackets < 0) {
 								log.warn("crazy number of missing packets: {}",
 										remainingMissingPackets);
@@ -547,56 +553,63 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						 */
 
 						if (seqNums == null) {
-							seqNums = new LinkedList<>();
-							missingSequenceNumbers.addLast(seqNums);
+							seqNums = newSequenceNumberCollector();
 						}
+						log.info("adding {} missed packets",
+								received.remaining() / WORD_SIZE);
 						while (received.hasRemaining()) {
-							seqNums.add(received.getInt());
+							int num = received.getInt();
+							seqNums.add(num);
+							if (num == MISSING_SEQS_END) {
+								break;
+							}
+							if (num < 0 || num > expectedMax) {
+								log.warn(
+										"crazy expected sequence number {}; "
+												+ "expected max is {}",
+										num, expectedMax);
+							}
 						}
 						if ((haveMissing && remainingMissingPackets <= 0)
 								|| (!seqNums.isEmpty() && seqNums
 										.peekLast() == MISSING_SEQS_END)) {
 							retransmitMissingPackets(protocol, data, seqNums);
-							resetState = true;
+							seqNums = null;
+							remainingMissingPackets = 0;
+							haveMissing = false;
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
 							throw e;
 						}
-						connection.restart();
-						if (seqNums == null) {
-							/*
-							 * Nothing received since last timeout, so we're
-							 * going to try to send our last message batch
-							 * again.
-							 */
-							if (missingSequenceNumbers.isEmpty()) {
-								/*
-								 * Timeout when waiting for first reply! Have to
-								 * completely restart.
-								 */
-								continue outerLoop;
-							}
-							seqNums = missingSequenceNumbers.peekLast();
-						}
-						retransmitMissingPackets(protocol, data, seqNums);
-						resetState = true;
-					}
-					if (resetState) {
-						seqNums = null;
+						//log.info("timeout; restarting socket");
+						//connection.restart();
 						remainingMissingPackets = 0;
 						haveMissing = false;
+						if (seqNums == null) {
+							log.info("resending initial packets");
+							continue outerLoop;
+						}
+						retransmitMissingPackets(protocol, data, seqNums);
+						seqNums = null;
 					}
 				}
 			}
 		}
 
-		private void sendInitialPackets(int baseAddress, ByteBuffer data,
+		private LinkedList<Integer> newSequenceNumberCollector() {
+			LinkedList<Integer> seqNums = new LinkedList<>();
+			missingSequenceNumbers.addLast(seqNums);
+			return seqNums;
+		}
+
+		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol) throws IOException {
 			int numPackets = ceildiv(
 					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
 					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
-			log.info("sending {} packets", numPackets);
+			log.info("streaming {} bytes in {} packets", data.remaining(),
+					numPackets);
 			log.debug("sending packet #{}", 0);
 			connection.send(
 					protocol.dataToLocation(baseAddress, data, numPackets));
@@ -606,6 +619,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 			log.debug("sending terminating packet");
 			connection.send(protocol.lastDataIn());
+			return numPackets;
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
@@ -654,7 +668,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			HasChipLocation boardDestination = calculateFakeChipID(monitorCore);
 
 			ByteBuffer payload =
-					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+					allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 			payload.putInt(SEND_DATA_TO_LOCATION.value);
 			payload.putInt(baseAddress);
 			payload.putShort((short) boardDestination.getY());
@@ -673,7 +687,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 */
 		SDPMessage seqData(ByteBuffer data, int seqNum) {
 			ByteBuffer payload =
-					allocate(DATA_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+					allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 			int position = calculatePositionFromSequenceNumber(seqNum);
 			if (position >= data.limit()) {
 				throw new RuntimeException(
