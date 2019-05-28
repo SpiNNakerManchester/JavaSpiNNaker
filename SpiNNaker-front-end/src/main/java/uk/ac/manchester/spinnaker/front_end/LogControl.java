@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataGatherer;
 public abstract class LogControl {
 	private static final String LOG_FILE = "jspin.log";
 	private static final String LOGGER_NAME = "tofile";
-	private static final String GATHER_LOGGER_NAME = "gatherlog";
+	private static final String PARALLEL_LOGGER_NAME = "parallog";
 	private static final String LOGGING_LEVEL_NAME = "logging.level";
 	private static final String UDP_LOGGING = "logging.udp";
 
@@ -61,7 +61,7 @@ public abstract class LogControl {
 		a.activateOptions();
 
 		a = (FileAppender) Logger.getLogger(DataGatherer.class)
-				.getAppender(GATHER_LOGGER_NAME);
+				.getAppender(PARALLEL_LOGGER_NAME);
 		if (System.getProperty(LOGGING_LEVEL_NAME) == null) {
 			a.setThreshold(Level.INFO);
 		}

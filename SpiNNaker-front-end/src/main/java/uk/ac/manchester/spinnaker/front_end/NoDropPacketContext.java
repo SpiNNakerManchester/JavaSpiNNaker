@@ -57,8 +57,6 @@ public class NoDropPacketContext implements AutoCloseable {
 	 */
 	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
 
-	private static final RouterTimeout TEMP_TIMEOUT = new RouterTimeout(15, 4);
-
 	/**
 	 * Create a no-drop-packets context.
 	 *
@@ -81,7 +79,8 @@ public class NoDropPacketContext implements AutoCloseable {
 		CoreLocation firstCore = monitorCores.iterator().next();
 		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
-		log.info("switching board at {} to non-drop mode", firstChip);
+		log.info("switching board at {} to non-drop mode (saved status: {})",
+				firstChip, lastStatus);
 		// Set to not inject dropped packets
 		txrx.setReinjection(monitorCores, false);
 		// Clear any outstanding packets from reinjection
@@ -156,15 +155,14 @@ public class NoDropPacketContext implements AutoCloseable {
 	@Override
 	public void close() throws IOException, ProcessException {
 		log.info("switching board at {} to standard mode", firstChip);
-		// Set the routers to temporary values so we can use SDP
-		txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
-		txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
+		//// Set the routers to temporary values so we can use SDP
+		// txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
+		// txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
 
 		try {
 			// Do the real reset
-			txrx.setReinjectionTimeout(monitorCores, lastStatus.getTimeout());
-			txrx.setReinjectionEmergencyTimeout(monitorCores,
-					lastStatus.getEmergencyTimeout());
+			txrx.setReinjectionTimeout(monitorCores, lastStatus);
+			txrx.setReinjectionEmergencyTimeout(monitorCores, lastStatus);
 			txrx.setReinjection(monitorCores, lastStatus);
 			log.info("switched board at {} to standard mode", firstChip);
 			return;

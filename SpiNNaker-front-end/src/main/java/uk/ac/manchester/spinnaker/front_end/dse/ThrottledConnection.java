@@ -168,15 +168,11 @@ public class ThrottledConnection implements Closeable {
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
 			while (System.nanoTime() - lastSend < THROTTLE_NS) {
-				doNothing();
+				Thread.yield();
 			}
 		}
 		connection.sendSDPMessage(message);
 		lastSend = System.nanoTime();
-	}
-
-	private static void doNothing() {
-		// Do nothing
 	}
 
 	@Override

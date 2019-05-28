@@ -16,11 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static difflib.DiffUtils.diff;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
@@ -42,6 +45,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +54,11 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import difflib.ChangeDelta;
+import difflib.Chunk;
+import difflib.DeleteDelta;
+import difflib.Delta;
+import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
@@ -77,6 +87,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
@@ -87,10 +98,13 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  */
 public class FastExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
-	private static final String LOADING_MSG =
-			"loading data specifications onto SpiNNaker";
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
+	private static final String SPINNAKER_COMPARE_UPLOAD =
+			System.getProperty("spinnaker.compare.upload");
+
+	private static final String LOADING_MSG =
+			"loading data specifications onto SpiNNaker";
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.txt";
@@ -306,12 +320,61 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
+	private static void compareBuffers(ByteBuffer original,
+			ByteBuffer downloaded) {
+		for (int i = 0; i < original.remaining(); i++) {
+			if (original.get(i) != downloaded.get(i)) {
+				log.error("downloaded buffer contents different");
+				for (Delta<Byte> delta : diff(list(original), list(downloaded))
+						.getDeltas()) {
+					if (delta instanceof ChangeDelta) {
+						Chunk<Byte> delete = delta.getOriginal();
+						Chunk<Byte> insert = delta.getRevised();
+						log.warn(
+								"swapped {} bytes (SCP) for {} (gather) "
+										+ "at {}->{}",
+								delete.getLines().size(),
+								insert.getLines().size(), delete.getPosition(),
+								insert.getPosition());
+						log.info("change {} -> {}", describeChunk(delete),
+								describeChunk(insert));
+					} else if (delta instanceof DeleteDelta) {
+						Chunk<Byte> delete = delta.getOriginal();
+						log.warn("gather deleted {} bytes at {}",
+								delete.getLines().size(), delete.getPosition());
+						log.info("delete {}", describeChunk(delete));
+					} else if (delta instanceof InsertDelta) {
+						Chunk<Byte> insert = delta.getRevised();
+						log.warn("gather inserted {} bytes at {}",
+								insert.getLines().size(), insert.getPosition());
+						log.info("insert {}", describeChunk(insert));
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	private static List<Byte> list(ByteBuffer buffer) {
+		List<Byte> l = new ArrayList<>();
+		ByteBuffer b = buffer.asReadOnlyBuffer();
+		while (b.hasRemaining()) {
+			l.add(b.get());
+		}
+		return l;
+	}
+
+	private static List<String> describeChunk(Chunk<Byte> chunk) {
+		return chunk.getLines().stream().map(MathUtils::hexbyte)
+				.collect(toList());
+	}
+
 	private class BoardWorker implements AutoCloseable {
 		/**
 		 * We don't report writes below this size because they add a lot of
 		 * noise and very little information.
 		 */
-		private static final int VERY_SMALL_WRITE_THRESHOLD = 256;//64;
+		private static final int VERY_SMALL_WRITE_THRESHOLD = 256;// 64;
 		private Ethernet board;
 		private DSEStorage storage;
 		private Progress bar;
@@ -377,6 +440,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
 						written += writeRegion(ctl.core, r, r.getRegionBase());
+						if (SPINNAKER_COMPARE_UPLOAD != null) {
+							ByteBuffer readBack =
+									txrx.readMemory(ctl.core, r.getRegionBase(),
+											r.getRegionData().remaining());
+							compareBuffers(r.getRegionData(), readBack);
+						}
 					}
 				}
 
@@ -506,27 +575,39 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			outerLoop: while (true) {
 				// Do the initial blast of data
-				int expectedMax = sendInitialPackets(baseAddress, data, protocol);
+				int expectedMax =
+						sendInitialPackets(baseAddress, data, protocol);
 
 				// Wait for confirmation and do required retransmits
 				while (true) {
 					try {
-						ByteBuffer received = connection.receive();
+						IntBuffer received = connection.receive().slice()
+								.order(LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
 
 						// Decide what to do with the packet
-						switch (FastDataInCommandID
-								.forValue(received.getInt())) {
+						switch (FastDataInCommandID.forValue(received.get())) {
 						case RECEIVE_FINISHED_DATA_IN:
 							// We're done!
 							break outerLoop;
 
 						case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
-							remainingMissingPackets = received.getInt();
+							int pktaddr = received.position();
+							remainingMissingPackets = received.get();
 							log.info(
 									"expecting {} packets of missing sequence"
-											+ " numbers",
-									remainingMissingPackets);
+											+ " numbers (pktaddr={})",
+									remainingMissingPackets, pktaddr);
+							if (remainingMissingPackets > expectedMax) {
+								received.position(0);
+								log.info("data:{}",
+										range(0, received.limit())
+												.map(i -> received.get(i))
+												.boxed().collect(toList()));
+								throw new RuntimeException(
+										"crazy number of missing packets: "
+												+ remainingMissingPackets);
+							}
 							haveMissing = true;
 							break;
 						case RECEIVE_MISSING_SEQ_DATA_IN:
@@ -536,6 +617,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 											+ "numbers; {} left to go",
 									remainingMissingPackets);
 							if (remainingMissingPackets < 0) {
+								log.info("data:{}",
+										range(0, received.limit())
+												.map(i -> received.get(i))
+												.boxed().collect(toList()));
 								log.warn("crazy number of missing packets: {}",
 										remainingMissingPackets);
 							}
@@ -543,7 +628,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						default:
 							throw new RuntimeException(
 									"unexpected response code: "
-											+ received.getInt(0));
+											+ received.get(0));
 						}
 
 						/*
@@ -555,21 +640,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						if (seqNums == null) {
 							seqNums = newSequenceNumberCollector();
 						}
-						log.info("adding {} missed packets",
-								received.remaining() / WORD_SIZE);
-						while (received.hasRemaining()) {
-							int num = received.getInt();
-							seqNums.add(num);
-							if (num == MISSING_SEQS_END) {
-								break;
-							}
-							if (num < 0 || num > expectedMax) {
-								log.warn(
-										"crazy expected sequence number {}; "
-												+ "expected max is {}",
-										num, expectedMax);
-							}
-						}
+						addMissedSeqNums(received, seqNums, expectedMax);
 						if ((haveMissing && remainingMissingPackets <= 0)
 								|| (!seqNums.isEmpty() && seqNums
 										.peekLast() == MISSING_SEQS_END)) {
@@ -582,12 +653,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
 							throw e;
 						}
-						//log.info("timeout; restarting socket");
-						//connection.restart();
+						// log.info("timeout; restarting socket");
+						// connection.restart();
 						remainingMissingPackets = 0;
 						haveMissing = false;
 						if (seqNums == null) {
-							log.info("resending initial packets");
+							log.info("full timeout; resending initial packets");
 							continue outerLoop;
 						}
 						retransmitMissingPackets(protocol, data, seqNums);
@@ -595,6 +666,26 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					}
 				}
 			}
+		}
+
+		private void addMissedSeqNums(IntBuffer received, List<Integer> seqNums,
+				int expectedMax) {
+			int actuallyAdded = 0;
+			String addedEnd = "";
+			while (received.hasRemaining()) {
+				int num = received.get();
+				seqNums.add(num);
+				if (num == MISSING_SEQS_END) {
+					addedEnd = " (and END marker)";
+					break;
+				}
+				actuallyAdded++;
+				if (num < 0 || num > expectedMax) {
+					log.warn("crazy expected sequence number {}; "
+							+ "expected max is {}", num, expectedMax);
+				}
+			}
+			log.info("added {} missed packets{}", actuallyAdded, addedEnd);
 		}
 
 		private LinkedList<Integer> newSequenceNumberCollector() {

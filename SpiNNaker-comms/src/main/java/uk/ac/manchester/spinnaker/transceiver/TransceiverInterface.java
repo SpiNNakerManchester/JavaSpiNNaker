@@ -3831,6 +3831,25 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Set the emergency packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param status
+	 *            The saved core status.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
+			ReinjectionStatus status) throws IOException, ProcessException {
+		setReinjectionEmergencyTimeout(monitorCores,
+				status.getEmergencyTimeout());
+	}
+
+	/**
 	 * Set the packet reinjection timeout.
 	 *
 	 * @param monitorCore
@@ -3900,5 +3919,23 @@ public interface TransceiverInterface {
 	default void setReinjectionTimeout(CoreSubsets monitorCores,
 			RouterTimeout timeout) throws IOException, ProcessException {
 		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+	}
+
+	/**
+	 * Set the packet reinjection timeout.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores.
+	 * @param status
+	 *            The saved core status.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void setReinjectionTimeout(CoreSubsets monitorCores,
+			ReinjectionStatus status) throws IOException, ProcessException {
+		setReinjectionTimeout(monitorCores, status.getTimeout());
 	}
 }
