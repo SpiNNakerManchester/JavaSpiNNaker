@@ -17,8 +17,12 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static difflib.DiffUtils.diff;
+import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
+import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -101,13 +105,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
 	private static final String SPINNAKER_COMPARE_UPLOAD =
-			System.getProperty("spinnaker.compare.upload");
+			getProperty("spinnaker.compare.upload");
 
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 	private static final String IN_REPORT_NAME =
-			"speeds_gained_in_speed_up_process.txt";
+			"speeds_gained_in_speed_up_process.rpt";
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
@@ -120,12 +124,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * Offset where data in starts on first command (command, base_address,
 	 * x&amp;y, max_seq_number), in bytes.
 	 */
-	private static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 16;
+	private static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 4 * WORD_SIZE;
 
 	/**
-	 * Offset where data starts after a command id and seq number, in bytes.
+	 * Offset where data starts after a command ID and seq number, in bytes.
 	 */
-	private static final int OFFSET_AFTER_COMMAND_AND_SEQUENCE = 8;
+	private static final int OFFSET_AFTER_COMMAND_AND_SEQUENCE = 2 * WORD_SIZE;
 
 	/** Size for data to store when first packet with command and address. */
 	private static final int DATA_IN_FULL_PACKET_WITH_ADDRESS =
@@ -139,6 +143,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
+	/**
+	 * The point below which we use SCP anyway.
+	 * <p>
+	 * We also don't report writes below this size because they add a lot of
+	 * noise and very little information.
+	 */
+	private static final int VERY_SMALL_WRITE_THRESHOLD = 256;
 
 	private final Transceiver txrx;
 	private final Map<ChipLocation, Gather> gathererForChip;
@@ -240,13 +251,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
-		try (BoardWorker worker = new BoardWorker(board, storage, bar)) {
+		try (BoardWorker worker = new BoardWorker(board, storage, bar);
+				NoDropPacketContext context = worker.dontDropPackets()) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
-			try (NoDropPacketContext context = worker.dontDropPackets()) {
-				for (CoreToLoad ctl : cores) {
-					log.info("loading data onto {}", ctl.core);
-					worker.loadCore(ctl);
-				}
+			for (CoreToLoad ctl : cores) {
+				log.info("loading data onto {}", ctl.core);
+				worker.loadCore(ctl);
 			}
 		}
 	}
@@ -266,6 +276,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
 	}
 
+	/**
+	 * Opens a file for writing text.
+	 *
+	 * @param file
+	 *            The file to open
+	 * @param append
+	 *            Whether to open in append mode; if {@code false}, the file
+	 *            will be created or overwritten.
+	 * @return The stream to use to do the writing.
+	 * @throws IOException
+	 *             If anything goes wrong with creating or opening the file.
+	 */
 	private static PrintWriter open(File file, boolean append)
 			throws IOException {
 		return new PrintWriter(new BufferedWriter(new OutputStreamWriter(
@@ -313,10 +335,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 		try (PrintWriter w = open(reportPath, true)) {
 			w.printf("%d\t\t %d\t\t %#08x\t\t %d\t\t\t\t %f\t\t\t %s\t\t %s\n",
-					chip.getX(), chip.getY(),
-					Integer.toUnsignedLong(baseAddress),
-					Integer.toUnsignedLong(size), timeTaken, mbs,
-					missingNumbers);
+					chip.getX(), chip.getY(), toUnsignedLong(baseAddress),
+					toUnsignedLong(size), timeTaken, mbs, missingNumbers);
 		}
 	}
 
@@ -369,12 +389,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				.collect(toList());
 	}
 
+	/**
+	 * The worker class that handles a particular board of a SpiNNaker machine.
+	 * Instances of this class are only ever used from a single thread.
+	 *
+	 * @author Donal Fellows
+	 */
 	private class BoardWorker implements AutoCloseable {
-		/**
-		 * We don't report writes below this size because they add a lot of
-		 * noise and very little information.
-		 */
-		private static final int VERY_SMALL_WRITE_THRESHOLD = 256;// 64;
 		private Ethernet board;
 		private DSEStorage storage;
 		private Progress bar;
@@ -530,15 +551,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			data.flip();
 			int written = data.remaining();
-			long start = System.nanoTime();
 			missingSequenceNumbers = new LinkedList<>();
+			long start = nanoTime();
 			if (written < VERY_SMALL_WRITE_THRESHOLD) {
 				// Faster to use SCP to SCAMP when the data is "small".
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
 				fastWrite(core, baseAddress, data);
 			}
-			long end = System.nanoTime();
+			long end = nanoTime();
 			if (writeReports && written >= VERY_SMALL_WRITE_THRESHOLD) {
 				writeReport(core, end - start, data.limit(), baseAddress,
 						missingSequenceNumbers);
@@ -547,6 +568,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return written;
 		}
 
+		/**
+		 * Put the board in don't-drop-packets mode.
+		 *
+		 * @return An object that, when closed, will put the board back in
+		 *         standard mode.
+		 * @throws IOException
+		 *             If anything goes wrong with communication.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 */
 		NoDropPacketContext dontDropPackets()
 				throws IOException, ProcessException {
 			return new NoDropPacketContext(txrx,
@@ -581,8 +612,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Wait for confirmation and do required retransmits
 				while (true) {
 					try {
-						IntBuffer received = connection.receive().slice()
-								.order(LITTLE_ENDIAN).asIntBuffer();
+						IntBuffer received = connection.receive();
 						timeoutCount = 0; // Reset the timeout counter
 
 						// Decide what to do with the packet
@@ -592,43 +622,43 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							break outerLoop;
 
 						case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
-							int pktaddr = received.position();
+							if (!received.hasRemaining()) {
+								throw new BadDataInMessageException(
+										received.get(0), received);
+							}
 							remainingMissingPackets = received.get();
-							log.info(
-									"expecting {} packets of missing sequence"
-											+ " numbers (pktaddr={})",
-									remainingMissingPackets, pktaddr);
 							if (remainingMissingPackets > expectedMax) {
-								received.position(0);
-								log.info("data:{}",
-										range(0, received.limit())
-												.map(i -> received.get(i))
-												.boxed().collect(toList()));
-								throw new RuntimeException(
-										"crazy number of missing packets: "
-												+ remainingMissingPackets);
+								throw new CrazySequenceNumberException(
+										remainingMissingPackets, received);
+							}
+							log.info(
+									"expecting {} packets of missing "
+											+ "sequence numbers",
+									remainingMissingPackets);
+							if (!received.hasRemaining()) {
+								throw new BadDataInMessageException(
+										received.get(0), received);
 							}
 							haveMissing = true;
 							break;
 						case RECEIVE_MISSING_SEQ_DATA_IN:
-							remainingMissingPackets--;
-							log.info(
-									"another packet of missing sequence "
-											+ "numbers; {} left to go",
-									remainingMissingPackets);
-							if (remainingMissingPackets < 0) {
-								log.info("data:{}",
-										range(0, received.limit())
-												.map(i -> received.get(i))
-												.boxed().collect(toList()));
-								log.warn("crazy number of missing packets: {}",
-										remainingMissingPackets);
+							if (!received.hasRemaining()) {
+								throw new BadDataInMessageException(
+										received.get(0), received);
 							}
+							remainingMissingPackets--;
+							if (remainingMissingPackets < 0) {
+								throw new CrazySequenceNumberException(
+										remainingMissingPackets, received);
+							}
+							log.debug(
+									"another packet (#{}) of missing "
+											+ "sequence numbers; {} left",
+									received.get(1), remainingMissingPackets);
 							break;
 						default:
-							throw new RuntimeException(
-									"unexpected response code: "
-											+ received.get(0));
+							throw new BadDataInMessageException(received.get(0),
+									received);
 						}
 
 						/*
@@ -681,11 +711,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				}
 				actuallyAdded++;
 				if (num < 0 || num > expectedMax) {
-					log.warn("crazy expected sequence number {}; "
-							+ "expected max is {}", num, expectedMax);
+					throw new CrazySequenceNumberException(num, received);
 				}
 			}
-			log.info("added {} missed packets{}", actuallyAdded, addedEnd);
+			log.debug("added {} missed packets{}", actuallyAdded, addedEnd);
 		}
 
 		private LinkedList<Integer> newSequenceNumberCollector() {
@@ -729,7 +758,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	/** Manufactures Fast Data In protocol messages. */
+	/**
+	 * Manufactures Fast Data In protocol messages.
+	 *
+	 * @author Donal Fellows
+	 */
 	class GathererProtocol {
 		private final HasCoreLocation gathererCore;
 		private final HasChipLocation monitorCore;
@@ -781,11 +814,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 			int position = calculatePositionFromSequenceNumber(seqNum);
 			if (position >= data.limit()) {
-				throw new RuntimeException(
+				throw new RuntimeException(format(
 						"attempt to write off end of buffer due to "
-								+ "over-large sequence number (" + seqNum
-								+ ") given that only " + data.limit()
-								+ " bytes are to be sent");
+								+ "over-large sequence number (%d) given "
+								+ "that only %d bytes are to be sent",
+						seqNum, toUnsignedLong(data.limit())));
 			}
 			payload.putInt(SEND_SEQ_DATA.value);
 			payload.putInt(seqNum);
@@ -839,6 +872,37 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				fakeY += machine.maxChipY() + 1;
 			}
 			return new ChipLocation(fakeX, fakeY);
+		}
+	}
+
+	/**
+	 * Exception thrown when something mad comes back off SpiNNaker.
+	 *
+	 * @author Donal Fellows
+	 */
+	static class BadDataInMessageException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		BadDataInMessageException(int code, IntBuffer message) {
+			super("unexpected response code: " + toUnsignedLong(code));
+			log.warn("bad message payload: {}", range(0, message.limit())
+					.map(i -> message.get(i)).boxed().collect(toList()));
+		}
+	}
+
+	/**
+	 * Exception thrown when something mad comes back off SpiNNaker.
+	 *
+	 * @author Donal Fellows
+	 */
+	static class CrazySequenceNumberException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		CrazySequenceNumberException(int remaining, IntBuffer message) {
+			super("crazy number of missing packets: "
+					+ toUnsignedLong(remaining));
+			log.warn("bad message payload: {}", range(0, message.limit())
+					.map(i -> message.get(i)).boxed().collect(toList()));
 		}
 	}
 }

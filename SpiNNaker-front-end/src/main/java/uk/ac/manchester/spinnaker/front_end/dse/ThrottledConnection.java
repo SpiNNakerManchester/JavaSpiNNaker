@@ -16,7 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.lang.System.nanoTime;
+import static java.lang.Thread.yield;
+import static java.net.InetAddress.getByName;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
@@ -26,12 +32,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.nio.IntBuffer;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
@@ -53,8 +59,8 @@ public class ThrottledConnection implements Closeable {
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1;
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
 
+	private final ChipLocation location;
 	private final InetAddress addr;
-	private final Ethernet board;
 	private SCPConnection connection;
 	private long lastSend;
 
@@ -67,9 +73,9 @@ public class ThrottledConnection implements Closeable {
 	 *             If IO fails.
 	 */
 	public ThrottledConnection(Ethernet board) throws IOException {
-		this.board = board;
-		addr = InetAddress.getByName(board.ethernetAddress);
-		connection = new SCPConnection(board.location, addr, SCP_SCAMP_PORT);
+		location = board.location;
+		addr = getByName(board.ethernetAddress);
+		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -81,8 +87,9 @@ public class ThrottledConnection implements Closeable {
 	 * @throws IOException
 	 *             If IO fails.
 	 */
-	public ByteBuffer receive() throws SocketTimeoutException, IOException {
-		return connection.receive(TIMEOUT_MS);
+	public IntBuffer receive() throws SocketTimeoutException, IOException {
+		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
+				.asIntBuffer();
 	}
 
 	private static final byte[] INADDR_ANY = new byte[] {
@@ -105,7 +112,7 @@ public class ThrottledConnection implements Closeable {
 			throws IOException, UnexpectedResponseCodeException {
 		log.debug("reprogramming tag {} to point to {}:{}", iptag.getTag(),
 				connection.getLocalIPAddress(), connection.getLocalPort());
-		IPTagSet tagSet = new IPTagSet(board.location, INADDR_ANY, ANY_PORT,
+		IPTagSet tagSet = new IPTagSet(location, INADDR_ANY, ANY_PORT,
 				iptag.getTag(), true, true);
 		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
 		ByteBuffer data = connection.getSCPData(tagSet);
@@ -113,7 +120,7 @@ public class ThrottledConnection implements Closeable {
 		for (int i = 0; i < IPTAG_REPROGRAM_ATTEMPTS; i++) {
 			try {
 				connection.send(data.duplicate());
-				lastSend = System.nanoTime();
+				lastSend = nanoTime();
 				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
 						.parsePayload(tagSet);
 				return;
@@ -143,8 +150,8 @@ public class ThrottledConnection implements Closeable {
 		InetAddress localAddr = connection.getLocalIPAddress();
 		int localPort = connection.getLocalPort();
 		connection.close();
-		connection = new SCPConnection(board.location, localAddr, localPort,
-				addr, SCP_SCAMP_PORT);
+		connection = new SCPConnection(location, localAddr, localPort, addr,
+				SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -159,24 +166,23 @@ public class ThrottledConnection implements Closeable {
 		log.debug("about to send {} bytes", message.getData().remaining());
 		if (log.isDebugEnabled()) {
 			ByteBuffer payload = message.getData();
-			log.debug("message payload data: {}",
-					IntStream.range(0, payload.remaining())
-							.mapToObj(i -> hexbyte(payload.get(i)))
-							.collect(Collectors.toList()));
+			log.debug("message payload data: {}", range(0, payload.remaining())
+					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
-		long waited = System.nanoTime() - lastSend;
+		long waited = nanoTime() - lastSend;
 		if (waited < THROTTLE_NS) {
 			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-			while (System.nanoTime() - lastSend < THROTTLE_NS) {
-				Thread.yield();
+			while (nanoTime() - lastSend < THROTTLE_NS) {
+				// Make the loop slightly less heavy
+				yield();
 			}
 		}
 		connection.sendSDPMessage(message);
-		lastSend = System.nanoTime();
+		lastSend = nanoTime();
 	}
 
 	@Override
 	public void close() throws IOException {
-		this.connection.close();
+		connection.close();
 	}
 }
