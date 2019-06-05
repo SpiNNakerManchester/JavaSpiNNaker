@@ -1907,11 +1907,7 @@ public interface TransceiverInterface {
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(chip, (int) baseAddress, dataStream, numBytes);
+		writeMemory(chip, Address.convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -1963,11 +1959,7 @@ public interface TransceiverInterface {
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(core, (int) baseAddress, dataStream, numBytes);
+		writeMemory(core, Address.convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -2014,11 +2006,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(chip, (int) baseAddress, dataFile);
+		writeMemory(chip, Address.convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -2064,11 +2052,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(core, (int) baseAddress, dataFile);
+		writeMemory(core, Address.convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -2111,11 +2095,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(chip, (int) baseAddress, dataWord);
+		writeMemory(chip, Address.convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -2159,11 +2139,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(core, (int) baseAddress, dataWord);
+		writeMemory(core, Address.convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -2209,11 +2185,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(chip, (int) baseAddress, wrap(data));
+		writeMemory(chip, Address.convert(baseAddress), wrap(data));
 	}
 
 	/**
@@ -2257,11 +2229,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(core, (int) baseAddress, data);
+		writeMemory(core, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -2306,11 +2274,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(chip, (int) baseAddress, data);
+		writeMemory(chip, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -2356,11 +2320,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemory(core, (int) baseAddress, data);
+		writeMemory(core, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -2415,12 +2375,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(chip, link, (int) baseAddress, dataStream,
-				numBytes);
+		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
+				dataStream, numBytes);
 	}
 
 	/**
@@ -2490,12 +2446,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(core, link, (int) baseAddress, dataStream,
-				numBytes);
+		writeNeighbourMemory(core, link, Address.convert(baseAddress),
+				dataStream, numBytes);
 	}
 
 	/**
@@ -2560,11 +2512,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(chip, link, (int) baseAddress, dataFile);
+		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
+				dataFile);
 	}
 
 	/**
@@ -2629,11 +2578,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(core, link, (int) baseAddress, dataFile);
+		writeNeighbourMemory(core, link, Address.convert(baseAddress),
+				dataFile);
 	}
 
 	/**
@@ -2694,11 +2640,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(chip, link, (int) baseAddress, dataWord);
+		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
+				dataWord);
 	}
 
 	/**
@@ -2761,11 +2704,8 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(core, link, (int) baseAddress, dataWord);
+		writeNeighbourMemory(core, link, Address.convert(baseAddress),
+				dataWord);
 	}
 
 	/**
@@ -2830,11 +2770,7 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(chip, link, (int) baseAddress, data);
+		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -2896,11 +2832,7 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(core, link, (int) baseAddress, data);
+		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -2963,11 +2895,7 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(chip, link, (int) baseAddress, data);
+		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -3032,11 +2960,7 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeNeighbourMemory(core, link, (int) baseAddress, data);
+		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -3092,11 +3016,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, InputStream dataStream,
 			int numBytes) throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemoryFlood((int) baseAddress, dataStream, numBytes);
+		writeMemoryFlood(Address.convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -3144,11 +3064,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemoryFlood((int) baseAddress, dataFile);
+		writeMemoryFlood(Address.convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -3193,11 +3109,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemoryFlood((int) baseAddress, dataWord);
+		writeMemoryFlood(Address.convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -3245,11 +3157,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemoryFlood((int) baseAddress, data);
+		writeMemoryFlood(Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -3296,11 +3204,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		writeMemoryFlood((int) baseAddress, data);
+		writeMemoryFlood(Address.convert(baseAddress), data);
 	}
 
 	/**
@@ -3374,8 +3278,8 @@ public interface TransceiverInterface {
 	/**
 	 * Read some areas of SDRAM from the board.
 	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
+	 * @param chip
+	 *            The coordinates of the chip where the memory is to be read
 	 *            from
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory to be read
@@ -3390,13 +3294,9 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default ByteBuffer readMemory(HasChipLocation chip, long address,
+	default ByteBuffer readMemory(HasChipLocation chip, long baseAddress,
 			int length) throws IOException, ProcessException {
-		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		return readMemory(chip, (int) address, length);
+		return readMemory(chip, Address.convert(baseAddress), length);
 	}
 
 	/**
@@ -3418,13 +3318,9 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default ByteBuffer readMemory(HasCoreLocation core, long address,
+	default ByteBuffer readMemory(HasCoreLocation core, long baseAddress,
 			int length) throws IOException, ProcessException {
-		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		return readMemory(core, (int) address, length);
+		return readMemory(core, Address.convert(baseAddress), length);
 	}
 
 	/**
@@ -3537,12 +3433,9 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafe
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
-			long address, int length) throws IOException, ProcessException {
-		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		return readNeighbourMemory(chip, link, (int) address, length);
+			long baseAddress, int length) throws IOException, ProcessException {
+		return readNeighbourMemory(chip, link, Address.convert(baseAddress),
+				length);
 	}
 
 	/**
@@ -3574,12 +3467,9 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafe
 	default ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
-			long address, int length) throws IOException, ProcessException {
-		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		return readNeighbourMemory(core, link, (int) address, length);
+			long baseAddress, int length) throws IOException, ProcessException {
+		return readNeighbourMemory(core, link, Address.convert(baseAddress),
+				length);
 	}
 
 	/**
@@ -4057,11 +3947,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void freeSDRAM(HasChipLocation chip, long baseAddress)
 			throws IOException, ProcessException {
-		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		freeSDRAM(chip, (int) baseAddress);
+		freeSDRAM(chip, Address.convert(baseAddress));
 	}
 
 	/**
@@ -4874,7 +4760,27 @@ public interface TransceiverInterface {
  *
  * @author Donal Fellows
  */
-interface TransceiverConstants {
+abstract class Address {
+	private Address() {
+	}
+
 	/** Maximum legal SpiNNaker address. */
-	long MAX_ADDR = 0xFFFFFFFFL;
+	private static final long MAX_ADDR = 0xFFFFFFFFL;
+
+	/**
+	 * Convert an address to a 32-bit integer.
+	 *
+	 * @param baseAddress
+	 *            The address as a long.
+	 * @return the address as an int.
+	 * @throws IllegalArgumentException
+	 *             if the value is outside the unsigned 32-bit integer range.
+	 */
+	static int convert(long baseAddress) {
+		if (baseAddress < 0 || baseAddress > MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		return (int) baseAddress;
+	}
 }
