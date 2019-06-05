@@ -1904,10 +1904,70 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasChipLocation chip, long baseAddress,
+			InputStream dataStream, int numBytes)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(chip, (int) baseAddress, dataStream, numBytes);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             input stream.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataStream, numBytes);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             input stream.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void writeMemory(HasCoreLocation core, long baseAddress,
+			InputStream dataStream, int numBytes)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(core, (int) baseAddress, dataStream, numBytes);
 	}
 
 	/**
@@ -1952,9 +2012,63 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasChipLocation chip, long baseAddress,
+			File dataFile) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(chip, (int) baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             file.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or reading from the
+	 *             file.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void writeMemory(HasCoreLocation core, long baseAddress,
+			File dataFile) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(core, (int) baseAddress, dataFile);
 	}
 
 	/**
@@ -1995,9 +2109,61 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasChipLocation chip, long baseAddress,
+			int dataWord) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(chip, (int) baseAddress, dataWord);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written (as 4 bytes).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written (as 4 bytes).
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void writeMemory(HasCoreLocation core, long baseAddress,
+			int dataWord) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(core, (int) baseAddress, dataWord);
 	}
 
 	/**
@@ -2041,6 +2207,32 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasChipLocation chip, long baseAddress,
+			byte[] data) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(chip, (int) baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
@@ -2063,9 +2255,62 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasCoreLocation core, long baseAddress,
+			byte[] data) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(core, (int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemory(core, baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param chip
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void writeMemory(HasChipLocation chip, long baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(chip, (int) baseAddress, data);
 	}
 
 	/**
@@ -2109,8 +2354,74 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	default void writeMemory(HasCoreLocation core, long baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemory(core, (int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the SDRAM on the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is that is to be
+	 *            written to
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
 	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			long baseAddress, InputStream dataStream, int numBytes)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(chip, link, (int) baseAddress, dataStream,
+				numBytes);
+	}
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -2176,9 +2487,85 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			long baseAddress, InputStream dataStream, int numBytes)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(core, link, (int) baseAddress, dataStream,
+				numBytes);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			long baseAddress, File dataFile)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(chip, link, (int) baseAddress, dataFile);
+	}
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -2239,8 +2626,80 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			long baseAddress, File dataFile)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(core, link, (int) baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			File dataFile) throws IOException, ProcessException;
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			long baseAddress, int dataWord)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(chip, link, (int) baseAddress, dataWord);
+	}
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -2271,6 +2730,42 @@ public interface TransceiverInterface {
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataWord);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			long baseAddress, int dataWord)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(core, link, (int) baseAddress, dataWord);
 	}
 
 	/**
@@ -2333,6 +2828,41 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			long baseAddress, byte[] data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(chip, link, (int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
@@ -2364,8 +2894,80 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			long baseAddress, byte[] data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(core, link, (int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be written
+	 *            to
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasChipLocation chip, int link,
+			long baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(chip, link, (int) baseAddress, data);
 	}
 
 	/**
@@ -2427,8 +3029,75 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	default void writeNeighbourMemory(HasCoreLocation core, int link,
+			long baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeNeighbourMemory(core, link, (int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose neighbour is to be written
+	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
 			ByteBuffer data) throws IOException, ProcessException;
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataStream
+	 *            The stream of data that is to be written.
+	 * @param numBytes
+	 *            The amount of data to be written in bytes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the input stream.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void writeMemoryFlood(long baseAddress, InputStream dataStream,
+			int numBytes) throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemoryFlood((int) baseAddress, dataStream, numBytes);
+	}
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2473,8 +3142,63 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	default void writeMemoryFlood(long baseAddress, File dataFile)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemoryFlood((int) baseAddress, dataFile);
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataFile
+	 *            The name of the file holding the data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or with reading from
+	 *             the file.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
 	void writeMemoryFlood(int baseAddress, File dataFile)
 			throws IOException, ProcessException;
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param dataWord
+	 *            The word that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void writeMemoryFlood(long baseAddress, int dataWord)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemoryFlood((int) baseAddress, dataWord);
+	}
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -2519,9 +3243,64 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	default void writeMemoryFlood(long baseAddress, byte[] data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemoryFlood((int) baseAddress, data);
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemoryFlood(baseAddress, wrap(data));
+	}
+
+	/**
+	 * Write to the SDRAM of all chips.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context. It has interlocking, but you should not rely on
+	 * it.
+	 *
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory is to be
+	 *            written
+	 * @param data
+	 *            The data that is to be written. The data should be from the
+	 *            <i>position</i> to the <i>limit</i>.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void writeMemoryFlood(long baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		writeMemoryFlood((int) baseAddress, data);
 	}
 
 	/**
@@ -2591,6 +3370,62 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
 			throws IOException, ProcessException;
+
+	/**
+	 * Read some areas of SDRAM from the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is to be read
+	 *            from
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read, positioned at the start of
+	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default ByteBuffer readMemory(HasChipLocation chip, long address,
+			int length) throws IOException, ProcessException {
+		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		return readMemory(chip, (int) address, length);
+	}
+
+	/**
+	 * Read some areas of SDRAM from the board.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is to be read
+	 *            from
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read, positioned at the start of
+	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default ByteBuffer readMemory(HasCoreLocation core, long address,
+			int length) throws IOException, ProcessException {
+		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		return readMemory(core, (int) address, length);
+	}
 
 	/**
 	 * Read an area associated with a <em>recording region</em> from SDRAM from
@@ -2674,6 +3509,78 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
 			int baseAddress, int length) throws IOException, ProcessException;
+
+	/**
+	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip whose neighbour is to be read from
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data that has been read, positioned at
+	 *         the start of the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
+			long address, int length) throws IOException, ProcessException {
+		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		return readNeighbourMemory(chip, link, (int) address, length);
+	}
+
+	/**
+	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param core
+	 *            The coordinates of the chip whose neighbour is to be read
+	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
+	 *            number)
+	 * @param link
+	 *            The link index to send the request to (or if BMP, the FPGA
+	 *            number)
+	 * @param baseAddress
+	 *            The address in SDRAM where the region of memory to be read
+	 *            starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data that has been read, positioned at
+	 *         the start of the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
+			long address, int length) throws IOException, ProcessException {
+		if (address < 0 || address > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		return readNeighbourMemory(core, link, (int) address, length);
+	}
 
 	/**
 	 * Sends a stop request for an application ID.
@@ -3134,6 +4041,28 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException;
+
+	/**
+	 * Free allocated SDRAM.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip onto which to free memory
+	 * @param baseAddress
+	 *            The base address of the allocated memory
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void freeSDRAM(HasChipLocation chip, long baseAddress)
+			throws IOException, ProcessException {
+		if (baseAddress < 0 || baseAddress > TransceiverConstants.MAX_ADDR) {
+			throw new IllegalArgumentException(
+					"address must be in 32-bit unsigned integer range");
+		}
+		freeSDRAM(chip, (int) baseAddress);
+	}
 
 	/**
 	 * Free allocated SDRAM.
@@ -3938,4 +4867,14 @@ public interface TransceiverInterface {
 			ReinjectionStatus status) throws IOException, ProcessException {
 		setReinjectionTimeout(monitorCores, status.getTimeout());
 	}
+}
+
+/**
+ * Constants used by the transceiver, but not exported by it.
+ *
+ * @author Donal Fellows
+ */
+interface TransceiverConstants {
+	/** Maximum legal SpiNNaker address. */
+	long MAX_ADDR = 0xFFFFFFFFL;
 }

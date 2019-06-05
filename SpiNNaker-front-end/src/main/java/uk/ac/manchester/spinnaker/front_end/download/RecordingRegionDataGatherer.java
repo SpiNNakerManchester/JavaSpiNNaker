@@ -89,7 +89,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	}
 
 	private synchronized RecordingRegionsDescriptor getDescriptor(
-			ChipLocation chip, int baseAddress)
+			ChipLocation chip, long baseAddress)
 			throws IOException, ProcessException {
 		RRKey key = new RRKey(chip, baseAddress);
 		RecordingRegionsDescriptor rrd = descriptors.get(key);
@@ -218,9 +218,9 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 */
 	private static final class RRKey {
 		private final ChipLocation chip;
-		private final int baseAddr;
+		private final long baseAddr;
 
-		RRKey(HasChipLocation chip, int baseAddress) {
+		RRKey(HasChipLocation chip, long baseAddress) {
 			this.chip = chip.asChipLocation();
 			this.baseAddr = baseAddress;
 		}
@@ -236,7 +236,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 		@Override
 		public int hashCode() {
-			return baseAddr ^ chip.hashCode();
+			return ((int) baseAddr) ^ chip.hashCode();
 		}
 	}
 }

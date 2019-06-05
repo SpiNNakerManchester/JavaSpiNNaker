@@ -40,7 +40,7 @@ public class Vertex {
 	 * actual buffers used to do the recording (which are <i>circular</i>
 	 * buffers).
 	 */
-    private final int recordingRegionBaseAddress;
+    private final long recordingRegionBaseAddress;
 
     /** The IDs of the regions recording. */
     private final int[] recordedRegionIds;
@@ -59,7 +59,7 @@ public class Vertex {
 	 */
     public Vertex(@JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "recordingRegionBaseAddress", required = true)
-                    int recordingRegionBaseAddress,
+                    long recordingRegionBaseAddress,
             @JsonProperty(value = "recordedRegionIds", required = true)
                     int[] recordedRegionIds) {
         this.label = label;
@@ -83,7 +83,7 @@ public class Vertex {
      *
      * @return the base address of the recording region
      */
-    public int getBaseAddress() {
+    public long getBaseAddress() {
         return recordingRegionBaseAddress;
     }
 

@@ -61,7 +61,7 @@ final class RecordingRegionsDescriptor {
 	 */
 	final int[] regionSizes;
 	private final ChipLocation chip;
-	private final int addr;
+	private final long addr;
 
 	/**
 	 * Get an instance of this descriptor from SpiNNaker.
@@ -78,7 +78,7 @@ final class RecordingRegionsDescriptor {
 	 *             If SpiNNaker rejects a message.
 	 */
 	RecordingRegionsDescriptor(Transceiver txrx, HasChipLocation chip,
-			int address) throws IOException, ProcessException {
+			long address) throws IOException, ProcessException {
 		// Read the descriptor from SpiNNaker
 		int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
 		RecordingRegionDataGatherer.log.info("{} recording regions at {} of {}",
@@ -108,7 +108,7 @@ final class RecordingRegionsDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("RecordingRegions:").append(chip)
-				.append("@0x").append(toHexString(addr)).append("{");
+				.append("@0x").append(toHexString((int) addr)).append("{");
 		sb.append("#").append(numRegions);
 		sb.append(",tag=").append(tag);
 		sb.append(",dst=0x").append(toHexString(tagDestination));
