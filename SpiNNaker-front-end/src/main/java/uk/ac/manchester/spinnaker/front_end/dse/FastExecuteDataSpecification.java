@@ -252,6 +252,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
 		try (BoardWorker worker = new BoardWorker(board, storage, bar);
+				SystemRouterTableContext routers = worker.systemRouterTables();
 				NoDropPacketContext context = worker.dontDropPackets()) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
 			for (CoreToLoad ctl : cores) {
@@ -581,6 +582,22 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		NoDropPacketContext dontDropPackets()
 				throws IOException, ProcessException {
 			return new NoDropPacketContext(txrx,
+					monitorsForBoard.get(board.location));
+		}
+
+		/**
+		 * Install the system router tables across the board.
+		 *
+		 * @return An object that, when closed, will put the board back in
+		 *         application mode.
+		 * @throws IOException
+		 *             If anything goes wrong with communication.
+		 * @throws ProcessException
+		 *             If SpiNNaker rejects a message.
+		 */
+		SystemRouterTableContext systemRouterTables()
+				throws IOException, ProcessException {
+			return new SystemRouterTableContext(txrx,
 					monitorsForBoard.get(board.location));
 		}
 
