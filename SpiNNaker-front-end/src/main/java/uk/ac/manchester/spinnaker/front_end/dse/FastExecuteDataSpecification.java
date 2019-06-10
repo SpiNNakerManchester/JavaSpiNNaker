@@ -18,9 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
@@ -32,14 +29,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_LAST_DATA_IN;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
-import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
-import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -80,9 +72,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
@@ -115,29 +104,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
-	/** Items of data a SDP packet can hold when SCP header removed. */
-	private static final int BYTES_PER_FULL_PACKET =
-			SDP_PAYLOAD_WORDS * WORD_SIZE;
-	// 272 bytes as removed SCP header
-
-	/**
-	 * Offset where data in starts on first command (command, base_address,
-	 * x&amp;y, max_seq_number), in bytes.
-	 */
-	private static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 4 * WORD_SIZE;
-
-	/**
-	 * Offset where data starts after a command ID and seq number, in bytes.
-	 */
-	private static final int OFFSET_AFTER_COMMAND_AND_SEQUENCE = 2 * WORD_SIZE;
-
-	/** Size for data to store when first packet with command and address. */
-	private static final int DATA_IN_FULL_PACKET_WITH_ADDRESS =
-			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_ADDRESS;
-
-	/** Size for data in to store when not first packet. */
-	private static final int DATA_IN_FULL_PACKET_WITHOUT_ADDRESS =
-			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_SEQUENCE;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 
@@ -742,9 +708,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol) throws IOException {
-			int numPackets = ceildiv(
-					max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
-					DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
+			int numPackets = computeNumPackets(data);
 			log.info("streaming {} bytes in {} packets", data.remaining(),
 					numPackets);
 			log.debug("sending packet #{}", 0);
@@ -780,115 +744,21 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *
 	 * @author Donal Fellows
 	 */
-	class GathererProtocol {
-		private final HasCoreLocation gathererCore;
-		private final HasChipLocation monitorCore;
-
-		GathererProtocol(HasChipLocation chip) {
-			ChipLocation chipLoc = chip.asChipLocation();
-			gathererCore = gathererForChip.get(chipLoc);
-			monitorCore = monitorForChip.get(chipLoc);
-		}
-
-		private SDPHeader header() {
-			return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
-					SDPPort.GATHERER_DATA_SPEED_UP.value);
+	private class GathererProtocol extends FastDataInProtocol {
+		private GathererProtocol(ChipLocation chip, boolean ignored) {
+			super(machine, gathererForChip.get(chip), monitorForChip.get(chip));
 		}
 
 		/**
-		 * @param baseAddress
-		 *            Where the data is to be written.
-		 * @param data
-		 *            The overall data to be transmitted.
-		 * @param numPackets
-		 *            How many SDP packets will be sent.
-		 * @return The message indicating the start of the data.
-		 */
-		SDPMessage dataToLocation(int baseAddress, ByteBuffer data,
-				int numPackets) {
-			HasChipLocation boardDestination = calculateFakeChipID(monitorCore);
-
-			ByteBuffer payload =
-					allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
-			payload.putInt(SEND_DATA_TO_LOCATION.value);
-			payload.putInt(baseAddress);
-			payload.putShort((short) boardDestination.getY());
-			payload.putShort((short) boardDestination.getX());
-			payload.putInt(numPackets - 1);
-			putBuffer(data, 0, payload);
-			return new SDPMessage(header(), payload);
-		}
-
-		/**
-		 * @param data
-		 *            The overall data to be transmitted.
-		 * @param seqNum
-		 *            The sequence number of this chunk.
-		 * @return The message containing a chunk of the data.
-		 */
-		SDPMessage seqData(ByteBuffer data, int seqNum) {
-			ByteBuffer payload =
-					allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
-			int position = calculatePositionFromSequenceNumber(seqNum);
-			if (position >= data.limit()) {
-				throw new RuntimeException(format(
-						"attempt to write off end of buffer due to "
-								+ "over-large sequence number (%d) given "
-								+ "that only %d bytes are to be sent",
-						seqNum, toUnsignedLong(data.limit())));
-			}
-			payload.putInt(SEND_SEQ_DATA.value);
-			payload.putInt(seqNum);
-			putBuffer(data, position, payload);
-			return new SDPMessage(header(), payload);
-		}
-
-		private int putBuffer(ByteBuffer data, int position,
-				ByteBuffer payload) {
-			ByteBuffer tmp = data.asReadOnlyBuffer();
-			tmp.position(position);
-			ByteBuffer slice = tmp.slice();
-			slice.limit(min(slice.limit(), payload.remaining()));
-			payload.put(slice).flip();
-			return slice.position();
-		}
-
-		private int calculatePositionFromSequenceNumber(int seqNum) {
-			if (seqNum < 1) {
-				return 0;
-			}
-			return DATA_IN_FULL_PACKET_WITH_ADDRESS
-					+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
-		}
-
-		/**
-		 * @return The message indicating the end of the data.
-		 */
-		SDPMessage lastDataIn() {
-			ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-			payload.putInt(SEND_LAST_DATA_IN.value);
-			payload.flip();
-			return new SDPMessage(header(), payload);
-		}
-
-		/**
-		 * Converts between real and board based fake chip IDs.
+		 * Create an instance of this for pushing data to a given chip's SDRAM.
 		 *
 		 * @param chip
-		 *            the real chip coordinates in the real machine
-		 * @return chip coordinates for the real chip as if it was 1 board
-		 *         machine
+		 *            The chip where the data is to be pushed. What extra
+		 *            monitor and data gatherer to route it via are determined
+		 *            from the board context.
 		 */
-		private ChipLocation calculateFakeChipID(HasChipLocation chip) {
-			int fakeX = chip.getX() - gathererCore.getX();
-			if (fakeX < 0) {
-				fakeX += machine.maxChipX() + 1;
-			}
-			int fakeY = chip.getY() - gathererCore.getY();
-			if (fakeY < 0) {
-				fakeY += machine.maxChipY() + 1;
-			}
-			return new ChipLocation(fakeX, fakeY);
+		GathererProtocol(HasChipLocation chip) {
+			this(chip.asChipLocation(), false);
 		}
 	}
 
