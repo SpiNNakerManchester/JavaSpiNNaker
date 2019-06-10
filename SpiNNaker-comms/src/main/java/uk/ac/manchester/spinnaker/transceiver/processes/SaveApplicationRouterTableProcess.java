@@ -58,7 +58,8 @@ public class SaveApplicationRouterTableProcess
 	}
 
 	/**
-	 * Save the application's multicast router tables for a collection of routers.
+	 * Save the application's multicast router tables for a collection of
+	 * routers.
 	 *
 	 * @param monitorCoreSubsets
 	 *            the cores where the monitors are running.
