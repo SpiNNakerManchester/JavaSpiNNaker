@@ -161,8 +161,10 @@ import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetVersionProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.LoadApplicationRouterTableProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.LoadFixedRouteEntryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.LoadMulticastRoutesProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.LoadSystemRouterTableProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.MallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadFixedRouteEntryProcess;
@@ -171,6 +173,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadReinjectionStatusProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadRouterDiagnosticsProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ResetReinjectionCountersProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SaveApplicationRouterTableProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SetReinjectionPacketTypesProcess;
@@ -2209,6 +2212,30 @@ public class Transceiver extends UDPTransceiver
 			throws ProcessException, IOException {
 		new FillProcess(scpSelector, this).fillMemory(chip, baseAddress,
 				repeatValue, size, dataType);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void saveApplicationRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
+		new SaveApplicationRouterTableProcess(scpSelector, this)
+				.saveApplicationRouterTable(monitorCores);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void loadApplicationRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
+		new LoadApplicationRouterTableProcess(scpSelector, this)
+				.loadApplicationRouterTable(monitorCores);
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void loadSystemRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException {
+		new LoadSystemRouterTableProcess(scpSelector, this)
+				.loadSystemRouterTable(monitorCores);
 	}
 
 	/**

@@ -4753,6 +4753,55 @@ public interface TransceiverInterface {
 			ReinjectionStatus status) throws IOException, ProcessException {
 		setReinjectionTimeout(monitorCores, status.getTimeout());
 	}
+
+	/**
+	 * Save the application's multicast router tables.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores; the routers on those
+	 *            chips will have their (current) multicast router tables saved.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void saveApplicationRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Load the (previously saved) application's multicast router tables. The
+	 * router tables <em>must</em> have been previously
+	 * {@linkplain #saveApplicationRouterTables(CoreSubsets) saved}.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores; the routers on those
+	 *            chips will have their multicast router tables loaded.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void loadApplicationRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
+
+	/**
+	 * Load the (previously configured) system multicast router tables. The
+	 * application's router tables <em>must</em> have been previously
+	 * {@linkplain #saveApplicationRouterTables(CoreSubsets) saved}.
+	 *
+	 * @param monitorCores
+	 *            The coordinates of some monitor cores; the routers on those
+	 *            chips will have their multicast router tables loaded.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void loadSystemRouterTables(CoreSubsets monitorCores)
+			throws IOException, ProcessException;
 }
 
 /**
