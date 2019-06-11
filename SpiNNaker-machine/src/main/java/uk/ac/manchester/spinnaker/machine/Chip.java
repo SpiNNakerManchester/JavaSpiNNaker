@@ -460,7 +460,6 @@ public class Chip implements HasChipLocation {
             return true;
         }
         if (!(obj instanceof Chip)) {
-            System.out.println("type");
             return false;
         }
         return difference((Chip) obj) == null;
