@@ -29,6 +29,7 @@ public final class RouterTimeout {
 	private static final int EXPONENT_OFFSET = 4;
 	/** An infinite timeout. */
 	public static final RouterTimeout INF = new RouterTimeout(15, 15);
+	private static final double CLOCK_INTERVAL = 1e9 / 133e6;
 
 	/** The mantissa of the timeout. */
 	public final int mantissa;
@@ -60,5 +61,13 @@ public final class RouterTimeout {
 			return (m - (1 << (EXPONENT_OFFSET - exponent))) * (1 << exponent);
 		}
 		return m * (1 << exponent);
+	}
+
+	@Override
+	public String toString() {
+		if (mantissa == INF.mantissa && exponent == INF.exponent) {
+			return "INF";
+		}
+		return "" + (getValue() * CLOCK_INTERVAL) + " ns";
 	}
 }

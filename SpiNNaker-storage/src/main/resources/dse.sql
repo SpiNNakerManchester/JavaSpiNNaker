@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--- This should match 
+-- This should match
 -- SpiNNFrontEndCommon\spinn_front_end_common\interface\ds\dse.sql
 
 -- https://www.sqlite.org/pragma.html#pragma_synchronous
@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS core(
 	processor INTEGER NOT NULL,
 	ethernet_id INTEGER NOT NULL
 		REFERENCES ethernet(ethernet_id) ON DELETE RESTRICT,
+	is_system INTEGER DEFAULT 0,
 	app_id INTEGER,
 	content BLOB,
 	start_address INTEGER,
@@ -52,6 +53,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS coreSanity ON core(
 CREATE VIEW IF NOT EXISTS core_view AS
 	SELECT ethernet_id, core_id,
 		ethernet_x, ethernet_y, ip_address,
-		x, y, processor, app_id, content,
+		x, y, processor, is_system, app_id, content,
 		start_address, memory_used, memory_written
 	FROM ethernet NATURAL JOIN core;

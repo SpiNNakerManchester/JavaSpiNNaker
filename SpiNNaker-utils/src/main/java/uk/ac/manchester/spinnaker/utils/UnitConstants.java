@@ -36,6 +36,9 @@ public final class UnitConstants {
     /** The number of milliseconds per second. */
 	public static final int MSEC_PER_SEC = 1000;
 
+    /** The number of nanoseconds per second. */
+	public static final int NSEC_PER_SEC = 1000000000;
+
    /** The number of second per minute. */
 	public static final int SEC_PER_MINUTE = 60;
 

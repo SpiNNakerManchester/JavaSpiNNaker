@@ -91,4 +91,7 @@ public abstract class Constants {
 	public static final int BYTE_MASK = 0xFF;
 	/** Number of bits per byte. */
 	public static final int NBBY = 8;
+
+	/** Maximum number of words in a full SDP packet. */
+	public static final int SDP_PAYLOAD_WORDS = 68;
 }

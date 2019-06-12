@@ -89,14 +89,26 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
+	private static EthernetImpl sanitise(Ethernet ethernet) {
+		if (!(ethernet instanceof EthernetImpl)) {
+			throw new IllegalArgumentException("can only list cores"
+					+ " for ethernets described by this class");
+		}
+		return (EthernetImpl) ethernet;
+	}
+
+	private static CoreToLoadImpl sanitise(CoreToLoad core, String desc) {
+		if (!(core instanceof CoreToLoadImpl)) {
+			throw new IllegalArgumentException(
+					"can only " + desc + " for cores described by this class");
+		}
+		return (CoreToLoadImpl) core;
+	}
+
 	@Override
 	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet)
 			throws StorageException {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException(
-                "can only list cores for ethernets described by this class");
-		}
-		return callR(conn -> listCoresToLoad(conn, (EthernetImpl) ethernet),
+		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet)),
 				"listing cores to load data onto");
 	}
 
@@ -106,6 +118,34 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
 			// ethernet_id
 			s.setInt(FIRST, ethernet.id);
+			try (ResultSet rs = s.executeQuery()) {
+				List<CoreToLoad> result = new ArrayList<>();
+				while (rs.next()) {
+					// core_id, x, y, processor, content
+					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
+							rs.getInt(SECOND), rs.getInt(THIRD),
+							rs.getInt(FOURTH), rs.getInt(FIFTH)));
+				}
+				return result;
+			}
+		}
+	}
+
+	@Override
+	public List<CoreToLoad> listCoresToLoad(Ethernet ethernet,
+			boolean loadSystemCores) throws StorageException {
+		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet),
+				loadSystemCores), "listing cores to load data onto");
+	}
+
+	private List<CoreToLoad> listCoresToLoad(Connection conn,
+			EthernetImpl ethernet, boolean loadSystemCores)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD_FILTERED)) {
+			// ethernet_id
+			s.setInt(FIRST, ethernet.id);
+			s.setBoolean(SECOND, loadSystemCores);
 			try (ResultSet rs = s.executeQuery()) {
 				List<CoreToLoad> result = new ArrayList<>();
 				while (rs.next()) {
@@ -130,12 +170,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	 *             have a data spec.
 	 */
 	ByteBuffer getDataSpec(CoreToLoad core) throws StorageException {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only read data specs for cores described by "
-							+ "this class");
-		}
-		return callR(conn -> getDataSpec(conn, (CoreToLoadImpl) core),
+		return callR(
+				conn -> getDataSpec(conn, sanitise(core, "read data specs")),
 				"reading data specification for core");
 	}
 
@@ -158,11 +194,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	@Override
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException {
-		if (!(core instanceof CoreToLoadImpl)) {
-			throw new IllegalArgumentException(
-					"can only save metadata for cores described by this class");
-		}
-		callV(conn -> saveLoadingMetadata(conn, (CoreToLoadImpl) core,
+		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
 				startAddress, memoryUsed, memoryWritten),
 				"saving data loading metadata");
 	}

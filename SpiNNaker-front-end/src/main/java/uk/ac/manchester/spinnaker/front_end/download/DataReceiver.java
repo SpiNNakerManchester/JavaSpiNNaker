@@ -169,7 +169,7 @@ public class DataReceiver extends BoardLocalSupport {
 	private void getDataForPlacement(Placement placement, int recordingRegionId)
 			throws IOException, StorageException, ProcessException {
 		Vertex vertex = placement.getVertex();
-		int recordingDataAddress = vertex.getBaseAddress();
+		long recordingDataAddress = vertex.getBaseAddress();
 		// Combine placement.x, placement.y, placement.p, recording_region_id
 		RegionLocation location =
 				new RegionLocation(placement, recordingRegionId);
@@ -259,8 +259,8 @@ public class DataReceiver extends BoardLocalSupport {
 	// Found in SpiNNFrontEndCommon/spinn_front_end_common/interface/
 	// buffer_management/recording_utilities.py
 	private int getLastSequenceNumber(Placement placement,
-			int recordingDataAddress) throws IOException, ProcessException {
-		int addr = recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET;
+			long recordingDataAddress) throws IOException, ProcessException {
+		long addr = recordingDataAddress + LAST_SEQUENCE_NUMBER_OFFSET;
 		return requestData(placement, addr, WORD_SIZE).getInt();
 	}
 
@@ -280,9 +280,9 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @throws IOException
 	 *             if communications fail
 	 */
-	private int getRegionPointer(Placement placement, int recordingDataAddress,
+	private int getRegionPointer(Placement placement, long recordingDataAddress,
 			int region) throws IOException, ProcessException {
-		int addr = recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
+		long addr = recordingDataAddress + FIRST_REGION_ADDRESS_OFFSET
 				+ (region * WORD_SIZE);
 		return requestData(placement, addr, WORD_SIZE).getInt();
 	}
@@ -309,7 +309,7 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @throws IOException
 	 *             if communications fail
 	 */
-	private ByteBuffer requestData(HasCoreLocation location, int address,
+	private ByteBuffer requestData(HasCoreLocation location, long address,
 			int length) throws IOException, ProcessException {
 		if (length == 0) {
 			return ByteBuffer.allocate(0);

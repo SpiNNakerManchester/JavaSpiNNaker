@@ -54,7 +54,7 @@ public class DirectDataGatherer extends DataGatherer {
 
 	private final Transceiver txrx;
 	private final BufferManagerStorage database;
-	private final Map<CoreLocation, Map<Integer, ByteBuffer>> coreTableCache;
+	private final Map<CoreLocation, Map<Long, ByteBuffer>> coreTableCache;
 
 	/**
 	 * Create a data gatherer.
@@ -96,7 +96,7 @@ public class DirectDataGatherer extends DataGatherer {
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
 			throws IOException, ProcessException {
 		// TODO get this info from the database, if the DB knows it
-		Map<Integer, ByteBuffer> map;
+		Map<Long, ByteBuffer> map;
 		synchronized (coreTableCache) {
 			map = coreTableCache.get(core);
 			if (map == null) {

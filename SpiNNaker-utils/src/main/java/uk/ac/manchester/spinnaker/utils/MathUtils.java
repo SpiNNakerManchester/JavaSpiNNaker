@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import static java.lang.Math.ceil;
-
 /**
  * Miscellaneous mathematical functions.
  *
@@ -32,14 +30,25 @@ public abstract class MathUtils {
 	 * {@code ceildiv(5,3) == 2}
 	 *
 	 * @param numerator
-	 *            The value to be divided.
+	 *            The value to be divided. Must be non-negative.
 	 * @param denominator
-	 *            The value to divide by.
+	 *            The value to divide by. Must be positive.
 	 * @return The value got by dividing the two, and rounding any floating
 	 *         remainder <i>up</i>.
 	 */
 	public static final int ceildiv(int numerator, int denominator) {
-		return (int) ceil((float) numerator / (float) denominator);
+		/*
+		 * Measured as faster than:
+		 *
+		 * return (int) Math.ceil((float) numerator / (float) denominator);
+		 *
+		 * and also as faster than:
+		 *
+		 * return (numerator / denominator)
+		 * 		+ (numerator % denominator != 0 ? 1 : 0);
+		 */
+
+		return (denominator - 1 + numerator) / denominator;
 	}
 
 	/**

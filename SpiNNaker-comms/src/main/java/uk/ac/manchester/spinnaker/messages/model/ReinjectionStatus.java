@@ -43,46 +43,46 @@ public class ReinjectionStatus {
 	}
 
 	/** The WAIT1 timeout value of the router in cycles. */
-	private final RouterTimeout routerTimeout;
+	private final RouterTimeout timeout;
 
 	/** The WAIT2 timeout value of the router in cycles. */
-	private final RouterTimeout routerEmergencyTimeout;
+	private final RouterTimeout emergencyTimeout;
 
 	/**
 	 * The number of packets dropped by the router and received by the
 	 * reinjection functionality (may not fit in the queue though).
 	 */
-	private final int numDroppedPackets;
+	private final int droppedPackets;
 
 	/**
 	 * The number of times that when a dropped packet was read it was found that
 	 * another one or more packets had also been dropped, but had been missed.
 	 */
-	private final int numMissedDroppedPackets;
+	private final int missedDroppedPackets;
 
 	/**
-	 * Of the {@link #numDroppedPackets} received, how many were lost due to not
+	 * Of the {@link #droppedPackets} received, how many were lost due to not
 	 * having enough space in the queue of packets to reinject.
 	 */
-	private final int numDroppedPacketOverflows;
+	private final int droppedPacketOverflows;
 
 	/**
-	 * Of the {@link #numDroppedPackets} received, how many packets were
+	 * Of the {@link #droppedPackets} received, how many packets were
 	 * successfully reinjected.
 	 */
-	private final int numReinjectedPackets;
+	private final int reinjectedPackets;
 
 	/**
 	 * The number of times that when a dropped packet was caused due to a link
 	 * failing to take the packet.
 	 */
-	private final int numLinkDumps;
+	private final int linkDumps;
 
 	/**
 	 * The number of times that when a dropped packet was caused due to a
 	 * processor failing to take the packet.
 	 */
-	private final int numProcessorDumps;
+	private final int processorDumps;
 
 	/** The flags that states which types of packets were being recorded. */
 	private final int flags;
@@ -92,25 +92,25 @@ public class ReinjectionStatus {
 	 *            The message containing the status to parse.
 	 */
 	public ReinjectionStatus(ByteBuffer buffer) {
-		this.routerTimeout = new RouterTimeout(buffer.getInt());
-		this.routerEmergencyTimeout = new RouterTimeout(buffer.getInt());
-		this.numDroppedPackets = buffer.getInt();
-		this.numMissedDroppedPackets = buffer.getInt();
-		this.numDroppedPacketOverflows = buffer.getInt();
-		this.numReinjectedPackets = buffer.getInt();
-		this.numLinkDumps = buffer.getInt();
-		this.numProcessorDumps = buffer.getInt();
+		this.timeout = new RouterTimeout(buffer.getInt());
+		this.emergencyTimeout = new RouterTimeout(buffer.getInt());
+		this.droppedPackets = buffer.getInt();
+		this.missedDroppedPackets = buffer.getInt();
+		this.droppedPacketOverflows = buffer.getInt();
+		this.reinjectedPackets = buffer.getInt();
+		this.linkDumps = buffer.getInt();
+		this.processorDumps = buffer.getInt();
 		this.flags = buffer.getInt();
 	}
 
 	/** @return The WAIT1 timeout value of the router in cycles. */
 	public RouterTimeout getTimeout() {
-		return routerTimeout;
+		return timeout;
 	}
 
 	/** @return The WAIT2 timeout value of the router in cycles. */
 	public RouterTimeout getEmergencyTimeout() {
-		return routerEmergencyTimeout;
+		return emergencyTimeout;
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class ReinjectionStatus {
 	 *         reinjection functionality (may not fit in the queue though).
 	 */
 	public int getNumDroppedPackets() {
-		return numDroppedPackets;
+		return droppedPackets;
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class ReinjectionStatus {
 	 *         had been missed.
 	 */
 	public int getNumMissedDroppedPackets() {
-		return numMissedDroppedPackets;
+		return missedDroppedPackets;
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class ReinjectionStatus {
 	 *         having enough space in the queue of packets to reinject.
 	 */
 	public int getNumDroppedPacketOverflows() {
-		return numDroppedPacketOverflows;
+		return droppedPacketOverflows;
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class ReinjectionStatus {
 	 *         a processor failing to take the packet.
 	 */
 	public int getNumProcessorDumps() {
-		return numProcessorDumps;
+		return processorDumps;
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class ReinjectionStatus {
 	 *         a link failing to take the packet.
 	 */
 	public int getNumLinkDumps() {
-		return numLinkDumps;
+		return linkDumps;
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class ReinjectionStatus {
 	 *         successfully reinjected.
 	 */
 	public int getNumReinjectedPackets() {
-		return numReinjectedPackets;
+		return reinjectedPackets;
 	}
 
 	private boolean flag(DPRIFlags flag) {
@@ -188,5 +188,11 @@ public class ReinjectionStatus {
 
 	private enum DPRIFlags {
 		MULTICAST, POINT_TO_POINT, NEAREST_NEIGHBOUR, FIXED_ROUTE;
+	}
+
+	@Override
+	public String toString() {
+		return "flags:" + flags + ",timeout:" + timeout + ",emergencyTimeout:"
+				+ emergencyTimeout + ",drops:" + droppedPackets;
 	}
 }

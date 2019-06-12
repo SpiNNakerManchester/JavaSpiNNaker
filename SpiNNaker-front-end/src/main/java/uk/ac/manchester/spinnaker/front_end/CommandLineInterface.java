@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
@@ -100,58 +101,102 @@ public final class CommandLineInterface {
 		}
 		try {
 			switch (args[0]) {
-			case "gather":
+			case CLICommands.GATHER:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "gather <gatherFile> <machineFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf("wrong # args: must be \"java -jar %s %s "
+							+ "<gatherFile> <machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.GATHER);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
 				gatherRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "download":
+			case CLICommands.DOWNLOAD:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "download <placementFile> <machineFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<placementFile> <machineFile> "
+									+ "<runFolder>\"\n",
+							JAR_FILE, CLICommands.DOWNLOAD);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
 				downloadRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "dse":
+			case CLICommands.DSE:
 				if (args.length != NUM_DSE_ARGS) {
 					System.err.printf(
-							"wrong # args: must be \"java -jar %s "
-									+ "dse <machineFile> <runFolder>\"\n",
-							JAR_FILE);
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE);
 					System.exit(1);
 				}
 				setLoggerDir(args[2]);
-				dseRun(args[1], args[2]);
+				dseRun(args[1], args[2], null);
 				System.exit(0);
 
-			case "iobuf":
+			case CLICommands.DSE_SYS:
+				if (args.length != NUM_DSE_ARGS) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE_SYS);
+					System.exit(1);
+				}
+				setLoggerDir(args[2]);
+				dseRun(args[1], args[2], false);
+				System.exit(0);
+
+			case CLICommands.DSE_APP:
+				if (args.length != NUM_DSE_ARGS) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <runFolder>\"\n",
+							JAR_FILE, CLICommands.DSE_APP);
+					System.exit(1);
+				}
+				setLoggerDir(args[2]);
+				dseRun(args[1], args[2], true);
+				System.exit(0);
+
+			case CLICommands.DSE_APP_MON:
+				if (args.length != NUM_DSE_APP_MON_ARGS
+						&& args.length != NUM_DSE_APP_MON_ARGS + 1) {
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<gatherFile> <machineFile> "
+									+ "<runFolder> ?<reportFolder>?\"\n",
+							JAR_FILE, CLICommands.DSE_APP_MON);
+					System.exit(1);
+				}
+				setLoggerDir(args[THIRD]);
+				dseAppMonRun(args[1], args[2], args[THIRD],
+						args.length > NUM_DSE_APP_MON_ARGS ? args[FOURTH]
+								: null);
+				System.exit(0);
+
+			case CLICommands.IOBUF:
 				if (args.length != NUM_IOBUF_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s "
-							+ "iobuf <machineFile> <iobufMapFile> "
-							+ "<runFolder>\"\n", JAR_FILE);
+					System.err.printf(
+							"wrong # args: must be \"java -jar %s %s "
+									+ "<machineFile> <iobufMapFile> "
+									+ "<runFolder>\"\n",
+							JAR_FILE, CLICommands.IOBUF);
 					System.exit(1);
 				}
 				setLoggerDir(args[THIRD]);
 				iobufRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
-			case "version":
+			case CLICommands.VERSION:
 				System.out.println(VERSION);
 				System.exit(0);
 
 			default:
 				System.err.printf("unknown command \"%s\": must be one of %s\n",
-						args[0], "download, dse, gather, or version");
+						args[0], CLICommands.list());
 				System.exit(1);
 			}
 		} catch (Throwable t) {
@@ -162,7 +207,9 @@ public final class CommandLineInterface {
 
 	private static final int NUM_DOWNLOAD_ARGS = 4;
 	private static final int THIRD = 3;
+	private static final int FOURTH = 4;
 	private static final int NUM_DSE_ARGS = 3;
+	private static final int NUM_DSE_APP_MON_ARGS = 4;
 	private static final String DSE_DB_FILE = "ds.sqlite3";
 	private static final int NUM_IOBUF_ARGS = 4;
 
@@ -174,6 +221,10 @@ public final class CommandLineInterface {
 	 * @param runFolder
 	 *            Name of directory containing per-run information (i.e., the
 	 *            database that holds the data specifications to execute).
+	 * @param filterSystemCores
+	 *            If {@code true}, only run the DSE for application vertices.
+	 *            If {@code false}, only run the DSE for system vertices. If
+	 *            {@code null}, run the DSE for all vertices.
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -189,17 +240,68 @@ public final class CommandLineInterface {
 	 * @throws DataSpecificationException
 	 *             If an invalid data specification file is executed.
 	 */
-	public static void dseRun(String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, ExecutionException, InterruptedException,
-			DataSpecificationException {
+	public static void dseRun(String machineJsonFile, String runFolder,
+			Boolean filterSystemCores) throws IOException, SpinnmanException,
+			ProcessException, StorageException, ExecutionException,
+			InterruptedException, DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
 		try (HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine)) {
-			dseExec.loadAll(database);
+			if (filterSystemCores == null) {
+				dseExec.loadAllCores(database);
+			} else if (filterSystemCores) {
+				dseExec.loadApplicationCores(database);
+			} else {
+				dseExec.loadSystemCores(database);
+			}
+		}
+	}
+
+	/**
+	 * Run the data specifications in parallel.
+	 *
+	 * @param gatherersJsonFile
+	 *            Name of file containing JSON description of gatherers.
+	 * @param machineJsonFile
+	 *            Name of file containing JSON description of overall machine.
+	 * @param runFolder
+	 *            Name of directory containing per-run information (i.e., the
+	 *            database that holds the data specifications to execute).
+	 * @param reportFolder
+	 *            Name of directory containing reports. If {@code null}, no
+	 *            report will be written.
+	 * @throws IOException
+	 *             If the communications fail.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database is in an illegal state.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
+	 * @throws DataSpecificationException
+	 *             If an invalid data specification file is executed.
+	 */
+	public static void dseAppMonRun(String gatherersJsonFile,
+			String machineJsonFile, String runFolder, String reportFolder)
+			throws IOException, SpinnmanException, ProcessException,
+			StorageException, ExecutionException, InterruptedException,
+			DataSpecificationException {
+		List<Gather> gathers = getGatherers(gatherersJsonFile);
+		Machine machine = getMachine(machineJsonFile);
+		DSEDatabaseEngine database =
+				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		File reportDir = reportFolder == null ? null : new File(reportFolder);
+
+		try (FastExecuteDataSpecification dseExec =
+				new FastExecuteDataSpecification(machine, gathers, reportDir)) {
+			dseExec.loadCores(database);
 		}
 	}
 
@@ -340,5 +442,50 @@ public final class CommandLineInterface {
 	private static BufferManagerStorage getDatabase(String runFolder) {
 		return new BufferManagerDatabaseEngine(
 				new File(runFolder, BUFFER_DB_FILE)).getStorageInterface();
+	}
+}
+
+/**
+ * The names of supported commands.
+ *
+ * @author Donal Fellows
+ */
+interface CLICommands {
+	/** The fast-data-out download command name. */
+	String GATHER = "gather";
+	/** The SCP-based download command name. */
+	String DOWNLOAD = "download";
+	/** The basic DSE command name. */
+	String DSE = "dse";
+	/** The system DSE command name. */
+	String DSE_SYS = "dse_sys";
+	/** The application DSE command name. */
+	String DSE_APP = "dse_app";
+	/** The application DSE (with fast-data-in) command name. */
+	String DSE_APP_MON = "dse_app_mon";
+	/** The IOBUF-retrieval command name. */
+	String IOBUF = "iobuf";
+	/** The version command name. */
+	String VERSION = "version";
+	/** All the command names. Sorted. */
+	String[] ALL = {
+		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, VERSION
+	};
+
+	/**
+	 * @return A human-readable list of all command names.
+	 */
+	static String list() {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (String item : ALL) {
+			sb.append(sep);
+			sep = ", ";
+			if (item == VERSION) {
+				sb.append("or ");
+			}
+			sb.append(item);
+		}
+		return sb.toString();
 	}
 }

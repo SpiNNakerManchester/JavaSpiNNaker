@@ -36,7 +36,7 @@ public @interface Parameters {
 	 * Describes what parameters are supported by the statement once it is
 	 * prepared.
 	 *
-	 * @return List of parameter names.
+	 * @return List of parameters.
 	 */
-	String[] value();
+	Parameter[] value();
 }

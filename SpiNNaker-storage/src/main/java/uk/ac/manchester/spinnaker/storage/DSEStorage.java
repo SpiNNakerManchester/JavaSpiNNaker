@@ -59,6 +59,22 @@ public interface DSEStorage extends DatabaseAPI {
 	List<CoreToLoad> listCoresToLoad(Ethernet ethernet) throws StorageException;
 
 	/**
+	 * Get a list of all DSE loading actions that need to be done for a
+	 * particular ethernet.
+	 *
+	 * @param ethernet
+	 *            The ethernet we're loading onto.
+	 * @param loadSystemCores
+	 *            If {@code true}, just list system cores. If {@code false},
+	 *            just list application (non-system) cores.
+	 * @return The list of actions.
+	 * @throws StorageException
+	 *             If the database access fails.
+	 */
+	List<CoreToLoad> listCoresToLoad(Ethernet ethernet, boolean loadSystemCores)
+			throws StorageException;
+
+	/**
 	 * Record the results of loading a core.
 	 *
 	 * @param coreToLoad

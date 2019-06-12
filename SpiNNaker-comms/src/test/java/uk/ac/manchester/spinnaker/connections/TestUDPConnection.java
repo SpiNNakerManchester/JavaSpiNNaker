@@ -65,7 +65,7 @@ public class TestUDPConnection {
 	}
 
 	@Test
-	public void testSCPReadLinkWoard() throws Exception {
+	public void testSCPReadLinkWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		ReadLink scpReq = new ReadLink(ZERO_CHIP, 0, 0x70000000, 250);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
