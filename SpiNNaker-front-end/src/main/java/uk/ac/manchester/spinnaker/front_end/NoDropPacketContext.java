@@ -56,6 +56,9 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * Standard short timeout for emergency routing.
 	 */
 	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
+	private static final RouterTimeout LONG_TIMEOUT = new RouterTimeout(14, 14);
+	private static final RouterTimeout TEMP_TIMEOUT = new RouterTimeout(15, 4);
+	private static final RouterTimeout ZERO_TIMEOUT = new RouterTimeout(0, 0);
 
 	/**
 	 * Create a no-drop-packets context.
@@ -87,7 +90,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		txrx.clearReinjectionQueues(monitorCores);
 		// Set time outs
 		txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
-		txrx.setReinjectionTimeout(monitorCores, RouterTimeout.INF);
+		txrx.setReinjectionTimeout(monitorCores, LONG_TIMEOUT);
 	}
 
 	/**
@@ -155,9 +158,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	@Override
 	public void close() throws IOException, ProcessException {
 		log.info("switching board at {} to standard mode", firstChip);
-		//// Set the routers to temporary values so we can use SDP
-		// txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
-		// txrx.setReinjectionEmergencyTimeout(monitorCores, 0, 0);
+		quietlySetTemporaryTimeouts();
 
 		try {
 			// Do the real reset
@@ -178,6 +179,22 @@ public class NoDropPacketContext implements AutoCloseable {
 			}
 		} catch (Exception e) {
 			log.error("couldn't get core state", e);
+		}
+	}
+
+	/**
+	 * This sets some temporary timeouts so that we can use SDP more safely. We
+	 * hope. Failures are ignored; if they happen, failures when setting the
+	 * real values are also likely and we'll get error messages then.
+	 */
+	private void quietlySetTemporaryTimeouts() {
+		try {
+			txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
+		} catch (Exception ignored) {
+		}
+		try {
+			txrx.setReinjectionEmergencyTimeout(monitorCores, ZERO_TIMEOUT);
+		} catch (Exception ignored) {
 		}
 	}
 }
