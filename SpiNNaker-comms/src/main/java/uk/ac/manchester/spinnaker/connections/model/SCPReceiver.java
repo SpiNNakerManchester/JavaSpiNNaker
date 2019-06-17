@@ -32,8 +32,8 @@ public interface SCPReceiver extends SocketHolder {
 	 * been received, or a timeout occurs.
 	 *
 	 * @param timeout
-	 *            The time in seconds to wait for the message to arrive; if not
-	 *            specified, will wait forever, or until the connection is
+	 *            The time in milliseconds to wait for the message to arrive; if
+	 *            {@code null}, will wait forever, or until the connection is
 	 *            closed.
 	 * @return The SCP result, the sequence number, and the data of the
 	 *         response. The buffer pointer will be positioned at the point

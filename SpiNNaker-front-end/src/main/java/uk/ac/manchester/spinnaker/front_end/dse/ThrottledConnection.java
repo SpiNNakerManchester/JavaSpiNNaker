@@ -56,7 +56,7 @@ public class ThrottledConnection implements Closeable {
 	public static final int THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
-	private static final int IPTAG_REPROGRAM_TIMEOUT = 1;
+	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
 
 	private final ChipLocation location;
