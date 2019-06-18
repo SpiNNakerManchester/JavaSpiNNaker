@@ -64,8 +64,15 @@ public class SystemRouterTableContext implements AutoCloseable {
 
 		log.info("switching multicast routing on board at {} to system mode",
 				firstChip);
-		txrx.saveApplicationRouterTables(monitorCores);
-		txrx.loadSystemRouterTables(monitorCores);
+		log.info("will switch {} cores", monitorCores.size());
+		try {
+			txrx.saveApplicationRouterTables(monitorCores);
+			txrx.loadSystemRouterTables(monitorCores);
+		} catch (IOException | ProcessException e) {
+			log.error("failed to switch multicast routing on {} to system",
+					firstChip, e);
+			throw e;
+		}
 	}
 
 	/**
@@ -137,8 +144,9 @@ public class SystemRouterTableContext implements AutoCloseable {
 
 		try {
 			txrx.loadApplicationRouterTables(monitorCores);
-		} catch (Exception e) {
+		} catch (IOException | ProcessException e) {
 			log.error("error restoring multicast router tables", e);
+			throw e;
 		}
 	}
 }
