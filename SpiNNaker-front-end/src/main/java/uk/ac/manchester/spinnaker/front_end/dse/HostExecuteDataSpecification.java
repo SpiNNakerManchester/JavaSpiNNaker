@@ -294,7 +294,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 		private int malloc(CoreToLoad ctl, int bytesUsed)
 				throws IOException, ProcessException {
-			return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
+			return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
+					new AppID(ctl.appID));
 		}
 
 		/**
@@ -323,7 +324,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 			b.flip();
 			int written = b.remaining();
-			txrx.writeMemory(core, startAddress, b);
+			txrx.writeMemory(core.getScampCore(), startAddress, b);
 			return written;
 		}
 
@@ -349,7 +350,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 			data.flip();
 			int written = data.remaining();
-			txrx.writeMemory(core, baseAddress, data);
+			txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			return written;
 		}
 	}
