@@ -164,10 +164,10 @@ public class SCPRequestPipeline {
 		private void send() throws IOException {
 			long now = nanoTime();
 			while (now - nextSendTime < 0) {
-                yield();
-                now = nanoTime();
+				yield();
+				now = nanoTime();
 			}
-            nextSendTime = now + INTER_SEND_INTERVAL_NS;
+			nextSendTime = now + INTER_SEND_INTERVAL_NS;
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
@@ -343,8 +343,8 @@ public class SCPRequestPipeline {
 		}
 
 		// Update the packet and store required details
-		int sequence = toUnsignedInt(
-				request.scpRequestHeader.issueSequenceNumber(requests.keySet()));
+		int sequence = toUnsignedInt(request.scpRequestHeader
+				.issueSequenceNumber(requests.keySet()));
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
 		if (requests.put(sequence, req) != null) {
@@ -392,9 +392,9 @@ public class SCPRequestPipeline {
 		// Receive the next response
 		log.debug("waiting for message...");
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
-        if (log.isDebugEnabled()) {
-    		log.debug("received message {}", msg.getResult());
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("received message {}", msg.getResult());
+		}
 		Request<?> req = msg.pickRequest(requests);
 
 		// Only process responses which have matching requests
