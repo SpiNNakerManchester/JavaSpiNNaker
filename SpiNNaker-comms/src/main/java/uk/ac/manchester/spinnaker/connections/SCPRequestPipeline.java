@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
@@ -342,8 +343,8 @@ public class SCPRequestPipeline {
 		}
 
 		// Update the packet and store required details
-		int sequence =
-				request.scpRequestHeader.issueSequenceNumber(requests.keySet());
+		int sequence = toUnsignedInt(
+				request.scpRequestHeader.issueSequenceNumber(requests.keySet()));
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
 		if (requests.put(sequence, req) != null) {
