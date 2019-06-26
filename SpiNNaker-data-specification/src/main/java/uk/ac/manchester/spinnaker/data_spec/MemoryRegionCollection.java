@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The
- * {@link #set(int,MemoryRegion) set(...)} operation works.
+ * {@link #set(MemoryRegion) set(...)} operation works.
  *
  * @author Donal Fellows
  */
@@ -75,19 +75,17 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	/**
 	 * Set the region with the given ID.
 	 *
-	 * @param regionID
-	 *            The region ID to set. Must not be {@code null}.
 	 * @param region
-	 *            The region to store.
+	 *            The region to store. Regions know their ID/index.
 	 * @throws RegionInUseException
 	 *             if the region has already been set to a non-empty region.
 	 */
-	public void set(int regionID, MemoryRegion region)
+	public void set(MemoryRegion region)
 			throws RegionInUseException {
-		if (!isEmpty(regionID)) {
-			throw new RegionInUseException(regionID);
+		if (!isEmpty(region.getIndex())) {
+			throw new RegionInUseException(region.getIndex());
 		}
-		regions[regionID] =
+		regions[region.getIndex()] =
             requireNonNull(region, "must not set an empty region");
 	}
 

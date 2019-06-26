@@ -82,9 +82,10 @@ public class NoDropPacketContext implements AutoCloseable {
 		CoreLocation firstCore = monitorCores.iterator().next();
 		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
-		log.info("switching board at {} to non-drop mode (saved status: {})",
-				firstChip, lastStatus);
-		log.info("will switch {} cores", monitorCores.size());
+		log.info(
+				"switching board at {} ({} monitor cores) to "
+						+ "non-drop mode (saved status: {})",
+				firstChip, monitorCores.size(), lastStatus);
 		try {
 			// Set to not inject dropped packets
 			txrx.setReinjection(monitorCores, false);
@@ -172,7 +173,7 @@ public class NoDropPacketContext implements AutoCloseable {
 			txrx.setReinjectionTimeout(monitorCores, lastStatus);
 			txrx.setReinjectionEmergencyTimeout(monitorCores, lastStatus);
 			txrx.setReinjection(monitorCores, lastStatus);
-			log.info("switched board at {} to standard mode", firstChip);
+			log.debug("switched board at {} to standard mode", firstChip);
 			return;
 		} catch (Exception e) {
 			log.error("error resetting router timeouts", e);

@@ -41,10 +41,14 @@ public class MemoryRegion {
 	private boolean unfilled;
 	/** The base address of the region. Set after the fact. */
 	private int regionBaseAddress;
+	/** The index of the memory region. */
+	private final int index;
 
 	/**
 	 * Create a memory region.
 	 *
+	 * @param index
+	 *            the index of the memory region
 	 * @param memoryPointer
 	 *            where the start of the block is
 	 * @param unfilled
@@ -52,7 +56,9 @@ public class MemoryRegion {
 	 * @param size
 	 *            the allocated size of the memory region
 	 */
-	public MemoryRegion(int memoryPointer, boolean unfilled, int size) {
+	public MemoryRegion(int index, int memoryPointer, boolean unfilled,
+			int size) {
+		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
 		regionBaseAddress = 0;
@@ -100,6 +106,10 @@ public class MemoryRegion {
 		return maxWritePointer;
 	}
 
+	/** @return the index of the memory region */
+	public int getIndex() {
+		return index;
+	}
 	/**
 	 * Set the write pointer. The write pointer is where the next block of data
 	 * to be written will actually be written.

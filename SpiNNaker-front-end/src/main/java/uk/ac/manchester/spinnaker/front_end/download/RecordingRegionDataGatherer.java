@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.lang.Integer.toUnsignedLong;
+import static java.lang.Long.toHexString;
 import static java.lang.String.format;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -117,10 +119,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	protected List<Region> getRegion(Placement placement, int index)
 			throws IOException, ProcessException {
 		ChannelBufferState state = getState(placement, index);
-		if (log.isInfoEnabled()) {
-			log.info("got state of {}:{} as {}", placement.asCoreLocation(),
-					index, state);
-		}
+		log.debug("got state of {} R:{} as {}", placement.asCoreLocation(),
+				index, state);
 		List<Region> regionPieces = new ArrayList<>(2);
 		if (state.currentRead < state.currentWrite) {
 			regionPieces.add(new RecordingRegion(placement, index,
@@ -135,10 +135,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 		// Remove any zero-sized reads
 		regionPieces =
 				regionPieces.stream().filter(r -> r.size > 0).collect(toList());
-		if (log.isInfoEnabled()) {
-			log.info("generated reads for {}:{} :: {}",
-					placement.asCoreLocation(), index, regionPieces);
-		}
+		log.debug("generated reads for {} R:{} :: {}",
+				placement.asCoreLocation(), index, regionPieces);
 		/*
 		 * But if there are NO reads, directly ask the database to store data so
 		 * that it has definitely a record for the current region.
@@ -159,15 +157,15 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data) {
+		String addr = toHexString(toUnsignedLong(r.startAddress));
 		if (data == null) {
-			log.warn("failed to download data for {}:{} from {}:{}", r.core,
-					r.regionIndex, r.startAddress, r.size);
+			log.warn("failed to download data for {} R:{} from 0x{}:{}", r.core,
+					r.regionIndex, addr, r.size);
 			return;
 		}
 		dbWorker.execute(() -> {
-			log.info("storing region data for {}:{} from {}:{} as {} bytes",
-					r.core, r.regionIndex, r.startAddress, r.size,
-					data.remaining());
+			log.info("storing region data for {} R:{} from 0x{} as {} bytes",
+					r.core, r.regionIndex, addr, data.remaining());
 			try {
 				database.appendRecordingContents(r, data);
 				numWrites++;
@@ -205,7 +203,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 		@Override
 		public String toString() {
-			return format("RegionRead(@%d,%d,%d:%d)=0x%08x[0x%x]",
+			return format("RegionRead(@%d,%d,%d,%d)=0x%08x[0x%x]",
 					core.getX(), core.getY(), core.getP(), regionIndex,
 					startAddress, size);
 		}

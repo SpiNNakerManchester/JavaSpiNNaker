@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
+import static java.lang.Long.toHexString;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
@@ -100,10 +101,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			"loading data specifications onto SpiNNaker";
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 	private static final String IN_REPORT_NAME =
-			"speeds_gained_in_speed_up_process.rpt";
+			"speeds_gained_in_speed_up_process.tsv";
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
-
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 
@@ -221,8 +221,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				SystemRouterTableContext routers = worker.systemRouterTables();
 				NoDropPacketContext context = worker.dontDropPackets()) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
+			if (!cores.isEmpty()) {
+				log.info("loading data onto {} cores on board", cores.size());
+			}
 			for (CoreToLoad ctl : cores) {
-				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}
 		}
@@ -283,12 +285,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			throws IOException {
 		if (!reportPath.exists()) {
 			try (PrintWriter w = open(reportPath, false)) {
-				w.println("x" + "\t\t y" + "\t\t SDRAM address"
-						+ "\t\t size in bytes" + "\t\t\t time took"
-						+ "\t\t\t Mb/s" + "\t\t\t missing sequence numbers");
-				w.println("------------------------------------------------"
-						+ "------------------------------------------------"
-						+ "-------------------------------------------------");
+				w.println("x" + "\ty" + "\tSDRAM address" + "\tsize/bytes"
+						+ "\ttime taken/s" + "\ttransfer rate/(Mb/s)"
+						+ "\tmissing sequence numbers");
 			}
 		}
 
@@ -301,8 +300,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			mbs = String.format("%f", megabits / timeTaken);
 		}
 		try (PrintWriter w = open(reportPath, true)) {
-			w.printf("%d\t\t %d\t\t %#08x\t\t %d\t\t\t\t %f\t\t\t %s\t\t %s\n",
-					chip.getX(), chip.getY(), toUnsignedLong(baseAddress),
+			w.printf("%d\t%d\t%#08x\t%d\t%f\t%s\t%s\n", chip.getX(),
+					chip.getY(), toUnsignedLong(baseAddress),
 					toUnsignedLong(size), timeTaken, mbs, missingNumbers);
 		}
 	}
@@ -421,8 +420,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int size = executor.getConstructedDataSize();
-				log.info("generated {} bytes to load onto {}", size, ctl.core);
 				int start = malloc(ctl, size);
+				log.info(
+						"generated {} bytes to load onto {} into memory "
+								+ "starting at {}",
+						size, ctl.core, toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
 				for (MemoryRegion r : executor.regions()) {
@@ -672,6 +674,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						haveMissing = false;
 						if (seqNums == null) {
 							log.info("full timeout; resending initial packets");
+							connection.restart();
+							connection.increaseThrottleDelay();
 							continue outerLoop;
 						}
 						retransmitMissingPackets(protocol, data, seqNums);
@@ -709,7 +713,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol) throws IOException {
 			int numPackets = computeNumPackets(data);
-			log.info("streaming {} bytes in {} packets", data.remaining(),
+			log.debug("streaming {} bytes in {} packets", data.remaining(),
 					numPackets);
 			log.debug("sending packet #{}", 0);
 			connection.send(

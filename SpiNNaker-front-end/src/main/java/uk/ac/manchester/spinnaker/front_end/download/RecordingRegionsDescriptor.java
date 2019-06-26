@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Integer.toHexString;
+import static java.lang.Long.toHexString;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
@@ -81,8 +82,9 @@ final class RecordingRegionsDescriptor {
 			long address) throws IOException, ProcessException {
 		// Read the descriptor from SpiNNaker
 		int nr = txrx.readMemory(chip, address, WORD_SIZE).getInt();
-		RecordingRegionDataGatherer.log.info("{} recording regions at {} of {}",
-				nr, address, chip);
+		RecordingRegionDataGatherer.log.info(
+				"{} recording regions at 0x{} of {}", nr, toHexString(address),
+				chip);
 		int size = WORD_SIZE * (REGION_POINTERS_START + 2 * nr);
 		ByteBuffer buffer = txrx.readMemory(chip, address, size);
 		this.chip = chip.asChipLocation();
