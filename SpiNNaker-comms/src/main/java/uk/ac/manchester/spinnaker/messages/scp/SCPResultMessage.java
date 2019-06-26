@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Short.toUnsignedInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
@@ -56,7 +57,7 @@ public class SCPResultMessage {
 		// Skip the padding bytes and the SDP header
 		peek.position(SKIP_HEADER_BYTES);
 		result = SCPResult.get(peek.getShort());
-		sequenceNumber = peek.getShort();
+		sequenceNumber = toUnsignedInt(peek.getShort());
 		responseData = response;
 	}
 
