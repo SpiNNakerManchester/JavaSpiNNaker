@@ -126,18 +126,18 @@ public class ThrottledConnection implements Closeable {
 		IPTagSet tagSet = new IPTagSet(location,
 				connection.getLocalIPAddress().getAddress(),
 				connection.getLocalPort(), iptag.getTag(), true, true);
-		log.info("reprogramming tag {} to point to {}:{}", iptag.getTag(),
+		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
 				connection.getLocalIPAddress(), connection.getLocalPort());
 		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
 		ByteBuffer data = connection.getSCPData(tagSet);
 		SocketTimeoutException e = null;
-		for (int i = 0; i < IPTAG_REPROGRAM_ATTEMPTS; i++) {
+		for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
 			try {
 				connection.send(data.duplicate());
 				lastSend = nanoTime();
 				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
 						.parsePayload(tagSet);
-				log.info("reprogrammed in {} attempts", i + 1);
+				log.debug("reprogrammed in {} attempts", i);
 				return;
 			} catch (SocketTimeoutException timeout) {
 				e = timeout;
@@ -208,7 +208,12 @@ public class ThrottledConnection implements Closeable {
 		// Prevent reuse of existing socket IDs for other boards
 		CLOSER.schedule(() -> {
 			try {
+				Object name = null;
+				if (log.isInfoEnabled()) {
+					name = c.toString();
+				}
 				c.close();
+				log.info("closed {}", name);
 			} catch (IOException e) {
 				log.warn("failed to close connection", e);
 			}

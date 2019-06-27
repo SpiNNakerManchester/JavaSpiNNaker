@@ -281,7 +281,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If IO fails.
 	 */
 	public synchronized void writeReport(HasChipLocation chip, long timeDiff,
-			int size, int baseAddress, List<?> missingNumbers)
+			int size, int baseAddress, Object missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
 			try (PrintWriter w = open(reportPath, false)) {
@@ -423,7 +423,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				int start = malloc(ctl, size);
 				log.info(
 						"generated {} bytes to load onto {} into memory "
-								+ "starting at {}",
+								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
@@ -529,9 +529,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				fastWrite(core, baseAddress, data);
 			}
 			long end = nanoTime();
-			if (writeReports && written >= VERY_SMALL_WRITE_THRESHOLD) {
+			if (writeReports) {
+				Object detail = missingSequenceNumbers;
+				if (written < VERY_SMALL_WRITE_THRESHOLD) {
+					detail = "written via SCP";
+				}
 				writeReport(core, end - start, data.limit(), baseAddress,
-						missingSequenceNumbers);
+						detail);
 			}
 			missingSequenceNumbers = null;
 			return written;

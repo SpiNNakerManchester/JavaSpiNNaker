@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.lang.Integer.toUnsignedLong;
+import static java.lang.Long.toHexString;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -199,7 +201,6 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		try (BoardLocal c = new BoardLocal(board.location)) {
 			BoardWorker worker = new BoardWorker(board, storage, bar);
 			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
-				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}
 		}
@@ -211,7 +212,6 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		try (BoardLocal c = new BoardLocal(board.location)) {
 			BoardWorker worker = new BoardWorker(board, storage, bar);
 			for (CoreToLoad ctl : storage.listCoresToLoad(board, system)) {
-				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}
 		}
@@ -271,6 +271,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				executor.execute();
 				int size = executor.getConstructedDataSize();
 				int start = malloc(ctl, size);
+				log.info("loading data onto {} ({} bytes at 0x{})",
+						ctl.core.asChipLocation(), toUnsignedLong(size),
+						toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
 				for (MemoryRegion r : executor.regions()) {
@@ -285,7 +288,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
 				throw new DataSpecificationException(
-						"failed to execute data specification on core "
+						"failed to execute data specification for core "
 								+ ctl.core + " of board " + board.location
 								+ " (" + board.ethernetAddress + ")",
 						e);
