@@ -57,7 +57,7 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 public class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final int THROTTLE_NS = 410000;
+	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
@@ -78,7 +78,6 @@ public class ThrottledConnection implements Closeable {
 	private final InetAddress addr;
 	private SCPConnection connection;
 	private long lastSend;
-	private int throttleFactor = 1;
 
 	/**
 	 * Create a throttled connection for talking to a board.
@@ -188,14 +187,10 @@ public class ThrottledConnection implements Closeable {
 			log.debug("message payload data: {}", range(0, payload.remaining())
 					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
-		long waited = nanoTime() - lastSend;
-		long delay = THROTTLE_NS * throttleFactor;
-		if (waited < delay) {
-			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-			while (nanoTime() - lastSend < delay) {
-				// Make the loop slightly less heavy
-				yield();
-			}
+		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
+		while (nanoTime() - lastSend < THROTTLE_NS) {
+			// Make the loop slightly less heavy
+			yield();
 		}
 		connection.sendSDPMessage(message);
 		lastSend = nanoTime();
@@ -218,12 +213,5 @@ public class ThrottledConnection implements Closeable {
 				log.warn("failed to close connection", e);
 			}
 		}, 1, TimeUnit.SECONDS);
-	}
-
-	/**
-	 * Increase the amount of time required for the inter-message throttling.
-	 */
-	public void increaseThrottleDelay() {
-		throttleFactor++;
 	}
 }

@@ -427,9 +427,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
+				List<MemoryRegion> largeRegions = new ArrayList<>();
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
-						written += writeRegion(ctl.core, r, r.getRegionBase());
+						written += writeRegion(ctl.core, r, r.getRegionBase(),
+								largeRegions);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
 							ByteBuffer readBack =
 									txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -441,6 +443,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
 				txrx.writeMemory(ctl.core, user0, start);
+
+				for (MemoryRegion r : largeRegions) {
+					written +=
+							writeRegion(ctl.core, r, r.getRegionBase(), null);
+					if (SPINNAKER_COMPARE_UPLOAD != null) {
+						ByteBuffer readBack =
+								txrx.readMemory(ctl.core, r.getRegionBase(),
+										r.getRegionData().remaining());
+						compareBuffers(r.getRegionData(), readBack);
+					}
+				}
+
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
@@ -508,6 +522,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The region to write.
 		 * @param baseAddress
 		 *            Where to write the region.
+		 * @param largeRegions
+		 *            If not {@code null}, append a the region to this list to
+		 *            be processed later if it is "large". If {@code null},
+		 *            process the region always (because it is probably large
+		 *            and was collected earlier).
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
@@ -515,7 +534,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
-				int baseAddress) throws IOException, ProcessException {
+				int baseAddress, List<MemoryRegion> largeRegions)
+				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
 			data.flip();
@@ -526,7 +546,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Faster to use SCP to SCAMP when the data is "small".
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
-				fastWrite(core, baseAddress, data);
+				if (largeRegions == null) {
+					fastWrite(core, baseAddress, data);
+				} else {
+					// Move large regions to the end
+					largeRegions.add(region);
+					return 0;
+				}
 			}
 			long end = nanoTime();
 			if (writeReports) {
@@ -658,6 +684,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 						if (seqNums == null) {
 							seqNums = newSequenceNumberCollector();
+							log.debug("allocated sequence number collector");
 						}
 						addMissedSeqNums(received, seqNums, expectedMax);
 						if ((haveMissing && remainingMissingPackets <= 0)
@@ -672,14 +699,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
 							throw e;
 						}
-						// log.info("timeout; restarting socket");
-						// connection.restart();
 						remainingMissingPackets = 0;
 						haveMissing = false;
 						if (seqNums == null) {
 							log.info("full timeout; resending initial packets");
 							connection.restart();
-							connection.increaseThrottleDelay();
 							continue outerLoop;
 						}
 						retransmitMissingPackets(protocol, data, seqNums);
