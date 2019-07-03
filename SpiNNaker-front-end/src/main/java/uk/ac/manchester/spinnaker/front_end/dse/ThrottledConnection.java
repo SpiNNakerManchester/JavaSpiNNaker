@@ -23,11 +23,13 @@ import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.emptySet;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -36,7 +38,6 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
@@ -60,18 +61,21 @@ public class ThrottledConnection implements Closeable {
 	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
+	/** In milliseconds. */
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
+	/** Number of times to try to reprogram the IP Tag. */
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
+	/** In milliseconds. */
 	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
-	private static final ScheduledExecutorService CLOSER =
-			newSingleThreadScheduledExecutor(r -> {
-				Thread t = new Thread(r, "ThrottledConnection.Closer");
-				t.setDaemon(true);
-				return t;
-			});
+	private static final ScheduledExecutorService CLOSER;
 	static {
+		CLOSER = newSingleThreadScheduledExecutor(r -> {
+			Thread t = new Thread(r, "ThrottledConnection.Closer");
+			t.setDaemon(true);
+			return t;
+		});
 		log.info("inter-message minimum time set to {}us",
-				THROTTLE_NS / 1000.0);
+				THROTTLE_NS / NSEC_PER_USEC);
 	}
 
 	private final ChipLocation location;
@@ -212,6 +216,6 @@ public class ThrottledConnection implements Closeable {
 			} catch (IOException e) {
 				log.warn("failed to close connection", e);
 			}
-		}, 1, TimeUnit.SECONDS);
+		}, 1, SECONDS);
 	}
 }

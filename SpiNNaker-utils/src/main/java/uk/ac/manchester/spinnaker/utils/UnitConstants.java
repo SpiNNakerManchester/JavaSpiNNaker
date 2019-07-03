@@ -45,6 +45,9 @@ public final class UnitConstants {
     /** The number of minute per hour. */
 	public static final int MINUTE_PER_HOUR = 60;
 
+	/** The number of nanoseconds per microsecond. */
+	public static final double NSEC_PER_USEC = 1000.0;
+
     /**
      * Formats a Duration with hours, minutes seconds and milliseconds
      *      as required.
