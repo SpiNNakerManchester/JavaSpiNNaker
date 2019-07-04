@@ -67,8 +67,6 @@ public class ThrottledConnection implements Closeable {
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
 	/** In milliseconds. */
 	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
-	/** Lets the OS have time to close down a socket. In milliseconds. */
-	private static final int SOCKET_RESTART_SLEEP = 50;
 	private static final ScheduledExecutorService CLOSER;
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {
@@ -160,27 +158,6 @@ public class ThrottledConnection implements Closeable {
 		if (e != null) {
 			throw e;
 		}
-	}
-
-	/**
-	 * Shut down and reopen the connection. It sometimes unsticks things
-	 * apparently.
-	 *
-	 * @throws IOException
-	 *             If IO fails
-	 */
-	public void restart() throws IOException {
-		log.info("restarting UDP connection");
-		InetAddress localAddr = connection.getLocalIPAddress();
-		int localPort = connection.getLocalPort();
-		connection.close();
-		try {
-			sleep(SOCKET_RESTART_SLEEP);
-		} catch (InterruptedException ignore) {
-			log.debug("interrupted while sleeping");
-		}
-		connection = new SCPConnection(location, localAddr, localPort, addr,
-				SCP_SCAMP_PORT);
 	}
 
 	/**

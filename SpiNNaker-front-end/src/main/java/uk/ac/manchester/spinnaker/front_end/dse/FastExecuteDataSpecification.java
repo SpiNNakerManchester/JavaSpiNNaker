@@ -703,7 +703,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						haveMissing = false;
 						if (seqNums == null) {
 							log.info("full timeout; resending initial packets");
-							connection.restart();
 							continue outerLoop;
 						}
 						retransmitMissingPackets(protocol, data, seqNums);
