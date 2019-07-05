@@ -1897,7 +1897,7 @@ public class Transceiver extends UDPTransceiver
 			IPTagSet tagSet;
 
 			if (useSender) {
-				tagSet = new IPTagSet(connection.getChip(), new byte[4], 0,
+				tagSet = new IPTagSet(connection.getChip(), null, 0,
 						tag.getTag(), tag.isStripSDP(), true);
 			} else {
 				// Convert the host string

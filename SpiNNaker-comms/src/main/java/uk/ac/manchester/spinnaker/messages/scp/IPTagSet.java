@@ -44,13 +44,15 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	private static final Logger log = getLogger(IPTagSet.class);
-	private static final byte[] INADDR_ANY = new byte[4];
+	private static final int INADDRSZ = 4;;
+	private static final byte[] INADDR_ANY = new byte[INADDRSZ];
 
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
 	 * @param host
-	 *            The host address, as an array of 4 bytes.
+	 *            The host address, as an array of 4 bytes. May be {@code null}
+	 *            to use the ANY address.
 	 * @param port
 	 *            The port, between 0 and 65535
 	 * @param tag
@@ -64,7 +66,7 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 			boolean strip, boolean useSender) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
 				argument2(port), argument3(host));
-		if (useSender && !Arrays.equals(host, INADDR_ANY)) {
+		if (useSender && host != null && !Arrays.equals(host, INADDR_ANY)) {
 			log.warn("IPTag has real host address but useSender was true");
 		}
 	}
@@ -80,6 +82,9 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument3(byte[] host) {
+		if (host == null) {
+			return 0;
+		}
 		return range(0, host.length)
 				.map(i -> toUnsignedInt(host[host.length - 1 - i]))
 				.reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
