@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.util.stream.IntStream.range;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.BYTE_SHIFT;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
@@ -28,6 +29,9 @@ import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.USE_
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -39,6 +43,9 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see ReverseIPTagSet
  */
 public class IPTagSet extends SCPRequest<CheckOKResponse> {
+	private static final Logger log = getLogger(IPTagSet.class);
+	private static final byte[] INADDR_ANY = new byte[4];
+
 	/**
 	 * @param chip
 	 *            The chip to set the tag on.
@@ -57,6 +64,9 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 			boolean strip, boolean useSender) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
 				argument2(port), argument3(host));
+		if (useSender && !Arrays.equals(host, INADDR_ANY)) {
+			log.warn("IPTag has real host address but useSender was true");
+		}
 	}
 
 	private static int argument1(int tag, boolean strip, boolean useSender) {

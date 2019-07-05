@@ -1894,16 +1894,22 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		for (SCPConnection connection : connections) {
-			// Convert the host string
-			InetAddress host = tag.getIPAddress();
-			if (host == null || host.isAnyLocalAddress()
-					|| host.isLoopbackAddress()) {
-				host = connection.getLocalIPAddress();
-			}
+			IPTagSet tagSet;
 
-			simpleProcess().execute(new IPTagSet(connection.getChip(),
-					host.getAddress(), tag.getPort(), tag.getTag(),
-					tag.isStripSDP(), useSender));
+			if (useSender) {
+				tagSet = new IPTagSet(connection.getChip(), new byte[4], 0,
+						tag.getTag(), tag.isStripSDP(), true);
+			} else {
+				// Convert the host string
+				InetAddress host = tag.getIPAddress();
+				if (host == null || host.isAnyLocalAddress()
+						|| host.isLoopbackAddress()) {
+					host = connection.getLocalIPAddress();
+				}
+				tagSet = new IPTagSet(connection.getChip(), host.getAddress(),
+						tag.getPort(), tag.getTag(), tag.isStripSDP(), false);
+			}
+			simpleProcess().execute(tagSet);
 		}
 	}
 
