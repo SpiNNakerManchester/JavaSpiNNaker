@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end;
 import static org.apache.log4j.Logger.getRootLogger;
 
 import java.io.File;
+import java.util.concurrent.Executor;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -39,6 +40,7 @@ public abstract class LogControl {
 	private static final String PARALLEL_LOGGER_NAME = "parallog";
 	private static final String LOGGING_LEVEL_NAME = "logging.level";
 	private static final String UDP_LOGGING = "logging.udp";
+	private static final String EXECUTOR_LOGGING = "logging.executor";
 
 	private LogControl() {
 	}
@@ -70,6 +72,9 @@ public abstract class LogControl {
 
 		if (System.getProperty(UDP_LOGGING) != null) {
 			Logger.getLogger(UDPConnection.class).setLevel(Level.DEBUG);
+		}
+		if (System.getProperty(EXECUTOR_LOGGING) != null) {
+			Logger.getLogger(Executor.class).setLevel(Level.DEBUG);
 		}
 	}
 }

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
+import static java.lang.Long.toHexString;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
@@ -100,10 +101,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			"loading data specifications onto SpiNNaker";
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 	private static final String IN_REPORT_NAME =
-			"speeds_gained_in_speed_up_process.rpt";
+			"speeds_gained_in_speed_up_process.tsv";
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
-
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
 
@@ -221,8 +221,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				SystemRouterTableContext routers = worker.systemRouterTables();
 				NoDropPacketContext context = worker.dontDropPackets()) {
 			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
+			if (!cores.isEmpty()) {
+				log.info("loading data onto {} cores on board", cores.size());
+			}
 			for (CoreToLoad ctl : cores) {
-				log.info("loading data onto {}", ctl.core);
 				worker.loadCore(ctl);
 			}
 		}
@@ -279,16 +281,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If IO fails.
 	 */
 	public synchronized void writeReport(HasChipLocation chip, long timeDiff,
-			int size, int baseAddress, List<?> missingNumbers)
+			int size, int baseAddress, Object missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
 			try (PrintWriter w = open(reportPath, false)) {
-				w.println("x" + "\t\t y" + "\t\t SDRAM address"
-						+ "\t\t size in bytes" + "\t\t\t time took"
-						+ "\t\t\t Mb/s" + "\t\t\t missing sequence numbers");
-				w.println("------------------------------------------------"
-						+ "------------------------------------------------"
-						+ "-------------------------------------------------");
+				w.println("x" + "\ty" + "\tSDRAM address" + "\tsize/bytes"
+						+ "\ttime taken/s" + "\ttransfer rate/(Mb/s)"
+						+ "\tmissing sequence numbers");
 			}
 		}
 
@@ -301,8 +300,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			mbs = String.format("%f", megabits / timeTaken);
 		}
 		try (PrintWriter w = open(reportPath, true)) {
-			w.printf("%d\t\t %d\t\t %#08x\t\t %d\t\t\t\t %f\t\t\t %s\t\t %s\n",
-					chip.getX(), chip.getY(), toUnsignedLong(baseAddress),
+			w.printf("%d\t%d\t%#08x\t%d\t%f\t%s\t%s\n", chip.getX(),
+					chip.getY(), toUnsignedLong(baseAddress),
 					toUnsignedLong(size), timeTaken, mbs, missingNumbers);
 		}
 	}
@@ -421,13 +420,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int size = executor.getConstructedDataSize();
-				log.info("generated {} bytes to load onto {}", size, ctl.core);
 				int start = malloc(ctl, size);
+				log.info(
+						"generated {} bytes to load onto {} into memory "
+								+ "starting at 0x{}",
+						size, ctl.core, toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
+				List<MemoryRegion> largeRegions = new ArrayList<>();
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
-						written += writeRegion(ctl.core, r, r.getRegionBase());
+						written += writeRegion(ctl.core, r, r.getRegionBase(),
+								largeRegions);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
 							ByteBuffer readBack =
 									txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -439,6 +443,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
 				txrx.writeMemory(ctl.core, user0, start);
+
+				for (MemoryRegion r : largeRegions) {
+					written +=
+							writeRegion(ctl.core, r, r.getRegionBase(), null);
+					if (SPINNAKER_COMPARE_UPLOAD != null) {
+						ByteBuffer readBack =
+								txrx.readMemory(ctl.core, r.getRegionBase(),
+										r.getRegionData().remaining());
+						compareBuffers(r.getRegionData(), readBack);
+					}
+				}
+
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
@@ -506,6 +522,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The region to write.
 		 * @param baseAddress
 		 *            Where to write the region.
+		 * @param largeRegions
+		 *            If not {@code null}, append a the region to this list to
+		 *            be processed later if it is "large". If {@code null},
+		 *            process the region always (because it is probably large
+		 *            and was collected earlier).
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
@@ -513,7 +534,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
-				int baseAddress) throws IOException, ProcessException {
+				int baseAddress, List<MemoryRegion> largeRegions)
+				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
 			data.flip();
@@ -524,12 +546,22 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Faster to use SCP to SCAMP when the data is "small".
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
-				fastWrite(core, baseAddress, data);
+				if (largeRegions == null) {
+					fastWrite(core, baseAddress, data);
+				} else {
+					// Move large regions to the end
+					largeRegions.add(region);
+					return 0;
+				}
 			}
 			long end = nanoTime();
-			if (writeReports && written >= VERY_SMALL_WRITE_THRESHOLD) {
+			if (writeReports) {
+				Object detail = missingSequenceNumbers;
+				if (written < VERY_SMALL_WRITE_THRESHOLD) {
+					detail = "written via SCP";
+				}
 				writeReport(core, end - start, data.limit(), baseAddress,
-						missingSequenceNumbers);
+						detail);
 			}
 			missingSequenceNumbers = null;
 			return written;
@@ -652,6 +684,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 						if (seqNums == null) {
 							seqNums = newSequenceNumberCollector();
+							log.debug("allocated sequence number collector");
 						}
 						addMissedSeqNums(received, seqNums, expectedMax);
 						if ((haveMissing && remainingMissingPackets <= 0)
@@ -666,8 +699,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
 							throw e;
 						}
-						// log.info("timeout; restarting socket");
-						// connection.restart();
 						remainingMissingPackets = 0;
 						haveMissing = false;
 						if (seqNums == null) {
@@ -709,7 +740,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol) throws IOException {
 			int numPackets = computeNumPackets(data);
-			log.info("streaming {} bytes in {} packets", data.remaining(),
+			log.debug("streaming {} bytes in {} packets", data.remaining(),
 					numPackets);
 			log.debug("sending packet #{}", 0);
 			connection.send(

@@ -17,15 +17,19 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.System.nanoTime;
+import static java.lang.Thread.sleep;
 import static java.lang.Thread.yield;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.emptySet;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -33,6 +37,7 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 
@@ -53,11 +58,26 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 public class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final int THROTTLE_NS = 35000;
+	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
+	/** In milliseconds. */
 	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
+	/** Number of times to try to reprogram the IP Tag. */
 	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
+	/** In milliseconds. */
+	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
+	private static final ScheduledExecutorService CLOSER;
+	private static final int ANY_PORT = 0;
+	static {
+		CLOSER = newSingleThreadScheduledExecutor(r -> {
+			Thread t = new Thread(r, "ThrottledConnection.Closer");
+			t.setDaemon(true);
+			return t;
+		});
+		log.info("inter-message minimum time set to {}us",
+				THROTTLE_NS / NSEC_PER_USEC);
+	}
 
 	private final ChipLocation location;
 	private final InetAddress addr;
@@ -76,6 +96,8 @@ public class ThrottledConnection implements Closeable {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+		log.info("created throttled connection to " + location + " (" + addr
+				+ ")");
 	}
 
 	/**
@@ -92,11 +114,6 @@ public class ThrottledConnection implements Closeable {
 				.asIntBuffer();
 	}
 
-	private static final byte[] INADDR_ANY = new byte[] {
-		0, 0, 0, 0
-	};
-	private static final int ANY_PORT = 0;
-
 	/**
 	 * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
 	 * up to the caller to ensure that the tag is allocated in the first place.
@@ -110,22 +127,27 @@ public class ThrottledConnection implements Closeable {
 	 */
 	public void reprogramTag(IPTag iptag)
 			throws IOException, UnexpectedResponseCodeException {
-		log.debug("reprogramming tag {} to point to {}:{}", iptag.getTag(),
+		IPTagSet tagSet = new IPTagSet(location, null, ANY_PORT, iptag.getTag(),
+				true, true);
+		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
 				connection.getLocalIPAddress(), connection.getLocalPort());
-		IPTagSet tagSet = new IPTagSet(location, INADDR_ANY, ANY_PORT,
-				iptag.getTag(), true, true);
 		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
 		ByteBuffer data = connection.getSCPData(tagSet);
 		SocketTimeoutException e = null;
-		for (int i = 0; i < IPTAG_REPROGRAM_ATTEMPTS; i++) {
+		for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
 			try {
 				connection.send(data.duplicate());
 				lastSend = nanoTime();
 				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
 						.parsePayload(tagSet);
+				log.debug("reprogrammed in {} attempts", i);
 				return;
 			} catch (SocketTimeoutException timeout) {
 				e = timeout;
+				try {
+					sleep(IPTAG_INTERATTEMPT_DELAY);
+				} catch (InterruptedException ignored) {
+				}
 			} catch (IOException | RuntimeException
 					| UnexpectedResponseCodeException ex) {
 				throw ex;
@@ -136,22 +158,6 @@ public class ThrottledConnection implements Closeable {
 		if (e != null) {
 			throw e;
 		}
-	}
-
-	/**
-	 * Shut down and reopen the connection. It sometimes unsticks things
-	 * apparently.
-	 *
-	 * @throws IOException
-	 *             If IO fails
-	 */
-	public void restart() throws IOException {
-		log.info("restarting UDP connection");
-		InetAddress localAddr = connection.getLocalIPAddress();
-		int localPort = connection.getLocalPort();
-		connection.close();
-		connection = new SCPConnection(location, localAddr, localPort, addr,
-				SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -169,20 +175,31 @@ public class ThrottledConnection implements Closeable {
 			log.debug("message payload data: {}", range(0, payload.remaining())
 					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
-		long waited = nanoTime() - lastSend;
-		if (waited < THROTTLE_NS) {
-			// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-			while (nanoTime() - lastSend < THROTTLE_NS) {
-				// Make the loop slightly less heavy
-				yield();
-			}
+		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
+		while (nanoTime() - lastSend < THROTTLE_NS) {
+			// Make the loop slightly less heavy
+			yield();
 		}
 		connection.sendSDPMessage(message);
 		lastSend = nanoTime();
 	}
 
 	@Override
-	public void close() throws IOException {
-		connection.close();
+	public void close() {
+		SCPConnection c = connection;
+		connection = null;
+		// Prevent reuse of existing socket IDs for other boards
+		CLOSER.schedule(() -> {
+			try {
+				Object name = null;
+				if (log.isInfoEnabled()) {
+					name = c.toString();
+				}
+				c.close();
+				log.info("closed {}", name);
+			} catch (IOException e) {
+				log.warn("failed to close connection", e);
+			}
+		}, 1, SECONDS);
 	}
 }

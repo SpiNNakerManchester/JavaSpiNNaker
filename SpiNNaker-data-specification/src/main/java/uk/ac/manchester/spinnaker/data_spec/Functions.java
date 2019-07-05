@@ -181,7 +181,7 @@ class Functions implements FunctionAPI {
                     + " but needs to be in 0 to " + (memorySpace - 1)
                     + " (inclusive)");
 		}
-		memRegions.set(region, new MemoryRegion(0, unfilled, size));
+		memRegions.set(new MemoryRegion(region, 0, unfilled, size));
 		spaceAllocated += size;
 	}
 

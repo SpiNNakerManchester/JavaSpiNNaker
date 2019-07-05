@@ -586,7 +586,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			ra = getRemoteAddress();
 		} catch (IOException ignore) {
 		}
-		return String.format("%s(%s <--> %s)",
-				getClass().getSimpleName().replaceAll("^.*\\.", ""), la, ra);
+		return String.format("%s(%s <-%s-> %s)",
+				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
+				isClosed() ? "|" : "", ra);
 	}
 }
