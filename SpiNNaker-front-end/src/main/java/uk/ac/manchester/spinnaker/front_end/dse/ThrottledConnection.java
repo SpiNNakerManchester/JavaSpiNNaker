@@ -68,6 +68,8 @@ public class ThrottledConnection implements Closeable {
 	/** In milliseconds. */
 	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
 	private static final ScheduledExecutorService CLOSER;
+	private static final byte[] INADDR_ANY = new byte[4];
+	private static final int ANY_PORT = 0;
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {
 			Thread t = new Thread(r, "ThrottledConnection.Closer");
@@ -126,9 +128,8 @@ public class ThrottledConnection implements Closeable {
 	 */
 	public void reprogramTag(IPTag iptag)
 			throws IOException, UnexpectedResponseCodeException {
-		IPTagSet tagSet = new IPTagSet(location,
-				connection.getLocalIPAddress().getAddress(),
-				connection.getLocalPort(), iptag.getTag(), true, true);
+		IPTagSet tagSet = new IPTagSet(location, INADDR_ANY, ANY_PORT,
+				iptag.getTag(), true, true);
 		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
 				connection.getLocalIPAddress(), connection.getLocalPort());
 		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
