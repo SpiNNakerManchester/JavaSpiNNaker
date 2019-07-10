@@ -93,4 +93,35 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
+	/**
+	 * Get the usage of each of the (active) tags associated with a connection.
+	 *
+	 * @param connection
+	 *            The connection that the tags are associated with.
+	 * @return A map from each active tag to the number of packets sent through
+	 *         that tag.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	public Map<Tag, Integer> getTagUsage(SCPConnection connection)
+			throws IOException, ProcessException {
+		Response tagInfo =
+				synchronousCall(new IPTagGetInfo(connection.getChip()));
+
+		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
+		Map<Tag, Integer> tagUsages = new TreeMap<>();
+		for (final int tag : range(0, numTags).toArray()) {
+			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
+				if (response.isInUse()) {
+					tagUsages.put(createTag(connection.getRemoteIPAddress(),
+							tag, response), response.count);
+				}
+			});
+		}
+		finish();
+		checkForError();
+		return tagUsages;
+	}
 }

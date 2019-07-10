@@ -37,16 +37,17 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
+import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
- * A process for reading IOBUF memory (mostly log messages) from a SpiNNaker
- * core.
+ * A process for reading and clearing IOBUF memory (mostly log messages) from a
+ * SpiNNaker core.
  */
-public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
+public class IOBufControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int BUF_HEADER_BYTES = 16;
 	private static final int BLOCK_HEADER_BYTES = 16;
 	private static final int WORD = 4;
@@ -63,10 +64,45 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ReadIOBufProcess(
+	public IOBufControlProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
+	}
+
+	/**
+	 * Clear the IOBUF buffers of a core.
+	 *
+	 * @param core
+	 *            the core where the IOBUF is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public void clearIOBUF(CoreLocation core)
+			throws IOException, ProcessException {
+		synchronousCall(new ClearIOBUF(core, true));
+	}
+
+	/**
+	 * Clear the IOBUF buffers of some cores.
+	 *
+	 * @param coreSubsets
+	 *            the cores where the IOBUFs are.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public void clearIOBUF(CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
+			sendRequest(new ClearIOBUF(core, true));
+		}
+		finish();
+		checkForError();
 	}
 
 	private static int chunk(int overall) {

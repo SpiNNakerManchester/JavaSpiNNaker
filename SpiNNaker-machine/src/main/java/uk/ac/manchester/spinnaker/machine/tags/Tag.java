@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.machine.tags;
 import java.net.InetAddress;
 
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
-public abstract class Tag {
+public abstract class Tag implements Comparable<Tag> {
     /** The board address associated with this tagID. */
     private final InetAddress boardAddress;
     /** The tagID ID associated with this tagID. */
@@ -43,12 +43,15 @@ public abstract class Tag {
         this.port = port;
     }
 
-    /** @return The board address of the tagID. */
+    /** @return The board address of the tag. */
     public InetAddress getBoardAddress() {
         return boardAddress;
     }
 
-    /** @return The tagID ID of the tagID. */
+    /**
+     * @return The ID of the tag. Note that this is the only property used for
+     *         determining order.
+     */
     public int getTag() {
         return tagID;
     }
@@ -68,8 +71,7 @@ public abstract class Tag {
      */
     public void setPort(int port) {
         if (this.port != null && this.port != port) {
-            throw new IllegalStateException(
-                    "port cannot be changed to " + port
+            throw new IllegalStateException("port cannot be changed to " + port
                     + " once set to " + this.port);
         }
         this.port = port;
@@ -116,5 +118,18 @@ public abstract class Tag {
             h ^= port * MAGIC2;
         }
         return h;
+    }
+
+    /**
+     * Compare this tag to another one for ordering <strong>Note:</strong> this
+     * class has a natural ordering that is inconsistent with equals; ordering
+     * is by the tag ID only (this is fine for tags obtained from the same chip
+     * at the same time, which is the primary use case).
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(Tag o) {
+        return getTag() - o.getTag();
     }
 }

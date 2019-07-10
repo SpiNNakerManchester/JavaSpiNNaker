@@ -23,10 +23,15 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
+import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
-/** A process for allocating a block of SDRAM on a SpiNNaker chip. */
-public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
+/**
+ * A process for allocating and deallocating a block of SDRAM on a SpiNNaker
+ * chip.
+ */
+public class SDRAMAllocatorProcess
+		extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -35,7 +40,7 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public MallocSDRAMProcess(
+	public SDRAMAllocatorProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
@@ -56,7 +61,7 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
+	public int malloc(HasChipLocation chip, int size, AppID appID)
 			throws IOException, ProcessException {
 		return synchronousCall(new SDRAMAlloc(chip, appID, size)).baseAddress;
 	}
@@ -80,9 +85,45 @@ public class MallocSDRAMProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
+	public int malloc(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
 		return synchronousCall(
 				new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
+	}
+
+	/**
+	 * Free the memory associated with a given application ID.
+	 *
+	 * @param chip
+	 *            the chip to allocate on
+	 * @param appID
+	 *            The ID of the application
+	 * @return the number of blocks freed
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public int free(HasChipLocation chip, AppID appID)
+			throws IOException, ProcessException {
+		return synchronousCall(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
+	}
+
+	/**
+	 * Free a block of memory of known size.
+	 *
+	 * @param chip
+	 *            the chip to allocate on
+	 * @param baseAddress
+	 *            The start address in SDRAM to which the block needs to be
+	 *            deallocated
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public void free(HasChipLocation chip, int baseAddress)
+			throws IOException, ProcessException {
+		synchronousCall(new SDRAMDeAlloc(chip, baseAddress));
 	}
 }

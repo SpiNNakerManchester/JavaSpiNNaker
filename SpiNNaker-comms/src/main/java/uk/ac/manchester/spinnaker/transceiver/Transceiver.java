@@ -150,35 +150,22 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ClearIOBufProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ClearQueueProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.DeallocSDRAMProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.processes.FixedRouteControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetHeapProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetMulticastRoutesProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetVersionProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.LoadApplicationRouterTableProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.LoadFixedRouteEntryProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.LoadMulticastRoutesProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.LoadSystemRouterTableProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.MallocSDRAMProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.IOBufControlProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.MulticastRoutesControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.processes.ReadFixedRouteEntryProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ReadIOBufProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ReadReinjectionStatusProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ReadRouterDiagnosticsProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ResetReinjectionCountersProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SaveApplicationRouterTableProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.RouterControlProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.SDRAMAllocatorProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SetReinjectionPacketTypesProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterEmergencyTimeoutProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SetRouterTimeoutProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.UpdateRuntimeProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
@@ -257,8 +244,7 @@ public class Transceiver extends UDPTransceiver
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
 	 */
-	private final Map<ChipLocation, Set<Integer>> ignoreCores =
-			new HashMap<>();
+	private final Map<ChipLocation, Set<Integer>> ignoreCores = new HashMap<>();
 
 	/**
 	 * A set of links to ignore in the machine. Requests for a "machine" will
@@ -1294,7 +1280,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// read iobuf from machine
-		return new ReadIOBufProcess(scpSelector, this).readIOBuf(iobufSize,
+		return new IOBufControlProcess(scpSelector, this).readIOBuf(iobufSize,
 				coreSubsets);
 	}
 
@@ -1308,7 +1294,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// read iobuf from machine
-		new ClearIOBufProcess(scpSelector, this).clearIOBUF(coreSubsets);
+		new IOBufControlProcess(scpSelector, this).clearIOBUF(coreSubsets);
 	}
 
 	@Override
@@ -1967,7 +1953,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
-		return new MallocSDRAMProcess(scpSelector, this).mallocSDRAM(chip, size,
+		return new SDRAMAllocatorProcess(scpSelector, this).malloc(chip, size,
 				appID, tag);
 	}
 
@@ -1975,16 +1961,14 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
-		new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
-				baseAddress);
+		new SDRAMAllocatorProcess(scpSelector, this).free(chip, baseAddress);
 	}
 
 	@Override
 	@ParallelSafe
 	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
-		return new DeallocSDRAMProcess(scpSelector, this).deallocSDRAM(chip,
-				appID);
+		return new SDRAMAllocatorProcess(scpSelector, this).free(chip, appID);
 	}
 
 	@Override
@@ -1992,7 +1976,7 @@ public class Transceiver extends UDPTransceiver
 	public void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
-		new LoadMulticastRoutesProcess(scpSelector, this).loadRoutes(chip,
+		new MulticastRoutesControlProcess(scpSelector, this).setRoutes(chip,
 				routes, appID);
 	}
 
@@ -2000,7 +1984,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID) throws IOException, ProcessException {
-		new LoadFixedRouteEntryProcess(scpSelector, this).loadFixedRoute(chip,
+		new FixedRouteControlProcess(scpSelector, this).loadFixedRoute(chip,
 				fixedRoute, appID);
 	}
 
@@ -2008,7 +1992,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
-		return new ReadFixedRouteEntryProcess(scpSelector, this)
+		return new FixedRouteControlProcess(scpSelector, this)
 				.readFixedRoute(chip, appID);
 	}
 
@@ -2017,8 +2001,8 @@ public class Transceiver extends UDPTransceiver
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException {
 		int address = (int) getSystemVariable(chip, router_table_copy_address);
-		return new GetMulticastRoutesProcess(scpSelector, this).getRoutes(chip,
-				address, appID);
+		return new MulticastRoutesControlProcess(scpSelector, this)
+				.getRoutes(chip, address, appID);
 	}
 
 	@Override
@@ -2032,7 +2016,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException {
-		return new ReadRouterDiagnosticsProcess(scpSelector, this)
+		return new RouterControlProcess(scpSelector, this)
 				.getRouterDiagnostics(chip);
 	}
 
@@ -2104,7 +2088,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void clearReinjectionQueues(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
-		new ClearQueueProcess(scpSelector, this)
+		new RouterControlProcess(scpSelector, this)
 				.clearQueue(monitorCore.asCoreLocation());
 	}
 
@@ -2112,14 +2096,14 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void clearReinjectionQueues(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
-		new ClearQueueProcess(scpSelector, this).clearQueue(monitorCores);
+		new RouterControlProcess(scpSelector, this).clearQueue(monitorCores);
 	}
 
 	@Override
 	@ParallelSafe
 	public ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
-		return new ReadReinjectionStatusProcess(scpSelector, this)
+		return new RouterControlProcess(scpSelector, this)
 				.getReinjectionStatus(monitorCore.asCoreLocation());
 	}
 
@@ -2127,7 +2111,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCores) throws IOException, ProcessException {
-		return new ReadReinjectionStatusProcess(scpSelector, this)
+		return new RouterControlProcess(scpSelector, this)
 				.getReinjectionStatus(monitorCores);
 	}
 
@@ -2135,7 +2119,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public void resetReinjectionCounters(HasCoreLocation monitorCore)
 			throws IOException, ProcessException {
-		new ResetReinjectionCountersProcess(scpSelector, this)
+		new RouterControlProcess(scpSelector, this)
 				.resetCounters(monitorCore.asCoreLocation());
 	}
 
@@ -2143,8 +2127,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void resetReinjectionCounters(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
-		new ResetReinjectionCountersProcess(scpSelector, this)
-				.resetCounters(monitorCores);
+		new RouterControlProcess(scpSelector, this).resetCounters(monitorCores);
 	}
 
 	@Override
@@ -2152,7 +2135,7 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionTypes(HasCoreLocation monitorCore,
 			boolean multicast, boolean pointToPoint, boolean fixedRoute,
 			boolean nearestNeighbour) throws IOException, ProcessException {
-		new SetReinjectionPacketTypesProcess(scpSelector, this).setPacketTypes(
+		new RouterControlProcess(scpSelector, this).setPacketTypes(
 				monitorCore.asCoreLocation(), multicast, pointToPoint,
 				fixedRoute, nearestNeighbour);
 	}
@@ -2162,9 +2145,8 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionTypes(CoreSubsets monitorCores, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException {
-		new SetReinjectionPacketTypesProcess(scpSelector, this).setPacketTypes(
-				monitorCores, multicast, pointToPoint, fixedRoute,
-				nearestNeighbour);
+		new RouterControlProcess(scpSelector, this).setPacketTypes(monitorCores,
+				multicast, pointToPoint, fixedRoute, nearestNeighbour);
 	}
 
 	@Override
@@ -2172,7 +2154,7 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		new SetRouterEmergencyTimeoutProcess(scpSelector, this).setTimeout(
+		new RouterControlProcess(scpSelector, this).setEmergencyTimeout(
 				monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
 	}
 
@@ -2181,8 +2163,8 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		new SetRouterEmergencyTimeoutProcess(scpSelector, this)
-				.setTimeout(monitorCores, timeoutMantissa, timeoutExponent);
+		new RouterControlProcess(scpSelector, this).setEmergencyTimeout(
+				monitorCores, timeoutMantissa, timeoutExponent);
 	}
 
 	@Override
@@ -2190,7 +2172,7 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionTimeout(HasCoreLocation monitorCore,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		new SetRouterTimeoutProcess(scpSelector, this).setTimeout(
+		new RouterControlProcess(scpSelector, this).setTimeout(
 				monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
 	}
 
@@ -2199,7 +2181,7 @@ public class Transceiver extends UDPTransceiver
 	public void setReinjectionTimeout(CoreSubsets monitorCores,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		new SetRouterTimeoutProcess(scpSelector, this).setTimeout(monitorCores,
+		new RouterControlProcess(scpSelector, this).setTimeout(monitorCores,
 				timeoutMantissa, timeoutExponent);
 	}
 
@@ -2224,7 +2206,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void saveApplicationRouterTables(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
-		new SaveApplicationRouterTableProcess(scpSelector, this)
+		new RouterControlProcess(scpSelector, this)
 				.saveApplicationRouterTable(monitorCores);
 	}
 
@@ -2232,7 +2214,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void loadApplicationRouterTables(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
-		new LoadApplicationRouterTableProcess(scpSelector, this)
+		new RouterControlProcess(scpSelector, this)
 				.loadApplicationRouterTable(monitorCores);
 	}
 
@@ -2240,7 +2222,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void loadSystemRouterTables(CoreSubsets monitorCores)
 			throws IOException, ProcessException {
-		new LoadSystemRouterTableProcess(scpSelector, this)
+		new RouterControlProcess(scpSelector, this)
 				.loadSystemRouterTable(monitorCores);
 	}
 

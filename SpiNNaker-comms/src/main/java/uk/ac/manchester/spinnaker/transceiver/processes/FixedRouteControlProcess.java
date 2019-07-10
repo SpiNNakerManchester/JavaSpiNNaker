@@ -23,11 +23,12 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
+import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
-/** A process for reading a chip's fixed route routing entry. */
-public class ReadFixedRouteEntryProcess
+/** Load a fixed route routing entry onto a chip, and read it back again. */
+public class FixedRouteControlProcess
 		extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
@@ -37,10 +38,48 @@ public class ReadFixedRouteEntryProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ReadFixedRouteEntryProcess(
+	public FixedRouteControlProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
+	}
+
+	/**
+	 * Load a fixed route routing entry onto a chip with a default application
+	 * ID.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip.
+	 * @param fixedRoute
+	 *            the fixed route entry
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
+			throws IOException, ProcessException {
+		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
+	}
+
+	/**
+	 * Load a fixed route routing entry onto a chip.
+	 *
+	 * @param chip
+	 *            The coordinates of the chip.
+	 * @param fixedRoute
+	 *            the fixed route entry
+	 * @param appID
+	 *            The ID of the application with which to associate the routes.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
+			AppID appID) throws IOException, ProcessException {
+		int entry = fixedRoute.encode();
+		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
 	}
 
 	/**
