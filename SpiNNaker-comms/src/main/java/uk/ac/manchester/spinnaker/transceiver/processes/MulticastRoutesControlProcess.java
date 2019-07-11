@@ -178,8 +178,7 @@ public class MulticastRoutesControlProcess
 	private void addRoutes(ByteBuffer data, int offset,
 			Map<Integer, MulticastRoutingEntry> routes, AppID appID) {
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
-			data.get(); // Ignore
-			data.get(); // Ignore
+			data.getShort(); // Ignore
 			AppID appid = new AppID(toUnsignedInt(data.get()));
 			data.get(); // Ignore
 			int route = data.getInt();

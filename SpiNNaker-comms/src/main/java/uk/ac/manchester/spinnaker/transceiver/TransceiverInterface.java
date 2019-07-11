@@ -3324,6 +3324,32 @@ public interface TransceiverInterface {
 	}
 
 	/**
+	 * Read the contents of an allocated block on the heap from the board. The
+	 * SDRAM heap can be read from any core of that chip; the DTCM heap can only
+	 * be read from one particular core.
+	 *
+	 * @param core
+	 *            The coordinates of the core where the memory is to be read
+	 *            from
+	 * @param element
+	 *            The heap element to read the contents of
+	 * @return A little-endian buffer of data read, positioned at the start of
+	 *         the data, or {@code null} if the heap element is free.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default ByteBuffer readMemory(HasCoreLocation core, HeapElement element)
+			throws IOException, ProcessException {
+		if (element.isFree) {
+			return null;
+		}
+		return readMemory(core, element.getDataAddress(), element.size);
+	}
+
+	/**
 	 * Read an area associated with a <em>recording region</em> from SDRAM from
 	 * a core of a chip on the board.
 	 *

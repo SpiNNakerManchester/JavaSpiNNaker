@@ -136,6 +136,7 @@ import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationStop;
 import uk.ac.manchester.spinnaker.messages.scp.CountState;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
+import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagClear;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagSetTTO;
@@ -144,6 +145,8 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReverseIPTagSet;
 import uk.ac.manchester.spinnaker.messages.scp.RouterClear;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
+import uk.ac.manchester.spinnaker.messages.scp.SDRAMAlloc;
+import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -157,13 +160,11 @@ import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetHeapProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetVersionProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.IOBufControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.MulticastRoutesControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.RouterControlProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SDRAMAllocatorProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.UpdateRuntimeProcess;
@@ -1063,8 +1064,8 @@ public class Transceiver extends UDPTransceiver
 		if (connectionSelector == null) {
 			connectionSelector = scpSelector;
 		}
-		return new GetVersionProcess(connectionSelector, this)
-				.getVersion(chip.getScampCore());
+		return new SendSingleSCPCommandProcess(connectionSelector, this)
+				.execute(new GetVersion(chip.getScampCore())).versionInfo;
 	}
 
 	@Override
@@ -1953,22 +1954,23 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
 			throws IOException, ProcessException {
-		return new SDRAMAllocatorProcess(scpSelector, this).malloc(chip, size,
-				appID, tag);
+		return simpleProcess()
+				.execute(new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
 	}
 
 	@Override
 	@ParallelSafe
 	public void freeSDRAM(HasChipLocation chip, int baseAddress)
 			throws IOException, ProcessException {
-		new SDRAMAllocatorProcess(scpSelector, this).free(chip, baseAddress);
+		simpleProcess().execute(new SDRAMDeAlloc(chip, baseAddress));
 	}
 
 	@Override
 	@ParallelSafe
 	public int freeSDRAM(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
-		return new SDRAMAllocatorProcess(scpSelector, this).free(chip, appID);
+		return simpleProcess()
+				.execute(new SDRAMDeAlloc(chip, appID)).numFreedBlocks;
 	}
 
 	@Override

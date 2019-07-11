@@ -96,8 +96,10 @@ public class RouterControlProcess
 	public void clearQueue(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
-			synchronousCall(new ClearReinjectionQueue(core));
+			sendRequest(new ClearReinjectionQueue(core));
 		}
+		finish();
+		checkForError();
 	}
 
 	/**
@@ -128,8 +130,10 @@ public class RouterControlProcess
 	public void resetCounters(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : coreSubsets) {
-			synchronousCall(new ResetReinjectionCounters(core));
+			sendRequest(new ResetReinjectionCounters(core));
 		}
+		finish();
+		checkForError();
 	}
 
 	/**
@@ -179,9 +183,11 @@ public class RouterControlProcess
 			boolean multicast, boolean pointToPoint, boolean fixedRoute,
 			boolean nearestNeighbour) throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
-			synchronousCall(new SetReinjectionPacketTypes(core, multicast,
+			sendRequest(new SetReinjectionPacketTypes(core, multicast,
 					pointToPoint, fixedRoute, nearestNeighbour));
 		}
+		finish();
+		checkForError();
 	}
 
 	/**
@@ -221,9 +227,11 @@ public class RouterControlProcess
 	public void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
-			synchronousCall(new SetRouterTimeout(core, timeoutMantissa,
+			sendRequest(new SetRouterTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
+		finish();
+		checkForError();
 	}
 
 	/**
@@ -265,9 +273,11 @@ public class RouterControlProcess
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
-			synchronousCall(new SetRouterEmergencyTimeout(core, timeoutMantissa,
+			sendRequest(new SetRouterEmergencyTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
+		finish();
+		checkForError();
 	}
 
 	/**
