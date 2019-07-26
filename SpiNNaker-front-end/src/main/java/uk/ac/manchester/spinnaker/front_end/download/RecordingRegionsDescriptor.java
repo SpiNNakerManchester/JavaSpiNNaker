@@ -26,8 +26,8 @@ import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Describes locations in a recording region. Must match

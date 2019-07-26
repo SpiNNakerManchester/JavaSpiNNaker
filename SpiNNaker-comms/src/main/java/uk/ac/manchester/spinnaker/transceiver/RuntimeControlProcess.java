@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
@@ -42,7 +42,6 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -52,8 +51,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  *
  * @author Donal Fellows
  */
-public class RuntimeControlProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int BUF_HEADER_BYTES = 16;
 	private static final int BLOCK_HEADER_BYTES = 16;
 	private static final int WORD = 4;

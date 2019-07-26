@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.io;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.transceiver.FillDataType;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /** A file-like object for reading and writing memory. */
@@ -101,7 +101,7 @@ public class MemoryIO extends BaseIO {
 	}
 
 	@Override
-	void doFill(int value, DataType type, int len)
+	void doFill(int value, FillDataType type, int len)
 			throws IOException, ProcessException {
 		synchronized (io) {
 			io.setCurrentAddress(current);

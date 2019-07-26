@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
-public abstract class Process {
+abstract class Process {
 	private SCPRequest<?> errorRequest;
 	private Throwable exception;
 

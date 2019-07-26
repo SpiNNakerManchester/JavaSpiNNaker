@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 
@@ -28,7 +28,6 @@ import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses multiple connections in communication.
@@ -36,8 +35,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * @param <T>
  *            The type of connection used by the process.
  */
-public abstract class MultiConnectionProcess<T extends SCPConnection>
-		extends Process {
+abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	/** The default for the number of retries. */
 	public static final int DEFAULT_NUM_RETRIES = 3;
 	/** The default for the timeout (in ms). */

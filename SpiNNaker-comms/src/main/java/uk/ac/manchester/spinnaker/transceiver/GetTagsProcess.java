@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.stream.IntStream.range;
 
@@ -33,10 +33,9 @@ import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Gets IP tags and reverse IP tags. */
-public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
+class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

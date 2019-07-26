@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 
@@ -25,11 +25,9 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteInitialise;
 import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Load a fixed route routing entry onto a chip, and read it back again. */
-public class FixedRouteControlProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

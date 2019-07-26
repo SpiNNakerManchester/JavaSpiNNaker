@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -36,10 +36,9 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for reading memory on a SpiNNaker chip. */
-public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

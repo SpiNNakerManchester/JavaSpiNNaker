@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
@@ -45,7 +45,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -59,7 +58,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
  *      SCPRequestPipeline
  */
-public class SendSingleBMPCommandProcess<R extends BMPResponse> {
+class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log =
 			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */

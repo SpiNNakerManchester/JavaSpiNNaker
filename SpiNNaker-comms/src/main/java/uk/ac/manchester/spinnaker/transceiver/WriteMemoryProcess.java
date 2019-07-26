@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
@@ -35,12 +35,11 @@ import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteLink;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Write to memory on SpiNNaker.
  */
-public class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

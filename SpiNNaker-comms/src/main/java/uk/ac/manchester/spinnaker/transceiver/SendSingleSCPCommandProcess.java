@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 
@@ -22,7 +22,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 // TODO refactor this to have the functionality exposed higher up
 /**
@@ -30,7 +29,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  *
  * @author Donal Fellows
  */
-public class SendSingleSCPCommandProcess
+class SendSingleSCPCommandProcess
 		extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector

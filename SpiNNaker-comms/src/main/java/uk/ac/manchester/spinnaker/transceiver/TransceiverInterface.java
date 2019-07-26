@@ -38,8 +38,8 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
-import static uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType.WORD;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,8 +90,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -4475,7 +4473,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafe
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
-			int size, DataType dataType) throws ProcessException, IOException;
+			int size, FillDataType dataType) throws ProcessException, IOException;
 
 	/**
 	 * Clear the packet reinjection queues in a monitor process.

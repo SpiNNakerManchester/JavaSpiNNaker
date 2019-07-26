@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
 
@@ -26,7 +26,6 @@ import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses a single connection in communication.
@@ -34,7 +33,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * @param <T>
  *            The type of connection used by this process.
  */
-public abstract class SingleConnectionProcess<T extends SCPConnection>
+abstract class SingleConnectionProcess<T extends SCPConnection>
 		extends Process {
 	private final ConnectionSelector<T> connectionSelector;
 	private SCPRequestPipeline requestPipeline;

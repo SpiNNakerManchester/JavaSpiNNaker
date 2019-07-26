@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
@@ -39,14 +39,12 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process for reading and writing the multicast routing table of a SpiNNaker
  * chip.
  */
-public class MulticastRoutesControlProcess
-		extends WriteMemoryProcess {
+class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
@@ -178,8 +176,7 @@ public class MulticastRoutesControlProcess
 	 *             If SpiNNaker rejects a message.
 	 */
 	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
-			int baseAddress, AppID appID)
-			throws IOException, ProcessException {
+			int baseAddress, AppID appID) throws IOException, ProcessException {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;

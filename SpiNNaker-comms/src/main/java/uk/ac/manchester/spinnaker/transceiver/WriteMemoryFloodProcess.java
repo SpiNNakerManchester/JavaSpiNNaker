@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
@@ -32,11 +32,9 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-public class WriteMemoryFloodProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

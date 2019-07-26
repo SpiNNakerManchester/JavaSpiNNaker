@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.util.Collections.emptyMap;
@@ -51,10 +51,9 @@ import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for getting the machine details over a set of connections. */
-public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
+class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	/** A dictionary of (x, y) -> ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;

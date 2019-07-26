@@ -19,8 +19,8 @@ package uk.ac.manchester.spinnaker.io;
 import java.io.EOFException;
 import java.io.IOException;
 
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.FillDataType;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /**
@@ -116,7 +116,7 @@ abstract class BaseIO implements AbstractIO {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	abstract void doFill(int value, DataType type, int len)
+	abstract void doFill(int value, FillDataType type, int len)
 			throws IOException, ProcessException;
 
 	@Override
@@ -145,7 +145,7 @@ abstract class BaseIO implements AbstractIO {
 	}
 
 	@Override
-	public void fill(int value, Integer size, DataType type)
+	public void fill(int value, Integer size, FillDataType type)
 			throws IOException, ProcessException {
 		int len = (size == null) ? (end - current) : size;
 		if (current + len > end) {

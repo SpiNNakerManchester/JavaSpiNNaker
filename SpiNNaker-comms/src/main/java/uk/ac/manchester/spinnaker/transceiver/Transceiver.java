@@ -48,6 +48,7 @@ import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIM
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.ethernet_ip_address;
+import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.iobuf_size;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.router_table_copy_address;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
@@ -152,23 +153,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.transceiver.processes.ApplicationRunProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
-import uk.ac.manchester.spinnaker.transceiver.processes.FixedRouteControlProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetHeapProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.MulticastRoutesControlProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.RouterControlProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.RuntimeControlProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 
 /**
  * An encapsulation of various communications with the SpiNNaker board.
@@ -1284,8 +1268,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {
-			iobufSize = (Integer) getSystemVariable(BOOT_CHIP,
-					SystemVariableDefinition.iobuf_size);
+			iobufSize = (Integer) getSystemVariable(BOOT_CHIP, iobuf_size);
 		}
 
 		// Get all the cores if the subsets are not given
@@ -2238,7 +2221,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelSafe
 	public void fillMemory(HasChipLocation chip, int baseAddress,
-			int repeatValue, int size, DataType dataType)
+			int repeatValue, int size, FillDataType dataType)
 			throws ProcessException, IOException {
 		new FillProcess(scpSelector, this).fillMemory(chip, baseAddress,
 				repeatValue, size, dataType);

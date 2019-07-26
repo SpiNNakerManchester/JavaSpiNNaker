@@ -19,14 +19,15 @@ package uk.ac.manchester.spinnaker.io;
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
 import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
+import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
+import uk.ac.manchester.spinnaker.transceiver.FillDataType;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /**
@@ -191,7 +192,7 @@ public interface AbstractIO extends AutoCloseable {
 	 *             If the amount of data to fill is more than the region
 	 */
 	default void fill(int value) throws IOException, ProcessException {
-		fill(value, null, FillProcess.DataType.WORD);
+		fill(value, null, WORD);
 	}
 
 	/**
@@ -208,7 +209,7 @@ public interface AbstractIO extends AutoCloseable {
 	 */
 	default void fill(int value, int size)
 			throws IOException, ProcessException {
-		fill(value, size, FillProcess.DataType.WORD);
+		fill(value, size, WORD);
 	}
 
 	/**
@@ -223,7 +224,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	default void fill(int value, FillProcess.DataType type)
+	default void fill(int value, FillDataType type)
 			throws IOException, ProcessException {
 		fill(value, null, type);
 	}
@@ -243,7 +244,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If the amount of data to fill is more than the region
 	 */
-	void fill(int value, Integer size, FillProcess.DataType type)
+	void fill(int value, Integer size, FillDataType type)
 			throws IOException, ProcessException;
 
 	/**

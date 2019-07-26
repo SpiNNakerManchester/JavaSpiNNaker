@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -39,15 +39,13 @@ import uk.ac.manchester.spinnaker.messages.scp.RouterTableSaveApplicationRoutes;
 import uk.ac.manchester.spinnaker.messages.scp.SetReinjectionPacketTypes;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterEmergencyTimeout;
 import uk.ac.manchester.spinnaker.messages.scp.SetRouterTimeout;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Access to the control facilities for a set of routers. Depends on access to
  * the extra monitor cores running on those chips.
  */
-public class RouterControlProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int REGISTER = 4;
 	private static final int NUM_REGISTERS = 16;
 	private static final int ROUTER_CONTROL_REGISTER = 0xe1000000;

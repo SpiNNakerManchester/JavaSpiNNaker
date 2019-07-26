@@ -14,59 +14,66 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
+
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
+import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
-/** Launch an application. */
-public class ApplicationRunProcess
-		extends MultiConnectionProcess<SCPConnection> {
+/**
+ * Get the CPU information structure for a set of processors.
+ */
+class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
-	 * Create.
-	 *
 	 * @param connectionSelector
-	 *            How to choose where to send messages.
+	 *            How to select how to communicate.
 	 * @param retryTracker
 	 *            Object used to track how many retries were used in an
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ApplicationRunProcess(
+	public GetCPUInfoProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
 
 	/**
-	 * Launch an application (already loaded).
+	 * Get CPU information.
 	 *
-	 * @param appID
-	 *            The application ID to launch.
 	 * @param coreSubsets
-	 *            Which cores to launch.
-	 * @param wait
-	 *            Whether to wait for the application launch to fully complete
-	 *            before returning.
+	 *            What processors to get the information from
+	 * @return The CPU information, in undetermined order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
-			throws ProcessException, IOException {
-		for (ChipLocation chip : coreSubsets.getChips()) {
-			sendRequest(new ApplicationRun(appID, chip,
-					coreSubsets.pByChip(chip), wait));
+	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		List<CPUInfo> cpuInfo = new ArrayList<>();
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
+			sendRequest(
+					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
+							CPU_INFO_BYTES),
+					response -> cpuInfo.add(new CPUInfo(core, response.data)));
 		}
 		finish();
 		checkForError();
+		return unmodifiableList(cpuInfo);
 	}
 }

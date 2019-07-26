@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Integer.toUnsignedLong;
 import static java.util.Collections.unmodifiableList;
@@ -33,12 +33,11 @@ import uk.ac.manchester.spinnaker.messages.model.SARKField;
 import uk.ac.manchester.spinnaker.messages.model.SARKStruct;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * Get a description of the heap.
  */
-public class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
+class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int HEAP_HEADER_SIZE = 16;
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
 

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
@@ -32,10 +32,9 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for filling memory. */
-public class FillProcess extends MultiConnectionProcess<SCPConnection> {
+class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(FillProcess.class);
 	private static final int ALIGNMENT = 4;
 	private static final int TWO_WORDS = 2 * WORD_SIZE;
@@ -74,7 +73,7 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void fillMemory(HasChipLocation chip, int baseAddress, int data,
-			int size, DataType dataType) throws ProcessException, IOException {
+			int size, FillDataType dataType) throws ProcessException, IOException {
 		// Don't do anything if there is nothing to do!
 		if (size == 0) {
 			return;
@@ -147,49 +146,6 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 			buffer.limit(buffer.position() + toWrite);
 			if (buffer.hasRemaining()) {
 				sendRequest(new WriteMemory(chip, address, buffer));
-			}
-		}
-	}
-
-	/**
-	 * The fill unit.
-	 */
-	public enum DataType {
-		/** Fill by words (4 bytes). */
-		WORD(4),
-		/** Fill by half words (2 bytes). */
-		HALF_WORD(2),
-		/** Fill by single bytes. */
-		BYTE(1);
-		/** The encoding of the fill unit size. */
-		public final int size;
-
-		DataType(int value) {
-			this.size = value;
-		}
-
-		/**
-		 * Write a value to the buffer in an appropriate way for this fill unit.
-		 *
-		 * @param value
-		 *            The value to write.
-		 * @param buffer
-		 *            The buffer to write to.
-		 */
-		public void writeTo(int value, ByteBuffer buffer) {
-			switch (this) {
-			case WORD:
-				buffer.putInt(value);
-				break;
-			case HALF_WORD:
-				buffer.putShort((short) value);
-				break;
-			case BYTE:
-				buffer.put((byte) value);
-				break;
-			default:
-				// unreachable
-				throw new IllegalStateException();
 			}
 		}
 	}
