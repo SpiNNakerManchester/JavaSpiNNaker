@@ -43,7 +43,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public WriteMemoryFloodProcess(
+	WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);

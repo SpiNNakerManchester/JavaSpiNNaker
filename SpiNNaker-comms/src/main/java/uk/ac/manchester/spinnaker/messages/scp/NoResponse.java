@@ -16,29 +16,29 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.UPDATE_PROVENCE_REGION_AND_EXIT;
-
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * An SCP Request to update the runtime info on a core.
+ * An SCP response that should never be received because its request is
+ * guaranteed to be a one-way request.
  */
-public class UpdateProvenanceAndExit extends SCPRequest<NoResponse> {
+public class NoResponse extends SCPResponse {
 	/**
-	 * @param core
-	 *            The SpiNNaker core to update the provenance info of.
+	 * Create an instance.
+	 *
+	 * @param operation
+	 *            The overall operation that we are doing.
+	 * @param buffer
+	 *            The buffer holding the response data.
+	 * @throws UnexpectedResponseCodeException
+	 *             Always.
 	 */
-	public UpdateProvenanceAndExit(HasCoreLocation core) {
-		super(new RunningSDPHeader(core, false),
-				UPDATE_PROVENCE_REGION_AND_EXIT, 0, 0, 0, null);
-	}
-
-	@Override
-	public NoResponse getSCPResponse(ByteBuffer buffer)
+	public NoResponse(String operation, ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new NoResponse("update provenance and exit", buffer);
+		super(buffer);
+		throw new UnexpectedResponseCodeException(operation, "one-way request",
+				result.toString());
 	}
 }

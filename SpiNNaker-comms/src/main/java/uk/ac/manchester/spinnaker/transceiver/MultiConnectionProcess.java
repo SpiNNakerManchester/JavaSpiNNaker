@@ -26,8 +26,9 @@ import java.util.function.Consumer;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 
 /**
  * A process that uses multiple connections in communication.
@@ -110,22 +111,14 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	}
 
 	@Override
-	protected <R extends SCPResponse> void sendRequest(SCPRequest<R> request,
-			Consumer<R> callback) throws IOException {
+	protected <R extends CheckOKResponse> void sendRequest(
+			SCPRequest<R> request, Consumer<R> callback) throws IOException {
 		getPipeline(selector.getNextConnection(request)).sendRequest(request,
 				callback, this::receiveError);
 	}
 
-	/**
-	 * Send a one-way request. One way requests do not need to be finished.
-	 *
-	 * @param request
-	 *            The request to send. <em>Must</em> be a one-way request! This
-	 *            is not enforced by this method.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected void sendOneWayRequest(SCPRequest<? extends SCPResponse> request)
+	@Override
+	protected void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
 			throws IOException {
 		getPipeline(selector.getNextConnection(request))
 				.sendOneWayRequest(request);

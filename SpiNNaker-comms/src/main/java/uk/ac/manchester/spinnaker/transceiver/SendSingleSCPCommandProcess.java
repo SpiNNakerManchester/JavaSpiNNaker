@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 
 // TODO refactor this to have the functionality exposed higher up
 /**
@@ -78,7 +78,7 @@ class SendSingleSCPCommandProcess
 	 * @throws ProcessException
 	 *             If SCAMP on SpiNNaker reports a failure.
 	 */
-	public <T extends SCPResponse> T execute(SCPRequest<T> request)
+	public <T extends CheckOKResponse> T execute(SCPRequest<T> request)
 			throws IOException, ProcessException {
 		return synchronousCall(request);
 	}
