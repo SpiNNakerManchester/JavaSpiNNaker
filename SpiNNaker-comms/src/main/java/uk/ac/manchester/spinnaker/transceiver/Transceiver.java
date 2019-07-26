@@ -1326,6 +1326,20 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafeWithCare
+	public void updateProvenanceAndExit(CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		// Get all the cores if the subsets are not given
+		if (coreSubsets == null) {
+			coreSubsets = getAllCores();
+		}
+
+		// set the information
+		new RuntimeControlProcess(scpSelector, this)
+				.updateProvenanceAndExit(coreSubsets);
+	}
+
+	@Override
 	@ParallelSafe
 	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException {

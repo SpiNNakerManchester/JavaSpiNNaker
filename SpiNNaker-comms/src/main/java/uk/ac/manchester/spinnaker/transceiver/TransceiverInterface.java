@@ -1361,7 +1361,7 @@ public interface TransceiverInterface {
 	 *            used to indicate an infinite (unbounded until explicitly
 	 *            stopped) run.
 	 * @param coreSubsets
-	 *            A set of chips and cores on which to clear the buffers.
+	 *            A set of chips and cores on which to set the running time.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1369,6 +1369,58 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException;
+
+	/**
+	 * Tell all running application cores to write their provenance data to a
+	 * location where it can be read back, and then to go into the
+	 * {@link CPUState#FINISHED FINISHED} state.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default void updateProvenanceAndExit()
+			throws IOException, ProcessException {
+		updateProvenanceAndExit((CoreSubsets) null);
+	}
+
+	/**
+	 * Tell a running application core to write its provenance data to a
+	 * location where it can be read back, and then to go into the
+	 * {@link CPUState#FINISHED FINISHED} state.
+	 *
+	 * @param core
+	 *            The core to tell to finish.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void updateProvenanceAndExit(HasCoreLocation core)
+			throws IOException, ProcessException {
+		CoreSubsets coreSubsets = new CoreSubsets();
+		coreSubsets.addCore(core.asCoreLocation());
+		updateProvenanceAndExit(coreSubsets);
+	}
+
+	/**
+	 * Tell some running application cores to write their provenance data to a
+	 * location where it can be read back, and then to go into their
+	 * {@link CPUState#FINISHED FINISHED} state.
+	 *
+	 * @param coreSubsets
+	 *            A set of cores tell to finish.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	void updateProvenanceAndExit(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
