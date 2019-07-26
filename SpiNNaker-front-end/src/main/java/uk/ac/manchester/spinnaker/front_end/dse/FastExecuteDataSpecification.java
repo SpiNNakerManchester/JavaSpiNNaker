@@ -159,6 +159,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		try {
 			txrx = new Transceiver(machine);
+		} catch (ProcessException e) {
+			throw e;
 		} catch (SpinnmanException e) {
 			throw new IllegalStateException("failed to talk to BMP, "
 					+ "but that shouldn't have happened at all", e);

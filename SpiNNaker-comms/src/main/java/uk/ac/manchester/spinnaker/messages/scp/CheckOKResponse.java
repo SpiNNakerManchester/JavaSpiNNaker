@@ -37,7 +37,7 @@ public class CheckOKResponse extends SCPResponse {
 	public CheckOKResponse(String operation, SCPCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		this.throwIfNotOK(operation, command);
+		throwIfNotOK(operation, command);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class CheckOKResponse extends SCPResponse {
 	CheckOKResponse(String operation, ReinjectorCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		this.throwIfNotOK(operation, command.name());
+		throwIfNotOK(operation, command.name());
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class CheckOKResponse extends SCPResponse {
 	CheckOKResponse(String operation, RouterTableCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		this.throwIfNotOK(operation, command.name());
+		throwIfNotOK(operation, command.name());
 	}
 
 	/**
@@ -91,6 +91,6 @@ public class CheckOKResponse extends SCPResponse {
 	CheckOKResponse(String operation, RunningCommand command,
 			ByteBuffer buffer) throws UnexpectedResponseCodeException {
 		super(buffer);
-		this.throwIfNotOK(operation, command.name());
+		throwIfNotOK(operation, command.name());
 	}
 }

@@ -3576,9 +3576,9 @@ public interface TransceiverInterface {
 	 * target state or states. Handles failures.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the cores are over more than a single board.
 	 *
-	 * @param allCoreSubsets
+	 * @param coreSubsets
 	 *            the cores to check are in a given sync state
 	 * @param appID
 	 *            the application ID that being used by the simulation
@@ -3587,18 +3587,17 @@ public interface TransceiverInterface {
 	 *            is when each application is in one of these states
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 * @throws SpinnmanException
-	 *             If some cores enter an error state.
+	 *             If some cores enter an error state or SpiNNaker rejects a
+	 *             message.
 	 */
 	@ParallelSafeWithCare
-	default void waitForCoresToBeInState(CoreSubsets allCoreSubsets,
-			AppID appID, Set<CPUState> cpuStates) throws IOException,
-			ProcessException, InterruptedException, SpinnmanException {
-		waitForCoresToBeInState(allCoreSubsets, appID, cpuStates,
+	default void waitForCoresToBeInState(CoreSubsets coreSubsets,
+			AppID appID, Set<CPUState> cpuStates)
+			throws IOException, InterruptedException, SpinnmanException {
+		waitForCoresToBeInState(coreSubsets, appID, cpuStates,
 				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
 				DEFAULT_CHECK_INTERVAL);
 	}
@@ -3608,7 +3607,7 @@ public interface TransceiverInterface {
 	 * target state or states. Handles failures.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the cores are over more than a single board.
 	 *
 	 * @param allCoreSubsets
 	 *            the cores to check are in a given sync state
@@ -3631,19 +3630,17 @@ public interface TransceiverInterface {
 	 *            using the full CPU state check
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted while waiting.
 	 * @throws SpinnmanException
-	 *             If some cores enter an error state.
+	 *             If some cores enter an error state or SpiNNaker rejects a
+	 *             message.
 	 */
 	@ParallelSafeWithCare
 	void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countsBetweenFullCheck)
-			throws IOException, ProcessException, InterruptedException,
-			SpinnmanException;
+			throws IOException, InterruptedException, SpinnmanException;
 
 	/**
 	 * Get all cores that are in a given state.

@@ -358,10 +358,8 @@ public class Transceiver extends UDPTransceiver
 	 *            in debugging purposes)
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
@@ -370,7 +368,7 @@ public class Transceiver extends UDPTransceiver
 			Map<ChipLocation, Set<Direction>> ignoredLinks,
 			boolean autodetectBMP, List<ConnectionDescriptor> scampConnections,
 			Integer bootPortNumber, Integer maxSDRAMSize)
-			throws IOException, SpinnmanException, ProcessException {
+			throws IOException, SpinnmanException {
 		log.info("Creating transceiver for {}", requireNonNull(host,
 				"SpiNNaker machine host name must be not null"));
 		List<Connection> connections = new ArrayList<>();
@@ -446,13 +444,11 @@ public class Transceiver extends UDPTransceiver
 	 *            be assumed to be always already booted.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public Transceiver(InetAddress hostname, MachineVersion version)
-			throws IOException, SpinnmanException, ProcessException {
+			throws IOException, SpinnmanException {
 		this(hostname, version, null, 0, emptySet(), emptyMap(), emptyMap(),
 				false, null, null, null);
 	}
@@ -464,13 +460,11 @@ public class Transceiver extends UDPTransceiver
 	 *            The SpiNNaker board version number.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public Transceiver(MachineVersion version)
-			throws IOException, SpinnmanException, ProcessException {
+			throws IOException, SpinnmanException {
 		this(version, null, null, null, null, null, null);
 	}
 
@@ -486,14 +480,12 @@ public class Transceiver extends UDPTransceiver
 	 *            transceiver may make additional connections.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
-			throws IOException, SpinnmanException, ProcessException {
+			throws IOException, SpinnmanException {
 		this(version, connections, null, null, null, null, null);
 	}
 
@@ -505,13 +497,10 @@ public class Transceiver extends UDPTransceiver
 	 *            The machine description
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
-	public Transceiver(Machine machine)
-			throws IOException, SpinnmanException, ProcessException {
+	public Transceiver(Machine machine) throws IOException, SpinnmanException {
 		this(requireNonNull(machine, "need a real machine")
 				.getBootEthernetAddress(), machine.version, null, null, null,
 				null, null, false, generateScampConnections(machine), null,
@@ -554,10 +543,8 @@ public class Transceiver extends UDPTransceiver
 	 *            If not {@code null}, the maximum SDRAM size to allow.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections,
@@ -565,8 +552,7 @@ public class Transceiver extends UDPTransceiver
 			Map<ChipLocation, Set<Integer>> ignoredCores,
 			Map<ChipLocation, Set<Direction>> ignoredLinks,
 			Collection<ConnectionDescriptor> scampConnections,
-			Integer maxSDRAMSize)
-			throws IOException, SpinnmanException, ProcessException {
+			Integer maxSDRAMSize) throws IOException, SpinnmanException {
 		this.version = version;
 		if (ignoredChips != null) {
 			ignoreChips.addAll(ignoredChips);
@@ -754,8 +740,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/** Check that the BMP connections are actually connected to valid BMPs. */
-	private void checkBMPConnections()
-			throws IOException, SpinnmanException, ProcessException {
+	private void checkBMPConnections() throws IOException, SpinnmanException {
 		/*
 		 * Check that the UDP BMP conn is actually connected to a BMP via the
 		 * SVER command
@@ -1787,8 +1772,7 @@ public class Transceiver extends UDPTransceiver
 	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
 			Set<CPUState> cpuStates, Integer timeout, int timeBetweenPolls,
 			Set<CPUState> errorStates, int countBetweenFullChecks)
-			throws IOException, ProcessException, InterruptedException,
-			SpinnmanException {
+			throws IOException, InterruptedException, SpinnmanException {
 		// check that the right number of processors are in the states
 		int processorsReady = 0;
 		long timeoutTime =
