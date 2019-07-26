@@ -356,6 +356,15 @@ public class SCPRequestPipeline {
 		req.send();
 	}
 
+	/**
+	 * Send a one-way request. It is the caller's responsibility to ensure that
+	 * the request really is a one-way request.
+	 *
+	 * @param request
+	 *            The one-way SCP request to be sent.
+	 * @throws IOException
+	 *             If things go really wrong.
+	 */
 	public <T extends SCPResponse> void sendOneWayRequest(SCPRequest<T> request)
 			throws IOException {
 		// Wait for all current in-flight responses to be received

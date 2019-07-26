@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
@@ -48,8 +49,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public WriteMemoryProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	WriteMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -64,12 +64,10 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public WriteMemoryProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	WriteMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numChannels, RetryTracker retryTracker) {
-		super(connectionSelector, MultiConnectionProcess.DEFAULT_NUM_RETRIES,
-				MultiConnectionProcess.DEFAULT_TIMEOUT, numChannels,
-				Math.max(numChannels / 2, 1), retryTracker);
+		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+				numChannels, max(numChannels / 2, 1), retryTracker);
 	}
 
 	/**

@@ -68,8 +68,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public RuntimeControlProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	RuntimeControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

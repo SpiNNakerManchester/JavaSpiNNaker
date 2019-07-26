@@ -64,7 +64,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
+	MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
 				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
@@ -87,7 +87,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
+	MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits, RetryTracker retryTracker) {
 		this.requestPipelines = new HashMap<>();
@@ -125,8 +125,8 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	 * @throws IOException
 	 *             If sending fails.
 	 */
-	protected <R extends SCPResponse> void sendOneWayRequest(
-			SCPRequest<R> request) throws IOException {
+	protected void sendOneWayRequest(SCPRequest<? extends SCPResponse> request)
+			throws IOException {
 		getPipeline(selector.getNextConnection(request))
 				.sendOneWayRequest(request);
 	}

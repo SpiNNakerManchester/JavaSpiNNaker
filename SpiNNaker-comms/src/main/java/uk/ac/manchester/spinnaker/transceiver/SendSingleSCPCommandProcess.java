@@ -39,7 +39,7 @@ class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleSCPCommandProcess(
+	SendSingleSCPCommandProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
@@ -58,7 +58,7 @@ class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleSCPCommandProcess(
+	SendSingleSCPCommandProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, DEFAULT_NUM_CHANNELS,

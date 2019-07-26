@@ -47,8 +47,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ReadMemoryProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	ReadMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

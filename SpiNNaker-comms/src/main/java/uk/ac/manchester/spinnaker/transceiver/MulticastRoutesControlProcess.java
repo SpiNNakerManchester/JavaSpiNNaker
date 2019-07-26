@@ -70,7 +70,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public MulticastRoutesControlProcess(
+	MulticastRoutesControlProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);

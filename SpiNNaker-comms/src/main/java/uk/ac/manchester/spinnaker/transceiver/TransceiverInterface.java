@@ -4473,7 +4473,8 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafe
 	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
-			int size, FillDataType dataType) throws ProcessException, IOException;
+			int size, FillDataType dataType)
+			throws ProcessException, IOException;
 
 	/**
 	 * Clear the packet reinjection queues in a monitor process.

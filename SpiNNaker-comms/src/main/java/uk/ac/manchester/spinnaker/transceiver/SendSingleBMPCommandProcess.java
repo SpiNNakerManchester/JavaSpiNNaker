@@ -81,7 +81,7 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleBMPCommandProcess(
+	SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_TIMEOUT, retryTracker);
@@ -97,7 +97,7 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleBMPCommandProcess(
+	SendSingleBMPCommandProcess(
 			ConnectionSelector<BMPConnection> connectionSelector, int timeout,
 			RetryTracker retryTracker) {
 		this.timeout = timeout;

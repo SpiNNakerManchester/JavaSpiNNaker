@@ -45,8 +45,7 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetCPUInfoProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	GetCPUInfoProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

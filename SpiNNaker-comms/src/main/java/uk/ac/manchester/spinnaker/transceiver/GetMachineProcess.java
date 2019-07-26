@@ -98,8 +98,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetMachineProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	GetMachineProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Set<Direction>> ignoreLinksMap,

@@ -49,7 +49,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetHeapProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetHeapProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

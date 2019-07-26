@@ -44,7 +44,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

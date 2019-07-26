@@ -37,8 +37,7 @@ class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ApplicationRunProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	ApplicationRunProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}

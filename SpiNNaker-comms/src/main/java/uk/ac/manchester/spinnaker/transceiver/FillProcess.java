@@ -49,7 +49,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -73,7 +73,8 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	public void fillMemory(HasChipLocation chip, int baseAddress, int data,
-			int size, FillDataType dataType) throws ProcessException, IOException {
+			int size, FillDataType dataType)
+			throws ProcessException, IOException {
 		// Don't do anything if there is nothing to do!
 		if (size == 0) {
 			return;
