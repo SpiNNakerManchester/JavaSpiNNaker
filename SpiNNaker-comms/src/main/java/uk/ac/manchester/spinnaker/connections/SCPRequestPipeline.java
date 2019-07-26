@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
 import static java.lang.Thread.yield;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -350,6 +351,19 @@ public class SCPRequestPipeline {
 		if (requests.put(sequence, req) != null) {
 			throw new RuntimeException("duplicate sequence number catastrophe");
 		}
+
+		// Send the request
+		req.send();
+	}
+
+	public <T extends SCPResponse> void sendOneWayRequest(SCPRequest<T> request)
+			throws IOException {
+		// Wait for all current in-flight responses to be received
+		finish();
+
+		// Update the packet and store required details
+		request.scpRequestHeader.issueSequenceNumber(emptySet());
+		Request<T> req = new Request<>(request, null, null);
 
 		// Send the request
 		req.send();

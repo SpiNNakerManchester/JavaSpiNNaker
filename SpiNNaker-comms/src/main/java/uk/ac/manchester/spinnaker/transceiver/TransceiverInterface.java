@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -95,6 +96,8 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
  * handling and variant-type handling by Python.
+ * <p>
+ * Note that operations on a BMP are <strong>always</strong> thread-unsafe.
  *
  * @author Donal Fellows
  */
@@ -2347,17 +2350,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2372,7 +2375,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
@@ -2382,17 +2385,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2407,7 +2410,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataStream,
@@ -2417,18 +2420,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2443,7 +2446,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, Address.convert(baseAddress),
@@ -2453,18 +2456,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2479,24 +2482,24 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			InputStream dataStream, int numBytes)
+	void writeNeighbourMemory(HasCoreLocation core, Direction link,
+			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2509,7 +2512,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
@@ -2519,17 +2522,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2542,7 +2545,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataFile);
@@ -2551,18 +2554,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2575,7 +2578,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, Address.convert(baseAddress),
@@ -2585,18 +2588,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2609,23 +2612,24 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			File dataFile) throws IOException, ProcessException;
+	void writeNeighbourMemory(HasCoreLocation core, Direction link,
+			int baseAddress, File dataFile)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2637,7 +2641,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
@@ -2647,17 +2651,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2669,7 +2673,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataWord);
@@ -2678,18 +2682,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2701,7 +2705,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, Address.convert(baseAddress),
@@ -2711,18 +2715,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2734,7 +2738,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
@@ -2745,17 +2749,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2767,7 +2771,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
@@ -2776,17 +2780,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2798,7 +2802,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
@@ -2806,18 +2810,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2829,7 +2833,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
@@ -2838,18 +2842,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2861,7 +2865,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
 	}
@@ -2869,17 +2873,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2892,7 +2896,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
@@ -2901,17 +2905,17 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be written
 	 *            to
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2924,7 +2928,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, int link,
+	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
@@ -2933,18 +2937,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2957,7 +2961,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, int link,
+	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
@@ -2966,18 +2970,18 @@ public interface TransceiverInterface {
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the core whose neighbour is to be written
 	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory is to be
 	 *            written
@@ -2990,8 +2994,9 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	void writeNeighbourMemory(HasCoreLocation core, int link, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException;
+	void writeNeighbourMemory(HasCoreLocation core, Direction link,
+			int baseAddress, ByteBuffer data)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -3373,15 +3378,17 @@ public interface TransceiverInterface {
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
-	 * command.
+	 * command. If sent to a BMP, this command can be used to communicate with
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be read from
 	 * @param link
-	 *            The link index to send the request to
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory to be read
 	 *            starts
@@ -3395,7 +3402,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
+	default ByteBuffer readNeighbourMemory(HasChipLocation chip, Direction link,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
 				length);
@@ -3404,18 +3411,18 @@ public interface TransceiverInterface {
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the chip whose neighbour is to be read
 	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory to be read
 	 *            starts
@@ -3429,22 +3436,22 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
+	ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, int length) throws IOException, ProcessException;
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param chip
 	 *            The coordinates of the chip whose neighbour is to be read from
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory to be read
 	 *            starts
@@ -3457,8 +3464,8 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
-	default ByteBuffer readNeighbourMemory(HasChipLocation chip, int link,
+	@ParallelSafeWithCare
+	default ByteBuffer readNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(chip, link, Address.convert(baseAddress),
 				length);
@@ -3467,18 +3474,18 @@ public interface TransceiverInterface {
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers.
+	 * the FPGAs' debug registers; in that case, the link must be the direction
+	 * with the same ID as the ID of the FPGA to communicate with.
 	 * <p>
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
+	 * multi-threaded context if the link leaves the current board.
 	 *
 	 * @param core
 	 *            The coordinates of the chip whose neighbour is to be read
 	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
 	 *            number)
 	 * @param link
-	 *            The link index to send the request to (or if BMP, the FPGA
-	 *            number)
+	 *            The link direction to send the request along
 	 * @param baseAddress
 	 *            The address in SDRAM where the region of memory to be read
 	 *            starts
@@ -3491,8 +3498,8 @@ public interface TransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
-	default ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
+	@ParallelSafeWithCare
+	default ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, int length) throws IOException, ProcessException {
 		return readNeighbourMemory(core, link, Address.convert(baseAddress),
 				length);
@@ -3893,6 +3900,41 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafe
 	List<Tag> getTags(SCPConnection connection)
+			throws IOException, ProcessException;
+
+	/**
+	 * Get the number of times each tag has had a message sent via it using all
+	 * SCPSender connections.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @return A map from the tags to their usage.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default Map<Tag, Integer> getTagUsage()
+			throws IOException, ProcessException {
+		return getTagUsage(null);
+	}
+
+	/**
+	 * Get the number of times each tag has had a message sent via it for a
+	 * connection.
+	 *
+	 * @param connection
+	 *            Connection from which the tag usage should be retrieved.
+	 * @return A map from the tags to their usage.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException;
 
 	/**

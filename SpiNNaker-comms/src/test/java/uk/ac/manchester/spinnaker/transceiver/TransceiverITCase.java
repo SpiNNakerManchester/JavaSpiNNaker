@@ -107,7 +107,6 @@ public class TransceiverITCase {
 	static CoreSubsets coreSubsets;
 	static Map<ChipLocation, Set<Integer>> downCores;
 
-
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
@@ -130,10 +129,10 @@ public class TransceiverITCase {
 	}
 
 	private static final Field[] FILTER_FIELDS = new Field[] {
-			new Field(31), new Field(30), new Field(29), new Field(28, 25),
-			new Field(24, 16), new Field(15, 14), new Field(13, 12),
-			new Field(11, 10), new Field(9), new Field(8), new Field(7, 4),
-			new Field(3, 0)
+		new Field(31), new Field(30), new Field(29), new Field(28, 25),
+		new Field(24, 16), new Field(15, 14), new Field(13, 12),
+		new Field(11, 10), new Field(9), new Field(8), new Field(7, 4),
+		new Field(3, 0)
 	};
 
 	void printFilter(DiagnosticFilter filter) {
@@ -370,10 +369,9 @@ public class TransceiverITCase {
 	@Test
 	@Disabled("not working right")
 	public void testTransceiver() throws Exception {
-		try (Transceiver txrx =
-				new Transceiver(boardConfig.remotehost, boardConfig.boardVersion,
-						boardConfig.bmpNames, null, downChips, downCores, null,
-						boardConfig.autoDetectBMP, null, null, null)) {
+		try (Transceiver txrx = new Transceiver(boardConfig.remotehost,
+				boardConfig.boardVersion, boardConfig.bmpNames, null, downChips,
+				downCores, null, boardConfig.autoDetectBMP, null, null, null)) {
 
 			section("Version Information", () -> boardReady(txrx));
 
@@ -412,12 +410,12 @@ public class TransceiverITCase {
 			});
 
 			section("Test reading/writing blobs to neighbours", () -> {
-				txrx.writeNeighbourMemory(SCAMP, 0, MEM, longData);
-				assertEquals(longVal,
-						txrx.readNeighbourMemory(SCAMP, 0, MEM, 8).getLong());
-				txrx.writeNeighbourMemory(SCAMP, 0, MEM, intVal);
+				txrx.writeNeighbourMemory(SCAMP, EAST, MEM, longData);
+				assertEquals(longVal, txrx
+						.readNeighbourMemory(SCAMP, EAST, MEM, 8).getLong());
+				txrx.writeNeighbourMemory(SCAMP, EAST, MEM, intVal);
 				assertEquals(intVal,
-						txrx.readNeighbourMemory(SCAMP, 0, MEM, WORD_SIZE)
+						txrx.readNeighbourMemory(SCAMP, EAST, MEM, WORD_SIZE)
 								.getInt());
 			});
 

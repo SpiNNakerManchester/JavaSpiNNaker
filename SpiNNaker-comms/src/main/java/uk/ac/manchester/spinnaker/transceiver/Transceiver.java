@@ -160,14 +160,13 @@ import uk.ac.manchester.spinnaker.transceiver.processes.GetCPUInfoProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetHeapProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetMachineProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.GetTagsProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.IOBufControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.MulticastRoutesControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.processes.ReadMemoryProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.RouterControlProcess;
+import uk.ac.manchester.spinnaker.transceiver.processes.RuntimeControlProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleBMPCommandProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.SendSingleSCPCommandProcess;
-import uk.ac.manchester.spinnaker.transceiver.processes.UpdateRuntimeProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryFloodProcess;
 import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
 
@@ -184,7 +183,9 @@ import uk.ac.manchester.spinnaker.transceiver.processes.WriteMemoryProcess;
  * <p>
  * For details of thread safety, see the methods annotated with
  * {@link ParallelSafe}, {@link ParallelSafeWithCare} and {@link ParallelUnsafe}
- * in {@link TransceiverInterface}.
+ * in {@link TransceiverInterface}. <em>Note that operations on a BMP are
+ * <strong>always</strong> parallel-unsafe, other documentation in this class
+ * notwithstanding.</em>
  */
 @SuppressWarnings("checkstyle:ParameterNumber")
 public class Transceiver extends UDPTransceiver
@@ -828,11 +829,11 @@ public class Transceiver extends UDPTransceiver
 	private boolean checkConnection(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			HasChipLocation chip) {
+		SendSingleSCPCommandProcess process = simpleProcess(connectionSelector);
 		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
 			try {
 				ChipSummaryInfo chipInfo =
-						new SendSingleSCPCommandProcess(connectionSelector,
-								this).execute(new GetChipInfo(chip)).chipInfo;
+						process.execute(new GetChipInfo(chip)).chipInfo;
 				if (chipInfo.isEthernetAvailable) {
 					return true;
 				}
@@ -1064,7 +1065,7 @@ public class Transceiver extends UDPTransceiver
 		if (connectionSelector == null) {
 			connectionSelector = scpSelector;
 		}
-		return new SendSingleSCPCommandProcess(connectionSelector, this)
+		return simpleProcess(connectionSelector)
 				.execute(new GetVersion(chip.getScampCore())).versionInfo;
 	}
 
@@ -1115,6 +1116,18 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private SendSingleSCPCommandProcess simpleProcess() {
 		return new SendSingleSCPCommandProcess(scpSelector, this);
+	}
+
+	/**
+	 * A neater way of getting a process for running simple SCP requests.
+	 *
+	 * @param selector
+	 *            The connection selector to use.
+	 * @return The SCP runner process.
+	 */
+	private SendSingleSCPCommandProcess simpleProcess(
+			ConnectionSelector<SCPConnection> selector) {
+		return new SendSingleSCPCommandProcess(selector, this);
 	}
 
 	@Override
@@ -1281,7 +1294,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// read iobuf from machine
-		return new IOBufControlProcess(scpSelector, this).readIOBuf(iobufSize,
+		return new RuntimeControlProcess(scpSelector, this).readIOBuf(iobufSize,
 				coreSubsets);
 	}
 
@@ -1295,7 +1308,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// read iobuf from machine
-		new IOBufControlProcess(scpSelector, this).clearIOBUF(coreSubsets);
+		new RuntimeControlProcess(scpSelector, this).clearIOBUF(coreSubsets);
 	}
 
 	@Override
@@ -1308,7 +1321,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// set the information
-		new UpdateRuntimeProcess(scpSelector, this).updateRuntime(runTimesteps,
+		new RuntimeControlProcess(scpSelector, this).updateRuntime(runTimesteps,
 				coreSubsets);
 	}
 
@@ -1535,6 +1548,19 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
+	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+			BMPRequest<T> request) throws IOException, ProcessException {
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
+				this).execute(request);
+	}
+
+	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+			int timeout, BMPRequest<T> request)
+			throws IOException, ProcessException {
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
+				timeout, this).execute(request);
+	}
+
 	@Override
 	@ParallelUnsafe
 	public void powerOnMachine()
@@ -1561,19 +1587,6 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
-			BMPRequest<T> request) throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
-				this).execute(request);
-	}
-
-	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
-			int timeout, BMPRequest<T> request)
-			throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
-				timeout, this).execute(request);
-	}
-
 	@Override
 	@ParallelUnsafe
 	public void power(PowerCommand powerCommand, Collection<Integer> boards,
@@ -1593,7 +1606,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@ParallelSafe
+	@ParallelUnsafe
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			Collection<Integer> board, int cabinet, int frame)
 			throws IOException, ProcessException {
@@ -1601,7 +1614,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@ParallelSafe
+	@ParallelUnsafe
 	public int readFPGARegister(int fpgaNumber, int register, int cabinet,
 			int frame, int board) throws IOException, ProcessException {
 		return bmpCall(cabinet, frame,
@@ -1609,7 +1622,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@ParallelSafe
+	@ParallelUnsafe
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
 			int cabinet, int frame, int board)
 			throws IOException, ProcessException {
@@ -1618,14 +1631,14 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	@ParallelSafe
+	@ParallelUnsafe
 	public ADCInfo readADCData(int board, int cabinet, int frame)
 			throws IOException, ProcessException {
 		return bmpCall(cabinet, frame, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
-	@ParallelSafe
+	@ParallelUnsafe
 	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
 			throws IOException, ProcessException {
 		return bmpCall(cabinet, frame, new GetBMPVersion(board)).versionInfo;
@@ -1671,7 +1684,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public void writeNeighbourMemory(HasCoreLocation core, int link,
+	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeProcess(numBytes).writeLink(core, link, baseAddress, dataStream,
@@ -1680,7 +1693,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public void writeNeighbourMemory(HasCoreLocation core, int link,
+	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeProcess(dataFile.length()).writeLink(core, link, baseAddress,
@@ -1689,7 +1702,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public void writeNeighbourMemory(HasCoreLocation core, int link,
+	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeProcess(data.remaining()).writeLink(core, link, baseAddress, data);
@@ -1754,7 +1767,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public ByteBuffer readNeighbourMemory(HasCoreLocation core, int link,
+	public ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return new ReadMemoryProcess(scpSelector, this).readLink(core, link,
 				baseAddress, length);
@@ -1944,10 +1957,23 @@ public class Transceiver extends UDPTransceiver
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		List<Tag> allTags = new ArrayList<>();
+		GetTagsProcess process = new GetTagsProcess(scpSelector, this);
 		for (SCPConnection conn : getConnectionList(connection)) {
-			allTags.addAll(new GetTagsProcess(scpSelector, this).getTags(conn));
+			allTags.addAll(process.getTags(conn));
 		}
 		return allTags;
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public Map<Tag, Integer> getTagUsage(SCPConnection connection)
+			throws IOException, ProcessException {
+		Map<Tag, Integer> allUsage = new HashMap<>();
+		GetTagsProcess process = new GetTagsProcess(scpSelector, this);
+		for (SCPConnection conn : getConnectionList(connection)) {
+			allUsage.putAll(process.getTagUsage(conn));
+		}
+		return allUsage;
 	}
 
 	@Override

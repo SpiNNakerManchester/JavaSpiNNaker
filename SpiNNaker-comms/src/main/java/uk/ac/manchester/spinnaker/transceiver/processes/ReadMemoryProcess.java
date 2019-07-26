@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -138,10 +139,10 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip does the link start at.
-	 * @param linkID
-	 *            the ID of the link to traverse.
+	 * @param linkDirection
+	 *            The direction of the link to traverse.
 	 * @param baseAddress
-	 *            where to read from.
+	 *            Where to read from.
 	 * @param receivingBuffer
 	 *            The buffer to receive into; the remaining space of the buffer
 	 *            determines how much memory to read.
@@ -150,15 +151,18 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			ByteBuffer receivingBuffer) throws IOException, ProcessException {
+	public void readLink(HasChipLocation chip, Direction linkDirection,
+			int baseAddress, ByteBuffer receivingBuffer)
+			throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
 		Accumulator a = new Accumulator(receivingBuffer);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
-			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
+			sendRequest(
+					new ReadLink(chip, linkDirection, baseAddress + offset,
+							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finish();
@@ -202,8 +206,8 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip does the link start at.
-	 * @param linkID
-	 *            the ID of the link to traverse.
+	 * @param linkDirection
+	 *            the direction of the link to traverse.
 	 * @param baseAddress
 	 *            where to read from.
 	 * @param size
@@ -214,14 +218,16 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public ByteBuffer readLink(HasChipLocation chip, int linkID,
+	public ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size) throws IOException, ProcessException {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
-			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
+			sendRequest(
+					new ReadLink(chip, linkDirection, baseAddress + offset,
+							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finish();
@@ -265,10 +271,10 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip does the link start at.
-	 * @param linkID
-	 *            the ID of the link to traverse.
+	 * @param linkDirection
+	 *            The direction of the link to traverse.
 	 * @param baseAddress
-	 *            where to read from.
+	 *            Where to read from.
 	 * @param size
 	 *            The number of bytes to read.
 	 * @param dataFile
@@ -279,15 +285,17 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			int size, RandomAccessFile dataFile)
+	public void readLink(HasChipLocation chip, Direction linkDirection,
+			int baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
-			sendRequest(new ReadLink(chip, linkID, baseAddress + offset, chunk),
+			sendRequest(
+					new ReadLink(chip, linkDirection, baseAddress + offset,
+							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finish();
@@ -302,7 +310,7 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @param chip
 	 *            What chip has the memory to read from.
 	 * @param baseAddress
-	 *            where to read from.
+	 *            Where to read from.
 	 * @param size
 	 *            The number of bytes to read.
 	 * @param dataFile
@@ -333,10 +341,10 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param chip
 	 *            What chip does the link start at.
-	 * @param linkID
-	 *            the ID of the link to traverse.
+	 * @param linkDirection
+	 *            The direction of the link to traverse.
 	 * @param baseAddress
-	 *            where to read from.
+	 *            Where to read from.
 	 * @param size
 	 *            The number of bytes to read.
 	 * @param dataFile
@@ -347,10 +355,11 @@ public class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, int linkID, int baseAddress,
-			int size, File dataFile) throws IOException, ProcessException {
+	public void readLink(HasChipLocation chip, Direction linkDirection,
+			int baseAddress, int size, File dataFile)
+			throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
-			readLink(chip, linkID, baseAddress, size, s);
+			readLink(chip, linkDirection, baseAddress, size, s);
 		}
 	}
 

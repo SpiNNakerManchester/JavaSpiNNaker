@@ -56,31 +56,6 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	/**
-	 * Create.
-	 *
-	 * @param connectionSelector
-	 *            How to choose where to send messages.
-	 * @param numRetries
-	 *            The number of retries allowed.
-	 * @param timeout
-	 *            How long to wait for a reply.
-	 * @param numChannels
-	 *            The number of parallel channels to use.
-	 * @param intermediateChannelWaits
-	 *            ???
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public FillProcess(ConnectionSelector<SCPConnection> connectionSelector,
-			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits, RetryTracker retryTracker) {
-		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits, retryTracker);
-	}
-
-	/**
 	 * Fill memory with a value.
 	 *
 	 * @param chip

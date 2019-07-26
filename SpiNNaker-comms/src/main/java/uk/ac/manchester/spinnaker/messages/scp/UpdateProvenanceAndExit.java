@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.NEW_RUNTIME_ID;
+import static uk.ac.manchester.spinnaker.messages.scp.RunningCommand.UPDATE_PROVENCE_REGION_AND_EXIT;
 
 import java.nio.ByteBuffer;
 
@@ -26,28 +26,20 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * An SCP Request to update the runtime info on a core.
  */
-public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
+public class UpdateProvenanceAndExit extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core
-	 *            The SpiNNaker core to update the runtime info of.
-	 * @param runTime
-	 *            The number of machine timesteps.
-	 * @param infiniteRun
-	 *            Whether we are doing infinite running.
+	 *            The SpiNNaker core to update the provenance info of.
 	 */
-	public UpdateRuntime(HasCoreLocation core, int runTime,
-			boolean infiniteRun) {
-		super(new RunningSDPHeader(core, true), NEW_RUNTIME_ID, runTime,
-				bool(infiniteRun), bool(true), null);
-	}
-
-	private static int bool(boolean value) {
-		return value ? 1 : 0;
+	public UpdateProvenanceAndExit(HasCoreLocation core) {
+		super(new RunningSDPHeader(core, false),
+				UPDATE_PROVENCE_REGION_AND_EXIT, 0, 0, 0, null);
 	}
 
 	@Override
 	public CheckOKResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new CheckOKResponse("update runtime", NEW_RUNTIME_ID, buffer);
+		return new CheckOKResponse("update provenance and exit",
+				UPDATE_PROVENCE_REGION_AND_EXIT, buffer);
 	}
 }

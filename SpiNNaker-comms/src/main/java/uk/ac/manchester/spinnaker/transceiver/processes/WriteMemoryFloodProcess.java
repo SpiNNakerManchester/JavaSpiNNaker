@@ -51,30 +51,6 @@ public class WriteMemoryFloodProcess
 		super(connectionSelector, retryTracker);
 	}
 
-	/**
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param numRetries
-	 *            The number of times to retry a communication.
-	 * @param timeout
-	 *            The timeout (in ms) for the communication.
-	 * @param numChannels
-	 *            The number of parallel communications to support
-	 * @param intermediateChannelWaits
-	 *            How many parallel communications to launch at once. (??)
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public WriteMemoryFloodProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
-			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits, RetryTracker retryTracker) {
-		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits, retryTracker);
-	}
-
 	private static final float BPW = 4.0F;
 
 	private static int numBlocks(int numBytes) {

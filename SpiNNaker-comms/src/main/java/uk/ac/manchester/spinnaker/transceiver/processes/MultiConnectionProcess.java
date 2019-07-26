@@ -101,17 +101,36 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 		this.retryTracker = retryTracker;
 	}
 
+	private SCPRequestPipeline getPipeline(T connection) {
+		SCPRequestPipeline pipeline = requestPipelines.get(connection);
+		if (pipeline == null) {
+			pipeline = new SCPRequestPipeline(connection, numChannels, numWaits,
+					numRetries, timeout, retryTracker);
+			requestPipelines.put(connection, pipeline);
+		}
+		return pipeline;
+	}
+
 	@Override
 	protected <R extends SCPResponse> void sendRequest(SCPRequest<R> request,
 			Consumer<R> callback) throws IOException {
-		T connection = selector.getNextConnection(request);
-		if (!requestPipelines.containsKey(connection)) {
-			SCPRequestPipeline pipeline = new SCPRequestPipeline(connection,
-					numChannels, numWaits, numRetries, timeout, retryTracker);
-			requestPipelines.put(connection, pipeline);
-		}
-		requestPipelines.get(connection).sendRequest(request, callback,
-				this::receiveError);
+		getPipeline(selector.getNextConnection(request)).sendRequest(request,
+				callback, this::receiveError);
+	}
+
+	/**
+	 * Send a one-way request. One way requests do not need to be finished.
+	 *
+	 * @param request
+	 *            The request to send. <em>Must</em> be a one-way request! This
+	 *            is not enforced by this method.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	protected <R extends SCPResponse> void sendOneWayRequest(
+			SCPRequest<R> request) throws IOException {
+		getPipeline(selector.getNextConnection(request))
+				.sendOneWayRequest(request);
 	}
 
 	@Override

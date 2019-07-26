@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -40,29 +41,31 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * @param core
 	 *            the core to read via
 	 * @param link
-	 *            The ID of the link down which to send the query
+	 *            The direction of the link down which to send the query
 	 * @param baseAddress
 	 *            The positive base address to start the read from
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadLink(HasCoreLocation core, int link, int baseAddress, int size) {
-		super(core, CMD_LINK_READ, baseAddress, validate(size), link);
+	public ReadLink(HasCoreLocation core, Direction link, int baseAddress,
+			int size) {
+		super(core, CMD_LINK_READ, baseAddress, validate(size), link.id);
 	}
 
 	/**
 	 * @param chip
 	 *            the chip to read via
 	 * @param link
-	 *            The ID of the link down which to send the query
+	 *            The direction of the link down which to send the query
 	 * @param baseAddress
 	 *            The positive base address to start the read from
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadLink(HasChipLocation chip, int link, int baseAddress, int size) {
+	public ReadLink(HasChipLocation chip, Direction link, int baseAddress,
+			int size) {
 		super(chip.getScampCore(), CMD_LINK_READ, baseAddress, validate(size),
-				link);
+				link.id);
 	}
 
 	@Override

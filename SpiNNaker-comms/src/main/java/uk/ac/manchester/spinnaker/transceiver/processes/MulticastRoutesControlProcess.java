@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * chip.
  */
 public class MulticastRoutesControlProcess
-		extends MultiConnectionProcess<SCPConnection> {
+		extends WriteMemoryProcess {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
@@ -56,11 +56,13 @@ public class MulticastRoutesControlProcess
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS =
 			ROUTER_AVAILABLE_ENTRIES / ENTRIES_PER_READ;
-	private static final int UNIT_SIZE = 16;
 	private static final int END = 0xFFFFFFFF;
+	/**
+	 * The maximum number of router entries we can write. A hardware constraint
+	 * for SpiNNaker 1 chips.
+	 */
+	private static final int MAX_ROUTER_ENTRIES = 1023;
 	private static final int ROUTING_TABLE_ADDRESS = 0x67800000;
-
-	private RetryTracker retryTracker;
 
 	/**
 	 * @param connectionSelector
@@ -74,10 +76,21 @@ public class MulticastRoutesControlProcess
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
-		this.retryTracker = retryTracker;
 	}
 
-	private static void writeEntry(ByteBuffer buffer, short index,
+	/**
+	 * 16 bytes per entry plus one for the end entry.
+	 *
+	 * @param entries
+	 *            The number of <em>information-containing</em> entries we want
+	 *            to write.
+	 * @return A buffer big enough to hold everything.
+	 */
+	private static ByteBuffer allocateBuffer(int entries) {
+		return allocate(BYTES_PER_ENTRY * (entries + 1)).order(LITTLE_ENDIAN);
+	}
+
+	private static void writeEntryToBuffer(ByteBuffer buffer, short index,
 			MulticastRoutingEntry route) {
 		buffer.putShort(index);
 		buffer.putShort((short) 0);
@@ -86,11 +99,25 @@ public class MulticastRoutesControlProcess
 		buffer.putInt(route.getMask());
 	}
 
-	private static void writeEnd(ByteBuffer buffer) {
+	private static void writeEndToBuffer(ByteBuffer buffer) {
 		buffer.putInt(END);
 		buffer.putInt(END);
 		buffer.putInt(END);
 		buffer.putInt(END);
+	}
+
+	private static ByteBuffer serializeRoutingData(
+			Collection<MulticastRoutingEntry> routes) {
+		ByteBuffer buffer = allocateBuffer(routes.size());
+		short index = 0;
+		for (MulticastRoutingEntry route : routes) {
+			writeEntryToBuffer(buffer, index++, route);
+		}
+
+		// Add an entry to mark the end
+		writeEndToBuffer(buffer);
+		buffer.flip();
+		return buffer;
 	}
 
 	/**
@@ -99,7 +126,8 @@ public class MulticastRoutesControlProcess
 	 * @param chip
 	 *            The chip whose router is to be updated.
 	 * @param routes
-	 *            The routes to load.
+	 *            The routes to load. There must not be more than 1023 routes
+	 *            (given hardware constraints).
 	 * @param appID
 	 *            The application ID associated with the routes.
 	 * @throws IOException
@@ -110,24 +138,15 @@ public class MulticastRoutesControlProcess
 	public void setRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
-		/*
-		 * Create the routing data. 16 bytes per entry plus one for the end
-		 * entry
-		 */
-		ByteBuffer buffer =
-				allocate(UNIT_SIZE * (routes.size() + 1)).order(LITTLE_ENDIAN);
-		short index = 0;
-		for (MulticastRoutingEntry route : routes) {
-			writeEntry(buffer, index++, route);
+		if (routes.size() > MAX_ROUTER_ENTRIES) {
+			throw new RuntimeException(
+					"too many router entries: " + routes.size());
 		}
+		// Create the routing data
+		ByteBuffer routingData = serializeRoutingData(routes);
 
-		// Add an entry to mark the end
-		writeEnd(buffer);
-		buffer.flip();
-
-		// Upload the data (delegate to another process)
-		new WriteMemoryProcess(selector, retryTracker).writeMemory(
-				chip.getScampCore(), ROUTING_TABLE_ADDRESS, buffer);
+		// Upload the data
+		writeMemory(chip.getScampCore(), ROUTING_TABLE_ADDRESS, routingData);
 
 		// Allocate space in the router table
 		int baseAddress = synchronousCall(
