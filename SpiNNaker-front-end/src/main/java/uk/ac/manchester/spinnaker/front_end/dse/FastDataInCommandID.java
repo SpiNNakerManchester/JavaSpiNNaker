@@ -54,8 +54,9 @@ public enum FastDataInCommandID {
 	 *
 	 * @param value
 	 *            The protocol ID
-	 * @return The matching constant, or {@code null} if the value is
-	 *         unrecognised.
+	 * @return The matching constant.
+	 * @throws IllegalArgumentException
+	 *             if the value isn't one of the ones accepted by this class.
 	 */
 	public static FastDataInCommandID forValue(int value) {
 		if (MAP.isEmpty()) {
@@ -63,6 +64,11 @@ public enum FastDataInCommandID {
 				MAP.put(c.value, c);
 			}
 		}
-		return MAP.get(value);
+		FastDataInCommandID id = MAP.get(value);
+		if (id == null) {
+			throw new IllegalArgumentException(
+					"unexpected command code: " + value);
+		}
+		return id;
 	}
 }
