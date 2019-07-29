@@ -67,7 +67,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public List<HeapElement> getBlocks(HasChipLocation chip,
+	List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		HeapHeader header = getHeapHeader(chip, heap);
@@ -101,7 +101,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public List<HeapElement> getFreeBlocks(HasChipLocation chip,
+	List<HeapElement> getFreeBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		HeapHeader header = getHeapHeader(chip, heap);
@@ -133,7 +133,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public int getFreeSpace(HasChipLocation chip, SystemVariableDefinition heap)
+	int getFreeSpace(HasChipLocation chip, SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		return getHeapHeader(chip, heap).freeBytes;
 	}

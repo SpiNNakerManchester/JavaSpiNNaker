@@ -78,7 +78,7 @@ class SendSingleSCPCommandProcess
 	 * @throws ProcessException
 	 *             If SCAMP on SpiNNaker reports a failure.
 	 */
-	public <T extends CheckOKResponse> T execute(SCPRequest<T> request)
+	<T extends CheckOKResponse> T execute(SCPRequest<T> request)
 			throws IOException, ProcessException {
 		return synchronousCall(request);
 	}

@@ -83,8 +83,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void clearIOBUF(CoreLocation core)
-			throws IOException, ProcessException {
+	void clearIOBUF(CoreLocation core) throws IOException, ProcessException {
 		synchronousCall(new ClearIOBUF(core));
 	}
 
@@ -98,7 +97,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void clearIOBUF(CoreSubsets coreSubsets)
+	void clearIOBUF(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
@@ -121,7 +120,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		int runTime = (runTimesteps == null ? 0 : runTimesteps);
 		boolean infiniteRun = runTimesteps == null;
@@ -143,8 +142,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
-	public void updateProvenanceAndExit(CoreSubsets coreSubsets)
-			throws IOException {
+	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
 		for (CoreLocation core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendOneWayRequest(new UpdateProvenanceAndExit(core));
@@ -169,7 +167,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
+	Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
 		for (CoreLocation core : requireNonNull(cores,

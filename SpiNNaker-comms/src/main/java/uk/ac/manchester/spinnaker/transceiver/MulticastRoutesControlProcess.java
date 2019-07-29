@@ -133,7 +133,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void setRoutes(HasChipLocation chip,
+	void setRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
 		if (routes.size() > MAX_ROUTER_ENTRIES) {
@@ -175,8 +175,8 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
-			int baseAddress, AppID appID) throws IOException, ProcessException {
+	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip, int baseAddress,
+			AppID appID) throws IOException, ProcessException {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;

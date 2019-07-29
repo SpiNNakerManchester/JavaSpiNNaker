@@ -61,7 +61,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public List<Tag> getTags(SCPConnection connection)
+	List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		Response tagInfo =
 				synchronousCall(new IPTagGetInfo(connection.getChip()));
@@ -104,7 +104,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Map<Tag, Integer> getTagUsage(SCPConnection connection)
+	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException {
 		Response tagInfo =
 				synchronousCall(new IPTagGetInfo(connection.getChip()));

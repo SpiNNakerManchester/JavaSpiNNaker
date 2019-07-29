@@ -107,6 +107,7 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
@@ -698,15 +699,13 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private ConnectionSelector<BMPConnection> bmpConnection(int cabinet,
-			int frame) {
-		BMPCoords key = new BMPCoords(cabinet, frame);
-		if (!bmpSelectors.containsKey(key)) {
+	private ConnectionSelector<BMPConnection> bmpConnection(BMPCoords bmp) {
+		if (!bmpSelectors.containsKey(bmp)) {
 			throw new IllegalArgumentException(
-					"Unknown combination of cabinet (" + cabinet
-							+ ") and frame (" + frame + ")");
+					"Unknown combination of cabinet (" + bmp.getCabinet()
+							+ ") and frame (" + bmp.getFrame() + ")");
 		}
-		return bmpSelectors.get(key);
+		return bmpSelectors.get(bmp);
 	}
 
 	private byte getNextNearestNeighbourID() {
@@ -749,7 +748,7 @@ public class Transceiver extends UDPTransceiver
 			// try to send a BMP SVER to check if it responds as expected
 			try {
 				VersionInfo versionInfo =
-						readBMPVersion(conn.boards, conn.cabinet, conn.frame);
+						readBMPVersion(conn.cabinet, conn.frame, conn.boards);
 				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
 						.contains(versionInfo.versionNumber.majorVersion)) {
 					throw new IOException(format(
@@ -1530,17 +1529,17 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			BMPRequest<T> request) throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
-				this).execute(request);
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(bmp), this)
+				.execute(request);
 	}
 
-	private <T extends BMPRequest.BMPResponse> T bmpCall(int cabinet, int frame,
+	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			int timeout, BMPRequest<T> request)
 			throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(cabinet, frame),
-				timeout, this).execute(request);
+		return new SendSingleBMPCommandProcess<T>(bmpConnection(bmp), timeout,
+				this).execute(request);
 	}
 
 	@Override
@@ -1551,8 +1550,8 @@ public class Transceiver extends UDPTransceiver
 			log.warn("No BMP connections, so can't power on");
 		}
 		for (BMPConnection connection : bmpConnections) {
-			power(POWER_ON, connection.boards, connection.cabinet,
-					connection.frame);
+			power(POWER_ON, new BMPCoords(connection.cabinet, connection.frame),
+					connection.boards);
 		}
 	}
 
@@ -1564,21 +1563,22 @@ public class Transceiver extends UDPTransceiver
 			log.warn("No BMP connections, so can't power off");
 		}
 		for (BMPConnection connection : bmpConnections) {
-			power(POWER_OFF, connection.boards, connection.cabinet,
-					connection.frame);
+			power(POWER_OFF,
+					new BMPCoords(connection.cabinet, connection.frame),
+					connection.boards);
 		}
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void power(PowerCommand powerCommand, Collection<Integer> boards,
-			int cabinet, int frame)
+	public void power(PowerCommand powerCommand, BMPCoords bmp,
+			Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException {
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		requireNonNull(bmpCall(cabinet, frame, timeout,
-				new SetPower(powerCommand, boards, 0.0)));
+		requireNonNull(
+				bmpCall(bmp, timeout, new SetPower(powerCommand, boards, 0.0)));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on
@@ -1590,40 +1590,38 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void setLED(Collection<Integer> leds, LEDAction action,
-			Collection<Integer> board, int cabinet, int frame)
+			BMPCoords bmp, Collection<Integer> board)
 			throws IOException, ProcessException {
-		bmpCall(cabinet, frame, new BMPSetLED(leds, action, board));
+		bmpCall(bmp, new BMPSetLED(leds, action, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public int readFPGARegister(int fpgaNumber, int register, int cabinet,
-			int frame, int board) throws IOException, ProcessException {
-		return bmpCall(cabinet, frame,
+	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+			int board) throws IOException, ProcessException {
+		return bmpCall(bmp,
 				new ReadFPGARegister(fpgaNumber, register, board)).fpgaRegister;
 	}
 
 	@Override
 	@ParallelUnsafe
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			int cabinet, int frame, int board)
-			throws IOException, ProcessException {
-		bmpCall(cabinet, frame,
-				new WriteFPGARegister(fpgaNumber, register, value, board));
+			BMPCoords bmp, int board) throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFPGARegister(fpgaNumber, register, value, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public ADCInfo readADCData(int board, int cabinet, int frame)
+	public ADCInfo readADCData(BMPCoords bmp, int board)
 			throws IOException, ProcessException {
-		return bmpCall(cabinet, frame, new ReadADC(board)).adcInfo;
+		return bmpCall(bmp, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public VersionInfo readBMPVersion(int board, int cabinet, int frame)
+	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
 			throws IOException, ProcessException {
-		return bmpCall(cabinet, frame, new GetBMPVersion(board)).versionInfo;
+		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {
@@ -2207,6 +2205,9 @@ public class Transceiver extends UDPTransceiver
 	public void fillMemory(HasChipLocation chip, int baseAddress,
 			int repeatValue, int size, FillDataType dataType)
 			throws ProcessException, IOException {
+		if (repeatValue < 1) {
+			throw new IllegalArgumentException("the repeat must be at least 1");
+		}
 		new FillProcess(scpSelector, this).fillMemory(chip, baseAddress,
 				repeatValue, size, dataType);
 	}
@@ -2326,33 +2327,6 @@ public class Transceiver extends UDPTransceiver
 			this.hostname = requireNonNull(host);
 			this.chip = chip.asChipLocation();
 			this.portNumber = port;
-		}
-	}
-
-	/**
-	 * A simple description of a BMP to talk to.
-	 */
-	static final class BMPCoords {
-		private final int cabinet;
-		private final int frame;
-
-		BMPCoords(int cabinet, int frame) {
-			this.cabinet = cabinet;
-			this.frame = frame;
-		}
-
-		@Override
-		public int hashCode() {
-			return cabinet << 16 | frame;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof BMPCoords) {
-				BMPCoords b = (BMPCoords) o;
-				return cabinet == b.cabinet && frame == b.frame;
-			}
-			return false;
 		}
 	}
 

@@ -149,7 +149,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, Direction linkDirection,
+	void readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, ByteBuffer receivingBuffer)
 			throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
@@ -183,7 +183,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readMemory(HasChipLocation chip, int baseAddress,
+	void readMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
 		Accumulator a = new Accumulator(receivingBuffer);
@@ -216,7 +216,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
+	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size) throws IOException, ProcessException {
 		Accumulator a = new Accumulator(size);
 		int chunk;
@@ -248,8 +248,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
-			int size) throws IOException, ProcessException {
+	ByteBuffer readMemory(HasChipLocation chip, int baseAddress, int size)
+			throws IOException, ProcessException {
 		Accumulator a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
@@ -283,7 +283,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, Direction linkDirection,
+	void readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException {
 		FileAccumulator a = new FileAccumulator(dataFile);
@@ -319,7 +319,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, int baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, ProcessException {
 		FileAccumulator a = new FileAccumulator(dataFile);
 		int chunk;
@@ -353,7 +353,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readLink(HasChipLocation chip, Direction linkDirection,
+	void readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size, File dataFile)
 			throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
@@ -378,7 +378,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, int baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
@@ -402,7 +402,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws StorageException
 	 *             If anything goes wrong with access to the database.
 	 */
-	public void readMemory(BufferManagerStorage.Region region,
+	void readMemory(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
 		byte[] buffer = new byte[region.size];

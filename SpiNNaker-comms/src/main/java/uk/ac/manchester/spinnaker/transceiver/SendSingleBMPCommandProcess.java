@@ -63,7 +63,7 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			getLogger(SendSingleBMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT =
-            (int) (MSEC_PER_SEC * BMP_TIMEOUT);
+			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
 
@@ -117,8 +117,7 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	public R execute(BMPRequest<R> request)
-			throws IOException, ProcessException {
+	R execute(BMPRequest<R> request) throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for

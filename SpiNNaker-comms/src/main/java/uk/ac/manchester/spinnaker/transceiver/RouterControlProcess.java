@@ -60,8 +60,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	RouterControlProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	RouterControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -76,7 +75,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void clearQueue(CoreLocation monitorCore)
+	void clearQueue(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		synchronousCall(new ClearReinjectionQueue(monitorCore));
 	}
@@ -91,7 +90,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void clearQueue(CoreSubsets monitorCoreSubsets)
+	void clearQueue(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new ClearReinjectionQueue(core));
@@ -110,7 +109,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void resetCounters(CoreLocation monitorCore)
+	void resetCounters(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		synchronousCall(new ResetReinjectionCounters(monitorCore));
 	}
@@ -125,7 +124,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void resetCounters(CoreSubsets coreSubsets)
+	void resetCounters(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : coreSubsets) {
 			sendRequest(new ResetReinjectionCounters(core));
@@ -152,7 +151,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setPacketTypes(CoreLocation monitorCore, boolean multicast,
+	void setPacketTypes(CoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException {
 		synchronousCall(new SetReinjectionPacketTypes(monitorCore, multicast,
@@ -177,9 +176,9 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setPacketTypes(CoreSubsets monitorCoreSubsets,
-			boolean multicast, boolean pointToPoint, boolean fixedRoute,
-			boolean nearestNeighbour) throws IOException, ProcessException {
+	void setPacketTypes(CoreSubsets monitorCoreSubsets, boolean multicast,
+			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
+			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new SetReinjectionPacketTypes(core, multicast,
 					pointToPoint, fixedRoute, nearestNeighbour));
@@ -202,7 +201,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
+	void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException {
 		synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
 				timeoutExponent));
@@ -222,7 +221,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
+	void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new SetRouterTimeout(core, timeoutMantissa,
@@ -246,9 +245,8 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setEmergencyTimeout(CoreLocation monitorCore,
-			int timeoutMantissa, int timeoutExponent)
-			throws IOException, ProcessException {
+	void setEmergencyTimeout(CoreLocation monitorCore, int timeoutMantissa,
+			int timeoutExponent) throws IOException, ProcessException {
 		synchronousCall(new SetRouterEmergencyTimeout(monitorCore,
 				timeoutMantissa, timeoutExponent));
 	}
@@ -267,7 +265,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void setEmergencyTimeout(CoreSubsets monitorCoreSubsets,
+	void setEmergencyTimeout(CoreSubsets monitorCoreSubsets,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
@@ -288,7 +286,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void saveApplicationRouterTable(CoreLocation monitorCore)
+	void saveApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		synchronousCall(new RouterTableSaveApplicationRoutes(monitorCore));
 	}
@@ -304,7 +302,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
+	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new RouterTableSaveApplicationRoutes(core));
@@ -324,7 +322,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadSystemRouterTable(CoreLocation monitorCore)
+	void loadSystemRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		synchronousCall(new RouterTableLoadSystemRoutes(monitorCore));
 	}
@@ -340,7 +338,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
+	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadSystemRoutes(core));
@@ -360,7 +358,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadApplicationRouterTable(CoreLocation monitorCore)
+	void loadApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		synchronousCall(new RouterTableLoadApplicationRoutes(monitorCore));
 	}
@@ -376,7 +374,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
+	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		for (CoreLocation core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadApplicationRoutes(core));
@@ -396,7 +394,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
+	ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
 			throws IOException, ProcessException {
 		return synchronousCall(
 				new GetReinjectionStatus(monitorCore)).reinjectionStatus;
@@ -413,7 +411,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
+	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
 		Map<CoreLocation, ReinjectionStatus> status = new HashMap<>();
@@ -437,7 +435,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
+	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException {
 		ValueHolder<Integer> cr = new ValueHolder<>();
 		ValueHolder<Integer> es = new ValueHolder<>();

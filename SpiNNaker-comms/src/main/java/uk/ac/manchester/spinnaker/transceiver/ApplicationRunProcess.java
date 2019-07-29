@@ -57,7 +57,7 @@ class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
+	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
 			throws ProcessException, IOException {
 		for (ChipLocation chip : coreSubsets.getChips()) {
 			sendRequest(new ApplicationRun(appID, chip,

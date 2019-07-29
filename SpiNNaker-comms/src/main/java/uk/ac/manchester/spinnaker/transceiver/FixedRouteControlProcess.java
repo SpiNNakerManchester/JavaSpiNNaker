@@ -55,7 +55,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
+	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
 		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
 	}
@@ -74,7 +74,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
+	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID) throws IOException, ProcessException {
 		int entry = fixedRoute.encode();
 		synchronousCall(new FixedRouteInitialise(chip, entry, appID));
@@ -91,7 +91,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public RoutingEntry readFixedRoute(HasChipLocation chip)
+	RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return readFixedRoute(chip, AppID.DEFAULT);
 	}
@@ -109,7 +109,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the message.
 	 */
-	public RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
+	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
 		return synchronousCall(new FixedRouteRead(chip, appID)).getRoute();
 	}

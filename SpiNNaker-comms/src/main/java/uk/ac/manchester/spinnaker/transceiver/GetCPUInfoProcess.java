@@ -61,7 +61,7 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+	Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
 		for (CoreLocation core : requireNonNull(coreSubsets,

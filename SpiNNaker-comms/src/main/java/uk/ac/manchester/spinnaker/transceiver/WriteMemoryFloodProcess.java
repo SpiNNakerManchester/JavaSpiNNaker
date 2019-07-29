@@ -70,8 +70,8 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, int baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
@@ -114,7 +114,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
+	void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		synchronousCall(
@@ -155,8 +155,8 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			File dataFile) throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, int baseAddress, File dataFile)
+			throws IOException, ProcessException {
 		try (InputStream s =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,

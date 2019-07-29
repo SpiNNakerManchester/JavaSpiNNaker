@@ -70,6 +70,7 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
@@ -1444,11 +1445,11 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param boards
-	 *            The board or boards to power on
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the boards, or 0
 	 *            if the boards are not in a frame
+	 * @param boards
+	 *            The board or boards to power on
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1457,9 +1458,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOn(Collection<Integer> boards, int frame)
+	default void powerOn(int frame, Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, boards, 0, frame);
+		power(POWER_ON, new BMPCoords(0, frame), boards);
 	}
 
 	/**
@@ -1468,14 +1469,14 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param boards
-	 *            The board or boards to power on
 	 * @param cabinet
 	 *            the ID of the cabinet containing the frame, or 0 if the frame
 	 *            is not in a cabinet
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the boards, or 0
 	 *            if the boards are not in a frame
+	 * @param boards
+	 *            The board or boards to power on
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1484,9 +1485,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOn(Collection<Integer> boards, int cabinet, int frame)
+	default void powerOn(int cabinet, int frame, Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, boards, cabinet, frame);
+		power(POWER_ON, new BMPCoords(cabinet, frame), boards);
 	}
 
 	/**
@@ -1507,7 +1508,7 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOn(int board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, singleton(board), 0, 0);
+		power(POWER_ON, new BMPCoords(0, 0), singleton(board));
 	}
 
 	/**
@@ -1516,11 +1517,11 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param board
-	 *            The board to power on
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @param board
+	 *            The board to power on
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1531,7 +1532,7 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOn(int board, int frame)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, singleton(board), 0, frame);
+		power(POWER_ON, new BMPCoords(0, frame), singleton(board));
 	}
 
 	/**
@@ -1540,14 +1541,14 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param board
-	 *            The board to power on
 	 * @param cabinet
 	 *            the ID of the cabinet containing the frame, or 0 if the frame
 	 *            is not in a cabinet
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @param board
+	 *            The board to power on
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1556,9 +1557,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(int board, int cabinet, int frame)
+	default void powerOn(int cabinet, int frame, int board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, singleton(board), cabinet, frame);
+		power(POWER_ON, new BMPCoords(cabinet, frame), singleton(board));
 	}
 
 	/**
@@ -1584,11 +1585,11 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param boards
-	 *            The board or boards to power off
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @param boards
+	 *            The board or boards to power off
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1597,9 +1598,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOff(Collection<Integer> boards, int frame)
+	default void powerOff(int frame, Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, boards, 0, frame);
+		power(POWER_OFF, new BMPCoords(0, frame), boards);
 	}
 
 	/**
@@ -1608,14 +1609,14 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param boards
-	 *            The board or boards to power off
 	 * @param cabinet
 	 *            the ID of the cabinet containing the frame, or 0 if the frame
 	 *            is not in a cabinet
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @param boards
+	 *            The board or boards to power off
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1624,9 +1625,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOff(Collection<Integer> boards, int cabinet, int frame)
+	default void powerOff(int cabinet, int frame, Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, boards, cabinet, frame);
+		power(POWER_OFF, new BMPCoords(cabinet, frame), boards);
 	}
 
 	/**
@@ -1647,7 +1648,7 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOff(int board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, singleton(board), 0, 0);
+		power(POWER_OFF, new BMPCoords(0, 0), singleton(board));
 	}
 
 	/**
@@ -1656,11 +1657,11 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param board
-	 *            The board to power off
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @param board
+	 *            The board to power off
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1669,9 +1670,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(int board, int frame)
+	default void powerOff(int frame, int board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, singleton(board), 0, frame);
+		power(POWER_OFF, new BMPCoords(0, frame), singleton(board));
 	}
 
 	/**
@@ -1680,14 +1681,14 @@ public interface TransceiverInterface {
 	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
 	 * multi-threaded context.
 	 *
-	 * @param board
-	 *            The board to power off
 	 * @param cabinet
 	 *            the ID of the cabinet containing the frame, or 0 if the frame
 	 *            is not in a cabinet
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board, or 0
 	 *            if the board is not in a frame
+	 * @param board
+	 *            The board to power off
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1696,9 +1697,9 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(int board, int cabinet, int frame)
+	default void powerOff(int cabinet, int frame, int board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, singleton(board), cabinet, frame);
+		power(POWER_OFF, new BMPCoords(cabinet, frame), singleton(board));
 	}
 
 	/**
@@ -1709,14 +1710,14 @@ public interface TransceiverInterface {
 	 *
 	 * @param powerCommand
 	 *            The power command to send
-	 * @param boards
-	 *            The boards to send the command to
 	 * @param cabinet
 	 *            the ID of the cabinet containing the frame, or 0 if the frame
 	 *            is not in a cabinet
 	 * @param frame
 	 *            the ID of the frame in the cabinet containing the board(s), or
 	 *            0 if the board is not in a frame
+	 * @param boards
+	 *            The boards to send the command to
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1725,8 +1726,35 @@ public interface TransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	void power(PowerCommand powerCommand, Collection<Integer> boards,
-			int cabinet, int frame)
+	default void power(PowerCommand powerCommand, int cabinet, int frame,
+			Collection<Integer> boards)
+			throws InterruptedException, IOException, ProcessException {
+		power(powerCommand, new BMPCoords(cabinet, frame), boards);
+	}
+
+	/**
+	 * Send a power request to the machine.
+	 * <p>
+	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
+	 * multi-threaded context.
+	 *
+	 * @param powerCommand
+	 *            The power command to send
+	 * @param bmp
+	 *            the coordinates of the BMP; components are zero for a board
+	 *            not in a frame of a cabinet
+	 * @param boards
+	 *            The boards to send the command to
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the thread is interrupted while waiting.
+	 */
+	@ParallelUnsafe
+	void power(PowerCommand powerCommand, BMPCoords bmp,
+			Collection<Integer> boards)
 			throws InterruptedException, IOException, ProcessException;
 
 	/**
@@ -1736,22 +1764,24 @@ public interface TransceiverInterface {
 	 *            Collection of LED numbers to set the state of (0-7)
 	 * @param action
 	 *            State to set the LED to, either on, off or toggle
-	 * @param board
-	 *            Specifies the board to control the LEDs of. The command will
-	 *            actually be sent to the first board in the collection.
 	 * @param cabinet
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @param boards
+	 *            Specifies the board to control the LEDs of. The command will
+	 *            actually be sent to the first board in the collection.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void setLED(Collection<Integer> leds, LEDAction action,
-			Collection<Integer> board, int cabinet, int frame)
-			throws IOException, ProcessException;
+	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
+			int frame, Collection<Integer> boards)
+			throws IOException, ProcessException {
+		setLED(leds, action, new BMPCoords(cabinet, frame), boards);
+	}
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -1760,46 +1790,42 @@ public interface TransceiverInterface {
 	 *            Collection of LED numbers to set the state of (0-7)
 	 * @param action
 	 *            State to set the LED to, either on, off or toggle
-	 * @param board
-	 *            Specifies the board to control the LEDs of.
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void setLED(Collection<Integer> leds, LEDAction action, int board,
-			int cabinet, int frame) throws IOException, ProcessException {
-		setLED(leds, action, singleton(board), cabinet, frame);
-	}
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param led
-	 *            Number of the LED to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
 	 * @param board
 	 *            Specifies the board to control the LEDs of. The command will
 	 *            actually be sent to the first board in the collection.
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void setLED(int led, LEDAction action, Collection<Integer> board,
-			int cabinet, int frame) throws IOException, ProcessException {
-		setLED(singleton(led), action, board, cabinet, frame);
+	void setLED(Collection<Integer> leds, LEDAction action, BMPCoords bmp,
+			Collection<Integer> board) throws IOException, ProcessException;
+
+	/**
+	 * Set the LED state of a board in the machine.
+	 *
+	 * @param leds
+	 *            Collection of LED numbers to set the state of (0-7)
+	 * @param action
+	 *            State to set the LED to, either on, off or toggle
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            Specifies the board to control the LEDs of.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
+			int frame, int board) throws IOException, ProcessException {
+		setLED(leds, action, new BMPCoords(cabinet, frame), singleton(board));
 	}
 
 	/**
@@ -1809,21 +1835,47 @@ public interface TransceiverInterface {
 	 *            Number of the LED to set the state of (0-7)
 	 * @param action
 	 *            State to set the LED to, either on, off or toggle
-	 * @param board
-	 *            Specifies the board to control the LEDs of.
 	 * @param cabinet
 	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
+	 * @param boards
+	 *            Specifies the board to control the LEDs of. The command will
+	 *            actually be sent to the first board in the collection.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void setLED(int led, LEDAction action, int board, int cabinet,
-			int frame) throws IOException, ProcessException {
-		setLED(singleton(led), action, singleton(board), cabinet, frame);
+	default void setLED(int led, LEDAction action, int cabinet, int frame,
+			Collection<Integer> boards) throws IOException, ProcessException {
+		setLED(singleton(led), action, new BMPCoords(cabinet, frame), boards);
+	}
+
+	/**
+	 * Set the LED state of a board in the machine.
+	 *
+	 * @param led
+	 *            Number of the LED to set the state of (0-7)
+	 * @param action
+	 *            State to set the LED to, either on, off or toggle
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            Specifies the board to control the LEDs of.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default void setLED(int led, LEDAction action, int cabinet, int frame,
+			int board) throws IOException, ProcessException {
+		setLED(singleton(led), action, new BMPCoords(cabinet, frame),
+				singleton(board));
 	}
 
 	/**
@@ -1848,8 +1900,34 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int readFPGARegister(int fpgaNumber, int register, int cabinet, int frame,
-			int board) throws IOException, ProcessException;
+	default int readFPGARegister(int fpgaNumber, int register, int cabinet,
+			int frame, int board) throws IOException, ProcessException {
+		return readFPGARegister(fpgaNumber, register,
+				new BMPCoords(cabinet, frame), board);
+	}
+
+	/**
+	 * Read a register on a FPGA of a board. The meaning of the register's
+	 * contents will depend on the FPGA's configuration.
+	 *
+	 * @param fpgaNumber
+	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param register
+	 *            Register address to read to (will be rounded down to the
+	 *            nearest 32-bit word boundary).
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
+	 * @param board
+	 *            which board to request the FPGA register from
+	 * @return the register data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp, int board)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board. The meaning of setting the
@@ -1863,7 +1941,7 @@ public interface TransceiverInterface {
 	 * @param value
 	 *            the value to write into the FPGA register
 	 * @param cabinet
-	 *            cabinet: the cabinet this is targeting
+	 *            the cabinet this is targeting
 	 * @param frame
 	 *            the frame this is targeting
 	 * @param board
@@ -1874,8 +1952,36 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void writeFPGARegister(int fpgaNumber, int register, int value, int cabinet,
-			int frame, int board) throws IOException, ProcessException;
+	default void writeFPGARegister(int fpgaNumber, int register, int value,
+			int cabinet, int frame, int board)
+			throws IOException, ProcessException {
+		writeFPGARegister(fpgaNumber, register, value,
+				new BMPCoords(cabinet, frame), board);
+	}
+
+	/**
+	 * Write a register on a FPGA of a board. The meaning of setting the
+	 * register's contents will depend on the FPGA's configuration.
+	 *
+	 * @param fpgaNumber
+	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param register
+	 *            Register address to read to (will be rounded down to the
+	 *            nearest 32-bit word boundary).
+	 * @param value
+	 *            the value to write into the FPGA register
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
+	 * @param board
+	 *            which board to write the FPGA register to
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void writeFPGARegister(int fpgaNumber, int register, int value,
+			BMPCoords bmp, int board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.
@@ -1893,7 +1999,26 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	ADCInfo readADCData(int board, int cabinet, int frame)
+	default ADCInfo readADCData(int cabinet, int frame, int board)
+			throws IOException, ProcessException {
+		return readADCData(new BMPCoords(cabinet, frame), board);
+	}
+
+	/**
+	 * Read the ADC data.
+	 *
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
+	 * @param board
+	 *            which board to request the ADC data from
+	 * @return the FPGA's ADC data object
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	ADCInfo readADCData(BMPCoords bmp, int board)
 			throws IOException, ProcessException;
 
 	/**
@@ -1913,9 +2038,10 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default VersionInfo readBMPVersion(Iterable<Integer> boards, int cabinet,
-			int frame) throws IOException, ProcessException {
-		return readBMPVersion(boards.iterator().next(), cabinet, frame);
+	default VersionInfo readBMPVersion(int cabinet, int frame,
+			Iterable<Integer> boards) throws IOException, ProcessException {
+		return readBMPVersion(new BMPCoords(cabinet, frame),
+				boards.iterator().next());
 	}
 
 	/**
@@ -1934,7 +2060,28 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	VersionInfo readBMPVersion(int board, int cabinet, int frame)
+	default VersionInfo readBMPVersion(int cabinet, int frame, int board)
+			throws IOException, ProcessException {
+		return readBMPVersion(new BMPCoords(cabinet, frame), board);
+	}
+
+	/**
+	 * Read the BMP version.
+	 *
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to request the data from
+	 * @return the SVER from the BMP
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	VersionInfo readBMPVersion(BMPCoords bmp, int board)
 			throws IOException, ProcessException;
 
 	/**
@@ -3594,11 +3741,11 @@ public interface TransceiverInterface {
 	 *             message.
 	 */
 	@ParallelSafeWithCare
-	default void waitForCoresToBeInState(CoreSubsets coreSubsets,
-			AppID appID, Set<CPUState> cpuStates)
+	default void waitForCoresToBeInState(CoreSubsets coreSubsets, AppID appID,
+			Set<CPUState> cpuStates)
 			throws IOException, InterruptedException, SpinnmanException {
-		waitForCoresToBeInState(coreSubsets, appID, cpuStates,
-				TIMEOUT_DISABLED, DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
+		waitForCoresToBeInState(coreSubsets, appID, cpuStates, TIMEOUT_DISABLED,
+				DEFAULT_POLL_INTERVAL, DEFAULT_ERROR_STATES,
 				DEFAULT_CHECK_INTERVAL);
 	}
 

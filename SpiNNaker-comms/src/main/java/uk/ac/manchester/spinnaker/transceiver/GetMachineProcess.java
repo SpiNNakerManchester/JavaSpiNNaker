@@ -126,8 +126,8 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Machine getMachineDetails(HasChipLocation bootChip,
-			MachineDimensions size) throws IOException, ProcessException {
+	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
+			throws IOException, ProcessException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
@@ -263,7 +263,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @return The description of what the state of each chip is.
 	 */
-	public Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
+	Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
 		return unmodifiableMap(chipInfo);
 	}
 }
