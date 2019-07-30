@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.Integer.getInteger;
 import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
@@ -24,7 +25,7 @@ import static java.lang.Thread.yield;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 
 import java.io.IOException;
@@ -63,6 +64,12 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
  * @author Donal Fellows
  */
 public class SCPRequestPipeline {
+	/**
+	 * The name of a <em>system property</em> that can override the default
+	 * timeouts. If specified as an integer, it gives the number of milliseconds
+	 * to wait before timing out a communication.
+	 */
+	private static final String TIMEOUT_PROPERTY = "spinnaker.scp_timeout";
 	private static final Logger log = getLogger(SCPRequestPipeline.class);
 	/** The default number of requests to send before checking for responses. */
 	public static final int DEFAULT_NUM_CHANNELS = 1;
@@ -85,6 +92,12 @@ public class SCPRequestPipeline {
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
 	private static final int INTER_SEND_INTERVAL_NS = 60000;
+	/** The default for the timeout (in ms). */
+	public static final int SCP_TIMEOUT;
+
+	static {
+		SCP_TIMEOUT = getInteger(TIMEOUT_PROPERTY, SCP_TIMEOUT_DEFAULT);
+	}
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;

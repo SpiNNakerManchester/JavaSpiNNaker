@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
+
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -42,7 +44,7 @@ public class ApplicationRunProcess
 	public ApplicationRunProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
-		super(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+		super(connectionSelector, DEFAULT_NUM_RETRIES, SCP_TIMEOUT,
 				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
 				retryTracker);
 	}

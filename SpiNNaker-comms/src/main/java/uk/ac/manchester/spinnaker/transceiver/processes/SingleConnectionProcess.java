@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver.processes;
 
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
 import java.util.function.Consumer;
