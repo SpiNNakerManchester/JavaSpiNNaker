@@ -65,6 +65,7 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
+import net.jcip.annotations.NotThreadSafe;
 import testconfig.BoardTestConfiguration;
 import testconfig.Utils.Field;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -96,6 +97,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
+@NotThreadSafe
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);
 	// TODO Stop printing to System.out
