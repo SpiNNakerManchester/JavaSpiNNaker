@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.jcip.annotations.NotThreadSafe;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.InetAddress;
@@ -37,6 +40,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
+@NotThreadSafe
 class ReliabilityITCase {
     static Machine jsonMachine;
 	private static final Logger log = getLogger(ReliabilityITCase.class);

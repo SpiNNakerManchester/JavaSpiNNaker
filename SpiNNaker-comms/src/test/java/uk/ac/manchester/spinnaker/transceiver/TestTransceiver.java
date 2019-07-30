@@ -40,6 +40,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import net.jcip.annotations.NotThreadSafe;
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
@@ -55,6 +56,7 @@ import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
+@NotThreadSafe
 class TestTransceiver {
 	static BoardTestConfiguration boardConfig;
 

@@ -83,6 +83,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<artifactId>commons-beanutils</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<pluginManagement>
