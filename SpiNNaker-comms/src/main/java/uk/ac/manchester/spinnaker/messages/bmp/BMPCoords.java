@@ -21,9 +21,24 @@ package uk.ac.manchester.spinnaker.messages.bmp;
  * a hash key.
  */
 public final class BMPCoords {
+	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	private final int cabinet;
+	/**
+	 * The ID of the frame that contains the master BMP. Frames are contained
+	 * within a cabinet.
+	 */
 	private final int frame;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param cabinet
+	 *            The ID of the cabinet that contains the frame that contains
+	 *            the BMPs.
+	 * @param frame
+	 *            The ID of the frame that contains the master BMP. Frames are
+	 *            contained within a cabinet.
+	 */
 	public BMPCoords(int cabinet, int frame) {
 		this.cabinet = cabinet;
 		this.frame = frame;
