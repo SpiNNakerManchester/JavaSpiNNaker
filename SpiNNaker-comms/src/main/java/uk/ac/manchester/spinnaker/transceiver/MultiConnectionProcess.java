@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,8 +39,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	/** The default for the number of retries. */
 	public static final int DEFAULT_NUM_RETRIES = 3;
-	/** The default for the timeout (in ms). */
-	public static final int DEFAULT_TIMEOUT = SCP_TIMEOUT;
 	/** The default for the number of parallel channels. */
 	public static final int DEFAULT_NUM_CHANNELS = 8;
 	/** The default for the number of instantaneously active channels. */
@@ -67,7 +65,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	 */
 	MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			RetryTracker retryTracker) {
-		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
+		this(connectionSelector, DEFAULT_NUM_RETRIES, SCP_TIMEOUT,
 				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
 				retryTracker);
 	}
