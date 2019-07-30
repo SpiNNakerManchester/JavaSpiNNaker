@@ -29,19 +29,19 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
  * @author Christian-B
  */
 public class ManualSpalloc {
+	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
 
-
-	public static void main(String... args) throws IOException, SpallocServerException, Exception {
-        SpallocClient client = new SpallocClient("spinnaker.cs.man.ac.uk", 22244);
-        try (AutoCloseable c = client.withConnection()) {
-            List<JobDescription> jobs = client.listJobs();
-            for (JobDescription job: jobs) {
-                System.out.println(job);
-            }
-        }
-        int two = 2;
-        System.out.println(3/two);
-        client.close();
-    }
-
+	public static void main(String... args)
+			throws IOException, SpallocServerException, Exception {
+		SpallocClient client = new SpallocClient(SPALLOC, 22244);
+		try (AutoCloseable c = client.withConnection()) {
+			List<JobDescription> jobs = client.listJobs();
+			for (JobDescription job : jobs) {
+				System.out.println(job);
+			}
+		}
+		int two = 2;
+		System.out.println(3 / two);
+		client.close();
+	}
 }
