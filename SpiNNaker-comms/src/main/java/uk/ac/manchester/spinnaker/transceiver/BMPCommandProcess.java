@@ -58,9 +58,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
  *      SCPRequestPipeline
  */
-class SendSingleBMPCommandProcess<R extends BMPResponse> {
-	private static final Logger log =
-			getLogger(SendSingleBMPCommandProcess.class);
+class BMPCommandProcess<R extends BMPResponse> {
+	private static final Logger log = getLogger(BMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT =
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
@@ -81,8 +80,7 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector,
+	BMPCommandProcess(ConnectionSelector<BMPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_TIMEOUT, retryTracker);
 	}
@@ -97,9 +95,8 @@ class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector, int timeout,
-			RetryTracker retryTracker) {
+	BMPCommandProcess(ConnectionSelector<BMPConnection> connectionSelector,
+			int timeout, RetryTracker retryTracker) {
 		this.timeout = timeout;
 		this.connectionSelector = connectionSelector;
 		this.retryTracker = retryTracker;

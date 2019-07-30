@@ -623,7 +623,7 @@ public class Transceiver extends UDPTransceiver
 				if (conn instanceof BMPConnection) {
 					BMPConnection bmpc = (BMPConnection) conn;
 					bmpConnections.add(bmpc);
-					bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
+					bmpSelectors.put(bmpc.getCoords(),
 							new SingletonConnectionSelector<>(bmpc));
 				} else if (conn instanceof SCPConnection) {
 					SCPConnection scamp = (SCPConnection) conn;
@@ -748,7 +748,7 @@ public class Transceiver extends UDPTransceiver
 			// try to send a BMP SVER to check if it responds as expected
 			try {
 				VersionInfo versionInfo =
-						readBMPVersion(conn.cabinet, conn.frame, conn.boards);
+						readBMPVersion(conn.getCoords(), conn.boards);
 				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
 						.contains(versionInfo.versionNumber.majorVersion)) {
 					throw new IOException(format(
@@ -797,7 +797,7 @@ public class Transceiver extends UDPTransceiver
 	private boolean checkConnection(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			HasChipLocation chip) {
-		SendSingleSCPCommandProcess process = simpleProcess(connectionSelector);
+		BasicSCPCommandProcess process = simpleProcess(connectionSelector);
 		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
 			try {
 				ChipSummaryInfo chipInfo =
@@ -1082,8 +1082,8 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @return The SCP runner process
 	 */
-	private SendSingleSCPCommandProcess simpleProcess() {
-		return new SendSingleSCPCommandProcess(scpSelector, this);
+	private BasicSCPCommandProcess simpleProcess() {
+		return new BasicSCPCommandProcess(scpSelector, this);
 	}
 
 	/**
@@ -1093,9 +1093,9 @@ public class Transceiver extends UDPTransceiver
 	 *            The connection selector to use.
 	 * @return The SCP runner process.
 	 */
-	private SendSingleSCPCommandProcess simpleProcess(
+	private BasicSCPCommandProcess simpleProcess(
 			ConnectionSelector<SCPConnection> selector) {
-		return new SendSingleSCPCommandProcess(selector, this);
+		return new BasicSCPCommandProcess(selector, this);
 	}
 
 	@Override
@@ -1147,8 +1147,9 @@ public class Transceiver extends UDPTransceiver
 		 * Change the default SCP timeout on the machine, keeping the old one to
 		 * revert at close
 		 */
+		BasicSCPCommandProcess process = simpleProcess();
 		for (SCPConnection connection : scampConnections) {
-			simpleProcess().execute(
+			process.execute(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
 
@@ -1531,15 +1532,15 @@ public class Transceiver extends UDPTransceiver
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			BMPRequest<T> request) throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(bmp), this)
+		return new BMPCommandProcess<T>(bmpConnection(bmp), this)
 				.execute(request);
 	}
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
 			int timeout, BMPRequest<T> request)
 			throws IOException, ProcessException {
-		return new SendSingleBMPCommandProcess<T>(bmpConnection(bmp), timeout,
-				this).execute(request);
+		return new BMPCommandProcess<T>(bmpConnection(bmp), timeout, this)
+				.execute(request);
 	}
 
 	@Override
@@ -1550,8 +1551,7 @@ public class Transceiver extends UDPTransceiver
 			log.warn("No BMP connections, so can't power on");
 		}
 		for (BMPConnection connection : bmpConnections) {
-			power(POWER_ON, new BMPCoords(connection.cabinet, connection.frame),
-					connection.boards);
+			power(POWER_ON, connection.getCoords(), connection.boards);
 		}
 	}
 
@@ -1563,9 +1563,7 @@ public class Transceiver extends UDPTransceiver
 			log.warn("No BMP connections, so can't power off");
 		}
 		for (BMPConnection connection : bmpConnections) {
-			power(POWER_OFF,
-					new BMPCoords(connection.cabinet, connection.frame),
-					connection.boards);
+			power(POWER_OFF, connection.getCoords(), connection.boards);
 		}
 	}
 
@@ -1872,6 +1870,7 @@ public class Transceiver extends UDPTransceiver
 					"The given board address is not recognised");
 		}
 
+		BasicSCPCommandProcess process = simpleProcess();
 		for (SCPConnection connection : connections) {
 			IPTagSet tagSet;
 
@@ -1888,7 +1887,7 @@ public class Transceiver extends UDPTransceiver
 				tagSet = new IPTagSet(connection.getChip(), host.getAddress(),
 						tag.getPort(), tag.getTag(), tag.isStripSDP(), false);
 			}
-			simpleProcess().execute(tagSet);
+			process.execute(tagSet);
 		}
 	}
 
@@ -1915,8 +1914,9 @@ public class Transceiver extends UDPTransceiver
 					"The given board address is not recognised");
 		}
 
+		BasicSCPCommandProcess process = simpleProcess();
 		for (SCPConnection connection : connections) {
-			simpleProcess().execute(new ReverseIPTagSet(connection.getChip(),
+			process.execute(new ReverseIPTagSet(connection.getChip(),
 					tag.getDestination(), tag.getPort(), tag.getTag(),
 					tag.getPort()));
 		}
@@ -1926,8 +1926,9 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void clearIPTag(int tag, InetAddress boardAddress)
 			throws IOException, ProcessException {
+		BasicSCPCommandProcess process = simpleProcess();
 		for (SCPConnection conn : getConnectionList(boardAddress)) {
-			simpleProcess().execute(new IPTagClear(conn.getChip(), tag));
+			process.execute(new IPTagClear(conn.getChip(), tag));
 		}
 	}
 

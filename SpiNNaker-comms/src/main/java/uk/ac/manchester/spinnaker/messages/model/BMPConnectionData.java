@@ -16,13 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import java.net.InetAddress;
 import static java.net.InetAddress.getByAddress;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
@@ -31,11 +32,14 @@ import java.util.Collection;
  * Processor (BMP).
  */
 public class BMPConnectionData {
-	/** The boards to be addressed. */
+	/** The boards to be addressed. Unmodifiable. */
 	public final Collection<Integer> boards;
-	/** The cabinet number. */
+	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	public final int cabinet;
-	/** The frame number. Frames are contained within a cabinet. */
+	/**
+	 * The ID of the frame that contains the BMPs. Frames are contained within a
+	 * cabinet.
+	 */
 	public final int frame;
 	/** The IP address of the BMP. */
 	public final InetAddress ipAddress;
@@ -57,7 +61,7 @@ public class BMPConnectionData {
 		this.cabinet = cabinet;
 		this.frame = frame;
 		this.ipAddress = ipAddress;
-		this.boards = boards;
+		this.boards = unmodifiableCollection(boards);
 		this.portNumber = portNumber;
 	}
 
@@ -66,8 +70,8 @@ public class BMPConnectionData {
 	/**
 	 * Work out the BMP connection IP address given the machine details. This is
 	 * assumed to be the IP address of the machine, with 1 subtracted from the
-	 * final part e.g. if the machine IP address is 192.168.0.5, the BMP IP
-	 * address is assumed to be 192.168.0.4
+	 * final part e.g. if the machine IP address is {@code 192.168.0.5}, the BMP
+	 * IP address is assumed to be {@code 192.168.0.4}.
 	 *
 	 * @param host
 	 *            the SpiNNaker machine main host
@@ -97,9 +101,10 @@ public class BMPConnectionData {
 		// if null, the end user didn't enter anything, so assume one board
 		// starting at position 0
 		if (numBoards == 0) {
-			boards = singletonList(0);
+			boards = unmodifiableCollection(singletonList(0));
 		} else {
-			boards = range(0, numBoards).boxed().collect(toList());
+			boards = unmodifiableCollection(
+					range(0, numBoards).boxed().collect(toList()));
 		}
 	}
 }

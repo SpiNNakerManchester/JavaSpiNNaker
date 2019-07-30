@@ -29,8 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  *
  * @author Donal Fellows
  */
-class SendSingleSCPCommandProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class BasicSCPCommandProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select which connection to use for communication.
@@ -39,8 +38,7 @@ class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	BasicSCPCommandProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_NUM_RETRIES, DEFAULT_TIMEOUT,
 				retryTracker);
@@ -58,8 +56,7 @@ class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	BasicSCPCommandProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_CHANNEL_WAITS, retryTracker);

@@ -2031,7 +2031,7 @@ public interface TransceiverInterface {
 	 * @param boards
 	 *            which board to request the data from; the first board in the
 	 *            collection will be queried
-	 * @return the SVER from the BMP
+	 * @return the parsed SVER from the BMP
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2053,7 +2053,7 @@ public interface TransceiverInterface {
 	 *            the frame this is targeting
 	 * @param board
 	 *            which board to request the data from
-	 * @return the SVER from the BMP
+	 * @return the parsed SVER from the BMP
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2068,13 +2068,31 @@ public interface TransceiverInterface {
 	/**
 	 * Read the BMP version.
 	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
+	 * @param boards
+	 *            which board to request the data from; the first board in the
+	 *            collection will be queried
+	 * @return the parsed SVER from the BMP
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelUnsafe
+	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<Integer> boards)
+			throws IOException, ProcessException {
+		return readBMPVersion(bmp, boards.iterator().next());
+	}
+
+	/**
+	 * Read the BMP version.
+	 *
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
 	 * @param board
 	 *            which board to request the data from
-	 * @return the SVER from the BMP
+	 * @return the parsed SVER from the BMP
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
