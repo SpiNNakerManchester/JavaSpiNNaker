@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
@@ -67,7 +68,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	WriteMemoryProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numChannels, RetryTracker retryTracker) {
-		super(connectionSelector, DEFAULT_NUM_RETRIES, SCP_TIMEOUT, numChannels,
+		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, numChannels,
 				max(numChannels / 2, 1), retryTracker);
 	}
 

@@ -189,7 +189,7 @@ public class Transceiver extends UDPTransceiver
 	 * How many times do we try to find SCAMP?
 	 */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
-	private static final int STANDARD_RETRIES_NO = 3;
+	private static final int CONNECTION_CHECK_RETRY_COUNT = 3;
 	private static final int CONNECTION_CHECK_DELAY = 100;
 	private static final int NNID_MAX = 0x7F;
 	private static final int POST_BOOT_DELAY = 2000;
@@ -798,7 +798,7 @@ public class Transceiver extends UDPTransceiver
 			ConnectionSelector<SCPConnection> connectionSelector,
 			HasChipLocation chip) {
 		BasicSCPCommandProcess process = simpleProcess(connectionSelector);
-		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
+		for (int r = 0; r < CONNECTION_CHECK_RETRY_COUNT; r++) {
 			try {
 				ChipSummaryInfo chipInfo =
 						process.execute(new GetChipInfo(chip)).chipInfo;

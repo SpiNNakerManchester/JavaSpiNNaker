@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
@@ -42,8 +43,7 @@ class BasicSCPCommandProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	BasicSCPCommandProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
-		this(connectionSelector, DEFAULT_NUM_RETRIES, SCP_TIMEOUT,
-				retryTracker);
+		this(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, retryTracker);
 	}
 
 	/**

@@ -20,7 +20,6 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.DEFAULT_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
@@ -65,6 +64,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
+	private static final int BMP_RETRIES = 3;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -164,7 +164,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
 			/** number of retries for the packet. */
-			private int retries = DEFAULT_RETRIES;
+			private int retries = BMP_RETRIES;
 
 			private Request(BMPRequest<R> request, Consumer<R> callback) {
 				this.request = request;
@@ -357,7 +357,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
 					hdr.command, core.getX(), core.getY(), core.getP(),
-					DEFAULT_RETRIES, retryReason));
+					BMP_RETRIES, retryReason));
 		}
 	}
 }

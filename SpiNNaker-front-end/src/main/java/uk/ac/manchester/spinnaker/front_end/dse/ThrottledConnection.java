@@ -27,6 +27,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
@@ -61,10 +63,6 @@ public class ThrottledConnection implements Closeable {
 	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 1000;
-	/** In milliseconds. */
-	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
-	/** Number of times to try to reprogram the IP Tag. */
-	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
 	/** In milliseconds. */
 	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
 	private static final ScheduledExecutorService CLOSER;
@@ -134,11 +132,11 @@ public class ThrottledConnection implements Closeable {
 		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
 		ByteBuffer data = connection.getSCPData(tagSet);
 		SocketTimeoutException e = null;
-		for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
+		for (int i = 1; i <= SCP_RETRIES; i++) {
 			try {
 				connection.send(data.duplicate());
 				lastSend = nanoTime();
-				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
+				connection.receiveSCPResponse(SCP_TIMEOUT)
 						.parsePayload(tagSet);
 				log.debug("reprogrammed in {} attempts", i);
 				return;

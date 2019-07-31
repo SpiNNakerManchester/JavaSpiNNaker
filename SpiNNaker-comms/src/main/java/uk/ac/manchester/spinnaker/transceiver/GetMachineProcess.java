@@ -21,6 +21,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
@@ -104,7 +105,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
 			Integer maxSDRAMSize, RetryTracker retryTracker) {
-		super(connectionSelector, DEFAULT_NUM_RETRIES, SCP_TIMEOUT, THROTTLED,
+		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, THROTTLED,
 				THROTTLED - 1, retryTracker);
 		this.ignoreChips = def(ignoreChips);
 		this.ignoreCoresMap = def(ignoreCoresMap);
