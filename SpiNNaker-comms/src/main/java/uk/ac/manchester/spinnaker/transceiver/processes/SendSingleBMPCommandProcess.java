@@ -20,7 +20,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.DEFAULT_RETRIES;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
@@ -169,7 +169,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
 			/** number of retries for the packet. */
-			private int retries = DEFAULT_RETRIES;
+			private int retries = SCP_RETRIES;
 
 			private Request(BMPRequest<R> request, Consumer<R> callback) {
 				this.request = request;
@@ -362,7 +362,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
 					hdr.command, core.getX(), core.getY(), core.getP(),
-					DEFAULT_RETRIES, retryReason));
+					SCP_RETRIES, retryReason));
 		}
 	}
 }

@@ -25,8 +25,10 @@ import static java.lang.Thread.yield;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -46,7 +48,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 /**
  * Allows a set of SCP requests to be grouped together in a communication across
@@ -70,6 +71,13 @@ public class SCPRequestPipeline {
 	 * to wait before timing out a communication.
 	 */
 	private static final String TIMEOUT_PROPERTY = "spinnaker.scp_timeout";
+	/**
+	 * The name of a <em>system property</em> that can override the default
+	 * retries. If specified as an integer, it gives the number of retries to
+	 * perform (on timeout of receiving a reply) before timing out a
+	 * communication.
+	 */
+	private static final String RETRY_PROPERTY = "spinnaker.scp_retries";
 	private static final Logger log = getLogger(SCPRequestPipeline.class);
 	/** The default number of requests to send before checking for responses. */
 	public static final int DEFAULT_NUM_CHANNELS = 1;
@@ -82,7 +90,7 @@ public class SCPRequestPipeline {
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
 	 */
-	public static final int DEFAULT_RETRIES = 3;
+	public static final int SCP_RETRIES;
 	/**
 	 * How long to wait between retries, in milliseconds.
 	 */
@@ -97,6 +105,7 @@ public class SCPRequestPipeline {
 
 	static {
 		SCP_TIMEOUT = getInteger(TIMEOUT_PROPERTY, SCP_TIMEOUT_DEFAULT);
+		SCP_RETRIES = getInteger(RETRY_PROPERTY, SCP_RETRY_DEFAULT);
 	}
 
 	/** The connection over which the communication is to take place. */
@@ -268,7 +277,7 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, DEFAULT_RETRIES,
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
 				SCP_TIMEOUT, retryTracker);
 	}
 
@@ -288,7 +297,7 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, DEFAULT_RETRIES,
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
 				packetTimeout, retryTracker);
 	}
 
