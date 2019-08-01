@@ -1785,6 +1785,16 @@ public class Transceiver extends UDPTransceiver
 		simpleProcess().execute(new ApplicationStop(appID));
 	}
 
+	private boolean inErrorStates(AppID appID, Set<CPUState> errorStates)
+			throws IOException, ProcessException {
+		for (CPUState state : errorStates) {
+			if (getCoreStateCount(appID, state) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	@ParallelSafeWithCare
 	public void waitForCoresToBeInState(CoreSubsets allCoreSubsets, AppID appID,
@@ -1807,12 +1817,13 @@ public class Transceiver extends UDPTransceiver
 
 			// If the count is too small, check for error states
 			if (processorsReady < allCoreSubsets.size()) {
-				for (CPUState state : errorStates) {
-					int errorCores = getCoreStateCount(appID, state);
-					if (errorCores > 0) {
-						throw new SpinnmanException(format(
-								"%d cores have reached an error state %s",
-								errorCores, state));
+				if (inErrorStates(appID, errorStates)) {
+					// Small chance that inErrorStates() is wrong
+					CoreSubsets errorCores =
+							getCoresInState(allCoreSubsets, errorStates);
+					if (!errorCores.isEmpty()) {
+						throw new CoresNotInStateException(timeout, cpuStates,
+								errorCores);
 					}
 				}
 
@@ -1820,8 +1831,7 @@ public class Transceiver extends UDPTransceiver
 				 * If we haven't seen an error, increase the tries, and do a
 				 * full check if required
 				 */
-				tries++;
-				if (tries >= countBetweenFullChecks) {
+				if (++tries >= countBetweenFullChecks) {
 					CoreSubsets coresInState =
 							getCoresInState(allCoreSubsets, cpuStates);
 					processorsReady = coresInState.size();
