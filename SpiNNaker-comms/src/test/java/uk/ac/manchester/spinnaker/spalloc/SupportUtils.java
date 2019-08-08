@@ -16,9 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.BlockingDeque;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
@@ -62,8 +68,19 @@ abstract class SupportUtils {
 		return t;
 	}
 
+	interface IServer extends AutoCloseable {
+		void send(JSONObject obj);
+		default void send(String jsonString) {
+			send(new JSONObject(jsonString));
+		}
+		JSONObject recv() throws JSONException, IOException;
+		void advancedEmulationMode(BlockingDeque<String> send,
+				BlockingDeque<JSONObject> received,
+				BlockingDeque<JSONObject> keepalives, Thread bgAccept);
+	}
+
 	interface WithConn {
-		void act(MockServer s, SpallocClient c, Thread bgAccept)
+		void act(IServer s, SpallocClient c, Thread bgAccept)
 				throws Exception;
 	}
 

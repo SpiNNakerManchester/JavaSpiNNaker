@@ -30,14 +30,14 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.BlockingDeque;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
-class MockServer implements AutoCloseable {
+class MockServer implements SupportUtils.IServer {
 	static final Charset UTF8 = Charset.forName("UTF-8");
 	static final int PORT = 22244;
 	static final int BUFFER_SIZE = 1024;
@@ -55,8 +55,16 @@ class MockServer implements AutoCloseable {
 		started = new OneShotEvent();
 	}
 
-	public void listen() throws IOException {
-		serverSocket.bind(new InetSocketAddress(PORT), QUEUE_LENGTH);
+	public void listen() throws IOException, InterruptedException {
+		while (true) {
+			try {
+				serverSocket.bind(new InetSocketAddress(PORT), QUEUE_LENGTH);
+				return;
+			} catch (BindException ignored) {
+				// try again after a delay
+				sleep(INTER_BIND_DELAY);
+			}
+		}
 	}
 
 	public InetAddress connect() throws IOException {
@@ -82,15 +90,13 @@ class MockServer implements AutoCloseable {
 		}
 	}
 
-	public void send(JSONObject obj) {
-		out.println(obj.toString());
+	@Override
+	public void send(JSONObject json) {
+		json.write(out);
 		out.flush();
 	}
 
-	public void send(String obj) {
-		send(new JSONObject(obj));
-	}
-
+	@Override
 	public JSONObject recv() throws JSONException, IOException {
 		String line = in.readLine();
 		return line == null ? null : new JSONObject(line);
@@ -98,9 +104,10 @@ class MockServer implements AutoCloseable {
 
 	public static final String STOP = "STOP";
 
-	public void advancedEmulationMode(LinkedBlockingDeque<String> send,
-			LinkedBlockingDeque<JSONObject> received,
-			LinkedBlockingDeque<JSONObject> keepaliveQueue, Thread bgAccept) {
+	@Override
+	public void advancedEmulationMode(BlockingDeque<String> send,
+			BlockingDeque<JSONObject> received,
+			BlockingDeque<JSONObject> keepaliveQueue, Thread bgAccept) {
 		new Thread(() -> {
 			try {
 				bgAccept.join();
@@ -126,19 +133,11 @@ class MockServer implements AutoCloseable {
 	}
 
 	private static void launchKeepaliveListener(
-			LinkedBlockingDeque<JSONObject> keepaliveQueue) {
+			BlockingDeque<JSONObject> keepaliveQueue) {
 		Thread t = new Thread(() -> {
 			try {
 				MockServer s = new MockServer();
-				while (true) {
-					try {
-						s.listen();
-						break;
-					} catch (BindException ignored) {
-						// try again after a delay
-						sleep(INTER_BIND_DELAY);
-					}
-				}
+				s.listen();
 				s.connect();
 				while (true) {
 					JSONObject o = s.recv();
