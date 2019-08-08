@@ -16,12 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.lang.Thread.sleep;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -39,6 +42,7 @@ class MockServer implements AutoCloseable {
 	static final int PORT = 22244;
 	static final int BUFFER_SIZE = 1024;
 	static final int QUEUE_LENGTH = 1;
+	static final int INTER_BIND_DELAY = 50;
 
 	final ServerSocket serverSocket;
 	final OneShotEvent started;
@@ -126,7 +130,15 @@ class MockServer implements AutoCloseable {
 		Thread t = new Thread(() -> {
 			try {
 				MockServer s = new MockServer();
-				s.listen();
+				while (true) {
+					try {
+						s.listen();
+						break;
+					} catch (BindException ignored) {
+						// try again after a delay
+						sleep(INTER_BIND_DELAY);
+					}
+				}
 				s.connect();
 				while (true) {
 					JSONObject o = s.recv();
