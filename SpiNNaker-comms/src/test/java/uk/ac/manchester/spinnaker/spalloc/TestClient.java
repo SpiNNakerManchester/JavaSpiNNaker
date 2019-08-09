@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static uk.ac.manchester.spinnaker.spalloc.JobConstants.PORT_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
@@ -62,9 +61,9 @@ class TestClient {
 
 	@Test
 	void testConnectNoServer() throws Exception {
-		assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-			SpallocClient c =
-					new SpallocClient("localhost", PORT_DEFAULT, null);
+		withConnection((s, c, bgAccept) -> {
+			s.close();
+			// If the server has gone, we're not going to successfully connect to it
 			assertThrows(ConnectException.class, () -> c.connect());
 			c.close();
 		});
