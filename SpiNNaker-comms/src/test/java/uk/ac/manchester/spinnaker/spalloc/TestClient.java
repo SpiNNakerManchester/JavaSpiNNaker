@@ -16,7 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
@@ -29,13 +32,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import net.jcip.annotations.NotThreadSafe;
+import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
@@ -45,7 +47,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
 
-@NotThreadSafe
 class TestClient {
 	static class MockCommand extends Command<Integer> {
 		MockCommand(String name, int arg, String key, Object val) {
@@ -60,8 +61,9 @@ class TestClient {
 
 	@Test
 	void testConnectNoServer() throws Exception {
-		assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-			SpallocClient c = new SpallocClient("localhost", 22244, null);
+		withConnection((s, c, bgAccept) -> {
+			s.close();
+			// If the server has gone, we're not going to successfully connect to it
 			assertThrows(ConnectException.class, () -> c.connect());
 			c.close();
 		});
@@ -74,18 +76,19 @@ class TestClient {
 
 	@Test
 	void testConnectContext() throws Exception {
-		assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-			MockServer s = new MockServer();
-			try (SpallocClient c =
-					new SpallocClient("localhost", 22244, null)) {
-				Thread t = backgroundAccept(s);
-				try (AutoCloseable context = c.withConnection()) {
-					// do nothing
+		try (MockServer s = new MockServer()) {
+			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
+				try (SpallocClient c =
+						new SpallocClient("localhost", s.getPort(), null)) {
+					Joinable t = backgroundAccept(s);
+					try (AutoCloseable context = c.withConnection()) {
+						// do nothing
+					} finally {
+						t.join();
+					}
 				}
-				t.join();
-			}
-			s.close();
-		});
+			});
+		}
 	}
 
 	@Test
@@ -94,7 +97,7 @@ class TestClient {
 			c.connect();
 			c.close();
 			c.close();
-			c = new SpallocClient("localhost", 22244, null);
+			c = new SpallocClient("localhost", s.getPort(), null);
 			c.close();
 		});
 	}

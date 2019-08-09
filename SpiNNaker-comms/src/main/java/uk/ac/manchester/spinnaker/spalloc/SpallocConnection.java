@@ -262,6 +262,19 @@ public abstract class SpallocConnection implements Closeable {
 		local.remove();
 	}
 
+	private static String readLine(TextSocket sock)
+			throws SpallocProtocolTimeoutException, IOException {
+		try {
+			String line = sock.getReader().readLine();
+			if (line == null) {
+				throw new EOFException("Connection closed");
+			}
+			return line;
+		} catch (SocketTimeoutException e) {
+			throw new SpallocProtocolTimeoutException("recv timed out", e);
+		}
+	}
+
 	/**
 	 * Receive a line from the server with a response.
 	 *
@@ -276,23 +289,19 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	protected Response receiveResponse(Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
+		if (timeout == null || timeout < 0) {
+			timeout = 0;
+		}
 		TextSocket sock = getConnection(timeout);
 
 		// Wait for some data to arrive
-		try {
-			String line = sock.getReader().readLine();
-			if (line == null) {
-				throw new EOFException("Connection closed");
-			}
-			Response response = parseResponse(line);
-			if (response == null) {
-				throw new SpallocProtocolException(
-						"unexpected response: " + line);
-			}
-			return response;
-		} catch (SocketTimeoutException e) {
-			throw new SpallocProtocolTimeoutException("recv timed out", e);
+		String line = readLine(sock);
+		Response response = parseResponse(line);
+		if (response == null) {
+			throw new SpallocProtocolException(
+					"unexpected response: " + line);
 		}
+		return response;
 	}
 
 	/**
@@ -310,6 +319,9 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
+		if (timeout == null || timeout < 0) {
+			timeout = 0;
+		}
 		if (log.isDebugEnabled()) {
     		log.debug("sending a {}", command.getClass());
         }
