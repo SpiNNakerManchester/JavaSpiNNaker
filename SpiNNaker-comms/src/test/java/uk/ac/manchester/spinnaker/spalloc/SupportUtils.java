@@ -26,9 +26,6 @@ import java.util.concurrent.BlockingDeque;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.manchester.spinnaker.utils.OneShotEvent;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
-
 abstract class SupportUtils {
 	private SupportUtils() {
 	}
@@ -42,30 +39,27 @@ abstract class SupportUtils {
 	static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
 	static final int TIMEOUT = 101;
 
-	static Thread backgroundAccept(MockServer s) throws Exception {
-		OneShotEvent started = new OneShotEvent();
-		Thread main = Thread.currentThread();
-		ValueHolder<Exception> problem = new ValueHolder<>();
-		Thread t = new Thread(() -> {
+	static class Daemon extends Thread {
+		Daemon(Runnable r, String name) {
+			super(r, name);
+			setDaemon(true);
+			start();
+		}
+	}
+
+	static Joinable backgroundAccept(MockServer s) throws Exception {
+		Thread t = new Daemon(() -> {
 			try {
-				s.listen();
-				started.fire();
 				s.connect();
 			} catch (Exception e) {
-				problem.setValue(e);
-				main.interrupt();
+				e.printStackTrace(System.err);
 			}
-		});
-		t.start();
-		try {
-			started.await();
-		} catch (InterruptedException e) {
-			if (problem.getValue() != null) {
-				throw problem.getValue();
-			}
-			throw e;
-		}
-		return t;
+		}, "background accept");
+		return () -> t.join();
+	}
+
+	interface Joinable {
+		void join() throws InterruptedException;
 	}
 
 	interface IServer extends AutoCloseable {
@@ -76,27 +70,24 @@ abstract class SupportUtils {
 		JSONObject recv() throws JSONException, IOException;
 		void advancedEmulationMode(BlockingDeque<String> send,
 				BlockingDeque<JSONObject> received,
-				BlockingDeque<JSONObject> keepalives, Thread bgAccept);
+				BlockingDeque<JSONObject> keepalives, Joinable bgAccept);
+		int getPort();
 	}
 
 	interface WithConn {
-		void act(IServer s, SpallocClient c, Thread bgAccept)
+		void act(IServer s, SpallocClient c, Joinable bgAccept)
 				throws Exception;
 	}
 
 	static void withConnection(WithConn op) throws Exception {
-		assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-			MockServer s = new MockServer();
-			try {
-				SpallocClient c = new SpallocClient("localhost", 22244, null);
-				Thread bgAccept = backgroundAccept(s);
+		try (MockServer s = new MockServer()) {
+			SpallocClient c = new SpallocClient("localhost", s.getPort(), null);
+			Joinable bgAccept = backgroundAccept(s);
+			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				op.act(s, c, bgAccept);
-				bgAccept.join();
-				c.close();
-			} finally {
-				s.close();
-			}
-		});
+			});
+			bgAccept.join();
+			c.close();
+		}
 	}
-
 }
