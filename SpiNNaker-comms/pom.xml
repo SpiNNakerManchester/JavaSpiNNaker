@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>5.0.0</version>
+		<version>5.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-comms</artifactId>
 	<description>How to actually talk to a SpiNNaker machine and to Spalloc, the allocation service.</description>
