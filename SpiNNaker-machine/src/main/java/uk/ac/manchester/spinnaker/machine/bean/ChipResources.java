@@ -37,7 +37,6 @@ public class ChipResources {
     private int sdram;
     private List<Integer> tags;
     private int routerEntries;
-    private int routerClockSpeed;
     private Boolean virtual;
 
     /**
@@ -47,7 +46,6 @@ public class ChipResources {
         cores = NOT_SET;
         monitors = NOT_SET;
         sdram = NOT_SET;
-        routerClockSpeed = NOT_SET;
         routerEntries = NOT_SET;
     }
 
@@ -73,9 +71,6 @@ public class ChipResources {
         }
         if (tags == null) {
             tags = defaults.tags;
-        }
-        if (getRouterClockSpeed() == NOT_SET) {
-            setRouterClockSpeed(defaults.getRouterClockSpeed());
         }
         if (routerEntries == NOT_SET) {
             routerEntries = defaults.routerEntries;
@@ -146,21 +141,6 @@ public class ChipResources {
     }
 
     /**
-     * @return the routerClockSpeed
-     */
-    public int getRouterClockSpeed() {
-        return routerClockSpeed;
-    }
-
-    /**
-     * @param routerClockSpeed
-     *            the routerClockSpeed to set
-     */
-    public void setRouterClockSpeed(int routerClockSpeed) {
-        this.routerClockSpeed = routerClockSpeed;
-    }
-
-    /**
      * @return the router_entries
      */
     public int getRouterEntries() {
@@ -204,10 +184,6 @@ public class ChipResources {
         }
         if (tags != null) {
             builder.append("tags: ").append(tags).append(", ");
-        }
-        if (getRouterClockSpeed() != NOT_SET) {
-            builder.append("routerClockSpeed: ").append(getRouterClockSpeed())
-                    .append(", ");
         }
         if (routerEntries != NOT_SET) {
             builder.append("router_entries: ").append(routerEntries)

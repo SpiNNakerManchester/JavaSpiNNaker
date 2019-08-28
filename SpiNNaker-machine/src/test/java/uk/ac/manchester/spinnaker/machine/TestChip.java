@@ -103,7 +103,6 @@ public class TestChip {
                 100, createInetAddress(), location11);
         assertEquals(tags, chip.getTagIds());
         assertFalse(chip.virtual);
-        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, chip.router.clockSpeed);
     }
 
     @Test

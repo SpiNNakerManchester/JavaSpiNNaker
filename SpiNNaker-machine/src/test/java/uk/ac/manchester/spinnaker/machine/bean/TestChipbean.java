@@ -30,7 +30,7 @@ public class TestChipbean {
     @Test
     public void testFromJson() throws IOException {
         String json = "[1, 2, {\"cores\": 17, \"ethernet\": [2, 3]}, {"
-                + "\"routerClockSpeed\": 1013, \"sdram\": 123469692, "
+                + "\"sdram\": 123469692, "
                 + "\"routerEntries\": 1013, \"monitors\": 2, "
                 + "\"virtual\": true}]";
         ObjectMapper mapper = MapperFactory.createMapper();

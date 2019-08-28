@@ -122,7 +122,6 @@ public class TestRouter {
     public void testDefaults1() {
         Router router = new Router();
         assertThat(router.links(), IsEmptyCollection.empty());
-        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
         assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES, router.nAvailableMulticastEntries);
     }
 
@@ -133,7 +132,6 @@ public class TestRouter {
         links.add(link00_10);
         Router router = new Router(links);
         assertThat(router.links(), containsInAnyOrder(links.toArray()));
-        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
         assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES, router.nAvailableMulticastEntries);
     }
 
@@ -145,7 +143,6 @@ public class TestRouter {
         Router router = new Router(
                 links, MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1);
         assertThat(router.links(), containsInAnyOrder(links.toArray()));
-        assertEquals(MachineDefaults.ROUTER_CLOCK_SPEED, router.clockSpeed);
         assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1,
                 router.nAvailableMulticastEntries);
     }
