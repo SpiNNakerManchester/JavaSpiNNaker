@@ -74,24 +74,31 @@ abstract class SQL {
 			"UPDATE region SET content = content || ?, fetches = fetches + 1,"
 					+ " append_time = ? WHERE region_id = ?";
 
+	/** Prepare a region record for handling content in the extra table. */
 	@Parameter("append_time")
 	@Parameter("region_id")
 	static final String PREP_EXTRA_CONTENT =
 			"UPDATE region SET fetches = fetches + 1, append_time = ?, "
 			+ "have_extra = 1 WHERE region_id = ?";
 
+	/** Append content to the given row in the extra table. */
 	@Parameter("content_to_append")
 	@Parameter("extra_id")
 	static final String APPEND_EXTRA_CONTENT =
 			"UPDATE region_extra SET content = content || ? "
 			+ "WHERE extra_id = ?";
 
+	/** Add content to a new row in the extra table. */
 	@Parameter("region_id")
 	@Parameter("content_to_append")
 	@GeneratesID
 	static final String ADD_EXTRA_CONTENT =
 			"INSERT INTO region_extra(region_id, content) VALUES (?, ?)";
 
+	/**
+	 * Discover whether region in the main region table is running out (or has
+	 * already run out) of room.
+	 */
 	@Parameter("region_id")
 	@ResultColumn("len")
 	@ResultColumn("have_extra")
@@ -99,6 +106,11 @@ abstract class SQL {
 			"SELECT length(content) AS len, have_extra FROM region "
 					+ "WHERE region_id = ? LIMIT 1";
 
+	/**
+	 * Determine what row of the extra table should receive the next chunk for a
+	 * region, and report how much space is already used (which can in turn
+	 * determine whether there's space left to add the chunk).
+	 */
 	@Parameter("region_id")
 	@ResultColumn("len")
 	@ResultColumn("extra_id")
