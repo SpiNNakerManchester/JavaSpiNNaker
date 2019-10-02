@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2019 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,38 @@ abstract class SQL {
 	static final String APPEND_CONTENT =
 			"UPDATE region SET content = content || ?, fetches = fetches + 1,"
 					+ " append_time = ? WHERE region_id = ?";
+
+	@Parameter("append_time")
+	@Parameter("region_id")
+	static final String PREP_EXTRA_CONTENT =
+			"UPDATE region SET fetches = fetches + 1, append_time = ?, "
+			+ "have_extra = 1 WHERE region_id = ?";
+
+	@Parameter("content_to_append")
+	@Parameter("extra_id")
+	static final String APPEND_EXTRA_CONTENT =
+			"UPDATE region_extra SET content = content || ? "
+			+ "WHERE extra_id = ?";
+
+	@Parameter("region_id")
+	@Parameter("content_to_append")
+	@GeneratesID
+	static final String ADD_EXTRA_CONTENT =
+			"INSERT INTO region_extra(region_id, content) VALUES (?, ?)";
+
+	@Parameter("region_id")
+	@ResultColumn("len")
+	@ResultColumn("have_extra")
+	static final String GET_MAIN_CONTENT_SIZE =
+			"SELECT length(content) AS len, have_extra FROM region "
+					+ "WHERE region_id = ? LIMIT 1";
+
+	@Parameter("region_id")
+	@ResultColumn("len")
+	@ResultColumn("extra_id")
+	static final String GET_EXTRA_CONTENT_ROW =
+			"SELECT length(content) AS len, extra_id FROM region_extra "
+					+ "WHERE region_id = ? ORDER BY extra_id DESC LIMIT 1";
 
 	/** Fetch the current variable state of a region record. */
 	@Parameter("x")

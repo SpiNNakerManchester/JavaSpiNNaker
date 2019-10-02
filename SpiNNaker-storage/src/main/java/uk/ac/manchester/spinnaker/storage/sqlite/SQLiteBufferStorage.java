@@ -44,6 +44,10 @@ public class SQLiteBufferStorage
 	private static final int SECOND = 2;
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
+	/**
+	 * Maximum size of an SQLite BLOB, in bytes. 1GB.
+	 */
+	private static final int SQLITE_BLOB_LIMIT = 1000 * 1000 * 1000;
 
 	/**
 	 * Create an instance.
@@ -117,14 +121,82 @@ public class SQLiteBufferStorage
 
 	private void appendRecordingContents(Connection conn, int regionID,
 			byte[] content) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.APPEND_CONTENT)) {
-			// content, append_time, region_id
-			s.setBinaryStream(FIRST, new ByteArrayInputStream(content),
-					content.length);
-			s.setLong(SECOND, System.currentTimeMillis());
-			s.setInt(THIRD, regionID);
-			s.executeUpdate();
+		int chunkLen = content.length;
+		ByteArrayInputStream chunk = new ByteArrayInputStream(content);
+		long timestamp = System.currentTimeMillis();
+		if (useMainTable(conn, regionID, chunkLen)) {
+			try (PreparedStatement s =
+					conn.prepareStatement(SQL.APPEND_CONTENT)) {
+				// content, append_time, region_id
+				s.setBinaryStream(FIRST, chunk, chunkLen);
+				s.setLong(SECOND, timestamp);
+				s.setInt(THIRD, regionID);
+				s.executeUpdate();
+			}
+		} else {
+			try (PreparedStatement s =
+					conn.prepareStatement(SQL.PREP_EXTRA_CONTENT)) {
+				// append_time, region_id
+				s.setLong(FIRST, timestamp);
+				s.setInt(SECOND, regionID);
+				s.executeUpdate();
+			}
+			Integer extraID = extraRowID(conn, regionID, chunkLen);
+			if (extraID != null) {
+				try (PreparedStatement s =
+						conn.prepareStatement(SQL.APPEND_EXTRA_CONTENT)) {
+					// content, extra_id
+					s.setBinaryStream(FIRST, chunk, chunkLen);
+					s.setInt(SECOND, extraID);
+					s.executeUpdate();
+				}
+			} else {
+				try (PreparedStatement s =
+						conn.prepareStatement(SQL.ADD_EXTRA_CONTENT)) {
+					// region_id, content
+					s.setInt(FIRST, regionID);
+					s.setBinaryStream(SECOND, chunk, chunkLen);
+					s.executeUpdate();
+				}
+			}
 		}
+	}
+
+	private boolean useMainTable(Connection conn, int regionID, int chunkLen)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.GET_MAIN_CONTENT_SIZE)) {
+			s.setInt(FIRST, regionID);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					int existingLen = rs.getInt(FIRST);
+					int haveExtra = rs.getInt(SECOND);
+					if (chunkLen + existingLen < SQLITE_BLOB_LIMIT
+							&& haveExtra != 1) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private Integer extraRowID(Connection conn, int regionID, int chunkLen)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.GET_EXTRA_CONTENT_ROW)) {
+			s.setInt(FIRST, regionID);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					int existingLen = rs.getInt(FIRST);
+					int existingID = rs.getInt(SECOND);
+					if (chunkLen + existingLen < SQLITE_BLOB_LIMIT) {
+						return existingID;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -163,6 +235,7 @@ public class SQLiteBufferStorage
 
 	private static byte[] getRecordingRegionContents(Connection conn,
 			Region region) throws SQLException {
+		// TODO: Make this work with the multi-region system
 		try (PreparedStatement s = conn.prepareStatement(SQL.FETCH_RECORDING)) {
 			// x, y, processor, local_region_index
 			s.setInt(FIRST, region.core.getX());
