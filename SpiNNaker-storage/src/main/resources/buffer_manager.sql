@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS region(
 		REFERENCES core(core_id) ON DELETE RESTRICT,
 	local_region_index INTEGER NOT NULL,
 	address INTEGER,
-	content BLOB NOT NULL DEFAULT X'',
+	content BLOB NOT NULL DEFAULT '',
 	have_extra INTEGER NOT NULL DEFAULT 0,
 	fetches INTEGER NOT NULL DEFAULT 0,
 	append_time INTEGER);
@@ -46,12 +46,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS regionSanity ON region(
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- A table containing the data which doesn't fit in the content column of the
--- region table; care must be taken with this to not exceed 1GB!
+-- region table; care must be taken with this to not exceed 1GB! We actually
+-- store one per auto-pause-resume cycle as that is more efficient.
 CREATE TABLE IF NOT EXISTS region_extra(
 	extra_id INTEGER PRIMARY KEY ASC AUTOINCREMENT,
 	region_id INTEGER NOT NULL
 		REFERENCES region(region_id) ON DELETE RESTRICT,
-	content BLOB NOT NULL DEFAULT X'');
+	content BLOB NOT NULL DEFAULT '' );
 
 CREATE VIEW IF NOT EXISTS region_view AS
 	SELECT core_id, region_id, x, y, processor, local_region_index, address,

@@ -67,12 +67,12 @@ abstract class SQL {
 			+ "core_id = ? AND local_region_index = ? LIMIT 1";
 
 	/** Append content to a region record. */
-	@Parameter("content_to_append")
+	@Parameter("content_to_add")
 	@Parameter("append_time")
 	@Parameter("region_id")
-	static final String APPEND_CONTENT =
-			"UPDATE region SET content = content || ?, fetches = fetches + 1,"
-					+ " append_time = ? WHERE region_id = ?";
+	static final String ADD_CONTENT =
+			"UPDATE region SET content = CAST(? AS BLOB), fetches = 1, "
+					+ "append_time = ? WHERE region_id = ?";
 
 	/** Prepare a region record for handling content in the extra table. */
 	@Parameter("append_time")
@@ -81,42 +81,35 @@ abstract class SQL {
 			"UPDATE region SET fetches = fetches + 1, append_time = ?, "
 			+ "have_extra = 1 WHERE region_id = ?";
 
-	/** Append content to the given row in the extra table. */
-	@Parameter("content_to_append")
-	@Parameter("extra_id")
-	static final String APPEND_EXTRA_CONTENT =
-			"UPDATE region_extra SET content = content || ? "
-			+ "WHERE extra_id = ?";
-
 	/** Add content to a new row in the extra table. */
 	@Parameter("region_id")
-	@Parameter("content_to_append")
+	@Parameter("content_to_add")
 	@GeneratesID
 	static final String ADD_EXTRA_CONTENT =
-			"INSERT INTO region_extra(region_id, content) VALUES (?, ?)";
+			"INSERT INTO region_extra(region_id, content) "
+					+ "VALUES (?, CAST(? AS BLOB))";
 
 	/**
-	 * Discover whether region in the main region table is running out (or has
-	 * already run out) of room.
+	 * Discover whether region in the main region table is available for storing
+	 * data.
+	 */
+	@Parameter("region_id")
+	@ResultColumn("existing")
+	static final String GET_MAIN_CONTENT_EXISTS =
+			"SELECT COUNT(*) AS existing FROM region "
+					+ "WHERE region_id = ? AND have_extra = 0";
+
+	/**
+	 * Determine just how much content there is for a row, overall.
 	 */
 	@Parameter("region_id")
 	@ResultColumn("len")
-	@ResultColumn("have_extra")
-	static final String GET_MAIN_CONTENT_SIZE =
-			"SELECT length(content) AS len, have_extra FROM region "
-					+ "WHERE region_id = ? LIMIT 1";
-
-	/**
-	 * Determine what row of the extra table should receive the next chunk for a
-	 * region, and report how much space is already used (which can in turn
-	 * determine whether there's space left to add the chunk).
-	 */
-	@Parameter("region_id")
-	@ResultColumn("len")
-	@ResultColumn("extra_id")
-	static final String GET_EXTRA_CONTENT_ROW =
-			"SELECT length(content) AS len, extra_id FROM region_extra "
-					+ "WHERE region_id = ? ORDER BY extra_id DESC LIMIT 1";
+	static final String GET_CONTENT_TOTAL_LENGTH =
+			"SELECT length(CAST(r.content AS BLOB)) + ("
+					+ "    SELECT SUM(length(CAST(x.content AS BLOB))) "
+					+ "    FROM region_extra AS x "
+					+ "    WHERE x.region_id = r.region_id"
+					+ ") AS len FROM region AS r WHERE region_id = ?";
 
 	/** Fetch the current variable state of a region record. */
 	@Parameter("x")
