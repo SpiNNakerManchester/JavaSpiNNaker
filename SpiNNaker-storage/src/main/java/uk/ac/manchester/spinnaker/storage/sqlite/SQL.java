@@ -55,9 +55,9 @@ abstract class SQL {
 	@Parameter("local_region_index")
 	@Parameter("address")
 	@GeneratesID
-	static final String INSERT_REGION =
-			"INSERT INTO region(core_id, local_region_index, address) "
-					+ "VALUES (?, ?, ?)";
+	static final String INSERT_REGION = "INSERT INTO "
+			+ "region(core_id, local_region_index, address)"
+			+ " VALUES (?, ?, ?)";
 
 	/** Find an existing region record. */
 	@Parameter("core_id")
@@ -78,8 +78,8 @@ abstract class SQL {
 	@Parameter("append_time")
 	@Parameter("region_id")
 	static final String PREP_EXTRA_CONTENT =
-			"UPDATE region SET fetches = fetches + 1, append_time = ?, "
-			+ "have_extra = 1 WHERE region_id = ?";
+			"UPDATE region SET fetches = fetches + 1, append_time = ? "
+			+ "WHERE region_id = ?";
 
 	/** Add content to a new row in the extra table. */
 	@Parameter("region_id")
@@ -95,9 +95,9 @@ abstract class SQL {
 	 */
 	@Parameter("region_id")
 	@ResultColumn("existing")
-	static final String GET_MAIN_CONTENT_EXISTS =
+	static final String GET_MAIN_CONTENT_AVAILABLE =
 			"SELECT COUNT(*) AS existing FROM region "
-					+ "WHERE region_id = ? AND have_extra = 0";
+					+ "WHERE region_id = ? AND fetches = 0";
 
 	/**
 	 * Determine just how much content there is for a row, overall.
@@ -119,10 +119,18 @@ abstract class SQL {
 	@ResultColumn("content")
 	@ResultColumn("fetches")
 	@ResultColumn("append_time")
+	@ResultColumn("region_id")
 	static final String FETCH_RECORDING =
-			"SELECT content, fetches, append_time FROM region_view"
+			"SELECT content, fetches, append_time, region_id FROM region_view"
 					+ " WHERE x = ? AND y = ? AND processor = ?"
 					+ " AND local_region_index = ? LIMIT 1";
+
+	/** Fetch the current variable state of a region record. */
+	@Parameter("region_id")
+	@ResultColumn("content")
+	static final String FETCH_EXTRA_RECORDING =
+			"SELECT content FROM region_extra"
+					+ " WHERE region_id = ? ORDER BY extra_id ASC";
 
 	/** List the cores with storage. */
 	@Parameters({})

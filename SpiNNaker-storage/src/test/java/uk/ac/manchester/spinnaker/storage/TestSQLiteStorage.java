@@ -78,8 +78,9 @@ class TestSQLiteStorage {
 
 		// append creates
 		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
-		storage.appendRecordingContents(rr, bytes("abc"));
-		storage.appendRecordingContents(rr, bytes("def"));
+		storage.appendRecordingContents(rr, bytes("ab"));
+		storage.appendRecordingContents(rr, bytes("cd"));
+		storage.appendRecordingContents(rr, bytes("ef"));
 		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr)));
 	}
 
