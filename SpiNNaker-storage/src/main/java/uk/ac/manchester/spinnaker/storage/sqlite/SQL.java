@@ -68,11 +68,12 @@ abstract class SQL {
 
 	/** Append content to a region record. */
 	@Parameter("content_to_add")
+	@Parameter("content_len")
 	@Parameter("append_time")
 	@Parameter("region_id")
 	static final String ADD_CONTENT =
-			"UPDATE region SET content = CAST(? AS BLOB), fetches = 1, "
-					+ "append_time = ? WHERE region_id = ?";
+			"UPDATE region SET content = CAST(? AS BLOB), content_len = ?, "
+					+ "fetches = 1, append_time = ? WHERE region_id = ?";
 
 	/** Prepare a region record for handling content in the extra table. */
 	@Parameter("append_time")
@@ -84,10 +85,11 @@ abstract class SQL {
 	/** Add content to a new row in the extra table. */
 	@Parameter("region_id")
 	@Parameter("content_to_add")
+	@Parameter("content_len")
 	@GeneratesID
 	static final String ADD_EXTRA_CONTENT =
-			"INSERT INTO region_extra(region_id, content) "
-					+ "VALUES (?, CAST(? AS BLOB))";
+			"INSERT INTO region_extra(region_id, content, content_len) "
+					+ "VALUES (?, CAST(? AS BLOB), ?)";
 
 	/**
 	 * Discover whether region in the main region table is available for storing
@@ -105,8 +107,8 @@ abstract class SQL {
 	@Parameter("region_id")
 	@ResultColumn("len")
 	static final String GET_CONTENT_TOTAL_LENGTH =
-			"SELECT length(CAST(r.content AS BLOB)) + ("
-					+ "    SELECT SUM(length(CAST(x.content AS BLOB))) "
+			"SELECT r.content_len + ("
+					+ "    SELECT SUM(x.content_len) "
 					+ "    FROM region_extra AS x "
 					+ "    WHERE x.region_id = r.region_id"
 					+ ") AS len FROM region AS r WHERE region_id = ?";
@@ -117,19 +119,22 @@ abstract class SQL {
 	@Parameter("processor")
 	@Parameter("local_region_index")
 	@ResultColumn("content")
+	@ResultColumn("content_len")
 	@ResultColumn("fetches")
 	@ResultColumn("append_time")
 	@ResultColumn("region_id")
 	static final String FETCH_RECORDING =
-			"SELECT content, fetches, append_time, region_id FROM region_view"
+			"SELECT content, content_len, fetches, append_time, region_id "
+					+ "FROM region_view"
 					+ " WHERE x = ? AND y = ? AND processor = ?"
 					+ " AND local_region_index = ? LIMIT 1";
 
 	/** Fetch the current variable state of a region record. */
 	@Parameter("region_id")
 	@ResultColumn("content")
+	@ResultColumn("content_len")
 	static final String FETCH_EXTRA_RECORDING =
-			"SELECT content FROM region_extra"
+			"SELECT content, content_len FROM region_extra"
 					+ " WHERE region_id = ? ORDER BY extra_id ASC";
 
 	/** List the cores with storage. */

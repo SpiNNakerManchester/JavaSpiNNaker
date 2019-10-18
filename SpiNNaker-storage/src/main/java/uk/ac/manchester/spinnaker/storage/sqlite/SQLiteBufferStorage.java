@@ -50,6 +50,7 @@ public class SQLiteBufferStorage
 	private static final int SECOND = 2;
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
+	private static final int FIFTH = 5;
 
 	/**
 	 * Create an instance.
@@ -144,8 +145,9 @@ public class SQLiteBufferStorage
 		try (PreparedStatement s = conn.prepareStatement(SQL.ADD_CONTENT)) {
 			// content, append_time, region_id
 			s.setBinaryStream(FIRST, chunk, chunkLen);
-			s.setLong(SECOND, timestamp);
-			s.setInt(THIRD, regionID);
+			s.setInt(SECOND, chunkLen);
+			s.setLong(THIRD, timestamp);
+			s.setInt(FOURTH, regionID);
 			s.executeUpdate();
 		}
 	}
@@ -168,6 +170,7 @@ public class SQLiteBufferStorage
 			// region_id, content
 			s.setInt(FIRST, regionID);
 			s.setBinaryStream(SECOND, chunk, chunkLen);
+			s.setInt(THIRD, chunkLen);
 			s.executeUpdate();
 		}
 	}
@@ -236,7 +239,7 @@ public class SQLiteBufferStorage
 				try (ResultSet rs = s.executeQuery()) {
 					while (rs.next()) {
 						accum.write(rs.getBytes(FIRST));
-						regionID = rs.getInt(FOURTH);
+						regionID = rs.getInt(FIFTH);
 					}
 				}
 			}
