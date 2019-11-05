@@ -4579,6 +4579,10 @@ public interface TransceiverInterface {
     *            The mantissa of the timeout value, between 0 and 15.
     * @param timeoutExponent
     *            The exponent of the timeout value, between 0 and 15.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4586,7 +4590,7 @@ public interface TransceiverInterface {
     */
     @ParallelSafe
     void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException;
 
     /**
@@ -4596,6 +4600,10 @@ public interface TransceiverInterface {
     *            The coordinates of the monitor core.
     * @param timeout
     *            The timeout value.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4603,9 +4611,10 @@ public interface TransceiverInterface {
     */
     @ParallelSafe
     default void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
-            RouterTimeout timeout) throws IOException, ProcessException {
+            RouterTimeout timeout, int numRetries)
+                    throws IOException, ProcessException {
         setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
-                timeout.exponent);
+                timeout.exponent, numRetries);
     }
 
     /**
@@ -4617,6 +4626,10 @@ public interface TransceiverInterface {
     *            The mantissa of the timeout value, between 0 and 15.
     * @param timeoutExponent
     *            The exponent of the timeout value, between 0 and 15.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4624,7 +4637,7 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException;
 
     /**
@@ -4634,6 +4647,10 @@ public interface TransceiverInterface {
     *            The coordinates of some monitor cores.
     * @param timeout
     *            The timeout value.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4641,9 +4658,10 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
-            RouterTimeout timeout) throws IOException, ProcessException {
+            RouterTimeout timeout, int numRetries)
+                    throws IOException, ProcessException {
         setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
-                timeout.exponent);
+                timeout.exponent, numRetries);
     }
 
     /**
@@ -4653,6 +4671,10 @@ public interface TransceiverInterface {
     *            The coordinates of some monitor cores.
     * @param status
     *            The saved core status.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4660,9 +4682,10 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     default void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
-            ReinjectionStatus status) throws IOException, ProcessException {
+            ReinjectionStatus status, int numRetries)
+                    throws IOException, ProcessException {
         setReinjectionEmergencyTimeout(monitorCores,
-                status.getEmergencyTimeout());
+                status.getEmergencyTimeout(), numRetries);
     }
 
     /**
@@ -4674,6 +4697,10 @@ public interface TransceiverInterface {
     *            The mantissa of the timeout value, between 0 and 15.
     * @param timeoutExponent
     *            The exponent of the timeout value, between 0 and 15.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4681,7 +4708,8 @@ public interface TransceiverInterface {
     */
     @ParallelSafe
     void setReinjectionTimeout(HasCoreLocation monitorCore, int timeoutMantissa,
-            int timeoutExponent) throws IOException, ProcessException;
+            int timeoutExponent, int numRetries)
+                    throws IOException, ProcessException;
 
     /**
     * Set the packet reinjection timeout.
@@ -4690,6 +4718,10 @@ public interface TransceiverInterface {
     *            The coordinates of the monitor core.
     * @param timeout
     *            The timeout value.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4697,8 +4729,10 @@ public interface TransceiverInterface {
     */
     @ParallelSafe
     default void setReinjectionTimeout(HasCoreLocation monitorCore,
-            RouterTimeout timeout) throws IOException, ProcessException {
-        setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
+            RouterTimeout timeout, int numRetries)
+                    throws IOException, ProcessException {
+        setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent,
+                numRetries);
     }
 
     /**
@@ -4710,6 +4744,10 @@ public interface TransceiverInterface {
     *            The mantissa of the timeout value, between 0 and 15.
     * @param timeoutExponent
     *            The exponent of the timeout value, between 0 and 15.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4717,7 +4755,8 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     void setReinjectionTimeout(CoreSubsets monitorCores, int timeoutMantissa,
-            int timeoutExponent) throws IOException, ProcessException;
+            int timeoutExponent, int numRetries)
+                    throws IOException, ProcessException;
 
     /**
     * Set the packet reinjection timeout.
@@ -4726,6 +4765,10 @@ public interface TransceiverInterface {
     *            The coordinates of some monitor cores.
     * @param timeout
     *            The timeout value.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4733,8 +4776,10 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     default void setReinjectionTimeout(CoreSubsets monitorCores,
-            RouterTimeout timeout) throws IOException, ProcessException {
-        setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+            RouterTimeout timeout, int numRetries)
+                    throws IOException, ProcessException {
+        setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent,
+                numRetries);
     }
 
     /**
@@ -4744,6 +4789,10 @@ public interface TransceiverInterface {
     *            The coordinates of some monitor cores.
     * @param status
     *            The saved core status.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
     * @throws IOException
     *             If anything goes wrong with networking.
     * @throws ProcessException
@@ -4751,8 +4800,9 @@ public interface TransceiverInterface {
     */
     @ParallelSafeWithCare
     default void setReinjectionTimeout(CoreSubsets monitorCores,
-            ReinjectionStatus status) throws IOException, ProcessException {
-        setReinjectionTimeout(monitorCores, status.getTimeout());
+            ReinjectionStatus status, int numRetries)
+                    throws IOException, ProcessException {
+        setReinjectionTimeout(monitorCores, status.getTimeout(), numRetries);
     }
 
     /**

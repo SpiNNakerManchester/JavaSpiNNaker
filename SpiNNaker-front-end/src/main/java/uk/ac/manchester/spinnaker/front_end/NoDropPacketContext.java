@@ -46,163 +46,171 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * @author Donal Fellows
  */
 public class NoDropPacketContext implements AutoCloseable {
-	private static final Logger log = getLogger(NoDropPacketContext.class);
-	private ReinjectionStatus lastStatus;
-	private final CoreSubsets monitorCores;
-	private final Transceiver txrx;
-	private final ChipLocation firstChip;
+    private static final Logger log = getLogger(NoDropPacketContext.class);
+    private ReinjectionStatus lastStatus;
+    private final CoreSubsets monitorCores;
+    private final Transceiver txrx;
+    private final ChipLocation firstChip;
 
-	/**
-	 * Standard short timeout for emergency routing.
-	 */
-	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
-	private static final RouterTimeout LONG_TIMEOUT = new RouterTimeout(14, 14);
-	private static final RouterTimeout TEMP_TIMEOUT = new RouterTimeout(15, 4);
-	private static final RouterTimeout ZERO_TIMEOUT = new RouterTimeout(0, 0);
+    /**
+    * Standard short timeout for emergency routing.
+    */
+    private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
+    private static final RouterTimeout LONG_TIMEOUT = new RouterTimeout(14, 14);
+    private static final RouterTimeout TEMP_TIMEOUT = new RouterTimeout(15, 4);
+    private static final RouterTimeout ZERO_TIMEOUT = new RouterTimeout(0, 0);
+    private static final int N_RETRIES_RESET = 1;
+    private static final int N_RETRIES_SET = 3;
 
-	/**
-	 * Create a no-drop-packets context.
-	 *
-	 * @param txrx
-	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCores
-	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 */
-	public NoDropPacketContext(Transceiver txrx, CoreSubsets monitorCores)
-			throws IOException, ProcessException {
-		this.txrx = txrx;
-		this.monitorCores = monitorCores;
-		// Store the last reinjection status for resetting
-		// NOTE: This assumes the status is the same on all cores
-		CoreLocation firstCore = monitorCores.iterator().next();
-		firstChip = firstCore.asChipLocation();
-		lastStatus = txrx.getReinjectionStatus(firstCore);
-		log.info(
-				"switching board at {} ({} monitor cores) to "
-						+ "non-drop mode (saved status: {})",
-				firstChip, monitorCores.size(), lastStatus);
-		try {
-			// Set to not inject dropped packets
-			txrx.setReinjection(monitorCores, false);
-			// Clear any outstanding packets from reinjection
-			txrx.clearReinjectionQueues(monitorCores);
-			// Set time outs
-			txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
-			txrx.setReinjectionTimeout(monitorCores, LONG_TIMEOUT);
-		} catch (IOException | ProcessException e) {
-			log.error("failed to switch board at {} to non-drop mode",
-					firstChip, e);
-			throw e;
-		}
-	}
+    /**
+    * Create a no-drop-packets context.
+    *
+    * @param txrx
+    *            The transceiver to use for talking to SpiNNaker.
+    * @param monitorCores
+    *            The extra monitor cores on the SpiNNaker system that control
+    *            the routers.
+    * @throws IOException
+    *             If communications fail.
+    * @throws ProcessException
+    *             If SCAMP or an extra monitor rejects a message.
+    */
+    public NoDropPacketContext(Transceiver txrx, CoreSubsets monitorCores)
+            throws IOException, ProcessException {
+        this.txrx = txrx;
+        this.monitorCores = monitorCores;
+        // Store the last reinjection status for resetting
+        // NOTE: This assumes the status is the same on all cores
+        CoreLocation firstCore = monitorCores.iterator().next();
+        firstChip = firstCore.asChipLocation();
+        lastStatus = txrx.getReinjectionStatus(firstCore);
+        log.info(
+                "switching board at {} ({} monitor cores) to "
+                        + "non-drop mode (saved status: {})",
+                firstChip, monitorCores.size(), lastStatus);
+        try {
+            // Set to not inject dropped packets
+            txrx.setReinjection(monitorCores, false);
+            // Clear any outstanding packets from reinjection
+            txrx.clearReinjectionQueues(monitorCores);
+            // Set time outs
+            txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT,
+                    N_RETRIES_SET);
+            txrx.setReinjectionTimeout(monitorCores, LONG_TIMEOUT,
+                    N_RETRIES_SET);
+        } catch (IOException | ProcessException e) {
+            log.error("failed to switch board at {} to non-drop mode",
+                    firstChip, e);
+            throw e;
+        }
+    }
 
-	/**
-	 * Create a no-drop-packets context.
-	 *
-	 * @param txrx
-	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCoreLocations
-	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 */
-	public NoDropPacketContext(Transceiver txrx,
-			List<? extends HasCoreLocation> monitorCoreLocations)
-			throws IOException, ProcessException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations));
-	}
+    /**
+    * Create a no-drop-packets context.
+    *
+    * @param txrx
+    *            The transceiver to use for talking to SpiNNaker.
+    * @param monitorCoreLocations
+    *            The extra monitor cores on the SpiNNaker system that control
+    *            the routers.
+    * @throws IOException
+    *             If communications fail.
+    * @throws ProcessException
+    *             If SCAMP or an extra monitor rejects a message.
+    */
+    public NoDropPacketContext(Transceiver txrx,
+            List<? extends HasCoreLocation> monitorCoreLocations)
+            throws IOException, ProcessException {
+        this(txrx, convertToCoreSubset(monitorCoreLocations));
+    }
 
-	/**
-	 * Create a no-drop-packets context.
-	 *
-	 * @param txrx
-	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCoreLocations
-	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 */
-	public NoDropPacketContext(Transceiver txrx,
-			Stream<? extends HasCoreLocation> monitorCoreLocations)
-			throws IOException, ProcessException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations));
-	}
+    /**
+    * Create a no-drop-packets context.
+    *
+    * @param txrx
+    *            The transceiver to use for talking to SpiNNaker.
+    * @param monitorCoreLocations
+    *            The extra monitor cores on the SpiNNaker system that control
+    *            the routers.
+    * @throws IOException
+    *             If communications fail.
+    * @throws ProcessException
+    *             If SCAMP or an extra monitor rejects a message.
+    */
+    public NoDropPacketContext(Transceiver txrx,
+            Stream<? extends HasCoreLocation> monitorCoreLocations)
+            throws IOException, ProcessException {
+        this(txrx, convertToCoreSubset(monitorCoreLocations));
+    }
 
-	private static CoreSubsets convertToCoreSubset(
-			List<? extends HasCoreLocation> coreLocationList) {
-		CoreSubsets cores = new CoreSubsets();
-		for (HasCoreLocation coreLocation : coreLocationList) {
-			cores.addCore(coreLocation.asCoreLocation());
-		}
-		return cores;
-	}
+    private static CoreSubsets convertToCoreSubset(
+            List<? extends HasCoreLocation> coreLocationList) {
+        CoreSubsets cores = new CoreSubsets();
+        for (HasCoreLocation coreLocation : coreLocationList) {
+            cores.addCore(coreLocation.asCoreLocation());
+        }
+        return cores;
+    }
 
-	private static CoreSubsets convertToCoreSubset(
-			Stream<? extends HasCoreLocation> coreLocations) {
-		CoreSubsets cores = new CoreSubsets();
-		coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
-		return cores;
-	}
+    private static CoreSubsets convertToCoreSubset(
+            Stream<? extends HasCoreLocation> coreLocations) {
+        CoreSubsets cores = new CoreSubsets();
+        coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
+        return cores;
+    }
 
-	/**
-	 * Restore the SpiNNaker board to its normal operating mode.
-	 *
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 */
-	@Override
-	public void close() throws IOException, ProcessException {
-		log.info("switching board at {} to standard mode", firstChip);
-		quietlySetTemporaryTimeouts();
+    /**
+    * Restore the SpiNNaker board to its normal operating mode.
+    *
+    * @throws IOException
+    *             If communications fail.
+    * @throws ProcessException
+    *             If SCAMP or an extra monitor rejects a message.
+    */
+    @Override
+    public void close() throws IOException, ProcessException {
+        log.info("switching board at {} to standard mode", firstChip);
+        quietlySetTemporaryTimeouts();
 
-		try {
-			// Do the real reset
-			txrx.setReinjectionTimeout(monitorCores, lastStatus);
-			txrx.setReinjectionEmergencyTimeout(monitorCores, lastStatus);
-			txrx.setReinjection(monitorCores, lastStatus);
-			log.debug("switched board at {} to standard mode", firstChip);
-			return;
-		} catch (Exception e) {
-			log.error("error resetting router timeouts", e);
-		}
-		try {
-			log.error("checking to see of the cores are OK...");
-			Map<CoreLocation, CPUInfo> errorCores =
-					txrx.getCoresNotInState(monitorCores, RUNNING);
-			if (!errorCores.isEmpty()) {
-				log.error("cores in an unexpected state: {}", errorCores);
-			}
-		} catch (Exception e) {
-			log.error("couldn't get core state", e);
-		}
-	}
+        try {
+            // Do the real reset
+            txrx.setReinjectionTimeout(monitorCores, lastStatus,
+                    N_RETRIES_RESET);
+            txrx.setReinjectionEmergencyTimeout(monitorCores, lastStatus,
+                    N_RETRIES_RESET);
+            txrx.setReinjection(monitorCores, lastStatus);
+            log.debug("switched board at {} to standard mode", firstChip);
+            return;
+        } catch (Exception e) {
+            log.error("error resetting router timeouts", e);
+        }
+        try {
+            log.error("checking to see of the cores are OK...");
+            Map<CoreLocation, CPUInfo> errorCores =
+                    txrx.getCoresNotInState(monitorCores, RUNNING);
+            if (!errorCores.isEmpty()) {
+                log.error("cores in an unexpected state: {}", errorCores);
+            }
+        } catch (Exception e) {
+            log.error("couldn't get core state", e);
+        }
+    }
 
-	/**
-	 * This sets some temporary timeouts so that we can use SDP more safely. We
-	 * hope. Failures are ignored; if they happen, failures when setting the
-	 * real values are also likely and we'll get error messages then.
-	 */
-	private void quietlySetTemporaryTimeouts() {
-		try {
-			txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
-		} catch (Exception ignored) {
-		}
-		try {
-			txrx.setReinjectionEmergencyTimeout(monitorCores, ZERO_TIMEOUT);
-		} catch (Exception ignored) {
-		}
-	}
+    /**
+    * This sets some temporary timeouts so that we can use SDP more safely. We
+    * hope. Failures are ignored; if they happen, failures when setting the
+    * real values are also likely and we'll get error messages then.
+    */
+    private void quietlySetTemporaryTimeouts() {
+        try {
+            txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT,
+                    N_RETRIES_RESET);
+        } catch (Exception ignored) {
+        }
+        try {
+            txrx.setReinjectionEmergencyTimeout(monitorCores, ZERO_TIMEOUT,
+                    N_RETRIES_RESET);
+        } catch (Exception ignored) {
+        }
+    }
 }

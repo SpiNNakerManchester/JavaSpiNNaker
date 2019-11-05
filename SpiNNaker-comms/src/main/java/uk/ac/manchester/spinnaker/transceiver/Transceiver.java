@@ -2173,37 +2173,38 @@ public class Transceiver extends UDPTransceiver
     @Override
     @ParallelSafe
     public void setReinjectionEmergencyTimeout(HasCoreLocation monitorCore,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException {
-        new SetRouterEmergencyTimeoutProcess(scpSelector, this).setTimeout(
-                monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
+        new SetRouterEmergencyTimeoutProcess(scpSelector, this, numRetries)
+                .setTimeout(monitorCore.asCoreLocation(), timeoutMantissa,
+                        timeoutExponent);
     }
 
     @Override
     @ParallelSafeWithCare
     public void setReinjectionEmergencyTimeout(CoreSubsets monitorCores,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException {
-        new SetRouterEmergencyTimeoutProcess(scpSelector, this)
+        new SetRouterEmergencyTimeoutProcess(scpSelector, this, numRetries)
                 .setTimeout(monitorCores, timeoutMantissa, timeoutExponent);
     }
 
     @Override
     @ParallelSafe
     public void setReinjectionTimeout(HasCoreLocation monitorCore,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException {
-        new SetRouterTimeoutProcess(scpSelector, this).setTimeout(
+        new SetRouterTimeoutProcess(scpSelector, this, numRetries).setTimeout(
                 monitorCore.asCoreLocation(), timeoutMantissa, timeoutExponent);
     }
 
     @Override
     @ParallelSafeWithCare
     public void setReinjectionTimeout(CoreSubsets monitorCores,
-            int timeoutMantissa, int timeoutExponent)
+            int timeoutMantissa, int timeoutExponent, int numRetries)
             throws IOException, ProcessException {
-        new SetRouterTimeoutProcess(scpSelector, this).setTimeout(monitorCores,
-                timeoutMantissa, timeoutExponent);
+        new SetRouterTimeoutProcess(scpSelector, this, numRetries).setTimeout(
+                monitorCores, timeoutMantissa, timeoutExponent);
     }
 
     @Override

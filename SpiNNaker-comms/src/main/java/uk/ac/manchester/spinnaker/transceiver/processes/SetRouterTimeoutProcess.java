@@ -27,60 +27,67 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Set the timeouts for a set of routers. */
 public class SetRouterTimeoutProcess
-		extends MultiConnectionProcess<SCPConnection> {
-	/**
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public SetRouterTimeoutProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+        extends MultiConnectionProcess<SCPConnection> {
+    private static final int ROUTER_SET_TIMEOUT = 5000;
 
-	/**
-	 * Set the timeout in an (extra) monitor's router.
-	 *
-	 * @param monitorCore
-	 *            the core where the monitor is running.
-	 * @param timeoutMantissa
-	 *            The mantissa of the timeout value, between 0 and 15.
-	 * @param timeoutExponent
-	 *            The exponent of the timeout value, between 0 and 15.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	public void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
-			int timeoutExponent) throws IOException, ProcessException {
-		synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
-				timeoutExponent));
-	}
+    /**
+    * @param connectionSelector
+    *            How to select how to communicate.
+    * @param retryTracker
+    *            Object used to track how many retries were used in an
+    *            operation. May be {@code null} if no suck tracking is
+    *            required.
+    * @param numRetries
+    *            Number of retries to use this time; if routers are currently
+    *            set not to drop, it is advised that this is set to 1 to avoid
+    *            sending multiple packets.
+    */
+    public SetRouterTimeoutProcess(
+            ConnectionSelector<SCPConnection> connectionSelector,
+            RetryTracker retryTracker, int numRetries) {
+        super(connectionSelector, numRetries, ROUTER_SET_TIMEOUT,
+                0, 0, retryTracker);
+    }
 
-	/**
-	 * Set the timeout in a set of (extra) monitors' routers.
-	 *
-	 * @param monitorCoreSubsets
-	 *            the cores where the monitors are running.
-	 * @param timeoutMantissa
-	 *            The mantissa of the timeout value, between 0 and 15.
-	 * @param timeoutExponent
-	 *            The exponent of the timeout value, between 0 and 15.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	public void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
-			int timeoutExponent) throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
-			synchronousCall(new SetRouterTimeout(core, timeoutMantissa,
-					timeoutExponent));
-		}
-	}
+    /**
+    * Set the timeout in an (extra) monitor's router.
+    *
+    * @param monitorCore
+    *            the core where the monitor is running.
+    * @param timeoutMantissa
+    *            The mantissa of the timeout value, between 0 and 15.
+    * @param timeoutExponent
+    *            The exponent of the timeout value, between 0 and 15.
+    * @throws IOException
+    *             If anything goes wrong with networking.
+    * @throws ProcessException
+    *             If SpiNNaker rejects the message.
+    */
+    public void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
+            int timeoutExponent) throws IOException, ProcessException {
+        synchronousCall(new SetRouterTimeout(monitorCore, timeoutMantissa,
+                timeoutExponent));
+    }
+
+    /**
+    * Set the timeout in a set of (extra) monitors' routers.
+    *
+    * @param monitorCoreSubsets
+    *            the cores where the monitors are running.
+    * @param timeoutMantissa
+    *            The mantissa of the timeout value, between 0 and 15.
+    * @param timeoutExponent
+    *            The exponent of the timeout value, between 0 and 15.
+    * @throws IOException
+    *             If anything goes wrong with networking.
+    * @throws ProcessException
+    *             If SpiNNaker rejects the message.
+    */
+    public void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
+            int timeoutExponent) throws IOException, ProcessException {
+        for (CoreLocation core : monitorCoreSubsets) {
+            synchronousCall(new SetRouterTimeout(core, timeoutMantissa,
+                    timeoutExponent));
+        }
+    }
 }
