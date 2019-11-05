@@ -21,6 +21,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.Processor;
+import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
@@ -69,7 +70,7 @@ public class TestSCP {
 
                 System.err.println("Sending Data");
                 SDPConnection conn = new SDPConnection(
-                        new ChipLocation(0, 0), hostname, 17894);
+                        new ChipLocation(0, 0), hostname, Constants.BIG_DATA_SCAMP_PORT);
                 byte[][] inputData = new byte[1000][];
                 Receiver receiver = new Receiver(1000, conn);
                 receiver.start();
