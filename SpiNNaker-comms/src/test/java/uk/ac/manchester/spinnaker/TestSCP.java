@@ -1,7 +1,21 @@
+/*
+ * Copyright (c) 2018 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -105,6 +119,8 @@ public class TestSCP {
                         if (!Arrays.equals(inputData[i].array(), receiver.received[i].array())) {
                             System.err.println("    Not equal!");
                             System.err.print("    ");
+                            printIndices(Constants.BIG_DATA_MAX_DATA_BYTES);
+                            System.err.print("    ");
                             printHex(inputData[i]);
                             System.err.print("    ");
                             printHex(receiver.received[i]);
@@ -126,14 +142,43 @@ public class TestSCP {
         }
     }
 
+    private static void printIndices(int max) {
+        System.err.print("[");
+        for (int i = 0; i < max; i++) {
+            if (i < 1000) {
+                System.err.print(" ");
+            }
+            if (i < 100) {
+                System.err.print(" ");
+            }
+            if (i < 10) {
+                System.err.print(" ");
+            }
+            System.err.print(i);
+            if (i + 1 < max) {
+                System.err.print(", ");
+            }
+         }
+        System.err.println("]");
+    }
+
+    private static void toHex(byte i) {
+        System.err.print("0x");
+        int v = i & 0xFF;
+        if (v <= 0xF) {
+            System.err.print("0");
+        }
+        System.err.print(Integer.toHexString(v));
+    }
+
     private static void printHex(ByteBuffer buffer) {
         buffer.rewind();
         System.err.print("[");
         try {
-            System.err.print(Integer.toHexString(buffer.get()));
+            toHex(buffer.get());
             while (true) {
                 System.err.print(", ");
-                System.err.print(Integer.toHexString(buffer.get()));
+                toHex(buffer.get());
             }
         } catch (BufferUnderflowException e) {
             // Do Nothing
