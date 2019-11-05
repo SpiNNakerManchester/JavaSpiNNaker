@@ -259,7 +259,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
      */
      public final ByteBuffer receive(Integer timeout)
              throws SocketTimeoutException, IOException {
-         return receive(null, PACKET_MAX_SIZE);
+         return receive(timeout, PACKET_MAX_SIZE);
      }
 
     /**
