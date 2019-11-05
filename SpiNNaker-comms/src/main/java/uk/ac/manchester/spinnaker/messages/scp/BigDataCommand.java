@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Commands supported by Big Data */
+/** Commands supported by Big Data. */
 public enum BigDataCommand implements CommandCode {
 
     /**
