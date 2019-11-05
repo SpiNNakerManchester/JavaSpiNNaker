@@ -106,6 +106,9 @@ public class TestSCP {
                         }
                     }
                 }
+                if (lastReceived + 1 != inputData.length) {
+                    System.err.println("Missing " + lastReceived + " - " + (inputData.length - 1));
+                }
 
                 System.err.println(txrx.getScampVersion());
                 System.err.println(txrx.getScampVersion(new ChipLocation(1, 1)));
