@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -62,9 +63,9 @@ public class TestSCP {
                 }
                 txrx.executeFlood(coreSubsets, executable, appID);
 
-                System.err.println("Running SCP test");
-                TestProcess process = new TestProcess(txrx.getScampConnectionSelector());
-                process.test(coreSubsets, 1000, 3);
+                //System.err.println("Running SCP test");
+                //TestProcess process = new TestProcess(txrx.getScampConnectionSelector());
+                //process.test(coreSubsets, 1000, 3);
 
                 System.err.println("Setting up Big Data");
                 txrx.initialiseBigData(new ChipLocation(0, 0), 1);
@@ -76,14 +77,16 @@ public class TestSCP {
                 Receiver receiver = new Receiver(1000, conn);
                 receiver.start();
                 for (int i = 0; i < 1000; i++) {
-                    inputData[i] = ByteBuffer.allocate(1464);
+                    inputData[i] = ByteBuffer.allocate(Constants.BIG_DATA_MAX_DATA_BYTES);
                     inputData[i].order(ByteOrder.LITTLE_ENDIAN);
                     inputData[i].putInt(i);
                     Random r = new Random();
                     for (int j = 0; j < 1460; j++) {
                         inputData[i].put((byte) (r.nextInt(255) - 128));
                     }
+                    inputData[i].rewind();
                     conn.send(inputData[i]);
+                    inputData[i].rewind();
                 }
 
                 System.err.println("Waiting for receive to finish");
@@ -101,8 +104,10 @@ public class TestSCP {
                         System.err.println("Received " + i);
                         if (!Arrays.equals(inputData[i].array(), receiver.received[i].array())) {
                             System.err.println("    Not equal!");
-                            System.err.println("    " + inputData[i]);
-                            System.err.println("    " + receiver.received[i]);
+                            System.err.print("    ");
+                            printHex(inputData[i]);
+                            System.err.print("    ");
+                            printHex(receiver.received[i]);
                         }
                     }
                 }
@@ -119,6 +124,21 @@ public class TestSCP {
                 System.err.println(txrx.getScampVersion(new ChipLocation(1, 1)));
             }
         }
+    }
+
+    private static void printHex(ByteBuffer buffer) {
+        buffer.rewind();
+        System.err.print("[");
+        try {
+            System.err.print(Integer.toHexString(buffer.get()));
+            while (true) {
+                System.err.print(", ");
+                System.err.print(Integer.toHexString(buffer.get()));
+            }
+        } catch (BufferUnderflowException e) {
+            // Do Nothing
+        }
+        System.err.println("]");
     }
 
 }
@@ -139,7 +159,7 @@ final class Receiver extends Thread {
     public void run() {
         while (!error) {
             try {
-                ByteBuffer data = connection.receive(2000);
+                ByteBuffer data = connection.receive(2000, Constants.BIG_DATA_MAX_DATA_BYTES);
                 data.order(ByteOrder.LITTLE_ENDIAN);
                 int index = data.getInt();
                 data.rewind();

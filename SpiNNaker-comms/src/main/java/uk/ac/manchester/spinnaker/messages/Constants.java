@@ -24,6 +24,8 @@ public abstract class Constants {
     public static final int SCP_SCAMP_PORT = 17893;
     /** The default port of the connection when using Big Data. */
     public static final int BIG_DATA_SCAMP_PORT = 17894;
+    /** The maximum size of the data in a Big Data packet. */
+    public static final int BIG_DATA_MAX_DATA_BYTES = 1464;
     /** The default port of the connection. */
     public static final int UDP_BOOT_CONNECTION_DEFAULT_PORT = 54321;
     /** The base address of the system variable structure in system RAM. */
