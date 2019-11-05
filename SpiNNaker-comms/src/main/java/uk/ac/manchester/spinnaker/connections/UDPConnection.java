@@ -257,10 +257,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
      * @throws IOException
      *             If an error occurs receiving the data
      */
-     public final ByteBuffer receive(Integer timeout)
-             throws SocketTimeoutException, IOException {
-         return receive(timeout, PACKET_MAX_SIZE);
-     }
+    public final ByteBuffer receive(Integer timeout)
+            throws SocketTimeoutException, IOException {
+        return receive(timeout, PACKET_MAX_SIZE);
+    }
 
     /**
      * Receive data from the connection.
@@ -274,7 +274,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
      *             If a timeout occurs before any data is received
      * @throws IOException
      *             If an error occurs receiving the data
-    */
+     */
     public ByteBuffer receive(Integer timeout, int maxSize)
             throws SocketTimeoutException, IOException {
         if (isClosed()) {

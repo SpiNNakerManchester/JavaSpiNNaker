@@ -29,12 +29,12 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 public class BigDataInit extends SCPRequest<CheckOKResponse> {
 
     /**
-     * Flag to indicate to use the sender IP address and port
+     * Flag to indicate to use the sender IP address and port.
      */
     private static final int USE_SENDER_FLAG = 0x80000000;
 
     /**
-     * Shift of port in argument 2
+     * Shift of port in argument 2.
      */
     private static final int PORT_SHIFT = 8;
 

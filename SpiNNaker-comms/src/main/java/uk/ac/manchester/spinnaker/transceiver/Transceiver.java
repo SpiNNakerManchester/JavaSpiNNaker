@@ -1428,7 +1428,7 @@ public class Transceiver extends UDPTransceiver
             ChipLocation key = chip.asChipLocation();
             synchronized (executeFloodLock) {
                 lock = chipExecuteLocks.computeIfAbsent(key,
-                        k -> new Semaphore(1));
+                    k -> new Semaphore(1));
             }
             lock.acquire();
             synchronized (executeFloodLock) {

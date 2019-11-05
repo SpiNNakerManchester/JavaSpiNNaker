@@ -21,20 +21,21 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Commands supported by Big Data */
 public enum BigDataCommand implements CommandCode {
 
     /**
-     * Initialise Big Data
+     * Initialise Big Data.
      */
     BIG_DATA_INIT(0),
 
     /**
-     * Free Big Data
+     * Free Big Data.
      */
     BIG_DATA_FREE(1),
 
     /**
-     * Get Big Data information
+     * Get Big Data information.
      */
     BIG_DATA_INFO(2);
 

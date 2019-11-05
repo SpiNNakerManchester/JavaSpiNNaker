@@ -45,6 +45,8 @@ public class BigDataInfo extends SCPRequest<BigDataInfo.Response> {
 
     /** An SCP response to a request for information about Big Data. */
     public static class Response extends CheckOKResponse {
+        /** The number of bytes in an IP address. */
+        private static final int IP_ADDR_BYTES = 4;
         /** The port where data is sent to. */
         public final int port;
         /** The number of packets sent back to host. */
@@ -63,7 +65,7 @@ public class BigDataInfo extends SCPRequest<BigDataInfo.Response> {
             nSent = buffer.getInt();
             nReceived = buffer.getInt();
             nDiscarded = buffer.getInt();
-            byte[] ip = new byte[4];
+            byte[] ip = new byte[IP_ADDR_BYTES];
             buffer.get(ip);
             try {
                 ipAddress = InetAddress.getByAddress(ip);
@@ -75,6 +77,7 @@ public class BigDataInfo extends SCPRequest<BigDataInfo.Response> {
             }
         }
 
+        @Override
         public String toString() {
             return "Big Data: Sending to " + ipAddress + ":" + port + "; nSent="
                     + nSent + "; nReceived=" + nReceived + "; nDiscarded="
