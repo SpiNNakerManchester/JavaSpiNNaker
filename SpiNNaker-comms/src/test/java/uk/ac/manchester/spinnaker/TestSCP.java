@@ -6,13 +6,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -68,6 +64,9 @@ public class TestSCP {
                 TestProcess process = new TestProcess(txrx.getScampConnectionSelector());
                 process.test(coreSubsets, 1000, 3);
 
+                System.err.println("Setting up Big Data");
+                txrx.initialiseBigData(new ChipLocation(0, 0), 1);
+
                 System.err.println("Sending Data");
                 SDPConnection conn = new SDPConnection(
                         new ChipLocation(0, 0), hostname, 17894);
@@ -95,7 +94,7 @@ public class TestSCP {
                 for (int i = 0; i < inputData.length; i++) {
                     if (receiver.received[i] != null) {
                         if (lastReceived + 1 != i) {
-                            System.err.println("Missing " + lastReceived + " - " + (i - 1));
+                            System.err.println("Missing " + (lastReceived + 1) + " - " + (i - 1));
                         }
                         lastReceived = i;
                         System.err.println("Received " + i);
@@ -107,8 +106,13 @@ public class TestSCP {
                     }
                 }
                 if (lastReceived + 1 != inputData.length) {
-                    System.err.println("Missing " + lastReceived + " - " + (inputData.length - 1));
+                    System.err.println("Missing " + (lastReceived + 1) + " - " + (inputData.length - 1));
                 }
+
+                System.err.println(txrx.getBigDataInfo(new ChipLocation(0, 0)));
+
+                System.err.println("Ending Big Data");
+                txrx.freeBigData(new ChipLocation(0, 0));
 
                 System.err.println(txrx.getScampVersion());
                 System.err.println(txrx.getScampVersion(new ChipLocation(1, 1)));
