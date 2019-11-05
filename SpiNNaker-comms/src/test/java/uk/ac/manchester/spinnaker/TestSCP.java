@@ -77,9 +77,9 @@ public class TestSCP {
                 }
                 txrx.executeFlood(coreSubsets, executable, appID);
 
-                //System.err.println("Running SCP test");
-                //TestProcess process = new TestProcess(txrx.getScampConnectionSelector());
-                //process.test(coreSubsets, 1000, 3);
+                System.err.println("Running SCP test");
+                TestProcess process = new TestProcess(txrx.getScampConnectionSelector());
+                process.test(coreSubsets, 1000, 3);
 
                 System.err.println("Setting up Big Data");
                 txrx.initialiseBigData(new ChipLocation(0, 0), 1);
@@ -90,17 +90,19 @@ public class TestSCP {
                 ByteBuffer[] inputData = new ByteBuffer[1000];
                 Receiver receiver = new Receiver(1000, conn);
                 receiver.start();
+                int nBytes = Constants.BIG_DATA_MAX_DATA_BYTES;
                 for (int i = 0; i < 1000; i++) {
-                    inputData[i] = ByteBuffer.allocate(Constants.BIG_DATA_MAX_DATA_BYTES);
+                    inputData[i] = ByteBuffer.allocate(nBytes);
                     inputData[i].order(ByteOrder.LITTLE_ENDIAN);
                     inputData[i].putInt(i);
                     Random r = new Random();
-                    for (int j = 0; j < 1460; j++) {
+                    for (int j = 0; j < nBytes - 4; j++) {
                         inputData[i].put((byte) (r.nextInt(255) - 128));
                     }
                     inputData[i].rewind();
                     conn.send(inputData[i]);
                     inputData[i].rewind();
+                    Thread.sleep(0, 1);
                 }
 
                 System.err.println("Waiting for receive to finish");
@@ -119,7 +121,7 @@ public class TestSCP {
                         if (!Arrays.equals(inputData[i].array(), receiver.received[i].array())) {
                             System.err.println("    Not equal!");
                             System.err.print("    ");
-                            printIndices(Constants.BIG_DATA_MAX_DATA_BYTES);
+                            printIndices(nBytes);
                             System.err.print("    ");
                             printHex(inputData[i]);
                             System.err.print("    ");
@@ -204,7 +206,7 @@ final class Receiver extends Thread {
     public void run() {
         while (!error) {
             try {
-                ByteBuffer data = connection.receive(2000, Constants.BIG_DATA_MAX_DATA_BYTES);
+                ByteBuffer data = connection.receive(2000, 1500);
                 data.order(ByteOrder.LITTLE_ENDIAN);
                 int index = data.getInt();
                 data.rewind();
