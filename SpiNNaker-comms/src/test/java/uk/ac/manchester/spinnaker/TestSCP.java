@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,18 +72,17 @@ public class TestSCP {
                 System.err.println("Sending Data");
                 SDPConnection conn = new SDPConnection(
                         new ChipLocation(0, 0), hostname, Constants.BIG_DATA_SCAMP_PORT);
-                byte[][] inputData = new byte[1000][];
+                ByteBuffer[] inputData = new ByteBuffer[1000];
                 Receiver receiver = new Receiver(1000, conn);
                 receiver.start();
                 for (int i = 0; i < 1000; i++) {
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream(1464);
-                    DataOutputStream data = new DataOutputStream(bytes);
-                    data.writeInt(i);
+                    inputData[i] = ByteBuffer.allocate(1464);
+                    inputData[i].order(ByteOrder.LITTLE_ENDIAN);
+                    inputData[i].putInt(i);
                     Random r = new Random();
                     for (int j = 0; j < 1460; j++) {
-                       data.writeByte(r.nextInt(255) - 128);
+                        inputData[i].put((byte) (r.nextInt(255) - 128));
                     }
-                    inputData[i] = bytes.toByteArray();
                     conn.send(inputData[i]);
                 }
 
@@ -99,7 +99,7 @@ public class TestSCP {
                         }
                         lastReceived = i;
                         System.err.println("Received " + i);
-                        if (!Arrays.equals(inputData[i], receiver.received[i])) {
+                        if (!Arrays.equals(inputData[i].array(), receiver.received[i].array())) {
                             System.err.println("    Not equal!");
                             System.err.println("    " + inputData[i]);
                             System.err.println("    " + receiver.received[i]);
@@ -125,14 +125,14 @@ public class TestSCP {
 
 
 final class Receiver extends Thread {
-    public final byte[][] received;
+    public final ByteBuffer[] received;
 
     private final SDPConnection connection;
 
     private boolean error = false;
 
     public Receiver(int size, SDPConnection connection) {
-        received = new byte[size][];
+        received = new ByteBuffer[size];
         this.connection = connection;
     }
 
@@ -140,10 +140,10 @@ final class Receiver extends Thread {
         while (!error) {
             try {
                 ByteBuffer data = connection.receive(2000);
+                data.order(ByteOrder.LITTLE_ENDIAN);
                 int index = data.getInt();
-                received[index] = new byte[data.capacity()];
                 data.rewind();
-                data.get(received[index]);
+                received[index] = data;
             } catch (Exception e) {
                 e.printStackTrace();
                 error = true;
