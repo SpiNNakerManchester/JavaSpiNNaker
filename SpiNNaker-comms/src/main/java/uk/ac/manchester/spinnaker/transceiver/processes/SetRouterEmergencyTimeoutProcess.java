@@ -46,7 +46,7 @@ public class SetRouterEmergencyTimeoutProcess
     public SetRouterEmergencyTimeoutProcess(
             ConnectionSelector<SCPConnection> connectionSelector,
             RetryTracker retryTracker, int numRetries) {
-        super(connectionSelector, numRetries, ROUTER_SET_TIMEOUT, 0, 0,
+        super(connectionSelector, numRetries, ROUTER_SET_TIMEOUT, 1, 0,
                 retryTracker);
     }
 

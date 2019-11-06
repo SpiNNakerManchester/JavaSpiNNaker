@@ -46,7 +46,7 @@ public class SetRouterTimeoutProcess
             ConnectionSelector<SCPConnection> connectionSelector,
             RetryTracker retryTracker, int numRetries) {
         super(connectionSelector, numRetries, ROUTER_SET_TIMEOUT,
-                0, 0, retryTracker);
+                1, 0, retryTracker);
     }
 
     /**
