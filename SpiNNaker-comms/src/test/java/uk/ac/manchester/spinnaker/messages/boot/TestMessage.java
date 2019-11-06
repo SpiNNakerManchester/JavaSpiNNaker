@@ -56,7 +56,7 @@ class TestMessage {
     void testBootMessages() {
         BootMessages bm = new BootMessages(FIVE);
         List<BootMessage> bml = bm.getMessages().collect(Collectors.toList());
-        assertEquals(31, bml.size());
+        assertEquals(32, bml.size());
         ByteBuffer patched = bml.get(1).data;
         patched.position(BOOT_STRUCT_REPLACE_OFFSET);
         byte[] got = new byte[16];
