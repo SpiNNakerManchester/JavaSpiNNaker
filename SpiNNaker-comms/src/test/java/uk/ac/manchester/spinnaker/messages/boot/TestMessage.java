@@ -70,7 +70,7 @@ class TestMessage {
         assertArrayEquals(expected, got);
     }
 
-    private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 998);
+    private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 110);
 
     @Test
     void testBootMessagesSerialize() {
