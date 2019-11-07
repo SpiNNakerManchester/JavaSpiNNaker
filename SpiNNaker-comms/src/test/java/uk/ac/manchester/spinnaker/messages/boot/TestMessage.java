@@ -56,7 +56,7 @@ class TestMessage {
     void testBootMessages() {
         BootMessages bm = new BootMessages(FIVE);
         List<BootMessage> bml = bm.getMessages().collect(Collectors.toList());
-        assertEquals(32, bml.size());
+        assertEquals(N_SCAMP_BLOCKS + 2, bml.size());
         ByteBuffer patched = bml.get(1).data;
         patched.position(BOOT_STRUCT_REPLACE_OFFSET);
         byte[] got = new byte[16];
@@ -70,7 +70,24 @@ class TestMessage {
         assertArrayEquals(expected, got);
     }
 
-    private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 110);
+    private static final int SCAMP_SIZE = 29944;
+
+    private static final int BLOCK_SIZE = 1024;
+
+    private static final int N_FULL_SCAMP_BLOCKS = (SCAMP_SIZE / BLOCK_SIZE);
+
+    private static final int N_SCAMP_BLOCKS = (int) Math.ceil(
+            (float) SCAMP_SIZE / (float) BLOCK_SIZE);
+
+    private static final int SCAMP_EXTRA_BYTES =
+            SCAMP_SIZE - (N_FULL_SCAMP_BLOCKS * BLOCK_SIZE);
+
+    private static final int BOOT_HEADER_SIZE = 18;
+
+    private static final List<Integer> EXPECTED_SIZES = asList(
+            BOOT_HEADER_SIZE,
+            BLOCK_SIZE + BOOT_HEADER_SIZE,
+            SCAMP_EXTRA_BYTES + BOOT_HEADER_SIZE);
 
     @Test
     void testBootMessagesSerialize() {
