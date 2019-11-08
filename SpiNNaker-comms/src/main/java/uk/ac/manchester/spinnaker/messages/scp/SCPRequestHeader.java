@@ -31,47 +31,47 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * actual sequence number when the message is sent on a connection.
  */
 public class SCPRequestHeader implements SerializableMessage {
-	/** The command of the SCP packet. */
-	public final CommandCode command;
-	/** The sequence number of the packet, between 0 and 65535. */
-	private short sequence;
-	private boolean sequenceSet;
+    /** The command of the SCP packet. */
+    public final CommandCode command;
+    /** The sequence number of the packet, between 0 and 65535. */
+    private short sequence;
+    private boolean sequenceSet;
 
-	public SCPRequestHeader(CommandCode command) {
-		this.command = command;
-	}
+    public SCPRequestHeader(CommandCode command) {
+        this.command = command;
+    }
 
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		buffer.putShort(command.getValue());
-		if (!sequenceSet) {
-			throw new IllegalStateException("sequence number not set");
-		}
-		buffer.putShort(sequence);
-	}
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        buffer.putShort(command.getValue());
+        if (!sequenceSet) {
+            throw new IllegalStateException("sequence number not set");
+        }
+        buffer.putShort(sequence);
+    }
 
-	/**
-	 * Set the sequence number of this request to the next available number.
-	 * This can only ever be called once per request.
-	 *
-	 * @param inFlight
-	 *            What sequence numbers are current in use and shouldn't be
-	 *            used.
-	 * @return The number that was issued.
-	 */
-	public short issueSequenceNumber(Set<Integer> inFlight) {
-		if (sequenceSet) {
-			throw new IllegalStateException(
-					"a message can only have its sequence number set once");
-		}
-		do {
-			sequence = getNextSequenceNumber();
-		} while (inFlight.contains((int) sequence));
-		sequenceSet = true;
-		return sequence;
-	}
+    /**
+    * Set the sequence number of this request to the next available number.
+    * This can only ever be called once per request.
+    *
+    * @param inFlight
+    *            What sequence numbers are current in use and shouldn't be
+    *            used.
+    * @return The number that was issued.
+    */
+    public short issueSequenceNumber(Set<Integer> inFlight) {
+        if (sequenceSet) {
+            throw new IllegalStateException(
+                    "a message can only have its sequence number set once");
+        }
+        do {
+            sequence = getNextSequenceNumber();
+        } while (inFlight.contains(Short.toUnsignedInt(sequence)));
+        sequenceSet = true;
+        return sequence;
+    }
 
-	public short getSequence() {
-		return sequence;
-	}
+    public short getSequence() {
+        return sequence;
+    }
 }
