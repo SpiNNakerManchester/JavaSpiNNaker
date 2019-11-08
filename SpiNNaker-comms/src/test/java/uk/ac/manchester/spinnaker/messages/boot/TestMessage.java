@@ -70,7 +70,7 @@ class TestMessage {
         assertArrayEquals(expected, got);
     }
 
-    private static final int SCAMP_SIZE = 29812;
+    private static final int SCAMP_SIZE = 29784;
 
     private static final int BLOCK_SIZE = 1024;
 
