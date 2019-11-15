@@ -36,3 +36,6 @@ nbactions.xml
 
 # macOS Finder metadata
 .DS_Store
+
+# versions plugin backups
+*pom.xml.versionsBackup
