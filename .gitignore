@@ -38,4 +38,4 @@ nbactions.xml
 .DS_Store
 
 # versions plugin backups
-*pom.xml.versionsBackup
+pom.xml.versionsBackup
