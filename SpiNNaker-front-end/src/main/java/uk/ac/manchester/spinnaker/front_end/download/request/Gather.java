@@ -42,7 +42,9 @@ public class Gather implements HasCoreLocation {
     private final IPTag iptag;
     /** The extra monitor cores, and what to retrieve from them. */
     private final List<Monitor> monitors;
-
+    /** The current transaction id for the board */
+    private int transactionId;
+    
 	/**
 	 * Constructor with minimum information needed.
 	 * <p>
@@ -73,6 +75,7 @@ public class Gather implements HasCoreLocation {
         this.p = p;
         this.iptag = iptag;
         this.monitors = monitors;
+        this.transactionId = 0;
     }
 
     @Override
@@ -88,6 +91,18 @@ public class Gather implements HasCoreLocation {
     @Override
     public int getP() {
         return p;
+    }
+    
+    public int getTransactionId() {
+    	return transactionId;
+    }
+    
+    /** sets the transaction id to a new value 
+     * @param new_value
+     *          the new value to set the transaction id to
+     */
+    public void setTransactionId(int newTransactionId) {
+        transactionId = newTransactionId;
     }
 
     /**

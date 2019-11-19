@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.BitSet;
 
 import org.slf4j.Logger;
 
@@ -88,7 +89,7 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  * Implementation of the Data Specification Executor that uses the Fast Data In
  * protocol to upload the results to a SpiNNaker machine.
  *
- * @author Donal Fellows
+ * @author Donal Fellows and Alan Stokes
  */
 public class FastExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
@@ -106,6 +107,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final int ONE_KI = 1024;
 
 	private static final int TIMEOUT_RETRY_LIMIT = 20;
+	
+	/** cap for stopping wrap around. */ 
+	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
+	
+	/** flag for saying missing all SEQ numbers. */
+	private static final int FLAG_FOR_MISSING_ALL_SEQUENCES = 0xFFFFFFFE;
 
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
@@ -225,7 +232,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				log.info("loading data onto {} cores on board", cores.size());
 			}
 			for (CoreToLoad ctl : cores) {
-				worker.loadCore(ctl);
+	            Gather gatherer = gathererForChip.get(board.location);
+			    gatherer.setTransactionId(
+			            (gatherer.getTransactionId() + 1) & TRANSACTION_ID_CAP);
+			    worker.loadCore(ctl, gatherer.getTransactionId());
 			}
 		}
 	}
@@ -366,7 +376,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private DSEStorage storage;
 		private Progress bar;
 		private ThrottledConnection connection;
-		private LinkedList<LinkedList<Integer>> missingSequenceNumbers;
+		private LinkedList<BitSet> missingSequenceNumbers;
 		private BoardLocal logContext;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
@@ -396,6 +406,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @param ctl
 		 *            The definition of what to run and where to send the
 		 *            results.
+		 * @param transactionId
+		 *            The transaction id for the stream.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
@@ -405,7 +417,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws StorageException
 		 *             If the database access fails.
 		 */
-		protected void loadCore(CoreToLoad ctl) throws IOException,
+		protected void loadCore(CoreToLoad ctl, int transactionId) throws IOException,
 				ProcessException, DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
@@ -431,7 +443,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
 						written += writeRegion(ctl.core, r, r.getRegionBase(),
-								largeRegions);
+								largeRegions, transactionId);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
 							ByteBuffer readBack =
 									txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -446,7 +458,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 				for (MemoryRegion r : largeRegions) {
 					written +=
-							writeRegion(ctl.core, r, r.getRegionBase(), null);
+							writeRegion(ctl.core, r, r.getRegionBase(), null, 
+							        transactionId);
 					if (SPINNAKER_COMPARE_UPLOAD != null) {
 						ByteBuffer readBack =
 								txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -522,6 +535,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The region to write.
 		 * @param baseAddress
 		 *            Where to write the region.
+		 * @param transactionId
+		 *            the transaction id for the stream
 		 * @param largeRegions
 		 *            If not {@code null}, append a the region to this list to
 		 *            be processed later if it is "large". If {@code null},
@@ -534,7 +549,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
-				int baseAddress, List<MemoryRegion> largeRegions)
+				int baseAddress, List<MemoryRegion> largeRegions,
+				int transactionId)
 				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
@@ -547,7 +563,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
 				if (largeRegions == null) {
-					fastWrite(core, baseAddress, data);
+					fastWrite(core, baseAddress, data, transactionId);
 				} else {
 					// Move large regions to the end
 					largeRegions.add(region);
@@ -566,7 +582,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			missingSequenceNumbers = null;
 			return written;
 		}
-
+		
 		/**
 		 * Put the board in don't-drop-packets mode.
 		 *
@@ -608,68 +624,55 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            Whether the data will be written.
 		 * @param data
 		 *            The data to be written.
+		 *            
+		 * @param trasnactionId
+		 *            The transaction id for this stream. 
 		 * @throws IOException
 		 *             If IO fails.
 		 */
 		private void fastWrite(CoreLocation core, int baseAddress,
-				ByteBuffer data) throws IOException {
-			boolean haveMissing = false;
-			int remainingMissingPackets = 0;
+				ByteBuffer data, int transactionId) throws IOException {
 			int timeoutCount = 0;
-			LinkedList<Integer> seqNums = null;
+			int numPackets = computeNumPackets(data);
 			GathererProtocol protocol = new GathererProtocol(core);
 
 			outerLoop: while (true) {
-				// Do the initial blast of data
-				int expectedMax =
-						sendInitialPackets(baseAddress, data, protocol);
+	            BitSet seqNums =  newSequenceNumberCollector(numPackets);
+			    // Do the initial blast of data
+				sendInitialPackets(
+				        baseAddress, data, protocol, transactionId, numPackets);
 
 				// Wait for confirmation and do required retransmits
-				while (true) {
+				innerLoop: while (true) {
 					try {
 						IntBuffer received = connection.receive();
 						timeoutCount = 0; // Reset the timeout counter
+						
+						// read transaction id
+						FastDataInCommandID command_code = 
+						        FastDataInCommandID.forValue(received.get());
+						int thisTransactionId = received.get();
+						
+						// if wrong transaction id, ignore packet
+						if (thisTransactionId != transactionId) {
+						    continue innerLoop;						    
+						}
 
 						// Decide what to do with the packet
-						switch (FastDataInCommandID.forValue(received.get())) {
+						switch (command_code) {
 						case RECEIVE_FINISHED_DATA_IN:
 							// We're done!
 							break outerLoop;
 
-						case RECEIVE_FIRST_MISSING_SEQ_DATA_IN:
-							if (!received.hasRemaining()) {
-								throw new BadDataInMessageException(
-										received.get(0), received);
-							}
-							remainingMissingPackets = received.get();
-							if (remainingMissingPackets > expectedMax) {
-								throw new CrazySequenceNumberException(
-										remainingMissingPackets, received);
-							}
-							log.info(
-									"expecting {} packets of missing "
-											+ "sequence numbers",
-									remainingMissingPackets);
-							if (!received.hasRemaining()) {
-								throw new BadDataInMessageException(
-										received.get(0), received);
-							}
-							haveMissing = true;
-							break;
 						case RECEIVE_MISSING_SEQ_DATA_IN:
 							if (!received.hasRemaining()) {
 								throw new BadDataInMessageException(
 										received.get(0), received);
 							}
-							remainingMissingPackets--;
-							if (remainingMissingPackets < 0) {
-								throw new CrazySequenceNumberException(
-										remainingMissingPackets, received);
-							}
 							log.debug(
 									"another packet (#{}) of missing "
-											+ "sequence numbers; {} left",
-									received.get(1), remainingMissingPackets);
+											+ "sequence numbers;",
+									received.get(1));
 							break;
 						default:
 							throw new BadDataInMessageException(received.get(0),
@@ -678,95 +681,117 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 						/*
 						 * The currently received packet has missing sequence
-						 * numbers. Accumulate and dispatch when we've got them
+						 * numbers. Accumulate and dispatch transactionIdwhen we've got them
 						 * all.
 						 */
-
-						if (seqNums == null) {
-							seqNums = newSequenceNumberCollector();
-							log.debug("allocated sequence number collector");
-						}
-						addMissedSeqNums(received, seqNums, expectedMax);
-						if ((haveMissing && remainingMissingPackets <= 0)
-								|| (!seqNums.isEmpty() && seqNums
-										.peekLast() == MISSING_SEQS_END)) {
-							retransmitMissingPackets(protocol, data, seqNums);
-							seqNums = null;
-							remainingMissingPackets = 0;
-							haveMissing = false;
+						
+						
+						SeenFlags flags = addMissedSeqNums(received, seqNums, numPackets);
+						if (flags.seenAll || flags.seenEnd) {
+						    retransmitMissingPackets(
+							        protocol, data, seqNums, transactionId, 
+							        baseAddress, numPackets);
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
 							throw e;
 						}
-						remainingMissingPackets = 0;
-						haveMissing = false;
-						if (seqNums == null) {
+						if (seqNums.isEmpty()) {
 							log.info("full timeout; resending initial packets");
 							continue outerLoop;
 						}
-						retransmitMissingPackets(protocol, data, seqNums);
-						seqNums = null;
+						retransmitMissingPackets(
+						        protocol, data, seqNums, transactionId, 
+						        baseAddress, numPackets);
+						seqNums.clear();
 					}
 				}
 			}
 		}
 
-		private void addMissedSeqNums(IntBuffer received, List<Integer> seqNums,
-				int expectedMax) {
-			int actuallyAdded = 0;
+		private SeenFlags addMissedSeqNums(
+		            IntBuffer received, BitSet seqNums, int expectedMax) {
+		    SeenFlags flags = new SeenFlags();
 			String addedEnd = "";
+			String addedAll = "";
+		    int actuallyAdded = 0;
 			while (received.hasRemaining()) {
 				int num = received.get();
-				seqNums.add(num);
+				
 				if (num == MISSING_SEQS_END) {
-					addedEnd = " (and END marker)";
+					addedEnd = " and saw END marker";
+					flags.setSeenEnd(true);
 					break;
 				}
+				if (num == FLAG_FOR_MISSING_ALL_SEQUENCES) {
+				    addedAll = " by finding ALL missing marker";
+				    flags.setSeenAll(true);
+				    for (int seqNum = 0; seqNum < expectedMax; seqNum++) {
+				        seqNums.set(num);
+		                actuallyAdded++;
+				    }
+				    break;
+				}
+				
+				seqNums.set(num);
 				actuallyAdded++;
 				if (num < 0 || num > expectedMax) {
 					throw new CrazySequenceNumberException(num, received);
 				}
 			}
-			log.debug("added {} missed packets{}", actuallyAdded, addedEnd);
+			log.debug("added {} missed packets, {} {}", actuallyAdded, 
+			        addedEnd, addedAll);
+			return flags;
 		}
 
-		private LinkedList<Integer> newSequenceNumberCollector() {
-			LinkedList<Integer> seqNums = new LinkedList<>();
+		private BitSet newSequenceNumberCollector(int expectedMax) {
+			// TODO check if this is faster in java than a bitfield. 
+		    BitSet seqNums = new BitSet(expectedMax);
 			missingSequenceNumbers.addLast(seqNums);
 			return seqNums;
 		}
 
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
-				GathererProtocol protocol) throws IOException {
-			int numPackets = computeNumPackets(data);
+				GathererProtocol protocol, int transactionId, 
+				int numPackets) throws IOException {
 			log.debug("streaming {} bytes in {} packets", data.remaining(),
 					numPackets);
 			log.debug("sending packet #{}", 0);
 			connection.send(
-					protocol.dataToLocation(baseAddress, data, numPackets));
-			for (int seqNum = 1; seqNum < numPackets; seqNum++) {
+					protocol.dataToLocation(baseAddress, numPackets, transactionId));
+			for (int seqNum = 0; seqNum < numPackets; seqNum++) {
 				log.debug("sending packet #{}", seqNum);
-				connection.send(protocol.seqData(data, seqNum));
+				connection.send(protocol.seqData(data, seqNum, transactionId));
 			}
 			log.debug("sending terminating packet");
-			connection.send(protocol.lastDataIn());
+			connection.send(protocol.tellDataIn(transactionId));
 			return numPackets;
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
-				ByteBuffer dataToSend, List<Integer> missingSeqNums)
+				ByteBuffer dataToSend, BitSet missingSeqNums,
+				int transactionId, int baseAddress, int numPackets)
 				throws IOException {
-			log.info("retransmitting {} packets", missingSeqNums.size());
-			for (int seqNum : missingSeqNums) {
-				if (seqNum == MISSING_SEQS_END) {
-					continue;
-				}
-				log.debug("resending packet #{}", seqNum);
-				connection.send(protocol.seqData(dataToSend, seqNum));
-			}
+			log.info("resending the location packet");
+	         connection.send(
+	               protocol.dataToLocation(baseAddress, numPackets, transactionId));
+		    
+		    log.info("retransmitting {} packets", missingSeqNums.size());
+			
+			missingSeqNums.stream().forEach(
+			        seqNum -> {
+			            log.debug("resending packet #{}", seqNum);
+		                try {
+                            connection.send(protocol.seqData(
+                                    dataToSend, seqNum, transactionId));
+                        } catch (IOException e) {
+                            log.error(
+                                    "missing sequence packet with id {}-{} "
+                                    + "failed to transmit", seqNum, transactionId, e);
+                        }
+			        });
 			log.debug("sending terminating packet");
-			connection.send(protocol.lastDataIn());
+			connection.send(protocol.tellDataIn(transactionId));
 		}
 	}
 
@@ -792,11 +817,43 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			this(chip.asChipLocation(), false);
 		}
 	}
+	
+	/**
+	 * Contains flags for seen missing sequence numbers.
+	 * 
+	 * @author Alan Stokes
+	 */
+	static class SeenFlags{
+
+        private boolean seenEnd;
+	    private boolean seenAll;
+	    
+	    SeenFlags(){
+	        this.seenEnd = false;
+	        this.seenAll = false;
+	    }
+	    
+	    public boolean isSeenEnd() {
+            return seenEnd;
+        }
+
+        public void setSeenEnd(boolean seenEnd) {
+            this.seenEnd = seenEnd;
+        }
+
+        public boolean isSeenAll() {
+            return seenAll;
+        }
+
+        public void setSeenAll(boolean seenAll) {
+            this.seenAll = seenAll;
+        }
+	}
 
 	/**
 	 * Exception thrown when something mad comes back off SpiNNaker.
 	 *
-	 * @author Donal Fellows
+	 * @author Donal Fellows 
 	 */
 	static class BadDataInMessageException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -811,7 +868,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/**
 	 * Exception thrown when something mad comes back off SpiNNaker.
 	 *
-	 * @author Donal Fellows
+	 * @author Donal Fellows and Alan Stokes
 	 */
 	static class CrazySequenceNumberException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -823,4 +880,5 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					.map(i -> message.get(i)).boxed().collect(toList()));
 		}
 	}
+	
 }
