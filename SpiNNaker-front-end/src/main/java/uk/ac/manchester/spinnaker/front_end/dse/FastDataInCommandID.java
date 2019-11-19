@@ -35,7 +35,7 @@ public enum FastDataInCommandID {
 	RECEIVE_MISSING_SEQ_DATA_IN(2002),
 	/** Gatherer to host: all present and correct. */
 	RECEIVE_FINISHED_DATA_IN(2003);
-	
+
 	private static final Map<Integer, FastDataInCommandID> MAP =
 			new HashMap<>();
 	/** The protocol ID of this constant. */

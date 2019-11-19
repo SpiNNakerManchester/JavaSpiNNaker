@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
@@ -49,9 +48,9 @@ class FastDataInProtocol {
 	/** Items of data a SDP packet can hold when SCP header removed. */
 	static final int BYTES_PER_FULL_PACKET = SDP_PAYLOAD_WORDS * WORD_SIZE;
 	// 272 bytes as removed SCP header
-	
-	/** size of the location data packet (command, transaction id, 
-	 * start sdram address, x and y, and max packet number
+
+	/** size of the location data packet (command, transaction id,
+	 * start sdram address, x and y, and max packet number.
 	 */
 	static final int BYTES_FOR_LOCATION_PACKET = 5 * WORD_SIZE;
 
@@ -64,9 +63,9 @@ class FastDataInProtocol {
 	/** Size for data to store when packet with command and key. */
 	static final int DATA_IN_FULL_PACKET_WITH_KEY =
 			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_KEY;
-	
-	/** size for data to store when sending tell packet (command id, 
-	 * transaction id)
+
+	/** size for data to store when sending tell packet (command id,
+	 * transaction id).
 	 */
 	static final int BYTES_FOR_TELL_PACKET = 2 * WORD_SIZE;
 
@@ -111,6 +110,8 @@ class FastDataInProtocol {
 	 *            Where the data is to be written.
 	 * @param numPackets
 	 *            How many SDP packets will be sent.
+	 * @param transactionId
+	 *            The transaction id of this stream.
 	 * @return The message indicating the start of the data.
 	 */
 	SDPMessage dataToLocation(int baseAddress, int numPackets,
@@ -132,10 +133,10 @@ class FastDataInProtocol {
 	 *            The overall data to be transmitted.
 	 * @param seqNum
 	 *            The sequence number of this chunk.
-	 * 
-	 * @param transactionIdposition
+	 *
+	 * @param transactionId
 	 * 			  The transaction id for this stream.
-	 *            
+	 *
 	 * @return The message containing a chunk of the data.
 	 */
 	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
@@ -170,9 +171,9 @@ class FastDataInProtocol {
 	}
 
 	/**
-	 * generates the tell message 
+	 * generates the tell message.
 	 * @param transactionId
-	 * 			The transaction id for this stream. 
+	 * 			The transaction id for this stream.
 	 * @return The message indicating the end of the data.
 	 */
 	SDPMessage tellDataIn(int transactionId) {
