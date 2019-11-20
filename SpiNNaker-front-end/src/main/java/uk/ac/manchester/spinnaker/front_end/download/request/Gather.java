@@ -18,15 +18,10 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
-
-import org.slf4j.Logger;
-
-import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
@@ -38,10 +33,6 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
 
-    
-    private static final Logger log =
-            getLogger(FastExecuteDataSpecification.class);
-    
     /** The x value of the core this placement is on. */
     private final int x;
     /** The y value of the core this placement is on. */
@@ -112,7 +103,6 @@ public class Gather implements HasCoreLocation {
      *          the new value to set the transaction id to.
      */
     public void setTransactionId(int newTransactionId) {
-        log.debug("the new transaction id is {}", newTransactionId);
         transactionId = newTransactionId;
     }
 
