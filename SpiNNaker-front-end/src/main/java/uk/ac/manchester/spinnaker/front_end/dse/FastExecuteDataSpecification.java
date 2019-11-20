@@ -232,10 +232,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				log.info("loading data onto {} cores on board", cores.size());
 			}
 			for (CoreToLoad ctl : cores) {
-	            Gather gatherer = gathererForChip.get(board.location);
-			    gatherer.setTransactionId(
-			            (gatherer.getTransactionId() + 1) & TRANSACTION_ID_CAP);
-			    worker.loadCore(ctl, gatherer.getTransactionId());
+			    worker.loadCore(ctl, gathererForChip.get(board.location));
 			}
 		}
 	}
@@ -418,7 +415,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If the database access fails.
 		 */
 		protected void loadCore(
-		        CoreToLoad ctl, int transactionId) throws IOException,
+		        CoreToLoad ctl, Gather gather) throws IOException,
 				ProcessException, DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
@@ -444,7 +441,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
 						written += writeRegion(ctl.core, r, r.getRegionBase(),
-								largeRegions, transactionId);
+								largeRegions, gather);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
 							ByteBuffer readBack =
 									txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -460,7 +457,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				for (MemoryRegion r : largeRegions) {
 					written +=
 							writeRegion(ctl.core, r, r.getRegionBase(), null,
-							        transactionId);
+							        gather);
 					if (SPINNAKER_COMPARE_UPLOAD != null) {
 						ByteBuffer readBack =
 								txrx.readMemory(ctl.core, r.getRegionBase(),
@@ -551,7 +548,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
 				int baseAddress, List<MemoryRegion> largeRegions,
-				int transactionId)
+				Gather gather)
 				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
@@ -564,7 +561,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			} else {
 				if (largeRegions == null) {
-					fastWrite(core, baseAddress, data, transactionId);
+					fastWrite(core, baseAddress, data, gather);
 				} else {
 					// Move large regions to the end
 					largeRegions.add(region);
@@ -632,10 +629,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If IO fails.
 		 */
 		private void fastWrite(CoreLocation core, int baseAddress,
-				ByteBuffer data, int transactionId) throws IOException {
+				ByteBuffer data, Gather gather) throws IOException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
 			GathererProtocol protocol = new GathererProtocol(core);
+			gather.setTransactionId(
+                    (gather.getTransactionId() + 1) & TRANSACTION_ID_CAP);
+			int transactionId = gather.getTransactionId();
 
 			outerLoop: while (true) {
 	            BitSet seqNums =  newSequenceNumberCollector(numPackets);
