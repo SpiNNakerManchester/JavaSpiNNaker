@@ -123,7 +123,7 @@ class FastDataInProtocol {
 		payload.putInt(baseAddress);
 		payload.putShort((short) boardLocalDestination.getY());
 		payload.putShort((short) boardLocalDestination.getX());
-		payload.putInt(numPackets);
+		payload.putInt(numPackets - 1);
 		payload.flip();
 		return new SDPMessage(header(), payload);
 	}
