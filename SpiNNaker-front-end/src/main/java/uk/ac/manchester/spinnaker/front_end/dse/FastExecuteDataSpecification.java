@@ -731,7 +731,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				    addedAll = " by finding ALL missing marker";
 				    flags.setSeenAll(true);
 				    for (int seqNum = 0; seqNum < expectedMax; seqNum++) {
-				        seqNums.set(num);
+				        seqNums.set(seqNum);
 		                actuallyAdded++;
 				    }
 				    break;
