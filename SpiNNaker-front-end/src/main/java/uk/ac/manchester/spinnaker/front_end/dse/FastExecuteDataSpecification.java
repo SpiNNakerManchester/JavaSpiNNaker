@@ -231,11 +231,28 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			if (!cores.isEmpty()) {
 				log.info("loading data onto {} cores on board", cores.size());
 			}
+			
+			HashMap<CoreToLoad, Integer> addresses = 
+			        new HashMap<CoreToLoad, Integer>();
 			for (CoreToLoad ctl : cores) {
-			    worker.loadCore(ctl, gathererForChip.get(board.location));
+			    int start = malloc(ctl, ctl.sizeToWrite);
+	            int user0 = txrx.getUser0RegisterAddress(ctl.core);
+	            txrx.writeMemory(ctl.core, user0, start);
+	            addresses.put(ctl, start);
+			}
+			
+			for (CoreToLoad ctl : cores) {
+			    worker.loadCore(
+			            ctl, gathererForChip.get(board.location), 
+			            addresses.get(ctl));
 			}
 		}
 	}
+	
+	private int malloc(CoreToLoad ctl, Integer bytesUsed)
+            throws IOException, ProcessException {
+        return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
+    }
 
 	@Override
 	public void close() throws IOException {
@@ -366,7 +383,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * The worker class that handles a particular board of a SpiNNaker machine.
 	 * Instances of this class are only ever used from a single thread.
 	 *
-	 * @author Donal Fellows
+	 * @author Donal Fellows & Alan stokes
 	 */
 	private class BoardWorker implements AutoCloseable {
 		private Ethernet board;
@@ -415,7 +432,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If the database access fails.
 		 */
 		protected void loadCore(
-		        CoreToLoad ctl, Gather gather) throws IOException,
+		        CoreToLoad ctl, Gather gather, int start) throws IOException,
 				ProcessException, DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
@@ -430,7 +447,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				executor.execute();
 				int size = executor.getConstructedDataSize();
-				int start = malloc(ctl, size);
 				log.info(
 						"generated {} bytes to load onto {} into memory "
 								+ "starting at 0x{}",
@@ -450,9 +466,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 					}
 				}
-
-				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core, user0, start);
 
 				for (MemoryRegion r : largeRegions) {
 					written +=
@@ -484,11 +497,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			}
-		}
-
-		private int malloc(CoreToLoad ctl, int bytesUsed)
-				throws IOException, ProcessException {
-			return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
 		}
 
 		/**
