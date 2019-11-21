@@ -143,7 +143,7 @@ public interface DSEStorage extends DatabaseAPI {
 		public final CoreLocation core;
 
 		/**
-		 * The size to write
+		 * The size to write.
 		 */
 		public final int sizeToWrite;
 
