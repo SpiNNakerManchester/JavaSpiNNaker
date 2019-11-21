@@ -116,13 +116,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
-	/**
-	 * The point below which we use SCP anyway.
-	 * <p>
-	 * We also don't report writes below this size because they add a lot of
-	 * noise and very little information.
-	 */
-	private static final int VERY_SMALL_WRITE_THRESHOLD = 256;
 
 	private final Transceiver txrx;
 	private final Map<ChipLocation, Gather> gathererForChip;
@@ -383,7 +376,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 * The worker class that handles a particular board of a SpiNNaker machine.
 	 * Instances of this class are only ever used from a single thread.
 	 *
-	 * @author Donal Fellows & Alan stokes
+	 * @author Donal Fellows & Alan Stokes
 	 */
 	private class BoardWorker implements AutoCloseable {
 		private Ethernet board;
@@ -453,32 +446,19 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 				int written = writeHeader(ctl.core, executor, start);
 
-				List<MemoryRegion> largeRegions = new ArrayList<>();
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
-						written += writeRegion(ctl.core, r, r.getRegionBase(),
-								largeRegions, gather);
+						written += writeRegion(
+						        ctl.core, r, r.getRegionBase(), gather);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
-							ByteBuffer readBack =
-									txrx.readMemory(ctl.core, r.getRegionBase(),
-											r.getRegionData().remaining());
+							ByteBuffer readBack =txrx.readMemory(
+							        ctl.core, r.getRegionBase(),
+							        r.getRegionData().remaining());
 							compareBuffers(r.getRegionData(), readBack);
 						}
 					}
 				}
-
-				for (MemoryRegion r : largeRegions) {
-					written +=
-							writeRegion(ctl.core, r, r.getRegionBase(), null,
-							        gather);
-					if (SPINNAKER_COMPARE_UPLOAD != null) {
-						ByteBuffer readBack =
-								txrx.readMemory(ctl.core, r.getRegionBase(),
-										r.getRegionData().remaining());
-						compareBuffers(r.getRegionData(), readBack);
-					}
-				}
-
+				
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
@@ -543,11 +523,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            Where to write the region.
 		 * @param transactionId
 		 *            the transaction id for the stream
-		 * @param largeRegions
-		 *            If not {@code null}, append a the region to this list to
-		 *            be processed later if it is "large". If {@code null},
-		 *            process the region always (because it is probably large
-		 *            and was collected earlier).
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
@@ -555,8 +530,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegion region,
-				int baseAddress, List<MemoryRegion> largeRegions,
-				Gather gather)
+				int baseAddress, Gather gather)
 				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
@@ -564,26 +538,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int written = data.remaining();
 			missingSequenceNumbers = new LinkedList<>();
 			long start = nanoTime();
-			if (written < VERY_SMALL_WRITE_THRESHOLD) {
-				// Faster to use SCP to SCAMP when the data is "small".
-				txrx.writeMemory(core.getScampCore(), baseAddress, data);
-			} else {
-				if (largeRegions == null) {
-					fastWrite(core, baseAddress, data, gather);
-				} else {
-					// Move large regions to the end
-					largeRegions.add(region);
-					return 0;
-				}
-			}
+			fastWrite(core, baseAddress, data, gather);
 			long end = nanoTime();
 			if (writeReports) {
-				Object detail = missingSequenceNumbers;
-				if (written < VERY_SMALL_WRITE_THRESHOLD) {
-					detail = "written via SCP";
-				}
 				writeReport(core, end - start, data.limit(), baseAddress,
-						detail);
+				        missingSequenceNumbers);
 			}
 			missingSequenceNumbers = null;
 			return written;
