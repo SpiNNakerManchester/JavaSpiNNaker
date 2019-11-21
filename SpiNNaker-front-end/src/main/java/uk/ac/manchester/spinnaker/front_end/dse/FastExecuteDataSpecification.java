@@ -224,8 +224,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			if (!cores.isEmpty()) {
 				log.info("loading data onto {} cores on board", cores.size());
 			}
-			
-			HashMap<CoreToLoad, Integer> addresses = 
+
+			HashMap<CoreToLoad, Integer> addresses =
 			        new HashMap<CoreToLoad, Integer>();
 			for (CoreToLoad ctl : cores) {
 			    int start = malloc(ctl, ctl.sizeToWrite);
@@ -233,15 +233,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	            txrx.writeMemory(ctl.core, user0, start);
 	            addresses.put(ctl, start);
 			}
-			
+
 			for (CoreToLoad ctl : cores) {
 			    worker.loadCore(
-			            ctl, gathererForChip.get(board.location), 
+			            ctl, gathererForChip.get(board.location),
 			            addresses.get(ctl));
 			}
 		}
 	}
-	
+
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
             throws IOException, ProcessException {
         return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
@@ -451,14 +451,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						written += writeRegion(
 						        ctl.core, r, r.getRegionBase(), gather);
 						if (SPINNAKER_COMPARE_UPLOAD != null) {
-							ByteBuffer readBack =txrx.readMemory(
+							ByteBuffer readBack = txrx.readMemory(
 							        ctl.core, r.getRegionBase(),
 							        r.getRegionData().remaining());
 							compareBuffers(r.getRegionData(), readBack);
 						}
 					}
 				}
-				
+
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
