@@ -668,7 +668,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							throw e;
 						}
 						if (seqNums.isEmpty()) {
-							log.info("full timeout; resending initial packets");
+							log.info("full timeout; resending initial "
+							        + "packets for stream with trasnaction "
+							        + "id {}", transactionId);
 							continue outerLoop;
 						}
 						retransmitMissingPackets(
