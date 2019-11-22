@@ -134,7 +134,7 @@ public class BasicExecutor implements AutoCloseable {
 			// Combine the possibly multiple exceptions into one
 			Exception ex = null;
 			List<Future<Exception>> tasks;
-			synchronized(this) {
+			synchronized (this) {
 				tasks = this.tasks;
 				this.tasks = null;
 			}

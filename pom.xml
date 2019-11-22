@@ -427,7 +427,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<id>SupportJDK9AndLater</id>
+			<id>JavadocSupportJDK9AndLater</id>
 			<activation>
 				<jdk>[1.9,)</jdk>
 			</activation>
@@ -440,6 +440,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<additionalOptions>
 									<additionalOption>-html5</additionalOption>
 								</additionalOptions>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>JavadocSupportJDK8</id>
+			<!-- work around a stupid JDK bug -->
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<configuration>
+								<doclint>none</doclint>
 							</configuration>
 						</plugin>
 					</plugins>

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Data specification generator and executor.
- * The main class here is {@link Executor}.
+ * Data specification generator and executor. The main class here is
+ * {@link uk.ac.manchester.spinnaker.data_spec.Executor Executor}.
  */
 package uk.ac.manchester.spinnaker.data_spec;
