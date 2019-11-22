@@ -109,13 +109,16 @@ public class BasicExecutor implements AutoCloseable {
 	 * @author Donal Fellows
 	 */
 	public static final class Tasks {
-		private final List<Future<Exception>> tasks;
+		private List<Future<Exception>> tasks;
 
 		private Tasks() {
 			tasks = new ArrayList<>();
 		}
 
-		private void add(Future<Exception> task) {
+		private synchronized void add(Future<Exception> task) {
+			if (tasks == null) {
+				throw new IllegalStateException("tasks already awaited");
+			}
 			tasks.add(task);
 		}
 
@@ -130,6 +133,14 @@ public class BasicExecutor implements AutoCloseable {
 		public void awaitAndCombineExceptions() throws Exception {
 			// Combine the possibly multiple exceptions into one
 			Exception ex = null;
+			List<Future<Exception>> tasks;
+			synchronized(this) {
+				tasks = this.tasks;
+				this.tasks = null;
+			}
+			if (tasks == null) {
+				throw new IllegalStateException("tasks already awaited");
+			}
 			for (Future<Exception> f : tasks) {
 				Exception e = f.get();
 				if (e != null) {
