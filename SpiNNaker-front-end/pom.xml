@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>5.0.1-SNAPSHOT</version>
+		<version>5.1.0</version>
 	</parent>
 	<artifactId>SpiNNaker-front-end</artifactId>
 	<properties>
