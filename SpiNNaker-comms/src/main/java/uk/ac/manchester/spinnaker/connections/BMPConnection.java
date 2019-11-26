@@ -29,7 +29,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
-
 /**
  * A connection for talking to one or more Board Management Processors (BMPs). A
  * particular connection can only talk to the BMPs of a single frame of a single
