@@ -457,7 +457,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						"generated {} bytes to load onto {} into memory "
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
-				int written = writeHeader(ctl.core, executor, start);
+				int written = writeHeader(ctl.core, executor, start, gather);
 
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
@@ -508,8 +508,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
 		 */
-		private int writeHeader(HasCoreLocation core, Executor executor,
-				int startAddress) throws IOException, ProcessException {
+		private int writeHeader(CoreLocation core, Executor executor,
+				int startAddress, Gather gather) throws IOException, ProcessException {
 			ByteBuffer b =
 					allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
 							.order(LITTLE_ENDIAN);
@@ -519,7 +519,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			b.flip();
 			int written = b.remaining();
-			txrx.writeMemory(core, startAddress, b);
+	        missingSequenceNumbers = new LinkedList<>();
+	        long start = nanoTime();
+			fastWrite(core, startAddress, b, gather);
+			long end = nanoTime();
+            if (writeReports) {
+                writeReport(core, end - start, b.limit(), startAddress,
+                        missingSequenceNumbers);
+            }
+            missingSequenceNumbers = null;
 			return written;
 		}
 
