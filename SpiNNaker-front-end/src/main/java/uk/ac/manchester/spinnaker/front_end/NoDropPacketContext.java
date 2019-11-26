@@ -165,7 +165,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 */
 	@Override
 	public void close() throws IOException, ProcessException {
-		
+
 	    log.info("switching board at {} to standard mode", firstChip);
 		quietlySetTemporaryTimeouts();
 
@@ -189,7 +189,6 @@ public class NoDropPacketContext implements AutoCloseable {
 		} catch (Exception e) {
 			log.error("couldn't get core state", e);
 		}
-		
 	}
 
 	/**

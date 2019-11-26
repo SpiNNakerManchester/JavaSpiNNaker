@@ -70,7 +70,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -231,7 +230,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
             txrx.writeMemory(ctl.core, user0, start);
             addresses.put(ctl, start);
 		}
-		
+
         NoDropPacketContext context = worker.dontDropPackets();
         SystemRouterTableContext routers = worker.systemRouterTables();
         try {
@@ -240,15 +239,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
     		            ctl, gathererForChip.get(board.location),
     		            addresses.get(ctl));
     		}
-        }
-        catch (Exception e) {
+    	} catch (Exception e) {
             log.info("shit went wrong. error is {}", e);
             worker.close();
             context.close();
             routers.close();
             throw e;
         }
-        
+
 		log.info("finished sending data in for this board");
         worker.close();
         context.close();
@@ -509,7 +507,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeHeader(CoreLocation core, Executor executor,
-				int startAddress, Gather gather) throws IOException, ProcessException {
+				int startAddress, Gather gather)
+				        throws IOException, ProcessException {
 			ByteBuffer b =
 					allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
 							.order(LITTLE_ENDIAN);
