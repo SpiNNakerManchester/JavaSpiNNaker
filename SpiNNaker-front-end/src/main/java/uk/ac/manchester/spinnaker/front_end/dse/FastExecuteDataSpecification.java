@@ -217,29 +217,42 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
 			throws IOException, ProcessException, DataSpecificationException,
 			StorageException {
-		try (BoardWorker worker = new BoardWorker(board, storage, bar);
-				SystemRouterTableContext routers = worker.systemRouterTables();
-				NoDropPacketContext context = worker.dontDropPackets()) {
-			List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
-			if (!cores.isEmpty()) {
-				log.info("loading data onto {} cores on board", cores.size());
-			}
-
-			HashMap<CoreToLoad, Integer> addresses =
-			        new HashMap<CoreToLoad, Integer>();
-			for (CoreToLoad ctl : cores) {
-			    int start = malloc(ctl, ctl.sizeToWrite);
-	            int user0 = txrx.getUser0RegisterAddress(ctl.core);
-	            txrx.writeMemory(ctl.core, user0, start);
-	            addresses.put(ctl, start);
-			}
-
-			for (CoreToLoad ctl : cores) {
-			    worker.loadCore(
-			            ctl, gathererForChip.get(board.location),
-			            addresses.get(ctl));
-			}
+		List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
+		if (!cores.isEmpty()) {
+			log.info("loading data onto {} cores on board", cores.size());
 		}
+        BoardWorker worker = new BoardWorker(board, storage, bar);
+
+		HashMap<CoreToLoad, Integer> addresses =
+		        new HashMap<CoreToLoad, Integer>();
+		for (CoreToLoad ctl : cores) {
+		    int start = malloc(ctl, ctl.sizeToWrite);
+            int user0 = txrx.getUser0RegisterAddress(ctl.core);
+            txrx.writeMemory(ctl.core, user0, start);
+            addresses.put(ctl, start);
+		}
+		
+        NoDropPacketContext context = worker.dontDropPackets();
+        SystemRouterTableContext routers = worker.systemRouterTables();
+        try {
+    		for (CoreToLoad ctl : cores) {
+    		    worker.loadCore(
+    		            ctl, gathererForChip.get(board.location),
+    		            addresses.get(ctl));
+    		}
+        }
+        catch (Exception e) {
+            log.info("shit went wrong. error is {}", e);
+            worker.close();
+            context.close();
+            routers.close();
+            throw e;
+        }
+        
+		log.info("finished sending data in for this board");
+        worker.close();
+        context.close();
+        routers.close();
 	}
 
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
@@ -403,8 +416,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		@Override
 		public void close() throws IOException {
-			connection.close();
 			logContext.close();
+			connection.close();
 		}
 
 		/**

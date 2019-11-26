@@ -190,6 +190,7 @@ public class SCPRequestPipeline {
 				now = nanoTime();
 			}
 			nextSendTime = now + INTER_SEND_INTERVAL_NS;
+			
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 
@@ -367,6 +368,7 @@ public class SCPRequestPipeline {
 		// Update the packet and store required details
 		int sequence = toUnsignedInt(request.scpRequestHeader
 				.issueSequenceNumber(requests.keySet()));
+		log.debug("sending message with sequence {}", sequence);
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
 		if (requests.put(sequence, req) != null) {
