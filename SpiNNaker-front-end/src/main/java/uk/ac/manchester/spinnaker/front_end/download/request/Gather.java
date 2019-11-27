@@ -32,7 +32,6 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
-
     /** The x value of the core this placement is on. */
     private final int x;
     /** The y value of the core this placement is on. */
@@ -94,16 +93,13 @@ public class Gather implements HasCoreLocation {
         return p;
     }
 
-    public int getTransactionId() {
-    	return transactionId;
-    }
-
-    /** sets the transaction id to a new value.
-     * @param newTransactionId
-     *          the new value to set the transaction id to.
-     */
-    public void setTransactionId(int newTransactionId) {
-        transactionId = newTransactionId;
+    /**
+	 * Sets the transaction ID to a new value and returns that new value.
+	 *
+	 * @return The new transaction ID.
+	 */
+    public int getNextTransactionId() {
+		return ++transactionId;
     }
 
     /**
