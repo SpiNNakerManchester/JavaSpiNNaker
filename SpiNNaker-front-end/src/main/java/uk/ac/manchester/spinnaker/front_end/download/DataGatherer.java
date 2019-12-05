@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.dse.SystemRouterTableContext;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -177,11 +178,16 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		}
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
-		Map<ChipLocation, List<Region>> smallWork =
-				new DefaultMap<>(ArrayList::new);
-		try (NoDropPacketContext p = new NoDropPacketContext(txrx,
-				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
-				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
+		try (
+		        SystemRouterTableContext s = new SystemRouterTableContext(
+		                txrx, 
+		                gatherers.stream().flatMap(g -> g.getMonitors().stream()));
+		        NoDropPacketContext p = new NoDropPacketContext(
+        		        txrx,
+        				gatherers.stream().flatMap(g -> g.getMonitors().stream()), 
+        				        gatherers.stream());
+				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)
+				      ) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
 			/*
@@ -191,23 +197,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			// CHECKSTYLE:OFF
 			parallel(work.keySet().stream()
 					.map(key -> () -> fastDownload(work.get(key),
-							conns.get(key), smallWork, bar)));
+							conns.get(key), bar)));
 			// CHECKSTYLE:ON
 		} finally {
 			log.info("shutting down high-speed download connections");
 			for (GatherDownloadConnection c : conns.values()) {
 				c.close();
 			}
-		}
-		log.info("launching {} parallel low-speed download tasks",
-				smallWork.size());
-		try (Progress bar = new Progress(
-				smallWork.values().stream().mapToInt(List::size).sum(),
-				SLOW_LABEL)) {
-			// CHECKSTYLE:OFF
-			parallel(smallWork.values().stream()
-					.map(regions -> () -> slowDownload(regions, bar)));
-			// CHECKSTYLE:ON
 		}
 		return missCount;
 	}
@@ -375,11 +371,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *             If IO fails.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
+	 * @throws TimeoutException 
+	 * @throws ProcessException 
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn,
-			Map<ChipLocation, List<Region>> smallWork, Progress bar)
-			throws IOException, StorageException {
+			GatherDownloadConnection conn, Progress bar)
+			throws IOException, StorageException, TimeoutException, ProcessException {
 		/**
 		 * A class that manages how to postpone work for doing the slow way.
 		 * This is a little tricky because the order of download regions for a
@@ -388,122 +385,22 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *
 		 * @author Donal Fellows
 		 */
-		class PostponeControl {
-			boolean addToSmall = false;
-
-			boolean shouldPostpone(Region region) {
-				return addToSmall || (region.size < SMALL_RETRIEVE_THRESHOLD);
-			}
-
-			private void doPostpone(Region region) {
-				addToSmall = true;
-				synchronized (smallWork) {
-					smallWork.get(conn.getChip()).add(region);
-				}
-			}
-
-			/**
-			 * Postpone a region.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 */
-			void postpone(Region region) {
-				log.info("moving {} to low-speed download system", region);
-				doPostpone(region);
-			}
-
-			/**
-			 * Postpone a region.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 * @param reason
-			 *            Why it is being postponed.
-			 */
-			void postpone(Region region, String reason) {
-				log.info("moving {} to low-speed download system{}{}", region,
-						" due to ", reason);
-				doPostpone(region);
-			}
-
-			/**
-			 * Postpone a region because of a failure.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 * @param locus
-			 *            Where the failure was.
-			 * @param exn
-			 *            What the failure was.
-			 */
-			void postpone(Region region, String locus, Exception exn) {
-				log.info("moving {} to low-speed download system{}{}", region,
-						" due to failure in ", locus, exn);
-				doPostpone(region);
-			}
-		}
 
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
 			for (WorkItems item : work) {
 				for (List<Region> regionsOnCore : item.regions) {
-					/*
-					 * Once there's something too small, all subsequent
-					 * retrieves for that recording region have to be done the
-					 * same way to get the data in the DB in the right order.
-					 */
-					PostponeControl ctl = new PostponeControl();
 					for (Region region : regionsOnCore) {
-						try {
-							if (ctl.shouldPostpone(region)) {
-								ctl.postpone(region);
-							} else {
-								ByteBuffer data = dl.doDownload(
-										item.monitor.asCoreLocation(), region);
-								if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-									compareDownloadWithSCP(region, data);
-								}
-								storeData(region, data);
-							}
-						} catch (TimeoutException e) {
-							ctl.postpone(region, "timeout");
-						} catch (ProcessException e) {
-							ctl.postpone(region, "comparison code", e);
-						} finally {
-							bar.update();
+						ByteBuffer data = dl.doDownload(
+								item.monitor.asCoreLocation(), region);
+						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+							compareDownloadWithSCP(region, data);
 						}
+						storeData(region, data);
+						bar.update();
 					}
 				}
-			}
-		}
-	}
-
-	/**
-	 * Do the slow downloads for a particular board.
-	 *
-	 * @param regions
-	 *            The regions to be processed on that board. <em>The order may
-	 *            be significant.</em>
-	 * @param bar
-	 *            The progress bar.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If DB access goes wrong.
-	 */
-	private void slowDownload(List<Region> regions, Progress bar)
-			throws IOException, ProcessException, StorageException {
-		try (BoardLocal c = new BoardLocal(regions.get(0).core)) {
-			log.info("processing {} slow downloads", regions.size());
-			for (Region region : regions) {
-				log.info("processing slow download from {}", region);
-				storeData(region, txrx.readMemory(region.core.getScampCore(),
-						region.startAddress, region.size));
-				bar.update();
 			}
 		}
 	}

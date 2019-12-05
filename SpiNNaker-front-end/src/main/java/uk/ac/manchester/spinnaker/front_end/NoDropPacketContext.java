@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -43,7 +44,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * more than one board at a time or while anything other than data transfer is
  * being done.
  *
- * @author Donal Fellows
+ * @author Donal Fellows and Alan Stokes
  */
 public class NoDropPacketContext implements AutoCloseable {
 	private static final Logger log = getLogger(NoDropPacketContext.class);
@@ -51,6 +52,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	private final CoreSubsets monitorCores;
 	private final Transceiver txrx;
 	private final ChipLocation firstChip;
+	private final CoreSubsets gatherer;
 
 	/**
 	 * Standard short timeout for emergency routing.
@@ -68,12 +70,17 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @param monitorCores
 	 *            The extra monitor cores on the SpiNNaker system that control
 	 *            the routers.
+	 * @param gatherer
+	 *         The gatherer core on the SpiNNaker system that supports the 
+	 *         MC control api.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public NoDropPacketContext(Transceiver txrx, CoreSubsets monitorCores)
+	public NoDropPacketContext(
+	        Transceiver txrx, CoreSubsets monitorCores, 
+	        CoreSubsets gatherer)
 			throws IOException, ProcessException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
@@ -82,6 +89,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		CoreLocation firstCore = monitorCores.iterator().next();
 		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
+		this.gatherer = gatherer;
 		log.info(
 				"switching board at {} ({} monitor cores) to "
 						+ "non-drop mode (saved status: {})",
@@ -90,16 +98,36 @@ public class NoDropPacketContext implements AutoCloseable {
 			// Set to not inject dropped packets
 			txrx.setReinjection(monitorCores, false);
 			// Clear any outstanding packets from reinjection
-			txrx.clearReinjectionQueues(monitorCores);
+			txrx.clearReinjectionQueues(this.gatherer);
 			// Set time outs
-			txrx.setReinjectionEmergencyTimeout(monitorCores, SHORT_TIMEOUT);
-			txrx.setReinjectionTimeout(monitorCores, LONG_TIMEOUT);
+			txrx.setReinjectionEmergencyTimeout(this.gatherer, 
+			        SHORT_TIMEOUT);
+			txrx.setReinjectionTimeout(this.gatherer, LONG_TIMEOUT);
 		} catch (IOException | ProcessException e) {
 			log.error("failed to switch board at {} to non-drop mode",
 					firstChip, e);
 			throw e;
 		}
 	}
+	
+	   /**
+     * Create a no-drop-packets context.
+     *
+     * @param txrx
+     *            The transceiver to use for talking to SpiNNaker.
+     * @param monitorCoreLocations
+     *            The extra monitor cores on the SpiNNaker system that control
+     *            the routers.
+     * @throws IOException
+     *             If communications fail.
+     * @throws ProcessException
+     *             If SCAMP or an extra monitor rejects a message.
+     */
+    public NoDropPacketContext(Transceiver txrx,
+            CoreSubsets monitorCoreLocations, Gather gather)
+            throws IOException, ProcessException {
+        this(txrx, monitorCoreLocations, convertToCoreSubset(gather));
+    }
 
 	/**
 	 * Create a no-drop-packets context.
@@ -115,9 +143,11 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	public NoDropPacketContext(Transceiver txrx,
-			List<? extends HasCoreLocation> monitorCoreLocations)
+			List<? extends HasCoreLocation> monitorCoreLocations,
+			Gather gather)
 			throws IOException, ProcessException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations));
+		this(txrx, convertToCoreSubset(monitorCoreLocations), 
+		        convertToCoreSubset(gather));
 	}
 
 	/**
@@ -134,9 +164,11 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	public NoDropPacketContext(Transceiver txrx,
-			Stream<? extends HasCoreLocation> monitorCoreLocations)
+			Stream<? extends HasCoreLocation> monitorCoreLocations,
+			Stream<Gather> gather)
 			throws IOException, ProcessException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations));
+		this(txrx, convertToCoreSubset(monitorCoreLocations),
+		        convertToCoreSubset(gather));
 	}
 
 	private static CoreSubsets convertToCoreSubset(
@@ -147,11 +179,19 @@ public class NoDropPacketContext implements AutoCloseable {
 		}
 		return cores;
 	}
+	
+	private static CoreSubsets convertToCoreSubset(
+	        Gather gather) {
+	    CoreSubsets cores = new CoreSubsets();
+	    cores.addCore(gather.asCoreLocation());
+	    return cores;
+	}
 
 	private static CoreSubsets convertToCoreSubset(
 			Stream<? extends HasCoreLocation> coreLocations) {
 		CoreSubsets cores = new CoreSubsets();
-		coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
+		coreLocations.forEach(
+		        loc -> cores.addCore(loc.asCoreLocation()));
 		return cores;
 	}
 
@@ -171,8 +211,8 @@ public class NoDropPacketContext implements AutoCloseable {
 
 		try {
 			// Do the real reset
-			txrx.setReinjectionTimeout(monitorCores, lastStatus);
-			txrx.setReinjectionEmergencyTimeout(monitorCores, lastStatus);
+			txrx.setReinjectionTimeout(this.gatherer, lastStatus);
+			txrx.setReinjectionEmergencyTimeout(this.gatherer, lastStatus);
 			txrx.setReinjection(monitorCores, lastStatus);
 			log.debug("switched board at {} to standard mode", firstChip);
 			return;
@@ -198,11 +238,11 @@ public class NoDropPacketContext implements AutoCloseable {
 	 */
 	private void quietlySetTemporaryTimeouts() {
 		try {
-			txrx.setReinjectionTimeout(monitorCores, TEMP_TIMEOUT);
+			txrx.setReinjectionTimeout(this.gatherer, TEMP_TIMEOUT);
 		} catch (Exception ignored) {
 		}
 		try {
-			txrx.setReinjectionEmergencyTimeout(monitorCores, ZERO_TIMEOUT);
+			txrx.setReinjectionEmergencyTimeout(this.gatherer, ZERO_TIMEOUT);
 		} catch (Exception ignored) {
 		}
 	}

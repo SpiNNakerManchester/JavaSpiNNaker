@@ -235,7 +235,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		SystemRouterTableContext routers = worker.systemRouterTables();
-		NoDropPacketContext context = worker.dontDropPackets();
+		NoDropPacketContext context = worker.dontDropPackets(
+		        gathererForChip.get(board.location));
 		try {
 			for (CoreToLoad ctl : cores) {
 				worker.loadCore(ctl, gathererForChip.get(board.location),
@@ -631,7 +632,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		/**
 		 * Put the board in don't-drop-packets mode.
-		 *
+		 * @param core
+		 *        The core location of the gatherer for the board to set 
+		 *        to don't drop packets.
 		 * @return An object that, when closed, will put the board back in
 		 *         standard mode.
 		 * @throws IOException
@@ -639,10 +642,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
 		 */
-		NoDropPacketContext dontDropPackets()
+		NoDropPacketContext dontDropPackets(Gather core)
 				throws IOException, ProcessException {
-			return new NoDropPacketContext(txrx,
-					monitorsForBoard.get(board.location));
+		    return new NoDropPacketContext(
+		        txrx, monitorsForBoard.get(board.location), core);
 		}
 
 		/**
