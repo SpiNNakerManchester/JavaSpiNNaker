@@ -633,7 +633,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		/**
 		 * Put the board in don't-drop-packets mode.
 		 * @param core
-		 *        The core location of the gatherer for the board to set 
+		 *        The core location of the gatherer for the board to set
 		 *        to don't drop packets.
 		 * @return An object that, when closed, will put the board back in
 		 *         standard mode.

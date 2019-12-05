@@ -23,7 +23,6 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.Constants.SMALL_RETRIEVE_THRESHOLD;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -66,7 +65,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -180,12 +178,14 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				createConnections(gatherers, work);
 		try (
 		        SystemRouterTableContext s = new SystemRouterTableContext(
-		                txrx, 
-		                gatherers.stream().flatMap(g -> g.getMonitors().stream()));
+		                txrx,
+		                gatherers.stream().flatMap(
+		                        g -> g.getMonitors().stream()));
 		        NoDropPacketContext p = new NoDropPacketContext(
         		        txrx,
-        				gatherers.stream().flatMap(g -> g.getMonitors().stream()), 
-        				        gatherers.stream());
+        				gatherers.stream().flatMap(
+        				        g -> g.getMonitors().stream()),
+        				gatherers.stream());
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)
 				      ) {
 			log.info("launching {} parallel high-speed download tasks",
@@ -199,6 +199,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 					.map(key -> () -> fastDownload(work.get(key),
 							conns.get(key), bar)));
 			// CHECKSTYLE:ON
+		} catch (Exception e) {
+		    log.info("failed to read all data correctly. shutting down");
+		    for (GatherDownloadConnection c : conns.values()) {
+                c.close();
+            }
+		    throw e;
 		} finally {
 			log.info("shutting down high-speed download connections");
 			for (GatherDownloadConnection c : conns.values()) {
@@ -371,12 +377,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *             If IO fails.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
-	 * @throws TimeoutException 
-	 * @throws ProcessException 
+	 * @throws TimeoutException
+	 * @throws ProcessException
 	 */
 	private void fastDownload(List<WorkItems> work,
 			GatherDownloadConnection conn, Progress bar)
-			throws IOException, StorageException, TimeoutException, ProcessException {
+			throws IOException, StorageException, TimeoutException,
+			ProcessException {
 		/**
 		 * A class that manages how to postpone work for doing the slow way.
 		 * This is a little tricky because the order of download regions for a

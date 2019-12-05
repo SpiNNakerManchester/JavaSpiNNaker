@@ -71,7 +71,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *            The extra monitor cores on the SpiNNaker system that control
 	 *            the routers.
 	 * @param gatherer
-	 *         The gatherer core on the SpiNNaker system that supports the 
+	 *         The gatherer core on the SpiNNaker system that supports the
 	 *         MC control api.
 	 * @throws IOException
 	 *             If communications fail.
@@ -79,7 +79,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	public NoDropPacketContext(
-	        Transceiver txrx, CoreSubsets monitorCores, 
+	        Transceiver txrx, CoreSubsets monitorCores,
 	        CoreSubsets gatherer)
 			throws IOException, ProcessException {
 		this.txrx = txrx;
@@ -100,7 +100,7 @@ public class NoDropPacketContext implements AutoCloseable {
 			// Clear any outstanding packets from reinjection
 			txrx.clearReinjectionQueues(this.gatherer);
 			// Set time outs
-			txrx.setReinjectionEmergencyTimeout(this.gatherer, 
+			txrx.setReinjectionEmergencyTimeout(this.gatherer,
 			        SHORT_TIMEOUT);
 			txrx.setReinjectionTimeout(this.gatherer, LONG_TIMEOUT);
 		} catch (IOException | ProcessException e) {
@@ -109,7 +109,7 @@ public class NoDropPacketContext implements AutoCloseable {
 			throw e;
 		}
 	}
-	
+
 	   /**
      * Create a no-drop-packets context.
      *
@@ -118,6 +118,9 @@ public class NoDropPacketContext implements AutoCloseable {
      * @param monitorCoreLocations
      *            The extra monitor cores on the SpiNNaker system that control
      *            the routers.
+     * @param gather
+     *          The gatherer for this context and linked to these
+     *           extra monitor cores.
      * @throws IOException
      *             If communications fail.
      * @throws ProcessException
@@ -137,6 +140,9 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @param monitorCoreLocations
 	 *            The extra monitor cores on the SpiNNaker system that control
 	 *            the routers.
+	 * @param gather
+     *          The gatherer for this context and linked to these
+     *           extra monitor cores.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws ProcessException
@@ -146,7 +152,7 @@ public class NoDropPacketContext implements AutoCloseable {
 			List<? extends HasCoreLocation> monitorCoreLocations,
 			Gather gather)
 			throws IOException, ProcessException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations), 
+		this(txrx, convertToCoreSubset(monitorCoreLocations),
 		        convertToCoreSubset(gather));
 	}
 
@@ -158,6 +164,9 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @param monitorCoreLocations
 	 *            The extra monitor cores on the SpiNNaker system that control
 	 *            the routers.
+	 * @param gather
+     *          The gatherer for this context and linked to these
+     *           extra monitor cores.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws ProcessException
@@ -179,7 +188,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		}
 		return cores;
 	}
-	
+
 	private static CoreSubsets convertToCoreSubset(
 	        Gather gather) {
 	    CoreSubsets cores = new CoreSubsets();
