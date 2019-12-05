@@ -749,7 +749,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-							throw e;
+							log.error("ran out of attempts due to timeouts.");
+						    throw e;
 						}
 						if (seqNums.isEmpty()) {
 							log.info("full timeout; resending initial "
