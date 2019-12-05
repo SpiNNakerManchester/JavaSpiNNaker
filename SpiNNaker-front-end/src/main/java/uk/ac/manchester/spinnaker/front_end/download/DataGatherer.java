@@ -781,15 +781,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			List<Integer> missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
-			log.debug("missing sequence numbers: {}", missingSeqs);
-			if (missingSeqs.equals(lastRequested)) {
-				log.info(
-						"retransmission cycle for {} made no progress;"
-								+ " bailing out to slow transfer mode",
-						monitorCore);
-				throw new TimeoutException();
-			}
-			if (missingSeqs.size() >= lastRequested.size()) {
+			if (missingSeqs.size() > lastRequested.size()) {
 				log.warn("what is going on?");
 				log.warn("last:{}", lastRequested);
 				log.warn("this:{}", missingSeqs);
