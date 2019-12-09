@@ -95,7 +95,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
 	private static final String SPINNAKER_COMPARE_UPLOAD =
-			getProperty("spinnaker.compare.upload");
+	        getProperty("spinnaker.compare.upload");
 
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";

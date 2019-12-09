@@ -753,7 +753,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			maxSeqNum =
 					ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			expectedSeqNums = new BitSet(maxSeqNum);
-			expectedSeqNums.set(0, maxSeqNum - 1);
+			expectedSeqNums.set(0, maxSeqNum);
 			lastRequested = expectedSeqs();
 			received = false;
 			timeoutcount = 0;
