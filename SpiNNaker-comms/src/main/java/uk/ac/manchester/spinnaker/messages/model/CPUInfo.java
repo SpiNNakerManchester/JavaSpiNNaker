@@ -276,9 +276,9 @@ public class CPUInfo implements HasCoreLocation {
 	public int getUser(int index) {
 		return user[index];
 	}
-	
+
 	/**
-	 * returns a string rep of this CPU info
+	 * @return a string rep of this CPU info.
 	 */
 	public String toString() {
 	    return this.getStatusDescription();
