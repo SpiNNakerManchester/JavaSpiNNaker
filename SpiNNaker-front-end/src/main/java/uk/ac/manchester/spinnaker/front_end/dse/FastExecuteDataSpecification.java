@@ -620,7 +620,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
             GathererProtocol protocol = new GathererProtocol(core);
 
             log.info("Loading {} bytes of data to {} starting at {}",
-                data.remaining(), core, toHexString(toUnsignedLong(baseAddress)));
+                data.remaining(), core,
+                toHexString(toUnsignedLong(baseAddress)));
 
             outerLoop: while (true) {
                 // Do the initial blast of data
