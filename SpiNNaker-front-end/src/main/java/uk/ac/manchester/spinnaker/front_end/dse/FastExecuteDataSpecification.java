@@ -557,7 +557,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
             long end = nanoTime();
             if (writeReports) {
                 Object detail = missingSequenceNumbers;
-                if (written < VERY_SMALL_WRITE_THRESHOLD) {
+                if (written <= VERY_SMALL_WRITE_THRESHOLD) {
                     detail = "written via SCP";
                 }
                 writeReport(core, end - start, data.limit(), baseAddress,
