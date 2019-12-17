@@ -806,7 +806,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			List<Integer> missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
-			log.debug("missing sequence numbers: {}", missingSeqs);
+			log.info("missing sequence numbers: {}", missingSeqs);
 			if (missingSeqs.size() > lastRequested.size()) {
 				log.warn("what is going on?");
 				log.warn("last:{}", lastRequested);
