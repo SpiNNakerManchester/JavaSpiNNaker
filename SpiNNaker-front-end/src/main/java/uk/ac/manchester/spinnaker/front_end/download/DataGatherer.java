@@ -400,34 +400,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		}
 	}
 
-	/**
-	 * Do the slow downloads for a particular board.
-	 *
-	 * @param regions
-	 *            The regions to be processed on that board. <em>The order may
-	 *            be significant.</em>
-	 * @param bar
-	 *            The progress bar.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If DB access goes wrong.
-	 */
-	private void slowDownload(List<Region> regions, Progress bar)
-			throws IOException, ProcessException, StorageException {
-		try (BoardLocal c = new BoardLocal(regions.get(0).core)) {
-			log.info("processing {} slow downloads", regions.size());
-			for (Region region : regions) {
-				log.info("processing slow download from {}", region);
-				storeData(region, txrx.readMemory(region.core.getScampCore(),
-						region.startAddress, region.size));
-				bar.update();
-			}
-		}
-	}
-
 	private void sanityCheck(List<Gather> gatherers) {
 		ConnectionSelector<?> sel = txrx.getScampConnectionSelector();
 		MostDirectConnectionSelector<?> s = null;
