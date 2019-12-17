@@ -561,13 +561,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return r;
 	}
 
-	public void stateOfSelector() throws IOException {
-		SelectionKey key = selectionKeyFactory.get();
-		int result = key.selector().selectNow();
-		log.warn("state check: select={}, valid={}, readable={}", result,
-				key.isValid(), key.isValid() && key.isReadable());
-	}
-
 	/**
 	 * Sends a port trigger message using a connection to (hopefully) open a
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
