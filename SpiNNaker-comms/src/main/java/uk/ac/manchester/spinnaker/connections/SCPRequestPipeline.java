@@ -94,7 +94,7 @@ public class SCPRequestPipeline {
 	/**
 	 * How long to wait between retries, in milliseconds.
 	 */
-	public static final int RETRY_DELAY_MS = 100;
+	public static final int RETRY_DELAY_MS = 1;
 	private static final String REASON_TIMEOUT = "timeout";
 	/**
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
@@ -426,9 +426,9 @@ public class SCPRequestPipeline {
 		if (req == null) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
-			log.debug("current waiting on requests with seq's ");
+			log.info("current waiting on requests with seq's ");
 			for (int seq : requests.keySet()) {
-			    log.debug("{}", seq);
+			    log.info("{}", seq);
 			}
 			return;
 		}
@@ -436,13 +436,12 @@ public class SCPRequestPipeline {
 		// If the response can be retried, retry it
 		if (msg.isRetriable()) {
 			try {
-				sleep(RETRY_DELAY_MS);
 				resend(req, msg.getResult(), msg.getSequenceNumber());
 				numRetryCodeResent++;
 			} catch (SocketTimeoutException e) {
 				throw e;
 			} catch (Exception e) {
-				log.debug("throwing away request {} coz of {}", msg.getSequenceNumber(), e);
+				log.info("throwing away request {} coz of {}", msg.getSequenceNumber(), e);
 			    req.handleError(e);
 				msg.removeRequest(requests);
 			}
@@ -465,7 +464,7 @@ public class SCPRequestPipeline {
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 		for (int seq : new ArrayList<>(requests.keySet())) {
-		    log.debug("resending seq {}", seq);
+		    log.info("resending seq {}", seq);
 		    Request<?> req = requests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
@@ -476,12 +475,12 @@ public class SCPRequestPipeline {
 			try {
 			    resend(req, REASON_TIMEOUT, seq);
 			} catch (Exception e) {
-				log.debug("removing seq {}", seq);
+				log.info("removing seq {}", seq);
 			    req.handleError(e);
 				toRemove.set(seq);
 			}
 		}
-		log.debug("finish resending");
+		log.info("finish resending");
 
 		toRemove.stream().forEach(requests::remove);
 	}

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
