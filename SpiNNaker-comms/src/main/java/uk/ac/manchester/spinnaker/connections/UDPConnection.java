@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
@@ -549,17 +548,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
             log.debug("wait:{}:{}:{}", result, key.isValid(),
                     key.isValid() && key.isReadable());
         }
-		
+
 		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;
-	}
-	
-	public void stateOfSelector() throws IOException {
-	    SelectionKey key = selectionKeyFactory.get();
-	    int result = key.selector().selectNow();
-	    log.warn("wait:{}:{}:{}", result, key.isValid(),
-                key.isValid() && key.isReadable());
 	}
 
 	/**

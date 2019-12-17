@@ -100,7 +100,7 @@ public class SCPRequestPipeline {
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
 	private static final int INTER_SEND_INTERVAL_NS = 60000;
-	
+
 	/** The default for the timeout (in ms). */
 	public static final int SCP_TIMEOUT;
 
@@ -418,7 +418,9 @@ public class SCPRequestPipeline {
 		log.debug("waiting for message... timeout of {}", packetTimeout);
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
 		if (log.isDebugEnabled()) {
-			log.debug("received message {} with seq num {}", msg.getResult(), msg.getSequenceNumber());
+			log.debug(
+			        "received message {} with seq num {}",
+			        msg.getResult(), msg.getSequenceNumber());
 		}
 		Request<?> req = msg.pickRequest(requests);
 
@@ -441,7 +443,9 @@ public class SCPRequestPipeline {
 			} catch (SocketTimeoutException e) {
 				throw e;
 			} catch (Exception e) {
-				log.info("throwing away request {} coz of {}", msg.getSequenceNumber(), e);
+				log.info(
+				        "throwing away request {} coz of {}",
+				        msg.getSequenceNumber(), e);
 			    req.handleError(e);
 				msg.removeRequest(requests);
 			}
@@ -485,7 +489,7 @@ public class SCPRequestPipeline {
 		toRemove.stream().forEach(requests::remove);
 	}
 
-	private void resend(Request<?> req, Object reason, int seq) 
+	private void resend(Request<?> req, Object reason, int seq)
 	        throws IOException, InterruptedException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
@@ -518,7 +522,8 @@ public class SCPRequestPipeline {
 		 *            The length of timeout, in milliseconds.
 		 */
 		SendTimedOutException(Request<?> req, int timeout, int seqNum) {
-			super(format("Operation %s timed out after %f seconds with seq num %d",
+			super(format(
+			        "Operation %s timed out after %f seconds with seq num %d",
 					req.getCommand(), timeout / (double) MSEC_PER_SEC, seqNum));
 		}
 	}
