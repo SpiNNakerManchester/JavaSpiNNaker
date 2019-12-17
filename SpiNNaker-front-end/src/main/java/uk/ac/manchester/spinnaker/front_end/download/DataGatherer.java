@@ -674,6 +674,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = expectedSeqs();
 			received = false;
 			timeoutcount = 0;
+			log.info(
+			        "extracting data from {} with size {}", 
+			        region.startAddress, region.size);
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			try {
 				boolean finished;
