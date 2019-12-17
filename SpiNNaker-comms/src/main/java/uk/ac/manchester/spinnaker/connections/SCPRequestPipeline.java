@@ -501,7 +501,8 @@ public class SCPRequestPipeline {
 			throw new SendFailedException(req, numRetries);
 		}
 
-		// If the request can be retried, retry it
+		// If the request can be retried, retry it, sleep for 1ms seems 
+		// to protect against weird errors. So don't remove this sleep. 
 		sleep(RETRY_DELAY_MS);
 		req.resend(reason);
 		numResent++;
