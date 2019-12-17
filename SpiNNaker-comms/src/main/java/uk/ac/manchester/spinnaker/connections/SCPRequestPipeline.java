@@ -100,6 +100,7 @@ public class SCPRequestPipeline {
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
 	private static final int INTER_SEND_INTERVAL_NS = 60000;
+	
 	/** The default for the timeout (in ms). */
 	public static final int SCP_TIMEOUT;
 
@@ -414,10 +415,10 @@ public class SCPRequestPipeline {
 
 	private void singleRetrieve() throws IOException {
 		// Receive the next response
-		log.debug("waiting for message...");
+		log.debug("waiting for message... timeout of {}", packetTimeout);
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
 		if (log.isDebugEnabled()) {
-			log.debug("received message {}", msg.getResult());
+			log.debug("received message {} with seq num {}", msg.getResult(), msg.getSequenceNumber());
 		}
 		Request<?> req = msg.pickRequest(requests);
 
@@ -425,6 +426,10 @@ public class SCPRequestPipeline {
 		if (req == null) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
+			log.debug("current waiting on requests with seq's ");
+			for (int seq : requests.keySet()) {
+			    log.debug("{}", seq);
+			}
 			return;
 		}
 
@@ -432,12 +437,13 @@ public class SCPRequestPipeline {
 		if (msg.isRetriable()) {
 			try {
 				sleep(RETRY_DELAY_MS);
-				resend(req, msg.getResult());
+				resend(req, msg.getResult(), msg.getSequenceNumber());
 				numRetryCodeResent++;
 			} catch (SocketTimeoutException e) {
 				throw e;
 			} catch (Exception e) {
-				req.handleError(e);
+				log.debug("throwing away request {} coz of {}", msg.getSequenceNumber(), e);
+			    req.handleError(e);
 				msg.removeRequest(requests);
 			}
 		} else {
@@ -459,7 +465,8 @@ public class SCPRequestPipeline {
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 		for (int seq : new ArrayList<>(requests.keySet())) {
-			Request<?> req = requests.get(seq);
+		    log.debug("resending seq {}", seq);
+		    Request<?> req = requests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
@@ -467,21 +474,24 @@ public class SCPRequestPipeline {
 			}
 
 			try {
-				resend(req, REASON_TIMEOUT);
+			    resend(req, REASON_TIMEOUT, seq);
 			} catch (Exception e) {
-				req.handleError(e);
+				log.debug("removing seq {}", seq);
+			    req.handleError(e);
 				toRemove.set(seq);
 			}
 		}
+		log.debug("finish resending");
 
 		toRemove.stream().forEach(requests::remove);
 	}
 
-	private void resend(Request<?> req, Object reason) throws IOException {
+	private void resend(Request<?> req, Object reason, int seq) 
+	        throws IOException, InterruptedException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
 			if (req.allTimeoutFailures()) {
-				throw new SendTimedOutException(req, packetTimeout);
+				throw new SendTimedOutException(req, packetTimeout, seq);
 			}
 
 			// Report any other exception
@@ -489,6 +499,7 @@ public class SCPRequestPipeline {
 		}
 
 		// If the request can be retried, retry it
+		sleep(RETRY_DELAY_MS);
 		req.resend(reason);
 		numResent++;
 	}
@@ -507,9 +518,9 @@ public class SCPRequestPipeline {
 		 * @param timeout
 		 *            The length of timeout, in milliseconds.
 		 */
-		SendTimedOutException(Request<?> req, int timeout) {
-			super(format("Operation %s timed out after %f seconds",
-					req.getCommand(), timeout / (double) MSEC_PER_SEC));
+		SendTimedOutException(Request<?> req, int timeout, int seqNum) {
+			super(format("Operation %s timed out after %f seconds with seq num %d",
+					req.getCommand(), timeout / (double) MSEC_PER_SEC, seqNum));
 		}
 	}
 

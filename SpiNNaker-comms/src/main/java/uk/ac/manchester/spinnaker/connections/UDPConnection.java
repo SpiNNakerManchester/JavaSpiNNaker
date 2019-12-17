@@ -519,7 +519,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	@Override
 	public final boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
-			return false;
+			log.debug("connection closed, so not ready to receive");
+		    return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
@@ -542,13 +543,22 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		} else {
 			result = key.selector().select(timeout);
 		}
+
 		if (log.isDebugEnabled()) {
-			log.debug("wait:{}:{}:{}", result, key.isValid(),
-					key.isValid() && key.isReadable());
-		}
+            log.debug("wait:{}:{}:{}", result, key.isValid(),
+                    key.isValid() && key.isReadable());
+        }
+		
 		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;
+	}
+	
+	public void stateOfSelector() throws IOException {
+	    SelectionKey key = selectionKeyFactory.get();
+	    int result = key.selector().selectNow();
+	    log.warn("wait:{}:{}:{}", result, key.isValid(),
+                key.isValid() && key.isReadable());
 	}
 
 	/**
