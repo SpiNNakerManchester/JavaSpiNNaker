@@ -684,14 +684,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 */
 		private boolean processOnePacket(int timeout)
 				throws IOException, TimeoutException {
-		    if (!conn.isReadyToReceive()) {
-		        log.error("failed to be ready to receive.");
-		    }
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
 				return processData(p);
 			}
+			log.error("failed to be ready to receive.");
 			return processTimeout();
 		}
 
