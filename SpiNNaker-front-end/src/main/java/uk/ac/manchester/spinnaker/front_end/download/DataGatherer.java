@@ -497,7 +497,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
 				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
 				TRAFFIC_ID);
-		txrx.setIPTag(tag);
+		txrx.setIPTag(tag, true);
 		log.info("reconfigured {} to {}", iptag, tag);
 		if (log.isDebugEnabled()) {
 			log.debug("all tags for board: {}", txrx.getTags(
