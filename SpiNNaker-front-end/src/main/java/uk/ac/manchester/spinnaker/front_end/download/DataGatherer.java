@@ -689,7 +689,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				received = true;
 				return processData(p);
 			}
-			log.error("failed to be ready to receive.");
+			log.error(
+			        "failed to be ready to receive on socket {}:{}.", 
+			        conn.getLocalPort(), conn.getLocalIPAddress());
 			return processTimeout();
 		}
 
