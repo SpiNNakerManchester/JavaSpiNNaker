@@ -499,10 +499,10 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				TRAFFIC_ID);
 		txrx.setIPTag(tag, true);
 		log.info("reconfigured {} to {}", iptag, tag);
-		if (log.isDebugEnabled()) {
-			log.debug("all tags for board: {}", txrx.getTags(
+		
+			log.info("all tags for board: {}", txrx.getTags(
 					txrx.locateSpinnakerConnection(tag.getBoardAddress())));
-		}
+		
 	}
 
 	/**
