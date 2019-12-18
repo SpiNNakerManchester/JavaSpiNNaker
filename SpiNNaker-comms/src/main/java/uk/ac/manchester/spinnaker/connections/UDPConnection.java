@@ -516,18 +516,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return !channel.isOpen();
 	}
 
-	private SelectionKey remake(SelectionKey stale) {
-		log.info("remaking selection key");
-		selectionKeyFactory.remove();
-		stale.cancel();
-		SelectionKey key = selectionKeyFactory.get();
-		if (!key.isValid()) {
-			throw new IllegalStateException(
-					"newly manufactured selection key is invalid");
-		}
-		return key;
-	}
-
 	@Override
 	public final boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
@@ -537,7 +525,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
-			key = remake(key);
+	         selectionKeyFactory.remove();
+	            key = selectionKeyFactory.get();    
+	            if (!key.isValid()) {   
+	                throw new IllegalStateException(    
+	                        "newly manufactured selection key is invalid");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
