@@ -525,11 +525,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
-	         selectionKeyFactory.remove();
-	            key = selectionKeyFactory.get();    
-	            if (!key.isValid()) {   
-	                throw new IllegalStateException(    
-	                        "newly manufactured selection key is invalid");
+	        selectionKeyFactory.remove();
+            key = selectionKeyFactory.get();    
+            if (!key.isValid()) {   
+                throw new IllegalStateException(    
+                        "newly manufactured selection key is invalid");
+            }
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
