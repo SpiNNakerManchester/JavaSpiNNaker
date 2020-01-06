@@ -16,13 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
+import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -35,6 +39,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  */
 final class GatherDownloadConnection extends SDPConnection {
 	private long lastSend = 0L;
+	private static final Logger log = getLogger(GatherDownloadConnection.class);
 	/**
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
@@ -117,7 +122,8 @@ final class GatherDownloadConnection extends SDPConnection {
 			}
 			return b;
 		} catch (SocketTimeoutException ignored) {
-			return EMPTY_DATA;
+			log.info("received timeout");
+		    return EMPTY_DATA;
 		}
 	}
 }

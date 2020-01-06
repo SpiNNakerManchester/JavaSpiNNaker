@@ -35,6 +35,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
@@ -378,7 +380,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
-			Downloader dl = new Downloader(conn);
+			Downloader dl = new Downloader(conn, txrx);
 			for (WorkItems item : work) {
 				for (List<Region> regionsOnCore : item.regions) {
 					/*
@@ -584,6 +586,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 */
 	private final class Downloader {
 		private final GatherDownloadConnection conn;
+		private final Transceiver txrx;
 
 		/**
 		 * Whether a packet has previously been received on this connection
@@ -606,8 +609,10 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param connection
 		 *            The connection used to send messages.
 		 */
-		private Downloader(GatherDownloadConnection connection) {
+		private Downloader(GatherDownloadConnection connection, Transceiver txrx) {
 			conn = connection;
+			this.txrx = txrx;
+			
 		}
 
 		/**
@@ -681,17 +686,22 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
+		 * @throws ProcessException 
 		 */
 		private boolean processOnePacket(int timeout)
-				throws IOException, TimeoutException {
+				throws IOException, TimeoutException, ProcessException {
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
 				return processData(p);
 			}
 			log.error(
-			        "failed to be ready to receive on socket {}:{}.", 
+			        "failed to receive on socket {}:{}.", 
 			        conn.getLocalPort(), conn.getLocalIPAddress());
+			IPTag tag = this.txrx.getTag(conn.getChip(), 1);
+			log.info(
+			        "tag 1 ip is {} and port is {}", 
+			        tag.getIPAddress(), tag.getPort());
 			return processTimeout();
 		}
 
