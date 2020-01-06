@@ -270,7 +270,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			timeout = Integer.MAX_VALUE;
 		}
 		if (!receivable && !isReadyToReceive(timeout)) {
-			throw new SocketTimeoutException();
+			log.info("not ready to recieve");
+		    throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
