@@ -31,8 +31,13 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public class SDPConnection extends UDPConnection<SDPMessage>
 		implements SDPReceiver, SDPSender {
 	private ChipLocation chip;
-	/*
-	 * Special constructor used only in delegated connections.
+
+	/**
+	 * Create a connection that delegates actual communications to another
+	 * connection.
+	 *
+	 * @param connection
+	 *            The connection to delegate to.
 	 */
 	SDPConnection(SDPConnection connection) {
 		super(connection);
