@@ -31,14 +31,12 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public class SDPConnection extends UDPConnection<SDPMessage>
 		implements SDPReceiver, SDPSender {
 	private ChipLocation chip;
-	private final SDPConnection delegate;
 	/*
 	 * Special constructor used only in delegated connections.
 	 */
 	SDPConnection(SDPConnection connection) {
 		super(connection);
-		delegate = connection;
-		chip = delegate.chip;
+		chip = connection.chip;
 	}
 
 	/**
@@ -81,28 +79,18 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 			Integer localPort, InetAddress remoteHost, Integer remotePort)
 			throws IOException {
 		super(localHost, localPort, remoteHost, remotePort);
-		this.delegate = null;
 		this.chip = remoteChip.asChipLocation();
 	}
 
 	@Override
 	public void sendSDPMessage(SDPMessage sdpMessage) throws IOException {
-		if (delegate != null) {
-			delegate.send(sdpMessage.getMessageData(chip));
-		} else {
-			send(sdpMessage.getMessageData(chip));
-		}
+		send(sdpMessage.getMessageData(chip));
 	}
 
 	@Override
 	public SDPMessage receiveMessage(Integer timeout)
 			throws IOException, InterruptedIOException {
-		ByteBuffer buffer;
-		if (delegate != null) {
-			buffer = delegate.receive(timeout);
-		} else {
-			buffer = receive(timeout);
-		}
+		ByteBuffer buffer = receive(timeout);
 		buffer.getShort(); // SKIP TWO PADDING BYTES
 		return new SDPMessage(buffer);
 	}

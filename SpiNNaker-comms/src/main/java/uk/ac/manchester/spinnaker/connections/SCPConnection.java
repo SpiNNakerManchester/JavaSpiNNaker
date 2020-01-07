@@ -31,8 +31,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 /** A UDP connection to SC&amp;MP on the board. */
 public class SCPConnection extends SDPConnection
 		implements SCPSenderReceiver {
-	private final SDPConnection delegate;
-
 	/**
 	 * Create a connection to a particular instance of SCAMP.
 	 *
@@ -127,7 +125,6 @@ public class SCPConnection extends SDPConnection
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
 				"SCPConnection only meaningful with a real remote host"),
 				(remotePort == null) ? SCP_SCAMP_PORT : remotePort);
-		delegate = null;
 	}
 
 	/**
@@ -139,24 +136,16 @@ public class SCPConnection extends SDPConnection
 	 */
 	SCPConnection(SDPConnection connection) {
 		super(connection);
-		delegate = connection;
 	}
 
 	@Override
 	public SCPResultMessage receiveSCPResponse(Integer timeout)
 			throws IOException {
-		if (delegate != null) {
-			return new SCPResultMessage(delegate.receive(timeout));
-		}
 		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override
 	public void sendSCPRequest(SCPRequest<?> scpRequest) throws IOException {
-		if (delegate != null) {
-			delegate.send(getSCPData(scpRequest));
-		} else {
-			send(getSCPData(scpRequest));
-		}
+		send(getSCPData(scpRequest));
 	}
 }
