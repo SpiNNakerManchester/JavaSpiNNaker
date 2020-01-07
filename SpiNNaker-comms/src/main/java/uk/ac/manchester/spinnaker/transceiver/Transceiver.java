@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.DelegatingSCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
@@ -1922,7 +1923,7 @@ public class Transceiver extends UDPTransceiver
 		ChipLocation[] chip = new ChipLocation[1];
 		connections.forEach(c -> chip[0] = c.getChip());
 
-		try (SCPConnection s = new SCPConnection(connection)) {
+		try (SCPConnection s = new DelegatingSCPConnection(connection)) {
 			new SendSingleSCPCommandProcess(r -> s, this).execute(new IPTagSet(
 					chip[0], null, 0, tag.getTag(), tag.isStripSDP(), true));
 		}

@@ -137,7 +137,7 @@ public class SCPConnection extends SDPConnection
 	 * @param connection
 	 *            The connection to delegate to.
 	 */
-	public SCPConnection(SDPConnection connection) {
+	SCPConnection(SDPConnection connection) {
 		super(connection);
 		delegate = connection;
 	}
