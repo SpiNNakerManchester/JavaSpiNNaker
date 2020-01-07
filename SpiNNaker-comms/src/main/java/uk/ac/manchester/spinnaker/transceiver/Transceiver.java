@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.DelegatingSCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
@@ -1130,6 +1131,22 @@ public class Transceiver extends UDPTransceiver
 		return new SendSingleSCPCommandProcess(scpSelector, this);
 	}
 
+	/**
+	 * A neater way of getting a process for running simple SCP requests.
+	 *
+	 * @param connector
+	 *            The specific connector to talk to the board along.
+	 * @return The SCP runner process
+	 * @throws IOException If anything fails (unexpected).
+	 */
+	private SendSingleSCPCommandProcess simpleProcess(SDPConnection connector)
+			throws IOException {
+		return new SendSingleSCPCommandProcess(
+				new SingletonConnectionSelector<>(
+						new DelegatingSCPConnection(connector)),
+				this);
+	}
+
 	@Override
 	@ParallelUnsafe
 	public VersionInfo ensureBoardIsReady(int numRetries,
@@ -1874,8 +1891,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public void setIPTag(IPTag tag, boolean useSender)
-			throws IOException, ProcessException {
+	public void setIPTag(IPTag tag) throws IOException, ProcessException {
 		// Check that the tag has a port assigned
 		if (tag.getPort() == null) {
 			throw new IllegalArgumentException(
@@ -1894,23 +1910,35 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		for (SCPConnection connection : connections) {
-			IPTagSet tagSet;
-
-			if (useSender) {
-				tagSet = new IPTagSet(connection.getChip(), null, 0,
-						tag.getTag(), tag.isStripSDP(), true);
-			} else {
-				// Convert the host string
-				InetAddress host = tag.getIPAddress();
-				if (host == null || host.isAnyLocalAddress()
-						|| host.isLoopbackAddress()) {
-					host = connection.getLocalIPAddress();
-				}
-				tagSet = new IPTagSet(connection.getChip(), host.getAddress(),
-						tag.getPort(), tag.getTag(), tag.isStripSDP(), false);
+			// Convert the host string
+			InetAddress host = tag.getIPAddress();
+			if (host == null || host.isAnyLocalAddress()
+					|| host.isLoopbackAddress()) {
+				host = connection.getLocalIPAddress();
 			}
+			IPTagSet tagSet = new IPTagSet(connection.getChip(),
+					host.getAddress(), tag.getPort(), tag.getTag(),
+					tag.isStripSDP(), false);
 			simpleProcess().execute(tagSet);
 		}
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public void setIPTag(IPTag tag, SDPConnection connection)
+			throws IOException, ProcessException {
+		/*
+		 * Check that the connection is actually pointing to somewhere we know.
+		 */
+		Collection<SCPConnection> connections =
+				getConnectionList(connection.getRemoteIPAddress());
+		if (connections == null || connections.isEmpty()) {
+			throw new IllegalArgumentException(
+					"The given board address is not recognised");
+		}
+
+		simpleProcess(connection).execute(new IPTagSet(connection.getChip(),
+				null, 0, tag.getTag(), tag.isStripSDP(), true));
 	}
 
 	@Override
