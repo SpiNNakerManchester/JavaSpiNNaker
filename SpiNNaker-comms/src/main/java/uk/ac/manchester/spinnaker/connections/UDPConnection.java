@@ -127,7 +127,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 				return null;
 			}
 		});
-		if (log.isDebugEnabled()) {
+		if (channel != null && log.isDebugEnabled()) {
 			InetSocketAddress us = null;
 			try {
 				us = getLocalAddress();
