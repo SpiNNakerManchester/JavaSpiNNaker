@@ -61,7 +61,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -113,9 +112,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
-	/** The traffic ID for this protocol. */
-	private static final TrafficIdentifier TRAFFIC_ID =
-			TrafficIdentifier.getInstance("DATA_SPEED_UP");
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			System.getProperty("spinnaker.compare.download");
 
@@ -323,10 +319,10 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
-			
+
 			GatherDownloadConnection conn =
 					new GatherDownloadConnection(gathererChip, g.getIptag());
-			reconfigureIPtag(g.getIptag(), gathererChip, conn);
+			reconfigureIPtag(g.getIptag(), conn);
 			connections.put(gathererChip, conn);
 		}
 		return connections;
@@ -485,8 +481,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *
 	 * @param iptag
 	 *            The tag to configure
-	 * @param gathererLocation
-	 *            Where the tag is.
 	 * @param conn
 	 *            How to talk to the gatherer.
 	 * @throws IOException
@@ -494,21 +488,14 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
+	private void reconfigureIPtag(IPTag iptag,
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
-	      log.info("all tags for board before: {}", txrx.getTags(
-	                txrx.locateSpinnakerConnection(iptag.getBoardAddress())));
-	      
-	    IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
-				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
-				TRAFFIC_ID);
-		txrx.setIPTag(tag, true);
-		log.info("reconfigured {} to {}", iptag, tag);
-		
-		log.info("all tags for board after : {}", txrx.getTags(
-				txrx.locateSpinnakerConnection(tag.getBoardAddress())));
-		
+		txrx.setIPTag(iptag, conn);
+		if (log.isDebugEnabled()) {
+			log.debug("all tags for board: {}", txrx.getTags(
+					txrx.locateSpinnakerConnection(conn.getRemoteIPAddress())));
+		}
 	}
 
 	/**
@@ -616,7 +603,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		private Downloader(GatherDownloadConnection connection, Transceiver txrx) {
 			conn = connection;
 			this.txrx = txrx;
-			
+
 		}
 
 		/**
@@ -656,7 +643,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			received = false;
 			timeoutcount = 0;
 			log.info(
-			        "extracting data from {} with size {}", 
+			        "extracting data from {} with size {}",
 			        region.startAddress, region.size);
 			conn.sendStart(monitorCore, region.startAddress, region.size);
 			try {
@@ -690,7 +677,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
-		 * @throws ProcessException 
+		 * @throws ProcessException
 		 */
 		private boolean processOnePacket(int timeout)
 				throws IOException, TimeoutException, ProcessException {
@@ -700,11 +687,11 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				return processData(p);
 			}
 			log.error(
-			        "failed to receive on socket {}:{}.", 
+			        "failed to receive on socket {}:{}.",
 			        conn.getLocalPort(), conn.getLocalIPAddress());
 			IPTag tag = this.txrx.getTag(conn.getChip(), 1);
 			log.info(
-			        "tag {} ip is {} and port is {}", 
+			        "tag {} ip is {} and port is {}",
 			        tag.getTag(), tag.getIPAddress(), tag.getPort());
 			return processTimeout();
 		}

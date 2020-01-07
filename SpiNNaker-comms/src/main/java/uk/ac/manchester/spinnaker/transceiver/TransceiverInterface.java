@@ -3749,25 +3749,23 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void setIPTag(IPTag tag) throws IOException, ProcessException {
-		setIPTag(tag, false);
-	}
+	void setIPTag(IPTag tag) throws IOException, ProcessException;
 
 	/**
-	 * Set up an IP tag.
+	 * Set up an IP tag to deliver messages to a particular connection.
 	 *
 	 * @param tag
-	 *            The tag to set up; note its board address can be {@code null},
-	 *            in which case, the tag will be assigned to all boards.
-	 * @param useSender
-	 *            if the sender's IP address and port should be used.
+	 *            The tag to set up.
+	 * @param connection
+	 *            The connection to deliver messages to, which must already be
+	 *            set up to talk to the correct board.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	void setIPTag(IPTag tag, boolean useSender)
+	void setIPTag(IPTag tag, SDPConnection connection)
 			throws IOException, ProcessException;
 
 	/**
