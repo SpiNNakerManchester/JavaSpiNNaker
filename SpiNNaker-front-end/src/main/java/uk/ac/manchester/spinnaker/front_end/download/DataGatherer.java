@@ -59,7 +59,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -112,9 +111,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
-	/** The traffic ID for this protocol. */
-	private static final TrafficIdentifier TRAFFIC_ID =
-			TrafficIdentifier.getInstance("DATA_SPEED_UP");
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			System.getProperty("spinnaker.compare.download");
 
@@ -328,7 +324,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			}
 			GatherDownloadConnection conn =
 					new GatherDownloadConnection(gathererChip, g.getIptag());
-			reconfigureIPtag(g.getIptag(), gathererChip, conn);
+			reconfigureIPtag(g.getIptag(), conn);
 			connections.put(gathererChip, conn);
 		}
 		return connections;
@@ -590,8 +586,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *
 	 * @param iptag
 	 *            The tag to configure
-	 * @param gathererLocation
-	 *            Where the tag is.
 	 * @param conn
 	 *            How to talk to the gatherer.
 	 * @throws IOException
@@ -599,17 +593,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
+	private void reconfigureIPtag(IPTag iptag,
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
-		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
-				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
-				TRAFFIC_ID);
-		txrx.setIPTag(tag);
-		log.info("reconfigured {} to {}", iptag, tag);
+		txrx.setIPTag(iptag, conn);
 		if (log.isDebugEnabled()) {
 			log.debug("all tags for board: {}", txrx.getTags(
-					txrx.locateSpinnakerConnection(tag.getBoardAddress())));
+					txrx.locateSpinnakerConnection(conn.getRemoteIPAddress())));
 		}
 	}
 

@@ -83,6 +83,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private final DatagramChannel channel;
 	private boolean receivable;
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
+	private final UDPConnection<T> delegate;
+
+	UDPConnection(UDPConnection<T> connection) {
+		this.delegate = connection;
+		this.channel = null;
+		this.selectionKeyFactory = null;
+	}
 
 	/**
 	 * Main constructor, any argument of which could {@code null}.
@@ -114,6 +121,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
+		delegate = null;
 		SocketAddress local = createLocalAddress(localHost, localPort);
 		channel = DatagramChannel.open();
 		channel.bind(local);
@@ -152,10 +160,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (them == null) {
 				them = new InetSocketAddress((InetAddress) null, 0);
 			}
-       		if (log.isDebugEnabled()) {
-                log.debug("{} socket created ({} <--> {})",
-                        getClass().getName(), us, them);
-            }
+			if (log.isDebugEnabled()) {
+				log.debug("{} socket created ({} <--> {})",
+						getClass().getName(), us, them);
+			}
 		}
 	}
 
@@ -189,6 +197,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	/** @return The local IP address to which the connection is bound. */
 	@Override
 	public final InetAddress getLocalIPAddress() {
+		if (delegate != null) {
+			return delegate.getLocalIPAddress();
+		}
 		try {
 			return getLocalAddress().getAddress();
 		} catch (IOException e) {
@@ -199,6 +210,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	/** @return The local port to which the connection is bound. */
 	@Override
 	public final int getLocalPort() {
+		if (delegate != null) {
+			return delegate.getLocalPort();
+		}
 		try {
 			return getLocalAddress().getPort();
 		} catch (IOException e) {
@@ -212,6 +226,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	@Override
 	public final InetAddress getRemoteIPAddress() {
+		if (delegate != null) {
+			return delegate.getRemoteIPAddress();
+		}
 		try {
 			return getRemoteAddress().getAddress();
 		} catch (IOException e) {
@@ -225,6 +242,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	@Override
 	public final int getRemotePort() {
+		if (delegate != null) {
+			return delegate.getRemotePort();
+		}
 		try {
 			return getRemoteAddress().getPort();
 		} catch (IOException e) {
@@ -259,6 +279,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		if (delegate != null) {
+			return delegate.receive(timeout);
+		}
 		if (isClosed()) {
 			throw new EOFException();
 		}
@@ -312,6 +335,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		if (delegate != null) {
+			return delegate.receiveWithAddress(timeout);
+		}
 		if (isClosed()) {
 			throw new EOFException();
 		}
@@ -356,6 +382,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *             If there is an error sending the data
 	 */
 	private void doSend(ByteBuffer data) throws IOException {
+		if (delegate != null) {
+			delegate.doSend(data);
+			return;
+		}
 		if (!canSend) {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
@@ -447,6 +477,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
+		if (delegate != null) {
+			delegate.sendTo(data, address, port);
+			return;
+		}
 		if (!canSend) {
 			throw new IOException("Remote host address or port not set; "
 					+ "data cannot be sent with this connection");
@@ -467,29 +501,26 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	private void logSend(ByteBuffer data, SocketAddress addr) {
-		log.debug("sending data of length {} to {}", data.remaining(),
-				addr);
+		log.debug("sending data of length {} to {}", data.remaining(), addr);
 		byte[] bytes = new byte[data.remaining()];
 		data.duplicate().get(bytes);
-		log.debug("message data: {}",
-				IntStream.range(0, bytes.length)
-						.mapToObj(i -> hexbyte(bytes[i]))
-						.collect(Collectors.toList()));
+		log.debug("message data: {}", IntStream.range(0, bytes.length)
+				.mapToObj(i -> hexbyte(bytes[i])).collect(Collectors.toList()));
 	}
 
 	private void logRecv(ByteBuffer data, SocketAddress addr) {
-		log.debug("received data of length {} from {}", data.remaining(),
-				addr);
+		log.debug("received data of length {} from {}", data.remaining(), addr);
 		byte[] bytes = new byte[data.remaining()];
 		data.duplicate().get(bytes);
-		log.debug("message data: {}",
-				IntStream.range(0, bytes.length)
-						.mapToObj(i -> hexbyte(bytes[i]))
-						.collect(Collectors.toList()));
+		log.debug("message data: {}", IntStream.range(0, bytes.length)
+				.mapToObj(i -> hexbyte(bytes[i])).collect(Collectors.toList()));
 	}
 
 	@Override
 	public final boolean isConnected() {
+		if (delegate != null) {
+			return delegate.isConnected();
+		}
 		if (!canSend) {
 			return false;
 		}
@@ -503,6 +534,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public void close() throws IOException {
+		if (delegate != null) {
+			/*
+			 * When we're delegating, closing is a no-op; the underlying channel
+			 * has to be closed directly.
+			 */
+			return;
+		}
 		try {
 			channel.disconnect();
 		} catch (Exception e) {
@@ -513,11 +551,17 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public final boolean isClosed() {
+		if (delegate != null) {
+			return delegate.isClosed();
+		}
 		return !channel.isOpen();
 	}
 
 	@Override
 	public final boolean isReadyToReceive(Integer timeout) throws IOException {
+		if (delegate != null) {
+			return delegate.isReadyToReceive(timeout);
+		}
 		if (isClosed()) {
 			return false;
 		}
@@ -563,7 +607,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final void sendPortTriggerMessage(InetAddress host)
 			throws IOException {
-		/*
+		if (delegate != null) {
+			delegate.sendPortTriggerMessage(host);
+			return;
+		}
+ 		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
 		 * message, but then fail to send a response since the
@@ -577,6 +625,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public String toString() {
+		if (delegate != null) {
+			return delegate.toString();
+		}
 		InetSocketAddress la = null, ra = null;
 		try {
 			la = getLocalAddress();
