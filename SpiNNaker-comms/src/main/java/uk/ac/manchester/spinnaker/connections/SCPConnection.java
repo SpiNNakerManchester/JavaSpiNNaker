@@ -127,17 +127,6 @@ public class SCPConnection extends SDPConnection
 				(remotePort == null) ? SCP_SCAMP_PORT : remotePort);
 	}
 
-	/**
-	 * Create a connection that delegates actual communications to another
-	 * connection.
-	 *
-	 * @param connection
-	 *            The connection to delegate to.
-	 */
-	SCPConnection(SDPConnection connection) {
-		super(connection);
-	}
-
 	@Override
 	public SCPResultMessage receiveSCPResponse(Integer timeout)
 			throws IOException {

@@ -33,18 +33,6 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	private ChipLocation chip;
 
 	/**
-	 * Create a connection that delegates actual communications to another
-	 * connection.
-	 *
-	 * @param connection
-	 *            The connection to delegate to.
-	 */
-	SDPConnection(SDPConnection connection) {
-		super(connection);
-		chip = connection.chip;
-	}
-
-	/**
 	 * @param remoteChip
 	 *            Which chip are we talking to? This is not necessarily the chip
 	 *            that is connected to the Ethernet connector on the SpiNNaker

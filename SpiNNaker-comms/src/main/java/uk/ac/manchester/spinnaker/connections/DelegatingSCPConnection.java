@@ -16,6 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+
 /**
  * An SCP connection that actually delegates message sending and receiving to
  * another connection. Note that closing a delegating connection does nothing;
@@ -24,14 +31,103 @@ package uk.ac.manchester.spinnaker.connections;
  * @author Donal Fellows
  */
 public class DelegatingSCPConnection extends SCPConnection {
+	private final SDPConnection delegate;
+
 	/**
 	 * Create a connection that delegates actual communications to another
 	 * connection.
 	 *
 	 * @param connection
 	 *            The connection to delegate to.
+	 * @throws IOException
+	 *             If anything goes wrong. (Unexpected)
 	 */
-	public DelegatingSCPConnection(SDPConnection connection) {
-		super(connection);
+	public DelegatingSCPConnection(SDPConnection connection)
+			throws IOException {
+		super(connection.getChip(), connection.getLocalIPAddress(),
+				connection.getLocalPort(), connection.getRemoteIPAddress(),
+				connection.getRemotePort());
+		this.delegate = connection;
+	}
+
+	@Override
+	public InetAddress getLocalIPAddress() {
+		return delegate.getLocalIPAddress();
+	}
+
+	@Override
+	public int getLocalPort() {
+		return delegate.getLocalPort();
+	}
+
+	@Override
+	public InetAddress getRemoteIPAddress() {
+		return delegate.getRemoteIPAddress();
+	}
+
+	@Override
+	public int getRemotePort() {
+		return delegate.getRemotePort();
+	}
+
+	/**
+	 * We never initialise a socket of our own.
+	 */
+	@Override
+	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort) throws IOException {
+		return null;
+	}
+
+	@Override
+	public ByteBuffer receive(Integer timeout)
+			throws SocketTimeoutException, IOException {
+		return delegate.receive(timeout);
+	}
+
+	@Override
+	public DatagramPacket receiveWithAddress(Integer timeout)
+			throws SocketTimeoutException, IOException {
+		return delegate.receiveWithAddress(timeout);
+	}
+
+	@Override
+	void doSend(ByteBuffer data) throws IOException {
+		delegate.doSend(data);
+	}
+
+	@Override
+	public void sendTo(ByteBuffer data, InetAddress address, int port)
+			throws IOException {
+		delegate.sendTo(data, address, port);
+	}
+
+	@Override
+	public boolean isReadyToReceive(Integer timeout) throws IOException {
+		return delegate.isReadyToReceive(timeout);
+	}
+
+	@Override
+	public boolean isConnected() {
+		return delegate.isConnected();
+	}
+
+	@Override
+	public boolean isClosed() {
+		return delegate.isClosed();
+	}
+
+	/**
+	 * When we're delegating, closing is a no-op; the underlying channel has to
+	 * be closed directly.
+	 */
+	@Override
+	public void close() throws IOException {
+		// Do nothing
+	}
+
+	@Override
+	public String toString() {
+		return "Delegate(" + delegate + ")";
 	}
 }
