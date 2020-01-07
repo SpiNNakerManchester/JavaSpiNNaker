@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByAddress;
+import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.nio.ByteBuffer.allocate;
@@ -117,8 +118,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
-		channel = initialiseSocket(remoteHost, remotePort, remoteHost,
-				remotePort);
+		channel =
+				initialiseSocket(localHost, localPort, remoteHost, remotePort);
 		selectionKeyFactory = ThreadLocal.withInitial(() -> {
 			try {
 				return channel.register(SELECTOR_FACTORY.get(), OP_READ);
@@ -149,20 +150,35 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 	}
 
+	/**
+	 * Set up a UDP/IPv4 socket.
+	 *
+	 * @param localHost
+	 *            Local side address.
+	 * @param localPort
+	 *            Local side port.
+	 * @param remoteHost
+	 *            Remote side address.
+	 * @param remotePort
+	 *            Remote side port.
+	 * @return The configured, connected socket.
+	 * @throws IOException
+	 *             If anything fails.
+	 */
 	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		SocketAddress local = createLocalAddress(localHost, localPort);
-		DatagramChannel channel = DatagramChannel.open();
-		channel.bind(local);
-		channel.configureBlocking(false);
-		channel.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
-		channel.setOption(SO_SNDBUF, ETHERNET_MTU);
+		// SpiNNaker only speaks IPv4
+		DatagramChannel chan = DatagramChannel.open(INET);
+		chan.bind(createLocalAddress(localHost, localPort));
+		chan.configureBlocking(false);
+		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
+		chan.setOption(SO_SNDBUF, ETHERNET_MTU);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
-			channel.connect(remoteAddress);
+			chan.connect(remoteAddress);
 		}
-		return channel;
+		return chan;
 	}
 
 	private static SocketAddress createLocalAddress(InetAddress localHost,
