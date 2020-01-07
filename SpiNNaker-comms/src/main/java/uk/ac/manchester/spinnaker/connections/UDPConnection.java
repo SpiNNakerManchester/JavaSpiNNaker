@@ -87,10 +87,17 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 	private final UDPConnection<T> delegate;
 
+	/**
+	 * Create a connection that delegates actual communications to another
+	 * connection.
+	 *
+	 * @param connection
+	 *            The connection to delegate to.
+	 */
 	UDPConnection(UDPConnection<T> connection) {
 		this.delegate = connection;
-		this.channel = null;
-		this.selectionKeyFactory = null;
+		this.channel = null; // unused
+		this.selectionKeyFactory = null; // unused
 	}
 
 	/**
