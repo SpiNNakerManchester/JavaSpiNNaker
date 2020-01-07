@@ -23,6 +23,8 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -44,8 +46,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
 
@@ -502,18 +504,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private void logSend(ByteBuffer data, SocketAddress addr) {
 		log.debug("sending data of length {} to {}", data.remaining(), addr);
-		byte[] bytes = new byte[data.remaining()];
-		data.duplicate().get(bytes);
-		log.debug("message data: {}", IntStream.range(0, bytes.length)
-				.mapToObj(i -> hexbyte(bytes[i])).collect(Collectors.toList()));
+		log.debug("message data: {}", describe(data));
 	}
 
 	private void logRecv(ByteBuffer data, SocketAddress addr) {
 		log.debug("received data of length {} from {}", data.remaining(), addr);
-		byte[] bytes = new byte[data.remaining()];
-		data.duplicate().get(bytes);
-		log.debug("message data: {}", IntStream.range(0, bytes.length)
-				.mapToObj(i -> hexbyte(bytes[i])).collect(Collectors.toList()));
+		log.debug("message data: {}", describe(data));
+	}
+
+	private List<String> describe(ByteBuffer data) {
+		int pos = data.position();
+		IntFunction<String> foo = i -> hexbyte(data.get(pos + i));
+		return range(0, data.remaining()).mapToObj(foo).collect(toList());
 	}
 
 	@Override
