@@ -191,7 +191,6 @@ public class SCPRequestPipeline {
 				now = nanoTime();
 			}
 			nextSendTime = now + INTER_SEND_INTERVAL_NS;
-
 			connection.send(requestData.asReadOnlyBuffer());
 		}
 

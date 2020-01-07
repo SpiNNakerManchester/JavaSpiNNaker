@@ -1969,7 +1969,11 @@ public class Transceiver extends UDPTransceiver
 	        if (conn.getChip().equals(chip)) {
 	            List<Tag> allTags = new ArrayList<>();
 	            allTags.addAll(new GetTagsProcess(scpSelector, this).getTags(conn));
-	            return (IPTag) allTags.get(tagID);
+	            for (Tag tag : allTags) {
+	                if (tag.getTag() == tagID) {
+	                    return (IPTag) tag;
+	                }
+	            }
 	        }
 	    }
 	    throw new IOException("failed to find a connection");

@@ -323,6 +323,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
+			
 			GatherDownloadConnection conn =
 					new GatherDownloadConnection(gathererChip, g.getIptag());
 			reconfigureIPtag(g.getIptag(), gathererChip, conn);
@@ -496,14 +497,17 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	private void reconfigureIPtag(IPTag iptag, ChipLocation gathererLocation,
 			GatherDownloadConnection conn)
 			throws IOException, ProcessException {
-		IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
+	      log.info("all tags for board before: {}", txrx.getTags(
+	                txrx.locateSpinnakerConnection(iptag.getBoardAddress())));
+	      
+	    IPTag tag = new IPTag(iptag.getBoardAddress(), gathererLocation,
 				iptag.getTag(), iptag.getIPAddress(), conn.getLocalPort(), true,
 				TRAFFIC_ID);
 		txrx.setIPTag(tag, true);
 		log.info("reconfigured {} to {}", iptag, tag);
 		
-			log.info("all tags for board: {}", txrx.getTags(
-					txrx.locateSpinnakerConnection(tag.getBoardAddress())));
+		log.info("all tags for board after : {}", txrx.getTags(
+				txrx.locateSpinnakerConnection(tag.getBoardAddress())));
 		
 	}
 
@@ -700,8 +704,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			        conn.getLocalPort(), conn.getLocalIPAddress());
 			IPTag tag = this.txrx.getTag(conn.getChip(), 1);
 			log.info(
-			        "tag 1 ip is {} and port is {}", 
-			        tag.getIPAddress(), tag.getPort());
+			        "tag {} ip is {} and port is {}", 
+			        tag.getTag(), tag.getIPAddress(), tag.getPort());
 			return processTimeout();
 		}
 
