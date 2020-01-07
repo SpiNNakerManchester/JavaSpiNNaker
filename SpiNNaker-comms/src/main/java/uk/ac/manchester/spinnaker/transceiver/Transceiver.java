@@ -1131,6 +1131,22 @@ public class Transceiver extends UDPTransceiver
 		return new SendSingleSCPCommandProcess(scpSelector, this);
 	}
 
+	/**
+	 * A neater way of getting a process for running simple SCP requests.
+	 *
+	 * @param connector
+	 *            The specific connector to talk to the board along.
+	 * @return The SCP runner process
+	 * @throws IOException If anything fails (unexpected).
+	 */
+	private SendSingleSCPCommandProcess simpleProcess(SDPConnection connector)
+			throws IOException {
+		return new SendSingleSCPCommandProcess(
+				new SingletonConnectionSelector<>(
+						new DelegatingSCPConnection(connector)),
+				this);
+	}
+
 	@Override
 	@ParallelUnsafe
 	public VersionInfo ensureBoardIsReady(int numRetries,
@@ -1920,13 +1936,9 @@ public class Transceiver extends UDPTransceiver
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}
-		ChipLocation[] chip = new ChipLocation[1];
-		connections.forEach(c -> chip[0] = c.getChip());
 
-		try (SCPConnection s = new DelegatingSCPConnection(connection)) {
-			new SendSingleSCPCommandProcess(r -> s, this).execute(new IPTagSet(
-					chip[0], null, 0, tag.getTag(), tag.isStripSDP(), true));
-		}
+		simpleProcess(connection).execute(new IPTagSet(connection.getChip(),
+				null, 0, tag.getTag(), tag.isStripSDP(), true));
 	}
 
 	@Override
