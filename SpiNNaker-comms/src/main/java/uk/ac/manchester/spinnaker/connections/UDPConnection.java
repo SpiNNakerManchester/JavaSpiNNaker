@@ -200,30 +200,30 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return new InetSocketAddress(localAddr, localPort);
 	}
 
-	private InetSocketAddress getLocalAddress() throws IOException {
+	InetSocketAddress getLocalAddress() throws IOException {
 		return (InetSocketAddress) channel.getLocalAddress();
 	}
 
-	private InetSocketAddress getRemoteAddress() throws IOException {
+	InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) channel.getRemoteAddress();
 	}
 
 	/** @return The local IP address to which the connection is bound. */
 	@Override
-	public InetAddress getLocalIPAddress() {
+	public final InetAddress getLocalIPAddress() {
 		try {
 			return getLocalAddress().getAddress();
-		} catch (IOException e) {
+		} catch (NullPointerException | IOException e) {
 			return null;
 		}
 	}
 
 	/** @return The local port to which the connection is bound. */
 	@Override
-	public int getLocalPort() {
+	public final int getLocalPort() {
 		try {
 			return getLocalAddress().getPort();
-		} catch (IOException e) {
+		} catch (NullPointerException | IOException e) {
 			return -1;
 		}
 	}
@@ -233,10 +233,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         {@code null} if it is not connected.
 	 */
 	@Override
-	public InetAddress getRemoteIPAddress() {
+	public final InetAddress getRemoteIPAddress() {
 		try {
 			return getRemoteAddress().getAddress();
-		} catch (IOException e) {
+		} catch (NullPointerException | IOException e) {
 			return null;
 		}
 	}
@@ -246,26 +246,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         it is not connected.
 	 */
 	@Override
-	public int getRemotePort() {
+	public final int getRemotePort() {
 		try {
 			return getRemoteAddress().getPort();
-		} catch (IOException e) {
+		} catch (NullPointerException | IOException e) {
 			return -1;
 		}
-	}
-
-	/**
-	 * Receive data from the connection.
-	 *
-	 * @return The data received, in a little-endian buffer
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 */
-	public final ByteBuffer receive()
-			throws SocketTimeoutException, IOException {
-		return receive(null);
 	}
 
 	/**
@@ -279,11 +265,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public ByteBuffer receive(Integer timeout)
+	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
 		}
+		return doReceive(timeout);
+	}
+
+	ByteBuffer doReceive(Integer timeout)
+			throws SocketTimeoutException, IOException {
 		if (timeout == null) {
 			/*
 			 * "Infinity" is nearly 25 days, which is a very long time to wait
@@ -309,21 +300,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Receive data from the connection along with the address where the data
 	 * was received from.
 	 *
-	 * @return The datagram packet received
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 */
-	public final DatagramPacket receiveWithAddress()
-			throws SocketTimeoutException, IOException {
-		return receiveWithAddress(null);
-	}
-
-	/**
-	 * Receive data from the connection along with the address where the data
-	 * was received from.
-	 *
 	 * @param timeout
 	 *            The timeout in milliseconds, or {@code null} to wait forever
 	 * @return The datagram packet received
@@ -332,11 +308,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public DatagramPacket receiveWithAddress(Integer timeout)
+	public final DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
 		}
+		return doReceiveWithAddress(timeout);
+	}
+
+	DatagramPacket doReceiveWithAddress(Integer timeout)
+			throws SocketTimeoutException, IOException {
 		if (timeout == null) {
 			/*
 			 * "Infinity" is nearly 25 days, which is a very long time to wait
@@ -365,30 +346,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public final void send(DatagramPacket data) throws IOException {
-		doSend(wrap(data.getData(), data.getOffset(), data.getLength()));
-	}
-
-	/**
-	 * Send data down this connection.
-	 *
-	 * @param data
-	 *            The data to be sent
-	 * @throws IOException
-	 *             If there is an error sending the data
-	 */
 	void doSend(ByteBuffer data) throws IOException {
-		if (!canSend) {
-			throw new IOException("Remote host and/or port not set; "
-					+ "data cannot be sent with this connection");
-		}
-		if (isClosed()) {
-			throw new EOFException();
-		}
-		if (!data.hasRemaining()) {
-			throw new IllegalStateException(
-					"data buffer must have bytes to send");
-		}
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
@@ -404,19 +362,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public final void send(byte[] data) throws IOException {
-		doSend(wrap(data));
-	}
-
-	/**
-	 * Send data down this connection.
-	 *
-	 * @param data
-	 *            The data to be sent
-	 * @throws IOException
-	 *             If there is an error sending the data
-	 */
 	public final void send(ByteBuffer data) throws IOException {
+		if (!canSend) {
+			throw new IOException("Remote host and/or port not set; "
+					+ "data cannot be sent with this connection");
+		}
+		if (isClosed()) {
+			throw new EOFException();
+		}
+		if (!data.hasRemaining()) {
+			throw new IllegalStateException(
+					"data buffer must have bytes to send");
+		}
 		doSend(data);
 	}
 
@@ -467,7 +424,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	public void sendTo(ByteBuffer data, InetAddress address, int port)
+	public final void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		if (!canSend) {
 			throw new IOException("Remote host address or port not set; "
@@ -480,6 +437,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			throw new IllegalStateException(
 					"data buffer must have bytes to send");
 		}
+		doSendTo(data, address, port);
+	}
+
+	void doSendTo(ByteBuffer data, InetAddress address, int port)
+			throws IOException {
 		InetSocketAddress addr = new InetSocketAddress(address, port);
 		if (log.isDebugEnabled()) {
 			logSend(data, addr);
@@ -533,10 +495,17 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public boolean isReadyToReceive(Integer timeout) throws IOException {
+	public final boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
 			return false;
 		}
+		int t = (timeout == null ? 0 : timeout);
+		boolean r = readyToReceive(t);
+		receivable = r;
+		return r;
+	}
+
+	boolean readyToReceive(int timeout) throws IOException {
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
@@ -553,7 +522,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 					key.interestOps());
 		}
 		int result;
-		if (timeout == null || timeout == 0) {
+		if (timeout == 0) {
 			result = key.selector().selectNow();
 		} else {
 			result = key.selector().select(timeout);
@@ -562,9 +531,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			log.debug("wait:{}:{}:{}", result, key.isValid(),
 					key.isValid() && key.isReadable());
 		}
-		boolean r = key.isValid() && key.isReadable();
-		receivable = r;
-		return r;
+		return key.isValid() && key.isReadable();
 	}
 
 	/**

@@ -833,20 +833,18 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Check that the given connection to the given chip works.
 	 *
-	 * @param connectionSelector
-	 *            the connection selector to use
+	 * @param connection
+	 *            the connection to use when doing the check
 	 * @param chip
 	 *            the chip coordinates to try to talk to
 	 * @return True if a valid response is received, False otherwise
 	 */
-	private boolean checkConnection(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	private boolean checkConnection(SCPConnection connection,
 			HasChipLocation chip) {
 		for (int r = 0; r < STANDARD_RETRIES_NO; r++) {
 			try {
-				ChipSummaryInfo chipInfo =
-						new SendSingleSCPCommandProcess(connectionSelector,
-								this).execute(new GetChipInfo(chip)).chipInfo;
+				ChipSummaryInfo chipInfo = simpleProcess(connection)
+						.execute(new GetChipInfo(chip)).chipInfo;
 				if (chipInfo.isEthernetAvailable) {
 					return true;
 				}
@@ -868,7 +866,7 @@ public class Transceiver extends UDPTransceiver
 		if (c == null) {
 			c = getRandomConnection(scpSenderConnections);
 		}
-		c.sendSCPRequest(message);
+		c.send(message);
 	}
 
 	@Override
@@ -878,7 +876,7 @@ public class Transceiver extends UDPTransceiver
 		if (c == null) {
 			c = getRandomConnection(sdpSenderConnections);
 		}
-		c.sendSDPMessage(message);
+		c.send(message);
 	}
 
 	/** Get the current machine status and store it. */
@@ -973,8 +971,7 @@ public class Transceiver extends UDPTransceiver
 			}
 
 			// check if it works
-			if (checkConnection(new SingletonConnectionSelector<>(conn),
-					chip)) {
+			if (checkConnection(conn, chip)) {
 				scpSenderConnections.add(conn);
 				allConnections.add(conn);
 				udpScampConnections.put(ipAddress, conn);
@@ -1129,6 +1126,21 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private SendSingleSCPCommandProcess simpleProcess() {
 		return new SendSingleSCPCommandProcess(scpSelector, this);
+	}
+
+	/**
+	 * A neater way of getting a process for running simple SCP requests.
+	 *
+	 * @param connector
+	 *            The specific connector to talk to the board along.
+	 * @return The SCP runner process
+	 * @throws IOException
+	 *             If anything fails (unexpected).
+	 */
+	private SendSingleSCPCommandProcess simpleProcess(SCPConnection connector)
+			throws IOException {
+		return new SendSingleSCPCommandProcess(
+				new SingletonConnectionSelector<>(connector), this);
 	}
 
 	/**

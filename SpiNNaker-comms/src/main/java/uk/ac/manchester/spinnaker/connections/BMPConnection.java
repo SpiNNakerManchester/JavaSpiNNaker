@@ -63,9 +63,8 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public final void sendSCPRequest(SCPRequest<?> scpRequest)
-			throws IOException {
-		sendBMPRequest((BMPRequest<?>) scpRequest);
+	public final void send(SCPRequest<?> scpRequest) throws IOException {
+		send((BMPRequest<?>) scpRequest);
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	 * @throws IOException
 	 *             If the request can't be sent.
 	 */
-	public void sendBMPRequest(BMPRequest<?> scpRequest) throws IOException {
+	public void send(BMPRequest<?> scpRequest) throws IOException {
 		send(getSCPData(scpRequest));
 	}
 

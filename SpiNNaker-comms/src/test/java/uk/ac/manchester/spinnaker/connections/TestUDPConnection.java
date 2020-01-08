@@ -56,7 +56,7 @@ public class TestUDPConnection {
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
-			connection.sendSCPRequest(scpReq);
+			connection.send(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		Response scp_response = result.parsePayload(scpReq);
@@ -72,7 +72,7 @@ public class TestUDPConnection {
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
-			connection.sendSCPRequest(scpReq);
+			connection.send(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -87,7 +87,7 @@ public class TestUDPConnection {
 		SCPResultMessage result;
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
-			connection.sendSCPRequest(scpReq);
+			connection.send(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
 		assertEquals(result.getResult(), RC_OK);
@@ -104,7 +104,7 @@ public class TestUDPConnection {
 				ReadMemory scp =
 						new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
-				connection.sendSCPRequest(scp);
+				connection.send(scp);
 				connection.receiveSCPResponse(2);
 			}
 		});

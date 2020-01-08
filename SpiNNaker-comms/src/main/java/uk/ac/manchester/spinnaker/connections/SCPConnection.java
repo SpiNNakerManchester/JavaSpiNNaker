@@ -134,7 +134,7 @@ public class SCPConnection extends SDPConnection
 	}
 
 	@Override
-	public void sendSCPRequest(SCPRequest<?> scpRequest) throws IOException {
+	public void send(SCPRequest<?> scpRequest) throws IOException {
 		send(getSCPData(scpRequest));
 	}
 }

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.connections;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -51,44 +52,32 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	public InetAddress getLocalIPAddress() {
-		return delegate.getLocalIPAddress();
+	InetSocketAddress getLocalAddress() throws IOException {
+		return delegate.getLocalAddress();
 	}
 
 	@Override
-	public int getLocalPort() {
-		return delegate.getLocalPort();
+	InetSocketAddress getRemoteAddress() throws IOException {
+		return delegate.getRemoteAddress();
 	}
 
-	@Override
-	public InetAddress getRemoteIPAddress() {
-		return delegate.getRemoteIPAddress();
-	}
-
-	@Override
-	public int getRemotePort() {
-		return delegate.getRemotePort();
-	}
-
-	/**
-	 * We never initialise a socket of our own.
-	 */
 	@Override
 	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
+		// We never initialise a socket of our own.
 		return null;
 	}
 
 	@Override
-	public ByteBuffer receive(Integer timeout)
+	ByteBuffer doReceive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		return delegate.receive(timeout);
+		return delegate.doReceive(timeout);
 	}
 
 	@Override
-	public DatagramPacket receiveWithAddress(Integer timeout)
+	DatagramPacket doReceiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		return delegate.receiveWithAddress(timeout);
+		return delegate.doReceiveWithAddress(timeout);
 	}
 
 	@Override
@@ -97,14 +86,14 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	public void sendTo(ByteBuffer data, InetAddress address, int port)
+	void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		delegate.sendTo(data, address, port);
+		delegate.doSendTo(data, address, port);
 	}
 
 	@Override
-	public boolean isReadyToReceive(Integer timeout) throws IOException {
-		return delegate.isReadyToReceive(timeout);
+	boolean readyToReceive(int timeout) throws IOException {
+		return delegate.readyToReceive(timeout);
 	}
 
 	@Override

@@ -72,7 +72,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
@@ -370,18 +369,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private BoardLocal logContext;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
-				throws IOException {
+				throws IOException, ProcessException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
 			connection = new ThrottledConnection(board);
-			try {
-				connection.reprogramTag(
-						gathererForChip.get(board.location).getIptag());
-			} catch (UnexpectedResponseCodeException e) {
-				throw new IOException("failed to reprogram IPtag", e);
-			}
+			connection.reprogramTag(
+					gathererForChip.get(board.location).getIptag(), txrx);
 		}
 
 		@Override

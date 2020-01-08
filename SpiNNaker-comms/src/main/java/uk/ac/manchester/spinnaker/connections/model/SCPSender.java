@@ -58,7 +58,7 @@ public interface SCPSender extends Connection {
 	 * @throws IOException
 	 *             If there is an error sending the message
 	 */
-	void sendSCPRequest(SCPRequest<?> scpRequest) throws IOException;
+	void send(SCPRequest<?> scpRequest) throws IOException;
 
 	/**
 	 * @return The chip at which messages sent down this connection will arrive

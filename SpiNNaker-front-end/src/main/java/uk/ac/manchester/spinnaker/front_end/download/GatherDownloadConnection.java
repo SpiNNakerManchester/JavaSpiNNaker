@@ -62,7 +62,7 @@ final class GatherDownloadConnection extends SDPConnection {
 			Thread.yield();
 		}
 		lastSend = System.nanoTime();
-		sendSDPMessage(msg);
+		send(msg);
 	}
 
 	/**
