@@ -35,7 +35,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -45,7 +44,6 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
-import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.selectors.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
@@ -600,10 +598,10 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param connection
 		 *            The connection used to send messages.
 		 */
-		private Downloader(GatherDownloadConnection connection, Transceiver txrx) {
+		private Downloader(GatherDownloadConnection connection,
+				Transceiver txrx) {
 			conn = connection;
 			this.txrx = txrx;
-
 		}
 
 		/**

@@ -26,7 +26,6 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
-import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
