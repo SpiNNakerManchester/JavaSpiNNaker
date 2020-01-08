@@ -372,10 +372,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			GatherDownloadConnection conn, Progress bar)
 			throws IOException, StorageException, TimeoutException,
 			ProcessException {
-
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
-			Downloader dl = new Downloader(conn, txrx);
+			Downloader dl = new Downloader(conn);
 			for (WorkItems item : work) {
 				for (List<Region> regionsOnCore : item.regions) {
 					/*
@@ -575,7 +574,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 */
 	private final class Downloader {
 		private final GatherDownloadConnection conn;
-		private final Transceiver txrx;
 
 		/**
 		 * Whether a packet has previously been received on this connection
@@ -598,10 +596,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param connection
 		 *            The connection used to send messages.
 		 */
-		private Downloader(GatherDownloadConnection connection,
-				Transceiver txrx) {
+		private Downloader(GatherDownloadConnection connection) {
 			conn = connection;
-			this.txrx = txrx;
 		}
 
 		/**
