@@ -54,7 +54,8 @@ public abstract class LogControl {
 		return getProperty(propertyName) == null ? DEBUG : INFO;
 	}
 
-	interface Loggers {
+	/** The names of appenders. */
+	private interface Loggers {
 		/** Main log appender. */
 		String MAIN = "tofile";
 		/** Console log appender. */
@@ -63,7 +64,8 @@ public abstract class LogControl {
 		String PARALLEL = "parallog";
 	}
 
-	interface Props {
+	/** The names of relevant system properties. */
+	private interface Props {
 		/** Logging level property. */
 		String LOGGING_LEVEL_NAME = "logging.level";
 		/** UDP low-level logging level property. */
@@ -72,7 +74,8 @@ public abstract class LogControl {
 		String EXECUTOR_LOGGING = "logging.executor";
 	}
 
-	interface Classes {
+	/** The names of actual loggers (class names). */
+	private interface Classes {
 		/** Base for logging domains (package name). */
 		String BASE = "uk.ac.manchester.spinnaker.";
 		/** Gatherer logging domain. */
@@ -90,7 +93,8 @@ public abstract class LogControl {
 		String EXEC_CORE = BASE + "data_spec.Executor";
 	}
 
-	interface Attrs {
+	/** The names of various attributes of logger components. */
+	private interface Attrs {
 		/** Control attribute. */
 		String ADDITIVITY = "additivity";
 		/** Control attribute. */
@@ -103,7 +107,8 @@ public abstract class LogControl {
 		String TARGET = "target";
 	}
 
-	interface Patterns {
+	/** The patterns used by loggers. */
+	private interface Patterns {
 		/** Console log message pattern. */
 		String CON = "%p: %m%n";
 		/** Main log message pattern. */
