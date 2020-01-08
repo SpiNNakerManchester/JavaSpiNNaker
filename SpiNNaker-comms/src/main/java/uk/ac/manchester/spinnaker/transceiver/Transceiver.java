@@ -1990,22 +1990,6 @@ public class Transceiver extends UDPTransceiver
 		}
 		return allTags;
 	}
-	
-	public IPTag getTag(HasChipLocation chip, int tagID) 
-	        throws IOException, ProcessException {
-	    for (SCPConnection conn : scampConnections) {
-	        if (conn.getChip().equals(chip)) {
-	            List<Tag> allTags = new ArrayList<>();
-	            allTags.addAll(new GetTagsProcess(scpSelector, this).getTags(conn));
-	            for (Tag tag : allTags) {
-	                if (tag.getTag() == tagID) {
-	                    return (IPTag) tag;
-	                }
-	            }
-	        }
-	    }
-	    throw new IOException("failed to find a connection");
-	}
 
 	@Override
 	@ParallelSafe

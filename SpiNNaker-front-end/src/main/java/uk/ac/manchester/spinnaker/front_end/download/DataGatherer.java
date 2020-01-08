@@ -689,10 +689,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			log.error(
 			        "failed to receive on socket {}:{}.",
 			        conn.getLocalPort(), conn.getLocalIPAddress());
-			IPTag tag = this.txrx.getTag(conn.getChip(), 1);
-			log.info(
-			        "tag {} ip is {} and port is {}",
-			        tag.getTag(), tag.getIPAddress(), tag.getPort());
 			return processTimeout();
 		}
 
