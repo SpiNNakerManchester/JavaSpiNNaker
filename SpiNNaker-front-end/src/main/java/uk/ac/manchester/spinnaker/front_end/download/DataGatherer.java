@@ -642,7 +642,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = expectedSeqs();
 			received = false;
 			timeoutcount = 0;
-			log.info(
+			log.debug(
 			        "extracting data from {} with size {}",
 			        region.startAddress, region.size);
 			conn.sendStart(monitorCore, region.startAddress, region.size);
@@ -781,7 +781,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			List<Integer> missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
-			log.info("missing sequence numbers: {}", missingSeqs);
+			log.debug("missing sequence numbers: {}", missingSeqs);
 			if (missingSeqs.size() > lastRequested.size()) {
 				log.warn("what is going on?");
 				log.warn("last:{}", lastRequested);

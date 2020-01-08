@@ -368,6 +368,7 @@ public class SCPRequestPipeline {
 		// Update the packet and store required details
 		int sequence = toUnsignedInt(request.scpRequestHeader
 				.issueSequenceNumber(requests.keySet()));
+
 		log.debug("sending message with sequence {}", sequence);
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
@@ -427,9 +428,9 @@ public class SCPRequestPipeline {
 		if (req == null) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
-			log.info("current waiting on requests with seq's ");
+			log.debug("current waiting on requests with seq's ");
 			for (int seq : requests.keySet()) {
-			    log.info("{}", seq);
+			    log.debug("{}", seq);
 			}
 			return;
 		}
@@ -442,7 +443,7 @@ public class SCPRequestPipeline {
 			} catch (SocketTimeoutException e) {
 				throw e;
 			} catch (Exception e) {
-				log.info(
+				log.debug(
 				        "throwing away request {} coz of {}",
 				        msg.getSequenceNumber(), e);
 			    req.handleError(e);
@@ -467,7 +468,7 @@ public class SCPRequestPipeline {
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 		for (int seq : new ArrayList<>(requests.keySet())) {
-		    log.info("resending seq {}", seq);
+		    log.debug("resending seq {}", seq);
 		    Request<?> req = requests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
@@ -478,12 +479,12 @@ public class SCPRequestPipeline {
 			try {
 			    resend(req, REASON_TIMEOUT, seq);
 			} catch (Exception e) {
-				log.info("removing seq {}", seq);
+				log.debug("removing seq {}", seq);
 			    req.handleError(e);
 				toRemove.set(seq);
 			}
 		}
-		log.info("finish resending");
+		log.debug("finish resending");
 
 		toRemove.stream().forEach(requests::remove);
 	}

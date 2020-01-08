@@ -292,7 +292,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			timeout = Integer.MAX_VALUE;
 		}
 		if (!receivable && !isReadyToReceive(timeout)) {
-			log.info("not ready to recieve");
+			log.debug("not ready to recieve");
 		    throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
@@ -534,7 +534,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	private SelectionKey remake(SelectionKey stale) {
-		log.info("remaking selection key");
+		log.debug("remaking selection key");
 		selectionKeyFactory.remove();
 		stale.cancel();
 		SelectionKey key = selectionKeyFactory.get();
