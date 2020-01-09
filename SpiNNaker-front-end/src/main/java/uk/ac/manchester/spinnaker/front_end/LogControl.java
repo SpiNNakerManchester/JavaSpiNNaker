@@ -45,7 +45,7 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
  *
  * @author Donal Fellows
  */
-public class LogControl {
+public final class LogControl {
 	private static final String LOG_FILE = "jspin.log";
 
 	/** The names of appenders. */
