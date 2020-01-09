@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import static java.lang.System.getProperty;
 import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.Level.ERROR;
 import static org.apache.logging.log4j.Level.INFO;
+import static org.apache.logging.log4j.Level.WARN;
 import static org.apache.logging.log4j.core.Filter.Result.ACCEPT;
 import static org.apache.logging.log4j.core.Filter.Result.DENY;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_ERR;
@@ -30,13 +31,13 @@ import java.io.File;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 /**
  * Utilities for working with the log. <em>This should be the only place in our
@@ -44,15 +45,8 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
  *
  * @author Donal Fellows
  */
-public abstract class LogControl {
+public class LogControl {
 	private static final String LOG_FILE = "jspin.log";
-
-	private LogControl() {
-	}
-
-	private static Level level(String propertyName) {
-		return getProperty(propertyName) == null ? DEBUG : INFO;
-	}
 
 	/** The names of appenders. */
 	private interface Loggers {
@@ -100,7 +94,7 @@ public abstract class LogControl {
 		/** Control attribute. */
 		String LEVEL = "level";
 		/** Control attribute. */
-		String FILE = "file";
+		String FILE = "fileName";
 		/** Control attribute. */
 		String PATTERN = "pattern";
 		/** Control attribute. */
@@ -117,78 +111,82 @@ public abstract class LogControl {
 		String PARALLEL = "%d{HH:mm:ss.SSS} %-5p %c{1}:%L %X{boardRoot} %m%n";
 	}
 
-	private static FilterComponentBuilder filter(
-			ConfigurationBuilder<?> builder, Level level) {
+	private final ConfigurationBuilder<? extends Configuration> builder;
+
+	private LogControl() {
+		builder = newConfigurationBuilder();
+	}
+
+	private FilterComponentBuilder filter(Level level) {
 		return builder.newFilter("ThresholdFilter", ACCEPT, DENY)
 				.addAttribute(Attrs.LEVEL, level);
 	}
 
-	private static FilterComponentBuilder filter(
-			ConfigurationBuilder<?> builder, String level) {
+	private FilterComponentBuilder filter(String level) {
 		return builder.newFilter("ThresholdFilter", ACCEPT, DENY)
 				.addAttribute(Attrs.LEVEL, level);
 	}
 
-	private static LayoutComponentBuilder layout(
-			ConfigurationBuilder<?> builder, String pattern) {
+	private LayoutComponentBuilder layout(String pattern) {
 		return builder.newLayout("PatternLayout").addAttribute(Attrs.PATTERN,
 				pattern);
 	}
 
-	private static RootLoggerComponentBuilder rootLog(
-			ConfigurationBuilder<?> builder) {
-		return builder.newRootLogger(level(Props.LOGGING_LEVEL_NAME))
+	private static Level debugIfDefined(String propertyName) {
+		return getProperty(propertyName) == null ? INFO : DEBUG;
+	}
+
+	private RootLoggerComponentBuilder rootLog(String level) {
+		return builder.newRootLogger(level)
 				.add(builder.newAppenderRef(Loggers.MAIN))
 				.add(builder.newAppenderRef(Loggers.CON));
 	}
 
-	private static LoggerComponentBuilder parallelLog(
-			ConfigurationBuilder<?> builder, String name) {
+	private LoggerComponentBuilder parallelLog(String name) {
 		return builder.newLogger(name, DEBUG)
 				.add(builder.newAppenderRef(Loggers.PARALLEL))
 				.add(builder.newAppenderRef(Loggers.CON))
 				.addAttribute(Attrs.ADDITIVITY, false);
 	}
 
-	private static LoggerComponentBuilder basicLog(
-			ConfigurationBuilder<?> builder, String name, String prop) {
-		return builder.newLogger(name, level(prop));
+	private LoggerComponentBuilder basicLog(String name, String prop) {
+		return builder.newLogger(name, debugIfDefined(prop));
+	}
+
+	private Configuration configuration(File logfile, String level) {
+		builder.setStatusLevel(ERROR).add(rootLog(level))
+				.add(parallelLog(Classes.DATA_GATHERER))
+				.add(parallelLog(Classes.RR_DATA_GATHERER))
+				.add(parallelLog(Classes.FAST_EXEC))
+				.add(parallelLog(Classes.BASE_EXEC))
+				.add(basicLog(Classes.UDP_CONN, Props.UDP_LOGGING))
+				.add(basicLog(Classes.EXEC_CORE, Props.EXECUTOR_LOGGING))
+				.add(builder
+						.newAppender(Loggers.CON, ConsoleAppender.PLUGIN_NAME)
+						.addAttribute(Attrs.TARGET, SYSTEM_ERR)
+						.add(filter(WARN)).add(layout(Patterns.CON)))
+				.add(builder.newAppender(Loggers.MAIN, FileAppender.PLUGIN_NAME)
+						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
+						.add(filter(level)).add(layout(Patterns.MAIN)))
+				.add(builder
+						.newAppender(Loggers.PARALLEL, FileAppender.PLUGIN_NAME)
+						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
+						.add(filter(level)).add(layout(Patterns.PARALLEL)));
+		return builder.build();
 	}
 
 	/**
 	 * Initialise the logging subsystem to log to the correct directory.
+	 * <p>
+	 * Note that this reads system properties.
 	 *
 	 * @param directoryName
 	 *            The directory where the log should written inside.
 	 */
-	public static void setLoggerDir(String directoryName) {
+	protected static void setLoggerDir(String directoryName) {
 		File logfile = new File(new File(directoryName), LOG_FILE);
-		ConfigurationBuilder<BuiltConfiguration> builder =
-				newConfigurationBuilder();
-		builder.add(rootLog(builder))
-				.add(parallelLog(builder, Classes.DATA_GATHERER))
-				.add(parallelLog(builder, Classes.RR_DATA_GATHERER))
-				.add(parallelLog(builder, Classes.FAST_EXEC))
-				.add(parallelLog(builder, Classes.BASE_EXEC))
-				.add(basicLog(builder, Classes.UDP_CONN, Props.UDP_LOGGING))
-				.add(basicLog(builder, Classes.EXEC_CORE,
-						Props.EXECUTOR_LOGGING))
-				.add(builder
-						.newAppender(Loggers.CON, ConsoleAppender.PLUGIN_NAME)
-						.addAttribute(Attrs.TARGET, SYSTEM_ERR)
-						.add(filter(builder, ERROR))
-						.add(layout(builder, Patterns.CON)))
-				.add(builder.newAppender(Loggers.MAIN, FileAppender.PLUGIN_NAME)
-						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
-						.add(filter(builder,
-								getProperty(Props.LOGGING_LEVEL_NAME)))
-						.add(layout(builder, Patterns.MAIN)))
-				.add(builder
-						.newAppender(Loggers.PARALLEL, FileAppender.PLUGIN_NAME)
-						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
-						.add(filter(builder,
-								getProperty(Props.LOGGING_LEVEL_NAME)))
-						.add(layout(builder, Patterns.PARALLEL)));
-		Configurator.initialize(builder.build());
+		String level = getProperty(Props.LOGGING_LEVEL_NAME, "info");
+		LogControl lc = new LogControl();
+		Configurator.reconfigure(lc.configuration(logfile, level));
 	}
 }
