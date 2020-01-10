@@ -36,3 +36,6 @@ nbactions.xml
 
 # macOS Finder metadata
 .DS_Store
+
+# Output of shade plugin
+dependency-reduced-pom.xml
