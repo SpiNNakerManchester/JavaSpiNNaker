@@ -127,15 +127,17 @@ public class SCPRequestPipeline {
 	 * considered a timeout.
 	 */
 	private int packetTimeout;
-
+	/** The number of requests issued to this pipeline. */
+	private int numRequests;
 	/** The number of packets that have been resent. */
 	private int numResent;
+	/** The number of retries due to restartable errors. */
 	private int numRetryCodeResent;
 	/** The number of timeouts that occurred. */
 	private int numTimeouts;
 
-	/** A dictionary of sequence number -> requests in progress. */
-	private final Map<Integer, Request<?>> requests;
+	/** A dictionary of sequence number &rarr; requests in progress. */
+	private final Map<Integer, Request<?>> outstandingRequests;
 	/**
 	 * An object used to track how many retries have been done, or {@code null}
 	 * if no such tracking is required.
@@ -277,8 +279,8 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
-				SCP_TIMEOUT, retryTracker);
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, SCP_TIMEOUT,
+				retryTracker);
 	}
 
 	/**
@@ -297,8 +299,8 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
-				packetTimeout, retryTracker);
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, packetTimeout,
+				retryTracker);
 	}
 
 	/**
@@ -332,7 +334,8 @@ public class SCPRequestPipeline {
 		this.packetTimeout = packetTimeout;
 		this.retryTracker = retryTracker;
 
-		requests = synchronizedMap(new HashMap<>());
+		outstandingRequests = synchronizedMap(new HashMap<>());
+		numRequests = 0;
 		numTimeouts = 0;
 		numResent = 0;
 		numRetryCodeResent = 0;
@@ -360,18 +363,19 @@ public class SCPRequestPipeline {
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		// If all the channels are used, start to receive packets
-		while (requests.size() >= numChannels) {
+		while (outstandingRequests.size() >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
 		// Update the packet and store required details
 		int sequence = toUnsignedInt(request.scpRequestHeader
-				.issueSequenceNumber(requests.keySet()));
+				.issueSequenceNumber(outstandingRequests.keySet()));
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
-		if (requests.put(sequence, req) != null) {
+		if (outstandingRequests.put(sequence, req) != null) {
 			throw new RuntimeException("duplicate sequence number catastrophe");
 		}
+		numRequests++;
 
 		// Send the request
 		req.send();
@@ -385,7 +389,7 @@ public class SCPRequestPipeline {
 	 *             If anything goes wrong with communications.
 	 */
 	public void finish() throws IOException {
-		while (requests.size() > 0) {
+		while (!outstandingRequests.isEmpty()) {
 			multiRetrieve(0);
 		}
 	}
@@ -400,7 +404,7 @@ public class SCPRequestPipeline {
 	 */
 	private void multiRetrieve(int numPackets) throws IOException {
 		// While there are still more packets in progress than some threshold
-		while (requests.size() > numPackets) {
+		while (outstandingRequests.size() > numPackets) {
 			try {
 				// Receive the next response
 				singleRetrieve();
@@ -417,7 +421,7 @@ public class SCPRequestPipeline {
 		if (log.isDebugEnabled()) {
 			log.debug("received message {}", msg.getResult());
 		}
-		Request<?> req = msg.pickRequest(requests);
+		Request<?> req = msg.pickRequest(outstandingRequests);
 
 		// Only process responses which have matching requests
 		if (req == null) {
@@ -436,7 +440,7 @@ public class SCPRequestPipeline {
 				throw e;
 			} catch (Exception e) {
 				req.handleError(e);
-				msg.removeRequest(requests);
+				msg.removeRequest(outstandingRequests);
 			}
 		} else {
 			// No retry is possible - try constructing the result
@@ -446,7 +450,7 @@ public class SCPRequestPipeline {
 				req.handleError(e);
 			} finally {
 				// Remove the sequence from the outstanding responses
-				msg.removeRequest(requests);
+				msg.removeRequest(outstandingRequests);
 			}
 		}
 	}
@@ -456,8 +460,8 @@ public class SCPRequestPipeline {
 
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
-		for (int seq : new ArrayList<>(requests.keySet())) {
-			Request<?> req = requests.get(seq);
+		for (int seq : new ArrayList<>(outstandingRequests.keySet())) {
+			Request<?> req = outstandingRequests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
@@ -472,7 +476,7 @@ public class SCPRequestPipeline {
 			}
 		}
 
-		toRemove.stream().forEach(requests::remove);
+		toRemove.stream().forEach(outstandingRequests::remove);
 	}
 
 	private void resend(Request<?> req, Object reason) throws IOException {
@@ -534,25 +538,13 @@ public class SCPRequestPipeline {
 		}
 	}
 
-	/**
-	 * @return The number of requests to send before checking for responses.
-	 */
-	public Integer getNumChannels() {
-		return numChannels;
-	}
-
-	/** @return The number of packets that have been resent. */
-	public int getNumResent() {
-		return numResent;
-	}
-
-	/** @return The number of retries due to restartable errors. */
-	public int getNumRetryCodeResent() {
-		return numRetryCodeResent;
-	}
-
-	/** @return The number of timeouts that occurred. */
-	public int getNumTimeouts() {
-		return numTimeouts;
+	@Override
+	public String toString() {
+		return "SCPPipe[channels=" + numChannels + ",width="
+				+ intermediateChannelWaits + "resendLim" + numRetries
+				+ "] (req=" + numRequests + ",outstanding="
+				+ outstandingRequests.size() + ",resent=" + numResent
+				+ ",restart=" + numRetryCodeResent + ",timeouts=" + numTimeouts
+				+ ")";
 	}
 }

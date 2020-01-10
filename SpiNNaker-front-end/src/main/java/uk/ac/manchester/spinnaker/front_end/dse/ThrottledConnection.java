@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -116,8 +115,6 @@ public class ThrottledConnection implements Closeable {
 	 *            The SCP transceiver.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws UnexpectedResponseCodeException
-	 *             If a weird message is received.
 	 */
 	public void reprogramTag(IPTag iptag, Transceiver transceiver)
 			throws IOException, ProcessException {
