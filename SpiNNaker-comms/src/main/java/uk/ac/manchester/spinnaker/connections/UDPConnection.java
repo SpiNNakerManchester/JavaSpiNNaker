@@ -270,11 +270,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (isClosed()) {
 			throw new EOFException();
 		}
-		return doReceive(timeout);
-	}
-
-	ByteBuffer doReceive(Integer timeout)
-			throws SocketTimeoutException, IOException {
 		if (timeout == null) {
 			/*
 			 * "Infinity" is nearly 25 days, which is a very long time to wait
@@ -282,6 +277,22 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			 */
 			timeout = Integer.MAX_VALUE;
 		}
+		return doReceive(timeout);
+	}
+
+	/**
+	 * Receive data from the connection.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The data received, in a little-endian buffer
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	ByteBuffer doReceive(Integer timeout)
+			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
@@ -313,11 +324,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (isClosed()) {
 			throw new EOFException();
 		}
-		return doReceiveWithAddress(timeout);
-	}
-
-	DatagramPacket doReceiveWithAddress(Integer timeout)
-			throws SocketTimeoutException, IOException {
 		if (timeout == null) {
 			/*
 			 * "Infinity" is nearly 25 days, which is a very long time to wait
@@ -325,6 +331,23 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			 */
 			timeout = Integer.MAX_VALUE;
 		}
+		return doReceiveWithAddress(timeout);
+	}
+
+	/**
+	 * Receive data from the connection along with the address where the data
+	 * was received from.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The datagram packet received
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	DatagramPacket doReceiveWithAddress(int timeout)
+			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
@@ -440,6 +463,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		doSendTo(data, address, port);
 	}
 
+	/**
+	 * Send data down this connection.
+	 *
+	 * @param data
+	 *            The data to be sent
+	 * @param address
+	 *            Where to send (must be non-{@code null})
+	 * @param port
+	 *            What port to send to (must be non-zero)
+	 * @throws IOException
+	 *             If there is an error sending the data
+	 */
 	void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		InetSocketAddress addr = new InetSocketAddress(address, port);
@@ -505,6 +540,17 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return r;
 	}
 
+	/**
+	 * Determines if there is a message available to be received without
+	 * blocking. <em>This method</em> may block until the timeout given, and a
+	 * zero timeout means do not wait.
+	 *
+	 * @param timeout
+	 *            How long to wait, in milliseconds.
+	 * @return true when there is a message waiting to be received
+	 * @throws IOException
+	 *             If anything goes wrong.
+	 */
 	boolean readyToReceive(int timeout) throws IOException {
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
