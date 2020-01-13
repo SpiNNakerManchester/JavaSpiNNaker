@@ -21,7 +21,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -141,59 +140,6 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 */
 		Conn getInstance(InetAddress localAddress, int localPort)
 				throws IOException;
-	}
-
-	/**
-	 * A connection factory that makes connection instances using reflection.
-	 *
-	 * @param <Conn>
-	 *            The type of connections being built by this factory.
-	 * @author Donal Fellows
-	 */
-	public static abstract class ReflectiveConnectionFactory<Conn extends UDPConnection<
-			?>> implements ConnectionFactory<Conn> {
-		private final Class<Conn> connClass;
-
-		/**
-		 * Create an instance of this class.
-		 *
-		 * @param connClass
-		 *            The type of connections to manufacture.
-		 */
-		protected ReflectiveConnectionFactory(Class<Conn> connClass) {
-			this.connClass = connClass;
-		}
-
-		@Override
-		public final Class<Conn> getClassKey() {
-			return connClass;
-		}
-
-		@Override
-		public final Conn getInstance(InetAddress localAddress)
-				throws IOException {
-			try {
-				return connClass.getConstructor(InetAddress.class)
-						.newInstance(localAddress);
-			} catch (InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException
-					| NoSuchMethodException | SecurityException e) {
-				throw new RuntimeException("failed to build instance", e);
-			}
-		}
-
-		@Override
-		public final Conn getInstance(InetAddress localAddress, int localPort)
-				throws IOException {
-			try {
-				return connClass.getConstructor(InetAddress.class, Integer.TYPE)
-						.newInstance(localAddress, localPort);
-			} catch (InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException
-					| NoSuchMethodException | SecurityException e) {
-				throw new RuntimeException("failed to build instance", e);
-			}
-		}
 	}
 
 	@Override
