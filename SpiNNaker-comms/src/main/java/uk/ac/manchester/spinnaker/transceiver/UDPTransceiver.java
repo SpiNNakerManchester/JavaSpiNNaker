@@ -440,6 +440,11 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 }
 
+/**
+ * Makes EIEIO connections. For internal use only.
+ *
+ * @author Donal Fellows
+ */
 class EIEIOFactory
 		implements UDPTransceiver.ConnectionFactory<EIEIOConnection> {
 	@Override

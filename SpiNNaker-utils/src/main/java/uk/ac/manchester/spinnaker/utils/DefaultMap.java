@@ -86,13 +86,20 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            Can be an Object of a Class that implement KeyAwareFactory.
      *            Can be a method expressed as a lambda.
 	 */
-	private DefaultMap(Class<?> dummy,
+	private DefaultMap(Marker dummy,
 			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
-		dummy.getSuperclass();
 		direct = false;
 		defValue = null;
 		defFactory = null;
 		advFactory = requireNonNull(defaultFactory);
+	}
+
+	/**
+	 * A marker used only to differentiate a constructor.
+	 */
+	private static class Marker {
+		// Nothing interesting
+		static final Marker INSTANCE = new Marker();
 	}
 
 	/**
@@ -119,7 +126,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 */
 	public static <K, V> DefaultMap<K, V> newAdvancedDefaultMap(
 			KeyAwareFactory<? super K, ? extends V> keyAwareFactory) {
-		return new DefaultMap<>(keyAwareFactory.getClass(), keyAwareFactory);
+		return new DefaultMap<>(Marker.INSTANCE, keyAwareFactory);
 	}
 
 	private V defaultFactory(K key) {
