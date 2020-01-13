@@ -47,9 +47,9 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public abstract class UDPTransceiver implements AutoCloseable {
 	private static final Logger log = getLogger(UDPTransceiver.class);
 	/**
-	 * A map of port -> map of IP address -> (connection, listener) for UDP
-	 * connections. Note listener might be {@code null} if the connection has
-	 * not been listened to before.
+	 * A map of port &rarr; map of IP address &rarr; (connection, listener) for
+	 * UDP connections. Note listener might be {@code null} if the connection
+	 * has not been listened to before.
 	 * <p>
 	 * Used to keep track of what connection is listening on what port to ensure
 	 * only one type of traffic is received on any port for any interface
@@ -57,8 +57,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	private final Map<Integer, Map<InetAddress, Pair<?>>> connectionsByPort =
 			new DefaultMap<>(HashMap::new);
 	/**
-	 * A map of class -> list of (connection, listener) for UDP connections that
-	 * are listenable. Note that listener might be {@code null} if the
+	 * A map of class &rarr; list of (connection, listener) for UDP connections
+	 * that are listenable. Note that listener might be {@code null} if the
 	 * connection has not be listened to before.
 	 */
 	private final Map<Class<?>, List<Pair<?>>> connectionsByClass =
