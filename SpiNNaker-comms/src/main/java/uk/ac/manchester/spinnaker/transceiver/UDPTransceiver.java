@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,8 +33,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionListener;
+import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.connections.model.EIEIOMessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -137,7 +140,60 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		 *             If the connection can't be opened.
 		 */
 		Conn getInstance(InetAddress localAddress, int localPort)
-                throws IOException;
+				throws IOException;
+	}
+
+	/**
+	 * A connection factory that makes connection instances using reflection.
+	 *
+	 * @param <Conn>
+	 *            The type of connections being built by this factory.
+	 * @author Donal Fellows
+	 */
+	public static abstract class ReflectiveConnectionFactory<Conn extends UDPConnection<
+			?>> implements ConnectionFactory<Conn> {
+		private final Class<Conn> connClass;
+
+		/**
+		 * Create an instance of this class.
+		 *
+		 * @param connClass
+		 *            The type of connections to manufacture.
+		 */
+		protected ReflectiveConnectionFactory(Class<Conn> connClass) {
+			this.connClass = connClass;
+		}
+
+		@Override
+		public final Class<Conn> getClassKey() {
+			return connClass;
+		}
+
+		@Override
+		public final Conn getInstance(InetAddress localAddress)
+				throws IOException {
+			try {
+				return connClass.getConstructor(InetAddress.class)
+						.newInstance(localAddress);
+			} catch (InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException
+					| NoSuchMethodException | SecurityException e) {
+				throw new RuntimeException("failed to build instance", e);
+			}
+		}
+
+		@Override
+		public final Conn getInstance(InetAddress localAddress, int localPort)
+				throws IOException {
+			try {
+				return connClass.getConstructor(InetAddress.class, Integer.TYPE)
+						.newInstance(localAddress, localPort);
+			} catch (InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException
+					| NoSuchMethodException | SecurityException e) {
+				throw new RuntimeException("failed to build instance", e);
+			}
+		}
 	}
 
 	@Override
@@ -267,8 +323,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			if (pair.connection == null) {
 				log.info("creating connection on {}:{}", addr.getHostAddress(),
 						localPort);
-				pair.connection = connectionFactory
-						.getInstance(addr, localPort);
+				pair.connection =
+						connectionFactory.getInstance(addr, localPort);
 				addConnection(pair.connection);
 			}
 		} else {
@@ -278,8 +334,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			if (pair.connection == null) {
 				log.info("creating connection on {}:0 (arbitrary port)",
 						addr.getHostAddress());
-				pair.connection =
-						connectionFactory.getInstance(addr);
+				pair.connection = connectionFactory.getInstance(addr);
 				addConnection(pair.connection);
 			}
 		}
@@ -301,6 +356,69 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		connectionsByClass.get(connectionFactory.getClassKey()).add(pair);
 		pair.listener.addCallback(callback);
 		return pair.connection;
+	}
+
+	private static final EIEIOFactory EIEIO_FACTORY = new EIEIOFactory();
+
+	/**
+	 * Register a callback for EIEIO traffic to be received.
+	 *
+	 * @param callback
+	 *            Function to be called when a packet is received
+	 * @param localPort
+	 *            The optional port number to listen on; if not specified, an
+	 *            existing connection will be used if possible, otherwise a
+	 *            random free port number will be used
+	 * @param localHost
+	 *            The optional hostname or IP address to listen on; if not
+	 *            specified, all interfaces will be used for listening
+	 * @return The connection to be used
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
+	 * @throws IOException
+	 *             If the networking fails.
+	 */
+	public final EIEIOConnection registerEIEIOListener(
+			EIEIOMessageHandler callback, Integer localPort,
+			InetAddress localHost) throws IOException {
+		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
+				localPort, localHost);
+	}
+
+	/**
+	 * Register a callback for EIEIO traffic to be received.
+	 *
+	 * @param callback
+	 *            Function to be called when a packet is received
+	 * @param localPort
+	 *            The local UDP port to bind.
+	 * @return The connection to be used
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
+	 * @throws IOException
+	 *             If the networking fails.
+	 */
+	public final EIEIOConnection registerEIEIOListener(
+			EIEIOMessageHandler callback, int localPort) throws IOException {
+		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
+				localPort, null);
+	}
+
+	/**
+	 * Register a callback for EIEIO traffic to be received.
+	 *
+	 * @param callback
+	 *            Function to be called when a packet is received
+	 * @return The connection to be used
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
+	 * @throws IOException
+	 *             If the networking fails.
+	 */
+	public final EIEIOConnection registerEIEIOListener(
+			EIEIOMessageHandler callback) throws IOException {
+		return (EIEIOConnection) registerUDPListener(callback, EIEIO_FACTORY,
+				null, null);
 	}
 
 	@SuppressWarnings({
@@ -373,5 +491,26 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			}
 		}
 		return new Pair<>(null, null);
+	}
+}
+
+class EIEIOFactory
+		implements UDPTransceiver.ConnectionFactory<EIEIOConnection> {
+	@Override
+	public Class<EIEIOConnection> getClassKey() {
+		// TODO Auto-generated method stub
+		return EIEIOConnection.class;
+	}
+
+	@Override
+	public EIEIOConnection getInstance(InetAddress localAddress)
+			throws IOException {
+		return new EIEIOConnection(localAddress);
+	}
+
+	@Override
+	public EIEIOConnection getInstance(InetAddress localAddress, int localPort)
+			throws IOException {
+		return new EIEIOConnection(localAddress, localPort);
 	}
 }

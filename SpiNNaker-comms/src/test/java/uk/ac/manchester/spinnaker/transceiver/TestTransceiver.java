@@ -18,7 +18,13 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
@@ -29,7 +35,6 @@ import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +58,6 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
-import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 @NotThreadSafe
@@ -167,15 +171,14 @@ class TestTransceiver {
 		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
-			EIEIOConnectionFactory cf = new EIEIOConnectionFactory();
 			// Register a UDP listeners
-			Connection c1 = txrx.registerUDPListener(null, cf);
+			Connection c1 = txrx.registerEIEIOListener(null);
 			assertTrue(c1 == orig, "first connection must be original");
-			Connection c2 = txrx.registerUDPListener(null, cf);
+			Connection c2 = txrx.registerEIEIOListener(null);
 			assertTrue(c2 == orig, "second connection must be original");
-			Connection c3 = txrx.registerUDPListener(null, cf, port);
+			Connection c3 = txrx.registerEIEIOListener(null, port);
 			assertTrue(c3 == orig, "third connection must be original");
-			Connection c4 = txrx.registerUDPListener(null, cf, port + 1);
+			Connection c4 = txrx.registerEIEIOListener(null, port + 1);
 			assertFalse(c4 == orig, "fourth connection must not be original");
 		}
 	}
@@ -293,24 +296,5 @@ class MockWriteTransceiver extends Transceiver {
 	public void writeMemory(HasCoreLocation core, int baseAddress,
 			ByteBuffer data) {
 		writtenMemory.add(new Write(core, baseAddress, data));
-	}
-}
-
-class EIEIOConnectionFactory implements ConnectionFactory<EIEIOConnection> {
-	@Override
-	public Class<EIEIOConnection> getClassKey() {
-		return EIEIOConnection.class;
-	}
-
-	@Override
-	public EIEIOConnection getInstance(InetAddress localAddress)
-			throws IOException {
-		return new EIEIOConnection(localAddress, null, null, null);
-	}
-
-	@Override
-	public EIEIOConnection getInstance(InetAddress localAddress, int localPort)
-			throws IOException {
-		return new EIEIOConnection(localAddress, localPort, null, null);
 	}
 }
