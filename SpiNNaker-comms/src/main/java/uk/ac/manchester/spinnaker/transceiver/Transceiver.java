@@ -306,13 +306,13 @@ public class Transceiver extends UDPTransceiver
 	 * A map of IP address &rarr; SCAMP connection. These are those that can be
 	 * used for setting up IP Tags.
 	 */
-	private final Map<InetAddress, SCPConnection> udpScampConnections =
+	private final Map<InetAddress, SCPConnection> udpScpConnections =
 			new HashMap<>();
 	/**
 	 * A list of all connections that can be used to send and receive SCP
 	 * messages for SCAMP interaction.
 	 */
-	private final List<SCPConnection> scampConnections = new ArrayList<>();
+	private final List<SCPConnection> scpConnections = new ArrayList<>();
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
 	/** Connection selectors for the BMP processes. */
@@ -456,7 +456,10 @@ public class Transceiver extends UDPTransceiver
 			connections.add(new SCPConnection(desc.chip, desc.hostname,
 					desc.portNumber));
 		}
-		scpSelector = identifyConnections(connections);
+		for (Connection conn : connections) {
+			identifyConnection(conn);
+		}
+		scpSelector = makeConnectionSelector();
 		checkBMPConnections();
 	}
 
@@ -550,7 +553,7 @@ public class Transceiver extends UDPTransceiver
 			((MachineAware) scpSelector).setMachine(machine);
 		}
 		log.info("known connections to this transceiver: {}",
-				udpScampConnections);
+				udpScpConnections);
 	}
 
 	private static List<ConnectionDescriptor> generateScampConnections(
@@ -620,64 +623,72 @@ public class Transceiver extends UDPTransceiver
 						desc.portNumber));
 			}
 		}
-		scpSelector = identifyConnections(connections);
+		for (Connection conn : connections) {
+			identifyConnection(conn);
+		}
+		scpSelector = makeConnectionSelector();
 		checkBMPConnections();
 	}
 
-	private ConnectionSelector<SCPConnection> identifyConnections(
-			Collection<Connection> connections) {
-		for (Connection conn : connections) {
-			// locate the only boot send conn
-			if (conn instanceof BootSender) {
-				if (bootSendConnection != null) {
-					throw new IllegalArgumentException(
-							"Only a single BootSender can be specified");
-				}
-				bootSendConnection = (BootSender) conn;
-			}
+	private ConnectionSelector<SCPConnection> makeConnectionSelector() {
+		return new MostDirectConnectionSelector<SCPConnection>(machine,
+				scpConnections);
+	}
 
-			// locate any boot receiver connections
-			if (conn instanceof BootReceiver) {
-				bootReceiveConnections.add((BootReceiver) conn);
+	/**
+	 * Work out what is going on with a connection. There are many types of
+	 * connections, and some connections are several different things at once.
+	 *
+	 * @param conn
+	 *            The connection to be handled.
+	 */
+	private void identifyConnection(Connection conn) {
+		// locate the only boot send conn
+		if (conn instanceof BootSender) {
+			if (bootSendConnection != null) {
+				throw new IllegalArgumentException(
+						"Only a single BootSender can be specified");
 			}
-
-			// Locate any connections listening on a UDP port
-			if (conn instanceof UDPConnection) {
-				registerConnection((UDPConnection<?>) conn);
-			}
-
-			/*
-			 * Locate any connections that can send SCP (that are not BMP
-			 * connections)
-			 */
-			if (conn instanceof SCPSender && !(conn instanceof BMPConnection)) {
-				scpSenderConnections.add((SCPSender) conn);
-			}
-
-			// Locate any connections that can send SDP
-			if (conn instanceof SDPSender) {
-				sdpSenderConnections.add((SDPSender) conn);
-			}
-
-			// Locate any connections that can send and receive SCP
-			if (conn instanceof SCPSender && conn instanceof SCPReceiver) {
-				// If it is a BMP connection, add it here
-				if (conn instanceof BMPConnection) {
-					BMPConnection bmpc = (BMPConnection) conn;
-					bmpConnections.add(bmpc);
-					bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
-							new SingletonConnectionSelector<>(bmpc));
-				} else if (conn instanceof SCPConnection) {
-					SCPConnection scamp = (SCPConnection) conn;
-					scampConnections.add(scamp);
-					udpScampConnections.put(scamp.getRemoteIPAddress(), scamp);
-				}
-			}
+			bootSendConnection = (BootSender) conn;
 		}
 
-		// update the transceiver with the connection selectors.
-		return new MostDirectConnectionSelector<SCPConnection>(machine,
-				scampConnections);
+		// locate any boot receiver connections
+		if (conn instanceof BootReceiver) {
+			bootReceiveConnections.add((BootReceiver) conn);
+		}
+
+		// Locate any connections listening on a UDP port
+		if (conn instanceof UDPConnection) {
+			registerConnection((UDPConnection<?>) conn);
+		}
+
+		/*
+		 * Locate any connections that can send SCP (that are not BMP
+		 * connections)
+		 */
+		if (conn instanceof SCPSender && !(conn instanceof BMPConnection)) {
+			scpSenderConnections.add((SCPSender) conn);
+		}
+
+		// Locate any connections that can send SDP
+		if (conn instanceof SDPSender) {
+			sdpSenderConnections.add((SDPSender) conn);
+		}
+
+		// Locate any connections that can send and receive SCP
+		if (conn instanceof SCPSender && conn instanceof SCPReceiver) {
+			// If it is a BMP connection, add it here
+			if (conn instanceof BMPConnection) {
+				BMPConnection bmpc = (BMPConnection) conn;
+				bmpConnections.add(bmpc);
+				bmpSelectors.put(new BMPCoords(bmpc.cabinet, bmpc.frame),
+						new SingletonConnectionSelector<>(bmpc));
+			} else if (conn instanceof SCPConnection) {
+				SCPConnection scpc = (SCPConnection) conn;
+				scpConnections.add(scpc);
+				udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
+			}
+		}
 	}
 
 	/**
@@ -691,7 +702,7 @@ public class Transceiver extends UDPTransceiver
 	private Collection<SCPConnection> getConnectionList(
 			InetAddress boardAddress) {
 		if (boardAddress == null) {
-			return scampConnections;
+			return scpConnections;
 		}
 		SCPConnection connection = locateSpinnakerConnection(boardAddress);
 		if (connection == null) {
@@ -711,7 +722,7 @@ public class Transceiver extends UDPTransceiver
 	private Collection<SCPConnection> getConnectionList(
 			SCPConnection connection) {
 		if (connection == null) {
-			return scampConnections;
+			return scpConnections;
 		}
 		return singletonList(connection);
 	}
@@ -907,7 +918,7 @@ public class Transceiver extends UDPTransceiver
 		 * update the SCAMP connections replacing any x and y with the default
 		 * SCP request params with the boot chip coordinates
 		 */
-		for (SCPConnection sc : scampConnections) {
+		for (SCPConnection sc : scpConnections) {
 			if (sc.getChip().equals(BOOT_CHIP)) {
 				sc.setChip(machine.boot);
 			}
@@ -944,7 +955,7 @@ public class Transceiver extends UDPTransceiver
 		 * Currently, this only finds other UDP connections given a connection
 		 * that supports SCP - this is done via the machine
 		 */
-		if (scampConnections.isEmpty()) {
+		if (scpConnections.isEmpty()) {
 			return Collections.emptyList();
 		}
 
@@ -957,7 +968,7 @@ public class Transceiver extends UDPTransceiver
 				.getPotentialRootChips(dims)) {
 			InetAddress ipAddress = getByAddress(
 					(byte[]) getSystemVariable(chip, ethernet_ip_address));
-			if (udpScampConnections.containsKey(ipAddress)) {
+			if (udpScpConnections.containsKey(ipAddress)) {
 				continue;
 			}
 			SCPConnection conn = searchForProxies(chip);
@@ -967,15 +978,15 @@ public class Transceiver extends UDPTransceiver
 				conn = new SCPConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
-				udpScampConnections.remove(conn.getRemoteIPAddress());
+				udpScpConnections.remove(conn.getRemoteIPAddress());
 			}
 
 			// check if it works
 			if (checkConnection(conn, chip)) {
 				scpSenderConnections.add(conn);
 				allConnections.add(conn);
-				udpScampConnections.put(ipAddress, conn);
-				scampConnections.add(conn);
+				udpScpConnections.put(ipAddress, conn);
+				scpConnections.add(conn);
 				newConnections.add(conn);
 			} else {
 				log.warn(
@@ -998,7 +1009,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return connection or {@code null} if there is no such connection
 	 */
 	private SCPConnection searchForProxies(ChipLocation chip) {
-		for (SCPConnection connection : scampConnections) {
+		for (SCPConnection connection : scpConnections) {
 			if (connection.getChip().equals(chip)) {
 				return connection;
 			}
@@ -1057,7 +1068,7 @@ public class Transceiver extends UDPTransceiver
 		if (connection != null) {
 			return connectedTest(connection);
 		}
-		return scampConnections.stream().anyMatch(this::connectedTest);
+		return scpConnections.stream().anyMatch(this::connectedTest);
 	}
 
 	private boolean connectedTest(Connection c) {
@@ -1208,7 +1219,7 @@ public class Transceiver extends UDPTransceiver
 		 * Change the default SCP timeout on the machine, keeping the old one to
 		 * revert at close
 		 */
-		for (SCPConnection connection : scampConnections) {
+		for (SCPConnection connection : scpConnections) {
 			simpleProcess().execute(
 					new IPTagSetTTO(connection.getChip(), TIMEOUT_2560_ms));
 		}
@@ -1898,7 +1909,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelSafe
 	public SCPConnection locateSpinnakerConnection(InetAddress boardAddress) {
-		return udpScampConnections.get(boardAddress);
+		return udpScpConnections.get(boardAddress);
 	}
 
 	@Override
