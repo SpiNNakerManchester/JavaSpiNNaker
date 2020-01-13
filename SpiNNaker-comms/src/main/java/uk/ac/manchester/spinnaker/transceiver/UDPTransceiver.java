@@ -444,7 +444,6 @@ class EIEIOFactory
 		implements UDPTransceiver.ConnectionFactory<EIEIOConnection> {
 	@Override
 	public Class<EIEIOConnection> getClassKey() {
-		// TODO Auto-generated method stub
 		return EIEIOConnection.class;
 	}
 
