@@ -303,8 +303,8 @@ public class Transceiver extends UDPTransceiver
 	/** A list of all connections that can be used to send SDP messages. */
 	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
 	/**
-	 * A map of IP address -> SCAMP connection. These are those that can be used
-	 * for setting up IP Tags.
+	 * A map of IP address &rarr; SCAMP connection. These are those that can be
+	 * used for setting up IP Tags.
 	 */
 	private final Map<InetAddress, SCPConnection> udpScampConnections =
 			new HashMap<>();

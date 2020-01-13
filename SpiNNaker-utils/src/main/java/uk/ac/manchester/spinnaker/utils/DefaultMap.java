@@ -103,7 +103,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
      * The Factory can be a lambda method to create a me value based on the key.
      * <br>For example:
      * <p>
-     * {@code DefaultMap.newAdvancedDefaultMap(i->i*2);}
+     * {@code DefaultMap.newAdvancedDefaultMap(i -> i*2);}
      * <p>
      * The Factory can also be a Object of a class that implements the
      * KeyAwareFactory interface.

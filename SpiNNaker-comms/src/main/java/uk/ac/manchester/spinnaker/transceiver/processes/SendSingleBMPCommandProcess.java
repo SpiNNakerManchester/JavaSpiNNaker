@@ -154,7 +154,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	private final class RequestPipeline {
 		/** The connection over which the communication is to take place. */
 		private BMPConnection connection;
-		/** A dictionary of sequence number -> requests in progress. */
+		/** A dictionary of sequence number &rarr; requests in progress. */
 		private final Map<Integer, Request> requests =
 				synchronizedMap(new HashMap<>());
 

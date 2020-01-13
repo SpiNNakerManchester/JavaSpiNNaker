@@ -58,7 +58,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 /** A process for getting the machine details over a set of connections. */
 public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
-	/** A dictionary of (x, y) -> ChipInfo. */
+	/** A dictionary of (x, y) &rarr; ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
 	private final Set<ChipLocation> ignoreChips;
 	private final Map<ChipLocation, Set<Integer>> ignoreCoresMap;
