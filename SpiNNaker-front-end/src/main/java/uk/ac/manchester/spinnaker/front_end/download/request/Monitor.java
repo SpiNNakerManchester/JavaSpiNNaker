@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.util.Collections.emptyList;
-
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -115,7 +115,8 @@ public class Monitor implements HasCoreLocation {
     public void updateTransactionIdFromMachine(Transceiver txrx)
             throws IOException, ProcessException {
         int address = txrx.getUser1RegisterAddress(this);
-        this.transactionId = txrx.readMemory(this, address, 4).getInt();
+        this.transactionId =
+                txrx.readMemory(this, address, WORD_SIZE).getInt();
     }
 
     /**
