@@ -155,7 +155,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		gathererForChip = new HashMap<>();
 		monitorForChip = new HashMap<>();
 		monitorsForBoard = new HashMap<>();
-		buildMaps(gatherers);
 
 		try {
 			txrx = new Transceiver(machine);
@@ -163,6 +162,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			throw new IllegalStateException("failed to talk to BMP, "
 					+ "but that shouldn't have happened at all", e);
 		}
+
+	    buildMaps(gatherers);
 	}
 
 	private void buildMaps(List<Gather> gatherers)
