@@ -20,10 +20,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Data speed up packet gatherer description.
@@ -100,6 +104,21 @@ public class Gather implements HasCoreLocation {
 	 */
     public int getNextTransactionId() {
 		return ++transactionId;
+    }
+
+    /**
+     * sets the transaction id from the machine.
+     * @param txrx
+     *          spinnman instance
+     * @throws ProcessException
+     *          If SpiNNaker rejects a message.
+     * @throws IOException
+     *          If anything goes wrong with networking.
+     */
+    public void updateTransactionIdFromMachine(Transceiver txrx)
+            throws IOException, ProcessException {
+        int address = txrx.getUser1RegisterAddress(this);
+        this.transactionId = txrx.readMemory(this, address, 4).getInt();
     }
 
     /**

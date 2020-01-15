@@ -20,9 +20,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.util.Collections.emptyList;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * Extra monitor core information.
  *
@@ -97,6 +101,21 @@ public class Monitor implements HasCoreLocation {
 
     public int getTransactionId() {
         return this.transactionId;
+    }
+
+    /**
+     * gets the transaction id from the machine and updates.
+     * @param txrx
+     *          the spinnman instance.
+     * @throws ProcessException
+     *          If SpiNNaker rejects a message.
+     * @throws IOException
+     *          If anything goes wrong with networking.
+     */
+    public void updateTransactionIdFromMachine(Transceiver txrx)
+            throws IOException, ProcessException {
+        int address = txrx.getUser1RegisterAddress(this);
+        this.transactionId = txrx.readMemory(this, address, 4).getInt();
     }
 
     /**

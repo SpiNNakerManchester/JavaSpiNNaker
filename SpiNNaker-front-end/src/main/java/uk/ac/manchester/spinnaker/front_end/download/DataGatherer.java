@@ -263,7 +263,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		for (Gather g : gatherers) {
 			List<WorkItems> workitems = new ArrayList<>();
 			for (Monitor m : g.getMonitors()) {
-				for (Placement p : m.getPlacements()) {
+				m.updateTransactionIdFromMachine(txrx);
+
+			    for (Placement p : m.getPlacements()) {
 					List<List<Region>> regions = new ArrayList<>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
 						List<Region> r = getRegion(p, id);

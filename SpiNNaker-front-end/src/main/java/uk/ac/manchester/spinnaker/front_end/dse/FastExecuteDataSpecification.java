@@ -165,9 +165,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private void buildMaps(List<Gather> gatherers) {
+	private void buildMaps(List<Gather> gatherers)
+	        throws IOException, ProcessException {
 		for (Gather g : gatherers) {
-			ChipLocation gathererChip = g.asChipLocation();
+			g.updateTransactionIdFromMachine(txrx);
+		    ChipLocation gathererChip = g.asChipLocation();
 			gathererForChip.put(gathererChip, g);
 			CoreSubsets boardMonitorCores = monitorsForBoard
 					.computeIfAbsent(gathererChip, x -> new CoreSubsets());
