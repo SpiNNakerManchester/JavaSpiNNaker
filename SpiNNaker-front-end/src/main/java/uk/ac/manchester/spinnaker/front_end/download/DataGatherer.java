@@ -371,7 +371,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			GatherDownloadConnection conn, Progress bar)
 			throws IOException, StorageException, TimeoutException,
 			ProcessException {
-
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
