@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * A message used to request fast data transfer from SpiNNaker to Host.
  */
 public final class StartSendingMessage extends GatherProtocolMessage {
-	private static final int NUM_WORDS = 3;
+	private static final int NUM_WORDS = 4;
 
 	/**
 	 * Create a message used to request fast data transfer from SpiNNaker to
@@ -42,13 +42,16 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 	 *            Where to start reading from
 	 * @param length
 	 *            How many bytes to read
+	 * @param transactionId
+	 *            the transaction id needed
 	 * @return The created message.
 	 */
 	static StartSendingMessage create(HasCoreLocation destination, int address,
-			int length) {
+			int length, int transactionId) {
 		ByteBuffer payload =
 				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		payload.putInt(START_SENDING_DATA.value);
+		payload.putInt(transactionId);
 		payload.putInt(address);
 		payload.putInt(length);
 		payload.flip();

@@ -26,7 +26,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /**
  * Extra monitor core information.
  *
- * @author Christian-B
+ * @author Christian-B and Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
@@ -38,6 +38,10 @@ public class Monitor implements HasCoreLocation {
 	private final int p;
     /** The vertex placements that this monitor will read. */
     private final List<Placement> placements;
+    /** The transaction id for this extra monitor. */
+    private int transactionId = 0;
+    /** cap of where a transaction id will get to. */
+    private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
     /**
 	 * Constructor with minimum information needed.
@@ -81,6 +85,18 @@ public class Monitor implements HasCoreLocation {
     @Override
     public int getP() {
         return p;
+    }
+
+    /**
+     * updates the transaction id by 1 and wraps with the cap.
+     */
+    public void updateTransactionId() {
+        this.transactionId =
+            (this.transactionId + 1) & Monitor.TRANSACTION_ID_CAP;
+    }
+
+    public int getTransactionId() {
+        return this.transactionId;
     }
 
     /**

@@ -40,9 +40,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** Number of words of overhead in a first message. */
-	private static final int FIRST_OVERHEAD_WORDS = 2;
+	private static final int FIRST_OVERHEAD_WORDS = 3;
 	/** Number of words of overhead in a subsequent message. */
-	private static final int NEXT_OVERHEAD_WORDS = 1;
+	private static final int NEXT_OVERHEAD_WORDS = 2;
 	/** How many sequence numbers fit in the first message. */
 	private static final int MAX_FIRST_SIZE =
 			SDP_PAYLOAD_WORDS - FIRST_OVERHEAD_WORDS;
@@ -94,10 +94,13 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 *            Where to send the messages
 	 * @param missingSeqs
 	 *            The collection of missing sequence numbers.
+	 * @param transactionId
+	 *             The transaction id of this stream.
 	 * @return Iterable of the messages to send.
 	 */
 	static Iterable<MissingSequenceNumbersMessage> createMessages(
-			HasCoreLocation destination, List<Integer> missingSeqs) {
+			HasCoreLocation destination, List<Integer> missingSeqs,
+			int transactionId) {
 		List<Integer> work = reduce(missingSeqs);
 		int numPackets = computeNumberOfPackets(work.size());
 		CoreLocation dest = destination.asCoreLocation();
@@ -118,10 +121,12 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 				if (pktNum++ == 0) {
 					data = allocateWords(remaining, FIRST_OVERHEAD_WORDS);
 					data.putInt(START_MISSING_SEQS.value);
+					data.putInt(transactionId);
 					data.putInt(numPackets);
 				} else {
 					data = allocateWords(remaining, NEXT_OVERHEAD_WORDS);
 					data.putInt(NEXT_MISSING_SEQS.value);
+					data.putInt(transactionId);
 				}
 
 				// Write body

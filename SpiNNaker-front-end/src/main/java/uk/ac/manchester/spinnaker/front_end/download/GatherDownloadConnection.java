@@ -79,14 +79,31 @@ final class GatherDownloadConnection extends SDPConnection {
 	 *            Where to read from.
 	 * @param length
 	 *            How many bytes to read.
+	 * @param transactionId
+	 *             The transaction id of this stream.
 	 * @throws IOException
 	 *             If message sending fails.
 	 */
-	void sendStart(CoreLocation extraMonitorCore, int address, int length)
-			throws IOException {
+	void sendStart(
+	        CoreLocation extraMonitorCore, int address, int length,
+	        int transactionId) throws IOException {
 		sendMsg(StartSendingMessage.create(extraMonitorCore, address,
-				length));
+				length, transactionId));
 	}
+
+	/**
+	 * Sends a message telling the extra monitor to stop sending FR packets.
+	 * @param extraMonitorCore
+	 *             The location of the monitor.
+     * @param transactionId
+     *             The transaction id of this stream.
+	 * @throws IOException
+     *             If message sending fails.
+	 */
+	void sendClear(CoreLocation extraMonitorCore, int transactionId)
+	        throws IOException {
+        sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
+    }
 
 	/**
 	 * Send a message asking the extra monitor core to ask it to resend some

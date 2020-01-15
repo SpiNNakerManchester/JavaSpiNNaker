@@ -56,7 +56,6 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.SystemRouterTableContext;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
@@ -101,7 +100,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * number of words in an SDP packet; that extra word is the control word
 	 * which encodes the sequence number and the end-of-stream flag.
 	 */
-	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 1;
+	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 2;
 	/**
 	 * Mask used to pick out the bit that says whether a sequence number is the
 	 * last in a stream.
@@ -384,8 +383,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 					 * same way to get the data in the DB in the right order.
 					 */
 					for (Region region : regionsOnCore) {
-						ByteBuffer data = dl.doDownload(
-								item.monitor.asCoreLocation(), region);
+						ByteBuffer data = dl.doDownload(item.monitor, region);
 						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
 							compareDownloadWithSCP(region, data);
 						}
@@ -588,7 +586,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		private BitSet expectedSeqNums;
 		private int maxSeqNum;
 		private ByteBuffer dataReceiver;
-		private CoreLocation monitorCore;
+		private Monitor monitorCore;
 		private List<Integer> lastRequested;
 
 		/**
@@ -617,7 +615,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws ProcessException
 		 *             If anything unexpected goes wrong.
 		 */
-		ByteBuffer doDownload(CoreLocation extraMonitor, Region region)
+		ByteBuffer doDownload(Monitor extraMonitor, Region region)
 				throws IOException, TimeoutException, ProcessException {
 			monitorCore = extraMonitor;
 			dataReceiver = ByteBuffer.allocate(region.size);
@@ -637,15 +635,23 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = expectedSeqs();
 			received = false;
 			timeoutcount = 0;
+			monitorCore.updateTransactionId();
 			log.debug(
-			        "extracting data from {} with size {}",
-			        region.startAddress, region.size);
-			conn.sendStart(monitorCore, region.startAddress, region.size);
+			    "extracting data from {} with size {} with transaction id {}",
+			        region.startAddress, region.size,
+			        monitorCore.getTransactionId());
+			conn.sendStart(
+			        monitorCore.asCoreLocation(), region.startAddress,
+			        region.size, monitorCore.getTransactionId());
 			try {
 				boolean finished;
 				do {
-					finished = processOnePacket(TIMEOUT_PER_RECEIVE);
+					finished = processOnePacket(
+					    TIMEOUT_PER_RECEIVE, monitorCore.getTransactionId());
 				} while (!finished);
+				conn.sendClear(
+				        monitorCore.asCoreLocation(),
+				        monitorCore.getTransactionId());
 			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
@@ -666,6 +672,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param timeout
 		 *            How long to wait for the queue to deliver a packet, in
 		 *            milliseconds.
+		 * @param transactionID
+         *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If packet reception or retransmission requesting fails.
@@ -674,17 +682,17 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *             making no progress.
 		 * @throws ProcessException
 		 */
-		private boolean processOnePacket(int timeout)
+		private boolean processOnePacket(int timeout, int transactionId)
 				throws IOException, TimeoutException, ProcessException {
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
-				return processData(p);
+				return processData(p, transactionId);
 			}
 			log.error(
 			        "failed to receive on socket {}:{}.",
 			        conn.getLocalPort(), conn.getLocalIPAddress());
-			return processTimeout();
+			return processTimeout(transactionId);
 		}
 
 		/**
@@ -692,6 +700,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *
 		 * @param data
 		 *            The content of the packet.
+		 * @param transactionID
+		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If the packet is an end-of-stream packet yet there are
@@ -700,9 +710,15 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
 		 */
-		private boolean processData(ByteBuffer data)
+		private boolean processData(ByteBuffer data, int transactionId)
 				throws IOException, TimeoutException {
 			int seqNum = data.getInt();
+			int responseTransactionId = data.getInt();
+
+			if (responseTransactionId != transactionId) {
+			    return false;
+			}
+
 			boolean isEndOfStream =
 					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
@@ -729,12 +745,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			if (!isEndOfStream) {
 				return false;
 			}
-			return retransmitMissingSequences();
+			return retransmitMissingSequences(transactionId);
 		}
 
 		/**
 		 * Process the fact that the message queue was in a timeout state.
-		 *
+		 * @param transactionId
+         *             The transaction id of this stream
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If there are packets outstanding, and the retransmission
@@ -742,7 +759,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout.
 		 */
-		private boolean processTimeout() throws IOException, TimeoutException {
+		private boolean processTimeout(int transactionId)
+		        throws IOException, TimeoutException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
@@ -750,26 +768,27 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 			// retransmit missing packets
 			log.debug("doing reinjection");
-			return retransmitMissingSequences();
+			return retransmitMissingSequences(transactionId);
 		}
 
 		/**
 		 * Request that the extra monitor core retransmit some packets. Does
 		 * nothing if there are no packets missing.
-		 *
+		 * @param transactionId
+		 *             The transaction id of this stream
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
 		 *             If there are failures.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
 		 */
-		private boolean retransmitMissingSequences()
+		private boolean retransmitMissingSequences(int transactionId)
 				throws IOException, TimeoutException {
 			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
 			}
-			log.info("there are {} missing packets in message from {}",
+			log.debug("there are {} missing packets in message from {}",
 					numMissing, monitorCore);
 
 			// Build a list of the sequence numbers of all missing packets
@@ -785,8 +804,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = missingSeqs;
 
 			// Transmit missing sequences as a new SDP Packet
-			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
-					missingSeqs)) {
+			for (MissingSequenceNumbersMessage msg : createMessages(
+			        monitorCore, missingSeqs, transactionId)) {
 				snooze(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
