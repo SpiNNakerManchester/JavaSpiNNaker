@@ -105,7 +105,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
-	private static final int TIMEOUT_RETRY_LIMIT = 20;
+	private static final int TIMEOUT_RETRY_LIMIT = 100;
 
 	/** flag for saying missing all SEQ numbers. */
 	private static final int FLAG_FOR_MISSING_ALL_SEQUENCES = 0xFFFFFFFE;

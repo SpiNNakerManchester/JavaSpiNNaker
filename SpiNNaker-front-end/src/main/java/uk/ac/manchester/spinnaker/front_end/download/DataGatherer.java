@@ -78,7 +78,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
 	/** The maximum number of times to retry. */
-	private static final int TIMEOUT_RETRY_LIMIT = 20;
+	private static final int TIMEOUT_RETRY_LIMIT = 100;
 	/**
 	 * The time delay between sending each message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
@@ -88,7 +88,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * The timeout when receiving a message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
-	private static final int TIMEOUT_PER_RECEIVE = 1000;
+	private static final int TIMEOUT_PER_RECEIVE = 2000;
 	/**
 	 * The <i>extra</i> timeout for processing the message queue. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
