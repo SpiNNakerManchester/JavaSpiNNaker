@@ -630,7 +630,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			timeoutcount = 0;
 			monitorCore.updateTransactionId();
 			log.debug(
-					"extracting data from {} with size {} with transaction id {}",
+					"extracting data from {} with size {} with "
+							+ "transaction id {}",
 					region.startAddress, region.size,
 					monitorCore.getTransactionId());
 			conn.sendStart(monitorCore.asCoreLocation(), region.startAddress,

@@ -147,8 +147,8 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	public NoDropPacketContext(Transceiver txrx,
-			List<? extends HasCoreLocation> monitorCoreLocations, Gather gatherer)
-			throws IOException, ProcessException {
+			List<? extends HasCoreLocation> monitorCoreLocations,
+			Gather gatherer) throws IOException, ProcessException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations),
 				convertToCoreSubset(gatherer));
 	}
