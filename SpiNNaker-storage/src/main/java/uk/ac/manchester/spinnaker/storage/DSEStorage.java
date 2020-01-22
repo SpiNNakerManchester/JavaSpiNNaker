@@ -144,7 +144,7 @@ public interface DSEStorage extends DatabaseAPI {
 		public final CoreLocation core;
 
 		/**
-		 * The size to write.
+		 * The size of region to allocate and write into.
 		 */
 		public final int sizeToWrite;
 
@@ -171,6 +171,8 @@ public interface DSEStorage extends DatabaseAPI {
 		 *            The P coordinate of the core.
 		 * @param appID
 		 *            The application identifier.
+		 * @param sizeToWrite
+		 *            Number of bytes to be written, as computed by DSG.
 		 */
 		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite) {
 			this.core = new CoreLocation(x, y, p);
