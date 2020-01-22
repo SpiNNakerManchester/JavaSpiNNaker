@@ -42,15 +42,17 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 /**
  * Manufactures Fast Data In protocol messages.
  *
- * @author Donal Fellows & Alan Stokes
+ * @author Donal Fellows
+ * @author Alan Stokes
  */
 class FastDataInProtocol {
 	/** Items of data a SDP packet can hold when SCP header removed. */
 	static final int BYTES_PER_FULL_PACKET = SDP_PAYLOAD_WORDS * WORD_SIZE;
 	// 272 bytes as removed SCP header
 
-	/** size of the location data packet (command, transaction id,
-	 * start sdram address, x and y, and max packet number.
+	/**
+	 * size of the location data packet (command, transaction id, start sdram
+	 * address, x and y, and max packet number.
 	 */
 	static final int BYTES_FOR_LOCATION_PACKET = 5 * WORD_SIZE;
 
@@ -64,8 +66,9 @@ class FastDataInProtocol {
 	static final int DATA_IN_FULL_PACKET_WITH_KEY =
 			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_KEY;
 
-	/** size for data to store when sending tell packet (command id,
-	 * transaction id).
+	/**
+	 * size for data to store when sending tell packet (command id, transaction
+	 * id).
 	 */
 	static final int BYTES_FOR_TELL_PACKET = 2 * WORD_SIZE;
 
@@ -81,7 +84,7 @@ class FastDataInProtocol {
 	 * @param gathererCore
 	 *            The gatherer core on the board that messages will be routed
 	 *            via.
-	 * @param monitorChipSEND_DATA_TO_LOCATION
+	 * @param monitorChip
 	 *            The extra monitor core on the board that is the destination
 	 *            for the messages.
 	 */
@@ -135,7 +138,7 @@ class FastDataInProtocol {
 	 *            The sequence number of this chunk.
 	 *
 	 * @param transactionId
-	 * 			  The transaction id for this stream.
+	 *            The transaction id for this stream.
 	 *
 	 * @return The message containing a chunk of the data.
 	 */
@@ -172,13 +175,14 @@ class FastDataInProtocol {
 
 	/**
 	 * generates the tell message.
+	 *
 	 * @param transactionId
-	 * 			The transaction id for this stream.
+	 *            The transaction id for this stream.
 	 * @return The message indicating the end of the data.
 	 */
 	SDPMessage tellDataIn(int transactionId) {
-		ByteBuffer payload = allocate(BYTES_FOR_TELL_PACKET).order(
-				LITTLE_ENDIAN);
+		ByteBuffer payload =
+				allocate(BYTES_FOR_TELL_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_TELL_DATA_IN.value);
 		payload.putInt(transactionId);
 		payload.flip();
@@ -193,7 +197,6 @@ class FastDataInProtocol {
 	 * @return The number of packets (i.e. 1 more than the max sequence number).
 	 */
 	static int computeNumPackets(ByteBuffer data) {
-		return ceildiv(
-				data.remaining(), DATA_IN_FULL_PACKET_WITH_KEY);
+		return ceildiv(data.remaining(), DATA_IN_FULL_PACKET_WITH_KEY);
 	}
 }

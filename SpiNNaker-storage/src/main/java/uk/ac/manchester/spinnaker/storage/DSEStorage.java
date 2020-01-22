@@ -38,9 +38,10 @@ public interface DSEStorage extends DatabaseAPI {
 	int countWorkRequired() throws StorageException;
 
 	/**
-	 * gets a size for a given core on a given ethernet.
+	 * Get a size for a given core on a given ethernet chip.
+	 *
 	 * @param coreToLoad
-     *            The instruction to load a particular core.
+	 *            The instruction to load a particular core.
 	 * @return The size required for the DSE for this given core.
 	 */
 	int getSizeForCore(CoreToLoad coreToLoad);

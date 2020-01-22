@@ -243,9 +243,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(
-		        int id, int x, int y, int p, int appID,
-		        int sizeToWrite) {
+		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
+				int sizeToWrite) {
 			super(x, y, p, appID, sizeToWrite);
 			this.id = id;
 		}
@@ -270,9 +269,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
-    @Override
-    public int getSizeForCore(CoreToLoad coreToLoad) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+	@Override
+	public int getSizeForCore(CoreToLoad coreToLoad) {
+		return 0; // FIXME incomplete method
+	}
 }

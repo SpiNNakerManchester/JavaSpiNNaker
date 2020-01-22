@@ -278,8 +278,8 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
-				SCP_TIMEOUT, retryTracker);
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, SCP_TIMEOUT,
+				retryTracker);
 	}
 
 	/**
@@ -298,8 +298,8 @@ public class SCPRequestPipeline {
 	public SCPRequestPipeline(SCPConnection connection, int packetTimeout,
 			RetryTracker retryTracker) {
 		this(connection, DEFAULT_NUM_CHANNELS,
-				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES,
-				packetTimeout, retryTracker);
+				DEFAULT_INTERMEDIATE_TIMEOUT_WAITS, SCP_RETRIES, packetTimeout,
+				retryTracker);
 	}
 
 	/**
@@ -418,9 +418,8 @@ public class SCPRequestPipeline {
 		log.debug("waiting for message... timeout of {}", packetTimeout);
 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
 		if (log.isDebugEnabled()) {
-			log.debug(
-			        "received message {} with seq num {}",
-			        msg.getResult(), msg.getSequenceNumber());
+			log.debug("received message {} with seq num {}", msg.getResult(),
+					msg.getSequenceNumber());
 		}
 		Request<?> req = msg.pickRequest(requests);
 
@@ -430,7 +429,7 @@ public class SCPRequestPipeline {
 					msg.getSequenceNumber());
 			log.debug("current waiting on requests with seq's ");
 			for (int seq : requests.keySet()) {
-			    log.debug("{}", seq);
+				log.debug("{}", seq);
 			}
 			return;
 		}
@@ -443,10 +442,9 @@ public class SCPRequestPipeline {
 			} catch (SocketTimeoutException e) {
 				throw e;
 			} catch (Exception e) {
-				log.debug(
-				        "throwing away request {} coz of {}",
-				        msg.getSequenceNumber(), e);
-			    req.handleError(e);
+				log.debug("throwing away request {} coz of {}",
+						msg.getSequenceNumber(), e);
+				req.handleError(e);
 				msg.removeRequest(requests);
 			}
 		} else {
@@ -468,8 +466,8 @@ public class SCPRequestPipeline {
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 		for (int seq : new ArrayList<>(requests.keySet())) {
-		    log.debug("resending seq {}", seq);
-		    Request<?> req = requests.get(seq);
+			log.debug("resending seq {}", seq);
+			Request<?> req = requests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
@@ -477,10 +475,10 @@ public class SCPRequestPipeline {
 			}
 
 			try {
-			    resend(req, REASON_TIMEOUT, seq);
+				resend(req, REASON_TIMEOUT, seq);
 			} catch (Exception e) {
 				log.debug("removing seq {}", seq);
-			    req.handleError(e);
+				req.handleError(e);
 				toRemove.set(seq);
 			}
 		}
@@ -490,7 +488,7 @@ public class SCPRequestPipeline {
 	}
 
 	private void resend(Request<?> req, Object reason, int seq)
-	        throws IOException, InterruptedException {
+			throws IOException, InterruptedException {
 		if (req.retries <= 0) {
 			// Report timeouts as timeout exception
 			if (req.allTimeoutFailures()) {
@@ -524,7 +522,7 @@ public class SCPRequestPipeline {
 		 */
 		SendTimedOutException(Request<?> req, int timeout, int seqNum) {
 			super(format(
-			        "Operation %s timed out after %f seconds with seq num %d",
+					"Operation %s timed out after %f seconds with seq num %d",
 					req.getCommand(), timeout / (double) MSEC_PER_SEC, seqNum));
 		}
 	}

@@ -43,7 +43,7 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 	 * @param length
 	 *            How many bytes to read
 	 * @param transactionId
-	 *            the transaction id needed
+	 *            the transaction ID needed
 	 * @return The created message.
 	 */
 	static StartSendingMessage create(HasCoreLocation destination, int address,

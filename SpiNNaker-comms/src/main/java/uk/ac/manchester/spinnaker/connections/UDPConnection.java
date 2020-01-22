@@ -293,7 +293,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		if (!receivable && !isReadyToReceive(timeout)) {
 			log.debug("not ready to recieve");
-		    throw new SocketTimeoutException();
+			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
@@ -549,7 +549,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
 			log.debug("connection closed, so not ready to receive");
-		    return false;
+			return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
@@ -590,7 +590,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final void sendPortTriggerMessage(InetAddress host)
 			throws IOException {
- 		/*
+		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
 		 * message, but then fail to send a response since the
