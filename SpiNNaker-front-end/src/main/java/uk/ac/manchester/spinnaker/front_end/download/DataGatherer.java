@@ -23,7 +23,6 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.Constants.SMALL_RETRIEVE_THRESHOLD;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -55,8 +54,8 @@ import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.front_end.dse.SystemRouterTableContext;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
@@ -64,7 +63,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -80,7 +78,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
 	/** The maximum number of times to retry. */
-	private static final int TIMEOUT_RETRY_LIMIT = 20;
+	private static final int TIMEOUT_RETRY_LIMIT = 100;
 	/**
 	 * The time delay between sending each message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
@@ -90,7 +88,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * The timeout when receiving a message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
-	private static final int TIMEOUT_PER_RECEIVE = 1000;
+	private static final int TIMEOUT_PER_RECEIVE = 2000;
 	/**
 	 * The <i>extra</i> timeout for processing the message queue. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
@@ -102,7 +100,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * number of words in an SDP packet; that extra word is the control word
 	 * which encodes the sequence number and the end-of-stream flag.
 	 */
-	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 1;
+	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 2;
 	/**
 	 * Mask used to pick out the bit that says whether a sequence number is the
 	 * last in a stream.
@@ -173,10 +171,16 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		}
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
-		Map<ChipLocation, List<Region>> smallWork =
-				new DefaultMap<>(ArrayList::new);
-		try (NoDropPacketContext p = new NoDropPacketContext(txrx,
-				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
+		try (
+		        SystemRouterTableContext s = new SystemRouterTableContext(
+		                txrx,
+		                gatherers.stream().flatMap(
+		                        g -> g.getMonitors().stream()));
+		        NoDropPacketContext p = new NoDropPacketContext(
+        		        txrx,
+        				gatherers.stream().flatMap(
+        				        g -> g.getMonitors().stream()),
+        				gatherers.stream());
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
@@ -187,23 +191,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			// CHECKSTYLE:OFF
 			parallel(work.keySet().stream()
 					.map(key -> () -> fastDownload(work.get(key),
-							conns.get(key), smallWork, bar)));
+							conns.get(key), bar)));
 			// CHECKSTYLE:ON
 		} finally {
 			log.info("shutting down high-speed download connections");
 			for (GatherDownloadConnection c : conns.values()) {
 				c.close();
 			}
-		}
-		log.info("launching {} parallel low-speed download tasks",
-				smallWork.size());
-		try (Progress bar = new Progress(
-				smallWork.values().stream().mapToInt(List::size).sum(),
-				SLOW_LABEL)) {
-			// CHECKSTYLE:OFF
-			parallel(smallWork.values().stream()
-					.map(regions -> () -> slowDownload(regions, bar)));
-			// CHECKSTYLE:ON
 		}
 		return missCount;
 	}
@@ -269,7 +263,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		for (Gather g : gatherers) {
 			List<WorkItems> workitems = new ArrayList<>();
 			for (Monitor m : g.getMonitors()) {
-				for (Placement p : m.getPlacements()) {
+				m.updateTransactionIdFromMachine(txrx);
+
+			    for (Placement p : m.getPlacements()) {
 					List<List<Region>> regions = new ArrayList<>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
 						List<Region> r = getRegion(p, id);
@@ -322,6 +318,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
+
 			GatherDownloadConnection conn =
 					new GatherDownloadConnection(gathererChip, g.getIptag());
 			reconfigureIPtag(g.getIptag(), conn);
@@ -361,85 +358,21 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *            The items to be downloaded for that board.
 	 * @param conn
 	 *            The connection for talking to the board.
-	 * @param smallWork
-	 *            Where to store any small or problem downloads; they're going
-	 *            to be processed later via SCP READs. <em>The order of items in
-	 *            the inner list may matter.</em>
 	 * @param bar
 	 *            The progress bar.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
+     * @throws TimeoutException
+     *             If a download times out unrecoverably.
+     * @throws ProcessException
+     *             If anything unexpected goes wrong.
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn,
-			Map<ChipLocation, List<Region>> smallWork, Progress bar)
-			throws IOException, StorageException {
-		/**
-		 * A class that manages how to postpone work for doing the slow way.
-		 * This is a little tricky because the order of download regions for a
-		 * single recording region (could be up to two) needs to be preserved so
-		 * that they're concatenated in the DB correctly.
-		 *
-		 * @author Donal Fellows
-		 */
-		class PostponeControl {
-			boolean addToSmall = false;
-
-			boolean shouldPostpone(Region region) {
-				return addToSmall || (region.size < SMALL_RETRIEVE_THRESHOLD);
-			}
-
-			private void doPostpone(Region region) {
-				addToSmall = true;
-				synchronized (smallWork) {
-					smallWork.get(conn.getChip()).add(region);
-				}
-			}
-
-			/**
-			 * Postpone a region.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 */
-			void postpone(Region region) {
-				log.info("moving {} to low-speed download system", region);
-				doPostpone(region);
-			}
-
-			/**
-			 * Postpone a region.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 * @param reason
-			 *            Why it is being postponed.
-			 */
-			void postpone(Region region, String reason) {
-				log.info("moving {} to low-speed download system{}{}", region,
-						" due to ", reason);
-				doPostpone(region);
-			}
-
-			/**
-			 * Postpone a region because of a failure.
-			 *
-			 * @param region
-			 *            The region to postpone.
-			 * @param locus
-			 *            Where the failure was.
-			 * @param exn
-			 *            What the failure was.
-			 */
-			void postpone(Region region, String locus, Exception exn) {
-				log.info("moving {} to low-speed download system{}{}", region,
-						" due to failure in ", locus, exn);
-				doPostpone(region);
-			}
-		}
-
+			GatherDownloadConnection conn, Progress bar)
+			throws IOException, StorageException, TimeoutException,
+			ProcessException {
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
@@ -450,56 +383,15 @@ public abstract class DataGatherer extends BoardLocalSupport {
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
-					PostponeControl ctl = new PostponeControl();
 					for (Region region : regionsOnCore) {
-						try {
-							if (ctl.shouldPostpone(region)) {
-								ctl.postpone(region);
-							} else {
-								ByteBuffer data = dl.doDownload(
-										item.monitor.asCoreLocation(), region);
-								if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-									compareDownloadWithSCP(region, data);
-								}
-								storeData(region, data);
-							}
-						} catch (TimeoutException e) {
-							ctl.postpone(region, "timeout");
-						} catch (ProcessException e) {
-							ctl.postpone(region, "comparison code", e);
-						} finally {
-							bar.update();
+						ByteBuffer data = dl.doDownload(item.monitor, region);
+						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+							compareDownloadWithSCP(region, data);
 						}
+						storeData(region, data);
+						bar.update();
 					}
 				}
-			}
-		}
-	}
-
-	/**
-	 * Do the slow downloads for a particular board.
-	 *
-	 * @param regions
-	 *            The regions to be processed on that board. <em>The order may
-	 *            be significant.</em>
-	 * @param bar
-	 *            The progress bar.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If DB access goes wrong.
-	 */
-	private void slowDownload(List<Region> regions, Progress bar)
-			throws IOException, ProcessException, StorageException {
-		try (BoardLocal c = new BoardLocal(regions.get(0).core)) {
-			log.info("processing {} slow downloads", regions.size());
-			for (Region region : regions) {
-				log.info("processing slow download from {}", region);
-				storeData(region, txrx.readMemory(region.core.getScampCore(),
-						region.startAddress, region.size));
-				bar.update();
 			}
 		}
 	}
@@ -695,7 +587,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		private BitSet expectedSeqNums;
 		private int maxSeqNum;
 		private ByteBuffer dataReceiver;
-		private CoreLocation monitorCore;
+		private Monitor monitorCore;
 		private List<Integer> lastRequested;
 
 		/**
@@ -721,9 +613,11 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *             If anything unexpected goes wrong.
 		 * @throws TimeoutException
 		 *             If a download times out unrecoverably.
+		 * @throws ProcessException
+		 *             If anything unexpected goes wrong.
 		 */
-		ByteBuffer doDownload(CoreLocation extraMonitor, Region region)
-				throws IOException, TimeoutException {
+		ByteBuffer doDownload(Monitor extraMonitor, Region region)
+				throws IOException, TimeoutException, ProcessException {
 			monitorCore = extraMonitor;
 			dataReceiver = ByteBuffer.allocate(region.size);
 			/*
@@ -736,18 +630,29 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			 * This translates into needing to add one here.
 			 */
 			maxSeqNum =
-					ceildiv(region.size + 1, DATA_WORDS_PER_PACKET * WORD_SIZE);
+					ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			expectedSeqNums = new BitSet(maxSeqNum);
-			expectedSeqNums.set(0, maxSeqNum - 1);
+			expectedSeqNums.set(0, maxSeqNum);
 			lastRequested = expectedSeqs();
 			received = false;
 			timeoutcount = 0;
-			conn.sendStart(monitorCore, region.startAddress, region.size);
+			monitorCore.updateTransactionId();
+			log.debug(
+			    "extracting data from {} with size {} with transaction id {}",
+			        region.startAddress, region.size,
+			        monitorCore.getTransactionId());
+			conn.sendStart(
+			        monitorCore.asCoreLocation(), region.startAddress,
+			        region.size, monitorCore.getTransactionId());
 			try {
 				boolean finished;
 				do {
-					finished = processOnePacket(TIMEOUT_PER_RECEIVE);
+					finished = processOnePacket(
+					    TIMEOUT_PER_RECEIVE, monitorCore.getTransactionId());
 				} while (!finished);
+				conn.sendClear(
+				        monitorCore.asCoreLocation(),
+				        monitorCore.getTransactionId());
 			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
@@ -768,21 +673,27 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param timeout
 		 *            How long to wait for the queue to deliver a packet, in
 		 *            milliseconds.
+		 * @param transactionID
+         *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If packet reception or retransmission requesting fails.
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
+		 * @throws ProcessException
 		 */
-		private boolean processOnePacket(int timeout)
-				throws IOException, TimeoutException {
+		private boolean processOnePacket(int timeout, int transactionId)
+				throws IOException, TimeoutException, ProcessException {
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
-				return processData(p);
+				return processData(p, transactionId);
 			}
-			return processTimeout();
+			log.error(
+			        "failed to receive on socket {}:{}.",
+			        conn.getLocalPort(), conn.getLocalIPAddress());
+			return processTimeout(transactionId);
 		}
 
 		/**
@@ -790,6 +701,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *
 		 * @param data
 		 *            The content of the packet.
+		 * @param transactionID
+		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If the packet is an end-of-stream packet yet there are
@@ -798,9 +711,15 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
 		 */
-		private boolean processData(ByteBuffer data)
+		private boolean processData(ByteBuffer data, int transactionId)
 				throws IOException, TimeoutException {
 			int seqNum = data.getInt();
+			int responseTransactionId = data.getInt();
+
+			if (responseTransactionId != transactionId) {
+			    return false;
+			}
+
 			boolean isEndOfStream =
 					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
@@ -827,12 +746,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			if (!isEndOfStream) {
 				return false;
 			}
-			return retransmitMissingSequences();
+			return retransmitMissingSequences(transactionId);
 		}
 
 		/**
 		 * Process the fact that the message queue was in a timeout state.
-		 *
+		 * @param transactionId
+         *             The transaction id of this stream
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If there are packets outstanding, and the retransmission
@@ -840,7 +760,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout.
 		 */
-		private boolean processTimeout() throws IOException, TimeoutException {
+		private boolean processTimeout(int transactionId)
+		        throws IOException, TimeoutException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
@@ -848,26 +769,27 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 			// retransmit missing packets
 			log.debug("doing reinjection");
-			return retransmitMissingSequences();
+			return retransmitMissingSequences(transactionId);
 		}
 
 		/**
 		 * Request that the extra monitor core retransmit some packets. Does
 		 * nothing if there are no packets missing.
-		 *
+		 * @param transactionId
+		 *             The transaction id of this stream
 		 * @return Whether there were really any packets to retransmit.
 		 * @throws IOException
 		 *             If there are failures.
 		 * @throws TimeoutException
 		 *             If we are flailing around, making no progress.
 		 */
-		private boolean retransmitMissingSequences()
+		private boolean retransmitMissingSequences(int transactionId)
 				throws IOException, TimeoutException {
 			int numMissing = expectedSeqNums.cardinality();
 			if (numMissing < 1) {
 				return true;
 			}
-			log.info("there are {} missing packets in message from {}",
+			log.debug("there are {} missing packets in message from {}",
 					numMissing, monitorCore);
 
 			// Build a list of the sequence numbers of all missing packets
@@ -875,14 +797,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			missCount += numMissing;
 
 			log.debug("missing sequence numbers: {}", missingSeqs);
-			if (missingSeqs.equals(lastRequested)) {
-				log.info(
-						"retransmission cycle for {} made no progress;"
-								+ " bailing out to slow transfer mode",
-						monitorCore);
-				throw new TimeoutException();
-			}
-			if (missingSeqs.size() >= lastRequested.size()) {
+			if (missingSeqs.size() > lastRequested.size()) {
 				log.warn("what is going on?");
 				log.warn("last:{}", lastRequested);
 				log.warn("this:{}", missingSeqs);
@@ -890,8 +805,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = missingSeqs;
 
 			// Transmit missing sequences as a new SDP Packet
-			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
-					missingSeqs)) {
+			for (MissingSequenceNumbersMessage msg : createMessages(
+			        monitorCore, missingSeqs, transactionId)) {
 				snooze(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}

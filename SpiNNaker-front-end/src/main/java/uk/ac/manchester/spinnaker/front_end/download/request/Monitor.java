@@ -20,13 +20,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.util.Collections.emptyList;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * Extra monitor core information.
  *
- * @author Christian-B
+ * @author Christian-B and Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
@@ -38,6 +42,10 @@ public class Monitor implements HasCoreLocation {
 	private final int p;
     /** The vertex placements that this monitor will read. */
     private final List<Placement> placements;
+    /** The transaction id for this extra monitor. */
+    private int transactionId = 0;
+    /** cap of where a transaction id will get to. */
+    private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
     /**
 	 * Constructor with minimum information needed.
@@ -81,6 +89,34 @@ public class Monitor implements HasCoreLocation {
     @Override
     public int getP() {
         return p;
+    }
+
+    /**
+     * updates the transaction id by 1 and wraps with the cap.
+     */
+    public void updateTransactionId() {
+        this.transactionId =
+            (this.transactionId + 1) & Monitor.TRANSACTION_ID_CAP;
+    }
+
+    public int getTransactionId() {
+        return this.transactionId;
+    }
+
+    /**
+     * gets the transaction id from the machine and updates.
+     * @param txrx
+     *          the spinnman instance.
+     * @throws ProcessException
+     *          If SpiNNaker rejects a message.
+     * @throws IOException
+     *          If anything goes wrong with networking.
+     */
+    public void updateTransactionIdFromMachine(Transceiver txrx)
+            throws IOException, ProcessException {
+        int address = txrx.getUser1RegisterAddress(this);
+        this.transactionId =
+                txrx.readMemory(this, address, WORD_SIZE).getInt();
     }
 
     /**

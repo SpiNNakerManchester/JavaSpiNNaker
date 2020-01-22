@@ -292,7 +292,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			timeout = Integer.MAX_VALUE;
 		}
 		if (!receivable && !isReadyToReceive(timeout)) {
-			throw new SocketTimeoutException();
+			log.debug("not ready to recieve");
+		    throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
@@ -532,20 +533,28 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return !channel.isOpen();
 	}
 
+	private SelectionKey remake(SelectionKey stale) {
+		log.debug("remaking selection key");
+		selectionKeyFactory.remove();
+		stale.cancel();
+		SelectionKey key = selectionKeyFactory.get();
+		if (!key.isValid()) {
+			throw new IllegalStateException(
+					"newly manufactured selection key is invalid");
+		}
+		return key;
+	}
+
 	@Override
 	public boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
-			return false;
+			log.debug("connection closed, so not ready to receive");
+		    return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
-			selectionKeyFactory.remove();
-			key = selectionKeyFactory.get();
-			if (!key.isValid()) {
-				throw new IllegalStateException(
-						"newly manufactured selection key is invalid");
-			}
+			key = remake(key);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
@@ -558,10 +567,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		} else {
 			result = key.selector().select(timeout);
 		}
+
 		if (log.isDebugEnabled()) {
-			log.debug("wait:{}:{}:{}", result, key.isValid(),
-					key.isValid() && key.isReadable());
+			log.debug("wait result: select={}, valid={}, readable={}", result,
+					key.isValid(), key.isValid() && key.isReadable());
 		}
+
 		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;

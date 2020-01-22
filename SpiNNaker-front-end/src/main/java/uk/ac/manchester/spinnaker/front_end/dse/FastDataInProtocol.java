@@ -17,13 +17,12 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_LAST_DATA_IN;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_TELL_DATA_IN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -43,31 +42,32 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 /**
  * Manufactures Fast Data In protocol messages.
  *
- * @author Donal Fellows
+ * @author Donal Fellows & Alan Stokes
  */
 class FastDataInProtocol {
 	/** Items of data a SDP packet can hold when SCP header removed. */
 	static final int BYTES_PER_FULL_PACKET = SDP_PAYLOAD_WORDS * WORD_SIZE;
 	// 272 bytes as removed SCP header
 
-	/**
-	 * Offset where data in starts on first command (command, base_address,
-	 * x&amp;y, max_seq_number), in bytes.
+	/** size of the location data packet (command, transaction id,
+	 * start sdram address, x and y, and max packet number.
 	 */
-	static final int OFFSET_AFTER_COMMAND_AND_ADDRESS = 4 * WORD_SIZE;
+	static final int BYTES_FOR_LOCATION_PACKET = 5 * WORD_SIZE;
 
 	/**
-	 * Offset where data starts after a command ID and seq number, in bytes.
+	 * Offset where data in starts on first command (command, transaction id,
+	 * seq_number), in bytes.
 	 */
-	static final int OFFSET_AFTER_COMMAND_AND_SEQUENCE = 2 * WORD_SIZE;
+	static final int OFFSET_AFTER_COMMAND_AND_KEY = 3 * WORD_SIZE;
 
-	/** Size for data to store when first packet with command and address. */
-	static final int DATA_IN_FULL_PACKET_WITH_ADDRESS =
-			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_ADDRESS;
+	/** Size for data to store when packet with command and key. */
+	static final int DATA_IN_FULL_PACKET_WITH_KEY =
+			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_KEY;
 
-	/** Size for data in to store when not first packet. */
-	static final int DATA_IN_FULL_PACKET_WITHOUT_ADDRESS =
-			BYTES_PER_FULL_PACKET - OFFSET_AFTER_COMMAND_AND_SEQUENCE;
+	/** size for data to store when sending tell packet (command id,
+	 * transaction id).
+	 */
+	static final int BYTES_FOR_TELL_PACKET = 2 * WORD_SIZE;
 
 	private final HasCoreLocation gathererCore;
 	private final HasChipLocation boardLocalDestination;
@@ -81,7 +81,7 @@ class FastDataInProtocol {
 	 * @param gathererCore
 	 *            The gatherer core on the board that messages will be routed
 	 *            via.
-	 * @param monitorChip
+	 * @param monitorChipSEND_DATA_TO_LOCATION
 	 *            The extra monitor core on the board that is the destination
 	 *            for the messages.
 	 */
@@ -108,22 +108,23 @@ class FastDataInProtocol {
 	/**
 	 * @param baseAddress
 	 *            Where the data is to be written.
-	 * @param data
-	 *            The overall data to be transmitted.
 	 * @param numPackets
 	 *            How many SDP packets will be sent.
+	 * @param transactionId
+	 *            The transaction id of this stream.
 	 * @return The message indicating the start of the data.
 	 */
-	SDPMessage dataToLocation(int baseAddress, ByteBuffer data,
-			int numPackets) {
+	SDPMessage dataToLocation(int baseAddress, int numPackets,
+			int transactionId) {
 		ByteBuffer payload =
-				allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+				allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_DATA_TO_LOCATION.value);
+		payload.putInt(transactionId);
 		payload.putInt(baseAddress);
 		payload.putShort((short) boardLocalDestination.getY());
 		payload.putShort((short) boardLocalDestination.getX());
 		payload.putInt(numPackets - 1);
-		putBuffer(data, 0, payload);
+		payload.flip();
 		return new SDPMessage(header(), payload);
 	}
 
@@ -132,9 +133,13 @@ class FastDataInProtocol {
 	 *            The overall data to be transmitted.
 	 * @param seqNum
 	 *            The sequence number of this chunk.
+	 *
+	 * @param transactionId
+	 * 			  The transaction id for this stream.
+	 *
 	 * @return The message containing a chunk of the data.
 	 */
-	SDPMessage seqData(ByteBuffer data, int seqNum) {
+	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
 		ByteBuffer payload =
 				allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 		int position = calculatePositionFromSequenceNumber(seqNum);
@@ -146,6 +151,7 @@ class FastDataInProtocol {
 					seqNum, toUnsignedLong(data.limit())));
 		}
 		payload.putInt(SEND_SEQ_DATA.value);
+		payload.putInt(transactionId);
 		payload.putInt(seqNum);
 		putBuffer(data, position, payload);
 		return new SDPMessage(header(), payload);
@@ -161,19 +167,20 @@ class FastDataInProtocol {
 	}
 
 	private int calculatePositionFromSequenceNumber(int seqNum) {
-		if (seqNum < 1) {
-			return 0;
-		}
-		return DATA_IN_FULL_PACKET_WITH_ADDRESS
-				+ DATA_IN_FULL_PACKET_WITHOUT_ADDRESS * (seqNum - 1);
+		return DATA_IN_FULL_PACKET_WITH_KEY * seqNum;
 	}
 
 	/**
+	 * generates the tell message.
+	 * @param transactionId
+	 * 			The transaction id for this stream.
 	 * @return The message indicating the end of the data.
 	 */
-	SDPMessage lastDataIn() {
-		ByteBuffer payload = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		payload.putInt(SEND_LAST_DATA_IN.value);
+	SDPMessage tellDataIn(int transactionId) {
+		ByteBuffer payload = allocate(BYTES_FOR_TELL_PACKET).order(
+				LITTLE_ENDIAN);
+		payload.putInt(SEND_TELL_DATA_IN.value);
+		payload.putInt(transactionId);
 		payload.flip();
 		return new SDPMessage(header(), payload);
 	}
@@ -187,7 +194,6 @@ class FastDataInProtocol {
 	 */
 	static int computeNumPackets(ByteBuffer data) {
 		return ceildiv(
-				max(data.remaining() - DATA_IN_FULL_PACKET_WITH_ADDRESS, 0),
-				DATA_IN_FULL_PACKET_WITHOUT_ADDRESS) + 1;
+				data.remaining(), DATA_IN_FULL_PACKET_WITH_KEY);
 	}
 }

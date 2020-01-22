@@ -83,7 +83,7 @@ public abstract class Constants {
 	/** This is the default timeout when using SCP, in milliseconds. */
 	public static final int SCP_TIMEOUT_DEFAULT = 1000;
 	/** This is the default retry limit when using SCP. */
-	public static final int SCP_RETRY_DEFAULT = 3;
+	public static final int SCP_RETRY_DEFAULT = 10;
 
 	/** Number of bytes in a SpiNNaker word. */
 	public static final int WORD_SIZE = 4;

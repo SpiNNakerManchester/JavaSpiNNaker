@@ -18,11 +18,16 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Data speed up packet gatherer description.
@@ -31,7 +36,6 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
-
     /** The x value of the core this placement is on. */
     private final int x;
     /** The y value of the core this placement is on. */
@@ -42,6 +46,8 @@ public class Gather implements HasCoreLocation {
     private final IPTag iptag;
     /** The extra monitor cores, and what to retrieve from them. */
     private final List<Monitor> monitors;
+    /** The current transaction id for the board. */
+    private int transactionId;
 
 	/**
 	 * Constructor with minimum information needed.
@@ -73,6 +79,7 @@ public class Gather implements HasCoreLocation {
         this.p = p;
         this.iptag = iptag;
         this.monitors = monitors;
+        this.transactionId = 0;
     }
 
     @Override
@@ -88,6 +95,31 @@ public class Gather implements HasCoreLocation {
     @Override
     public int getP() {
         return p;
+    }
+
+    /**
+	 * Sets the transaction ID to a new value and returns that new value.
+	 *
+	 * @return The new transaction ID.
+	 */
+    public int getNextTransactionId() {
+		return ++transactionId;
+    }
+
+    /**
+     * sets the transaction id from the machine.
+     * @param txrx
+     *          spinnman instance
+     * @throws ProcessException
+     *          If SpiNNaker rejects a message.
+     * @throws IOException
+     *          If anything goes wrong with networking.
+     */
+    public void updateTransactionIdFromMachine(Transceiver txrx)
+            throws IOException, ProcessException {
+        int address = txrx.getUser1RegisterAddress(this);
+        this.transactionId =
+                txrx.readMemory(this, address, WORD_SIZE).getInt();
     }
 
     /**

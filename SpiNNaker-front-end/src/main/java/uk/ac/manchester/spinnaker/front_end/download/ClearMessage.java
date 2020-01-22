@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_SENDING_DATA;
+import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.CLEAR_TRANSMISSIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 
@@ -28,38 +28,33 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * A message used to request fast data transfer from SpiNNaker to Host.
+ * @author Alan Stokes
  */
-public final class StartSendingMessage extends GatherProtocolMessage {
-	private static final int NUM_WORDS = 4;
 
-	/**
-	 * Create a message used to request fast data transfer from SpiNNaker to
-	 * Host.
-	 *
-	 * @param destination
-	 *            Where to send the message
-	 * @param address
-	 *            Where to start reading from
-	 * @param length
-	 *            How many bytes to read
-	 * @param transactionId
-	 *            the transaction id needed
-	 * @return The created message.
-	 */
-	static StartSendingMessage create(HasCoreLocation destination, int address,
-			int length, int transactionId) {
-		ByteBuffer payload =
-				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
-		payload.putInt(START_SENDING_DATA.value);
-		payload.putInt(transactionId);
-		payload.putInt(address);
-		payload.putInt(length);
-		payload.flip();
-		return new StartSendingMessage(destination, payload);
-	}
+public final class ClearMessage extends GatherProtocolMessage {
+    private static final int NUM_WORDS = 2;
 
-	private StartSendingMessage(HasCoreLocation destination,
-			ByteBuffer payload) {
-		super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
-	}
+    /**
+     * Create a message used to request fast data transfer from SpiNNaker to
+     * Host.
+     *
+     * @param destination
+     *            Where to send the message
+     * @param transactionId
+     *            the transaction id needed
+     * @return The created message.
+     */
+    static ClearMessage create(
+            HasCoreLocation destination, int transactionId) {
+        ByteBuffer payload =
+                allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+        payload.putInt(CLEAR_TRANSMISSIONS.value);
+        payload.putInt(transactionId);
+        payload.flip();
+        return new ClearMessage(destination, payload);
+    }
+
+    private ClearMessage(HasCoreLocation destination, ByteBuffer payload) {
+        super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
+    }
 }
