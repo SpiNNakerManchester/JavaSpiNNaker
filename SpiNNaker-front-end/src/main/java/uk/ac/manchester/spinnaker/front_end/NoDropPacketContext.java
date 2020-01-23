@@ -40,9 +40,9 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 /**
  * A context class that can disable dropping of packets on the SpiNNaker on-chip
  * network. <em>Use very carefully indeed!</em> A network that can't drop
- * packets is a network that can deadlock. It is not safe to use this class on
- * more than one board at a time or while anything other than data transfer is
- * being done.
+ * packets is a network that can deadlock. It is not believed safe to use this
+ * class on more than one board at a time, and it is definitely not safe to do
+ * anything else than data transfers while the context is set.
  *
  * @author Donal Fellows
  * @author Alan Stokes
@@ -64,15 +64,18 @@ public class NoDropPacketContext implements AutoCloseable {
 	private static final RouterTimeout ZERO_TIMEOUT = new RouterTimeout(0, 0);
 
 	/**
-	 * Create a no-drop-packets context.
+	 * Create a no-drop-packets context. This can manage multiple boards at
+	 * once, but it is <em>recommended</em> that only a single board be handled
+	 * by a context.
 	 *
 	 * @param txrx
 	 *            The transceiver to use for talking to SpiNNaker.
 	 * @param monitorCores
 	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
+	 *            the routers. These must be on the same board as one of the
+	 *            gatherers; this is not checked.
 	 * @param gatherers
-	 *            The gatherer core on the SpiNNaker system that supports the
+	 *            The gatherer cores on the SpiNNaker system that supports the
 	 *            multicast router control API.
 	 * @throws IOException
 	 *             If communications fail.
@@ -109,13 +112,14 @@ public class NoDropPacketContext implements AutoCloseable {
 	}
 
 	/**
-	 * Create a no-drop-packets context.
+	 * Create a no-drop-packets context for a single board.
 	 *
 	 * @param txrx
 	 *            The transceiver to use for talking to SpiNNaker.
 	 * @param monitorCoreLocations
 	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
+	 *            the routers. These must be on the same board as the gatherer;
+	 *            this is not checked.
 	 * @param gatherer
 	 *            The gatherer for this context and linked to these extra
 	 *            monitor cores.
@@ -131,13 +135,14 @@ public class NoDropPacketContext implements AutoCloseable {
 	}
 
 	/**
-	 * Create a no-drop-packets context.
+	 * Create a no-drop-packets context for a single board.
 	 *
 	 * @param txrx
 	 *            The transceiver to use for talking to SpiNNaker.
 	 * @param monitorCoreLocations
 	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
+	 *            the routers. These must be on the same board as the gatherer;
+	 *            this is not checked.
 	 * @param gatherer
 	 *            The gatherer for this context and linked to these extra
 	 *            monitor cores.
@@ -160,7 +165,8 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *            The transceiver to use for talking to SpiNNaker.
 	 * @param monitorCoreLocations
 	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers.
+	 *            the routers. These must be on the same board as one of the
+	 *            gatherers; this is not checked.
 	 * @param gatherers
 	 *            The gatherer for this context and linked to these extra
 	 *            monitor cores.
@@ -199,7 +205,8 @@ public class NoDropPacketContext implements AutoCloseable {
 	}
 
 	/**
-	 * Restore the SpiNNaker board to its normal operating mode.
+	 * Restore the SpiNNaker board (or boards, for the brave) to its normal
+	 * operating mode.
 	 *
 	 * @throws IOException
 	 *             If communications fail.
