@@ -58,7 +58,7 @@ public class ThrottledConnection implements Closeable {
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
 	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
-	private static final int TIMEOUT_MS = 1000;
+	private static final int TIMEOUT_MS = 2000;
 	private static final ScheduledExecutorService CLOSER;
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {

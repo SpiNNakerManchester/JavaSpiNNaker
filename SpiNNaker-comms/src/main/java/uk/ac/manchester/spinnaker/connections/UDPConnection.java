@@ -294,6 +294,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	ByteBuffer doReceive(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
+			log.debug("not ready to recieve");
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
@@ -529,9 +530,22 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return !channel.isOpen();
 	}
 
+	private SelectionKey remake(SelectionKey stale) {
+		log.debug("remaking selection key");
+		selectionKeyFactory.remove();
+		stale.cancel();
+		SelectionKey key = selectionKeyFactory.get();
+		if (!key.isValid()) {
+			throw new IllegalStateException(
+					"newly manufactured selection key is invalid");
+		}
+		return key;
+	}
+
 	@Override
 	public final boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
+			log.debug("connection closed, so not ready to receive");
 			return false;
 		}
 		int t = (timeout == null ? 0 : timeout);
@@ -555,12 +569,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
-			selectionKeyFactory.remove();
-			key = selectionKeyFactory.get();
-			if (!key.isValid()) {
-				throw new IllegalStateException(
-						"newly manufactured selection key is invalid");
-			}
+			key = remake(key);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
@@ -573,11 +582,14 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		} else {
 			result = key.selector().select(timeout);
 		}
+
 		if (log.isDebugEnabled()) {
-			log.debug("wait:{}:{}:{}", result, key.isValid(),
-					key.isValid() && key.isReadable());
+			log.debug("wait result: select={}, valid={}, readable={}", result,
+					key.isValid(), key.isValid() && key.isReadable());
 		}
-		return key.isValid() && key.isReadable();
+		boolean r = key.isValid() && key.isReadable();
+		receivable = r;
+		return r;
 	}
 
 	/**
@@ -592,7 +604,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final void sendPortTriggerMessage(InetAddress host)
 			throws IOException {
- 		/*
+		/*
 		 * Set up the message so that no reply is expected and it is sent to an
 		 * invalid port for SCAMP. The current version of SCAMP will reject this
 		 * message, but then fail to send a response since the

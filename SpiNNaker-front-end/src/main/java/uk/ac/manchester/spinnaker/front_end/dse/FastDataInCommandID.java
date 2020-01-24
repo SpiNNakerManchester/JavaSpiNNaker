@@ -30,16 +30,12 @@ public enum FastDataInCommandID {
 	/** Host to Gatherer: more data with sequence number. */
 	SEND_SEQ_DATA(2000),
 	/** Host to Gatherer: all data transmitted. */
-	SEND_LAST_DATA_IN(2002),
+	SEND_TELL_DATA_IN(2001),
 	/** Gatherer to host: there are missing sequence numbers. */
-	RECEIVE_FIRST_MISSING_SEQ_DATA_IN(2003),
-	/**
-	 * Gatherer to host: here are more missing sequence numbers. Sequence number
-	 * {@code -1} marks the end.
-	 */
-	RECEIVE_MISSING_SEQ_DATA_IN(2004),
+	RECEIVE_MISSING_SEQ_DATA_IN(2002),
 	/** Gatherer to host: all present and correct. */
-	RECEIVE_FINISHED_DATA_IN(2005);
+	RECEIVE_FINISHED_DATA_IN(2003);
+
 	private static final Map<Integer, FastDataInCommandID> MAP =
 			new HashMap<>();
 	/** The protocol ID of this constant. */
