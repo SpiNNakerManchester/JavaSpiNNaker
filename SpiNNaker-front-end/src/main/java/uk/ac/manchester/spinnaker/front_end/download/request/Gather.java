@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,21 +33,22 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  * Data speed up packet gatherer description.
  *
  * @author Christian-B
+ * @author Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
-    /** The x value of the core this placement is on. */
-    private final int x;
-    /** The y value of the core this placement is on. */
-    private final int y;
-    /** The p value of the core this placement is on. */
-    private final int p;
-    /** The IPTag of the package gatherer. */
-    private final IPTag iptag;
-    /** The extra monitor cores, and what to retrieve from them. */
-    private final List<Monitor> monitors;
-    /** The current transaction id for the board. */
-    private int transactionId;
+	/** The x value of the core this placement is on. */
+	private final int x;
+	/** The y value of the core this placement is on. */
+	private final int y;
+	/** The p value of the core this placement is on. */
+	private final int p;
+	/** The IPTag of the package gatherer. */
+	private final IPTag iptag;
+	/** The extra monitor cores, and what to retrieve from them. */
+	private final List<Monitor> monitors;
+	/** The current transaction id for the board. */
+	private int transactionId;
 
 	/**
 	 * Constructor with minimum information needed.
@@ -68,71 +69,71 @@ public class Gather implements HasCoreLocation {
 	 *            placed on the same board as this data speed up packet
 	 *            gatherer.
 	 */
-    Gather(@JsonProperty(value = "x", required = true) int x,
-            @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "iptag", required = true) IPTag iptag,
-            @JsonProperty(value = "monitors", required = true)
-                    List<Monitor> monitors) {
-        this.x = x;
-        this.y = y;
-        this.p = p;
-        this.iptag = iptag;
-        this.monitors = monitors;
-        this.transactionId = 0;
-    }
+	Gather(@JsonProperty(value = "x", required = true) int x,
+			@JsonProperty(value = "y", required = true) int y,
+			@JsonProperty(value = "p", required = true) int p,
+			@JsonProperty(value = "iptag", required = true) IPTag iptag,
+			@JsonProperty(value = "monitors", required = true) List<
+					Monitor> monitors) {
+		this.x = x;
+		this.y = y;
+		this.p = p;
+		this.iptag = iptag;
+		this.monitors = monitors;
+		this.transactionId = 0;
+	}
 
-    @Override
-    public int getX() {
-        return x;
-    }
+	@Override
+	public int getX() {
+		return x;
+	}
 
-    @Override
-    public int getY() {
-        return y;
-    }
+	@Override
+	public int getY() {
+		return y;
+	}
 
-    @Override
-    public int getP() {
-        return p;
-    }
+	@Override
+	public int getP() {
+		return p;
+	}
 
-    /**
+	/**
 	 * Sets the transaction ID to a new value and returns that new value.
 	 *
 	 * @return The new transaction ID.
 	 */
-    public int getNextTransactionId() {
+	public int getNextTransactionId() {
 		return ++transactionId;
-    }
+	}
 
-    /**
-     * sets the transaction id from the machine.
-     * @param txrx
-     *          spinnman instance
-     * @throws ProcessException
-     *          If SpiNNaker rejects a message.
-     * @throws IOException
-     *          If anything goes wrong with networking.
-     */
-    public void updateTransactionIdFromMachine(Transceiver txrx)
-            throws IOException, ProcessException {
-        int address = txrx.getUser1RegisterAddress(this);
-        this.transactionId =
-                txrx.readMemory(this, address, WORD_SIZE).getInt();
-    }
+	/**
+	 * sets the transaction id from the machine.
+	 *
+	 * @param txrx
+	 *            spinnman instance
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
+	public void updateTransactionIdFromMachine(Transceiver txrx)
+			throws IOException, ProcessException {
+		int address = txrx.getUser1RegisterAddress(this);
+		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
+	}
 
-    /**
-     * @return the iptag
-     */
-    public IPTag getIptag() {
-        return iptag;
-    }
+	/**
+	 * @return the iptag
+	 */
+	public IPTag getIptag() {
+		return iptag;
+	}
 
-    /**
-     * @return the monitors
-     */
-    public List<Monitor> getMonitors() {
-        return Collections.unmodifiableList(monitors);
-    }
+	/**
+	 * @return the monitors
+	 */
+	public List<Monitor> getMonitors() {
+		return Collections.unmodifiableList(monitors);
+	}
 }

@@ -95,7 +95,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 * @param missingSeqs
 	 *            The collection of missing sequence numbers.
 	 * @param transactionId
-	 *             The transaction id of this stream.
+	 *            The transaction id of this stream.
 	 * @return Iterable of the messages to send.
 	 */
 	static Iterable<MissingSequenceNumbersMessage> createMessages(

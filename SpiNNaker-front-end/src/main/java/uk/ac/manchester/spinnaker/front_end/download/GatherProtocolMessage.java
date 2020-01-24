@@ -56,9 +56,10 @@ public abstract class GatherProtocolMessage extends SDPMessage {
 		START_MISSING_SEQS(1000),
 		/** ID of message used to send more missing sequence numbers. */
 		NEXT_MISSING_SEQS(1001),
-	    /** ID of the clear message used to stop the extra monitor
-	     * transmitting. */
-	    CLEAR_TRANSMISSIONS(2000);
+		/**
+		 * ID of the clear message used to stop the extra monitor transmitting.
+		 */
+		CLEAR_TRANSMISSIONS(2000);
 		/** The value of the ID. */
 		public final int value;
 
