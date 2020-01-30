@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import static java.lang.System.arraycopy;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -193,8 +194,16 @@ public class SQLiteBufferStorage
 	@Override
 	public void appendRecordingContents(Region region, byte[] contents)
 			throws StorageException {
-		callV(conn -> appendRecordContents(conn, region, contents),
-				"creating a region");
+		// Strip off any prefix and suffix added to make the read aligned
+		byte[] tmp;
+		if (region.isAligned()) {
+			tmp = contents;
+		} else {
+			tmp = new byte[region.realSize];
+			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
+		}
+		callV(conn -> appendRecordContents(conn, region, tmp),
+				"creating or adding to a recorded region");
 	}
 
 	/**

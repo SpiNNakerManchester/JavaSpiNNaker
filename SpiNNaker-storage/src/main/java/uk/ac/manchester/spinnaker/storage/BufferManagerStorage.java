@@ -107,6 +107,8 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	class Region {
+		private static final int INT_SIZE = 0;
+
 		/**
 		 * What core owned the region? Note that the region might be retrieved
 		 * from another core of the same chip.
@@ -127,6 +129,20 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * size of the region.</em>
 		 */
 		public final int size;
+		/**
+		 * How much data was originally requested?
+		 */
+		public final int realSize;
+		/**
+		 * How many extra bytes are being read at the start of the region in
+		 * order to get an aligned read?
+		 */
+		public final int initialIgnore;
+		/**
+		 * How many extra bytes are being read at the end of the region in order
+		 * to get an aligned read?
+		 */
+		public final int finalIgnore;
 
 		/**
 		 * Create a region descriptor.
@@ -148,9 +164,21 @@ public interface BufferManagerStorage extends DatabaseAPI {
 				int size) {
 			this.core = core.asCoreLocation();
 			this.regionIndex = regionIndex;
+			this.realSize = size;
+			this.initialIgnore = startAddress % INT_SIZE;
+			startAddress -= initialIgnore;
+			size += initialIgnore;
 			this.startAddress = startAddress;
+			this.finalIgnore =
+					(size % INT_SIZE == 0 ? 0 : INT_SIZE - (size % INT_SIZE));
+			size += finalIgnore;
 			this.size = size;
 		}
+
+		public final boolean isAligned() {
+			return initialIgnore == 0 && finalIgnore == 0;
+		}
+
 	}
 
 	/**
