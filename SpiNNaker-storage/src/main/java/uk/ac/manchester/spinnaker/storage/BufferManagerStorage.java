@@ -107,7 +107,7 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 * @author Donal Fellows
 	 */
 	class Region {
-		private static final int INT_SIZE = 0;
+		private static final int INT_SIZE = 4;
 
 		/**
 		 * What core owned the region? Note that the region might be retrieved
