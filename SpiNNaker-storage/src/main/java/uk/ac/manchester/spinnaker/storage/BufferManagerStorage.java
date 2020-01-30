@@ -169,8 +169,8 @@ public interface BufferManagerStorage extends DatabaseAPI {
 			startAddress -= initialIgnore;
 			size += initialIgnore;
 			this.startAddress = startAddress;
-			this.finalIgnore =
-					(size % INT_SIZE == 0 ? 0 : INT_SIZE - (size % INT_SIZE));
+			// Looks weird, but works
+			this.finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
 			size += finalIgnore;
 			this.size = size;
 		}
