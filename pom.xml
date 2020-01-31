@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>1.7.30</slf4j.version>
 		<log4j.version>2.13.0</log4j.version>
 		<junit.version>5.2.0</junit.version>
-		<checkstyle.version>8.18</checkstyle.version>
+		<checkstyle.version>8.29</checkstyle.version>
   	</properties>
 
 	<dependencyManagement>
