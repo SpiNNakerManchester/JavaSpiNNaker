@@ -97,7 +97,7 @@ public interface DSEStorage extends DatabaseAPI {
 	 *             If the database access fails.
 	 */
 	void saveLoadingMetadata(CoreToLoad coreToLoad, int startAddress,
-			int memoryUsed, int memoryWritten) throws StorageException;
+			int memoryUsed, int memoryWritten, long time) throws StorageException;
 
 	/**
 	 * A ethernet which allows data specifications to be loaded.
@@ -159,6 +159,8 @@ public interface DSEStorage extends DatabaseAPI {
 		 */
 		public final int appID;
 
+		public final long time;
+
 		/**
 		 * Create an instance.
 		 *
@@ -171,10 +173,11 @@ public interface DSEStorage extends DatabaseAPI {
 		 * @param appID
 		 *            The application identifier.
 		 */
-		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite) {
+		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite, long time) {
 			this.core = new CoreLocation(x, y, p);
 			this.appID = appID;
 			this.sizeToWrite = sizeToWrite;
+			this.time = time;
 		}
 	}
 }

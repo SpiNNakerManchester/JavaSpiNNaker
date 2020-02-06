@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
-
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
@@ -490,11 +489,17 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int written = writeHeader(ctl.core, executor, start, gather);
 			int writeCount = 1;
 
+
+			long timeTotal = 0;
 			for (MemoryRegion r : executor.regions()) {
 				if (isToBeIgnored(r)) {
 					continue;
 				}
+				long startTime = System.nanoTime();
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
+				long end = System.nanoTime();
+				long diff = end - startTime;
+				timeTotal += diff;
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
 					ByteBuffer readBack = txrx.readMemory(ctl.core,
@@ -504,7 +509,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 
 			bar.update();
-			storage.saveLoadingMetadata(ctl, start, size, written);
+			storage.saveLoadingMetadata(ctl, start, size, written, timeTotal);
 			return writeCount;
 		}
 

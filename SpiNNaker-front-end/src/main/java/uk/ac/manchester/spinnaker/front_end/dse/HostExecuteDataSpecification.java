@@ -283,9 +283,12 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
+                long startTime = System.nanoTime();
 				txrx.writeMemory(ctl.core, user0, start);
+				long end = System.nanoTime();
+                long diff = end - startTime;
 				bar.update();
-				storage.saveLoadingMetadata(ctl, start, size, written);
+				storage.saveLoadingMetadata(ctl, start, size, written, diff);
 			} catch (DataSpecificationException e) {
 				throw new DataSpecificationException(
 						"failed to execute data specification for core "
