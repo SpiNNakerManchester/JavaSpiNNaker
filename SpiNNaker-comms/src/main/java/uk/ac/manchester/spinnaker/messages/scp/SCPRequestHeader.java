@@ -58,6 +58,8 @@ public class SCPRequestHeader implements SerializableMessage {
 	 *            What sequence numbers are current in use and shouldn't be
 	 *            used.
 	 * @return The number that was issued.
+	 * @throws IllegalStateException
+	 *             If an attempt is made to set a sequence number a second time
 	 */
 	public short issueSequenceNumber(Set<Integer> inFlight) {
 		if (sequenceSet) {

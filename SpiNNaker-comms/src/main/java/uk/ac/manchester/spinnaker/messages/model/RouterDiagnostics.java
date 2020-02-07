@@ -70,6 +70,8 @@ public class RouterDiagnostics {
 	 * @param registerValues
 	 *            The register values. (Should have {@value #NUM_REGISTERS}
 	 *            elements.)
+	 * @throws IllegalArgumentException
+	 *             if the state size doesn't match the model of the state size
 	 */
 	public RouterDiagnostics(int controlRegister, int errorStatus,
 			int[] registerValues) {

@@ -39,6 +39,8 @@ public final class RoundRobinConnectionSelector<T extends Connection>
 	/**
 	 * @param connections
 	 *            The list of connections that this selector iterates over.
+	 * @throws IllegalArgumentException
+	 *             If the list of connections is empty.
 	 */
 	public RoundRobinConnectionSelector(List<T> connections) {
 		if (connections.isEmpty()) {

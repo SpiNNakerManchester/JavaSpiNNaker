@@ -39,6 +39,8 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 *             If there's no such saved region.
 	 * @throws StorageException
 	 *             If anything goes wrong.
+	 * @throws UnsupportedOperationException
+	 *             This method is unsupported.
 	 * @deprecated Currently unsupported; underlying database structure absent
 	 */
 	@Deprecated
@@ -70,6 +72,8 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 *            The region ID.
 	 * @throws StorageException
 	 *             If anything goes wrong.
+	 * @throws UnsupportedOperationException
+	 *             This method is unsupported.
 	 * @deprecated Currently unsupported; underlying database structure absent
 	 */
 	@Deprecated
@@ -192,6 +196,8 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 * @return The storage ID. (Not currently used elsewhere.)
 	 * @throws StorageException
 	 *             If anything goes wrong.
+	 * @throws UnsupportedOperationException
+	 *             This method is unsupported.
 	 * @deprecated Currently unsupported; underlying database structure absent
 	 */
 	@Deprecated

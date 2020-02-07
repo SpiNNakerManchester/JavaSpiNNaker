@@ -881,7 +881,14 @@ public class Transceiver extends UDPTransceiver
 		c.sendSDPMessage(message);
 	}
 
-	/** Get the current machine status and store it. */
+	/**
+	 * Get the current machine status and store it.
+	 *
+	 * @throws IOException
+	 *             if the OS has networking troubles
+	 * @throws ProcessException
+	 *             if SpiNNaker rejects a message
+	 */
 	void updateMachine() throws IOException, ProcessException {
 		// Get the width and height of the machine
 		getMachineDimensions();

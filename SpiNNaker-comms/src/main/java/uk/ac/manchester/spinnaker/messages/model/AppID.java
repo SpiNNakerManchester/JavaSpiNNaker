@@ -43,6 +43,8 @@ public final class AppID {
 	 *
 	 * @param appID
 	 *            The proposed ID of the application. Must be between 0 and 255.
+	 * @throws IllegalArgumentException
+	 *             If an illegal ID is given.
 	 */
 	public AppID(int appID) {
 		if (appID < 0 || appID > MAX_APP_ID) {
