@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,7 +143,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 	private static final String META_LABEL = "reading region metadata";
 	private static final String FAST_LABEL = "high-speed transfers";
-	private static final String SLOW_LABEL = "slow-speed transfers";
 
 	/**
 	 * Download he contents of the regions that are described through the data
@@ -171,16 +170,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		}
 		Map<ChipLocation, GatherDownloadConnection> conns =
 				createConnections(gatherers, work);
-		try (
-		        SystemRouterTableContext s = new SystemRouterTableContext(
-		                txrx,
-		                gatherers.stream().flatMap(
-		                        g -> g.getMonitors().stream()));
-		        NoDropPacketContext p = new NoDropPacketContext(
-        		        txrx,
-        				gatherers.stream().flatMap(
-        				        g -> g.getMonitors().stream()),
-        				gatherers.stream());
+		try (SystemRouterTableContext s = new SystemRouterTableContext(txrx,
+				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
+				NoDropPacketContext p = new NoDropPacketContext(txrx,
+						gatherers.stream()
+								.flatMap(g -> g.getMonitors().stream()),
+						gatherers.stream());
 				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
@@ -265,7 +260,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			for (Monitor m : g.getMonitors()) {
 				m.updateTransactionIdFromMachine(txrx);
 
-			    for (Placement p : m.getPlacements()) {
+				for (Placement p : m.getPlacements()) {
 					List<List<Region>> regions = new ArrayList<>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
 						List<Region> r = getRegion(p, id);
@@ -364,15 +359,14 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *             If IO fails.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
-     * @throws TimeoutException
-     *             If a download times out unrecoverably.
-     * @throws ProcessException
-     *             If anything unexpected goes wrong.
+	 * @throws TimeoutException
+	 *             If a download times out unrecoverably.
+	 * @throws ProcessException
+	 *             If anything unexpected goes wrong.
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn, Progress bar)
-			throws IOException, StorageException, TimeoutException,
-			ProcessException {
+			GatherDownloadConnection conn, Progress bar) throws IOException,
+			StorageException, TimeoutException, ProcessException {
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads", conn.getChip());
 			Downloader dl = new Downloader(conn);
@@ -485,8 +479,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private void reconfigureIPtag(IPTag iptag,
-			GatherDownloadConnection conn)
+	private void reconfigureIPtag(IPTag iptag, GatherDownloadConnection conn)
 			throws IOException, ProcessException {
 		txrx.setIPTag(iptag, conn);
 		if (log.isDebugEnabled()) {
@@ -629,8 +622,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			 *
 			 * This translates into needing to add one here.
 			 */
-			maxSeqNum =
-					ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
+			maxSeqNum = ceildiv(region.size, DATA_WORDS_PER_PACKET * WORD_SIZE);
 			expectedSeqNums = new BitSet(maxSeqNum);
 			expectedSeqNums.set(0, maxSeqNum);
 			lastRequested = expectedSeqs();
@@ -638,21 +630,20 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			timeoutcount = 0;
 			monitorCore.updateTransactionId();
 			log.debug(
-			    "extracting data from {} with size {} with transaction id {}",
-			        region.startAddress, region.size,
-			        monitorCore.getTransactionId());
-			conn.sendStart(
-			        monitorCore.asCoreLocation(), region.startAddress,
-			        region.size, monitorCore.getTransactionId());
+					"extracting data from {} with size {} with "
+							+ "transaction id {}",
+					region.startAddress, region.size,
+					monitorCore.getTransactionId());
+			conn.sendStart(monitorCore.asCoreLocation(), region.startAddress,
+					region.size, monitorCore.getTransactionId());
 			try {
 				boolean finished;
 				do {
-					finished = processOnePacket(
-					    TIMEOUT_PER_RECEIVE, monitorCore.getTransactionId());
+					finished = processOnePacket(TIMEOUT_PER_RECEIVE,
+							monitorCore.getTransactionId());
 				} while (!finished);
-				conn.sendClear(
-				        monitorCore.asCoreLocation(),
-				        monitorCore.getTransactionId());
+				conn.sendClear(monitorCore.asCoreLocation(),
+						monitorCore.getTransactionId());
 			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
@@ -674,7 +665,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *            How long to wait for the queue to deliver a packet, in
 		 *            milliseconds.
 		 * @param transactionID
-         *            The transaction id of this stream.
+		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If packet reception or retransmission requesting fails.
@@ -690,9 +681,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				received = true;
 				return processData(p, transactionId);
 			}
-			log.error(
-			        "failed to receive on socket {}:{}.",
-			        conn.getLocalPort(), conn.getLocalIPAddress());
+			log.error("failed to receive on socket {}:{}.", conn.getLocalPort(),
+					conn.getLocalIPAddress());
 			return processTimeout(transactionId);
 		}
 
@@ -717,7 +707,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			int responseTransactionId = data.getInt();
 
 			if (responseTransactionId != transactionId) {
-			    return false;
+				return false;
 			}
 
 			boolean isEndOfStream =

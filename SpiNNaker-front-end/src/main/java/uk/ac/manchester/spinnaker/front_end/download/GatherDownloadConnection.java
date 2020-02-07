@@ -80,30 +80,31 @@ final class GatherDownloadConnection extends SDPConnection {
 	 * @param length
 	 *            How many bytes to read.
 	 * @param transactionId
-	 *             The transaction id of this stream.
+	 *            The transaction id of this stream.
 	 * @throws IOException
 	 *             If message sending fails.
 	 */
-	void sendStart(
-	        CoreLocation extraMonitorCore, int address, int length,
-	        int transactionId) throws IOException {
-		sendMsg(StartSendingMessage.create(extraMonitorCore, address,
-				length, transactionId));
+	void sendStart(CoreLocation extraMonitorCore, int address, int length,
+			int transactionId) throws IOException {
+		sendMsg(StartSendingMessage.create(extraMonitorCore, address, length,
+				transactionId));
 	}
 
 	/**
-	 * Sends a message telling the extra monitor to stop sending FR packets.
+	 * Sends a message telling the extra monitor to stop sending fixed route
+	 * packets.
+	 *
 	 * @param extraMonitorCore
-	 *             The location of the monitor.
-     * @param transactionId
-     *             The transaction id of this stream.
+	 *            The location of the monitor.
+	 * @param transactionId
+	 *            The transaction id of this stream.
 	 * @throws IOException
-     *             If message sending fails.
+	 *             If message sending fails.
 	 */
 	void sendClear(CoreLocation extraMonitorCore, int transactionId)
-	        throws IOException {
-        sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
-    }
+			throws IOException {
+		sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
+	}
 
 	/**
 	 * Send a message asking the extra monitor core to ask it to resend some
@@ -124,11 +125,10 @@ final class GatherDownloadConnection extends SDPConnection {
 	 *
 	 * @param timeout
 	 *            How long to wait for the packet.
-	 * @return The packet's raw contents. On timeout, an empty buffer will
-	 *         be returned. Never returns {@code null}.
+	 * @return The packet's raw contents. On timeout, an empty buffer will be
+	 *         returned. Never returns {@code null}.
 	 * @throws IOException
-	 *             If a non-recoverable error (e.g., closed channel)
-	 *             happens.
+	 *             If a non-recoverable error (e.g., closed channel) happens.
 	 */
 	ByteBuffer getNextPacket(int timeout) throws IOException {
 		try {
@@ -139,7 +139,7 @@ final class GatherDownloadConnection extends SDPConnection {
 			return b;
 		} catch (SocketTimeoutException ignored) {
 			log.debug("received timeout");
-		    return EMPTY_DATA;
+			return EMPTY_DATA;
 		}
 	}
 }

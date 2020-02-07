@@ -271,9 +271,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		}
 	}
 
-    @Override
-    public int getSizeForCore(CoreToLoad coreToLoad) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+	@Override
+	public int getSizeForCore(CoreToLoad coreToLoad) {
+		return 0; // FIXME incomplete method
+	}
 }

@@ -38,9 +38,10 @@ public interface DSEStorage extends DatabaseAPI {
 	int countWorkRequired() throws StorageException;
 
 	/**
-	 * gets a size for a given core on a given ethernet.
+	 * Get a size for a given core on a given ethernet chip.
+	 *
 	 * @param coreToLoad
-     *            The instruction to load a particular core.
+	 *            The instruction to load a particular core.
 	 * @return The size required for the DSE for this given core.
 	 */
 	int getSizeForCore(CoreToLoad coreToLoad);
@@ -143,7 +144,7 @@ public interface DSEStorage extends DatabaseAPI {
 		public final CoreLocation core;
 
 		/**
-		 * The size to write.
+		 * The size of region to allocate and write into.
 		 */
 		public final int sizeToWrite;
 
@@ -172,6 +173,8 @@ public interface DSEStorage extends DatabaseAPI {
 		 *            The P coordinate of the core.
 		 * @param appID
 		 *            The application identifier.
+		 * @param sizeToWrite
+		 *            Number of bytes to be written, as computed by DSG.
 		 */
 		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite, long time) {
 			this.core = new CoreLocation(x, y, p);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,33 +28,33 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * A message used to request fast data transfer from SpiNNaker to Host.
+ *
  * @author Alan Stokes
  */
 
 public final class ClearMessage extends GatherProtocolMessage {
-    private static final int NUM_WORDS = 2;
+	private static final int NUM_WORDS = 2;
 
-    /**
-     * Create a message used to request fast data transfer from SpiNNaker to
-     * Host.
-     *
-     * @param destination
-     *            Where to send the message
-     * @param transactionId
-     *            the transaction id needed
-     * @return The created message.
-     */
-    static ClearMessage create(
-            HasCoreLocation destination, int transactionId) {
-        ByteBuffer payload =
-                allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
-        payload.putInt(CLEAR_TRANSMISSIONS.value);
-        payload.putInt(transactionId);
-        payload.flip();
-        return new ClearMessage(destination, payload);
-    }
+	/**
+	 * Create a message used to request fast data transfer from SpiNNaker to
+	 * Host.
+	 *
+	 * @param destination
+	 *            Where to send the message
+	 * @param transactionId
+	 *            the transaction id needed
+	 * @return The created message.
+	 */
+	static ClearMessage create(HasCoreLocation destination, int transactionId) {
+		ByteBuffer payload =
+				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		payload.putInt(CLEAR_TRANSMISSIONS.value);
+		payload.putInt(transactionId);
+		payload.flip();
+		return new ClearMessage(destination, payload);
+	}
 
-    private ClearMessage(HasCoreLocation destination, ByteBuffer payload) {
-        super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
-    }
+	private ClearMessage(HasCoreLocation destination, ByteBuffer payload) {
+		super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
+	}
 }

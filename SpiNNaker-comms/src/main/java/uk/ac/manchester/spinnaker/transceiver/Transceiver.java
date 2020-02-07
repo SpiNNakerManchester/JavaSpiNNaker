@@ -1137,7 +1137,8 @@ public class Transceiver extends UDPTransceiver
 	 * @param connector
 	 *            The specific connector to talk to the board along.
 	 * @return The SCP runner process
-	 * @throws IOException If anything fails (unexpected).
+	 * @throws IOException
+	 *             If anything fails (unexpected).
 	 */
 	private SendSingleSCPCommandProcess simpleProcess(SDPConnection connector)
 			throws IOException {
