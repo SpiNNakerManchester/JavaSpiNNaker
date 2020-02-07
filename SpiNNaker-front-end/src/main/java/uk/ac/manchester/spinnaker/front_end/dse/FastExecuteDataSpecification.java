@@ -445,7 +445,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
-				ds = ctl.getDataSpec();
+				log.info("getting dse for core %s", ctl.core);
+			    ds = ctl.getDataSpec();
 			} catch (StorageException e) {
 				throw new DataSpecificationException(String.format(
 						"failed to read data specification on "
