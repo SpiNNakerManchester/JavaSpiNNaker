@@ -51,6 +51,8 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	 * @param originatingChip
 	 *            Where the message notionally originates from.
 	 * @return The byte buffer.
+	 * @throws IllegalStateException
+	 *             If a message is prepared for sending a second time.
 	 */
 	public final ByteBuffer getMessageData(HasChipLocation originatingChip) {
 		if (sdpHeader.getSource() != null) {

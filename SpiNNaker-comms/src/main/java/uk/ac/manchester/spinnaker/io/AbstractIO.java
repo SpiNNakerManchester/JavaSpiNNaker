@@ -107,7 +107,9 @@ public interface AbstractIO extends AutoCloseable {
 			seek(numBytes + size());
 			break;
 		default:
+			// CHECKSTYLE:OFF
 			throw new IllegalArgumentException();
+			// CHECKSTYLE:ON
 		}
 	}
 
@@ -273,7 +275,9 @@ public interface AbstractIO extends AutoCloseable {
 				} catch (EOFException e) {
 					return -1;
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -286,7 +290,9 @@ public interface AbstractIO extends AutoCloseable {
 				} catch (EOFException e) {
 					return -1;
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -300,7 +306,9 @@ public interface AbstractIO extends AutoCloseable {
 				} catch (EOFException e) {
 					return -1;
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -312,7 +320,9 @@ public interface AbstractIO extends AutoCloseable {
 					int after = tell();
 					return after - before;
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 		};
@@ -332,7 +342,9 @@ public interface AbstractIO extends AutoCloseable {
 				try {
 					AbstractIO.this.write(buffer);
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -341,7 +353,9 @@ public interface AbstractIO extends AutoCloseable {
 				try {
 					AbstractIO.this.write(bytes);
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -353,7 +367,9 @@ public interface AbstractIO extends AutoCloseable {
 				try {
 					AbstractIO.this.write(buffer);
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 
@@ -362,7 +378,9 @@ public interface AbstractIO extends AutoCloseable {
 				try {
 					AbstractIO.this.flush();
 				} catch (ProcessException e) {
+					// CHECKSTYLE:OFF
 					throw new IOException(e);
+					// CHECKSTYLE:ON
 				}
 			}
 		};

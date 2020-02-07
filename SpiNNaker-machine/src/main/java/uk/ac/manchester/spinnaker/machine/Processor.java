@@ -27,9 +27,9 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOH
  * <p>
  * Note: There is No public Constructor instead use a static factory method.
  *
- * @see <a
- * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
- * Python Version</a>
+ * @see <a href=
+ *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
+ *      Python Version</a>
  *
  * @author Christian-B
  */
@@ -46,8 +46,8 @@ public final class Processor implements Comparable<Processor> {
     public final int clockSpeed;
 
     /**
-     * Determines if the processor is the monitor, and therefore not
-     * to be allocated.
+     * Determines if the processor is the monitor, and therefore not to be
+     * allocated.
      */
     public final boolean isMonitor;
 
@@ -179,8 +179,9 @@ public final class Processor implements Comparable<Processor> {
      * @param isMonitor
      *            Determines if the processor is considered the monitor
      *            processor, and so should not be otherwise allocated.
-     *
      * @return A Processor object with these properties
+     * @throws IllegalArgumentException
+     *             If a nonsense parameter is given.
      */
     public static Processor factory(int processorId, int clockSpeed,
             int dtcmAvailable, boolean isMonitor)
@@ -190,12 +191,12 @@ public final class Processor implements Comparable<Processor> {
             return factory(processorId, isMonitor);
         }
         if (clockSpeed <= 0) {
-            throw new IllegalArgumentException("clockSpeed parameter "
-                    + clockSpeed + " cannot be less than or equal to zero");
+            throw new IllegalArgumentException("clockSpeed parameter, "
+                    + clockSpeed + ", cannot be less than or equal to zero");
         }
         if (dtcmAvailable <= 0) {
-            throw new IllegalArgumentException("dtcmAvailable parameter "
-                    + dtcmAvailable + " cannot be less than or equal to zero");
+            throw new IllegalArgumentException("dtcmAvailable parameter, "
+                    + dtcmAvailable + ", cannot be less than or equal to zero");
         }
         return new Processor(processorId, clockSpeed, dtcmAvailable, isMonitor);
     }

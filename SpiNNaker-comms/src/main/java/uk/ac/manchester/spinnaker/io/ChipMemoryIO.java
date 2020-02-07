@@ -123,7 +123,14 @@ final class ChipMemoryIO {
 		return t;
 	}
 
-	/** Force the writing of the current write buffer. */
+	/**
+	 * Force the writing of the current write buffer.
+	 *
+	 * @throws IOException
+	 *             If the OS has a problem sending or receiving a message.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
 	void flushWriteBuffer() throws IOException, ProcessException {
 		if (writeBuffer.position() > 0) {
 			Transceiver t = hold;
@@ -144,6 +151,10 @@ final class ChipMemoryIO {
 	 *
 	 * @param address
 	 *            The address to set.
+	 * @throws IOException
+	 *             If the OS has a problem sending or receiving a message.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void setCurrentAddress(int address) throws IOException, ProcessException {
 		flushWriteBuffer();
@@ -157,6 +168,10 @@ final class ChipMemoryIO {
 	 * @return The bytes that have been read.
 	 * @param numBytes
 	 *            The number of bytes to read
+	 * @throws IOException
+	 *             If the OS has a problem sending or receiving a message.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	byte[] read(int numBytes) throws IOException, ProcessException {
 		if (numBytes == 0) {
@@ -180,6 +195,10 @@ final class ChipMemoryIO {
 	 *
 	 * @param data
 	 *            The data to write
+	 * @throws IOException
+	 *             If the OS has a problem sending or receiving a message.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void write(byte[] data) throws IOException, ProcessException {
 		int numBytes = data.length;
@@ -216,6 +235,10 @@ final class ChipMemoryIO {
 	 *            Number of bytes to fill from current position
 	 * @param type
 	 *            The type of the repeat value
+	 * @throws IOException
+	 *             If the OS has a problem sending or receiving a message.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void fill(int value, int size, FillProcess.DataType type)
 			throws IOException, ProcessException {
