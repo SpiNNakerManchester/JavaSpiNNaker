@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.String.format;
+import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -42,12 +43,12 @@ abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
 	/** Cache of what methods implement operations in a class. */
 	private static final Map<Class<? extends FunctionAPI>,
-			Map<Commands, Method>> OPS_MAP = new HashMap<>();
+			Map<Commands, Method>> OPS_MAP = synchronizedMap(new HashMap<>());
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
 	 */
 	private static final Map<FunctionAPI, Map<Commands, Callable>> MAP =
-			new WeakHashMap<>();
+			synchronizedMap(new WeakHashMap<>());
 
 	private OperationMapper() {
 	}
