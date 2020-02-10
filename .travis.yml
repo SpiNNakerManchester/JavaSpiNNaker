@@ -1,7 +1,8 @@
 language: java
+os: linux
 jdk:
-  - openjdk8
   - openjdk11
+  - openjdk8
 cache:
   directories:
     - $HOME/.m2
