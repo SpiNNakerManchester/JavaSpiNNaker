@@ -721,6 +721,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         switch (commandCode) {
                         case RECEIVE_FINISHED_DATA_IN:
                             // We're done!
+                            log.info("finished sending transaction {}",
+                                    transactionId);
                             break outerLoop;
 
                         case RECEIVE_MISSING_SEQ_DATA_IN:
@@ -770,7 +772,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         // created the buffer, so send everything again
                         if (missing == null) {
                             log.info("full timeout; resending initial "
-                                    + "packets for stream with trasnaction "
+                                    + "packets for stream with transaction "
                                     + "id {}", transactionId);
                             continue outerLoop;
                         }
@@ -822,8 +824,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
         private int sendInitialPackets(int baseAddress, ByteBuffer data,
                 GathererProtocol protocol, int transactionId, int numPackets)
                 throws IOException {
-            log.debug("streaming {} bytes in {} packets", data.remaining(),
-                    numPackets);
+            log.info("Streaming {} bytes in {} packets using transaction {}",
+                    data.remaining(), numPackets, transactionId);
             log.debug("sending packet #{}", 0);
             connection.send(protocol.dataToLocation(baseAddress, numPackets,
                     transactionId));
