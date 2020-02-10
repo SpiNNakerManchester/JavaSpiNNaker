@@ -56,150 +56,150 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
  * @author Donal Fellows
  */
 public class ThrottledConnection implements Closeable {
-	private static final Logger log = getLogger(ThrottledConnection.class);
-	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final long THROTTLE_NS = 35000;
-	/** The {@link #receive()} timeout, in milliseconds. */
-	private static final int TIMEOUT_MS = 2000;
-	/** In milliseconds. */
-	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
-	/** Number of times to try to reprogram the IP Tag. */
-	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
-	/** In milliseconds. */
-	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
-	private static final ScheduledExecutorService CLOSER;
-	private static final int ANY_PORT = 0;
-	static {
-		CLOSER = newSingleThreadScheduledExecutor(r -> {
-			Thread t = new Thread(r, "ThrottledConnection.Closer");
-			t.setDaemon(true);
-			return t;
-		});
-		log.info("inter-message minimum time set to {}us",
-				THROTTLE_NS / NSEC_PER_USEC);
-	}
+    private static final Logger log = getLogger(ThrottledConnection.class);
+    /** The minimum interval between messages, in <em>nanoseconds</em>. */
+    public static final long THROTTLE_NS = 35000;
+    /** The {@link #receive()} timeout, in milliseconds. */
+    private static final int TIMEOUT_MS = 5000;
+    /** In milliseconds. */
+    private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
+    /** Number of times to try to reprogram the IP Tag. */
+    private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
+    /** In milliseconds. */
+    private static final int IPTAG_INTERATTEMPT_DELAY = 50;
+    private static final ScheduledExecutorService CLOSER;
+    private static final int ANY_PORT = 0;
+    static {
+        CLOSER = newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "ThrottledConnection.Closer");
+            t.setDaemon(true);
+            return t;
+        });
+        log.info("inter-message minimum time set to {}us",
+                THROTTLE_NS / NSEC_PER_USEC);
+    }
 
-	private final ChipLocation location;
-	private final InetAddress addr;
-	private SCPConnection connection;
-	private long lastSend;
+    private final ChipLocation location;
+    private final InetAddress addr;
+    private SCPConnection connection;
+    private long lastSend;
 
-	/**
-	 * Create a throttled connection for talking to a board.
-	 *
-	 * @param board
-	 *            The board to talk to.
-	 * @throws IOException
-	 *             If IO fails.
-	 */
-	public ThrottledConnection(Ethernet board) throws IOException {
-		location = board.location;
-		addr = getByName(board.ethernetAddress);
-		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
-		log.info("created throttled connection to " + location + " (" + addr
-				+ ")");
-	}
+    /**
+    * Create a throttled connection for talking to a board.
+    *
+    * @param board
+    *            The board to talk to.
+    * @throws IOException
+    *             If IO fails.
+    */
+    public ThrottledConnection(Ethernet board) throws IOException {
+        location = board.location;
+        addr = getByName(board.ethernetAddress);
+        connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
+        log.info("created throttled connection to " + location + " (" + addr
+                + ")");
+    }
 
-	/**
-	 * Get a message from the connection.
-	 *
-	 * @return The content of the message.
-	 * @throws SocketTimeoutException
-	 *             If no message is received by the timeout.
-	 * @throws IOException
-	 *             If IO fails.
-	 */
-	public IntBuffer receive() throws SocketTimeoutException, IOException {
-		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
-				.asIntBuffer();
-	}
+    /**
+    * Get a message from the connection.
+    *
+    * @return The content of the message.
+    * @throws SocketTimeoutException
+    *             If no message is received by the timeout.
+    * @throws IOException
+    *             If IO fails.
+    */
+    public IntBuffer receive() throws SocketTimeoutException, IOException {
+        return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
+                .asIntBuffer();
+    }
 
-	/**
-	 * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
-	 * up to the caller to ensure that the tag is allocated in the first place.
-	 *
-	 * @param iptag
-	 *            The tag to reprogram.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws UnexpectedResponseCodeException
-	 *             If a weird message is received.
-	 */
-	public void reprogramTag(IPTag iptag)
-			throws IOException, UnexpectedResponseCodeException {
-		IPTagSet tagSet = new IPTagSet(location, null, ANY_PORT, iptag.getTag(),
-				true, true);
-		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
-				connection.getLocalIPAddress(), connection.getLocalPort());
-		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
-		ByteBuffer data = connection.getSCPData(tagSet);
-		SocketTimeoutException e = null;
-		for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
-			try {
-				connection.send(data.duplicate());
-				lastSend = nanoTime();
-				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
-						.parsePayload(tagSet);
-				log.debug("reprogrammed in {} attempts", i);
-				return;
-			} catch (SocketTimeoutException timeout) {
-				e = timeout;
-				try {
-					sleep(IPTAG_INTERATTEMPT_DELAY);
-				} catch (InterruptedException ignored) {
-				}
-			} catch (IOException | RuntimeException
-					| UnexpectedResponseCodeException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				throw new RuntimeException("unexpected exception", e);
-			}
-		}
-		if (e != null) {
-			throw e;
-		}
-	}
+    /**
+    * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
+    * up to the caller to ensure that the tag is allocated in the first place.
+    *
+    * @param iptag
+    *            The tag to reprogram.
+    * @throws IOException
+    *             If IO fails.
+    * @throws UnexpectedResponseCodeException
+    *             If a weird message is received.
+    */
+    public void reprogramTag(IPTag iptag)
+            throws IOException, UnexpectedResponseCodeException {
+        IPTagSet tagSet = new IPTagSet(location, null, ANY_PORT, iptag.getTag(),
+                true, true);
+        log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
+                connection.getLocalIPAddress(), connection.getLocalPort());
+        tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
+        ByteBuffer data = connection.getSCPData(tagSet);
+        SocketTimeoutException e = null;
+        for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
+            try {
+                connection.send(data.duplicate());
+                lastSend = nanoTime();
+                connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
+                        .parsePayload(tagSet);
+                log.debug("reprogrammed in {} attempts", i);
+                return;
+            } catch (SocketTimeoutException timeout) {
+                e = timeout;
+                try {
+                    sleep(IPTAG_INTERATTEMPT_DELAY);
+                } catch (InterruptedException ignored) {
+                }
+            } catch (IOException | RuntimeException
+                    | UnexpectedResponseCodeException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new RuntimeException("unexpected exception", e);
+            }
+        }
+        if (e != null) {
+            throw e;
+        }
+    }
 
-	/**
-	 * Throttled send.
-	 *
-	 * @param message
-	 *            The message to send.
-	 * @throws IOException
-	 *             If IO fails.
-	 */
-	public void send(SDPMessage message) throws IOException {
-		log.debug("about to send {} bytes", message.getData().remaining());
-		if (log.isDebugEnabled()) {
-			ByteBuffer payload = message.getData();
-			log.debug("message payload data: {}", range(0, payload.remaining())
-					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
-		}
-		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-		while (nanoTime() - lastSend < THROTTLE_NS) {
-			// Make the loop slightly less heavy
-			yield();
-		}
-		connection.sendSDPMessage(message);
-		lastSend = nanoTime();
-	}
+    /**
+    * Throttled send.
+    *
+    * @param message
+    *            The message to send.
+    * @throws IOException
+    *             If IO fails.
+    */
+    public void send(SDPMessage message) throws IOException {
+        log.debug("about to send {} bytes", message.getData().remaining());
+        if (log.isDebugEnabled()) {
+            ByteBuffer payload = message.getData();
+            log.debug("message payload data: {}", range(0, payload.remaining())
+                    .mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
+        }
+        // BUSY LOOP! https://stackoverflow.com/q/11498585/301832
+        while (nanoTime() - lastSend < THROTTLE_NS) {
+            // Make the loop slightly less heavy
+            yield();
+        }
+        connection.sendSDPMessage(message);
+        lastSend = nanoTime();
+    }
 
-	@Override
-	public void close() {
-		SCPConnection c = connection;
-		connection = null;
-		// Prevent reuse of existing socket IDs for other boards
-		CLOSER.schedule(() -> {
-			try {
-				Object name = null;
-				if (log.isInfoEnabled()) {
-					name = c.toString();
-				}
-				c.close();
-				log.info("closed {}", name);
-			} catch (IOException e) {
-				log.warn("failed to close connection", e);
-			}
-		}, 1, SECONDS);
-	}
+    @Override
+    public void close() {
+        SCPConnection c = connection;
+        connection = null;
+        // Prevent reuse of existing socket IDs for other boards
+        CLOSER.schedule(() -> {
+            try {
+                Object name = null;
+                if (log.isInfoEnabled()) {
+                    name = c.toString();
+                }
+                c.close();
+                log.info("closed {}", name);
+            } catch (IOException e) {
+                log.warn("failed to close connection", e);
+            }
+        }, 1, SECONDS);
+    }
 }
