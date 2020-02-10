@@ -112,7 +112,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 				getDescriptor(chip, placement.getVertex().getBaseAddress());
 		return new ChannelBufferState(txrx.readMemory(chip,
 				descriptor.regionPointers[recordingRegionIndex],
-				ChannelBufferState.SIZE));
+				ChannelBufferState.STATE_SIZE));
 	}
 
 	@Override
@@ -126,15 +126,15 @@ public class RecordingRegionDataGatherer extends DataGatherer
 			regionPieces.add(new RecordingRegion(placement, index,
 					state.currentRead, state.currentWrite));
 		} else if (state.currentRead > state.currentWrite
-				|| state.lastBufferOperationWasWrite) {
+				|| state.lastOpWasWrite) {
 			regionPieces.add(new RecordingRegion(placement, index,
 					state.currentRead, state.end));
 			regionPieces.add(new RecordingRegion(placement, index, state.start,
 					state.currentWrite));
 		}
 		// Remove any zero-sized reads
-		regionPieces =
-				regionPieces.stream().filter(r -> r.size > 0).collect(toList());
+		regionPieces = regionPieces.stream().filter(Region::isNonEmpty)
+				.collect(toList());
 		log.debug("generated reads for {} R:{} :: {}",
 				placement.asCoreLocation(), index, regionPieces);
 		/*

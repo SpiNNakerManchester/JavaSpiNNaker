@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.download.storage_objects.BufferingOperation.BUFFER_WRITE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
@@ -34,9 +33,6 @@ import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
-import uk.ac.manchester.spinnaker.front_end.download.storage_objects.BufferedReceivingData;
-import uk.ac.manchester.spinnaker.front_end.download.storage_objects.BufferingOperation;
-import uk.ac.manchester.spinnaker.front_end.download.storage_objects.ChannelBufferState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -228,34 +224,41 @@ public class DataReceiver extends BoardLocalSupport {
 		 * now state is updated, read back values for read pointer and last
 		 * operation performed
 		 */
-		BufferingOperation lastOperation = endState.getLastBufferOperation();
-
-		if (endState.getCurrentRead() < endState.currentWrite) {
-			int length = endState.currentWrite - endState.getCurrentRead();
-			readSomeData(location, endState.getCurrentRead(), length);
-		} else if (endState.getCurrentRead() > endState.currentWrite
-				|| lastOperation == BUFFER_WRITE) {
-			int length = endState.endAddress - endState.getCurrentRead();
+		if (endState.currentRead < endState.currentWrite) {
+			long length = endState.currentWrite - endState.currentRead;
+			readSomeData(location, endState.currentRead, length);
+		} else if (endState.currentRead > endState.currentWrite
+				|| endState.lastOpWasWrite) {
+			long length = endState.end - endState.currentRead;
 			if (length < 0) {
 				throw new IOException(
 						"The amount of data to read is negative!");
 			}
-			readSomeData(location, endState.getCurrentRead(), length);
-			length = endState.currentWrite - endState.startAddress;
-			readSomeData(location, endState.startAddress, length);
+			readSomeData(location, endState.currentRead, length);
+			length = endState.currentWrite - endState.start;
+			readSomeData(location, endState.start, length);
 		} else {
 			ByteBuffer data = ByteBuffer.allocate(0);
 			receivedData.flushingDataFromRegion(location, data);
 		}
 	}
 
-	private void readSomeData(RegionLocation location, int address, int length)
+	private static final long MAX_UINT = 0xFFFFFFFFl;
+	private static boolean is32bit(long value) {
+		return value >= 0 && value <= MAX_UINT;
+	}
+
+	private void readSomeData(RegionLocation location, long address,
+			long length)
 			throws IOException, StorageException, ProcessException {
-        if (log.isDebugEnabled()) {
-    		log.debug("< Reading " + length + " bytes from " + location
-                    + " at " + address);
-        }
-		ByteBuffer data = requestData(location, address, length);
+		if (!is32bit(address) || !is32bit(length)) {
+			throw new IllegalArgumentException("non-32-bit argument");
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("< Reading " + length + " bytes from " + location + " at "
+					+ address);
+		}
+		ByteBuffer data = requestData(location, (int) address, (int) length);
 		receivedData.flushingDataFromRegion(location, data);
 	}
 
@@ -314,8 +317,9 @@ public class DataReceiver extends BoardLocalSupport {
 	 */
 	private ByteBuffer requestData(HasCoreLocation location, long address,
 			int length) throws IOException, ProcessException {
-		if (length == 0) {
-			return ByteBuffer.allocate(0);
+		if (length < 1) {
+			// Crazy negative lengths get an exception
+			return ByteBuffer.allocate(length);
 		}
 		return txrx.readMemory(location.getScampCore(), address, length);
 	}

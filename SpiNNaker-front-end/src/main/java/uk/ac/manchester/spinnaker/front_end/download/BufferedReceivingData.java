@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.front_end.download.storage_objects;
+package uk.ac.manchester.spinnaker.front_end.download;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -183,7 +183,8 @@ public class BufferedReceivingData {
 	public ChannelBufferState getEndBufferingState(RegionLocation location) {
 		ChannelBufferState value = endBufferingState.get(location);
 		if (value == null) {
-			throw new IllegalArgumentException("no state know for " + location);
+			throw new IllegalArgumentException(
+					"no state known for " + location);
 		}
 		return value;
 	}
