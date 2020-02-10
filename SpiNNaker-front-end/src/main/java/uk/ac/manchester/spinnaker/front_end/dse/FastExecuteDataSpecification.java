@@ -836,7 +836,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
             connection.send(protocol.dataToLocation(baseAddress, numPackets,
                     transactionId));
 
-            log.debug("retransmitting {} packets", missingSeqNums.cardinality());
+            log.debug("retransmitting {} packets",
+                    missingSeqNums.cardinality());
 
             missingSeqNums.stream().forEach(seqNum -> {
                 log.debug("resending packet #{}", seqNum);
