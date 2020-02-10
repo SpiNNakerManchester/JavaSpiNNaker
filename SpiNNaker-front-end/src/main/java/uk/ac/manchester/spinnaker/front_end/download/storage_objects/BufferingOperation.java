@@ -28,16 +28,15 @@ package uk.ac.manchester.spinnaker.front_end.download.storage_objects;
  * @author Christian-B
  */
 public enum BufferingOperation {
-    /** Database handshake with external program. */
-    BUFFER_READ(0),
-    /** Host confirming data being read form SpiNNaker memory. */
-    BUFFER_WRITE(1);
+	/** Database handshake with external program. */
+	BUFFER_READ(0),
+	/** Host confirming data being read form SpiNNaker memory. */
+	BUFFER_WRITE(1);
 
-    /** Python value for this enum. */
-    public final int value;
+	/** Python value for this enum. */
+	public final int value;
 
-    BufferingOperation(int value) {
-        this.value = value;
-    }
-
+	BufferingOperation(int value) {
+		this.value = value;
+	}
 }

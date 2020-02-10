@@ -28,31 +28,22 @@ import java.nio.ByteBuffer;
  * @author Christian-B
  */
 public class ChannelBufferState {
-
-    /** start buffering area memory address (32 bits). */
+    /** The start buffering area memory address (32 bits). */
     public final int startAddress;
-
-    /** address where data was last written (32 bits). */
+    /** The address where data was last written (32 bits). */
     public final int  currentWrite;
-
-    /** address where the DMA write got up to (32 bits). */
+    /** The address where the DMA write got up to (32 bits). */
     public final int currentDmaWrite;
-
-    /** address where data was last read (32 bits). */
+    /** The address where data was last read (32 bits). */
     private int currentRead;
-
     /** The address of first byte after the buffer (32 bits). */
     public final int endAddress;
-
     /** The ID of the region (8 bits). */
     public final byte regionId;
-
     /** True if the region overflowed during the simulation (8 bits). */
     public final byte missingInfo;
-
     /** Last operation performed on the buffer - read or write (8 bits). */
     private BufferingOperation lastBufferOperation;
-
     /** bool check for if its extracted data from machine. */
     private boolean updateCompleted;
 
@@ -64,7 +55,7 @@ public class ChannelBufferState {
 	 * {@code endAddress}, 1 for {@code regionId}, 1 for {@code missingInfo}, 1
 	 * for {@code lastBufferOperation},
 	 */
-    public static final int STATE_SIZE = 24;
+	public static final int STATE_SIZE = 24;
 
     /**
      * Creates a new ChannelBufferState reading from the ByteBuffer.
@@ -89,47 +80,50 @@ public class ChannelBufferState {
         // x  IE move the read flag to ignore the last byte
         data.get();
         updateCompleted = false;
-    }
+	}
 
-    /**
-     * @return the currentRead
-     */
-    public int getCurrentRead() {
-        return currentRead;
-    }
+	/**
+	 * @return the currentRead
+	 */
+	public int getCurrentRead() {
+		return currentRead;
+	}
 
-    /**
-     * @param currentRead the currentRead to set
-     */
-    public void setCurrentRead(int currentRead) {
-        this.currentRead = currentRead;
-    }
+	/**
+	 * @param currentRead
+	 *            the currentRead to set
+	 */
+	public void setCurrentRead(int currentRead) {
+		this.currentRead = currentRead;
+	}
 
-    /**
-     * @return the lastBufferOperation
-     */
-    public BufferingOperation getLastBufferOperation() {
-        return lastBufferOperation;
-    }
+	/**
+	 * @return the lastBufferOperation
+	 */
+	public BufferingOperation getLastBufferOperation() {
+		return lastBufferOperation;
+	}
 
-    /**
-     * @param lastBufferOperation the lastBufferOperation to set
-     */
-    public void setLastBufferOperation(BufferingOperation lastBufferOperation) {
-        this.lastBufferOperation = lastBufferOperation;
-    }
+	/**
+	 * @param lastBufferOperation
+	 *            the lastBufferOperation to set
+	 */
+	public void setLastBufferOperation(BufferingOperation lastBufferOperation) {
+		this.lastBufferOperation = lastBufferOperation;
+	}
 
-    /**
-     * @return the updateCompleted
-     */
-    public boolean isUpdateCompleted() {
-        return updateCompleted;
-    }
+	/**
+	 * @return the updateCompleted
+	 */
+	public boolean isUpdateCompleted() {
+		return updateCompleted;
+	}
 
-    /**
-     * @param updateCompleted the updateCompleted to set
-     */
-    public void setUpdateCompleted(boolean updateCompleted) {
-        this.updateCompleted = updateCompleted;
-    }
+	/**
+	 * @param updateCompleted
+	 *            the updateCompleted to set
+	 */
+	public void setUpdateCompleted(boolean updateCompleted) {
+		this.updateCompleted = updateCompleted;
+	}
 }

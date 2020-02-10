@@ -49,27 +49,20 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 public class BufferedReceivingData {
 	private static final Logger log = getLogger(BufferedReceivingData.class);
 
-    /** The physical storage of the data. */
-    private final BufferManagerStorage storage;
+	/** The physical storage of the data. */
+	private final BufferManagerStorage storage;
 
-    /** Map of booleans indicating if a region on a core has been flushed. */
-    private final Map<RegionLocation, Boolean> isFlushed;
+	/** Map of booleans indicating if a region on a core has been flushed. */
+	private final Map<RegionLocation, Boolean> isFlushed;
 
-    /** Map of last sequence number received by core. */
-    private final Map<CoreLocation, Integer> sequenceNo;
+	/** Map of last sequence number received by core. */
+	private final Map<CoreLocation, Integer> sequenceNo;
 
-        // In python but unused in this prototype
-        //# dict of last packet received by core
-        //"_last_packet_received",
+	/** Map of end buffer sequence number. */
+	private final Map<CoreLocation, Integer> endBufferingSequenceNo;
 
-    /** Map of last packet sent by core. */
-    //private final Map<CoreLocation, HostDataRead> lastPacketSent;
-
-    /** Map of end buffer sequence number. */
-    private final Map<CoreLocation, Integer> endBufferingSequenceNo;
-
-    /** Map of end state by core. */
-    private final Map<RegionLocation, ChannelBufferState> endBufferingState;
+	/** Map of end state by core. */
+	private final Map<RegionLocation, ChannelBufferState> endBufferingState;
 
 	private static final int DEFAULT_SEQUENCE_NUMBER = 0xFF;
 
@@ -82,23 +75,11 @@ public class BufferedReceivingData {
 	 */
 	public BufferedReceivingData(BufferManagerStorage storage) {
 		this.storage = storage;
-        isFlushed = new DefaultMap<>(false);
-        sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
-        //self._last_packet_received = defaultdict(lambda: None)
-        //lastPacketSent = new HashMap<>();
-        endBufferingSequenceNo = new HashMap<>();
-        endBufferingState = new HashMap<>();
-    }
-
-    // Resets states so that it can behave in a resumed mode.
-    //public void resume() {
-        //self._end_buffering_state = dict()
-        //self._is_flushed = defaultdict(lambda: False)
-        //self._sequence_no = defaultdict(lambda: 0xFF)
-        //self._last_packet_received = defaultdict(lambda: None)
-        //self._last_packet_sent = defaultdict(lambda: None)
-        //self._end_buffering_sequence_no = dict()
-    //}
+		isFlushed = new DefaultMap<>(false);
+		sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
+		endBufferingSequenceNo = new HashMap<>();
+		endBufferingState = new HashMap<>();
+	}
 
 	/**
 	 * Determine if the last sequence number has been retrieved.
@@ -267,28 +248,4 @@ public class BufferedReceivingData {
 		storeDataInRegionBuffer(location, data);
 		isFlushed.put(location, true);
 	}
-
-    /* *
-     * Get the last packet received for a given core.
-     *
-     * @param location The Core
-     * @return last HostDataRead packet sent
-     * /
-    public HostDataRead lastSentPacketToCore(CoreLocation location) {
-        return lastPacketSent.get(location);
-    }*/
-
-    /* *
-     * Get the last packet received for a given core.
-     *
-     * @param location The Core
-     * @return last HostDataRead packet sent
-     * /
-    public HostDataRead lastSentPacketToCore(HasCoreLocation location) {
-        return lastPacketSent.get(location.asCoreLocation());
-    }*/
-
-    //BufferedDataStorage getRegionDataPointer(RegionLocation location) {
-    //    throw new UnsupportedOperationException("Not supported yet.");
-    //}
 }
