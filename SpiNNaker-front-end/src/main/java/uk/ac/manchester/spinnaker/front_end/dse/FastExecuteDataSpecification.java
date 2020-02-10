@@ -693,19 +693,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                 BitSet missing = null;
 
                 // Wait for confirmation and do required retransmits
-                boolean firstAfterRetransmit = false;
                 innerLoop: while (true) {
                     try {
                         IntBuffer received = connection.receive();
                         timeoutCount = 0; // Reset the timeout counter
-
-                        // If this is the first packet received after a
-                        // retransmit, we can clear the missing packet buffer
-                        // as we will (potentially) build a new one now
-                        if (firstAfterRetransmit) {
-                            missing.clear();
-                            firstAfterRetransmit = false;
-                        }
 
                         // read transaction id
                         FastDataInCommandID commandCode =
@@ -759,9 +750,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         if (flags.seenAll || flags.seenEnd) {
                             retransmitMissingPackets(protocol, data, missing,
                                     transactionId, baseAddress, numPackets);
-                            // The next packet received will be the first
-                            // after retransmitting
-                            firstAfterRetransmit = true;
+                            missing.clear();
                         }
                     } catch (SocketTimeoutException e) {
                         if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
@@ -782,9 +771,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                                 gather.asCoreLocation());
                         retransmitMissingPackets(protocol, data, missing,
                                 transactionId, baseAddress, numPackets);
-                        // The next packet received will be the first
-                        // after retransmitting
-                        firstAfterRetransmit = true;
+                        missing.clear();
                     }
                 }
             }
