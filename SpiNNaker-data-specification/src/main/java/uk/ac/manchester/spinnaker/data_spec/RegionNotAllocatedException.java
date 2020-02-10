@@ -14,13 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
+package uk.ac.manchester.spinnaker.data_spec;
 
 /**
- * A special exception that indicates that a
- * {@link uk.ac.manchester.spinnaker.data_spec.Commands#BREAK BREAK} was
- * encountered.
+ * An exception which occurs when trying to write to an unallocated region of
+ * memory.
  */
-public class ExecuteBreakInstruction extends DataSpecificationException {
-	private static final long serialVersionUID = -4902287652556707319L;
+public class RegionNotAllocatedException extends DataSpecificationException {
+	private static final long serialVersionUID = 7075946109066864639L;
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param currentRegion
+	 *            What is the current region.
+	 * @param command
+	 *            What command was trying to use the region.
+	 */
+	public RegionNotAllocatedException(int currentRegion, Commands command) {
+		super("Region " + currentRegion
+            + " has not been allocated during execution of command "
+            + command);
+	}
 }

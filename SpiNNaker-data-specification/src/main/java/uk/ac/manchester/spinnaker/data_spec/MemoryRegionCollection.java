@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
-
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The

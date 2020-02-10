@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
+package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.String.format;
-
-import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
  * An exception which occurs when trying to execute an unimplemented command.

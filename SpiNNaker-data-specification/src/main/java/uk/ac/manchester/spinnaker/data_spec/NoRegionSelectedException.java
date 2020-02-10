@@ -14,27 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
-
-import uk.ac.manchester.spinnaker.data_spec.Commands;
+package uk.ac.manchester.spinnaker.data_spec;
 
 /**
- * An exception that indicates that a memory region is being used that was
- * originally requested to be unfilled.
+ * An exception that indicates that a memory region has not been selected.
  */
-public class RegionUnfilledException extends DataSpecificationException {
-	private static final long serialVersionUID = -3485312741873589073L;
+public class NoRegionSelectedException extends DataSpecificationException {
+	private static final long serialVersionUID = -3704038507680648327L;
 
 	/**
 	 * Create an instance.
 	 *
-	 * @param region
-	 *            What region are we talking about.
-	 * @param command
-	 *            What command wanted to use the region.
+	 * @param msg
+	 *            The message in the exception.
 	 */
-	public RegionUnfilledException(int region, Commands command) {
-		super("Region " + region + " was requested unfilled, but command "
-				+ command + " requests its use");
+	public NoRegionSelectedException(String msg) {
+		super(msg);
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param command
+	 *            What command was using memory without a region selected.
+	 */
+	public NoRegionSelectedException(Commands command) {
+		super("no region has been selected for writing by " + command);
 	}
 }

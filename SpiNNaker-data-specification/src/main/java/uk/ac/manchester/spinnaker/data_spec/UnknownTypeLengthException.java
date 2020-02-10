@@ -14,40 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
+package uk.ac.manchester.spinnaker.data_spec;
 
 /**
- * Exceptions thrown by the Data Specification code.
+ * An exception that indicates that the value of the requested type is unknown.
  */
-public class DataSpecificationException extends Exception {
-	private static final long serialVersionUID = 6442679259006679916L;
+public class UnknownTypeLengthException extends DataSpecificationException {
+	private static final long serialVersionUID = 8012093021275095441L;
 
 	/**
-	 * Create an exception.
+	 * Create an instance.
 	 *
-	 * @param msg
-	 *            The message in the exception.
+	 * @param dataLen
+	 *            How long a set of data was requested.
+	 * @param command
+	 *            What command was being executed.
 	 */
-	public DataSpecificationException(String msg) {
-		super(msg);
-	}
-
-	/**
-	 * Create an exception.
-	 */
-	DataSpecificationException() {
-	}
-
-	/**
-	 * Create an exception.
-	 *
-	 * @param msg
-	 *            The message in the exception.
-	 * @param cause
-	 *            The cause of the exception.
-	 */
-	public DataSpecificationException(String msg,
-			Throwable cause) {
-		super(msg, cause);
+	public UnknownTypeLengthException(int dataLen, Commands command) {
+		super("Unknown data length " + dataLen + " during command " + command);
 	}
 }

@@ -14,28 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec.exceptions;
-
-import uk.ac.manchester.spinnaker.data_spec.Commands;
+package uk.ac.manchester.spinnaker.data_spec;
 
 /**
- * An exception which occurs when trying to write to an unallocated region of
- * memory.
+ * An exception that indicates that there is no more space for the requested
+ * item.
  */
-public class RegionNotAllocatedException extends DataSpecificationException {
-	private static final long serialVersionUID = 7075946109066864639L;
+public class NoMoreException extends DataSpecificationException {
+	private static final long serialVersionUID = 1924179276762267554L;
 
 	/**
 	 * Create an instance.
 	 *
+	 * @param remainingSpace
+	 *            How much space is available
+	 * @param length
+	 *            How much space was asked for
 	 * @param currentRegion
-	 *            What is the current region.
-	 * @param command
-	 *            What command was trying to use the region.
+	 *            What region are we talking about
 	 */
-	public RegionNotAllocatedException(int currentRegion, Commands command) {
-		super("Region " + currentRegion
-            + " has not been allocated during execution of command "
-            + command);
+	public NoMoreException(int remainingSpace, int length, int currentRegion) {
+		super("Space unavailable to write all the elements requested by the "
+            + "write operation. Space available: " + remainingSpace
+            + "; space requested: " + length + " for region "
+            + currentRegion + ".");
 	}
 }

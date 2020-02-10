@@ -23,8 +23,6 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
-
 class TestMemoryRegionCollection {
 
 	@Test

@@ -31,8 +31,6 @@ import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-
 /**
  * Clever stuff to turn a method annotated with {@link Operation} into a
  * {@link Callable}.

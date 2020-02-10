@@ -37,14 +37,6 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.lang3.BitField;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.NoMoreException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.NoRegionSelectedException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionNotAllocatedException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionUnfilledException;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.UnknownTypeLengthException;
-
 /**
  * Functions that implement {@linkplain Operation operations} for the
  * {@link Executor}.

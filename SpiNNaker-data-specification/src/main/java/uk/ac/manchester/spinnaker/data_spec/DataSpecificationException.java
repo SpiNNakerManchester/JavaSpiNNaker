@@ -17,23 +17,37 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 /**
- * How to actually call a DSE operation.
- *
- * @author Donal Fellows
+ * Exceptions thrown by the Data Specification code.
  */
-@FunctionalInterface
-interface Callable {
+public class DataSpecificationException extends Exception {
+	private static final long serialVersionUID = 6442679259006679916L;
+
 	/**
-	 * The outer interface of a DSE operation. Note that this is subject to
-	 * coercion to make the actual operations have a wider range of supported
-	 * types.
+	 * Create an exception.
 	 *
-	 * @param cmd
-	 *            The encoded command word.
-	 * @return Usually {@code 0}. Sometimes a marker to indicate special
-	 *         states (currently just for end-of-specification).
-	 * @throws DataSpecificationException
-	 *             If anything goes wrong in the data specification.
+	 * @param msg
+	 *            The message in the exception.
 	 */
-	int execute(int cmd) throws DataSpecificationException;
+	public DataSpecificationException(String msg) {
+		super(msg);
+	}
+
+	/**
+	 * Create an exception.
+	 */
+	DataSpecificationException() {
+	}
+
+	/**
+	 * Create an exception.
+	 *
+	 * @param msg
+	 *            The message in the exception.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	public DataSpecificationException(String msg,
+			Throwable cause) {
+		super(msg, cause);
+	}
 }
