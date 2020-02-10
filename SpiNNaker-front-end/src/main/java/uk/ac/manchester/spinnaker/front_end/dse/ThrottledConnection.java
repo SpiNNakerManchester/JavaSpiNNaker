@@ -90,8 +90,8 @@ class ThrottledConnection implements Closeable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
 	 */
-	public ThrottledConnection(Transceiver transceiver, Ethernet board,
-			IPTag iptag) throws IOException, ProcessException {
+	ThrottledConnection(Transceiver transceiver, Ethernet board, IPTag iptag)
+			throws IOException, ProcessException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);

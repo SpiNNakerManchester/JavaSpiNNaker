@@ -132,12 +132,16 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws IllegalArgumentException
+	 *             If there are more routes to apply than can fit in a router.
+	 * @throws RuntimeException
+	 *             If on-chip memory allocation fails.
 	 */
 	void setRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException {
 		if (routes.size() > MAX_ROUTER_ENTRIES) {
-			throw new RuntimeException(
+			throw new IllegalArgumentException(
 					"too many router entries: " + routes.size());
 		}
 		// Create the routing data
