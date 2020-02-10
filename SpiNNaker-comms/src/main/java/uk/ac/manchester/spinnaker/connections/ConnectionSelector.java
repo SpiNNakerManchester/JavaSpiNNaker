@@ -14,15 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.connections.selectors;
+package uk.ac.manchester.spinnaker.connections;
 
-import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 
 /**
- * This indicates a class that can be told about the machine.
+ * A connection selector for (especially multi-connection) processes.
+ *
+ * @param <T>
+ *            The type of connections handled by this selector.
  */
-public interface MachineAware {
-	Machine getMachine();
-
-	void setMachine(Machine machine);
+public interface ConnectionSelector<T extends Connection> {
+	/**
+	 * Get the next connection for the process from a list of connections that
+	 * might satisfy the request.
+	 *
+	 * @param request
+	 *            The SCP message to be sent
+	 * @return The connection on which the message should be sent.
+	 */
+	T getNextConnection(SCPRequest<?> request);
 }

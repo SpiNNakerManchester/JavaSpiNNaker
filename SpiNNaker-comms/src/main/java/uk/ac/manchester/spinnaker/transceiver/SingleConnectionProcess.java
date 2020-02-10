@@ -21,9 +21,9 @@ import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIME
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
-import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;

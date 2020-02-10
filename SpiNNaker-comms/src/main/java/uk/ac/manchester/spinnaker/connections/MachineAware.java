@@ -14,7 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package uk.ac.manchester.spinnaker.connections;
+
+import uk.ac.manchester.spinnaker.machine.Machine;
+
 /**
- * Selectors for connections.
+ * This indicates a class that can be told about the machine.
  */
-package uk.ac.manchester.spinnaker.connections.selectors;
+public interface MachineAware {
+	Machine getMachine();
+
+	void setMachine(Machine machine);
+}
