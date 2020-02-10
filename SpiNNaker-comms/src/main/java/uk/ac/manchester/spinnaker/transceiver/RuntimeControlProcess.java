@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
@@ -37,16 +37,21 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
+import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
+import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
- * A process for reading IOBUF memory (mostly log messages) from a SpiNNaker
- * core.
+ * A process for controlling an application running on a SpiNNaker core. The
+ * operations on this process <em>do not make sense when applied to a SCAMP
+ * core;</em> they only apply to application cores.
+ *
+ * @author Donal Fellows
  */
-public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
+class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int BUF_HEADER_BYTES = 16;
 	private static final int BLOCK_HEADER_BYTES = 16;
 	private static final int WORD = 4;
@@ -63,10 +68,85 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ReadIOBufProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	RuntimeControlProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
+	}
+
+	/**
+	 * Clear the IOBUF buffers of a core.
+	 *
+	 * @param core
+	 *            the core where the IOBUF is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	void clearIOBUF(CoreLocation core) throws IOException, ProcessException {
+		synchronousCall(new ClearIOBUF(core));
+	}
+
+	/**
+	 * Clear the IOBUF buffers of some cores.
+	 *
+	 * @param coreSubsets
+	 *            the cores where the IOBUFs are.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	void clearIOBUF(CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
+			sendRequest(new ClearIOBUF(core));
+		}
+		finish();
+		checkForError();
+	}
+
+	/**
+	 * Update the running time configuration of some cores.
+	 *
+	 * @param runTimesteps
+	 *            The number of machine timesteps to run for. {@code null}
+	 *            indicates an infinite run.
+	 * @param coreSubsets
+	 *            the cores to update the information of.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
+	 */
+	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
+			throws IOException, ProcessException {
+		int runTime = (runTimesteps == null ? 0 : runTimesteps);
+		boolean infiniteRun = runTimesteps == null;
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
+			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));
+		}
+		finish();
+		checkForError();
+	}
+
+	/**
+	 * Ask some cores to update their provenance data and exit. It is up to the
+	 * caller to check for the cores' response, which is by changing state to
+	 * the exited state.
+	 *
+	 * @param coreSubsets
+	 *            the cores to update the provenance of.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
+	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
+		for (CoreLocation core : requireNonNull(coreSubsets,
+				"must have actual core subset to iterate over")) {
+			sendOneWayRequest(new UpdateProvenanceAndExit(core));
+		}
 	}
 
 	private static int chunk(int overall) {
@@ -87,7 +167,7 @@ public class ReadIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
+	Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
 		for (CoreLocation core : requireNonNull(cores,

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.stream.IntStream.range;
 
@@ -33,10 +33,9 @@ import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Gets IP tags and reverse IP tags. */
-public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
+class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -45,7 +44,7 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
+	GetTagsProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -62,7 +61,7 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public List<Tag> getTags(SCPConnection connection)
+	List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
 		Response tagInfo =
 				synchronousCall(new IPTagGetInfo(connection.getChip()));
@@ -93,4 +92,35 @@ public class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 	}
 
+	/**
+	 * Get the usage of each of the (active) tags associated with a connection.
+	 *
+	 * @param connection
+	 *            The connection that the tags are associated with.
+	 * @return A map from each active tag to the number of packets sent through
+	 *         that tag.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	Map<Tag, Integer> getTagUsage(SCPConnection connection)
+			throws IOException, ProcessException {
+		Response tagInfo =
+				synchronousCall(new IPTagGetInfo(connection.getChip()));
+
+		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
+		Map<Tag, Integer> tagUsages = new TreeMap<>();
+		for (final int tag : range(0, numTags).toArray()) {
+			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
+				if (response.isInUse()) {
+					tagUsages.put(createTag(connection.getRemoteIPAddress(),
+							tag, response), response.count);
+				}
+			});
+		}
+		finish();
+		checkForError();
+		return tagUsages;
+	}
 }

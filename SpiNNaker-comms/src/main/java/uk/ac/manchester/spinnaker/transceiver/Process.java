@@ -14,20 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
-public abstract class Process {
+abstract class Process {
 	private SCPRequest<?> errorRequest;
 	private Throwable exception;
+
+	private void resetState() {
+		this.errorRequest = null;
+		this.exception = null;
+	}
 
 	/**
 	 * A default handler for exceptions that arranges for them to be rethrown
@@ -79,7 +85,7 @@ public abstract class Process {
 	 * @throws IOException
 	 *             If sending fails.
 	 */
-	protected final <T extends SCPResponse> void sendRequest(
+	protected final <T extends CheckOKResponse> void sendRequest(
 			SCPRequest<T> request) throws IOException {
 		sendRequest(request, null);
 	}
@@ -96,7 +102,7 @@ public abstract class Process {
 	 * @throws IOException
 	 *             If sending fails.
 	 */
-	protected abstract <T extends SCPResponse> void sendRequest(
+	protected abstract <T extends CheckOKResponse> void sendRequest(
 			SCPRequest<T> request, Consumer<T> callback) throws IOException;
 
 	/**
@@ -122,12 +128,24 @@ public abstract class Process {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	protected final <T extends SCPResponse> T synchronousCall(
+	protected final <T extends CheckOKResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, ProcessException {
 		ValueHolder<T> holder = new ValueHolder<>();
+		resetState();
 		sendRequest(request, holder::setValue);
 		finish();
 		checkForError();
 		return holder.getValue();
 	}
+
+	/**
+	 * Send a one-way request. One way requests do not need to be finished.
+	 *
+	 * @param request
+	 *            The request to send. <em>Must</em> be a one-way request!
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	protected abstract void sendOneWayRequest(
+			SCPRequest<? extends NoResponse> request) throws IOException;
 }

@@ -22,6 +22,7 @@ import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
 import static java.lang.Thread.yield;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -43,7 +44,9 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -360,7 +363,7 @@ public class SCPRequestPipeline {
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
-	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
+	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		// If all the channels are used, start to receive packets
@@ -382,6 +385,25 @@ public class SCPRequestPipeline {
 
 		// Send the request
 		req.send();
+	}
+
+	/**
+	 * Send a one-way request.
+	 *
+	 * @param request
+	 *            The one-way SCP request to be sent.
+	 * @throws IOException
+	 *             If things go really wrong.
+	 */
+	public void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
+			throws IOException {
+		// Wait for all current in-flight responses to be received
+		finish();
+
+		// Update the packet with a (non-valuable) sequence number
+		request.scpRequestHeader.issueSequenceNumber(emptySet());
+		// Send the request
+		new Request<>(request, null, null).send();
 	}
 
 	/**

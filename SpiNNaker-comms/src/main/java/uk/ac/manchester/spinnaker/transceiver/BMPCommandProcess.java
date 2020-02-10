@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
@@ -45,7 +44,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -59,14 +57,14 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @see uk.ac.manchester.spinnaker.connections.SCPRequestPipeline
  *      SCPRequestPipeline
  */
-public class SendSingleBMPCommandProcess<R extends BMPResponse> {
-	private static final Logger log =
-			getLogger(SendSingleBMPCommandProcess.class);
+class BMPCommandProcess<R extends BMPResponse> {
+	private static final Logger log = getLogger(BMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
 	public static final int DEFAULT_TIMEOUT =
-            (int) (MSEC_PER_SEC * BMP_TIMEOUT);
+			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
+	private static final int BMP_RETRIES = 3;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 	private final int timeout;
@@ -82,8 +80,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector,
+	BMPCommandProcess(ConnectionSelector<BMPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, DEFAULT_TIMEOUT, retryTracker);
 	}
@@ -98,9 +95,8 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleBMPCommandProcess(
-			ConnectionSelector<BMPConnection> connectionSelector, int timeout,
-			RetryTracker retryTracker) {
+	BMPCommandProcess(ConnectionSelector<BMPConnection> connectionSelector,
+			int timeout, RetryTracker retryTracker) {
 		this.timeout = timeout;
 		this.connectionSelector = connectionSelector;
 		this.retryTracker = retryTracker;
@@ -118,8 +114,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	public R execute(BMPRequest<R> request)
-			throws IOException, ProcessException {
+	R execute(BMPRequest<R> request) throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -169,7 +164,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			/** retry reason. */
 			private final List<String> retryReason = new ArrayList<>();
 			/** number of retries for the packet. */
-			private int retries = SCP_RETRIES;
+			private int retries = BMP_RETRIES;
 
 			private Request(BMPRequest<R> request, Consumer<R> callback) {
 				this.request = request;
@@ -362,7 +357,7 @@ public class SendSingleBMPCommandProcess<R extends BMPResponse> {
 			super(format(
 					"Errors sending request %s to %d,%d,%d over %d retries: %s",
 					hdr.command, core.getX(), core.getY(), core.getP(),
-					SCP_RETRIES, retryReason));
+					BMP_RETRIES, retryReason));
 		}
 	}
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 
@@ -23,7 +23,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /**
  * Encapsulates exceptions from processes which communicate with some core/chip.
  */
-public class ProcessException extends Exception {
+public class ProcessException extends SpinnmanException {
 	private static final long serialVersionUID = 7759365416594564702L;
 	private static final String S = "     "; // five spaces
 
@@ -36,9 +36,10 @@ public class ProcessException extends Exception {
 	 *            What exception caused problems.
 	 */
 	public ProcessException(HasCoreLocation core, Throwable cause) {
-		super(format("\n" + S + "Received exception class: %s\n" + S
-				+ "With message: %s\n" + S + "When sending to %d:%d:%d\n",
-				cause.getClass().getName(), cause.getMessage(), core.getX(),
-				core.getY(), core.getP()), cause);
+		super(format(
+				"when sending to %d:%d:%d, received exception: %s\n" + S
+						+ "with message: %s",
+				core.getX(), core.getY(), core.getP(),
+				cause.getClass().getName(), cause.getMessage()), cause);
 	}
 }

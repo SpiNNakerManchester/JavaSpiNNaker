@@ -44,8 +44,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
  *
  * @author Donal Fellows
  */
-public class ThrottledConnection implements Closeable {
+class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
 	public static final long THROTTLE_NS = 35000;
@@ -76,19 +76,31 @@ public class ThrottledConnection implements Closeable {
 	private long lastSend;
 
 	/**
-	 * Create a throttled connection for talking to a board.
+	 * Create a throttled connection for talking to a board and point an IPTag
+	 * so that messages sent to it arrive on this connection.
 	 *
+	 * @param transceiver
+	 *            The SCP transceiver.
 	 * @param board
-	 *            The board to talk to.
+	 *            The SpiNNaker board to talk to.
+	 * @param iptag
+	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
-	public ThrottledConnection(Ethernet board) throws IOException {
+	public ThrottledConnection(Transceiver transceiver, Ethernet board,
+			IPTag iptag) throws IOException, ProcessException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
-		log.info("created throttled connection to " + location + " (" + addr
-				+ ")");
+		log.info(
+				"created throttled connection to {} ({}) from {}:{}; "
+						+ "reprogramming tag #{} to point to this connection",
+				location, addr, connection.getLocalIPAddress(),
+				connection.getLocalPort(), iptag.getTag());
+		transceiver.setIPTag(iptag, connection);
 	}
 
 	/**
@@ -103,25 +115,6 @@ public class ThrottledConnection implements Closeable {
 	public IntBuffer receive() throws SocketTimeoutException, IOException {
 		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
 				.asIntBuffer();
-	}
-
-	/**
-	 * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
-	 * up to the caller to ensure that the tag is allocated in the first place.
-	 *
-	 * @param iptag
-	 *            The tag to reprogram.
-	 * @param transceiver
-	 *            The SCP transceiver.
-	 * @throws IOException
-	 *             If IO fails.
-	 */
-	public void reprogramTag(IPTag iptag, Transceiver transceiver)
-			throws IOException, ProcessException {
-		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
-				connection.getLocalIPAddress(), connection.getLocalPort());
-
-		transceiver.setIPTag(iptag, connection);
 	}
 
 	/**

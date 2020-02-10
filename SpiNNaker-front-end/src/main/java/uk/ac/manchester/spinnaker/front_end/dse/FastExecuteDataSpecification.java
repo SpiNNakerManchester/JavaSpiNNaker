@@ -77,9 +77,9 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
@@ -158,6 +158,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		try {
 			txrx = new Transceiver(machine);
+		} catch (ProcessException e) {
+			throw e;
 		} catch (SpinnmanException e) {
 			throw new IllegalStateException("failed to talk to BMP, "
 					+ "but that shouldn't have happened at all", e);
@@ -402,9 +404,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
-			connection = new ThrottledConnection(board);
-			connection.reprogramTag(
-					gathererForChip.get(board.location).getIptag(), txrx);
+			connection = new ThrottledConnection(txrx, board,
+					gathererForChip.get(board.location).getIptag());
 		}
 
 		@Override

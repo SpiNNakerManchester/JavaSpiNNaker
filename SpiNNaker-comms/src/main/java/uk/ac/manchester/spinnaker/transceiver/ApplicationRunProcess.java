@@ -14,10 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
-
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
-import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.IOException;
 
@@ -27,11 +24,9 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** Launch an application. */
-public class ApplicationRunProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * Create.
 	 *
@@ -42,38 +37,9 @@ public class ApplicationRunProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ApplicationRunProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	ApplicationRunProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
-		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT,
-				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
-				retryTracker);
-	}
-
-	/**
-	 * Create.
-	 *
-	 * @param connectionSelector
-	 *            How to choose where to send messages.
-	 * @param numRetries
-	 *            The number of retries allowed.
-	 * @param timeout
-	 *            How long to wait for a reply.
-	 * @param numChannels
-	 *            The number of parallel channels to use.
-	 * @param intermediateChannelWaits
-	 *            ???
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public ApplicationRunProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
-			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits, RetryTracker retryTracker) {
-		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits, retryTracker);
+		super(connectionSelector, retryTracker);
 	}
 
 	/**
@@ -91,7 +57,7 @@ public class ApplicationRunProcess
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
+	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
 			throws ProcessException, IOException {
 		for (ChipLocation chip : coreSubsets.getChips()) {
 			sendRequest(new ApplicationRun(appID, chip,

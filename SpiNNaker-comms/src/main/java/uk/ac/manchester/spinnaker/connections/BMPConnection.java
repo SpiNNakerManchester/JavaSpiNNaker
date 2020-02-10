@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -38,10 +39,8 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 		implements SCPSenderReceiver {
 	/** Defined to satisfy the SCPSender; always 0,0 for a BMP. */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
-	/** The ID of the cabinet that contains the frame that contains the BMPs. */
-	public final int cabinet;
-	/** The ID of the frame that contains the BMPs. */
-	public final int frame;
+	/** The coordinates of the BMP. */
+	private final BMPCoords coords;
 	/**
 	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
 	 */
@@ -57,8 +56,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 		super(null, null, connectionData.ipAddress,
 				(connectionData.portNumber == null ? SCP_SCAMP_PORT
 						: connectionData.portNumber));
-		cabinet = connectionData.cabinet;
-		frame = connectionData.frame;
+		coords = new BMPCoords(connectionData.cabinet, connectionData.frame);
 		boards = connectionData.boards;
 	}
 
@@ -93,5 +91,12 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	@Override
 	public SDPMessage receiveMessage(Integer timeout) throws IOException {
 		return new SDPMessage(receive(timeout));
+	}
+
+	/**
+	 * @return The coordinates of the BMP that this connection talks to.
+	 */
+	public BMPCoords getCoords() {
+		return coords;
 	}
 }

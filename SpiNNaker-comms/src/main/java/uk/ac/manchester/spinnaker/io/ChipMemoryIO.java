@@ -32,9 +32,9 @@ import java.util.WeakHashMap;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.transceiver.FillDataType;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess;
 
 /** A file-like object for the memory of a chip. */
 final class ChipMemoryIO {
@@ -240,7 +240,7 @@ final class ChipMemoryIO {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void fill(int value, int size, FillProcess.DataType type)
+	void fill(int value, int size, FillDataType type)
 			throws IOException, ProcessException {
 		Transceiver t = txrx();
 		flushWriteBuffer();

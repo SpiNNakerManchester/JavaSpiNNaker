@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses a single connection in communication.
@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * @param <T>
  *            The type of connection used by this process.
  */
-public abstract class SingleConnectionProcess<T extends SCPConnection>
+abstract class SingleConnectionProcess<T extends SCPConnection>
 		extends Process {
 	private final ConnectionSelector<T> connectionSelector;
 	private SCPRequestPipeline requestPipeline;
@@ -72,9 +72,7 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 		this.retryTracker = retryTracker;
 	}
 
-	@Override
-	protected final <R extends SCPResponse> void sendRequest(
-			SCPRequest<R> request, Consumer<R> callback) throws IOException {
+	private SCPRequestPipeline getPipeline(SCPRequest<?> request) {
 		/*
 		 * If no pipe line built yet, build one on the connection selected for
 		 * it
@@ -84,7 +82,19 @@ public abstract class SingleConnectionProcess<T extends SCPConnection>
 					connectionSelector.getNextConnection(request), timeout,
 					retryTracker);
 		}
-		requestPipeline.sendRequest(request, callback, this::receiveError);
+		return requestPipeline;
+	}
+
+	@Override
+	protected final <R extends CheckOKResponse> void sendRequest(
+			SCPRequest<R> request, Consumer<R> callback) throws IOException {
+		getPipeline(request).sendRequest(request, callback, this::receiveError);
+	}
+
+	@Override
+	protected void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
+			throws IOException {
+		getPipeline(request).sendOneWayRequest(request);
 	}
 
 	@Override

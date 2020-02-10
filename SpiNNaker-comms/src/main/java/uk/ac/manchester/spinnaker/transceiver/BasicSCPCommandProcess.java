@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
@@ -23,9 +23,8 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 // TODO refactor this to have the functionality exposed higher up
 /**
@@ -33,8 +32,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  *
  * @author Donal Fellows
  */
-public class SendSingleSCPCommandProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class BasicSCPCommandProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select which connection to use for communication.
@@ -43,8 +41,7 @@ public class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	BasicSCPCommandProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, retryTracker);
 	}
@@ -61,8 +58,7 @@ public class SendSingleSCPCommandProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public SendSingleSCPCommandProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	BasicSCPCommandProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			int numRetries, int timeout, RetryTracker retryTracker) {
 		super(connectionSelector, numRetries, timeout, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_CHANNEL_WAITS, retryTracker);
@@ -81,7 +77,7 @@ public class SendSingleSCPCommandProcess
 	 * @throws ProcessException
 	 *             If SCAMP on SpiNNaker reports a failure.
 	 */
-	public <T extends SCPResponse> T execute(SCPRequest<T> request)
+	<T extends CheckOKResponse> T execute(SCPRequest<T> request)
 			throws IOException, ProcessException {
 		return synchronousCall(request);
 	}

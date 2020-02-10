@@ -16,28 +16,29 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-/** SCP Command codes for running core control. */
-enum RunningCommand implements CommandCode {
-	/** Ask the core to stop. */
-	STOP_ID(6),
-	/** Set the running time and mode. */
-	NEW_RUNTIME_ID(7),
-	/** Update the provenance and exit. */
-	UPDATE_PROVENCE_REGION_AND_EXIT(8),
-	/** Clear the IOBUF of the core. */
-	CLEAR_IOBUF(9);
+import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+
+/**
+ * An SCP response that should never be received because its request is
+ * guaranteed to be a one-way request.
+ */
+public class NoResponse extends SCPResponse {
 	/**
-	 * The encoded form of the command.
+	 * Create an instance.
+	 *
+	 * @param operation
+	 *            The overall operation that we are doing.
+	 * @param buffer
+	 *            The buffer holding the response data.
+	 * @throws UnexpectedResponseCodeException
+	 *             Always.
 	 */
-	private final short value;
-
-	RunningCommand(int cmd) {
-		this.value = (short) cmd;
-	}
-
-	@Override
-	public short getValue() {
-		return value;
+	public NoResponse(String operation, ByteBuffer buffer)
+			throws UnexpectedResponseCodeException {
+		super(buffer);
+		throw new UnexpectedResponseCodeException(operation, "one-way request",
+				result.toString());
 	}
 }

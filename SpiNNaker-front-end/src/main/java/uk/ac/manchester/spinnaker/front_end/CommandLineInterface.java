@@ -51,7 +51,6 @@ import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * The main command line interface.
@@ -228,9 +227,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
 	 * @throws ExecutionException
@@ -242,8 +239,8 @@ public final class CommandLineInterface {
 	 */
 	public static void dseRun(String machineJsonFile, String runFolder,
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
-			ProcessException, StorageException, ExecutionException,
-			InterruptedException, DataSpecificationException {
+			StorageException, ExecutionException, InterruptedException,
+			DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
@@ -276,9 +273,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
 	 * @throws ExecutionException
@@ -290,8 +285,8 @@ public final class CommandLineInterface {
 	 */
 	public static void dseAppMonRun(String gatherersJsonFile,
 			String machineJsonFile, String runFolder, String reportFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, ExecutionException, InterruptedException,
+			throws IOException, SpinnmanException, StorageException,
+			ExecutionException, InterruptedException,
 			DataSpecificationException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
@@ -319,13 +314,10 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
-			String runFolder)
-			throws IOException, SpinnmanException, ProcessException {
+			String runFolder) throws IOException, SpinnmanException {
 		Machine machine = getMachine(machineJsonFile);
 		IobufRequest request = getIobufRequest(iobufMapFile);
 
@@ -349,15 +341,13 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 */
 	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, ProcessException {
+			SpinnmanException, StorageException {
 		List<Placement> placements = getPlacements(placementsJsonFile);
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine);
@@ -380,9 +370,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 * @throws InterruptedException
@@ -390,9 +378,8 @@ public final class CommandLineInterface {
 	 *             to be done
 	 */
 	public static void gatherRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, InterruptedException {
+			String machineJsonFile, String runFolder) throws IOException,
+			SpinnmanException, StorageException, InterruptedException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine);

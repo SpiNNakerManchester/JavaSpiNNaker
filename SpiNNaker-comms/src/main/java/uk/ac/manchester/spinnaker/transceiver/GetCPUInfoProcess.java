@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 The University of Manchester
+ * Copyright (c) 2018 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
+import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
+import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
-/** Clear the IOBUFs on some cores. */
-public class ClearIOBufProcess extends MultiConnectionProcess<SCPConnection> {
+/**
+ * Get the CPU information structure for a set of processors.
+ */
+class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -37,44 +45,34 @@ public class ClearIOBufProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public ClearIOBufProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	GetCPUInfoProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
 
 	/**
-	 * Clear the IOBUF of a core.
-	 *
-	 * @param core
-	 *            the core where the IOBUF is.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	public void clearIOBUF(CoreLocation core)
-			throws IOException, ProcessException {
-		synchronousCall(new ClearIOBUF(core, true));
-	}
-
-	/**
-	 * Clear the IOBUF of some cores.
+	 * Get CPU information.
 	 *
 	 * @param coreSubsets
-	 *            the cores where the IOBUFs are.
+	 *            What processors to get the information from
+	 * @return The CPU information, in undetermined order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
+	 *             If SpiNNaker rejects a message.
 	 */
-	public void clearIOBUF(CoreSubsets coreSubsets)
+	Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
+		List<CPUInfo> cpuInfo = new ArrayList<>();
 		for (CoreLocation core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
-			sendRequest(new ClearIOBUF(core, true));
+			sendRequest(
+					new ReadMemory(core.getScampCore(), getVcpuAddress(core),
+							CPU_INFO_BYTES),
+					response -> cpuInfo.add(new CPUInfo(core, response.data)));
 		}
 		finish();
 		checkForError();
+		return unmodifiableList(cpuInfo);
 	}
 }

@@ -271,7 +271,7 @@ class MockWriteTransceiver extends Transceiver {
 	public MockWriteTransceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
-			uk.ac.manchester.spinnaker.transceiver.processes.ProcessException {
+			uk.ac.manchester.spinnaker.transceiver.ProcessException {
 		super(version, connections, null, null, null, null, null);
 	}
 

@@ -14,47 +14,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
+
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
+import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
-/** A process for getting the version of the machine. */
-public class GetVersionProcess extends SingleConnectionProcess<SCPConnection> {
+// TODO refactor this to have the functionality exposed higher up
+/**
+ * A simple wrapper round the basic underlying connection process system.
+ *
+ * @author Donal Fellows
+ */
+class SendSingleSCPCommandProcess
+		extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
-	 *            How to select how to communicate.
+	 *            How to select which connection to use for communication.
 	 * @param retryTracker
 	 *            Object used to track how many retries were used in an
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetVersionProcess(
+	SendSingleSCPCommandProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
+		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT,
+				DEFAULT_NUM_CHANNELS, DEFAULT_INTERMEDIATE_CHANNEL_WAITS,
+				retryTracker);
 	}
 
 	/**
-	 * Get the version of the software on a particular core. Should usually be a
-	 * SCAMP core.
+	 * Execute a call of a request and get a response from it.
 	 *
-	 * @param core
-	 *            The core to query.
-	 * @return The version description.
+	 * @param <T>
+	 *            The type of the response.
+	 * @param request
+	 *            The request to make
+	 * @return The response to the request
 	 * @throws IOException
-	 *             If anything goes wrong with networking.
+	 *             If communications fail.
 	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
+	 *             If SCAMP on SpiNNaker reports a failure.
 	 */
-	public VersionInfo getVersion(HasCoreLocation core)
+	public <T extends CheckOKResponse> T execute(SCPRequest<T> request)
 			throws IOException, ProcessException {
-		return synchronousCall(new GetVersion(core)).versionInfo;
+		return synchronousCall(request);
 	}
 }

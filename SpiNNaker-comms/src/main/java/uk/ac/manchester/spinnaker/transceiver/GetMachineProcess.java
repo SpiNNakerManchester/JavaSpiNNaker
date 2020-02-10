@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.util.Collections.emptyMap;
@@ -53,10 +53,9 @@ import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.P2PTable;
 import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for getting the machine details over a set of connections. */
-public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
+class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 	/** A dictionary of (x, y) &rarr; ChipInfo. */
 	private final Map<ChipLocation, ChipSummaryInfo> chipInfo;
@@ -101,8 +100,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public GetMachineProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
+	GetMachineProcess(ConnectionSelector<SCPConnection> connectionSelector,
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCoresMap,
 			Map<ChipLocation, Set<Direction>> ignoreLinksMap,
@@ -130,8 +128,8 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public Machine getMachineDetails(HasChipLocation bootChip,
-			MachineDimensions size) throws IOException, ProcessException {
+	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
+			throws IOException, ProcessException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
@@ -267,7 +265,7 @@ public class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @return The description of what the state of each chip is.
 	 */
-	public Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
+	Map<ChipLocation, ChipSummaryInfo> getChipInfo() {
 		return unmodifiableMap(chipInfo);
 	}
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
@@ -32,11 +32,9 @@ import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /** A process for writing memory on multiple SpiNNaker chips at once. */
-public class WriteMemoryFloodProcess
-		extends MultiConnectionProcess<SCPConnection> {
+class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -45,34 +43,10 @@ public class WriteMemoryFloodProcess
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	public WriteMemoryFloodProcess(
+	WriteMemoryFloodProcess(
 			ConnectionSelector<SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
-	}
-
-	/**
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param numRetries
-	 *            The number of times to retry a communication.
-	 * @param timeout
-	 *            The timeout (in ms) for the communication.
-	 * @param numChannels
-	 *            The number of parallel communications to support
-	 * @param intermediateChannelWaits
-	 *            How many parallel communications to launch at once. (??)
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	public WriteMemoryFloodProcess(
-			ConnectionSelector<SCPConnection> connectionSelector,
-			int numRetries, int timeout, int numChannels,
-			int intermediateChannelWaits, RetryTracker retryTracker) {
-		super(connectionSelector, numRetries, timeout, numChannels,
-				intermediateChannelWaits, retryTracker);
 	}
 
 	private static final float BPW = 4.0F;
@@ -96,8 +70,8 @@ public class WriteMemoryFloodProcess
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, int baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
@@ -140,7 +114,7 @@ public class WriteMemoryFloodProcess
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
+	void writeMemory(byte nearestNeighbourID, int baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		synchronousCall(
@@ -181,8 +155,8 @@ public class WriteMemoryFloodProcess
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	public void writeMemory(byte nearestNeighbourID, int baseAddress,
-			File dataFile) throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, int baseAddress, File dataFile)
+			throws IOException, ProcessException {
 		try (InputStream s =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,

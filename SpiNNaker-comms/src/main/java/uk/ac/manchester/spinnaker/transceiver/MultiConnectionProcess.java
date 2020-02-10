@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.transceiver.processes;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SCPRequestPipeline;
 import uk.ac.manchester.spinnaker.connections.selectors.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
-import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
 
 /**
  * A process that uses multiple connections in communication.
@@ -37,8 +37,7 @@ import uk.ac.manchester.spinnaker.transceiver.RetryTracker;
  * @param <T>
  *            The type of connection used by the process.
  */
-public abstract class MultiConnectionProcess<T extends SCPConnection>
-		extends Process {
+abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	/** The default for the number of parallel channels. */
 	public static final int DEFAULT_NUM_CHANNELS = 8;
 	/** The default for the number of instantaneously active channels. */
@@ -63,7 +62,7 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
+	MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, DEFAULT_NUM_CHANNELS,
 				DEFAULT_INTERMEDIATE_CHANNEL_WAITS, retryTracker);
@@ -85,7 +84,7 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
+	MultiConnectionProcess(ConnectionSelector<T> connectionSelector,
 			int numRetries, int timeout, int numChannels,
 			int intermediateChannelWaits, RetryTracker retryTracker) {
 		this.requestPipelines = new HashMap<>();
@@ -97,17 +96,28 @@ public abstract class MultiConnectionProcess<T extends SCPConnection>
 		this.retryTracker = retryTracker;
 	}
 
-	@Override
-	protected <R extends SCPResponse> void sendRequest(SCPRequest<R> request,
-			Consumer<R> callback) throws IOException {
-		T connection = selector.getNextConnection(request);
-		if (!requestPipelines.containsKey(connection)) {
-			SCPRequestPipeline pipeline = new SCPRequestPipeline(connection,
-					numChannels, numWaits, numRetries, timeout, retryTracker);
+	private SCPRequestPipeline getPipeline(T connection) {
+		SCPRequestPipeline pipeline = requestPipelines.get(connection);
+		if (pipeline == null) {
+			pipeline = new SCPRequestPipeline(connection, numChannels, numWaits,
+					numRetries, timeout, retryTracker);
 			requestPipelines.put(connection, pipeline);
 		}
-		requestPipelines.get(connection).sendRequest(request, callback,
-				this::receiveError);
+		return pipeline;
+	}
+
+	@Override
+	protected <R extends CheckOKResponse> void sendRequest(
+			SCPRequest<R> request, Consumer<R> callback) throws IOException {
+		getPipeline(selector.getNextConnection(request)).sendRequest(request,
+				callback, this::receiveError);
+	}
+
+	@Override
+	protected void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
+			throws IOException {
+		getPipeline(selector.getNextConnection(request))
+				.sendOneWayRequest(request);
 	}
 
 	@Override
