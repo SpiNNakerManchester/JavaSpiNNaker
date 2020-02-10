@@ -712,7 +712,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         switch (commandCode) {
                         case RECEIVE_FINISHED_DATA_IN:
                             // We're done!
-                            log.info("finished sending transaction {}",
+                            log.debug("finished sending transaction {}",
                                     transactionId);
                             break outerLoop;
 
@@ -761,12 +761,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         // If we never received a packet, we will never have
                         // created the buffer, so send everything again
                         if (missing == null) {
-                            log.info("full timeout; resending initial "
+                            log.debug("full timeout; resending initial "
                                     + "packets for stream with transaction "
                                     + "id {}", transactionId);
                             continue outerLoop;
                         }
-                        log.info("timeout {} on transaction {} sending to {}"
+                        log.debug("timeout {} on transaction {} sending to {}"
                                 + " via {}", timeoutCount, transactionId, core,
                                 gather.asCoreLocation());
                         retransmitMissingPackets(protocol, data, missing,
@@ -832,11 +832,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
         private void retransmitMissingPackets(GathererProtocol protocol,
                 ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
                 int baseAddress, int numPackets) throws IOException {
-            log.info("resending the location packet");
+            log.debug("resending the location packet");
             connection.send(protocol.dataToLocation(baseAddress, numPackets,
                     transactionId));
 
-            log.info("retransmitting {} packets", missingSeqNums.cardinality());
+            log.debug("retransmitting {} packets", missingSeqNums.cardinality());
 
             missingSeqNums.stream().forEach(seqNum -> {
                 log.debug("resending packet #{}", seqNum);
