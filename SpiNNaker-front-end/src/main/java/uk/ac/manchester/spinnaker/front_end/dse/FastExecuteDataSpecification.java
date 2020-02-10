@@ -766,7 +766,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                                     + "id {}", transactionId);
                             continue outerLoop;
                         }
-                        log.debug("timeout {} on transaction {} sending to {}"
+                        log.info("timeout {} on transaction {} sending to {}"
                                 + " via {}", timeoutCount, transactionId, core,
                                 gather.asCoreLocation());
                         retransmitMissingPackets(protocol, data, missing,
