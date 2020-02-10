@@ -765,7 +765,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                         }
                     } catch (SocketTimeoutException e) {
                         if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-                            log.error("ran out of attempts due to timeouts.");
+                            log.error("ran out of attempts on transaction {}"
+                                    + "due to timeouts.", transactionId);
                             throw e;
                         }
                         // If we never received a packet, we will never have
@@ -776,6 +777,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                                     + "id {}", transactionId);
                             continue outerLoop;
                         }
+                        log.info("timeout on transaction {}", transactionId);
                         retransmitMissingPackets(protocol, data, missing,
                                 transactionId, baseAddress, numPackets);
                         // The next packet received will be the first
