@@ -205,6 +205,8 @@ public class SDPHeader implements SerializableMessage {
 	 *
 	 * @param port
 	 *            The port to set it to.
+	 * @throws IllegalArgumentException
+	 *             If the port number is bad.
 	 */
 	public void setDestinationPort(int port) {
 		if (port < 0 || port > MAX_PORT) {
@@ -240,6 +242,8 @@ public class SDPHeader implements SerializableMessage {
 	 *
 	 * @param port
 	 *            The port to set it to.
+	 * @throws IllegalArgumentException
+	 *             If the port number is bad.
 	 */
 	public void setSourcePort(int port) {
 		if (port < 0 || port > MAX_PORT) {

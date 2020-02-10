@@ -40,6 +40,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
 	private static final int FIFTH = 5;
+	private static final int SIXTH = 6;
 
 	/**
 	 * Create an instance.
@@ -124,7 +125,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH)));
+							rs.getInt(FOURTH), rs.getInt(FIFTH),
+							rs.getInt(SIXTH)));
 				}
 				return result;
 			}
@@ -152,7 +154,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
-							rs.getInt(FOURTH), rs.getInt(FIFTH)));
+							rs.getInt(FOURTH), rs.getInt(FIFTH),
+							rs.getInt(SIXTH)));
 				}
 				return result;
 			}
@@ -240,8 +243,9 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(int id, int x, int y, int p, int appID) {
-			super(x, y, p, appID);
+		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
+				int sizeToWrite) {
+			super(x, y, p, appID, sizeToWrite);
 			this.id = id;
 		}
 
@@ -263,5 +267,10 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		public ByteBuffer getDataSpec() throws StorageException {
 			return SQLiteDataSpecStorage.this.getDataSpec(this);
 		}
+	}
+
+	@Override
+	public int getSizeForCore(CoreToLoad coreToLoad) {
+		return 0; // FIXME incomplete method
 	}
 }

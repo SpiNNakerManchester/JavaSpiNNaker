@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.json.JSONObject;
@@ -58,10 +59,9 @@ class TestJob {
 	@Test
 	@Disabled("unreliable: depends on timing")
 	void testCoreJobFlow() throws Exception {
-		LinkedBlockingDeque<String> send = new LinkedBlockingDeque<>();
-		LinkedBlockingDeque<JSONObject> received = new LinkedBlockingDeque<>();
-		LinkedBlockingDeque<JSONObject> keepalives =
-				new LinkedBlockingDeque<>();
+		BlockingDeque<String> send = new LinkedBlockingDeque<>();
+		BlockingDeque<JSONObject> received = new LinkedBlockingDeque<>();
+		BlockingDeque<JSONObject> keepalives = new LinkedBlockingDeque<>();
 
 		// Set the sequence of messages that the server will send
 		send.offer("{\"return\": 123}");

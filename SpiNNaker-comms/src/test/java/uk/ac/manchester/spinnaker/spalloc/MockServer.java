@@ -23,42 +23,46 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.BlockingDeque;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
-class MockServer implements AutoCloseable {
+class MockServer implements SupportUtils.IServer {
 	static final Charset UTF8 = Charset.forName("UTF-8");
-	static final int PORT = 22244;
 	static final int BUFFER_SIZE = 1024;
 	static final int QUEUE_LENGTH = 1;
+	static final int INTER_BIND_DELAY = 50;
 
-	final ServerSocket serverSocket;
+	private ServerSocket serverSocket;
+	private int port;
 	final OneShotEvent started;
 	Socket sock;
 	PrintWriter out;
 	BufferedReader in;
 
 	public MockServer() throws IOException {
-		serverSocket = new ServerSocket();
 		started = new OneShotEvent();
+		serverSocket = new ServerSocket(0, QUEUE_LENGTH);
+		port = serverSocket.getLocalPort();
 	}
 
-	public void listen() throws IOException {
-		serverSocket.bind(new InetSocketAddress(PORT), QUEUE_LENGTH);
+	@Override
+	public int getPort() {
+		return port;
 	}
 
 	public InetAddress connect() throws IOException {
 		started.fire();
 		sock = serverSocket.accept();
 		serverSocket.close();
+		serverSocket = null;
 		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF8));
 		in = new BufferedReader(
@@ -69,24 +73,24 @@ class MockServer implements AutoCloseable {
 
 	@Override
 	public void close() throws IOException {
+		if (serverSocket != null && !serverSocket.isClosed()) {
+			serverSocket.close();
+		}
+		serverSocket = null;
 		if (sock != null) {
 			sock.close();
 		}
 		sock = null;
-		if (!serverSocket.isClosed()) {
-			serverSocket.close();
-		}
 	}
 
-	public void send(JSONObject obj) {
-		out.println(obj.toString());
+	@Override
+	public void send(JSONObject json) {
+		json.write(out);
+		out.println();
 		out.flush();
 	}
 
-	public void send(String obj) {
-		send(new JSONObject(obj));
-	}
-
+	@Override
 	public JSONObject recv() throws JSONException, IOException {
 		String line = in.readLine();
 		return line == null ? null : new JSONObject(line);
@@ -94,10 +98,11 @@ class MockServer implements AutoCloseable {
 
 	public static final String STOP = "STOP";
 
-	public void advancedEmulationMode(LinkedBlockingDeque<String> send,
-			LinkedBlockingDeque<JSONObject> received,
-			LinkedBlockingDeque<JSONObject> keepaliveQueue, Thread bgAccept) {
-		new Thread(() -> {
+	@Override
+	public void advancedEmulationMode(BlockingDeque<String> send,
+			BlockingDeque<JSONObject> received,
+			BlockingDeque<JSONObject> keepaliveQueue, Joinable bgAccept) {
+		new SupportUtils.Daemon(() -> {
 			try {
 				bgAccept.join();
 				launchKeepaliveListener(keepaliveQueue);
@@ -118,15 +123,14 @@ class MockServer implements AutoCloseable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}).start();
+		}, "mock server advanced emulator");
 	}
 
 	private static void launchKeepaliveListener(
-			LinkedBlockingDeque<JSONObject> keepaliveQueue) {
-		Thread t = new Thread(() -> {
+			BlockingDeque<JSONObject> keepaliveQueue) {
+		new SupportUtils.Daemon(() -> {
 			try {
 				MockServer s = new MockServer();
-				s.listen();
 				s.connect();
 				while (true) {
 					JSONObject o = s.recv();
@@ -142,8 +146,6 @@ class MockServer implements AutoCloseable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		});
-		t.setDaemon(true);
-		t.start();
+		}, "mock server keepalive listener");
 	}
 }

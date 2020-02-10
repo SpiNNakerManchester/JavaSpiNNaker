@@ -16,15 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import static java.lang.System.arraycopy;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -40,10 +46,12 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 public class SQLiteBufferStorage
 		extends SQLiteConnectionManager<BufferManagerStorage>
 		implements BufferManagerStorage {
+	private static final Logger log = getLogger(SQLiteBufferStorage.class);
 	private static final int FIRST = 1;
 	private static final int SECOND = 2;
 	private static final int THIRD = 3;
 	private static final int FOURTH = 4;
+	private static final int FIFTH = 5;
 
 	/**
 	 * Create an instance.
@@ -117,21 +125,85 @@ public class SQLiteBufferStorage
 
 	private void appendRecordingContents(Connection conn, int regionID,
 			byte[] content) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.APPEND_CONTENT)) {
+		int chunkLen = content.length;
+		ByteArrayInputStream chunk = new ByteArrayInputStream(content);
+		long timestamp = System.currentTimeMillis();
+		if (useMainTable(conn, regionID)) {
+			log.debug("adding chunk of {} bytes to region table for region {}",
+					chunkLen, regionID);
+			addContentToMainRow(conn, regionID, chunkLen, chunk, timestamp);
+		} else {
+			log.debug("adding chunk of {} bytes to extra table for region {}",
+					chunkLen, regionID);
+			prepareExtraContent(conn, regionID, timestamp);
+			addExtraContentRow(conn, regionID, chunkLen, chunk);
+		}
+	}
+
+	private void addContentToMainRow(Connection conn, int regionID,
+			int chunkLen, ByteArrayInputStream chunk, long timestamp)
+			throws SQLException {
+		try (PreparedStatement s = conn.prepareStatement(SQL.ADD_CONTENT)) {
 			// content, append_time, region_id
-			s.setBinaryStream(FIRST, new ByteArrayInputStream(content),
-					content.length);
-			s.setLong(SECOND, System.currentTimeMillis());
-			s.setInt(THIRD, regionID);
+			s.setBinaryStream(FIRST, chunk, chunkLen);
+			s.setInt(SECOND, chunkLen);
+			s.setLong(THIRD, timestamp);
+			s.setInt(FOURTH, regionID);
 			s.executeUpdate();
 		}
+	}
+
+	private void prepareExtraContent(Connection conn, int regionID,
+			long timestamp) throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.PREP_EXTRA_CONTENT)) {
+			// append_time, region_id
+			s.setLong(FIRST, timestamp);
+			s.setInt(SECOND, regionID);
+			s.executeUpdate();
+		}
+	}
+
+	private void addExtraContentRow(Connection conn, int regionID, int chunkLen,
+			ByteArrayInputStream chunk) throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.ADD_EXTRA_CONTENT)) {
+			// region_id, content
+			s.setInt(FIRST, regionID);
+			s.setBinaryStream(SECOND, chunk, chunkLen);
+			s.setInt(THIRD, chunkLen);
+			s.executeUpdate();
+		}
+	}
+
+	private boolean useMainTable(Connection conn, int regionID)
+			throws SQLException {
+		try (PreparedStatement s =
+				conn.prepareStatement(SQL.GET_MAIN_CONTENT_AVAILABLE)) {
+			s.setInt(FIRST, regionID);
+			try (ResultSet rs = s.executeQuery()) {
+				while (rs.next()) {
+					int existing = rs.getInt(FIRST);
+					return existing == 1;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public void appendRecordingContents(Region region, byte[] contents)
 			throws StorageException {
-		callV(conn -> appendRecordContents(conn, region, contents),
-				"creating a region");
+		// Strip off any prefix and suffix added to make the read aligned
+		byte[] tmp;
+		if (region.isAligned()) {
+			tmp = contents;
+		} else {
+			tmp = new byte[region.realSize];
+			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
+		}
+		callV(conn -> appendRecordContents(conn, region, tmp),
+				"creating or adding to a recorded region");
 	}
 
 	/**
@@ -163,20 +235,41 @@ public class SQLiteBufferStorage
 
 	private static byte[] getRecordingRegionContents(Connection conn,
 			Region region) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.FETCH_RECORDING)) {
-			// x, y, processor, local_region_index
-			s.setInt(FIRST, region.core.getX());
-			s.setInt(SECOND, region.core.getY());
-			s.setInt(THIRD, region.core.getP());
-			s.setInt(FOURTH, region.regionIndex);
-			try (ResultSet rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getBytes(FIRST);
+		ByteArrayOutputStream accum = new ByteArrayOutputStream();
+		try {
+			int regionID = -1;
+			try (PreparedStatement s =
+					conn.prepareStatement(SQL.FETCH_RECORDING)) {
+				// x, y, processor, local_region_index
+				s.setInt(FIRST, region.core.getX());
+				s.setInt(SECOND, region.core.getY());
+				s.setInt(THIRD, region.core.getP());
+				s.setInt(FOURTH, region.regionIndex);
+				try (ResultSet rs = s.executeQuery()) {
+					while (rs.next()) {
+						accum.write(rs.getBytes(FIRST));
+						regionID = rs.getInt(FIFTH);
+					}
 				}
+			}
+			if (regionID < 0) {
 				throw new IllegalArgumentException("core " + region.core
 						+ " has no data for region " + region.regionIndex);
 			}
+			try (PreparedStatement s =
+					conn.prepareStatement(SQL.FETCH_EXTRA_RECORDING)) {
+				// region_id
+				s.setInt(FIRST, regionID);
+				try (ResultSet rs = s.executeQuery()) {
+					while (rs.next()) {
+						accum.write(rs.getBytes(FIRST));
+					}
+				}
+			}
+		} catch (IOException | OutOfMemoryError e) {
+			throw new RuntimeException("BLOB sequence too large for Java", e);
 		}
+		return accum.toByteArray();
 	}
 
 	@Override

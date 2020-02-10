@@ -30,6 +30,11 @@ abstract class Process {
 	private SCPRequest<?> errorRequest;
 	private Throwable exception;
 
+	private void resetState() {
+		this.errorRequest = null;
+		this.exception = null;
+	}
+
 	/**
 	 * A default handler for exceptions that arranges for them to be rethrown
 	 * later.
@@ -126,6 +131,7 @@ abstract class Process {
 	protected final <T extends CheckOKResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, ProcessException {
 		ValueHolder<T> holder = new ValueHolder<>();
+		resetState();
 		sendRequest(request, holder::setValue);
 		finish();
 		checkForError();

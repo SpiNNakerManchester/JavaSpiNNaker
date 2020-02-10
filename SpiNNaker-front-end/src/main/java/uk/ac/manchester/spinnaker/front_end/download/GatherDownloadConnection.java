@@ -16,11 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -35,6 +38,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  */
 final class GatherDownloadConnection extends SDPConnection {
 	private long lastSend = 0L;
+	private static final Logger log = getLogger(GatherDownloadConnection.class);
 	/**
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
@@ -75,13 +79,31 @@ final class GatherDownloadConnection extends SDPConnection {
 	 *            Where to read from.
 	 * @param length
 	 *            How many bytes to read.
+	 * @param transactionId
+	 *            The transaction id of this stream.
 	 * @throws IOException
 	 *             If message sending fails.
 	 */
-	void sendStart(CoreLocation extraMonitorCore, int address, int length)
+	void sendStart(CoreLocation extraMonitorCore, int address, int length,
+			int transactionId) throws IOException {
+		sendMsg(StartSendingMessage.create(extraMonitorCore, address, length,
+				transactionId));
+	}
+
+	/**
+	 * Sends a message telling the extra monitor to stop sending fixed route
+	 * packets.
+	 *
+	 * @param extraMonitorCore
+	 *            The location of the monitor.
+	 * @param transactionId
+	 *            The transaction id of this stream.
+	 * @throws IOException
+	 *             If message sending fails.
+	 */
+	void sendClear(CoreLocation extraMonitorCore, int transactionId)
 			throws IOException {
-		sendMsg(StartSendingMessage.create(extraMonitorCore, address,
-				length));
+		sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
 	}
 
 	/**
@@ -103,11 +125,10 @@ final class GatherDownloadConnection extends SDPConnection {
 	 *
 	 * @param timeout
 	 *            How long to wait for the packet.
-	 * @return The packet's raw contents. On timeout, an empty buffer will
-	 *         be returned. Never returns {@code null}.
+	 * @return The packet's raw contents. On timeout, an empty buffer will be
+	 *         returned. Never returns {@code null}.
 	 * @throws IOException
-	 *             If a non-recoverable error (e.g., closed channel)
-	 *             happens.
+	 *             If a non-recoverable error (e.g., closed channel) happens.
 	 */
 	ByteBuffer getNextPacket(int timeout) throws IOException {
 		try {
@@ -117,6 +138,7 @@ final class GatherDownloadConnection extends SDPConnection {
 			}
 			return b;
 		} catch (SocketTimeoutException ignored) {
+			log.debug("received timeout");
 			return EMPTY_DATA;
 		}
 	}

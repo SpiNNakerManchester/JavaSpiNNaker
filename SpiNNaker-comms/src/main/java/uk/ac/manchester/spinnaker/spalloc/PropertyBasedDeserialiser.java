@@ -57,6 +57,8 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 *            This is the JSON name.
 	 * @param type
 	 *            The class to register against the property.
+	 * @throws IllegalArgumentException
+	 *             if given bad arguments
 	 */
 	protected void register(String propertyName, Class<? extends T> type) {
 		if (propertyName == null) {

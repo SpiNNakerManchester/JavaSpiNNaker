@@ -64,10 +64,12 @@ public abstract class Tag implements Comparable<Tag> {
     }
 
     /**
-     * Set the port; will fail if the port is already set.
+     * Set the port.
      *
      * @param port
      *            the port to set
+     * @throws IllegalStateException
+     *             If the port has already been set.
      */
     public void setPort(int port) {
         if (this.port != null && this.port != port) {

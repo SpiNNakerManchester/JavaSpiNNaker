@@ -134,7 +134,10 @@ public class DataReceiver extends BoardLocalSupport {
 				| RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
+			// CHECKSTYLE:OFF
+			// This code should be unreachable
 			throw new RuntimeException("unexpected exception", e);
+			// CHECKSTYLE:ON
 		}
 	}
 

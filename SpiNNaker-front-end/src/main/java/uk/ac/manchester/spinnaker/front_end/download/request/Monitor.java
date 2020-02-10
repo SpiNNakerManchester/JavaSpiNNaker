@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,30 +16,43 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.util.Collections.emptyList;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+
 /**
  * Extra monitor core information.
  *
  * @author Christian-B
+ * @author Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
-    /** The X coordinate of the core this monitor is placed on. */
+	/** The X coordinate of the core this monitor is placed on. */
 	private final int x;
-    /** The Y coordinate of the core this monitor is placed on. */
+	/** The Y coordinate of the core this monitor is placed on. */
 	private final int y;
-    /** The processor ID of the core this monitor is placed on. */
+	/** The processor ID of the core this monitor is placed on. */
 	private final int p;
-    /** The vertex placements that this monitor will read. */
-    private final List<Placement> placements;
+	/** The vertex placements that this monitor will read. */
+	private final List<Placement> placements;
+	/** The transaction id for this extra monitor. */
+	private int transactionId = 0;
+	/** cap of where a transaction id will get to. */
+	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
-    /**
+	/**
 	 * Constructor with minimum information needed.
 	 * <p>
 	 * Could be called from an unmarshaller.
@@ -53,40 +66,67 @@ public class Monitor implements HasCoreLocation {
 	 * @param placements
 	 *            Vertex placement info handled by this monitor.
 	 */
-    Monitor(@JsonProperty(value = "x", required = true) int x,
-            @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "placements", required = false)
-                    List<Placement> placements) {
-        this.x = x;
-        this.y = y;
-        this.p = p;
-        if (placements == null) {
-            this.placements = emptyList();
-        } else {
-            this.placements = placements;
-        }
-    }
+	Monitor(@JsonProperty(value = "x", required = true) int x,
+			@JsonProperty(value = "y", required = true) int y,
+			@JsonProperty(value = "p", required = true) int p,
+			@JsonProperty(value = "placements", required = false) List<
+					Placement> placements) {
+		this.x = x;
+		this.y = y;
+		this.p = p;
+		if (placements == null) {
+			this.placements = emptyList();
+		} else {
+			this.placements = placements;
+		}
+	}
 
-    @Override
-    public int getX() {
-        return x;
-    }
+	@Override
+	public int getX() {
+		return x;
+	}
 
-    @Override
-    public int getY() {
-        return y;
-    }
+	@Override
+	public int getY() {
+		return y;
+	}
 
-    @Override
-    public int getP() {
-        return p;
-    }
+	@Override
+	public int getP() {
+		return p;
+	}
 
-    /**
-     * @return the placements
-     */
-    public List<Placement> getPlacements() {
-        return Collections.unmodifiableList(placements);
-    }
+	/**
+	 * Updates the transaction id by 1 and wraps with the cap.
+	 */
+	public void updateTransactionId() {
+		transactionId = (transactionId + 1) & TRANSACTION_ID_CAP;
+	}
+
+	public int getTransactionId() {
+		return transactionId;
+	}
+
+	/**
+	 * gets the transaction id from the machine and updates.
+	 *
+	 * @param txrx
+	 *            the spinnman instance.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
+	public void updateTransactionIdFromMachine(Transceiver txrx)
+			throws IOException, ProcessException {
+		int address = txrx.getUser1RegisterAddress(this);
+		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
+	}
+
+	/**
+	 * @return the placements
+	 */
+	public List<Placement> getPlacements() {
+		return Collections.unmodifiableList(placements);
+	}
 }

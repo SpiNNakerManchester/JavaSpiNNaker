@@ -33,3 +33,9 @@ hs_err_pid*
 #netbeans metadata
 nbproject
 nbactions.xml
+
+# macOS Finder metadata
+.DS_Store
+
+# Output of shade plugin
+dependency-reduced-pom.xml

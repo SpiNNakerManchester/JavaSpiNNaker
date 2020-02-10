@@ -52,11 +52,14 @@ public class RoutingEntry {
      * Create a routing entry from its expanded description.
      *
      * @param processorIDs
-     *            The IDs of the processors that this entry routes to.
-     *            The Duplicate IDs are ignored.
+     *            The IDs of the processors that this entry routes to. The
+     *            Duplicate IDs are ignored.
      * @param linkIDs
-     *            The IDs of the links that this entry routes to.
-     *            The Duplicate IDs are ignored.
+     *            The IDs of the links that this entry routes to. The Duplicate
+     *            IDs are ignored.
+     * @throws IllegalArgumentException
+     *             If a bad processor ID is given (i.e., one that doesn't match
+     *             SpiNNaker hardware).
      */
     public RoutingEntry(
             Iterable<Integer> processorIDs, Iterable<Direction> linkIDs) {

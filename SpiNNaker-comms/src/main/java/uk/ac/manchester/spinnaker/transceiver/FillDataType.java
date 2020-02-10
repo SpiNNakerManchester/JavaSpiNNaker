@@ -56,7 +56,9 @@ public enum FillDataType {
 			break;
 		default:
 			// unreachable
+			// CHECKSTYLE:OFF
 			throw new IllegalStateException();
+			// CHECKSTYLE:ON
 		}
 	}
 }
