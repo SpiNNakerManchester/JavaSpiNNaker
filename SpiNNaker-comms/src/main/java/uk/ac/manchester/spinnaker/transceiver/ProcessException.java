@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
@@ -27,6 +28,9 @@ public class ProcessException extends SpinnmanException {
 	private static final long serialVersionUID = 7759365416594564702L;
 	private static final String S = "     "; // five spaces
 
+	/** Where does the code believe this exception originated? */
+	public final CoreLocation core;
+
 	/**
 	 * Create an exception.
 	 *
@@ -35,11 +39,12 @@ public class ProcessException extends SpinnmanException {
 	 * @param cause
 	 *            What exception caused problems.
 	 */
-	public ProcessException(HasCoreLocation core, Throwable cause) {
+	ProcessException(HasCoreLocation core, Throwable cause) {
 		super(format(
 				"when sending to %d:%d:%d, received exception: %s\n" + S
 						+ "with message: %s",
 				core.getX(), core.getY(), core.getP(),
 				cause.getClass().getName(), cause.getMessage()), cause);
+		this.core = core.asCoreLocation();
 	}
 }

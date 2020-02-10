@@ -60,7 +60,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 class BMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 	/** How long to wait for a BMP to respond. */
-	public static final int DEFAULT_TIMEOUT =
+	private static final int DEFAULT_TIMEOUT =
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";

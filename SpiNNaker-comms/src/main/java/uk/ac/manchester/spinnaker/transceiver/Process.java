@@ -30,6 +30,9 @@ abstract class Process {
 	private SCPRequest<?> errorRequest;
 	private Throwable exception;
 
+	/**
+	 * Put the state in such a way that it definitely isn't recording an error.
+	 */
 	private void resetState() {
 		this.errorRequest = null;
 		this.exception = null;
@@ -53,7 +56,7 @@ abstract class Process {
 	/**
 	 * @return Whether an exception is waiting to be thrown.
 	 */
-	public final boolean isError() {
+	private boolean isError() {
 		return exception != null;
 	}
 
@@ -70,7 +73,6 @@ abstract class Process {
 		SDPHeader hdr = errorRequest.sdpHeader;
 		ProcessException ex =
 				new ProcessException(hdr.getDestination(), exception);
-		exception = ex;
 		throw ex;
 	}
 

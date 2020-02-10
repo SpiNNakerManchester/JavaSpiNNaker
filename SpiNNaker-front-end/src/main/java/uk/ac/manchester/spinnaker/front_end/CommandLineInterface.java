@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
 import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
@@ -188,6 +189,10 @@ public final class CommandLineInterface {
 				setLoggerDir(args[THIRD]);
 				iobufRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
+
+			case CLICommands.LISTEN:
+				LocateConnectedMachineIPAddress.main(args);
+				return;
 
 			case CLICommands.VERSION:
 				System.out.println(VERSION);
@@ -452,11 +457,14 @@ interface CLICommands {
 	String DSE_APP_MON = "dse_app_mon";
 	/** The IOBUF-retrieval command name. */
 	String IOBUF = "iobuf";
+	/** The listen-for-an-unbooted-machine command name. */
+	String LISTEN = "listen_for_unbooted";
 	/** The version command name. */
 	String VERSION = "version";
 	/** All the command names. Sorted. */
 	String[] ALL = {
-		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, VERSION
+		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, LISTEN,
+		VERSION
 	};
 
 	/**
