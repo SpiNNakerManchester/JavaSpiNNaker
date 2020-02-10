@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  *      Python Version</a>
  * @author Christian-B
  */
-public class BufferedReceivingData {
+class BufferedReceivingData {
 	private static final Logger log = getLogger(BufferedReceivingData.class);
 
 	/** The physical storage of the data. */
@@ -73,7 +73,7 @@ public class BufferedReceivingData {
 	 * @param storage
 	 *            How to talk to the database.
 	 */
-	public BufferedReceivingData(BufferManagerStorage storage) {
+	BufferedReceivingData(BufferManagerStorage storage) {
 		this.storage = storage;
 		isFlushed = new DefaultMap<>(false);
 		sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
