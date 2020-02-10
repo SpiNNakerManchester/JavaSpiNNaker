@@ -70,7 +70,9 @@ public enum DataType {
 			buffer.put((byte[]) value);
 			return;
 		default:
+			// CHECKSTYLE:OFF
 			throw new Error("unreachable?");
+			// CHECKSTYLE:ON
 		}
 	}
 }

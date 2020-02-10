@@ -37,8 +37,8 @@ import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
  */
 public final class Router implements Iterable<Link> {
 
-    private final EnumMap<Direction, Link> links =
-            new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, Link> links = new EnumMap<>(
+            Direction.class);
 
     /** The number of entries available in the routing table. */
     public final int nAvailableMulticastEntries;
@@ -52,15 +52,14 @@ public final class Router implements Iterable<Link> {
      * @param nAvailableMulticastEntries
      *            The number of entries available in the routing table.
      */
-    public Router(int nAvailableMulticastEntries)
-            throws IllegalArgumentException {
+    public Router(int nAvailableMulticastEntries) {
         this.nAvailableMulticastEntries = nAvailableMulticastEntries;
     }
 
     /**
      * Default Constructor to add links later using default values.
      */
-    public Router() throws IllegalArgumentException {
+    public Router() {
         this(MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
     }
 
@@ -72,6 +71,9 @@ public final class Router implements Iterable<Link> {
      *            {@code sourceLinkDirection}(s).
      * @param nAvailableMulticastEntries
      *            The number of entries available in the routing table.
+     * @throws IllegalArgumentException
+     *             Indicates that there are two Links with the same
+     *             {@code sourceLinkDirection}.
      */
     public Router(Iterable<Link> links, int nAvailableMulticastEntries)
             throws IllegalArgumentException {
@@ -87,6 +89,9 @@ public final class Router implements Iterable<Link> {
      *            {@code sourceLinkDirection}(s).
      * @param nAvailableMulticastEntries
      *            The number of entries available in the routing table.
+     * @throws IllegalArgumentException
+     *             Indicates that there are two Links with the same
+     *             {@code sourceLinkDirection}.
      */
     public Router(Stream<Link> links, int nAvailableMulticastEntries)
             throws IllegalArgumentException {
@@ -100,11 +105,13 @@ public final class Router implements Iterable<Link> {
      * @param links
      *            Known Link(s) to add. All must have unique
      *            {@code sourceLinkDirection}(s).
+     * @throws IllegalArgumentException
+     *             Indicates that there are two Links with the same
+     *             {@code sourceLinkDirection}.
      */
     public Router(Iterable<Link> links) throws IllegalArgumentException {
         this(links, ROUTER_AVAILABLE_ENTRIES);
     }
-
 
     /**
      * Pass through Constructor that uses default values.
@@ -113,8 +120,8 @@ public final class Router implements Iterable<Link> {
      *            Known Link(s) to add. All must have unique
      *            {@code sourceLinkDirection}(s).
      * @throws IllegalArgumentException
-     *             Indicates another Link with this {@code sourceLinkDirection}
-     *             has already been added.
+     *             Indicates that there are two Links with the same
+     *             {@code sourceLinkDirection}.
      */
     public Router(Stream<Link> links) throws IllegalArgumentException {
         this(links, ROUTER_AVAILABLE_ENTRIES);
@@ -129,8 +136,8 @@ public final class Router implements Iterable<Link> {
      *            Known Link(s) to add. All must have unique
      *            {@code sourceLinkDirection}(s).
      * @throws IllegalArgumentException
-     *             Indicates another Link with this {@code sourceLinkDirection}
-     *             has already been added.
+     *             Indicates that there are two Links with the same
+     *             {@code sourceLinkDirection}.
      */
     Router(Router router, Iterable<Link> links) {
         this(links, router.nAvailableMulticastEntries);
@@ -150,16 +157,16 @@ public final class Router implements Iterable<Link> {
      *            The Machine this chip will go on. Used for calculating
      *            wrap-arounds
      * @throws NullPointerException
-     *             if a none valid direction is not in ignoredLinks
+     *             if a non-valid direction is not in ignoredLinks
      */
     public Router(HasChipLocation source, int nAvailableMulticastEntries,
-            ChipDetails details,  Machine machine) {
+            ChipDetails details, Machine machine) {
         this(nAvailableMulticastEntries);
         Set<Direction> ignoreDirections = details.getDeadDirections();
         for (Direction direction : Direction.values()) {
             if (!ignoreDirections.contains(direction)) {
-                ChipLocation destination = details.getLinkDestination(
-                        direction, source, machine);
+                ChipLocation destination = details.getLinkDestination(direction,
+                        source, machine);
                 addLink(new Link(source, direction,
                         Objects.requireNonNull(destination)));
             }
@@ -234,8 +241,8 @@ public final class Router implements Iterable<Link> {
     /**
      * Stream of the destinations of each link.
      * <p>
-     * There will be exactly one destination for each Link.
-     * While normally all destinations will be unique the is no guarantee.
+     * There will be exactly one destination for each Link. While normally all
+     * destinations will be unique the is no guarantee.
      *
      * @return A Stream over the destination locations.
      */
@@ -246,8 +253,8 @@ public final class Router implements Iterable<Link> {
     /**
      * Iterable over the destinations of each link.
      * <p>
-     * There will be exactly one destination for each Link.
-     * While normally all destinations will be unique the is no guarantee.
+     * There will be exactly one destination for each Link. While normally all
+     * destinations will be unique the is no guarantee.
      *
      * @return A Stream over the destination locations.
      */

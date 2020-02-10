@@ -108,6 +108,8 @@ public class SCPResultMessage {
 	 * @throws Exception
 	 *             If anything goes wrong with result code checking or
 	 *             deserialization.
+	 * @throws IllegalStateException
+	 *             If the response has already been parsed.
 	 */
 	public <T extends SCPResponse> T parsePayload(SCPRequest<T> request)
 			throws Exception {

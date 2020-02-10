@@ -214,7 +214,9 @@ public class FillProcess extends MultiConnectionProcess<SCPConnection> {
 				break;
 			default:
 				// unreachable
+				// CHECKSTYLE:OFF
 				throw new IllegalStateException();
+				// CHECKSTYLE:ON
 			}
 		}
 	}

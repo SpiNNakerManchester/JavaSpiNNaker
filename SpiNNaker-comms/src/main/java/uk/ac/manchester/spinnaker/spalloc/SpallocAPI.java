@@ -747,6 +747,8 @@ public interface SpallocAPI {
 	 * @see MachinesChangedNotification
 	 * @throws SpallocProtocolException
 	 *             If the socket is unusable or becomes disconnected.
+	 * @throws RuntimeException
+	 *             If there is a timeout.
 	 */
 	default Notification waitForNotification() throws SpallocProtocolException {
 		try {
