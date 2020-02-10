@@ -278,21 +278,22 @@ class Functions implements FunctionAPI {
 			address = spec.getInt();
 		}
 
+		MemoryRegion r = getRegion();
+		if (r == null) {
+			throw new NoRegionSelectedException(
+					"no current region has been selected");
+		} else if (r.isUnfilled()) {
+			throw new RegionUnfilledException(currentRegion, SET_WR_PTR);
+		}
+
 		// check that the address is relative or absolute
 		if (RELATIVE.isSet(packedCommand)) {
-			// relative to its current write pointer
-			if (getRegion() == null) {
-				throw new NoRegionSelectedException(
-                    "the write pointer for this region is currently"
-                        + " undefined");
-			}
-
 			// relative to the base address of the region (obsolete)
-			address += getRegion().getWritePointer();
+			address += r.getWritePointer();
 		}
 
 		// update write pointer
-		getRegion().setWritePointer(address);
+		r.setWritePointer(address);
 	}
 
 	/**
@@ -349,6 +350,8 @@ class Functions implements FunctionAPI {
 		MemoryRegion r = getRegion();
 		if (r == null) {
 			throw new RegionNotAllocatedException(currentRegion, command);
+		} else if (r.isUnfilled()) {
+			throw new RegionUnfilledException(currentRegion, command);
 		}
 
 		// It must have enough space

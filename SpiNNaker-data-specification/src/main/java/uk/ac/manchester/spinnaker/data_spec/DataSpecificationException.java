@@ -46,8 +46,7 @@ public class DataSpecificationException extends Exception {
 	 * @param cause
 	 *            The cause of the exception.
 	 */
-	public DataSpecificationException(String msg,
-			Throwable cause) {
+	public DataSpecificationException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

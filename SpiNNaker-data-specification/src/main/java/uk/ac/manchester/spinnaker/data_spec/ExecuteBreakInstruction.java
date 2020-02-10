@@ -23,4 +23,9 @@ package uk.ac.manchester.spinnaker.data_spec;
  */
 public class ExecuteBreakInstruction extends DataSpecificationException {
 	private static final long serialVersionUID = -4902287652556707319L;
+
+	/** Create an instance. */
+	ExecuteBreakInstruction() {
+		super("BREAK instruction reached");
+	}
 }

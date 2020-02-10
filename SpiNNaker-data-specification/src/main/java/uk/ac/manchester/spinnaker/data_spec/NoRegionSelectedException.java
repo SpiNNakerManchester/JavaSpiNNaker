@@ -28,7 +28,7 @@ public class NoRegionSelectedException extends DataSpecificationException {
 	 * @param msg
 	 *            The message in the exception.
 	 */
-	public NoRegionSelectedException(String msg) {
+	NoRegionSelectedException(String msg) {
 		super(msg);
 	}
 
@@ -38,7 +38,7 @@ public class NoRegionSelectedException extends DataSpecificationException {
 	 * @param command
 	 *            What command was using memory without a region selected.
 	 */
-	public NoRegionSelectedException(Commands command) {
+	NoRegionSelectedException(Commands command) {
 		super("no region has been selected for writing by " + command);
 	}
 }

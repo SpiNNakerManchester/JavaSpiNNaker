@@ -33,7 +33,7 @@ public class UnimplementedDSECommandException
 	 * @param command
 	 *            The command that was unimplemented.
 	 */
-	public UnimplementedDSECommandException(int index, Commands command) {
+	UnimplementedDSECommandException(int index, Commands command) {
 		super(format("Command %s (at index %d) in the data specification "
             + "executor has not yet been implemented", command, index));
 	}
@@ -46,7 +46,7 @@ public class UnimplementedDSECommandException
 	 * @param opcode
 	 *            The opcode that couldn't be converted into a command.
 	 */
-	public UnimplementedDSECommandException(int index, int opcode) {
+	UnimplementedDSECommandException(int index, int opcode) {
 		super(format("unknown opcocode (%d) at index %d", opcode, index));
 	}
 }

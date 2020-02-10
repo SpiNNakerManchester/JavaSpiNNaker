@@ -31,7 +31,7 @@ public class RegionUnfilledException extends DataSpecificationException {
 	 * @param command
 	 *            What command wanted to use the region.
 	 */
-	public RegionUnfilledException(int region, Commands command) {
+	RegionUnfilledException(int region, Commands command) {
 		super("Region " + region + " was requested unfilled, but command "
 				+ command + " requests its use");
 	}

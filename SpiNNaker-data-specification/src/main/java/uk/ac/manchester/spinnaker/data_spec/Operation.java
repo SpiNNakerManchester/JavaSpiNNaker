@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to indicate which methods should be used to implement
- * DSE operations. Methods annotated with this <i>must</i> take no arguments,
- * and <i>must</i> have a return type of either {@code void} or {@code int}.
+ * DSE operations. Methods annotated with this <em>must</em> take no arguments,
+ * and <em>must</em> have a return type of either {@code void} or {@code int}.
  * The operation calling mechanism treats methods that don't return a value as
  * if they returned zero.
  *
@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
 public @interface Operation {
 	/**
 	 * Describes what Data Specification operation is implemented by the method
-	 * the annotation is on. This <i>must not</i> be {@code null}.
+	 * the annotation is on. This <em>must not</em> be {@code null}.
 	 *
 	 * @return The DSE operation descriptor.
 	 */

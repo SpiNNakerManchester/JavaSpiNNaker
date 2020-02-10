@@ -30,7 +30,7 @@ public class UnknownTypeLengthException extends DataSpecificationException {
 	 * @param command
 	 *            What command was being executed.
 	 */
-	public UnknownTypeLengthException(int dataLen, Commands command) {
+	UnknownTypeLengthException(int dataLen, Commands command) {
 		super("Unknown data length " + dataLen + " during command " + command);
 	}
 }

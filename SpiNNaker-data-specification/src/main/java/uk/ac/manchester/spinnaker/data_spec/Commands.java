@@ -19,9 +19,17 @@ package uk.ac.manchester.spinnaker.data_spec;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Set of opcodes for the spec executor. */
+/**
+ * Set of opcodes for the spec executor. All names come from the Data
+ * Specification specification document.
+ */
 public enum Commands {
-	/** Halts spec execution with an error. */
+	/**
+	 * Halts spec execution with an error.
+	 * <p>
+	 * This opcode is probably misnamed, and ought to be called {@code RTE} or
+	 * something like that.
+	 */
 	BREAK(0x00),
 	/** No operation. Can be used as a filler. */
 	NOP(0x01),
@@ -42,14 +50,14 @@ public enum Commands {
 	/** Ends declaration of new structure. */
 	END_STRUCT(0x12),
 	/** Begins definition of a packing specification. */
-    START_PACKSPEC(0x1A),
+	START_PACKSPEC(0x1A),
 	/**
 	 * Writes one bit field inside a single parameter from a bit field of a
 	 * source parameter.
 	 */
-    PACK_PARAM(0x1B),
+	PACK_PARAM(0x1B),
 	/** Ends definition of a packing specification. */
-    END_PACKSPEC(0x1C),
+	END_PACKSPEC(0x1C),
 	/** Begins definition of a function to write data structures to memory. */
 	START_CONSTRUCTOR(0x20),
 	/** Ends definition of the write function. */
@@ -145,6 +153,13 @@ public enum Commands {
 		}
 	}
 
+	/**
+	 * Get the command for a particular value.
+	 *
+	 * @param value
+	 *            The value to parse.
+	 * @return The command, or {@code null} if there is no such value.
+	 */
 	public static Commands get(int value) {
 		return MAP.get(value);
 	}
