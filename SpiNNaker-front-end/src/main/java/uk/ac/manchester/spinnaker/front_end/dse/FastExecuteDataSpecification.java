@@ -832,9 +832,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
         private void retransmitMissingPackets(GathererProtocol protocol,
                 ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
                 int baseAddress, int numPackets) throws IOException {
-            log.debug("resending the location packet");
-            connection.send(protocol.dataToLocation(baseAddress, numPackets,
-                    transactionId));
 
             log.debug("retransmitting {} packets",
                     missingSeqNums.cardinality());
