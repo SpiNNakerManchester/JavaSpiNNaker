@@ -243,7 +243,7 @@ public class DataReceiver extends BoardLocalSupport {
 		}
 	}
 
-	private static final long MAX_UINT = 0xFFFFFFFFl;
+	private static final long MAX_UINT = 0xFFFFFFFFL;
 	private static boolean is32bit(long value) {
 		return value >= 0 && value <= MAX_UINT;
 	}
