@@ -291,9 +291,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-                startTime = nanoTime();
 				txrx.writeMemory(ctl.core, user0, start);
-				diff += max(nanoTime() - startTime, 0);
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written, diff);
 			} catch (DataSpecificationException e) {
