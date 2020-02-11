@@ -66,6 +66,10 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 * @param value
 	 *            The value to set it to. The type depends on the type of the
 	 *            variable being set.
+	 * @throws UnsupportedOperationException
+	 *             If the boot values are not writable.
+	 * @throws IllegalArgumentException
+	 *             If the variable type doesn't match.
 	 */
 	public void setValue(SystemVariableDefinition systemVariable,
 			Object value) {

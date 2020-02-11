@@ -136,12 +136,15 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	/**
 	 * Get whether a particular region needs to be written.
 	 *
-	 * @param regionID The ID of the region to check.
+	 * @param regionID
+	 *            The ID of the region to check.
 	 * @return True if the region must be written. A region must be written if
 	 *         it is filled or if it has a region after it that must be written.
+	 * @throws IllegalArgumentException
+	 *             If a bad region ID is given
 	 */
 	public boolean needsToWriteRegion(int regionID) {
-		if (regionID >= regions.length) {
+		if (regionID < 0 || regionID >= regions.length) {
 			throw new IllegalArgumentException(
                 "the region ID requested is beyond the supported number "
                     + "of available region IDs");

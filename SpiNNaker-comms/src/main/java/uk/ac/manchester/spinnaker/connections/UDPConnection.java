@@ -276,6 +276,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
@@ -330,6 +332,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @return The datagram packet received
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
