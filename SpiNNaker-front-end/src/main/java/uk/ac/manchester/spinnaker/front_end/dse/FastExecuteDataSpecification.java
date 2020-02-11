@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
+import static java.lang.Math.max;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
@@ -481,20 +482,20 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
+			long startTime, timeTotal = 0;
+			startTime = nanoTime();
 			int written = writeHeader(ctl.core, executor, start, gather);
+			timeTotal += max(nanoTime() - startTime, 0);
 			int writeCount = 1;
 
-
-			long timeTotal = 0;
+			// Time taken with loading this core in nanoseconds, never negative
 			for (MemoryRegion r : executor.regions()) {
 				if (isToBeIgnored(r)) {
 					continue;
 				}
-				long startTime = System.nanoTime();
+				startTime = nanoTime();
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
-				long end = System.nanoTime();
-				long diff = end - startTime;
-				timeTotal += diff;
+				timeTotal += max(nanoTime() - startTime, 0);
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
 					ByteBuffer readBack = txrx.readMemory(ctl.core,

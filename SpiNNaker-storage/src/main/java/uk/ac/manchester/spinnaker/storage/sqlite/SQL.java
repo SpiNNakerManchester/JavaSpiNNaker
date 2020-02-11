@@ -220,9 +220,9 @@ abstract class SQL {
 	@Parameter("start_address")
 	@Parameter("memory_used")
 	@Parameter("memory_written")
-	@Parameter("time")
+	@Parameter("time_delta")
 	@Parameter("core_id")
 	static final String ADD_LOADING_METADATA = "UPDATE core "
-			+ "SET start_address = ?, memory_used = ?, memory_written = ?, time = ?"
-			+ "WHERE core_id = ?";
+			+ "SET start_address = ?, memory_used = ?, memory_written = ?, "
+			+ "\"time\" = \"time\" + ? WHERE core_id = ?";
 }

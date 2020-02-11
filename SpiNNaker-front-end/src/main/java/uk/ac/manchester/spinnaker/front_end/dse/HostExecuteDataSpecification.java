@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
+import static java.lang.Math.max;
+import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -271,22 +273,27 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				executor.execute();
 				int size = executor.getConstructedDataSize();
 				int start = malloc(ctl, size);
+				// diff = cumulative time actually writing, in nanos
+				long startTime, diff = 0;
 				log.info("loading data onto {} ({} bytes at 0x{})",
 						ctl.core.asChipLocation(), toUnsignedLong(size),
 						toHexString(toUnsignedLong(start)));
+				startTime = nanoTime();
 				int written = writeHeader(ctl.core, executor, start);
+				diff += max(nanoTime() - startTime, 0);
 
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
+						startTime = nanoTime();
 						written += writeRegion(ctl.core, r, r.getRegionBase());
+						diff += max(nanoTime() - startTime, 0);
 					}
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-                long startTime = System.nanoTime();
+                startTime = nanoTime();
 				txrx.writeMemory(ctl.core, user0, start);
-				long end = System.nanoTime();
-                long diff = end - startTime;
+				diff += max(nanoTime() - startTime, 0);
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written, diff);
 			} catch (DataSpecificationException e) {

@@ -196,22 +196,23 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	@Override
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
-			int memoryUsed, int memoryWritten, long time) throws StorageException {
+			int memoryUsed, int memoryWritten, long timeDelta)
+			throws StorageException {
 		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
-				startAddress, memoryUsed, memoryWritten, time),
+				startAddress, memoryUsed, memoryWritten, timeDelta),
 				"saving data loading metadata");
 	}
 
 	private static void saveLoadingMetadata(Connection conn,
 			CoreToLoadImpl core, int startAddress, int memoryUsed,
-			int memoryWritten, long time) throws SQLException {
+			int memoryWritten, long timeDelta) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);
 			s.setInt(FIFTH, core.id);
-			s.setLong(FOURTH, time);
+			s.setLong(FOURTH, timeDelta);
 			s.executeUpdate();
 		}
 	}
