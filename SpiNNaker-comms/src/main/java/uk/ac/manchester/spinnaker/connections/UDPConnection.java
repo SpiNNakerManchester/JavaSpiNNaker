@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
-import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -67,7 +66,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
-	private static final int ETHERNET_MTU = 1500;
 	private static final int PING_COUNT = 5;
 	private static final int PACKET_MAX_SIZE = 300;
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
@@ -172,7 +170,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		chan.bind(createLocalAddress(localHost, localPort));
 		chan.configureBlocking(false);
 		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
-		chan.setOption(SO_SNDBUF, ETHERNET_MTU);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
