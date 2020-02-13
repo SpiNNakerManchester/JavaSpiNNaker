@@ -67,7 +67,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
-	private static final int ETHERNET_MTU = 1500;
 	private static final int PING_COUNT = 5;
 	private static final int PACKET_MAX_SIZE = 300;
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
@@ -172,7 +171,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		chan.bind(createLocalAddress(localHost, localPort));
 		chan.configureBlocking(false);
 		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
-		chan.setOption(SO_SNDBUF, ETHERNET_MTU);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
@@ -397,7 +395,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
-		int sent = channel.send(data, remoteAddress);
+		int sent = 0;
+		while (sent == 0) {
+		    sent = channel.send(data, remoteAddress);
+		}
 		log.debug("sent {} bytes", sent);
 	}
 
