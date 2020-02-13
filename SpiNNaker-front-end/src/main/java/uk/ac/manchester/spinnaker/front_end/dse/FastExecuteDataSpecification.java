@@ -831,8 +831,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
 				int baseAddress, int numPackets) throws IOException {
 
-		    log.info("retransmitting {} packets",
-		            missingSeqNums.cardinality());
+			log.info("retransmitting {} packets",
+					missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {
 				log.debug("resending packet #{}", seqNum);
