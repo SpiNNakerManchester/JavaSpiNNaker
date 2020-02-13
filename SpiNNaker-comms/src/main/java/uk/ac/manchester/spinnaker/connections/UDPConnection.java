@@ -398,9 +398,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
             logSend(data, getRemoteAddress());
         }
         int sent = 0;
-        while (data.hasRemaining()) {
-            log.info("Not sent yet; try again");
-            sent += channel.send(data, remoteAddress);
+        while (sent == 0) {
+            sent = channel.send(data, remoteAddress);
+            if (sent == 0) {
+                log.info("Not sent yet; try again");
+            }
         }
         log.debug("sent {} bytes", sent);
     }
