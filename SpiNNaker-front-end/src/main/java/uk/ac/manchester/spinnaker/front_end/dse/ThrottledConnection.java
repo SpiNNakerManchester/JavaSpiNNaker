@@ -176,12 +176,12 @@ public class ThrottledConnection implements Closeable {
                     .mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
         }
         // BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-        /*while (nanoTime() - lastSend < THROTTLE_NS) {
+        while (nanoTime() - lastSend < THROTTLE_NS) {
             // Make the loop slightly less heavy
             yield();
-        } */
+        }
         connection.sendSDPMessage(message);
-        //lastSend = nanoTime();
+        lastSend = nanoTime();
     }
 
     @Override
