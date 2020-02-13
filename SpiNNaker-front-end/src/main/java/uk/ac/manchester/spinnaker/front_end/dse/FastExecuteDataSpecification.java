@@ -813,8 +813,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol, int transactionId, int numPackets)
 				throws IOException {
-		    log.info("Streaming {} bytes in {} packets using transaction {}",
-		            data.remaining(), numPackets, transactionId);
+			log.info("Streaming {} bytes in {} packets using transaction {}",
+					data.remaining(), numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
 			connection.send(protocol.dataToLocation(baseAddress, numPackets,
 					transactionId));
