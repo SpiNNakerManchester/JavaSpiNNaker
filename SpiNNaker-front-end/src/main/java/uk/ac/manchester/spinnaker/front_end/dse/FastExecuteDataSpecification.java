@@ -688,9 +688,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Do the initial blast of data
 				sendInitialPackets(baseAddress, data, protocol, transactionId,
 						numPackets);
-                // Don't create a missing buffer until at least one packet has
-                // come back.
-                BitSet missing = null;
+				// Don't create a missing buffer until at least one packet has
+				// come back.
+				BitSet missing = null;
 
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
@@ -734,42 +734,42 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						 * numbers. Accumulate and dispatch transactionId when
 						 * we've got them all.
 						 */
-                        if (missing == null) {
-                            missing = missingSequenceNumbers.issueNew(
-                                    numPackets);
-                        }
+						if (missing == null) {
+						    missing = missingSequenceNumbers.issueNew(
+						            numPackets);
+						}
 						SeenFlags flags =
-                                addMissedSeqNums(received, missing, numPackets);
+						        addMissedSeqNums(received, missing, numPackets);
 
 						/*
 						 * Check that you've seen something that implies ready
 						 * to retransmit.
 						 */
 						if (flags.seenAll || flags.seenEnd) {
-                            retransmitMissingPackets(protocol, data, missing,
+						    retransmitMissingPackets(protocol, data, missing,
 									transactionId, baseAddress, numPackets);
-                            missing.clear();
+						    missing.clear();
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-                            log.error("ran out of attempts on transaction {}"
-                                    + " due to timeouts.", transactionId);
+						    log.error("ran out of attempts on transaction {}"
+						            + " due to timeouts.", transactionId);
 							throw e;
 						}
-                        // If we never received a packet, we will never have
-                        // created the buffer, so send everything again
-                        if (missing == null) {
-                            log.debug("full timeout; resending initial "
-                                    + "packets for stream with transaction "
+						// If we never received a packet, we will never have
+						// created the buffer, so send everything again
+						if (missing == null) {
+						    log.debug("full timeout; resending initial "
+						            + "packets for stream with transaction "
 									+ "id {}", transactionId);
 							continue outerLoop;
 						}
-                        log.info("timeout {} on transaction {} sending to {}"
-                                + " via {}", timeoutCount, transactionId, core,
-                                gather.asCoreLocation());
-                        retransmitMissingPackets(protocol, data, missing,
+						log.info("timeout {} on transaction {} sending to {}"
+						        + " via {}", timeoutCount, transactionId, core,
+						        gather.asCoreLocation());
+					    retransmitMissingPackets(protocol, data, missing,
 								transactionId, baseAddress, numPackets);
-                        missing.clear();
+					    missing.clear();
 					}
 				}
 			}
@@ -813,8 +813,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol, int transactionId, int numPackets)
 				throws IOException {
-            log.info("Streaming {} bytes in {} packets using transaction {}",
-                    data.remaining(), numPackets, transactionId);
+		    log.info("Streaming {} bytes in {} packets using transaction {}",
+		            data.remaining(), numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
 			connection.send(protocol.dataToLocation(baseAddress, numPackets,
 					transactionId));
@@ -831,8 +831,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
 				int baseAddress, int numPackets) throws IOException {
 
-            log.info("retransmitting {} packets",
-                    missingSeqNums.cardinality());
+		    log.info("retransmitting {} packets",
+		            missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {
 				log.debug("resending packet #{}", seqNum);
