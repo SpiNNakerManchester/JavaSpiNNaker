@@ -375,7 +375,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Send data down this connection.
 	 *
 	 * @param data
-	 *            The data to be sent
+	 *            The data to be sent; the position in this buffer will
+	 *            <em>not</em> be updated by this method
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
@@ -394,11 +395,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
-		int sent = 0;
-		while (sent == 0) {
-		    sent = channel.send(data, remoteAddress);
+		while (true) {
+			int sent = channel.send(data.slice(), remoteAddress);
+			if (sent > 0) {
+				log.debug("sent {} bytes", sent);
+				break;
+			}
 		}
-		log.debug("sent {} bytes", sent);
 	}
 
 	/**
@@ -489,8 +492,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (log.isDebugEnabled()) {
 			logSend(data, addr);
 		}
-		int sent = channel.send(data, addr);
-		log.debug("sent {} bytes", sent);
+		while (true) {
+			int sent = channel.send(data.slice(), addr);
+			if (sent > 0) {
+				log.debug("sent {} bytes", sent);
+				break;
+			}
+		}
 	}
 
 	private void logSend(ByteBuffer data, SocketAddress addr) {
