@@ -233,7 +233,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			for (CoreToLoad ctl : cores) {
 				int start = malloc(ctl, ctl.sizeToWrite);
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core, user0, start);
+				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
 				addresses.put(ctl, start);
 			}
 
@@ -254,7 +254,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
 			throws IOException, ProcessException {
-		return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
+		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed, 
+				new AppID(ctl.appID));
 	}
 
 	@Override
