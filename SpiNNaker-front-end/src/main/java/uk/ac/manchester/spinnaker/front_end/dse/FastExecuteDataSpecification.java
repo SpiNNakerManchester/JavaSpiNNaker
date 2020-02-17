@@ -254,7 +254,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
 			throws IOException, ProcessException {
-		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed, 
+		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 				new AppID(ctl.appID));
 	}
 
