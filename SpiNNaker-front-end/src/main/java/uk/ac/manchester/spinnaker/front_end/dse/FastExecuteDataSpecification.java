@@ -756,10 +756,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-							log.error(
-									"ran out of attempts on transaction {}"
-											+ " due to timeouts.",
-									transactionId);
+							log.error("ran out of attempts on transaction {}"
+									+ " due to timeouts.", transactionId);
 							throw e;
 						}
 						/*
@@ -772,10 +770,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 									+ "id {}", transactionId);
 							continue outerLoop;
 						}
-						log.info(
-								"timeout {} on transaction {} sending to {}"
-										+ " via {}",
-								timeoutCount, transactionId, core,
+						log.info("timeout {} on transaction {} sending to {}"
+								+ " via {}", timeoutCount, transactionId, core,
 								gather.asCoreLocation());
 						retransmitMissingPackets(protocol, data, missing,
 								transactionId, baseAddress, numPackets);
@@ -823,7 +819,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol, int transactionId, int numPackets)
 				throws IOException {
-			log.info("Streaming {} bytes in {} packets using transaction {}",
+			log.info("streaming {} bytes in {} packets using transaction {}",
 					data.remaining(), numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
 			connection.send(protocol.dataToLocation(baseAddress, numPackets,
@@ -840,9 +836,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private void retransmitMissingPackets(GathererProtocol protocol,
 				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
 				int baseAddress, int numPackets) throws IOException {
-
-			log.debug("retransmitting {} packets",
-					missingSeqNums.cardinality());
+			log.info("retransmitting {} packets", missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {
 				log.debug("resending packet #{}", seqNum);
