@@ -43,7 +43,7 @@ public enum FastDataInCommandID {
 			MAP.put(c.value, c);
 		}
 	}
-	
+
 	/** The protocol ID of this constant. */
 	public final int value;
 
