@@ -38,6 +38,14 @@ public enum FastDataInCommandID {
 
 	private static final Map<Integer, FastDataInCommandID> MAP =
 			new HashMap<>();
+	static {
+		if (MAP.isEmpty()) {
+			for (FastDataInCommandID c : values()) {
+				MAP.put(c.value, c);
+			}
+		}
+	}
+	
 	/** The protocol ID of this constant. */
 	public final int value;
 
@@ -55,11 +63,6 @@ public enum FastDataInCommandID {
 	 *             if the value isn't one of the ones accepted by this class.
 	 */
 	public static FastDataInCommandID forValue(int value) {
-		if (MAP.isEmpty()) {
-			for (FastDataInCommandID c : values()) {
-				MAP.put(c.value, c);
-			}
-		}
 		FastDataInCommandID id = MAP.get(value);
 		if (id == null) {
 			throw new IllegalArgumentException(
