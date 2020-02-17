@@ -39,10 +39,8 @@ public enum FastDataInCommandID {
 	private static final Map<Integer, FastDataInCommandID> MAP =
 			new HashMap<>();
 	static {
-		if (MAP.isEmpty()) {
-			for (FastDataInCommandID c : values()) {
-				MAP.put(c.value, c);
-			}
+		for (FastDataInCommandID c : values()) {
+			MAP.put(c.value, c);
 		}
 	}
 	
