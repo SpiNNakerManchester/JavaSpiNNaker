@@ -234,7 +234,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			for (CoreToLoad ctl : cores) {
 				int start = malloc(ctl, ctl.sizeToWrite);
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core, user0, start);
+				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
 				addresses.put(ctl, start);
 			}
 
@@ -254,9 +254,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
-            throws IOException, ProcessException {
-        return txrx.mallocSDRAM(ctl.core, bytesUsed, new AppID(ctl.appID));
-    }
+			throws IOException, ProcessException {
+		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
+				new AppID(ctl.appID));
+	}
 
 	@Override
 	public void close() throws IOException {
@@ -681,10 +682,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int transactionId = gather.getNextTransactionId();
 
 			outerLoop: while (true) {
-				BitSet seqNums = missingSequenceNumbers.issueNew(numPackets);
 				// Do the initial blast of data
 				sendInitialPackets(baseAddress, data, protocol, transactionId,
 						numPackets);
+				/*
+				 * Don't create a missing buffer until at least one packet has
+				 * come back.
+				 */
+				BitSet missing = null;
 
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
@@ -728,32 +733,44 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						 * numbers. Accumulate and dispatch transactionId when
 						 * we've got them all.
 						 */
-
+						if (missing == null) {
+							missing =
+									missingSequenceNumbers.issueNew(numPackets);
+						}
 						SeenFlags flags =
-								addMissedSeqNums(received, seqNums, numPackets);
+								addMissedSeqNums(received, missing, numPackets);
 
 						/*
 						 * Check that you've seen something that implies ready
 						 * to retransmit.
 						 */
 						if (flags.seenAll || flags.seenEnd) {
-							retransmitMissingPackets(protocol, data, seqNums,
+							retransmitMissingPackets(protocol, data, missing,
 									transactionId, baseAddress, numPackets);
+							missing.clear();
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-							log.error("ran out of attempts due to timeouts.");
+							log.error("ran out of attempts on transaction {}"
+									+ " due to timeouts.", transactionId);
 							throw e;
 						}
-						if (seqNums.isEmpty()) {
-							log.info("full timeout; resending initial "
-									+ "packets for stream with trasnaction "
+						/*
+						 * If we never received a packet, we will never have
+						 * created the buffer, so send everything again
+						 */
+						if (missing == null) {
+							log.debug("full timeout; resending initial "
+									+ "packets for stream with transaction "
 									+ "id {}", transactionId);
 							continue outerLoop;
 						}
-						retransmitMissingPackets(protocol, data, seqNums,
+						log.info("timeout {} on transaction {} sending to {}"
+								+ " via {}", timeoutCount, transactionId, core,
+								gather.asCoreLocation());
+						retransmitMissingPackets(protocol, data, missing,
 								transactionId, baseAddress, numPackets);
-						seqNums.clear();
+						missing.clear();
 					}
 				}
 			}
@@ -797,8 +814,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int sendInitialPackets(int baseAddress, ByteBuffer data,
 				GathererProtocol protocol, int transactionId, int numPackets)
 				throws IOException {
-			log.debug("streaming {} bytes in {} packets", data.remaining(),
-					numPackets);
+			log.info("streaming {} bytes in {} packets using transaction {}",
+					data.remaining(), numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
 			connection.send(protocol.dataToLocation(baseAddress, numPackets,
 					transactionId));
@@ -814,11 +831,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private void retransmitMissingPackets(GathererProtocol protocol,
 				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
 				int baseAddress, int numPackets) throws IOException {
-			log.info("resending the location packet");
-			connection.send(protocol.dataToLocation(baseAddress, numPackets,
-					transactionId));
-
-			log.info("retransmitting {} packets", missingSeqNums.size());
+			log.info("retransmitting {} packets", missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {
 				log.debug("resending packet #{}", seqNum);
