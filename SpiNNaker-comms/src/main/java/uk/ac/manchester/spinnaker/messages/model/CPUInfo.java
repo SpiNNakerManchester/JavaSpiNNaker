@@ -278,6 +278,14 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
+	 * @return A string representation of this CPU info.
+	 */
+	@Override
+	public String toString() {
+		return getStatusDescription();
+	}
+
+	/**
 	 * @return A description of the state.
 	 */
 	public String getStatusDescription() {

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>5.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -30,10 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-		<spinnaker.version>0.0.1-SNAPSHOT</spinnaker.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<spinnaker.version>5.1.1-SNAPSHOT</spinnaker.version>
+		<slf4j.version>1.7.30</slf4j.version>
+		<log4j.version>2.13.0</log4j.version>
 		<junit.version>5.2.0</junit.version>
-		<checkstyle.version>8.18</checkstyle.version>
+		<checkstyle.version>8.29</checkstyle.version>
   	</properties>
 
 	<dependencyManagement>
@@ -87,9 +88,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j.version}</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -138,9 +145,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<version>3.25.2</version>
 			</dependency>
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -165,11 +172,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.7.0</version>
 				</plugin>
@@ -190,8 +192,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.0</version>
+					<configuration>
+						<trimStackTrace>false</trimStackTrace>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -201,7 +211,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
@@ -286,6 +296,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
 							<exclude>README.md</exclude>
+							<exclude>**/dependency-reduced-pom.xml</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 					</configuration>
@@ -424,7 +435,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<id>SupportJDK9AndLater</id>
+			<id>JavadocSupportJDK9AndLater</id>
 			<activation>
 				<jdk>[1.9,)</jdk>
 			</activation>
@@ -437,6 +448,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<additionalOptions>
 									<additionalOption>-html5</additionalOption>
 								</additionalOptions>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>JavadocSupportJDK8</id>
+			<!-- work around a stupid JDK bug -->
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<configuration>
+								<doclint>none</doclint>
 							</configuration>
 						</plugin>
 					</plugins>

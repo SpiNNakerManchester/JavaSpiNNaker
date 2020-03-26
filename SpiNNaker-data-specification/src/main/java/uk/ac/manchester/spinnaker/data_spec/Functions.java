@@ -158,7 +158,12 @@ class Functions implements FunctionAPI {
 		dataLength = 1 << DATA_LEN.getValue(command);
 	}
 
-	/** This command reserves a region and assigns some memory space to it. */
+	/**
+	 * This command reserves a region and assigns some memory space to it.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
+	 */
 	@Operation(RESERVE)
 	public void reserve() throws DataSpecificationException {
 		int region = REGION.getValue(packedCommand);
@@ -188,6 +193,9 @@ class Functions implements FunctionAPI {
 	/**
 	 * This command writes the given value in the specified region a number of
 	 * times as identified by either a value in the command or a register value.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
 	 */
 	@Operation(WRITE)
 	public void write() throws DataSpecificationException {
@@ -211,7 +219,12 @@ class Functions implements FunctionAPI {
 		writeToMemory(value, dataLength, numRepeats, WRITE);
 	}
 
-	/** This command writes an array of values in the specified region. */
+	/**
+	 * This command writes an array of values in the specified region.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
+	 */
 	@Operation(WRITE_ARRAY)
 	public void writeArray() throws DataSpecificationException {
 		byte[] bytes = new byte[spec.getInt() * INT_SIZE];
@@ -222,6 +235,9 @@ class Functions implements FunctionAPI {
 	/**
 	 * This command switches the focus to the desired, already allocated, memory
 	 * region.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
 	 */
 	@Operation(SWITCH_FOCUS)
 	public void switchFocus() throws DataSpecificationException {
@@ -236,6 +252,9 @@ class Functions implements FunctionAPI {
 	/**
 	 * This command moves an immediate value to a register or copies the value
 	 * of a register to another register.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
 	 */
 	@Operation(MV)
 	public void move() throws DataSpecificationException {
@@ -252,6 +271,9 @@ class Functions implements FunctionAPI {
 
 	/**
 	 * This command sets the position where writes will be performed.
+	 *
+	 * @throws DataSpecificationException
+	 *             If execution fails
 	 */
 	@Operation(SET_WR_PTR)
 	public void setWritePointer() throws DataSpecificationException {
@@ -286,6 +308,8 @@ class Functions implements FunctionAPI {
 	 * successfully.
 	 *
 	 * @return Special end-of-execution token.
+	 * @throws DataSpecificationException
+	 *             If execution fails
 	 */
 	@Operation(END_SPEC)
 	public int endSpecification() throws DataSpecificationException {

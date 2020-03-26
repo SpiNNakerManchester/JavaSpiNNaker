@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.spalloc;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -139,6 +141,7 @@ public class MockConnectedClient extends SpallocClient {
      */
     static final String VERSION = "\"1.0.0\"";
 
+    private static final Map<Class<?>, String> RESPONSES = new HashMap<>();
 
     private boolean actual;
 
@@ -165,6 +168,21 @@ public class MockConnectedClient extends SpallocClient {
         }
     }
 
+    static {
+    	RESPONSES.put(ListJobsCommand.class, LIST_JOBS_R);
+    	RESPONSES.put(ListMachinesCommand.class, LIST_MACHINE_R);
+    	RESPONSES.put(CreateJobCommand.class, "" + MOCK_ID);
+    	RESPONSES.put(GetJobMachineInfoCommand.class, JOB_MACHINE_INFO_R);
+    	RESPONSES.put(GetJobStateCommand.class, STATE_POWER_R);
+    	RESPONSES.put(WhereIsJobChipCommand.class, WHERE_IS_R);
+    	RESPONSES.put(WhereIsMachineBoardLogicalCommand.class, WHERE_IS_R);
+    	RESPONSES.put(WhereIsMachineBoardPhysicalCommand.class, WHERE_IS_R);
+    	RESPONSES.put(WhereIsMachineChipCommand.class, WHERE_IS_R);
+    	RESPONSES.put(VersionCommand.class, VERSION);
+    	RESPONSES.put(GetBoardPositionCommand.class, POSITION_R);
+    	RESPONSES.put(GetBoardAtPositionCommand.class, AT_R);
+    }
+
     @Override
     protected String call(Command<?> command, Integer timeout) {
         if (actual) {
@@ -175,37 +193,7 @@ public class MockConnectedClient extends SpallocClient {
                 log.warn("Call fail using mock", ex);
             }
         }
-        if (command.getClass() == ListJobsCommand.class) {
-            return LIST_JOBS_R;
-        }
-        if (command.getClass() == ListMachinesCommand.class) {
-            return LIST_MACHINE_R;
-        }
-        if (command.getClass() == CreateJobCommand.class) {
-            return "" + MOCK_ID;
-        }
-        if (command.getClass() == GetJobMachineInfoCommand.class) {
-            return JOB_MACHINE_INFO_R;
-        }
-        if (command.getClass() ==GetJobStateCommand.class) {
-            return STATE_POWER_R;
-        }
-        if (command.getClass() == WhereIsJobChipCommand.class
-                || command.getClass() == WhereIsMachineBoardLogicalCommand.class
-                || command.getClass() == WhereIsMachineBoardPhysicalCommand.class
-                || command.getClass() == WhereIsMachineChipCommand.class) {
-            return WHERE_IS_R;
-        }
-        if (command.getClass() == VersionCommand.class) {
-            return VERSION;
-        }
-        if (command.getClass() == GetBoardPositionCommand.class) {
-            return POSITION_R;
-        }
-        if (command.getClass() == GetBoardAtPositionCommand.class) {
-            return AT_R;
-        }
-        return null;
+        return RESPONSES.get(command.getClass());
     }
 
     /**

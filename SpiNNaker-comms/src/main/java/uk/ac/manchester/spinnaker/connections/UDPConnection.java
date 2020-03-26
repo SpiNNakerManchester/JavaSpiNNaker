@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,14 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByAddress;
+import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
-import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.channels.SelectionKey.OP_READ;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -44,8 +46,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
 
@@ -64,7 +66,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
-	private static final int ETHERNET_MTU = 1500;
 	private static final int PING_COUNT = 5;
 	private static final int PACKET_MAX_SIZE = 300;
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
@@ -114,12 +115,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		SocketAddress local = createLocalAddress(localHost, localPort);
-		channel = DatagramChannel.open();
-		channel.bind(local);
-		channel.configureBlocking(false);
-		channel.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
-		channel.setOption(SO_SNDBUF, ETHERNET_MTU);
+		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
+		channel =
+				initialiseSocket(localHost, localPort, remoteHost, remotePort);
 		selectionKeyFactory = ThreadLocal.withInitial(() -> {
 			try {
 				return channel.register(SELECTOR_FACTORY.get(), OP_READ);
@@ -128,14 +126,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 				return null;
 			}
 		});
-		canSend = false;
-		if (remoteHost != null && remotePort != null && remotePort > 0) {
-			remoteIPAddress = (Inet4Address) remoteHost;
-			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
-			channel.connect(remoteAddress);
-			canSend = true;
-		}
-		if (log.isDebugEnabled()) {
+		if (channel != null && log.isDebugEnabled()) {
 			InetSocketAddress us = null;
 			try {
 				us = getLocalAddress();
@@ -152,14 +143,42 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			if (them == null) {
 				them = new InetSocketAddress((InetAddress) null, 0);
 			}
-       		if (log.isDebugEnabled()) {
-                log.debug("{} socket created ({} <--> {})",
-                        getClass().getName(), us, them);
-            }
+			log.debug("{} socket created ({} <--> {})", getClass().getName(),
+					us, them);
 		}
 	}
 
-	private SocketAddress createLocalAddress(InetAddress localHost,
+	/**
+	 * Set up a UDP/IPv4 socket.
+	 *
+	 * @param localHost
+	 *            Local side address.
+	 * @param localPort
+	 *            Local side port.
+	 * @param remoteHost
+	 *            Remote side address.
+	 * @param remotePort
+	 *            Remote side port.
+	 * @return The configured, connected socket.
+	 * @throws IOException
+	 *             If anything fails.
+	 */
+	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort) throws IOException {
+		// SpiNNaker only speaks IPv4
+		DatagramChannel chan = DatagramChannel.open(INET);
+		chan.bind(createLocalAddress(localHost, localPort));
+		chan.configureBlocking(false);
+		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
+		if (canSend) {
+			remoteIPAddress = (Inet4Address) remoteHost;
+			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
+			chan.connect(remoteAddress);
+		}
+		return chan;
+	}
+
+	private static SocketAddress createLocalAddress(InetAddress localHost,
 			Integer localPort) throws UnknownHostException {
 		// Convert null into wildcard
 		if (localPort == null) {
@@ -188,7 +207,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/** @return The local IP address to which the connection is bound. */
 	@Override
-	public final InetAddress getLocalIPAddress() {
+	public InetAddress getLocalIPAddress() {
 		try {
 			return getLocalAddress().getAddress();
 		} catch (IOException e) {
@@ -198,7 +217,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/** @return The local port to which the connection is bound. */
 	@Override
-	public final int getLocalPort() {
+	public int getLocalPort() {
 		try {
 			return getLocalAddress().getPort();
 		} catch (IOException e) {
@@ -211,7 +230,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         {@code null} if it is not connected.
 	 */
 	@Override
-	public final InetAddress getRemoteIPAddress() {
+	public InetAddress getRemoteIPAddress() {
 		try {
 			return getRemoteAddress().getAddress();
 		} catch (IOException e) {
@@ -224,7 +243,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *         it is not connected.
 	 */
 	@Override
-	public final int getRemotePort() {
+	public int getRemotePort() {
 		try {
 			return getRemoteAddress().getPort();
 		} catch (IOException e) {
@@ -254,6 +273,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
@@ -270,6 +291,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			timeout = Integer.MAX_VALUE;
 		}
 		if (!receivable && !isReadyToReceive(timeout)) {
+			log.debug("not ready to recieve");
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
@@ -307,6 +329,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @return The datagram packet received
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
@@ -351,11 +375,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Send data down this connection.
 	 *
 	 * @param data
-	 *            The data to be sent
+	 *            The data to be sent; the position in this buffer will
+	 *            <em>not</em> be updated by this method
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	private void doSend(ByteBuffer data) throws IOException {
+	void doSend(ByteBuffer data) throws IOException {
 		if (!canSend) {
 			throw new IOException("Remote host and/or port not set; "
 					+ "data cannot be sent with this connection");
@@ -370,8 +395,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
-		int sent = channel.send(data, remoteAddress);
-		log.debug("sent {} bytes", sent);
+		while (true) {
+			int sent = channel.send(data.slice(), remoteAddress);
+			if (sent > 0) {
+				log.debug("sent {} bytes", sent);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -462,34 +492,33 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (log.isDebugEnabled()) {
 			logSend(data, addr);
 		}
-		int sent = channel.send(data, addr);
-		log.debug("sent {} bytes", sent);
+		while (true) {
+			int sent = channel.send(data.slice(), addr);
+			if (sent > 0) {
+				log.debug("sent {} bytes", sent);
+				break;
+			}
+		}
 	}
 
 	private void logSend(ByteBuffer data, SocketAddress addr) {
-		log.debug("sending data of length {} to {}", data.remaining(),
-				addr);
-		byte[] bytes = new byte[data.remaining()];
-		data.duplicate().get(bytes);
-		log.debug("message data: {}",
-				IntStream.range(0, bytes.length)
-						.mapToObj(i -> hexbyte(bytes[i]))
-						.collect(Collectors.toList()));
+		log.debug("sending data of length {} to {}", data.remaining(), addr);
+		log.debug("message data: {}", describe(data));
 	}
 
 	private void logRecv(ByteBuffer data, SocketAddress addr) {
-		log.debug("received data of length {} from {}", data.remaining(),
-				addr);
-		byte[] bytes = new byte[data.remaining()];
-		data.duplicate().get(bytes);
-		log.debug("message data: {}",
-				IntStream.range(0, bytes.length)
-						.mapToObj(i -> hexbyte(bytes[i]))
-						.collect(Collectors.toList()));
+		log.debug("received data of length {} from {}", data.remaining(), addr);
+		log.debug("message data: {}", describe(data));
+	}
+
+	private List<String> describe(ByteBuffer data) {
+		int pos = data.position();
+		IntFunction<String> foo = i -> hexbyte(data.get(pos + i));
+		return range(0, data.remaining()).mapToObj(foo).collect(toList());
 	}
 
 	@Override
-	public final boolean isConnected() {
+	public boolean isConnected() {
 		if (!canSend) {
 			return false;
 		}
@@ -512,24 +541,32 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public final boolean isClosed() {
+	public boolean isClosed() {
 		return !channel.isOpen();
 	}
 
+	private SelectionKey remake(SelectionKey stale) {
+		log.debug("remaking selection key");
+		selectionKeyFactory.remove();
+		stale.cancel();
+		SelectionKey key = selectionKeyFactory.get();
+		if (!key.isValid()) {
+			throw new IllegalStateException(
+					"newly manufactured selection key is invalid");
+		}
+		return key;
+	}
+
 	@Override
-	public final boolean isReadyToReceive(Integer timeout) throws IOException {
+	public boolean isReadyToReceive(Integer timeout) throws IOException {
 		if (isClosed()) {
+			log.debug("connection closed, so not ready to receive");
 			return false;
 		}
 		SelectionKey key = selectionKeyFactory.get();
 		if (!key.isValid()) {
 			// Key is stale; try to remake it
-			selectionKeyFactory.remove();
-			key = selectionKeyFactory.get();
-			if (!key.isValid()) {
-				throw new IllegalStateException(
-						"newly manufactured selection key is invalid");
-			}
+			key = remake(key);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
@@ -542,10 +579,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		} else {
 			result = key.selector().select(timeout);
 		}
+
 		if (log.isDebugEnabled()) {
-			log.debug("wait:{}:{}:{}", result, key.isValid(),
-					key.isValid() && key.isReadable());
+			log.debug("wait result: select={}, valid={}, readable={}", result,
+					key.isValid(), key.isValid() && key.isReadable());
 		}
+
 		boolean r = key.isValid() && key.isReadable();
 		receivable = r;
 		return r;

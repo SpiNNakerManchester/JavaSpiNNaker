@@ -45,9 +45,6 @@ public final class MachineDefaults {
     /** Entries available on a standard Router. */
     public static final int ROUTER_AVAILABLE_ENTRIES = 1024;
 
-    /** Clock speed in MHz of a standard Router. */
-    public static final int ROUTER_CLOCK_SPEED = 150 * 1024 * 1024;
-
     /** Max links available on a standard Router. */
     public static final int MAX_LINKS_PER_ROUTER = 6;
 
