@@ -16,17 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import static java.util.Collections.emptyList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Extra monitor core information.

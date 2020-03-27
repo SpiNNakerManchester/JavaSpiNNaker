@@ -27,7 +27,11 @@ import java.nio.charset.Charset;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
-/** The contents of IOBUF for a core. */
+/**
+ * The contents of IOBUF for a core.
+ *
+ * @author Donal Fellows
+ */
 public class IOBuffer implements HasCoreLocation {
 	private static final Charset ASCII = Charset.forName("ascii");
 	private final HasCoreLocation core;
@@ -41,7 +45,7 @@ public class IOBuffer implements HasCoreLocation {
 	 */
 	public IOBuffer(HasCoreLocation core, byte[] contents) {
 		this.core = core;
-		iobuf = contents;
+		iobuf = contents.clone();
 	}
 
 	/**
@@ -86,19 +90,17 @@ public class IOBuffer implements HasCoreLocation {
 		return core.getP();
 	}
 
-	/** @return The contents of the buffer. */
-	public byte[] getContents() {
-		return iobuf;
-	}
-
-	/** @return The contents of the buffer as an input stream. */
+	/** @return The raw contents of the buffer as an input stream. */
 	public InputStream getContentsStream() {
 		return new ByteArrayInputStream(iobuf);
 	}
 
-	/** @return The contents of the buffer as a little-endian byte buffer. */
+	/**
+	 * @return The raw contents of the buffer as a read-only little-endian byte
+	 *         buffer.
+	 */
 	public ByteBuffer getContentsBuffer() {
-		return wrap(iobuf).order(LITTLE_ENDIAN);
+		return wrap(iobuf).asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
 	/**

@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.RegionInUseException;
-
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The
@@ -80,7 +78,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @throws RegionInUseException
 	 *             if the region has already been set to a non-empty region.
 	 */
-	public void set(MemoryRegion region)
+	void set(MemoryRegion region)
 			throws RegionInUseException {
 		if (!isEmpty(region.getIndex())) {
 			throw new RegionInUseException(region.getIndex());
@@ -271,5 +269,25 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	@Deprecated
 	public void clear() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		Object[] a;
+		if (o instanceof MemoryRegionCollection) {
+			a = ((MemoryRegionCollection) o).regions;
+		} else if (o instanceof Collection) {
+			a = ((Collection<?>) o).toArray();
+		} else if (o instanceof MemoryRegion[]) {
+			a = (MemoryRegion[]) o;
+		} else {
+			return false;
+		}
+		return Arrays.equals(regions, a);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(regions);
 	}
 }

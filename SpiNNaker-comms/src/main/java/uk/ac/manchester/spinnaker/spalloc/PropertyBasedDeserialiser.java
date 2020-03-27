@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @param <T>
  *            The type of values being deserialised.
  */
-public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
+class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	private static final long serialVersionUID = 1L;
 
 	private final Map<String, Class<? extends T>> registry = new HashMap<>();
@@ -45,7 +45,7 @@ public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 * @param type
 	 *            The (super)class of the values that will be produced.
 	 */
-	public PropertyBasedDeserialiser(Class<T> type) {
+	PropertyBasedDeserialiser(Class<T> type) {
 		super(type);
 	}
 

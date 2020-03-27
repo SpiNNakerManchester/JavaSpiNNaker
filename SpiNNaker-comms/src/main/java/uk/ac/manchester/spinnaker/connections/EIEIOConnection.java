@@ -190,7 +190,7 @@ public class EIEIOConnection
 	@Override
 	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(Integer timeout)
 			throws IOException {
-		ByteBuffer b = receive();
+		ByteBuffer b = receive(timeout);
 		short header = b.getShort();
 		if ((header & MASK) == FLAG) {
 			return readCommandMessage(b);

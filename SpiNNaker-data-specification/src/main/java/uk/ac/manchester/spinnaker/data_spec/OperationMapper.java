@@ -31,8 +31,6 @@ import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-
 /**
  * Clever stuff to turn a method annotated with {@link Operation} into a
  * {@link Callable}.
@@ -80,15 +78,25 @@ abstract class OperationMapper {
 			 * it doesn't compromise the weak hash map. But we can use the same
 			 * weak reference for all the method wrappers that we create.
 			 */
-			WeakReference<FunctionAPI> objref = new WeakReference<>(funcs);
-			Map<Commands, Method> ops = getOperations(funcs.getClass());
-			for (Entry<Commands, Method> e : ops.entrySet()) {
-				Commands c = e.getKey();
-				Method m = e.getValue();
-				map.put(c, cmd -> doCall(objref.get(), m, c, cmd));
-			}
+			manufactureCallables(map, new WeakReference<>(funcs),
+					getOperations(funcs.getClass()));
 		}
 		return map.get(opcode);
+	}
+
+	private static void manufactureCallables(Map<Commands, Callable> map,
+			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
+		// Note that getOperations() below ensures the safety of this
+		for (Entry<Commands, Method> e : ops.entrySet()) {
+			Commands c = e.getKey();
+			Method m = e.getValue();
+			Class<?> rt = m.getReturnType();
+			if (rt.equals(Void.TYPE)) {
+				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
+			} else {
+				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
+			}
+		}
 	}
 
 	private static Map<Commands, Method> getOperations(
@@ -134,7 +142,7 @@ abstract class OperationMapper {
 	 * the handling of exceptions, which have to be unwrapped from the dynamic
 	 * method calling machinery.
 	 */
-	private static int doCall(FunctionAPI funcs, Method method,
+	private static int doIntCall(FunctionAPI funcs, Method method,
 			Commands command, int encodedOpcode)
 			throws DataSpecificationException {
 		requireNonNull(funcs, "unexpectedly early deallocation");
@@ -144,12 +152,38 @@ abstract class OperationMapper {
         }
 		try {
 			try {
-				if (method.getReturnType().equals(Void.TYPE)) {
-					method.invoke(funcs);
-					return 0;
-				} else {
-					return (int) method.invoke(funcs);
-				}
+				return (int) method.invoke(funcs);
+			} catch (InvocationTargetException innerException) {
+				// Unwrap the inner exception
+				throw innerException.getTargetException();
+			}
+		} catch (RuntimeException | Error
+				| DataSpecificationException realException) {
+			// These are the real things that can be thrown
+			throw realException;
+		} catch (Throwable badException) {
+			// Should be unreachable
+			throw new RuntimeException("bad call", badException);
+		}
+	}
+
+	/**
+	 * Ugly stuff to wrap methods as {@link Callable}. The truly nasty part is
+	 * the handling of exceptions, which have to be unwrapped from the dynamic
+	 * method calling machinery.
+	 */
+	private static int doVoidCall(FunctionAPI funcs, Method method,
+			Commands command, int encodedOpcode)
+			throws DataSpecificationException {
+		requireNonNull(funcs, "unexpectedly early deallocation");
+		funcs.unpack(encodedOpcode);
+		if (log.isDebugEnabled()) {
+    		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+        }
+		try {
+			try {
+				method.invoke(funcs);
+				return 0;
 			} catch (InvocationTargetException innerException) {
 				// Unwrap the inner exception
 				throw innerException.getTargetException();

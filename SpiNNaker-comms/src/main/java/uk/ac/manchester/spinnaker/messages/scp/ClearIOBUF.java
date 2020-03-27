@@ -30,12 +30,9 @@ public class ClearIOBUF extends SCPRequest<CheckOKResponse> {
 	/**
 	 * @param core
 	 *            The core to clear the IOBUF of.
-	 * @param expectResponse
-	 *            Whether we expect responses.
 	 */
-	public ClearIOBUF(HasCoreLocation core, boolean expectResponse) {
-		super(new RunningSDPHeader(core, expectResponse), CLEAR_IOBUF,
-				0, 0, expectResponse ? 1 : 0, null);
+	public ClearIOBUF(HasCoreLocation core) {
+		super(new RunningSDPHeader(core, true), CLEAR_IOBUF, 0, 0, 1, null);
 	}
 
 	@Override

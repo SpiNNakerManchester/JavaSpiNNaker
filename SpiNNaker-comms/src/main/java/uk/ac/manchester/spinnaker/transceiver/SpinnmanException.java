@@ -22,11 +22,11 @@ package uk.ac.manchester.spinnaker.transceiver;
 public class SpinnmanException extends Exception {
 	private static final long serialVersionUID = 4307580491294281556L;
 
-	public SpinnmanException(String message) {
+	SpinnmanException(String message) {
 		super(message);
 	}
 
-	public SpinnmanException(String message, Throwable cause) {
+	SpinnmanException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

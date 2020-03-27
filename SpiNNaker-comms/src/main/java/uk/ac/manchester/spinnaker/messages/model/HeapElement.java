@@ -66,4 +66,36 @@ public class HeapElement {
 		}
 		size = nextAddress - blockAddress - BLOCK_HEADER_SIZE;
 	}
+
+	/**
+	 * @param blockAddress
+	 *            The address of this element on the heap
+	 * @param nextAddress
+	 *            The address of the next element on the heap
+	 * @param free
+	 *            The "free" element of the block as read from the heap
+	 */
+	public HeapElement(long blockAddress, int nextAddress, int free) {
+		this.blockAddress = (int) blockAddress;
+		this.nextAddress = nextAddress;
+		this.isFree = (free & FREE_MASK) != FREE_MASK;
+		if (isFree) {
+			tag = null;
+			appID = null;
+		} else {
+			tag = free & BYTE_MASK;
+			appID = new AppID((free >>> BYTE1_SHIFT) & BYTE_MASK);
+		}
+		size = (int) (nextAddress - blockAddress) - BLOCK_HEADER_SIZE;
+	}
+
+	/**
+	 * Gets the address of the data in the heap element.
+	 *
+	 * @return The address of the data ({@link #size} bytes long) that
+	 *         immediately follows the heap element header.
+	 */
+	public final int getDataAddress() {
+		return blockAddress + BLOCK_HEADER_SIZE;
+	}
 }

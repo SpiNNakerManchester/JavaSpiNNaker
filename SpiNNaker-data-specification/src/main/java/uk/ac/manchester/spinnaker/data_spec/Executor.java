@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-
 /**
  * Used to execute a SpiNNaker data specification language file to produce a
  * memory image.

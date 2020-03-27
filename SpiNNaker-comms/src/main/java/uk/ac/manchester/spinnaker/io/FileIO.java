@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.transceiver.processes.FillProcess.DataType;
+import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
 /** A file input/output interface to match the MemoryIO interface. */
@@ -107,7 +107,7 @@ public class FileIO extends BaseIO {
 	}
 
 	@Override
-	void doFill(int value, DataType type, int len) throws IOException {
+	void doFill(int value, FillDataType type, int len) throws IOException {
 		ByteBuffer b = allocate(len).order(LITTLE_ENDIAN);
 		while (b.hasRemaining()) {
 			type.writeTo(value, b);

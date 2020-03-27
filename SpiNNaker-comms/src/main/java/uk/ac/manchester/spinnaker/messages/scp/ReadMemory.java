@@ -72,7 +72,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 * An SCP response to a request to read a region of memory on a chip.
 	 */
 	public static class Response extends CheckOKResponse {
-		/** The data read. */
+		/** The data read, in a little-endian read-only buffer. */
 		public final ByteBuffer data;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {

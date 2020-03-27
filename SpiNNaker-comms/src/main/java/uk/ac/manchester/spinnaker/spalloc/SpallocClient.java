@@ -98,7 +98,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
 	/** The default communication timeout. (This is no timeout at all.) */
-	public static final Integer DEFAULT_TIMEOUT = null;
+	private static final Integer DEFAULT_TIMEOUT = null;
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
 	private static final ObjectMapper MAPPER =  createMapper();
 
@@ -161,14 +161,15 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
         super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
 	}
 
-    /**
-     * Static method to create the object mapper.
-     *
-     * This method makes sure that all json unmarshallers use the same Mapper
-     *      set up the exact same way.
-     * @return The Object Mapper used by the Spalloc client,
-     */
-    public static ObjectMapper createMapper() {
+	/**
+	 * Static method to create the object mapper.
+	 * <p>
+	 * This method makes sure that all JSON unmarshallers use the same Mapper
+	 * set up the exact same way.
+	 *
+	 * @return The Object Mapper used by the Spalloc client,
+	 */
+	public static ObjectMapper createMapper() {
         ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
@@ -474,5 +475,4 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	protected Response parseResponse(String line) throws IOException {
 		return MAPPER.readValue(line, Response.class);
 	}
-
 }

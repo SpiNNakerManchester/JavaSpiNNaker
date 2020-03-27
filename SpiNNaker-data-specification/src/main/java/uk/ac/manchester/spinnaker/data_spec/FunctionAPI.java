@@ -21,9 +21,6 @@ import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
 import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE;
 import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationImpl;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.ExecuteBreakInstruction;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.UnimplementedDSECommandException;
-
 /**
  * The interface supported by the {@link Functions} class. This makes generating
  * an {@link Callable} much easier.

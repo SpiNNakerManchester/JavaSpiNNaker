@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
-
 /**
  * How to actually call a DSE operation.
  *

@@ -32,9 +32,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.Progress;
@@ -46,9 +46,9 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * Executes the host based data specification.
@@ -87,6 +87,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		this.machine = machine;
 		try {
 			txrx = new Transceiver(machine);
+		} catch (ProcessException e) {
+			throw e;
 		} catch (SpinnmanException e) {
 			throw new IllegalStateException("failed to talk to BMP, "
 					+ "but that shouldn't have happened at all", e);

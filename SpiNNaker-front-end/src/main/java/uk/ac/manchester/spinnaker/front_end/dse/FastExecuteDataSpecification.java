@@ -57,9 +57,9 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
@@ -72,15 +72,14 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
@@ -159,6 +158,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		try {
 			txrx = new Transceiver(machine);
+		} catch (ProcessException e) {
+			throw e;
 		} catch (SpinnmanException e) {
 			throw new IllegalStateException("failed to talk to BMP, "
 					+ "but that shouldn't have happened at all", e);
@@ -399,18 +400,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private BoardLocal logContext;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
-				throws IOException {
+				throws IOException, ProcessException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
-			connection = new ThrottledConnection(board);
-			try {
-				connection.reprogramTag(
-						gathererForChip.get(board.location).getIptag());
-			} catch (UnexpectedResponseCodeException e) {
-				throw new IOException("failed to reprogram IPtag", e);
-			}
+			connection = new ThrottledConnection(txrx, board,
+					gathererForChip.get(board.location).getIptag());
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 The University of Manchester
+ * Copyright (c) 2019-2020 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,9 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.System.nanoTime;
-import static java.lang.Thread.sleep;
 import static java.lang.Thread.yield;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Collections.emptySet;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
@@ -44,10 +42,10 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
-import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
-import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -55,20 +53,13 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
  *
  * @author Donal Fellows
  */
-public class ThrottledConnection implements Closeable {
+class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
 	public static final long THROTTLE_NS = 35000;
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 2000;
-	/** In milliseconds. */
-	private static final int IPTAG_REPROGRAM_TIMEOUT = 1000;
-	/** Number of times to try to reprogram the IP Tag. */
-	private static final int IPTAG_REPROGRAM_ATTEMPTS = 3;
-	/** In milliseconds. */
-	private static final int IPTAG_INTERATTEMPT_DELAY = 50;
 	private static final ScheduledExecutorService CLOSER;
-	private static final int ANY_PORT = 0;
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {
 			Thread t = new Thread(r, "ThrottledConnection.Closer");
@@ -85,19 +76,31 @@ public class ThrottledConnection implements Closeable {
 	private long lastSend;
 
 	/**
-	 * Create a throttled connection for talking to a board.
+	 * Create a throttled connection for talking to a board and point an IPTag
+	 * so that messages sent to it arrive on this connection.
 	 *
+	 * @param transceiver
+	 *            The SCP transceiver.
 	 * @param board
-	 *            The board to talk to.
+	 *            The SpiNNaker board to talk to.
+	 * @param iptag
+	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
-	public ThrottledConnection(Ethernet board) throws IOException {
+	ThrottledConnection(Transceiver transceiver, Ethernet board, IPTag iptag)
+			throws IOException, ProcessException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);
-		log.info("created throttled connection to " + location + " (" + addr
-				+ ")");
+		log.info(
+				"created throttled connection to {} ({}) from {}:{}; "
+						+ "reprogramming tag #{} to point to this connection",
+				location, addr, connection.getLocalIPAddress(),
+				connection.getLocalPort(), iptag.getTag());
+		transceiver.setIPTag(iptag, connection);
 	}
 
 	/**
@@ -112,52 +115,6 @@ public class ThrottledConnection implements Closeable {
 	public IntBuffer receive() throws SocketTimeoutException, IOException {
 		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN)
 				.asIntBuffer();
-	}
-
-	/**
-	 * Reprogram a SpiNNaker IPTag to direct messages to this connection. It's
-	 * up to the caller to ensure that the tag is allocated in the first place.
-	 *
-	 * @param iptag
-	 *            The tag to reprogram.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws UnexpectedResponseCodeException
-	 *             If a weird message is received.
-	 */
-	public void reprogramTag(IPTag iptag)
-			throws IOException, UnexpectedResponseCodeException {
-		IPTagSet tagSet = new IPTagSet(location, null, ANY_PORT, iptag.getTag(),
-				true, true);
-		log.info("reprogramming tag #{} to point to {}:{}", iptag.getTag(),
-				connection.getLocalIPAddress(), connection.getLocalPort());
-		tagSet.scpRequestHeader.issueSequenceNumber(emptySet());
-		ByteBuffer data = connection.getSCPData(tagSet);
-		SocketTimeoutException e = null;
-		for (int i = 1; i <= IPTAG_REPROGRAM_ATTEMPTS; i++) {
-			try {
-				connection.send(data.duplicate());
-				lastSend = nanoTime();
-				connection.receiveSCPResponse(IPTAG_REPROGRAM_TIMEOUT)
-						.parsePayload(tagSet);
-				log.debug("reprogrammed in {} attempts", i);
-				return;
-			} catch (SocketTimeoutException timeout) {
-				e = timeout;
-				try {
-					sleep(IPTAG_INTERATTEMPT_DELAY);
-				} catch (InterruptedException ignored) {
-				}
-			} catch (IOException | RuntimeException
-					| UnexpectedResponseCodeException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				throw new RuntimeException("unexpected exception", e);
-			}
-		}
-		if (e != null) {
-			throw e;
-		}
 	}
 
 	/**
@@ -180,7 +137,7 @@ public class ThrottledConnection implements Closeable {
 			// Make the loop slightly less heavy
 			yield();
 		}
-		connection.sendSDPMessage(message);
+		connection.send(message);
 		lastSend = nanoTime();
 	}
 

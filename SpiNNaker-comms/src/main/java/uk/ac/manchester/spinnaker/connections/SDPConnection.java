@@ -76,7 +76,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public void sendSDPMessage(SDPMessage sdpMessage) throws IOException {
+	public void send(SDPMessage sdpMessage) throws IOException {
 		send(sdpMessage.getMessageData(chip));
 	}
 
