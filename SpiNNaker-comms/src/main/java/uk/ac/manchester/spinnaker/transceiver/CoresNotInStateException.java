@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2018-2019 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package uk.ac.manchester.spinnaker.transceiver;
+
+import static java.lang.Float.POSITIVE_INFINITY;
+import static java.lang.String.format;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+
+import java.util.Set;
+
+import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.messages.model.CPUState;
+
+/**
+ * Cores failed to reach a given state within a timeout.
+ *
+ * @author Donal Fellows
+ */
+public class CoresNotInStateException extends SpinnmanException {
+	private static final long serialVersionUID = 1790369744408178478L;
+	private static final String OP_TMPL =
+			"waiting for cores to reach one of %s";
+	private static final String TMPL =
+			"operation '" + OP_TMPL + "' timed out after %f seconds";
+
+	private float timeout;
+	private String operation;
+	private CoreSubsets failedCores;
+
+	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,
+			CoreSubsets failedCores) {
+		this(convertTimeout(timeout), expectedStates, failedCores);
+	}
+
+	private static float convertTimeout(Integer timeout) {
+		if (timeout == null) {
+			return POSITIVE_INFINITY;
+		}
+		return timeout / (float) MSEC_PER_SEC;
+	}
+
+	CoresNotInStateException(float timeout, Set<CPUState> expectedStates,
+			CoreSubsets failedCores) {
+		super(format(TMPL, expectedStates, timeout));
+		this.operation = format(OP_TMPL, timeout);
+		this.timeout = timeout;
+		this.failedCores = failedCores;
+	}
+
+	public float getTimeout() {
+		return timeout;
+	}
+
+	public String getOperation() {
+		return operation;
+	}
+
+	public CoreSubsets getFailedCores() {
+		return failedCores;
+	}
+}
