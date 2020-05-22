@@ -126,8 +126,10 @@ public class TransceiverITCase {
 
 	@AfterAll
 	static void tearDownAtTheEnd() throws Exception {
-		job.destroy();
-		job.close();
+		if (job != null) {
+			job.destroy();
+			job.close();
+		}
 	}
 
 	private static final Field[] FILTER_FIELDS = new Field[] {
