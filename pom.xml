@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.8</version>
+				<version>3.9</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
@@ -152,7 +152,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.4</version>
+				<version>1.8</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.java-diff-utils</groupId>
