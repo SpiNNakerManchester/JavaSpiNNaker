@@ -1,5 +1,6 @@
 language: java
 os: linux
+dist: focal
 jdk:
   - openjdk11
   - openjdk8
