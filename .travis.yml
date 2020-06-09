@@ -4,6 +4,8 @@ jobs:
   include:
     - dist: focal
       jdk: openjdk11
+    - dist: focal
+      jdk: openjdk14
     - dist: xenial
       jdk: openjdk8
 cache:
