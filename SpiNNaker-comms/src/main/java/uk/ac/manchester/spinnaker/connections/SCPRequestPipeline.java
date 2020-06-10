@@ -21,7 +21,6 @@ import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
-import static java.lang.Thread.yield;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
@@ -30,6 +29,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -190,13 +190,9 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			long now = nanoTime();
-			while (now - nextSendTime < 0) {
-				yield();
-				now = nanoTime();
-			}
-			nextSendTime = now + INTER_SEND_INTERVAL_NS;
+			waitUntil(nextSendTime);
 			connection.send(requestData.asReadOnlyBuffer());
+			nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 		}
 
 		/**
