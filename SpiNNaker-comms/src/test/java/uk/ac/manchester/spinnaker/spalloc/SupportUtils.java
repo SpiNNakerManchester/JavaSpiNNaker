@@ -51,7 +51,12 @@ abstract class SupportUtils {
 		Thread t = new Daemon(() -> {
 			try {
 				s.connect();
-			} catch (Exception e) {
+			} catch (IOException e) {
+				// Just totally ignore early closing of sockets
+				if (!e.getMessage().equals("Socket closed")) {
+					e.printStackTrace(System.err);
+				}
+			} catch (RuntimeException e) {
 				e.printStackTrace(System.err);
 			}
 		}, "background accept");

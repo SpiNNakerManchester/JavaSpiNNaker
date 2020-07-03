@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.System.nanoTime;
-import static java.lang.Thread.yield;
 import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -28,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
+import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -73,7 +73,7 @@ class ThrottledConnection implements Closeable {
 	private final ChipLocation location;
 	private final InetAddress addr;
 	private SCPConnection connection;
-	private long lastSend;
+	private long lastSend = nanoTime();
 
 	/**
 	 * Create a throttled connection for talking to a board and point an IPTag
@@ -132,11 +132,7 @@ class ThrottledConnection implements Closeable {
 			log.debug("message payload data: {}", range(0, payload.remaining())
 					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
-		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-		while (nanoTime() - lastSend < THROTTLE_NS) {
-			// Make the loop slightly less heavy
-			yield();
-		}
+		waitUntil(lastSend + THROTTLE_NS);
 		connection.send(message);
 		lastSend = nanoTime();
 	}
