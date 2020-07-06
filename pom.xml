@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<testing.version>3.0.0-M4</testing.version>
 		<jacoco.version>0.8.5</jacoco.version>
+		<javadoc.version>3.2.0</javadoc.version>
   	</properties>
 
 	<dependencyManagement>
@@ -231,7 +232,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>${javadoc.version}</version>
 					<configuration>
 						<quiet>true</quiet>
 						<groups>
@@ -271,6 +272,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.9.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
@@ -358,8 +364,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<name>SpiNNaker Team @ University of Manchester</name>
 		<url>http://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
 	</organization>
+	<licenses>
+		<license>
+			<url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+			<name>GNU General Public License, version 3</name>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
 	<scm>
-		<connection>https://github.com/SpiNNakerManchester/JavaSpiNNaker.git</connection>
+		<connection>scm:git:https://github.com/SpiNNakerManchester/JavaSpiNNaker.git</connection>
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker</url>
 	</scm>
 	<issueManagement>
@@ -370,6 +383,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<system>Travis</system>
 		<url>https://travis-ci.org/SpiNNakerManchester/JavaSpiNNaker</url>
 	</ciManagement>
+	<distributionManagement>
+		<site>
+			<id>github-pages</id>
+			<name>github pages</name>
+			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
+		</site>
+	</distributionManagement>
 	<mailingLists>
 		<mailingList>
 			<name>SpiNNaker Users Group</name>
@@ -404,6 +424,67 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<name>Oliver Rhodes</name>
 		</developer>
 	</developers>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.1.0</version>
+				<reportSets>
+					<reportSet>
+						<reports><!-- select reports -->
+							<report>index</report>
+							<report>dependencies</report>
+							<report>scm</report>
+							<report>ci-management</report>
+							<report>mailing-lists</report>
+							<report>team</report>
+							<report>summary</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${javadoc.version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>3.0.0</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>jxr</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<profiles>
 		<profile>
