@@ -160,7 +160,7 @@ public class JobDescription {
 		builder.append(" args: ").append(args);
 		builder.append(" kwargs: ").append(kwargs);
         if (boards == null) {
-            builder.append("No Boards");
+            builder.append(" <No Boards>");
         } else {
             if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
                 builder.append(" boards: ").append(boards);

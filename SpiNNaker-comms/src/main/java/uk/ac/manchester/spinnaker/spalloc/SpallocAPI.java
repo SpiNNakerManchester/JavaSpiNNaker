@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
@@ -777,4 +778,109 @@ public interface SpallocAPI {
 	 */
 	Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException;
+
+	/**
+	 * Report that a problem has been detected on a board.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the problem.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default void reportProblem(String boardAddress)
+			throws IOException, SpallocServerException {
+		reportProblem(boardAddress, (Integer) null);
+	}
+
+	/**
+	 * Report that a problem has been detected on a chip.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the chip
+	 *            with the problem.
+	 * @param problemChip
+	 *            The address of the chip with the problem. Board-relative.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default void reportProblem(String boardAddress, HasChipLocation problemChip)
+			throws IOException, SpallocServerException {
+		reportProblem(boardAddress, problemChip, (Integer) null);
+	}
+
+	/**
+	 * Report that a problem has been detected on a core.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the core
+	 *            with the problem.
+	 * @param problemCore
+	 *            The address of the core with the problem. Board-relative.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default void reportProblem(String boardAddress, HasCoreLocation problemCore)
+			throws IOException, SpallocServerException {
+		reportProblem(boardAddress, problemCore, (Integer) null);
+	}
+
+	/**
+	 * Report that a problem has been detected on a board.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the problem.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	void reportProblem(String boardAddress, Integer timeout)
+			throws IOException, SpallocServerException;
+
+	/**
+	 * Report that a problem has been detected on a chip.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the chip
+	 *            with the problem.
+	 * @param problemChip
+	 *            The address of the chip with the problem. Board-relative.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	void reportProblem(String boardAddress, HasChipLocation problemChip,
+			Integer timeout) throws IOException, SpallocServerException;
+
+	/**
+	 * Report that a problem has been detected on a core.
+	 *
+	 * @param boardAddress
+	 *            The IP address (in string form) of the board with the core
+	 *            with the problem.
+	 * @param problemCore
+	 *            The address of the core with the problem. Board-relative.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	void reportProblem(String boardAddress, HasCoreLocation problemCore,
+			Integer timeout) throws IOException, SpallocServerException;
 }

@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
@@ -75,6 +76,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.NotifyJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.NotifyMachineCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.PowerOffJobBoardsCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.PowerOnJobBoardsCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.ReportProblemCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.Response;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
@@ -442,6 +444,35 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			log.debug("where-is result: {}", json);
 		}
 		return MAPPER.readValue(json, WhereIs.class);
+	}
+
+	@Override
+	public void reportProblem(String boardAddress, Integer timeout)
+			throws IOException, SpallocServerException {
+		String json = call(new ReportProblemCommand(boardAddress), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("report_problem result: {}", json);
+		}
+	}
+
+	@Override
+	public void reportProblem(String boardAddress, HasChipLocation problemChip,
+			Integer timeout) throws IOException, SpallocServerException {
+		String json = call(new ReportProblemCommand(boardAddress, problemChip),
+				timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("report_problem result: {}", json);
+		}
+	}
+
+	@Override
+	public void reportProblem(String boardAddress, HasCoreLocation problemCore,
+			Integer timeout) throws IOException, SpallocServerException {
+		String json = call(new ReportProblemCommand(boardAddress, problemCore),
+				timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("report_problem result: {}", json);
+		}
 	}
 
 	private static class ResponseBasedDeserializer
