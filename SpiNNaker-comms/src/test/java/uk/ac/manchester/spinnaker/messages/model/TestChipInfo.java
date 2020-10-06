@@ -16,19 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.manchester.spinnaker.messages.model.ChipInfo;
-
 class TestChipInfo {
+	private static final int SIZE = 256;
 
 	@Test
 	void testCreateWithBlankBuffer() {
-		ByteBuffer b = ByteBuffer.allocate(256);
+		ByteBuffer b = ByteBuffer.allocate(SIZE);
 		ChipInfo c = new ChipInfo(b);
 		assertEquals(0, c.getSDRAMClock());
 	}
