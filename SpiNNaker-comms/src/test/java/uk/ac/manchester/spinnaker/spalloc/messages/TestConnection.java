@@ -35,7 +35,7 @@ public class TestConnection {
         String json = "[[2,4],\"6.8.10.12\"]";
         ObjectMapper mapper = SpallocClient.createMapper();
         Connection fromJson = mapper.readValue(json, Connection.class);
-        assertEquals(new ChipLocation(2,4), fromJson.getChip());
+        assertEquals(new ChipLocation(2, 4), fromJson.getChip());
         assertEquals("6.8.10.12", fromJson.getHostname());
 
         Connection direct = new Connection(new ChipLocation(2, 4), "6.8.10.12");

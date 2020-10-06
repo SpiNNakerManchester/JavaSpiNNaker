@@ -62,7 +62,7 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
 
 @NotThreadSafe
 class TestTransceiver {
-	static BoardTestConfiguration boardConfig;
+	private static BoardTestConfiguration boardConfig;
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
@@ -154,7 +154,7 @@ class TestTransceiver {
 		}
 	}
 
-	/** Tests the creation of listening sockets. */
+	// Tests the creation of listening sockets.
 	@Test
 	@Disabled("host reachability; issue #215")
 	void testListenerCreation() throws Exception {
@@ -249,6 +249,7 @@ class TestTransceiver {
 	}
 }
 
+@SuppressWarnings("checkstyle:JavadocVariable")
 class MockWriteTransceiver extends Transceiver {
 	static class Write {
 		final CoreLocation core;
@@ -268,7 +269,7 @@ class MockWriteTransceiver extends Transceiver {
 
 	List<Write> writtenMemory = new ArrayList<>();
 
-	public MockWriteTransceiver(MachineVersion version,
+	MockWriteTransceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException,
 			uk.ac.manchester.spinnaker.transceiver.ProcessException {

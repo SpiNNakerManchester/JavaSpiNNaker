@@ -35,16 +35,17 @@ class TestVersionInfo {
 	}
 
 	@Test
-    void testRetrievingBitsFromVersionData() throws UnsupportedEncodingException {
+	void testRetrievingBitsFromVersionData()
+			throws UnsupportedEncodingException {
         int p2pAddr = 0xf0a1;
         int physCPU = 0xff;
         int virtCPU = 0x0b;
         int verNumber = 0xff;
         int arg1 = (p2pAddr << 16) | (physCPU << 8) | virtCPU;
-        int buffer_size = 0x10;
-        int arg2 = (verNumber << 16) | buffer_size;
-        int build_date = 0x1000;
-        int arg3 = build_date;
+        int bufferSize = 0x10;
+        int arg2 = (verNumber << 16) | bufferSize;
+        int buildDate = 0x1000;
+        int arg3 = buildDate;
         byte[] data = "my/spinnaker".getBytes("ASCII");
 
         ByteBuffer versionData = packVersionData(arg1, arg2, arg3, data);
@@ -54,7 +55,7 @@ class TestVersionInfo {
 		assertEquals(new Version(2, 55, 0), vi.versionNumber);
 		assertEquals("spinnaker", vi.hardware);
 		assertEquals(new CoreLocation(0xf0, 0xa1, 0x0b), vi.core);
-        assertEquals(build_date, vi.buildDate);
+        assertEquals(buildDate, vi.buildDate);
         assertEquals("my/spinnaker", vi.versionString);
 	}
 
@@ -73,7 +74,7 @@ class TestVersionInfo {
 
 		ByteBuffer versionData = packVersionData(arg1, arg2, arg3, data);
 
-		assertThrows(IllegalArgumentException.class, ()->{
+		assertThrows(IllegalArgumentException.class, () -> {
             new VersionInfo(versionData);
         });
     }
@@ -95,7 +96,7 @@ class TestVersionInfo {
         ByteBuffer versionData = ByteBuffer.allocate(21).order(LITTLE_ENDIAN);
         versionData.putInt(arg1).putInt(arg2)/*.putInt(arg3)*/.put(data).flip();
 
-        assertThrows(IllegalArgumentException.class, ()->{
+        assertThrows(IllegalArgumentException.class, () -> {
             new VersionInfo(versionData);
         });
     }

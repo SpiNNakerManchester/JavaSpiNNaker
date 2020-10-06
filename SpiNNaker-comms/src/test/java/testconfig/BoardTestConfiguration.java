@@ -42,6 +42,9 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutEx
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
+@SuppressWarnings({
+	"checkstyle:JavadocVariable", "checkstyle:VisibilityModifier"
+})
 public class BoardTestConfiguration {
 	public static final String LOCALHOST = "127.0.0.1";
 	/**

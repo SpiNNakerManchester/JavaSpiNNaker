@@ -4,5 +4,12 @@
 	"https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
 	<suppress files=".*[\\/]src[\\/]test[\\/].*" id="mainOnly" />
+	<suppress files=".*[\\/]Test.*" id="mainOnly" />
+	<suppress files=".*[\\/].*ITCase.*" id="mainOnly" />
 	<suppress files=".*[\\/]src[\\/]main[\\/].*" id="testOnly" />
+	<suppress message=".*lambda arguments.*" files=".*"/>
+	<suppress message=".*magic number.*" files=".*(Test|ITCase).*"/>
+	<suppress message=".*org\.junit\.jupiter\.api\.Assertions.*" files=".*(Test|ITCase).*"/>
+	<suppress message=".*org\.hamcrest\.Matcher.*" files=".*(Test|ITCase).*"/>
+	<suppress files=".*[\\/]src[\\/]test[\\/].*" message=".*package-info\.java.*" />
 </suppressions>

@@ -43,11 +43,12 @@ public class TestMachine {
         ObjectMapper mapper = SpallocClient.createMapper();
         Machine fromJson = mapper.readValue(json, Machine.class);
         assertEquals("power-monitor", fromJson.getName());
-        assertThat(fromJson.getTags(), contains("power-monitor","machine-room"));
+        assertThat(fromJson.getTags(),
+        		contains("power-monitor", "machine-room"));
         assertEquals(1, fromJson.getWidth());
         assertEquals(1, fromJson.getHeight());
         assertThat(fromJson.getDeadBoards(), contains(
-                new BoardCoordinates(0, 0, 1), new BoardCoordinates(0,0,2)));
+                new BoardCoordinates(0, 0, 1), new BoardCoordinates(0, 0, 2)));
         assertEquals(0, fromJson.getDeadLinks().size());
         assertNotNull(fromJson.toString());
     }
@@ -62,7 +63,8 @@ public class TestMachine {
         ObjectMapper mapper = SpallocClient.createMapper();
         Machine fromJson = mapper.readValue(json, Machine.class);
         assertEquals("power-monitor", fromJson.getName());
-        assertThat(fromJson.getTags(), contains("power-monitor","machine-room"));
+        assertThat(fromJson.getTags(),
+        		contains("power-monitor", "machine-room"));
         assertEquals(1, fromJson.getWidth());
         assertEquals(1, fromJson.getHeight());
         assertThat(fromJson.getDeadBoards(), contains(

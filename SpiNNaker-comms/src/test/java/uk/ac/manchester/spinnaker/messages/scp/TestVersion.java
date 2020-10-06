@@ -103,16 +103,16 @@ class TestVersion {
 		// SDP stuff
 		byte flags = REPLY_NOT_EXPECTED.value;
 		byte tag = 5;
-		byte dest_port_cpu = 0x4f;
-		byte src_port_cpu = 0x6a;
-		byte dest_x = 0x11;
-		byte dest_y = (byte) 0xab;
-		byte src_x = 0x7;
-		byte src_y = 0x0;
+		byte destPortCpu = 0x4f;
+		byte srcPortCpu = 0x6a;
+		byte destX = 0x11;
+		byte destY = (byte) 0xab;
+		byte srcX = 0x7;
+		byte srcY = 0x0;
 
 		ByteBuffer data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
-		data.put(flags).put(tag).put(dest_port_cpu).put(src_port_cpu);
-		data.put(dest_y).put(dest_x).put(src_y).put(src_x);
+		data.put(flags).put(tag).put(destPortCpu).put(srcPortCpu);
+		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc).putShort(seq).putShort(p2pAddr);
 		data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
 		data.putInt(buildDate).put(verString);

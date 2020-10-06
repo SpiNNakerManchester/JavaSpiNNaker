@@ -63,7 +63,8 @@ class TestClient {
 	void testConnectNoServer() throws Exception {
 		withConnection((s, c, bgAccept) -> {
 			s.close();
-			// If the server has gone, we're not going to successfully connect to it
+			// If the server has gone, we're not going to successfully connect
+			// to it
 			assertThrows(ConnectException.class, () -> c.connect());
 			c.close();
 		});
@@ -82,7 +83,7 @@ class TestClient {
 						new SpallocClient("localhost", s.getPort(), null)) {
 					Joinable t = backgroundAccept(s);
 					try (AutoCloseable context = c.withConnection()) {
-						// do nothing
+						return;
 					} finally {
 						t.join();
 					}
@@ -280,7 +281,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\": 123}");
-			Map<String,Object>kwargs= new HashMap<>();
+			Map<String, Object> kwargs = new HashMap<>();
 			kwargs.put("bar", 2);
 			kwargs.put("owner", "dummy");
 		    assertEquals(123, c.createJob(Arrays.asList(1), kwargs));

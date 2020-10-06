@@ -25,25 +25,25 @@ import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 
 /**
  * This is a manual tool to help understanding state while running tests.
- *
- * This NOT intended to be an automated test.
+ * <p>
+ * This is <i>not</i> intended to be an automated test.
  *
  * @author Christian-B
  */
-public class ManualSpalloc {
+public final class ManualSpalloc {
 	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+
+	private ManualSpalloc() {
+	}
 
 	public static void main(String... args)
 			throws IOException, SpallocServerException, Exception {
-		SpallocClient client = new SpallocClient(SPALLOC, PORT_DEFAULT);
-		try (AutoCloseable c = client.withConnection()) {
+		try (SpallocClient client = new SpallocClient(SPALLOC, PORT_DEFAULT);
+				AutoCloseable c = client.withConnection()) {
 			List<JobDescription> jobs = client.listJobs();
 			for (JobDescription job : jobs) {
 				System.out.println(job);
 			}
 		}
-		int two = 2;
-		System.out.println(3 / two);
-		client.close();
 	}
 }

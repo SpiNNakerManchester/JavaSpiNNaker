@@ -219,7 +219,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<version>3.1.2</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
-						<suppressionsLocation>src/support/checkstyle/suppressions.xml</suppressionsLocation>
+						<propertyExpansion>
+							checkstyle.config.path=${basedir}/src/support/checkstyle
+						</propertyExpansion>
 					</configuration>
 					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
 					<dependencies>

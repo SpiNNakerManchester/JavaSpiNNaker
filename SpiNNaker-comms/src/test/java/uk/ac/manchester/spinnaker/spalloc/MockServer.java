@@ -35,19 +35,18 @@ import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class MockServer implements SupportUtils.IServer {
-	static final Charset UTF8 = Charset.forName("UTF-8");
-	static final int BUFFER_SIZE = 1024;
-	static final int QUEUE_LENGTH = 1;
-	static final int INTER_BIND_DELAY = 50;
+	private static final Charset UTF8 = Charset.forName("UTF-8");
+	private static final int BUFFER_SIZE = 1024;
+	private static final int QUEUE_LENGTH = 1;
 
 	private ServerSocket serverSocket;
 	private int port;
-	final OneShotEvent started;
-	Socket sock;
-	PrintWriter out;
-	BufferedReader in;
+	private final OneShotEvent started;
+	private Socket sock;
+	private PrintWriter out;
+	private BufferedReader in;
 
-	public MockServer() throws IOException {
+	MockServer() throws IOException {
 		started = new OneShotEvent();
 		serverSocket = new ServerSocket(0, QUEUE_LENGTH);
 		port = serverSocket.getLocalPort();
@@ -96,6 +95,7 @@ class MockServer implements SupportUtils.IServer {
 		return line == null ? null : new JSONObject(line);
 	}
 
+	/** Message used to stop the server. */
 	public static final String STOP = "STOP";
 
 	@Override

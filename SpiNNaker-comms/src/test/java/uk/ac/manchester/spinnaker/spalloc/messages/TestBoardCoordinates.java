@@ -32,7 +32,8 @@ public class TestBoardCoordinates {
     void testFromJson() throws IOException {
         String json = "[2, 4, 6]";
         ObjectMapper mapper = SpallocClient.createMapper();
-        BoardCoordinates fromJson = mapper.readValue(json, BoardCoordinates.class);
+		BoardCoordinates fromJson =
+				mapper.readValue(json, BoardCoordinates.class);
         assertEquals(2, fromJson.getX());
         assertEquals(4, fromJson.getY());
         assertEquals(6, fromJson.getZ());

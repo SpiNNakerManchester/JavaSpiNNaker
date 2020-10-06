@@ -101,13 +101,12 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);
 	// TODO Stop printing to System.out
-	static BoardTestConfiguration boardConfig;
+	private static BoardTestConfiguration boardConfig;
 	private static SpallocJob job;
 
-	static int numCores = 20;
-	static Set<ChipLocation> downChips;
-	static CoreSubsets coreSubsets;
-	static Map<ChipLocation, Set<Integer>> downCores;
+	private static Set<ChipLocation> downChips;
+	private static CoreSubsets coreSubsets;
+	private static Map<ChipLocation, Set<Integer>> downCores;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {

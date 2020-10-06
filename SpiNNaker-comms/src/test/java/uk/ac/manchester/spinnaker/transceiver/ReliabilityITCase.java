@@ -41,7 +41,7 @@ import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 @NotThreadSafe
 class ReliabilityITCase {
-    static Machine jsonMachine;
+    private static Machine jsonMachine;
 	private static final Logger log = getLogger(ReliabilityITCase.class);
 
 	@BeforeAll
@@ -59,7 +59,7 @@ class ReliabilityITCase {
         InetAddress host = InetAddress.getByName("spinn-4.cs.man.ac.uk");
         assumeTrue(ping(host) == 0);
 
-        for (int i = 0 ; i < REPETITIONS ; i++) {
+        for (int i = 0; i < REPETITIONS; i++) {
         	try (Transceiver txrx = new Transceiver(host, FIVE)) {
         		txrx.ensureBoardIsReady();
         		txrx.getMachineDimensions();
