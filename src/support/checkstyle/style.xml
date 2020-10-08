@@ -32,6 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<property name="maximum" value="0" />
 		<property name="message" value="Line has trailing spaces." />
 	</module>
+	<module name="Header">
+		<property name="fileExtensions" value="java" />
+		<property name="severity" value="error" />
+		<property name="ignoreLines" value="2" />
+		<property name="headerFile" value="${checkstyle.config.path}/java-header.txt" />
+	</module>
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
 	</module>
