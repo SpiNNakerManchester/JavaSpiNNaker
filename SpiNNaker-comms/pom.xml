@@ -105,6 +105,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<configuration>
 						<!-- Some tests are timing-sensitive. -->
 						<rerunFailingTestsCount>5</rerunFailingTestsCount>
+						<systemProperties>
+							<property>
+								<!-- Silence a stupid message: BEANUTILS-477 resolution was idiotic, but we're stuck with it -->
+								<name>java.util.logging.config.file</name>
+								<value>${project.build.testOutputDirectory}/logging.properties</value>
+							</property>
+						</systemProperties>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<configuration>
+						<systemProperties>
+							<property>
+								<!-- Silence a stupid message: BEANUTILS-477 resolution was idiotic, but we're stuck with it -->
+								<name>java.util.logging.config.file</name>
+								<value>${project.build.testOutputDirectory}/logging.properties</value>
+							</property>
+						</systemProperties>
 					</configuration>
 				</plugin>
 			</plugins>

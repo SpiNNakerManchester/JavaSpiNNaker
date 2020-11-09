@@ -33,7 +33,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.manchester.spinnaker.data_spec.exceptions.DataSpecificationException;
+import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -51,7 +52,6 @@ import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.processes.ProcessException;
 
 /**
  * The main command line interface.
@@ -190,6 +190,10 @@ public final class CommandLineInterface {
 				iobufRun(args[1], args[2], args[THIRD]);
 				System.exit(0);
 
+			case CLICommands.LISTEN:
+				LocateConnectedMachineIPAddress.main(args);
+				return;
+
 			case CLICommands.VERSION:
 				System.out.println(VERSION);
 				System.exit(0);
@@ -228,9 +232,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
 	 * @throws ExecutionException
@@ -242,8 +244,8 @@ public final class CommandLineInterface {
 	 */
 	public static void dseRun(String machineJsonFile, String runFolder,
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
-			ProcessException, StorageException, ExecutionException,
-			InterruptedException, DataSpecificationException {
+			StorageException, ExecutionException, InterruptedException,
+			DataSpecificationException {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
@@ -276,9 +278,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
 	 * @throws ExecutionException
@@ -290,8 +290,8 @@ public final class CommandLineInterface {
 	 */
 	public static void dseAppMonRun(String gatherersJsonFile,
 			String machineJsonFile, String runFolder, String reportFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, ExecutionException, InterruptedException,
+			throws IOException, SpinnmanException, StorageException,
+			ExecutionException, InterruptedException,
 			DataSpecificationException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
@@ -319,13 +319,10 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
-			String runFolder)
-			throws IOException, SpinnmanException, ProcessException {
+			String runFolder) throws IOException, SpinnmanException {
 		Machine machine = getMachine(machineJsonFile);
 		IobufRequest request = getIobufRequest(iobufMapFile);
 
@@ -349,15 +346,13 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 */
 	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
-			SpinnmanException, StorageException, ProcessException {
+			SpinnmanException, StorageException {
 		List<Placement> placements = getPlacements(placementsJsonFile);
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine);
@@ -380,9 +375,7 @@ public final class CommandLineInterface {
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
 	 * @throws InterruptedException
@@ -390,9 +383,8 @@ public final class CommandLineInterface {
 	 *             to be done
 	 */
 	public static void gatherRun(String gatherersJsonFile,
-			String machineJsonFile, String runFolder)
-			throws IOException, SpinnmanException, ProcessException,
-			StorageException, InterruptedException {
+			String machineJsonFile, String runFolder) throws IOException,
+			SpinnmanException, StorageException, InterruptedException {
 		List<Gather> gathers = getGatherers(gatherersJsonFile);
 		Machine machine = getMachine(machineJsonFile);
 		Transceiver trans = new Transceiver(machine);
@@ -465,11 +457,14 @@ interface CLICommands {
 	String DSE_APP_MON = "dse_app_mon";
 	/** The IOBUF-retrieval command name. */
 	String IOBUF = "iobuf";
+	/** The listen-for-an-unbooted-machine command name. */
+	String LISTEN = "listen_for_unbooted";
 	/** The version command name. */
 	String VERSION = "version";
 	/** All the command names. Sorted. */
 	String[] ALL = {
-		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, VERSION
+		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, LISTEN,
+		VERSION
 	};
 
 	/**

@@ -34,13 +34,11 @@ public class UpdateRuntime extends SCPRequest<CheckOKResponse> {
 	 *            The number of machine timesteps.
 	 * @param infiniteRun
 	 *            Whether we are doing infinite running.
-	 * @param expectResponse
-	 *            Whether we expect responses.
 	 */
-	public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
-			boolean expectResponse) {
-		super(new RunningSDPHeader(core, expectResponse), NEW_RUNTIME_ID,
-				runTime, bool(infiniteRun), bool(expectResponse), null);
+	public UpdateRuntime(HasCoreLocation core, int runTime,
+			boolean infiniteRun) {
+		super(new RunningSDPHeader(core, true), NEW_RUNTIME_ID, runTime,
+				bool(infiniteRun), bool(true), null);
 	}
 
 	private static int bool(boolean value) {

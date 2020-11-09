@@ -24,5 +24,11 @@ package uk.ac.manchester.spinnaker.connections.model;
  * @author Donal Fellows
  */
 public interface MessageHandler<MessageType> {
+	/**
+	 * The callback for handling the message.
+	 *
+	 * @param message
+	 *            The message that was received.
+	 */
 	void handle(MessageType message);
 }

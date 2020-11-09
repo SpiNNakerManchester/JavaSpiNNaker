@@ -183,6 +183,9 @@ public interface BufferManagerStorage extends DatabaseAPI {
 			return initialIgnore == 0 && finalIgnore == 0;
 		}
 
+		public final boolean isNonEmpty() {
+			return size > 0;
+		}
 	}
 
 	/**

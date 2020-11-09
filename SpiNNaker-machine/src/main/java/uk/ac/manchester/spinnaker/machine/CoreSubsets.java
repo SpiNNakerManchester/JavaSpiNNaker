@@ -218,6 +218,20 @@ public class CoreSubsets implements Iterable<CoreLocation> {
     }
 
     /**
+     * Whether there are any processors in these core subsets.
+     *
+     * @return {@code true} when the core subsets are empty.
+     */
+    public boolean isEmpty() {
+        for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
+            if (!subset.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Determine if the chip with coordinates (x, y) is in the subset.
      * <p>
      * Note: An empty subset mapped to the Chip is ignored.

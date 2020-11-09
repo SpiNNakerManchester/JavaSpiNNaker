@@ -30,13 +30,19 @@ abstract class SupportUtils {
 	private SupportUtils() {
 	}
 
+	private static final long MIN_TIMEOUT = 100;
+	private static final long MAX_TIMEOUT = 400;
+
 	static final void assertTimeout(long before, long after) {
-		assertTrue(after - before > 100 && after - before < 400,
-				"measured timeout must be between 0.1s and 0.4s (measured"
-						+ (after - before) + "ms)");
+		long delta = after - before;
+		assertTrue(delta > MIN_TIMEOUT && delta < MAX_TIMEOUT,
+				"measured timeout must be between 0.1s and 0.4s (measured "
+						+ delta + "ms)");
 	}
 
+	/** Overall test timeout. */
 	static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
+	/** Requested timeout. */
 	static final int TIMEOUT = 101;
 
 	static class Daemon extends Thread {
@@ -51,7 +57,12 @@ abstract class SupportUtils {
 		Thread t = new Daemon(() -> {
 			try {
 				s.connect();
-			} catch (Exception e) {
+			} catch (IOException e) {
+				// Just totally ignore early closing of sockets
+				if (!e.getMessage().equals("Socket closed")) {
+					e.printStackTrace(System.err);
+				}
+			} catch (RuntimeException e) {
 				e.printStackTrace(System.err);
 			}
 		}, "background accept");

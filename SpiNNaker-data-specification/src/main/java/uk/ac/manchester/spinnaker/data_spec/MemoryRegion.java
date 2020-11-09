@@ -56,8 +56,7 @@ public class MemoryRegion {
 	 * @param size
 	 *            the allocated size of the memory region
 	 */
-	public MemoryRegion(int index, int memoryPointer, boolean unfilled,
-			int size) {
+	MemoryRegion(int index, int memoryPointer, boolean unfilled, int size) {
 		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;

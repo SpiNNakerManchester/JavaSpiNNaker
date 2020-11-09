@@ -30,5 +30,5 @@ public interface SDPSender extends Connection {
 	 * @throws IOException
 	 *             If there is an error sending the message.
 	 */
-	void sendSDPMessage(SDPMessage sdpMessage) throws IOException;
+	void send(SDPMessage sdpMessage) throws IOException;
 }

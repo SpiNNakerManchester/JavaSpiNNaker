@@ -21,7 +21,7 @@ import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
-import static java.lang.Thread.yield;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -43,7 +44,9 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.CommandCode;
+import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -128,15 +131,17 @@ public class SCPRequestPipeline {
 	 * considered a timeout.
 	 */
 	private int packetTimeout;
-
+	/** The number of requests issued to this pipeline. */
+	private int numRequests;
 	/** The number of packets that have been resent. */
 	private int numResent;
+	/** The number of retries due to restartable errors. */
 	private int numRetryCodeResent;
 	/** The number of timeouts that occurred. */
 	private int numTimeouts;
 
-	/** A dictionary of sequence number -> requests in progress. */
-	private final Map<Integer, Request<?>> requests;
+	/** A dictionary of sequence number &rarr; requests in progress. */
+	private final Map<Integer, Request<?>> outstandingRequests;
 	/**
 	 * An object used to track how many retries have been done, or {@code null}
 	 * if no such tracking is required.
@@ -185,13 +190,9 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			long now = nanoTime();
-			while (now - nextSendTime < 0) {
-				yield();
-				now = nanoTime();
-			}
-			nextSendTime = now + INTER_SEND_INTERVAL_NS;
+			waitUntil(nextSendTime);
 			connection.send(requestData.asReadOnlyBuffer());
+			nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 		}
 
 		/**
@@ -333,7 +334,8 @@ public class SCPRequestPipeline {
 		this.packetTimeout = packetTimeout;
 		this.retryTracker = retryTracker;
 
-		requests = synchronizedMap(new HashMap<>());
+		outstandingRequests = synchronizedMap(new HashMap<>());
+		numRequests = 0;
 		numTimeouts = 0;
 		numResent = 0;
 		numRetryCodeResent = 0;
@@ -357,27 +359,47 @@ public class SCPRequestPipeline {
 	 * @throws IOException
 	 *             If things go really wrong.
 	 */
-	public <T extends SCPResponse> void sendRequest(SCPRequest<T> request,
+	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
 		// If all the channels are used, start to receive packets
-		while (requests.size() >= numChannels) {
+		while (outstandingRequests.size() >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
 		// Update the packet and store required details
 		int sequence = toUnsignedInt(request.scpRequestHeader
-				.issueSequenceNumber(requests.keySet()));
+				.issueSequenceNumber(outstandingRequests.keySet()));
 
 		log.debug("sending message with sequence {}", sequence);
 		Request<T> req =
 				new Request<>(request, callback, requireNonNull(errorCallback));
-		if (requests.put(sequence, req) != null) {
+		if (outstandingRequests.put(sequence, req) != null) {
 			throw new RuntimeException("duplicate sequence number catastrophe");
 		}
+		numRequests++;
 
 		// Send the request
 		req.send();
+	}
+
+	/**
+	 * Send a one-way request.
+	 *
+	 * @param request
+	 *            The one-way SCP request to be sent.
+	 * @throws IOException
+	 *             If things go really wrong.
+	 */
+	public void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
+			throws IOException {
+		// Wait for all current in-flight responses to be received
+		finish();
+
+		// Update the packet with a (non-valuable) sequence number
+		request.scpRequestHeader.issueSequenceNumber(emptySet());
+		// Send the request
+		new Request<>(request, null, null).send();
 	}
 
 	/**
@@ -388,7 +410,7 @@ public class SCPRequestPipeline {
 	 *             If anything goes wrong with communications.
 	 */
 	public void finish() throws IOException {
-		while (requests.size() > 0) {
+		while (!outstandingRequests.isEmpty()) {
 			multiRetrieve(0);
 		}
 	}
@@ -403,7 +425,7 @@ public class SCPRequestPipeline {
 	 */
 	private void multiRetrieve(int numPackets) throws IOException {
 		// While there are still more packets in progress than some threshold
-		while (requests.size() > numPackets) {
+		while (outstandingRequests.size() > numPackets) {
 			try {
 				// Receive the next response
 				singleRetrieve();
@@ -421,14 +443,14 @@ public class SCPRequestPipeline {
 			log.debug("received message {} with seq num {}", msg.getResult(),
 					msg.getSequenceNumber());
 		}
-		Request<?> req = msg.pickRequest(requests);
+		Request<?> req = msg.pickRequest(outstandingRequests);
 
 		// Only process responses which have matching requests
 		if (req == null) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
 			log.debug("current waiting on requests with seq's ");
-			for (int seq : requests.keySet()) {
+			for (int seq : outstandingRequests.keySet()) {
 				log.debug("{}", seq);
 			}
 			return;
@@ -445,7 +467,7 @@ public class SCPRequestPipeline {
 				log.debug("throwing away request {} coz of {}",
 						msg.getSequenceNumber(), e);
 				req.handleError(e);
-				msg.removeRequest(requests);
+				msg.removeRequest(outstandingRequests);
 			}
 		} else {
 			// No retry is possible - try constructing the result
@@ -455,7 +477,7 @@ public class SCPRequestPipeline {
 				req.handleError(e);
 			} finally {
 				// Remove the sequence from the outstanding responses
-				msg.removeRequest(requests);
+				msg.removeRequest(outstandingRequests);
 			}
 		}
 	}
@@ -465,9 +487,9 @@ public class SCPRequestPipeline {
 
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
-		for (int seq : new ArrayList<>(requests.keySet())) {
+		for (int seq : new ArrayList<>(outstandingRequests.keySet())) {
 			log.debug("resending seq {}", seq);
-			Request<?> req = requests.get(seq);
+			Request<?> req = outstandingRequests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
@@ -484,7 +506,7 @@ public class SCPRequestPipeline {
 		}
 		log.debug("finish resending");
 
-		toRemove.stream().forEach(requests::remove);
+		toRemove.stream().forEach(outstandingRequests::remove);
 	}
 
 	private void resend(Request<?> req, Object reason, int seq)
@@ -550,25 +572,13 @@ public class SCPRequestPipeline {
 		}
 	}
 
-	/**
-	 * @return The number of requests to send before checking for responses.
-	 */
-	public Integer getNumChannels() {
-		return numChannels;
-	}
-
-	/** @return The number of packets that have been resent. */
-	public int getNumResent() {
-		return numResent;
-	}
-
-	/** @return The number of retries due to restartable errors. */
-	public int getNumRetryCodeResent() {
-		return numRetryCodeResent;
-	}
-
-	/** @return The number of timeouts that occurred. */
-	public int getNumTimeouts() {
-		return numTimeouts;
+	@Override
+	public String toString() {
+		return "SCPPipe[channels=" + numChannels + ",width="
+				+ intermediateChannelWaits + "resendLim" + numRetries
+				+ "] (req=" + numRequests + ",outstanding="
+				+ outstandingRequests.size() + ",resent=" + numResent
+				+ ",restart=" + numRetryCodeResent + ",timeouts=" + numTimeouts
+				+ ")";
 	}
 }

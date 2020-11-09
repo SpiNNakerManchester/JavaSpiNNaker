@@ -30,11 +30,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+
 		<spinnaker.version>5.1.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<log4j.version>2.13.0</log4j.version>
-		<junit.version>5.2.0</junit.version>
+		<log4j.version>2.13.3</log4j.version>
+		<junit.version>5.6.0</junit.version>
 		<checkstyle.version>8.29</checkstyle.version>
+
+		<testing.version>3.0.0-M4</testing.version>
+		<jacoco.version>0.8.5</jacoco.version>
   	</properties>
 
 	<dependencyManagement>
@@ -107,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-configuration2</artifactId>
-				<version>2.3</version>
+				<version>2.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
@@ -122,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.3</version>
+				<version>1.9.4</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -132,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.8</version>
+				<version>3.9</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
@@ -152,7 +156,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.4</version>
+				<version>1.8</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.java-diff-utils</groupId>
@@ -173,7 +177,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -193,12 +197,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>3.2.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.0</version>
+					<version>${testing.version}</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
@@ -206,12 +210,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.2.2</version>
+					<version>3.2.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.1.1</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
@@ -257,7 +261,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.22.0</version>
+					<version>${testing.version}</version>
 					<executions>
 						<execution>
 							<id>integration-test</id>
@@ -276,7 +280,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.2</version>
+					<version>${jacoco.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>

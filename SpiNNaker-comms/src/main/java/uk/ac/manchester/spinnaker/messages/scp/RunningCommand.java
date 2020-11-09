@@ -20,7 +20,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 enum RunningCommand implements CommandCode {
 	/** Ask the core to stop. */
 	STOP_ID(6),
-	/** Allocate a new runtime ID. */
+	/** Set the running time and mode. */
 	NEW_RUNTIME_ID(7),
 	/** Update the provenance and exit. */
 	UPDATE_PROVENCE_REGION_AND_EXIT(8),

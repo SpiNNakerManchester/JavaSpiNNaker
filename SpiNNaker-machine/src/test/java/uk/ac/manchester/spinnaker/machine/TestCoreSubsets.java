@@ -42,19 +42,23 @@ public class TestCoreSubsets {
     public void testBasic() {
         CoreSubsets instance = new CoreSubsets();
         assertEquals(0, instance.size());
+        assertTrue(instance.isEmpty());
 
         instance.addCore(0, 0, 1);
         assertEquals(1, instance.size());
+        assertFalse(instance.isEmpty());
 
         ArrayList<Integer> processors = new ArrayList<>();
         processors.add(1);
         instance.addCores(0, 0, processors);
         assertEquals(1, instance.size());
+        assertFalse(instance.isEmpty());
         assertFalse(instance.isChip(ChipLocation.ONE_ZERO));
 
         processors.add(2);
         instance.addCores(1, 0, processors);
         assertEquals(3, instance.size());
+        assertFalse(instance.isEmpty());
 
         assertTrue(instance.isChip(ChipLocation.ONE_ZERO));
         assertTrue(instance.isCore(new CoreLocation(0, 0, 1)));
@@ -132,6 +136,7 @@ public class TestCoreSubsets {
         css1.addCore(new ChipLocation(1, 1), 1);
         css1.addCore(new ChipLocation(2, 2), 1);
         assertEquals(8, css1.size());
+        assertFalse(css1.isEmpty());
 
         CoreSubsets css2 = new CoreSubsets();
         css2.addCores(new ChipLocation(0, 0), Arrays.asList(2, 3, 5));
@@ -139,13 +144,14 @@ public class TestCoreSubsets {
         css2.addCores(new ChipLocation(1, 1), Arrays.asList(9, 7, 1, 5));
         css2.addCore(new ChipLocation(2, 2), 2);
         assertEquals(11, css2.size());
+        assertFalse(css2.isEmpty());
 
         CoreSubsets css3 = css1.intersection(css2);
         assertTrue(css3.isCore(new CoreLocation(0, 0, 2)));
         assertTrue(css3.isCore(new CoreLocation(0, 0, 3)));
         assertTrue(css3.isCore(new CoreLocation(1, 1, 1)));
         assertEquals(3, css3.size());
-
+        assertFalse(css3.isEmpty());
      }
 
     public void testEquals() {

@@ -16,7 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +46,7 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewLinkSCPPacket() {
-        ReadLink scp = new ReadLink(ZERO_CORE, 0, 0, 252);
+        ReadLink scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
         assertEquals(0, scp.argument1);
         assertEquals(252, scp.argument2);
         assertEquals(0, scp.argument3);

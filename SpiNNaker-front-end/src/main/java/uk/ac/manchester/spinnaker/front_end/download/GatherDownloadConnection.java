@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.lang.System.nanoTime;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -62,11 +64,9 @@ final class GatherDownloadConnection extends SDPConnection {
 	}
 
 	private void sendMsg(SDPMessage msg) throws IOException {
-		while (System.nanoTime() < lastSend + INTER_SEND_INTERVAL_NS) {
-			Thread.yield();
-		}
-		lastSend = System.nanoTime();
-		sendSDPMessage(msg);
+		waitUntil(lastSend + INTER_SEND_INTERVAL_NS);
+		send(msg);
+		lastSend = nanoTime();
 	}
 
 	/**
