@@ -36,8 +36,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-j${{ matrix.java }}
 
       - name: Ensure dependencies are present
         run: mvn -B dependency:resolve dependency:resolve-plugins --setting $SETTINGS_FILE || true
