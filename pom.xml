@@ -323,13 +323,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>javax.xml.bind</groupId>
-						<artifactId>jaxb-api</artifactId>
-						<version>2.2.3</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
@@ -460,6 +453,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 									<additionalOption>-html5</additionalOption>
 								</additionalOptions>
 							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.eluder.coveralls</groupId>
+							<artifactId>coveralls-maven-plugin</artifactId>
+							<dependencies>
+								<dependency>
+									<groupId>jakarta.xml.bind</groupId>
+									<artifactId>jakarta.xml.bind-api</artifactId>
+									<version>2.3.2</version>
+								</dependency>
+							</dependencies>
 						</plugin>
 					</plugins>
 				</pluginManagement>
