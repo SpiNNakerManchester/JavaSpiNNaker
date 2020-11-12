@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/SpiNNakerManchester/JavaSpiNNaker.svg?branch=master)](https://travis-ci.com/SpiNNakerManchester/JavaSpiNNaker)
+[![Build and Test](https://github.com/SpiNNakerManchester/JavaSpiNNaker/workflows/Build%20and%20Test/badge.svg?branch=actions)](https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions?query=workflow%3A%22Build+and+Test%22+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/JavaSpiNNaker/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/JavaSpiNNaker?branch=master)
 # JavaSpiNNaker
 This is an implementation of the SpiNNaker host software in Java. It requires at least Java 8. We test regularly with OpenJDK 8 and OpenJDK 11.
