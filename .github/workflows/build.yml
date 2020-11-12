@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 11, 13] # TODO: add 14
+        java: [8, 11, 14]
     env:
       SETTINGS_FILE: .github/settings.xml
       CI_NAME: "Github Actions"
