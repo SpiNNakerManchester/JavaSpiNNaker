@@ -1,0 +1,75 @@
+# Copyright (c) 2020 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+name: Publish
+
+on: #[push]
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [14]
+    env:
+      SETTINGS_FILE: .github/settings.xml
+      SITE_DIR: target/site
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-j${{ matrix.java }}
+
+      - name: Ensure dependencies are present
+        run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE || true
+
+      - name: Build
+        run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+        
+      - name: Build Documentation
+        run: |
+          mvn site --settings $SETTINGS_FILE
+          touch $SITE_DIR/.nojekyll
+
+      - name: "TEST DOC BUILD!"
+        if: ${{ github.ref != 'refs/heads/master' }}
+        run: ls -AlRF
+        working-directory: ${{ env.SITE_DIR }}
+        env:
+          CLICOLOR_FORCE: 1
+          TERM: xterm-color
+
+      - name: Deploy to GitHub Pages
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: ${{ env.SITE_DIR }}
+
+      - name: "Post: Purge SNAPSHOTs"
+        # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
+        # will always rebuild internal snapshots.
+        run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
