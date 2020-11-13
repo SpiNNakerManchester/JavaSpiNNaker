@@ -454,6 +454,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								</additionalOptions>
 							</configuration>
 						</plugin>
+						<plugin>
+							<groupId>org.eluder.coveralls</groupId>
+							<artifactId>coveralls-maven-plugin</artifactId>
+							<dependencies>
+								<!-- Of course! -->
+								<dependency>
+									<groupId>javax.xml.bind</groupId>
+									<artifactId>jaxb-api</artifactId>
+									<version>2.3.1</version>
+								</dependency>
+							</dependencies>
+						</plugin>
 					</plugins>
 				</pluginManagement>
 			</build>
