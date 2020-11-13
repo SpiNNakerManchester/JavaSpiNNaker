@@ -296,8 +296,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
 							<exclude>.github/*</exclude>
-							<exclude>.travis/*</exclude>
-							<exclude>.travis.yml</exclude>
 							<exclude>nbactions.xml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
@@ -380,13 +378,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Travis</system>
-		<url>https://travis-ci.org/SpiNNakerManchester/JavaSpiNNaker</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions</url>
 	</ciManagement>
 	<distributionManagement>
 		<site>
 			<id>github-pages</id>
-			<name>github pages</name>
+			<name>GitHub Pages</name>
 			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
@@ -399,29 +397,61 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</mailingList>
 	</mailingLists>
 	<developers>
+		<!-- IDs are github logins -->
 		<developer>
-			<id>abs</id>
+			<id>alan-stokes</id>
 			<name>Alan Stokes</name>
+			<roles>
+				<role>New Feature Development Lead</role>
+				<role>Dissemination</role>
+			</roles>
 		</developer>
 		<developer>
-			<id>ag</id>
+			<id>andrewgait</id>
 			<name>Andrew Gait</name>
+			<roles>
+				<role>New Feature Development</role>
+				<role>User Support</role>
+			</roles>
 		</developer>
 		<developer>
 			<id>agr</id>
 			<name>Andrew Rowley</name>
+			<roles>
+				<role>New Feature Development</role>
+				<role>Architectural Design</role>
+				<role>Project Liaison</role>
+				<role>Dissemination</role>
+			</roles>
 		</developer>
 		<developer>
-			<id>cb</id>
+			<id>Christian-B</id>
 			<name>Christian Brenninkmeijer</name>
+			<roles>
+				<role>New Feature Development</role>
+				<role>Software Testing</role>
+				<role>Continuous Integration Control</role>
+			</roles>
 		</developer>
 		<developer>
-			<id>dkf</id>
+			<id>dkfellows</id>
 			<name>Donal Fellows</name>
+			<roles>
+				<role>New Feature Development</role>
+				<role>Low-Level Maintenance</role>
+				<role>Software Quality Control</role>
+				<role>Continuous Integration Control</role>
+			</roles>
 		</developer>
 		<developer>
-			<id>or</id>
+			<id>oliverrhodes</id>
 			<name>Oliver Rhodes</name>
+			<roles>
+				<role>Academic Oversight</role>
+				<role>Dissemination</role>
+				<role>Model Development</role>
+			</roles>
+			<url>https://www.research.manchester.ac.uk/portal/oliver.rhodes.html</url>
 		</developer>
 	</developers>
 
@@ -520,7 +550,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<id>JavadocSupportJDK9AndLater</id>
+			<id>JDK9AndLater</id>
 			<activation>
 				<jdk>[1.9,)</jdk>
 			</activation>
@@ -552,7 +582,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<id>JavadocSupportJDK8</id>
+			<id>JDK8</id>
 			<!-- work around a stupid JDK bug -->
 			<activation>
 				<jdk>1.8</jdk>

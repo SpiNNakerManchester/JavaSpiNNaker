@@ -27,7 +27,7 @@ jobs:
         java: [14]
     env:
       SETTINGS_FILE: .github/settings.xml
-      SITE_DIR: target/site
+      SITE_DIR: target/staging
 
     steps:
       - uses: actions/checkout@v2
@@ -50,7 +50,7 @@ jobs:
         
       - name: Build Documentation
         run: |
-          mvn site --settings $SETTINGS_FILE
+          mvn site site:stage --settings $SETTINGS_FILE
           touch $SITE_DIR/.nojekyll
 
       - name: "TEST DOC BUILD!"
