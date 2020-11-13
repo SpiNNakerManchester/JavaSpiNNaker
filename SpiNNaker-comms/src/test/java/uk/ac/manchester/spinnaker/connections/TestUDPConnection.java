@@ -23,11 +23,10 @@ import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import testconfig.BoardTestConfiguration;
@@ -40,9 +39,9 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public class TestUDPConnection {
-	static BoardTestConfiguration boardConfig;
-	static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
-	static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
+	private static BoardTestConfiguration boardConfig;
+	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
@@ -60,15 +59,18 @@ public class TestUDPConnection {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(null);
 		}
-		Response scp_response = result.parsePayload(scpReq);
-		System.out.println(scp_response.versionInfo);
-		assertEquals(scp_response.result, RC_OK);
+		Response scpResponse = result.parsePayload(scpReq);
+		System.out.println(scpResponse.versionInfo);
+		assertEquals(scpResponse.result, RC_OK);
 	}
+
+	private static final int ADDR = 0x70000000;
+	private static final int LINK_SIZE = 250;
 
 	@Test
 	public void testSCPReadLinkWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadLink scpReq = new ReadLink(ZERO_CHIP, EAST, 0x70000000, 250);
+		ReadLink scpReq = new ReadLink(ZERO_CHIP, EAST, ADDR, LINK_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
 		try (SCPConnection connection =
@@ -83,7 +85,7 @@ public class TestUDPConnection {
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		ReadMemory scpReq =
-				new ReadMemory(ZERO_CHIP, 0x70000000, UDP_MESSAGE_MAX_SIZE);
+				new ReadMemory(ZERO_CHIP, ADDR, UDP_MESSAGE_MAX_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
 		try (SCPConnection connection =
@@ -95,11 +97,10 @@ public class TestUDPConnection {
 	}
 
 	@Test
-	@Disabled("host reachability; issue #215")
 	public void testSendSCPRequestToNonexistentHost()
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();
-		assertThrows(SocketTimeoutException.class, () -> {
+		assertThrows(IOException.class, () -> {
 			try (SCPConnection connection =
 					new SCPConnection(boardConfig.remotehost)) {
 				ReadMemory scp =
