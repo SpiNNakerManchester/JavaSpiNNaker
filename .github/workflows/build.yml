@@ -15,7 +15,12 @@
 
 name: Build and Test
 
-on: [push]
+on: 
+  push:
+    # On any push to any branch
+  schedule:
+    # Build daily on the default branch at 04:40
+    - cron: "40 4 * * *"
 
 jobs:
   build:
@@ -76,6 +81,14 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
           COVERALLS_SECRET: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Upload Build (JDK 8 only)
+        if: ${{ matrix.java == 8 }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: spinnaker-exe.jar
+          path: SpiNNaker-front-end/target/spinnaker-exe.jar
+          retention-days: 5
 
       - name: "Post: Purge SNAPSHOTs"
         # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
