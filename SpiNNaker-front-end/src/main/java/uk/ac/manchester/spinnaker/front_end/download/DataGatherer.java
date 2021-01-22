@@ -681,7 +681,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				received = true;
 				return processData(p, transactionId);
 			}
-			log.error("failed to receive on socket {}:{}.", conn.getLocalPort(),
+			log.debug("timeout on receive on socket {}:{}.", conn.getLocalPort(),
 					conn.getLocalIPAddress());
 			return processTimeout(transactionId);
 		}
