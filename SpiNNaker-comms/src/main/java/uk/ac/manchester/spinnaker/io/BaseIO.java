@@ -28,7 +28,7 @@ import uk.ac.manchester.spinnaker.utils.Slice;
  *
  * @author Donal Fellows
  */
-abstract class BaseIO implements AbstractIO {
+abstract class BaseIO implements IO {
 	/** The start address of the region to write to. */
 	final int start;
 	/** The end of the region to write to. */
@@ -183,7 +183,7 @@ abstract class BaseIO implements AbstractIO {
 	/**
 	 * Core of slice application.
 	 *
-	 * @param <IO>
+	 * @param <T>
 	 *            The type of slice produced.
 	 * @param slice
 	 *            The slice to apply.
@@ -192,8 +192,7 @@ abstract class BaseIO implements AbstractIO {
 	 *            represents the slice.
 	 * @return The sliced object.
 	 */
-	final <IO extends AbstractIO> IO get(Slice slice,
-			SliceFactory<IO> factory) {
+	final <T extends IO> T get(Slice slice, SliceFactory<T> factory) {
 		int from = start;
 		int to = end;
 		if (slice.start != null) {

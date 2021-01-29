@@ -57,6 +57,7 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.io.IO;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -5081,6 +5082,134 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	void loadSystemRouterTables(CoreSubsets monitorCores)
 			throws IOException, ProcessException;
+
+	/**
+	 * Get an IO view on a range of memory of a core.
+	 * <p>
+	 * Note that, though this is parallel safe in itself, the operations on the
+	 * IO view are only parallel safe if they refer to cores of chips of
+	 * different boards.
+	 *
+	 * @param core
+	 *            What core are we looking at
+	 * @param baseAddress
+	 *            Where does the memory range start.
+	 * @param size
+	 *            How large is the memory range.
+	 * @return the IO view
+	 */
+	@ParallelSafe
+	IO getIOView(HasCoreLocation core, int baseAddress, int size);
+
+	/**
+	 * Get an IO view on a range of memory of a file.
+	 *
+	 * @param file
+	 *            What file are we looking at
+	 * @param size
+	 *            How large can the file become, and what range of bytes within
+	 *            the file can be accessed.
+	 * @return the IO view
+	 * @throws IOException
+	 *             If the file can't be accessed
+	 */
+	@ParallelSafe
+	IO getFileIOView(File file, int size) throws IOException;
+
+	/**
+	 * Get an IO view on a range of memory of a file.
+	 *
+	 * @param file
+	 *            What file are we looking at. This must exist, and already be
+	 *            of the correct size.
+	 * @return the IO view
+	 * @throws IOException
+	 *             If the file can't be accessed
+	 */
+	@ParallelSafe
+	default IO getFileIOView(File file) throws IOException {
+		return getFileIOView(file, (int) file.length());
+	}
+
+	/**
+	 * Allocate a block of memory visible from a core and return an IO view on
+	 * it.
+	 * <p>
+	 * Note that, though this is parallel safe in itself, the operations on the
+	 * IO view are only parallel safe if they refer to cores of chips of
+	 * different boards.
+	 *
+	 * @param core
+	 *            What core are we looking at
+	 * @param size
+	 *            How large is the memory range.
+	 *            @param appId The SpiNNaker application ID.
+	 *            @param tag The memory tag.
+	 * @return the IO view
+	 * @throws IOException If the chip can't be accessed.
+	 * @throws ProcessException If the allocation fails.
+	 * @see IO#getAddress()
+	 */
+	@ParallelSafe
+	default IO allocateIOView(HasCoreLocation core, int size, AppID appId,
+			int tag) throws ProcessException, IOException {
+		int base = mallocSDRAM(core, size, appId, tag);
+		return getIOView(core, base, size);
+	}
+
+	/**
+	 * Allocate a block of memory visible from a core and return an IO view on
+	 * it.
+	 * <p>
+	 * Note that, though this is parallel safe in itself, the operations on the
+	 * IO view are only parallel safe if they refer to cores of chips of
+	 * different boards.
+	 *
+	 * @param core
+	 *            What core are we looking at
+	 * @param size
+	 *            How large is the memory range.
+	 * @param appId
+	 *            The SpiNNaker application ID.
+	 * @return the IO view
+	 * @throws IOException
+	 *             If the chip can't be accessed.
+	 * @throws ProcessException
+	 *             If the allocation fails.
+	 * @see IO#getAddress()
+	 */
+	@ParallelSafe
+	default IO allocateIOView(HasCoreLocation core, int size, AppID appId)
+			throws ProcessException, IOException {
+		int base = mallocSDRAM(core, size, appId);
+		return getIOView(core, base, size);
+	}
+
+	/**
+	 * Allocate a block of memory visible from a core and return an IO view on
+	 * it.
+	 * <p>
+	 * Note that, though this is parallel safe in itself, the operations on the
+	 * IO view are only parallel safe if they refer to cores of chips of
+	 * different boards.
+	 *
+	 * @param core
+	 *            What core are we looking at
+	 * @param size
+	 *            How large is the memory range.
+	 * @return the IO view
+	 * @throws IOException
+	 *             If the chip can't be accessed.
+	 * @throws ProcessException
+	 *             If the allocation fails.
+	 * @see IO#getAddress()
+	 */
+	@ParallelSafe
+	default IO allocateIOView(HasCoreLocation core, int size)
+			throws ProcessException, IOException {
+		int base = mallocSDRAM(core, size);
+		return getIOView(core, base, size);
+	}
 }
 
 /**

@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.utils.Slice;
  *
  * @author Donal Fellows
  */
-public interface AbstractIO extends AutoCloseable {
+public interface IO extends AutoCloseable {
 	/** @return The size of the entire region of memory. */
 	int size();
 
@@ -52,7 +52,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	AbstractIO get(int slice) throws IOException, ProcessException;
+	IO get(int slice) throws IOException, ProcessException;
 
 	/**
 	 * Get a sub-region of this memory object. The slice must be in range of the
@@ -66,7 +66,7 @@ public interface AbstractIO extends AutoCloseable {
 	 * @throws IOException
 	 *             If something goes wrong
 	 */
-	AbstractIO get(Slice slice) throws IOException, ProcessException;
+	IO get(Slice slice) throws IOException, ProcessException;
 
 	/** @return whether the object has been closed. */
 	boolean isClosed();
@@ -139,7 +139,12 @@ public interface AbstractIO extends AutoCloseable {
 	 */
 	int tell() throws IOException, ProcessException;
 
-	/** @return the current absolute address within the region. */
+	/**
+	 * Get the current absolute address; this is initially the absolute start
+	 * address of the region.
+	 *
+	 * @return the current absolute address within the region.
+	 */
 	int getAddress();
 
 	/**
@@ -271,7 +276,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read() throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(1);
+					byte[] b = IO.this.read(1);
 					return b[0];
 				} catch (EOFException e) {
 					return -1;
@@ -285,7 +290,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read(byte[] buffer) throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(buffer.length);
+					byte[] b = IO.this.read(buffer.length);
 					arraycopy(b, 0, buffer, 0, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -301,7 +306,7 @@ public interface AbstractIO extends AutoCloseable {
 			public int read(byte[] buffer, int offset, int length)
 					throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(length);
+					byte[] b = IO.this.read(length);
 					arraycopy(b, 0, buffer, offset, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -341,7 +346,7 @@ public interface AbstractIO extends AutoCloseable {
 				byte[] buffer = new byte[1];
 				buffer[0] = (byte) (b & BYTE_MASK);
 				try {
-					AbstractIO.this.write(buffer);
+					IO.this.write(buffer);
 				} catch (ProcessException e) {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
@@ -352,7 +357,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public void write(byte[] bytes) throws IOException {
 				try {
-					AbstractIO.this.write(bytes);
+					IO.this.write(bytes);
 				} catch (ProcessException e) {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
@@ -366,7 +371,7 @@ public interface AbstractIO extends AutoCloseable {
 				byte[] buffer = new byte[length];
 				arraycopy(bytes, offset, buffer, 0, length);
 				try {
-					AbstractIO.this.write(buffer);
+					IO.this.write(buffer);
 				} catch (ProcessException e) {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);
@@ -377,7 +382,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public void flush() throws IOException {
 				try {
-					AbstractIO.this.flush();
+					IO.this.flush();
 				} catch (ProcessException e) {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);

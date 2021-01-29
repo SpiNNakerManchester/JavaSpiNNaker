@@ -39,6 +39,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<property name="ignorePattern"
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
+	<module name="SuppressionSingleFilter">
+		<!-- Suppress this message due to checkstyle/checkstyle#7926 -->
+		<property name="message"
+			value="'lambda arguments' has incorrect indentation level" />
+	</module>
+	<module name="SuppressionSingleFilter">
+		<!-- Suppress checks in test code -->
+		<property name="file" value="[\\/]src[\\/]test[\\/]" />
+	</module>
 	<module name="TreeWalker">
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />

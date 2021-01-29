@@ -92,6 +92,9 @@ import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.SCPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SCPSender;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
+import uk.ac.manchester.spinnaker.io.IO;
+import uk.ac.manchester.spinnaker.io.FileIO;
+import uk.ac.manchester.spinnaker.io.MemoryIO;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -2303,6 +2306,18 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		new RouterControlProcess(scpSelector, this)
 				.loadSystemRouterTable(monitorCores);
+	}
+
+	@Override
+	@ParallelSafe
+	public IO getIOView(HasCoreLocation core, int baseAddress, int size) {
+		return new MemoryIO(this, core, baseAddress, baseAddress + size);
+	}
+
+	@Override
+	@ParallelSafe
+	public IO getFileIOView(File file, int size) throws IOException {
+		return new FileIO(file, 0, size);
 	}
 
 	/**
