@@ -126,7 +126,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
 							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getInt(SIXTH)));
+							rs.getInt(SIXTH), 0));
 				}
 				return result;
 			}
@@ -155,7 +155,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
 							rs.getInt(SECOND), rs.getInt(THIRD),
 							rs.getInt(FOURTH), rs.getInt(FIFTH),
-							rs.getInt(SIXTH)));
+							rs.getInt(SIXTH), 0));
 				}
 				return result;
 			}
@@ -196,21 +196,23 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	@Override
 	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
-			int memoryUsed, int memoryWritten) throws StorageException {
+			int memoryUsed, int memoryWritten, long timeDelta)
+			throws StorageException {
 		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
-				startAddress, memoryUsed, memoryWritten),
+				startAddress, memoryUsed, memoryWritten, timeDelta),
 				"saving data loading metadata");
 	}
 
 	private static void saveLoadingMetadata(Connection conn,
 			CoreToLoadImpl core, int startAddress, int memoryUsed,
-			int memoryWritten) throws SQLException {
+			int memoryWritten, long timeDelta) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(SQL.ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);
-			s.setInt(FOURTH, core.id);
+			s.setInt(FIFTH, core.id);
+			s.setLong(FOURTH, timeDelta);
 			s.executeUpdate();
 		}
 	}
@@ -243,9 +245,10 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		/** The primary key. */
 		final int id;
 
-		private CoreToLoadImpl(int id, int x, int y, int p, int appID,
-				int sizeToWrite) {
-			super(x, y, p, appID, sizeToWrite);
+		private CoreToLoadImpl(
+		        int id, int x, int y, int p, int appID,
+		        int sizeToWrite, long time) {
+			super(x, y, p, appID, sizeToWrite, time);
 			this.id = id;
 		}
 

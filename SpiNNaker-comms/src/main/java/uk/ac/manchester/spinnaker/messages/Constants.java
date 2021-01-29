@@ -81,9 +81,9 @@ public abstract class Constants {
 	/** Time to sleep after powering on boards (in seconds). */
 	public static final double BMP_POST_POWER_ON_SLEEP_TIME = 5.0;
 	/** This is the default timeout when using SCP, in milliseconds. */
-	public static final int SCP_TIMEOUT_DEFAULT = 1000;
+	public static final int SCP_TIMEOUT_DEFAULT = 2000;
 	/** This is the default retry limit when using SCP. */
-	public static final int SCP_RETRY_DEFAULT = 10;
+	public static final int SCP_RETRY_DEFAULT = 100;
 
 	/** Number of bytes in a SpiNNaker word. */
 	public static final int WORD_SIZE = 4;

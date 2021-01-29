@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
+import static java.lang.Math.max;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
@@ -183,6 +184,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				boardMonitorCores.addCore(m.asCoreLocation());
 			}
 		}
+	}
+
+	// Number of nanoseconds from start instant
+	private static long delta(long startNanos) {
+		return max(nanoTime() - startNanos, 0L);
 	}
 
 	/**
@@ -437,6 +443,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
+				log.info("getting data spec for core %s", ctl.core);
 				ds = ctl.getDataSpec();
 			} catch (StorageException e) {
 				throw new DataSpecificationException(String.format(
@@ -478,14 +485,20 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
+			long startTime, timeTotal = 0L;
+			startTime = nanoTime();
 			int written = writeHeader(ctl.core, executor, start, gather);
+			timeTotal += delta(startTime);
 			int writeCount = 1;
 
+			// Time taken with loading this core in nanoseconds, never negative
 			for (MemoryRegion r : executor.regions()) {
 				if (isToBeIgnored(r)) {
 					continue;
 				}
+				startTime = nanoTime();
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
+				timeTotal += delta(startTime);
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
 					ByteBuffer readBack = txrx.readMemory(ctl.core,
@@ -495,7 +508,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 
 			bar.update();
-			storage.saveLoadingMetadata(ctl, start, size, written);
+			storage.saveLoadingMetadata(ctl, start, size, written, timeTotal);
 			return writeCount;
 		}
 
@@ -583,8 +596,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			try (MissingRecorder recorder = new MissingRecorder()) {
 				long start = nanoTime();
 				fastWrite(core, startAddress, b, gather);
-				long end = nanoTime();
-				recorder.report(core, end - start, b.limit(), startAddress);
+				long elapsed = delta(start);
+				recorder.report(core, elapsed, b.limit(), startAddress);
 			}
 			return written;
 		}
@@ -618,8 +631,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			try (MissingRecorder recorder = new MissingRecorder()) {
 				long start = nanoTime();
 				fastWrite(core, baseAddress, data, gather);
-				long end = nanoTime();
-				recorder.report(core, end - start, data.limit(), baseAddress);
+				long elapsed = delta(start);
+				recorder.report(core, elapsed, data.limit(), baseAddress);
 			}
 			return written;
 		}

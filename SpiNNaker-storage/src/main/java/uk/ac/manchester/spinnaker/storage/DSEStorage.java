@@ -94,11 +94,16 @@ public interface DSEStorage extends DatabaseAPI {
 	 *            How much memory was allocated by loading.
 	 * @param memoryWritten
 	 *            How much memory was written by loading.
+	 * @param timeDelta
+	 *            The extra time taken loading data into this core, in
+	 *            <em>nanoseconds</em>. Added to the record, which is cumulative
+	 *            for all loading done to a particular core.
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
 	void saveLoadingMetadata(CoreToLoad coreToLoad, int startAddress,
-			int memoryUsed, int memoryWritten) throws StorageException;
+			int memoryUsed, int memoryWritten, long timeDelta)
+			throws StorageException;
 
 	/**
 	 * A ethernet which allows data specifications to be loaded.
@@ -161,6 +166,12 @@ public interface DSEStorage extends DatabaseAPI {
 		public final int appID;
 
 		/**
+		 * The accumulated time taken loading data into this core, in
+		 * <em>nanoseconds</em>.
+		 */
+		public final long time;
+
+		/**
 		 * Create an instance.
 		 *
 		 * @param x
@@ -173,11 +184,16 @@ public interface DSEStorage extends DatabaseAPI {
 		 *            The application identifier.
 		 * @param sizeToWrite
 		 *            Number of bytes to be written, as computed by DSG.
+		 * @param time
+		 *            The accumulated time taken loading data into this core, in
+		 *            <em>nanoseconds</em>.
 		 */
-		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite) {
+		protected CoreToLoad(int x, int y, int p, int appID, int sizeToWrite,
+				long time) {
 			this.core = new CoreLocation(x, y, p);
 			this.appID = appID;
 			this.sizeToWrite = sizeToWrite;
+			this.time = time;
 		}
 	}
 }

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
+import static java.lang.Math.max;
+import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -241,6 +243,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 			this.bar = bar;
 		}
 
+		// Number of nanoseconds from start instant
+		private long delta(long startNanos) {
+			return max(nanoTime() - startNanos, 0L);
+		}
+
 		/**
 		 * Execute a data specification and load the results onto a core.
 		 *
@@ -273,21 +280,27 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				executor.execute();
 				int size = executor.getConstructedDataSize();
 				int start = malloc(ctl, size);
+				// diff = cumulative time actually writing, in nanos
+				long startTime, diff = 0L;
 				log.info("loading data onto {} ({} bytes at 0x{})",
 						ctl.core.asChipLocation(), toUnsignedLong(size),
 						toHexString(toUnsignedLong(start)));
+				startTime = nanoTime();
 				int written = writeHeader(ctl.core, executor, start);
+				diff += delta(startTime);
 
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
+						startTime = nanoTime();
 						written += writeRegion(ctl.core, r, r.getRegionBase());
+						diff += delta(startTime);
 					}
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
 				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
 				bar.update();
-				storage.saveLoadingMetadata(ctl, start, size, written);
+				storage.saveLoadingMetadata(ctl, start, size, written, diff);
 			} catch (DataSpecificationException e) {
 				throw new DataSpecificationException(
 						"failed to execute data specification for core "
