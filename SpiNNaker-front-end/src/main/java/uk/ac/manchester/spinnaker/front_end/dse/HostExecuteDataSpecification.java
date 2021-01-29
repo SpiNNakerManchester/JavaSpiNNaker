@@ -243,6 +243,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 			this.bar = bar;
 		}
 
+		// Number of nanoseconds from start instant
+		private long delta(long startNanos) {
+			return max(nanoTime() - startNanos, 0L);
+		}
+
 		/**
 		 * Execute a data specification and load the results onto a core.
 		 *
@@ -276,19 +281,19 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				int size = executor.getConstructedDataSize();
 				int start = malloc(ctl, size);
 				// diff = cumulative time actually writing, in nanos
-				long startTime, diff = 0;
+				long startTime, diff = 0L;
 				log.info("loading data onto {} ({} bytes at 0x{})",
 						ctl.core.asChipLocation(), toUnsignedLong(size),
 						toHexString(toUnsignedLong(start)));
 				startTime = nanoTime();
 				int written = writeHeader(ctl.core, executor, start);
-				diff += max(nanoTime() - startTime, 0);
+				diff += delta(startTime);
 
 				for (MemoryRegion r : executor.regions()) {
 					if (!isToBeIgnored(r)) {
 						startTime = nanoTime();
 						written += writeRegion(ctl.core, r, r.getRegionBase());
-						diff += max(nanoTime() - startTime, 0);
+						diff += delta(startTime);
 					}
 				}
 
