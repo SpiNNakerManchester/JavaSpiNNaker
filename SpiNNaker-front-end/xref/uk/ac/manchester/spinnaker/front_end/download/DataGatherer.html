@@ -689,7 +689,7 @@
 <a class="jxr_linenumber" name="L681" href="#L681">681</a> 				received = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L682" href="#L682">682</a> 				<strong class="jxr_keyword">return</strong> processData(p, transactionId);
 <a class="jxr_linenumber" name="L683" href="#L683">683</a> 			}
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> 			log.error(<span class="jxr_string">"failed to receive on socket {}:{}."</span>, conn.getLocalPort(),
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> 			log.debug(<span class="jxr_string">"failed to receive on socket {}:{}."</span>, conn.getLocalPort(),
 <a class="jxr_linenumber" name="L685" href="#L685">685</a> 					conn.getLocalIPAddress());
 <a class="jxr_linenumber" name="L686" href="#L686">686</a> 			<strong class="jxr_keyword">return</strong> processTimeout(transactionId);
 <a class="jxr_linenumber" name="L687" href="#L687">687</a> 		}
@@ -849,6 +849,6 @@
 <a class="jxr_linenumber" name="L841" href="#L841">841</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2018&#x2013;2020 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2018&#x2013;2021 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
 </body>
 </html>
