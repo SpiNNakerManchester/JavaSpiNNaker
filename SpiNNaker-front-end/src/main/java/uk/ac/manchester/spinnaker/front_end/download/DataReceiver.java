@@ -217,17 +217,17 @@ public class DataReceiver extends BoardLocalSupport {
             Transceiver txrx, Placement placement, long recordingDataAddress)
             throws IOException, ProcessException {
         // Get the size of the list of recordings
-        int n_regions = txrx.readMemory(placement.getScampCore(),
+        int nRegions = txrx.readMemory(placement.getScampCore(),
                 recordingDataAddress, WORD_SIZE).getInt();
 
         // Read all the channels
         ByteBuffer channelData = txrx.readMemory(placement.getScampCore(),
                 recordingDataAddress + WORD_SIZE,
-                RecordingRegion.SIZE * n_regions);
+                RecordingRegion.SIZE * nRegions);
 
         // Parse the data
-        RecordingRegion[] regions = new RecordingRegion[n_regions];
-        for (int i = 0; i < n_regions; i++) {
+        RecordingRegion[] regions = new RecordingRegion[nRegions];
+        for (int i = 0; i < nRegions; i++) {
             regions[i] = new RecordingRegion(channelData);
         }
         return regions;

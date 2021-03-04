@@ -91,7 +91,7 @@ class BufferedReceivingData {
     }
 
     /**
-     * Store the recording region information
+     * Store the recording region information.
      *
      * @param location
      *            The X, Y and P
