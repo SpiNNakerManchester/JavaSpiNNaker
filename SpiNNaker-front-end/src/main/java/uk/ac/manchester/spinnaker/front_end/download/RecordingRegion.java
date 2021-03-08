@@ -35,8 +35,10 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * <p>
  * Must match {@code recording_region_t} in {@code recording.h} in
  * SpiNNFrontEndCommon.
+ * <p>
+ * Do not use as a hash key.
  */
-public class RecordingRegion {
+public final class RecordingRegion {
 	/**
 	 * Size of the channel data on the machine.
 	 * <p>
