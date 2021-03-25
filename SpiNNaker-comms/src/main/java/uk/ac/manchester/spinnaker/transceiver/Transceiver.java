@@ -261,11 +261,6 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private BootSender bootSendConnection;
 	/**
-	 * A list of boot receive connections. These are used to listen for the
-	 * pre-boot board identifiers.
-	 */
-	private final List<BootReceiver> bootReceiveConnections = new ArrayList<>();
-	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
 	 * Note that some of these might not be able to receive SCP; this could be
@@ -609,11 +604,9 @@ public class Transceiver extends UDPTransceiver
 						"Only a single BootSender can be specified");
 			}
 			bootSendConnection = (BootSender) conn;
-		}
-
-		// locate any boot receiver connections
-		if (conn instanceof BootReceiver) {
-			bootReceiveConnections.add((BootReceiver) conn);
+		} else if (conn instanceof BootReceiver) {
+			// non-sending boot receivers aren't supported; warn about them
+			log.warn("unhandled boot connection: {}", conn);
 		}
 
 		// Locate any connections listening on a UDP port
