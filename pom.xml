@@ -304,6 +304,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
 							<exclude>README.md</exclude>
+							<exclude>SECURITY.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
