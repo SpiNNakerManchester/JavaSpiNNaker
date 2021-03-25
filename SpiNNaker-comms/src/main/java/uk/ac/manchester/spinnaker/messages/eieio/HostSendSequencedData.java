@@ -33,6 +33,8 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 	public final int sequenceNum;
 	/** The data. */
 	public final EIEIODataMessage eieioDataMessage;
+	/** The length of the payload of the message. */
+	private static final int PAYLOAD_LENGTH = 2;
 
 	/**
 	 * Create a message.
@@ -62,7 +64,7 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 
 	@Override
 	public int minPacketLength() {
-		return super.minPacketLength() + 2;
+		return super.minPacketLength() + PAYLOAD_LENGTH;
 	}
 
 	@Override
