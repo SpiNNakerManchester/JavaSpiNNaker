@@ -14,70 +14,100 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 name: Build and Test
-
-on: [push]
+on: 
+  push:
+    # On any push to any branch
+  schedule:
+    # Build daily on the default branch at 04:40
+    - cron: "40 4 * * *"
+env:
+  SETTINGS_FILE: .github/settings.xml
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [8, 11, 14]
-    env:
-      SETTINGS_FILE: .github/settings.xml
-      CI_NAME: "Github Actions"
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Set branch name and PR number
-        id: refs
-        env:
-          BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-          COVERALLS_SECRET: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
-          echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
-          echo "::set-output name=secret_present::$(test -n "$COVERALLS_SECRET"; echo $?)"
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java }}
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-j${{ matrix.java }}
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: build-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: build-m2-j${{ matrix.java }}
 
-      - name: Ensure dependencies are present
-        run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE || true
+    - name: Ensure dependencies are present
+      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
+      continue-on-error: true
 
-      - name: "Check: copyright declarations"
-        run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
+    - name: Build
+      run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+    - name: "Check: Test"
+      run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
+    - name: "Report: Coverage via coveralls.io"
+      run: |
+        export CI_BRANCH=${BRANCH_NAME_OR_REF#refs/heads/}
+        export CI_PULL_REQUEST=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        mvn coveralls:report --settings $SETTINGS_FILE --no-transfer-progress -DrepoToken=$COVERALLS_SECRET
+      env:
+        CI_NAME: github
+        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+        CI_BUILD_NUMBER: ${{ github.run_id }}
+        CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
+        COVERALLS_SECRET: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Build (JDK 8 only)
+      if: matrix.java == 8
+      uses: actions/upload-artifact@v2
+      with:
+        name: spinnaker-exe.jar
+        path: SpiNNaker-front-end/target/spinnaker-exe.jar
+        retention-days: 5
 
-      - name: Build
-        run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
-        
-      - name: "Check: Test"
-        run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
-        
-      - name: "Check: Code Style"
-        run: mvn checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true
-        
-      - name: "Check: Documentation"
-        run: mvn javadoc:aggregate --settings $SETTINGS_FILE
+    - name: "Post: Purge SNAPSHOTs"
+      # Do not cache SNAPSHOT dependencies; we don't use external snapshots
+      # and we will always rebuild internal snapshots.
+      run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
+      continue-on-error: true
 
-      - name: "Report: Coverage via coveralls.io"
-        if: ${{ steps.refs.outputs.secret_present }} > 0
-        run: mvn coveralls:report --settings $SETTINGS_FILE --no-transfer-progress -DrepoToken=$COVERALLS_SECRET
-        env:
-          CI_BUILD_NUMBER: ${{ github.run_id }}
-          CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
-          CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
-          CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
-          COVERALLS_SECRET: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: validate-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: validate-m2-j${{ matrix.java }}
 
-      - name: "Post: Purge SNAPSHOTs"
-        # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
-        # will always rebuild internal snapshots.
-        run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
+    - name: Ensure dependencies are present
+      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
+      continue-on-error: true
+
+    - name: "Check: copyright declarations"
+      run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
+    - name: "Check: Code Style"
+      run: mvn checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true
+    - name: Build
+      run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+    - name: "Check: Documentation"
+      run: mvn javadoc:aggregate --settings $SETTINGS_FILE
+
+    - name: "Post: Purge SNAPSHOTs"
+      # Do not cache SNAPSHOT dependencies; we don't use external snapshots and
+      # we will always rebuild internal snapshots.
+      run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
+      continue-on-error: true
