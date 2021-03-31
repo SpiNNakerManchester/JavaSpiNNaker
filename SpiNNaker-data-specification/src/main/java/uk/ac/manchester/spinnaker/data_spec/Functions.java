@@ -199,7 +199,8 @@ class Functions implements FunctionAPI {
             memRegions.set(new MemoryRegionReal(region, 0, unfilled, size));
         } else {
             int reference = spec.getInt();
-            memRegions.set(new MemoryRegionReal(region, 0, unfilled, size, reference));
+            memRegions.set(new MemoryRegionReal(
+                    region, 0, unfilled, size, reference));
             referenceableRegions.add(region);
         }
         spaceAllocated += size;

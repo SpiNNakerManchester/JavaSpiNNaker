@@ -22,15 +22,15 @@ package uk.ac.manchester.spinnaker.data_spec;
 public interface MemoryRegion {
 
     /** @return the index of the memory region. */
-    public int getIndex();
+    int getIndex();
 
     /** @return the base address of the region. */
-    public int getRegionBase();
+    int getRegionBase();
 
     /**
      * Set the base address of the region.
      * @param baseAddress The base address to set.
      */
-    public void setRegionBase(int baseAddress);
+    void setRegionBase(int baseAddress);
 
 }

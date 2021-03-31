@@ -107,7 +107,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
      *         always unfilled.
      */
     public boolean isUnfilled(int regionID) {
-        return isEmpty(regionID) || !(regions[regionID] instanceof MemoryRegionReal)
+        return isEmpty(regionID)
+                || !(regions[regionID] instanceof MemoryRegionReal)
                 || ((MemoryRegionReal) regions[regionID]).isUnfilled();
     }
 

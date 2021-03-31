@@ -166,7 +166,8 @@ public class Executor implements Closeable {
     }
 
     /**
-     * Set the base address of the data and update the region addresses
+     * Set the base address of the data and update the region addresses.
+     *
      * @param startAddress
      */
     public void setBaseAddress(int startAddress) {
@@ -213,7 +214,8 @@ public class Executor implements Closeable {
     public int getConstructedDataSize() {
         return APP_PTR_TABLE_BYTE_SIZE
                 + memRegions.stream().filter(r -> r instanceof MemoryRegionReal)
-                        .mapToInt(r -> ((MemoryRegionReal) r).getAllocatedSize()).sum();
+                        .mapToInt(r -> (
+                                (MemoryRegionReal) r).getAllocatedSize()).sum();
     }
 
     /**
