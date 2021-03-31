@@ -52,7 +52,7 @@ class ExecutionContext implements AutoCloseable {
             APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE;
 
     private final Transceiver txrx;
-    private final Map<Integer, RegionToRef> regionsToReference = new HashMap<>();
+    private final Map<Integer, RegionToRef> regionsToRef = new HashMap<>();
     private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
     ExecutionContext(Transceiver txrx) {
@@ -67,21 +67,22 @@ class ExecutionContext implements AutoCloseable {
         for (int region : executor.getReferenceableRegions()) {
             MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
             int ref = r.getReference();
-            if (regionsToReference.containsKey(ref)) {
-                RegionToRef reg = regionsToReference.get(ref);
-                throw new DataSpecificationException("Reference " + ref +
-                        " from " + core + ", " + region + " already exists from "
-                        + reg);
+            if (regionsToRef.containsKey(ref)) {
+                RegionToRef reg = regionsToRef.get(ref);
+                throw new DataSpecificationException("Reference " + ref
+                        + " from " + core + ", " + region
+                        + " already exists from "+ reg);
             }
-            regionsToReference.put(ref, new RegionToRef(core, r.getRegionBase()));
+            regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
         }
 
         CoreToFill coreToFill = new CoreToFill(executor, start, core);
         for (int region : executor.getRegionsToFill()) {
-            MemoryRegionReference r = (MemoryRegionReference) executor.getRegion(region);
+            MemoryRegionReference r =
+                    (MemoryRegionReference) executor.getRegion(region);
             int ref = r.getReference();
-            if (regionsToReference.containsKey(ref)) {
-                RegionToRef reg = regionsToReference.get(ref);
+            if (regionsToRef.containsKey(ref)) {
+                RegionToRef reg = regionsToRef.get(ref);
                 if (!reg.core.onSameChipAs(core)) {
                     throw new DataSpecificationException(
                             "Region " + ref + " on " + reg + " cannot be"
@@ -118,12 +119,12 @@ class ExecutionContext implements AutoCloseable {
         for (CoreToFill toFill : regionsToFill) {
             for (MemoryRegionReference ref : toFill.refs) {
                 int reference = ref.getReference();
-                if (!regionsToReference.containsKey(reference)) {
+                if (!regionsToRef.containsKey(reference)) {
                     throw new DataSpecificationException(
                             "Reference " + reference + " from " + toFill
                             + " not found");
                 }
-                RegionToRef reg = regionsToReference.get(reference);
+                RegionToRef reg = regionsToRef.get(reference);
                 if (!reg.core.onSameChipAs(toFill.core)) {
                     throw new DataSpecificationException(
                             "Region " + ref + " on " + reg + " cannot be"

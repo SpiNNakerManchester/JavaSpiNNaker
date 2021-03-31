@@ -115,7 +115,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
         try (Progress bar = new Progress(opsToRun, LOADING_MSG);
                 ExecutionContext context = new ExecutionContext(txrx)) {
             executor.submitTasks(ethernets.stream()
-                    .map(board -> () -> loadBoard(board, storage, bar, context)))
+                    .map(board -> ()
+                            -> loadBoard(board, storage, bar, context)))
                     .awaitAndCombineExceptions();
         } catch (StorageException | IOException | ProcessException
                 | DataSpecificationException | RuntimeException e) {
@@ -150,7 +151,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
         try (Progress bar = new Progress(opsToRun, LOADING_MSG);
                 ExecutionContext context = new ExecutionContext(txrx)) {
             executor.submitTasks(ethernets.stream()
-                    .map(board -> () -> loadBoard(board, storage, bar, false, context)))
+                    .map(board -> ()
+                            -> loadBoard(board, storage, bar, false, context)))
                     .awaitAndCombineExceptions();
         } catch (StorageException | IOException | ProcessException
                 | DataSpecificationException | RuntimeException e) {
@@ -185,7 +187,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
         try (Progress bar = new Progress(opsToRun, LOADING_MSG);
                 ExecutionContext context = new ExecutionContext(txrx)) {
             executor.submitTasks(ethernets.stream()
-                    .map(board -> () -> loadBoard(board, storage, bar, true, context)))
+                    .map(board -> ()
+                            -> loadBoard(board, storage, bar, true, context)))
                     .awaitAndCombineExceptions();
         } catch (StorageException | IOException | ProcessException
                 | DataSpecificationException | RuntimeException e) {

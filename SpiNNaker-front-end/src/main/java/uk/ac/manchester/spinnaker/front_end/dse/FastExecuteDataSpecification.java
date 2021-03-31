@@ -205,7 +205,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
         try (Progress bar = new Progress(opsToRun, LOADING_MSG);
                 ExecutionContext context = new ExecutionContext(txrx)) {
             executor.submitTasks(ethernets.stream()
-                    .map(board -> () -> loadBoard(board, storage, bar, context)))
+                    .map(board -> ()
+                            -> loadBoard(board, storage, bar, context)))
                     .awaitAndCombineExceptions();
         } catch (StorageException | IOException | ProcessException
                 | DataSpecificationException | RuntimeException e) {
@@ -224,7 +225,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
             return;
         }
         log.info("loading data onto {} cores on board", cores.size());
-        try (BoardWorker worker = new BoardWorker(board, storage, bar, execContext)) {
+        try (BoardWorker worker = new BoardWorker(board, storage, bar,
+                execContext)) {
             HashMap<CoreToLoad, Integer> addresses =
                     new HashMap<CoreToLoad, Integer>();
             for (CoreToLoad ctl : cores) {
