@@ -206,7 +206,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
                 ExecutionContext context = new ExecutionContext(txrx)) {
             executor.submitTasks(ethernets.stream()
                     .map(board -> ()
-                            -> loadBoard(board, storage, bar, context)))
+                        -> loadBoard(board, storage, bar, context)))
                     .awaitAndCombineExceptions();
         } catch (StorageException | IOException | ProcessException
                 | DataSpecificationException | RuntimeException e) {

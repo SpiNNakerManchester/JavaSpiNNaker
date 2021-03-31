@@ -71,7 +71,7 @@ class ExecutionContext implements AutoCloseable {
                 RegionToRef reg = regionsToRef.get(ref);
                 throw new DataSpecificationException("Reference " + ref
                         + " from " + core + ", " + region
-                        + " already exists from "+ reg);
+                        + " already exists from " + reg);
             }
             regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
         }
