@@ -400,20 +400,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<developers>
 		<!-- IDs are github logins -->
 		<developer>
-			<id>alan-stokes</id>
-			<name>Alan Stokes</name>
-			<roles>
-				<role>New Feature Development Lead</role>
-				<role>Dissemination</role>
-			</roles>
-		</developer>
-		<developer>
 			<id>andrewgait</id>
 			<name>Andrew Gait</name>
 			<roles>
 				<role>New Feature Development</role>
 				<role>User Support</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>agr</id>
@@ -424,6 +417,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Project Liaison</role>
 				<role>Dissemination</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>Christian-B</id>
@@ -433,6 +427,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Software Testing</role>
 				<role>Continuous Integration Control</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>dkfellows</id>
@@ -443,16 +438,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Software Quality Control</role>
 				<role>Continuous Integration Control</role>
 			</roles>
+			<organization>The University of Manchester</organization>
+		</developer>
+		<developer>
+			<id>sfurber</id>
+			<name>Steve Furber</name>
+			<roles>
+				<role>Head of SpiNNaker Project</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>alan-stokes</id>
+			<name>Alan Stokes</name>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
 		</developer>
 		<developer>
 			<id>oliverrhodes</id>
 			<name>Oliver Rhodes</name>
 			<roles>
-				<role>Academic Oversight</role>
-				<role>Dissemination</role>
-				<role>Model Development</role>
+				<role>Emeritus</role>
 			</roles>
 			<url>https://www.research.manchester.ac.uk/portal/oliver.rhodes.html</url>
+			<organization>The University of Manchester</organization>
 		</developer>
 	</developers>
 
