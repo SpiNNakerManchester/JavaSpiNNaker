@@ -69,14 +69,14 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
  * A high-level interface for requesting and managing allocations of SpiNNaker
  * boards.
  * <p>
- * Constructing a {@link SpallocJob} object connects to a
- * <a href="https://github.com/project-rig/spalloc_server">spalloc-server</a>
+ * Constructing a {@link SpallocJob} object connects to a <a href=
+ * "https://github.com/SpiNNakerManchester/spalloc_server">spalloc-server</a>
  * and requests a number of SpiNNaker boards. The job object may then be used to
  * monitor the state of the request, control the boards allocated and determine
  * their IP addresses.
  * <p>
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
- * like so::
+ * like so:
  *
  * <pre>
  * try (SpallocJob j = new SpallocJob(Arrays.asList(6), null)) {
