@@ -22,3 +22,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "bug"
+      - "dependabot"
+    milestone: "7.0.0"
+    assignees:
+      - "dkfellows"
+    reviewers:
+      - "Christian-B"
+      - "rowleya"
