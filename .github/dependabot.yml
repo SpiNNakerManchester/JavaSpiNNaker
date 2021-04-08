@@ -25,7 +25,7 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    milestone: "7.0.0"
+    milestone: 6   # This is the *ID* for the 7.0.0 milestone
     assignees:
       - "dkfellows"
     reviewers:
