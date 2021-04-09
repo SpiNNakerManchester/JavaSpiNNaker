@@ -351,7 +351,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
-
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
@@ -379,7 +378,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>GitHub Actions</system>
+		<system>github</system>
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions</url>
 	</ciManagement>
 	<distributionManagement>
@@ -393,8 +392,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<mailingList>
 			<name>SpiNNaker Users Group</name>
 			<post>spinnakerusers@googlegroups.com</post>
-			<subscribe>http://groups.google.com/group/spinnakerusers/subscribe</subscribe>
+			<subscribe>spinnakerusers+subscribe@googlegroups.com</subscribe>
 			<unsubscribe>spinnakerusers+unsubscribe@googlegroups.com</unsubscribe>
+			<archive>https://groups.google.com/g/spinnakerusers</archive>
 		</mailingList>
 	</mailingLists>
 	<developers>
@@ -407,6 +407,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>User Support</role>
 			</roles>
 			<organization>The University of Manchester</organization>
+			<url>https://personalpages.manchester.ac.uk/staff/Andrew.Gait/</url>
 		</developer>
 		<developer>
 			<id>agr</id>
@@ -439,6 +440,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Continuous Integration Control</role>
 			</roles>
 			<organization>The University of Manchester</organization>
+			<url>https://github.com/dkfellows</url>
 		</developer>
 		<developer>
 			<id>sfurber</id>
@@ -446,6 +448,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<roles>
 				<role>Head of SpiNNaker Project</role>
 			</roles>
+			<organization>The University of Manchester</organization>
+			<url>http://apt.cs.manchester.ac.uk/people/sfurber/</url>
 		</developer>
 		<developer>
 			<id>alan-stokes</id>
@@ -453,6 +457,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<roles>
 				<role>Emeritus</role>
 			</roles>
+			<organization>STFC (ex University of Manchester)</organization>
 		</developer>
 		<developer>
 			<id>oliverrhodes</id>
