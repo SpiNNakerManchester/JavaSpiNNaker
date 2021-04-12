@@ -77,14 +77,14 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment"> * A high-level interface for requesting and managing allocations of SpiNNaker</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment"> * boards.</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment"> * Constructing a {@link SpallocJob} object connects to a</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment"> * &lt;a href="<a href="https://github.com/project-rig/spalloc_server" target="alexandria_uri">https://github.com/project-rig/spalloc_server</a>"&gt;spalloc-server&lt;/a&gt;</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment"> * Constructing a {@link SpallocJob} object connects to a &lt;a href=</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment"> * "<a href="https://github.com/SpiNNakerManchester/spalloc_server" target="alexandria_uri">https://github.com/SpiNNakerManchester/spalloc_server</a>"&gt;spalloc-server&lt;/a&gt;</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment"> * and requests a number of SpiNNaker boards. The job object may then be used to</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment"> * monitor the state of the request, control the boards allocated and determine</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment"> * their IP addresses.</em>
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment"> * In its simplest form, a {@link SpallocJob} can be used as a context manager</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment"> * like so::</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment"> * like so:</em>
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment"> * &lt;pre&gt;</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment"> * try (SpallocJob j = new SpallocJob(Arrays.asList(6), null)) {</em>
