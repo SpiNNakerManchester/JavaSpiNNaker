@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>5.1.1-SNAPSHOT</version>
+	<version>6.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -31,10 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
-		<spinnaker.version>5.1.1-SNAPSHOT</spinnaker.version>
+		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<log4j.version>2.13.3</log4j.version>
-		<junit.version>5.6.0</junit.version>
+		<junit.version>5.7.1</junit.version>
 		<checkstyle.version>8.29</checkstyle.version>
 
 		<testing.version>3.0.0-M4</testing.version>
@@ -351,7 +351,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
 		<module>SpiNNaker-pacman</module>
-
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 	</modules>
@@ -379,7 +378,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>GitHub Actions</system>
+		<system>github</system>
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions</url>
 	</ciManagement>
 	<distributionManagement>
@@ -393,20 +392,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<mailingList>
 			<name>SpiNNaker Users Group</name>
 			<post>spinnakerusers@googlegroups.com</post>
-			<subscribe>http://groups.google.com/group/spinnakerusers/subscribe</subscribe>
+			<subscribe>spinnakerusers+subscribe@googlegroups.com</subscribe>
 			<unsubscribe>spinnakerusers+unsubscribe@googlegroups.com</unsubscribe>
+			<archive>https://groups.google.com/g/spinnakerusers</archive>
 		</mailingList>
 	</mailingLists>
 	<developers>
 		<!-- IDs are github logins -->
-		<developer>
-			<id>alan-stokes</id>
-			<name>Alan Stokes</name>
-			<roles>
-				<role>New Feature Development Lead</role>
-				<role>Dissemination</role>
-			</roles>
-		</developer>
 		<developer>
 			<id>andrewgait</id>
 			<name>Andrew Gait</name>
@@ -414,6 +406,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>New Feature Development</role>
 				<role>User Support</role>
 			</roles>
+			<organization>The University of Manchester</organization>
+			<url>https://personalpages.manchester.ac.uk/staff/Andrew.Gait/</url>
 		</developer>
 		<developer>
 			<id>agr</id>
@@ -424,6 +418,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Project Liaison</role>
 				<role>Dissemination</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>Christian-B</id>
@@ -433,6 +428,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Software Testing</role>
 				<role>Continuous Integration Control</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>dkfellows</id>
@@ -443,16 +439,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>Software Quality Control</role>
 				<role>Continuous Integration Control</role>
 			</roles>
+			<organization>The University of Manchester</organization>
+			<url>https://github.com/dkfellows</url>
+		</developer>
+		<developer>
+			<id>sfurber</id>
+			<name>Steve Furber</name>
+			<roles>
+				<role>Head of SpiNNaker Project</role>
+			</roles>
+			<organization>The University of Manchester</organization>
+			<url>http://apt.cs.manchester.ac.uk/people/sfurber/</url>
+		</developer>
+		<developer>
+			<id>alan-stokes</id>
+			<name>Alan Stokes</name>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
+			<organization>STFC (ex University of Manchester)</organization>
 		</developer>
 		<developer>
 			<id>oliverrhodes</id>
 			<name>Oliver Rhodes</name>
 			<roles>
-				<role>Academic Oversight</role>
-				<role>Dissemination</role>
-				<role>Model Development</role>
+				<role>Emeritus</role>
 			</roles>
 			<url>https://www.research.manchester.ac.uk/portal/oliver.rhodes.html</url>
+			<organization>The University of Manchester</organization>
 		</developer>
 	</developers>
 
