@@ -17,7 +17,8 @@ current version of the code, that will _consistently_ be our answer.
 | Version | Supported          |
 | ------- | ------------------ |
 | git `master` branch | :white_check_mark: |
-| 5.1     | :white_check_mark: |
+| 6.0     | :white_check_mark: |
+| 5.1     | :x:                |
 | 5.0     | :x:                |
 | 4.0.    | :x:                |
 | < 4.0   | :x:                |
@@ -28,7 +29,7 @@ Please clearly put **SECURITY:** at the start of the title of communications on
 security issues, whether using issues or email.
 
 If you find a problem and don't wish to just
-[report an Issue](https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/new) or 
+[report an Issue](https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/new) or
 [make a Pull Request](https://github.com/SpiNNakerManchester/JavaSpiNNaker/compare)
 due to confidentiality concerns, you may send an email to the
 [SpiNNaker team mailing list](mailto:SPINNAKER@listserv.manchester.ac.uk) (moderated,
