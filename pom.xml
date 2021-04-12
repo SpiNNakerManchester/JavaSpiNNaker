@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<junit.version>5.7.1</junit.version>
 		<checkstyle.version>8.29</checkstyle.version>
 
-		<testing.version>3.0.0-M4</testing.version>
+		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.5</jacoco.version>
 		<javadoc.version>3.2.0</javadoc.version>
   	</properties>
