@@ -216,7 +216,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.1.2</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 					</configuration>
