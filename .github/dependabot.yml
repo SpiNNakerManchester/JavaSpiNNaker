@@ -31,3 +31,16 @@ updates:
     reviewers:
       - "Christian-B"
       - "rowleya"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "bug"
+      - "dependabot"
+    milestone: 6   # This is the *ID* for the 7.0.0 milestone
+    assignees:
+      - "dkfellows"
+    reviewers:
+      - "Christian-B"
+      - "rowleya"
