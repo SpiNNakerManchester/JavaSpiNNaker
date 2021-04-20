@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to get notifications about a machine.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.notify_machine"
+ *      >Spalloc Server documentation</a>
  */
 public class NotifyMachineCommand extends Command<String> {
 	/**

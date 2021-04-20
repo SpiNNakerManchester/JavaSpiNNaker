@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to get machine information relating to a job.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.get_job_machine_info"
+ *      >Spalloc Server documentation</a>
+ * @see JobMachineInfo The basic result type associated with the request
  */
 public class GetJobMachineInfoCommand extends Command<Integer> {
 	/**

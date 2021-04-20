@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The physical coordinates of a board.
  */
 @JsonPropertyOrder({
-		"cabinet", "frame", "board"
+	"cabinet", "frame", "board"
 })
 @JsonFormat(shape = ARRAY)
 public class BoardPhysicalCoordinates {

@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to keep a job alive.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.job_keepalive"
+ *      >Spalloc Server documentation</a>
  */
 public class JobKeepAliveCommand extends Command<Integer> {
 	/**

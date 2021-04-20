@@ -72,6 +72,10 @@ public class BMPConnectionData {
 	 * assumed to be the IP address of the machine, with 1 subtracted from the
 	 * final part e.g. if the machine IP address is {@code 192.168.0.5}, the BMP
 	 * IP address is assumed to be {@code 192.168.0.4}.
+	 * <p>
+	 * This algorithm is rather hokey. Far better for the user to simply know
+	 * where the BMP actually is (this is necessary in any large deployment
+	 * anyway).
 	 *
 	 * @param host
 	 *            the SpiNNaker machine main host
@@ -79,6 +83,10 @@ public class BMPConnectionData {
 	 *            the number of boards in the machine
 	 * @throws UnknownHostException
 	 *             If the IP address computations fail
+	 * @throws IllegalArgumentException
+	 *             If a host with an address that can't be related to a BMP is
+	 *             given. Specifically, the given IP address can't end in
+	 *             {@code .0} or {@code .1} or things will not work.
 	 */
 	public BMPConnectionData(InetAddress host, int numBoards)
 			throws UnknownHostException {

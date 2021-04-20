@@ -444,13 +444,15 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param timeout
 	 *            The communications timeout
 	 * @param args
-	 *            The machine shape description.
+	 *            The machine shape description (0 to 3 integers).
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalArgumentException
+	 *             If a bad size of machine shape is given.
 	 */
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			List<Integer> args, Map<String, Object> kwargs)
@@ -735,6 +737,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalStateException
+	 *             If the server is not compatible with this client.
 	 */
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {

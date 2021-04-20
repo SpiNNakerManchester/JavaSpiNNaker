@@ -68,6 +68,8 @@ public class Configuration {
 	 *
 	 * @param configFilename
 	 *            The name of file to load from.
+	 * @throws RuntimeException
+	 *             If the configuration could not be loaded.
 	 */
 	public Configuration(String configFilename) {
 		configurationMap = initDefaultValues();

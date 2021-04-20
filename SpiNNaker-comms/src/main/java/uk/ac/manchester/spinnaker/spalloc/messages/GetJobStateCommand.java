@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request the state of a job.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.get_job_state"
+ *      >Spalloc Server documentation</a>
+ * @see JobState The basic result type associated with the request
  */
 public class GetJobStateCommand extends Command<Integer> {
 	/**

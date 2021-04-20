@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request the list of all jobs from the spalloc server.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.list_jobs"
+ *      >Spalloc Server documentation</a>
+ * @see JobDescription The basic result type associated with the request
  */
 public class ListJobsCommand extends Command<Integer> {
 	/**
