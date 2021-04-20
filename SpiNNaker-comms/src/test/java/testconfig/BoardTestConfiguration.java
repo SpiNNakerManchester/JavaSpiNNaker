@@ -90,7 +90,7 @@ public class BoardTestConfiguration {
 			throws SocketException, UnknownHostException {
 		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
-				() -> "test board (" + remotehost + ") appears to be down");
+			() -> "test board (" + remotehost + ") appears to be down");
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {

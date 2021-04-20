@@ -233,7 +233,7 @@ public class TransceiverITCase {
 		List<CPUInfo> cpuInfos = new ArrayList<>();
 		txrx.getCPUInformation(cores).forEach(cpuInfos::add);
 		sort(cpuInfos,
-				(o1, o2) -> o1.asCoreLocation().compareTo(o2.asCoreLocation()));
+			(o1, o2) -> o1.asCoreLocation().compareTo(o2.asCoreLocation()));
 		return cpuInfos;
 	}
 
@@ -381,7 +381,7 @@ public class TransceiverITCase {
 			AppID appID = txrx.getAppIdTracker().allocateNewID();
 
 			section("Discovering other connections to the machine",
-					() -> findConnections(txrx));
+				() -> findConnections(txrx));
 			section("Machine Details", () -> retrieveDetails(txrx));
 			section("Memory Write and Read", () -> readWrite(txrx));
 			section("Flood Memory Write", () -> floodWrite(txrx));
@@ -393,7 +393,7 @@ public class TransceiverITCase {
 			section("Create and Clear IP Tags", () -> iptags(txrx));
 			section("Load and Clear Routes", () -> routes(txrx, appID));
 			section("Router Diagnostic Filter Testing",
-					() -> diagnostics(txrx));
+				() -> diagnostics(txrx));
 
 			/*
 			 * 8-byte numbers have to be converted into bytebuffers to be
