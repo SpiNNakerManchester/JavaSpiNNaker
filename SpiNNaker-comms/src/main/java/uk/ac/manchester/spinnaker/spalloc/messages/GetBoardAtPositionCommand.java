@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request the logical location of a board.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.get_board_at_position"
+ *      >Spalloc Server documentation</a>
+ * @see BoardCoordinates The basic result type associated with the request
  */
 public class GetBoardAtPositionCommand extends Command<Integer> {
 	/**

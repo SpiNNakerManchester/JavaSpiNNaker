@@ -112,11 +112,13 @@ public enum Direction {
      * The Direction with this label
      * <p>
      * The current implementation assumes the labels are lowercase and words are
-     * separated by underscore.
+     * separated by underscore (e.g., {@code north_east}).
      *
      * @param label
-     *            Label of this Direction
-     * @return IllegalArgumentException If no direction is found.
+     *            Label of a Direction
+     * @return A valid Direction
+     * @throws IllegalArgumentException
+     *             If no direction is found.
      */
     public static Direction byLabel(String label) {
         for (Direction direction: Direction.values()) {

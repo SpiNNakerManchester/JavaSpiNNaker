@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Christian
  */
 @JsonPropertyOrder({
-		"x", "y", "z", "link"
+	"x", "y", "z", "link"
 })
 @JsonFormat(shape = ARRAY)
 public class BoardLink {

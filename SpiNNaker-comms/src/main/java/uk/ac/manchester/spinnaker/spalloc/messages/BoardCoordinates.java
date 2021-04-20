@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The logical coordinates of a board.
  */
 @JsonPropertyOrder({
-		"x", "y", "z"
+	"x", "y", "z"
 })
 @JsonFormat(shape = ARRAY)
 public final class BoardCoordinates {

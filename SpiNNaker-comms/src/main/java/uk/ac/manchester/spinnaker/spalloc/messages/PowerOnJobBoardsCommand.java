@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to turn on the boards associated with a job.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.power_on_job_boards"
+ *      >Spalloc Server documentation</a>
  */
 public class PowerOnJobBoardsCommand extends Command<Integer> {
 	/**

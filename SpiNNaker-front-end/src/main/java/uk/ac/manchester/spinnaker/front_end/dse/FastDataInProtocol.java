@@ -139,8 +139,9 @@ class FastDataInProtocol {
 	 *
 	 * @param transactionId
 	 *            The transaction id for this stream.
-	 *
 	 * @return The message containing a chunk of the data.
+	 * @throws RuntimeException
+	 *             If the sequence number is nonsense.
 	 */
 	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
 		ByteBuffer payload =

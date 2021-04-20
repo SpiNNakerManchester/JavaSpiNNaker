@@ -111,6 +111,8 @@ class BufferedReceivingData {
 	 * @param location
 	 *            The X, Y, P and Region
 	 * @return The end state
+	 * @throws IllegalArgumentException
+	 *             If the location doesn't have recording regions.
 	 */
 	public RecordingRegion getRecordingRegion(RegionLocation location) {
 		CoreLocation coreLocation = location.asCoreLocation();

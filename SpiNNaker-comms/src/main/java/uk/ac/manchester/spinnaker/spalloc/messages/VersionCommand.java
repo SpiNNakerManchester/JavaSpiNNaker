@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request the version of the spalloc server.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.version"
+ *      >Spalloc Server documentation</a>
  */
 public class VersionCommand extends Command<Integer> {
 	/**

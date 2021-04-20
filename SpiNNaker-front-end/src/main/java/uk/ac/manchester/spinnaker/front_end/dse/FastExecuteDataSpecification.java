@@ -136,6 +136,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If IO goes wrong.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws IllegalStateException
+	 *             If something really strange occurs with talking to the BMP;
+	 *             this constructor should not be doing that!
 	 */
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
@@ -200,6 +203,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws IllegalStateException
+	 *             If an unexpected exception occurs in any of the parallel
+	 *             tasks.
 	 */
 	public void loadCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,

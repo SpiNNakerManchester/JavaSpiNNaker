@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * Describes a connection by its chip and hostname.
  */
 @JsonPropertyOrder({
-		"chip", "hostname"
+	"chip", "hostname"
 })
 @JsonFormat(shape = ARRAY)
 public final class Connection {

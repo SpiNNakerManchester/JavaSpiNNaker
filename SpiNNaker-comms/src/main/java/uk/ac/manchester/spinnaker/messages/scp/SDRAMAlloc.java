@@ -56,6 +56,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	 *            the tag for the SDRAM, a 8-bit (chip-wide) tag that can be
 	 *            looked up by a SpiNNaker application to discover the address
 	 *            of the allocated block
+	 * @throws IllegalArgumentException
+	 *             If a bad tag is given.
 	 */
 	public SDRAMAlloc(HasChipLocation chip, AppID appID, int size, int tag) {
 		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), size, tag);
