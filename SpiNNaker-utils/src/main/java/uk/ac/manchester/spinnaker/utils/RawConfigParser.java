@@ -70,6 +70,9 @@ public class RawConfigParser {
 	 *
 	 * @param resource
 	 *            The handle to the configuration file.
+	 * @throws RuntimeException
+	 *             If the file can't be read. (NB: <i>not</i>
+	 *             {@link IOException}.)
 	 */
 	public RawConfigParser(URL resource) {
 		this();
@@ -88,6 +91,9 @@ public class RawConfigParser {
 	 *
 	 * @param file
 	 *            The handle to the configuration file.
+	 * @throws RuntimeException
+	 *             If the file can't be read. (NB: <i>not</i>
+	 *             {@link IOException}.)
 	 */
 	public RawConfigParser(File file) {
 		this();
