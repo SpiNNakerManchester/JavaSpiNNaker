@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to get the location of a board in a machine by physical location.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.where_is"
+ *      >Spalloc Server documentation</a>
+ * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	/**

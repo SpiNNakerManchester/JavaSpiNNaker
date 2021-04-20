@@ -74,6 +74,8 @@ public class BootMessage implements SerializableMessage {
 	 *            The third arg
 	 * @param buffer
 	 *            The payload
+	 * @throws IllegalArgumentException
+	 *             if the payload is too large for the message
 	 */
 	public BootMessage(BootOpCode opcode, int operand1, int operand2,
 			int operand3, ByteBuffer buffer) {

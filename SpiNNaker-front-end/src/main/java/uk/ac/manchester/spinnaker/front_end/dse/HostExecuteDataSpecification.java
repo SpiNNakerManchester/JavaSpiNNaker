@@ -79,6 +79,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws IllegalStateException
+	 *             If something really strange occurs with talking to the BMP;
+	 *             this constructor should not be doing that!
 	 */
 	public HostExecuteDataSpecification(Machine machine)
 			throws IOException, ProcessException {
@@ -110,6 +113,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws IllegalStateException
+	 *             If an unexpected exception occurs in any of the parallel
+	 *             tasks.
 	 */
 	public void loadAllCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
@@ -144,6 +150,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws IllegalStateException
+	 *             If an unexpected exception occurs in any of the parallel
+	 *             tasks.
 	 */
 	public void loadApplicationCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
@@ -178,6 +187,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 *             If SpiNNaker rejects a message.
 	 * @throws DataSpecificationException
 	 *             If a data specification in the database is invalid.
+	 * @throws IllegalStateException
+	 *             If an unexpected exception occurs in any of the parallel
+	 *             tasks.
 	 */
 	public void loadSystemCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,

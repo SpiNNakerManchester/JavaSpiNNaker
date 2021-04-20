@@ -191,6 +191,9 @@ abstract class BaseIO implements AbstractIO {
 	 *            How to make a new instance of the current class that
 	 *            represents the slice.
 	 * @return The sliced object.
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             If the indices are out of the range supported by this IO
+	 *             object.
 	 */
 	final <IO extends AbstractIO> IO get(Slice slice,
 			SliceFactory<IO> factory) {

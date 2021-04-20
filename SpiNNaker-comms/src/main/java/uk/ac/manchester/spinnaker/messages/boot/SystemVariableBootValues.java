@@ -49,7 +49,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	/**
 	 * Create a set of boot values that is a copy of an existing set of boot
-	 * values.
+	 * values. <em>This new set will be modifiable.</em>
 	 *
 	 * @param original
 	 *            The set of boot values to copy from.
@@ -100,11 +100,15 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	/**
 	 * Get the default values of the system variables that get passed to
-	 * SpiNNaker during boot for a particular version of SpiNNaker board.
+	 * SpiNNaker during boot for a particular version of SpiNNaker board. This
+	 * set of defaults will be <em>unmodifiable</em> and must be copied (with
+	 * the appropriate constructor) to be changed.
 	 *
 	 * @param boardVersion
 	 *            Which sort of SpiNN board is being booted.
 	 * @return The defaults for the specific board.
+	 * @throws IllegalArgumentException
+	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
 		SystemVariableBootValues bv = BootValues.get(boardVersion);
@@ -117,11 +121,15 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	/**
 	 * Get the default values of the system variables that get passed to
-	 * SpiNNaker during boot for a particular version of SpiNNaker board.
+	 * SpiNNaker during boot for a particular version of SpiNNaker board. This
+	 * set of defaults will be <em>unmodifiable</em> and must be copied (with
+	 * the appropriate constructor) to be changed.
 	 *
 	 * @param boardVersion
 	 *            Which sort of SpiNN board is being booted.
 	 * @return The defaults for the specific board.
+	 * @throws IllegalArgumentException
+	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
 		SystemVariableBootValues bv = BootValues.get(
