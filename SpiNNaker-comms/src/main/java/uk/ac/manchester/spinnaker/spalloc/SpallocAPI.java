@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutExcep
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
@@ -98,6 +99,25 @@ public interface SpallocAPI {
 			throws IOException, SpallocServerException {
 		return createJob(args, kwargs, null);
 	}
+
+	/**
+	 * Create a job.
+	 *
+	 * @param builder
+	 *            The builder saying what sort of job to create.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return the ID of the created job.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	int createJob(CreateJobBuilder builder, Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Create a job.

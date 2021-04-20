@@ -41,6 +41,7 @@ import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.DESTROYED;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,11 +60,11 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutEx
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
+import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 /**
  * A high-level interface for requesting and managing allocations of SpiNNaker
@@ -77,25 +78,49 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
  * <p>
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
  * like so:
+ * <p>
  *
  * <pre>
- * try (SpallocJob j = new SpallocJob(Arrays.asList(6), null)) {
+ * Map opts = new HashMap();
+ * opts.put("owner", me);
+ * try (SpallocJob j = new SpallocJob(Arrays.asList(6), opts)) {
  *     myApplication.boot(j.getHostname(), j.getDimensions());
  *     myApplication.run(j.getHostname());
  * }
  * </pre>
- *
+ * <p>
  * In this example a six-board machine is requested and the
  * {@code try}-with-resources context is entered once the allocation has been
  * made and the allocated boards are fully powered on. When control leaves the
  * block, the job is destroyed and the boards shut down by the server ready for
  * another job.
  * <p>
+ * Alternatively, a builder can be used to make the job request:
+ *
+ * <pre>
+ * try (SpallocJob j = new SpallocJob(new CreateJobRequest(6).owner(me))) {
+ *     myApplication.boot(j.getHostname(), j.getDimensions());
+ *     myApplication.run(j.getHostname());
+ * }
+ * </pre>
+ * <p>
  * For more fine-grained control, the same functionality is available via
  * various methods:
  *
  * <pre>
- * SpallocJob j = new SpallocJob(Arrays.asList(6), null));
+ * Map opts = new HashMap();
+ * opts.put("owner", me);
+ * SpallocJob j = new SpallocJob(Arrays.asList(6), opts));
+ * j.waitUntilReady();
+ * myApplication.boot(j.getHostname(), j.getDimensions());
+ * myApplication.run(j.getHostname());
+ * j.destroy();
+ * </pre>
+ *
+ * or:
+ *
+ * <pre>
+ * SpallocJob j = new SpallocJob(new CreateJobRequest(6).owner(me)));
  * j.waitUntilReady();
  * myApplication.boot(j.getHostname(), j.getDimensions());
  * myApplication.run(j.getHostname());
@@ -250,6 +275,26 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param timeout
+	 *            The communications timeout
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	public SpallocJob(String hostname, Integer timeout,
+			CreateJobBuilder builder)
+			throws IOException, SpallocServerException {
+		this(hostname, config.getPort(), timeout, builder);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
 	 * <p>
 	 * The requested machine shape can be one of the following:
 	 * <ul>
@@ -320,6 +365,23 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	public SpallocJob(String hostname, CreateJobBuilder builder)
+			throws IOException, SpallocServerException {
+		this(hostname, config.getPort(), f2ms(config.getTimeout()), builder);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
 	 * <p>
 	 * The requested machine shape can be one of the following:
 	 * <ul>
@@ -383,6 +445,22 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throws IOException, SpallocServerException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
 				args, kwargs);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	public SpallocJob(CreateJobBuilder builder)
+			throws IOException, SpallocServerException {
+		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
+				builder);
 	}
 
 	/**
@@ -477,6 +555,44 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		 * keepalive messages.
 		 */
 		keepaliveTime = f2ms(kwargs.get(KEEPALIVE_PROPERTY));
+		log.info("created spalloc job with ID: {}", id);
+		launchKeepaliveDaemon();
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
+	 * @param hostname
+	 *            The spalloc server host
+	 * @param port
+	 *            The spalloc server port
+	 * @param timeout
+	 *            The communications timeout
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalArgumentException
+	 *             If a bad builder is given.
+	 */
+	public SpallocJob(String hostname, Integer port, Integer timeout,
+			CreateJobBuilder builder)
+			throws IOException, SpallocServerException {
+		if (builder == null) {
+			throw new IllegalArgumentException("a builder must be specified");
+		}
+		this.client = new SpallocClient(hostname, port, timeout);
+		this.timeout = timeout;
+		client.connect();
+		reconnectDelay = f2ms(config.getReconnectDelay());
+		id = client.createJob(builder, timeout);
+		/*
+		 * We also need the keepalive configuration so we know when to send
+		 * keepalive messages.
+		 */
+		keepaliveTime = f2ms(builder.getKeepAlive());
 		log.info("created spalloc job with ID: {}", id);
 		launchKeepaliveDaemon();
 	}
@@ -864,7 +980,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 
 	@Override
 	public String getMachineName()
-            throws IOException, SpallocServerException, IllegalStateException {
+			throws IOException, SpallocServerException, IllegalStateException {
 		if (machineInfoCache == null
 				|| machineInfoCache.getMachineName() == null) {
 			retrieveMachineInfo();

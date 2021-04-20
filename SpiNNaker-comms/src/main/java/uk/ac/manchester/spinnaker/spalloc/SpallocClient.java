@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
@@ -52,6 +52,7 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
+import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.DestroyJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
@@ -215,6 +216,16 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			log.debug("version result: {}", json);
 		}
 		return new Version(json);
+	}
+
+	@Override
+	public int createJob(CreateJobBuilder builder, Integer timeout)
+			throws IOException, SpallocServerException {
+		String json = call(builder.build(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("create result: {}", json);
+		}
+		return parseInt(json);
 	}
 
 	@Override
