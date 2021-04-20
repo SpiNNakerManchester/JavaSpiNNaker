@@ -70,6 +70,8 @@ public final class VersionInfo {
 	/**
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
+	 * @throws IllegalArgumentException
+	 *             If the buffer contains an unsupported format of data
 	 */
 	public VersionInfo(ByteBuffer buffer) {
 		int p = toUnsignedInt(buffer.get());

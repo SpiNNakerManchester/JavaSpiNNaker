@@ -56,6 +56,9 @@ public class IobufRequest {
 	 *            A mapping from fully qualified filenames to an array of
 	 *            sub-arrays of integers, where each sub-array is three elements
 	 *            long.
+	 * @throws IllegalArgumentException
+	 *             If any core is used more than once, whether for the same
+	 *             executable or a different one.
 	 */
 	@JsonCreator(mode = DELEGATING)
 	public IobufRequest(Map<String, List<List<Integer>>> map) {

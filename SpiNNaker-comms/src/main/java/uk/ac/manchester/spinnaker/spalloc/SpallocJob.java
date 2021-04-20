@@ -69,14 +69,14 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
  * A high-level interface for requesting and managing allocations of SpiNNaker
  * boards.
  * <p>
- * Constructing a {@link SpallocJob} object connects to a
- * <a href="https://github.com/project-rig/spalloc_server">spalloc-server</a>
+ * Constructing a {@link SpallocJob} object connects to a <a href=
+ * "https://github.com/SpiNNakerManchester/spalloc_server">spalloc-server</a>
  * and requests a number of SpiNNaker boards. The job object may then be used to
  * monitor the state of the request, control the boards allocated and determine
  * their IP addresses.
  * <p>
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
- * like so::
+ * like so:
  *
  * <pre>
  * try (SpallocJob j = new SpallocJob(Arrays.asList(6), null)) {
@@ -444,13 +444,15 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param timeout
 	 *            The communications timeout
 	 * @param args
-	 *            The machine shape description.
+	 *            The machine shape description (0 to 3 integers).
 	 * @param kwargs
 	 *            The extra properties.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalArgumentException
+	 *             If a bad size of machine shape is given.
 	 */
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			List<Integer> args, Map<String, Object> kwargs)
@@ -735,6 +737,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalStateException
+	 *             If the server is not compatible with this client.
 	 */
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {

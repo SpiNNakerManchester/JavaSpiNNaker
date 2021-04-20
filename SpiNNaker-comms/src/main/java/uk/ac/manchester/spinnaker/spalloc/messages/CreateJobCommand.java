@@ -21,10 +21,15 @@ import java.util.Map;
 
 /**
  * Request to create a job.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.create_job"
+ *      >Spalloc Server documentation</a>
  */
 public class CreateJobCommand extends Command<Integer> {
 	/**
-	 * Create a request to create a job.
+	 * Create a request to create a job. Short-hand form for most basic kind of
+	 * request.
 	 *
 	 * @param numBoards
 	 *            The number of boards to request.
@@ -47,6 +52,8 @@ public class CreateJobCommand extends Command<Integer> {
 	 * @param kwargs
 	 *            Additional arguments required. Must include the key
 	 *            {@code owner}. Values can be boxed primitive types or strings.
+	 * @throws IllegalArgumentException
+	 *             if the {@code owner} key is missing
 	 */
 	public CreateJobCommand(List<Integer> args, Map<String, Object> kwargs) {
 		super("create_job");

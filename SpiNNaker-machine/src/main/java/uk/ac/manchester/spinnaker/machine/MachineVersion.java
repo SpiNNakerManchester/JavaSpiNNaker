@@ -164,7 +164,7 @@ public enum MachineVersion {
     }
 
     /**
-     * Multi board constructor based purely on size.
+     * Multi-board constructor based purely on size.
      *
      * @param width
      *            Number of columns in chips.
@@ -219,11 +219,13 @@ public enum MachineVersion {
     }
 
     /**
-     * Converts a python board id into a MachineVersion.
+     * Converts a python board ID into a MachineVersion.
      *
      * @param id
      *            Python board version.
      * @return Machine version assuming just a single board.
+     * @throws IllegalArgumentException
+     *             If the ID doesn't correspond to a supported version.
      */
     public static MachineVersion byId(Integer id) {
         for (MachineVersion possible : MachineVersion.values()) {

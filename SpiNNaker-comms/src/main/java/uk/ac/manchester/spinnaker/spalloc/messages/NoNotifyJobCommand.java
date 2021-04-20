@@ -18,6 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to not receive notifications about a job.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.no_notify_job"
+ *      >Spalloc Server documentation</a>
  */
 public class NoNotifyJobCommand extends Command<Integer> {
 	/**

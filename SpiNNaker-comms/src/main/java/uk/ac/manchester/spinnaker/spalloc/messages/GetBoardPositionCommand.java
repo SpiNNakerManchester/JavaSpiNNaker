@@ -18,6 +18,12 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request the physical location of a board.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.get_board_position"
+ *      >Spalloc Server documentation</a>
+ * @see BoardPhysicalCoordinates The basic result type associated with the
+ *      request
  */
 public class GetBoardPositionCommand extends Command<Integer> {
 	/**

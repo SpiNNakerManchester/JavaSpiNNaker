@@ -71,6 +71,8 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws IllegalArgumentException
+	 *             If the size doesn't match the alignment of the data type.
 	 */
 	void fillMemory(HasChipLocation chip, int baseAddress, int data, int size,
 			FillDataType dataType) throws ProcessException, IOException {

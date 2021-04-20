@@ -18,6 +18,11 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
  * Request to get the known machines from the spalloc service.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.list_machines"
+ *      >Spalloc Server documentation</a>
+ * @see Machine The basic result type associated with the request
  */
 public class ListMachinesCommand extends Command<String> {
     /** Create a request to list the known SpiNNaker machines. */

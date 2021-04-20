@@ -16,16 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
@@ -36,13 +37,11 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * Stores the information received through the buffering output technique from
  * the SpiNNaker system.
  * <p>
- * The data kept includes the last sent packet and last received packet, their
- * correspondent sequence numbers, the data retrieved, a flag to identify if the
- * data from a core has been flushed and the final state of the buffering output
- * state machine.
+ * The data kept includes the data retrieved, a flag to identify if the data
+ * from a core has been flushed and the recording region sizes and states.
  *
  * @see <a href=
- * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/storage_objects/buffered_receiving_data.py">
+ *      "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/storage_objects/buffered_receiving_data.py">
  *      Python Version</a>
  * @author Christian-B
  */
@@ -55,16 +54,8 @@ class BufferedReceivingData {
 	/** Map of booleans indicating if a region on a core has been flushed. */
 	private final Map<RegionLocation, Boolean> isFlushed;
 
-	/** Map of last sequence number received by core. */
-	private final Map<CoreLocation, Integer> sequenceNo;
-
-	/** Map of end buffer sequence number. */
-	private final Map<CoreLocation, Integer> endBufferingSequenceNo;
-
-	/** Map of end state by core. */
-	private final Map<RegionLocation, ChannelBufferState> endBufferingState;
-
-	private static final int DEFAULT_SEQUENCE_NUMBER = 0xFF;
+	/** Map of recording regions by core. */
+	private final Map<CoreLocation, List<RecordingRegion>> recordingRegions;
 
 	/**
 	 * Stores the information received through the buffering output technique
@@ -76,64 +67,7 @@ class BufferedReceivingData {
 	BufferedReceivingData(BufferManagerStorage storage) {
 		this.storage = storage;
 		isFlushed = new DefaultMap<>(false);
-		sequenceNo = new DefaultMap<>(DEFAULT_SEQUENCE_NUMBER);
-		endBufferingSequenceNo = new HashMap<>();
-		endBufferingState = new HashMap<>();
-	}
-
-	/**
-	 * Determine if the last sequence number has been retrieved.
-	 *
-	 * @param location
-	 *            Location to check retrieved from.
-	 * @return True if the number has been retrieved
-	 */
-	public boolean isEndBufferingSequenceNumberStored(
-			HasCoreLocation location) {
-		return endBufferingSequenceNo.containsKey(location.asCoreLocation());
-	}
-
-	/**
-	 * Store the last sequence number sent by the core.
-	 *
-	 * @param location
-	 *            The core retrieved from.
-	 * @param lastSequenceNumber
-	 *            The last sequence number
-	 */
-	public void storeEndBufferingSequenceNumber(HasCoreLocation location,
-			int lastSequenceNumber) {
-		synchronized (endBufferingSequenceNo) {
-			endBufferingSequenceNo.put(location.asCoreLocation(),
-					lastSequenceNumber);
-		}
-	}
-
-	/**
-	 * Get the last sequence number sent by the core.
-	 *
-	 * @param location
-	 *            The core
-	 * @return The last sequence number.
-	 */
-	public int getEndBufferingSequenceNumber(CoreLocation location) {
-		Integer value = endBufferingSequenceNo.get(location);
-		if (value == null) {
-			throw new IllegalArgumentException(
-					"no squence number known for " + location);
-		}
-		return value;
-	}
-
-	/**
-	 * Get the last sequence number sent by the core.
-	 *
-	 * @param location
-	 *            The core
-	 * @return The last sequence number.
-	 */
-	public int getEndBufferingSequenceNumber(HasCoreLocation location) {
-		return getEndBufferingSequenceNumber(location.asCoreLocation());
+		recordingRegions = synchronizedMap(new HashMap<>());
 	}
 
 	/**
@@ -148,29 +82,27 @@ class BufferedReceivingData {
 	}
 
 	/**
-	 * Determine if the end state has been stored.
+	 * Determine if the recording regions have been stored.
 	 *
 	 * @param location
-	 *            The X, Y, P and Region
-	 * @return True if the state has been stored.
+	 *            The X, Y and P
+	 * @return True if the region information has been stored.
 	 */
-	public boolean isEndBufferingStateRecovered(RegionLocation location) {
-		return endBufferingState.containsKey(location);
+	public boolean isRecordingRegionsStored(CoreLocation location) {
+		return recordingRegions.containsKey(location);
 	}
 
 	/**
-	 * Store the end state of buffering.
+	 * Store the recording region information.
 	 *
 	 * @param location
-	 *            The X, Y, P and Region
-	 * @param state
-	 *            The end state
+	 *            The X, Y and P
+	 * @param regions
+	 *            The recording region information
 	 */
-	public void storeEndBufferingState(RegionLocation location,
-			ChannelBufferState state) {
-		synchronized (endBufferingState) {
-			endBufferingState.put(location, state);
-		}
+	void storeRecordingRegions(CoreLocation location,
+			List<RecordingRegion> regions) {
+		recordingRegions.put(location, regions);
 	}
 
 	/**
@@ -179,36 +111,21 @@ class BufferedReceivingData {
 	 * @param location
 	 *            The X, Y, P and Region
 	 * @return The end state
+	 * @throws IllegalArgumentException
+	 *             If the location doesn't have recording regions.
 	 */
-	public ChannelBufferState getEndBufferingState(RegionLocation location) {
-		ChannelBufferState value = endBufferingState.get(location);
+	public RecordingRegion getRecordingRegion(RegionLocation location) {
+		CoreLocation coreLocation = location.asCoreLocation();
+		List<RecordingRegion> value = recordingRegions.get(coreLocation);
 		if (value == null) {
 			throw new IllegalArgumentException(
-					"no state known for " + location);
+					"no regions known for " + coreLocation);
 		}
-		return value;
-	}
-
-	/**
-	 * Get the last sequence number for a core.
-	 *
-	 * @param location
-	 *            The Core
-	 * @return Last sequence number used
-	 */
-	public Integer lastSequenceNoForCore(CoreLocation location) {
-		return sequenceNo.get(location);
-	}
-
-	/**
-	 * Get the last sequence number for a core.
-	 *
-	 * @param location
-	 *            The Core
-	 * @return Last sequence number used
-	 */
-	public Integer lastSequenceNoForCore(HasCoreLocation location) {
-		return sequenceNo.get(location.asCoreLocation());
+		if (value.size() < location.region || location.region < 0) {
+			throw new IllegalArgumentException(
+					"no region known for " + location);
+		}
+		return value.get(location.region);
 	}
 
 	/**

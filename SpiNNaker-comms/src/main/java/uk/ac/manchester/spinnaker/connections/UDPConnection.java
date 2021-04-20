@@ -368,11 +368,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *
 	 * @param data
 	 *            The data to be sent
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If there is an error sending the data
+	 * @throws IllegalStateException
+	 *             If the data packet doesn't hold a real message; zero-length
+	 *             messages are not supported!
 	 */
 	public final void send(DatagramPacket data) throws IOException {
-		doSend(wrap(data.getData(), data.getOffset(), data.getLength()));
+		send(wrap(data.getData(), data.getOffset(), data.getLength()));
 	}
 
 	/**
@@ -402,8 +407,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *
 	 * @param data
 	 *            The data to be sent
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If there is an error sending the data
+	 * @throws IllegalStateException
+	 *             If the data buffer doesn't hold a message; zero-length
+	 *             messages are not supported!
 	 */
 	public final void send(ByteBuffer data) throws IOException {
 		if (!canSend) {
@@ -429,8 +439,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If there is an error sending the data
+	 * @throws IllegalStateException
+	 *             If the data packet doesn't hold a real message; zero-length
+	 *             messages are not supported!
 	 */
 	public final void sendTo(DatagramPacket data, InetAddress address, int port)
 			throws IOException {
@@ -447,8 +462,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If there is an error sending the data
+	 * @throws IllegalStateException
+	 *             If the data array doesn't hold a message; zero-length
+	 *             messages are not supported!
 	 */
 	public final void sendTo(byte[] data, InetAddress address, int port)
 			throws IOException {
@@ -464,8 +484,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 *            Where to send (must be non-{@code null})
 	 * @param port
 	 *            What port to send to (must be non-zero)
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If there is an error sending the data
+	 * @throws IllegalStateException
+	 *             If the data buffer doesn't hold a message; zero-length
+	 *             messages are not supported!
 	 */
 	public final void sendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {

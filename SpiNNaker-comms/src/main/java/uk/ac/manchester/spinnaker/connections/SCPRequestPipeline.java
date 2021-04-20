@@ -362,25 +362,64 @@ public class SCPRequestPipeline {
 	public <T extends CheckOKResponse> void sendRequest(SCPRequest<T> request,
 			Consumer<T> callback, SCPErrorHandler errorCallback)
 			throws IOException {
+		requireNonNull(errorCallback);
 		// If all the channels are used, start to receive packets
 		while (outstandingRequests.size() >= numChannels) {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
-		// Update the packet and store required details
-		int sequence = toUnsignedInt(request.scpRequestHeader
-				.issueSequenceNumber(outstandingRequests.keySet()));
-
-		log.debug("sending message with sequence {}", sequence);
-		Request<T> req =
-				new Request<>(request, callback, requireNonNull(errorCallback));
-		if (outstandingRequests.put(sequence, req) != null) {
-			throw new RuntimeException("duplicate sequence number catastrophe");
-		}
-		numRequests++;
+		Request<T> req = registerRequest(request, callback, errorCallback);
 
 		// Send the request
 		req.send();
+	}
+
+	/**
+	 * There's a duplicate sequence number! This really shouldn't happen.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static class DuplicateSequenceNumberException
+			extends IllegalThreadStateException {
+		private static final long serialVersionUID = -4033792283948201730L;
+
+		DuplicateSequenceNumberException() {
+			super("duplicate sequence number catastrophe");
+		}
+	}
+
+	/**
+	 * Update the packet and store required details.
+	 *
+	 * @param <T>
+	 *            The type of response expected to the request.
+	 * @param request
+	 *            The SCP request to be sent
+	 * @param callback
+	 *            A callback function to call when the response has been
+	 *            received; takes an SCPResponse as a parameter, or a
+	 *            {@code null} if the response doesn't need to be processed.
+	 * @param errorCallback
+	 *            A callback function to call when an error is found when
+	 *            processing the message; takes the original SCPRequest, and the
+	 *            exception caught while sending it.
+	 * @return The registered (but unsent) request.
+	 */
+	private <T extends CheckOKResponse> Request<T> registerRequest(
+			SCPRequest<T> request, Consumer<T> callback,
+			SCPErrorHandler errorCallback) {
+		synchronized (outstandingRequests) {
+			int sequence = toUnsignedInt(request.scpRequestHeader
+					.issueSequenceNumber(outstandingRequests.keySet()));
+
+			log.debug("sending message with sequence {}", sequence);
+			Request<T> req = new Request<>(request, callback, errorCallback);
+			if (outstandingRequests.put(sequence, req) != null) {
+				throw new DuplicateSequenceNumberException();
+			}
+			numRequests++;
+			return req;
+		}
 	}
 
 	/**
@@ -449,9 +488,13 @@ public class SCPRequestPipeline {
 		if (req == null) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
-			log.debug("current waiting on requests with seq's ");
-			for (int seq : outstandingRequests.keySet()) {
-				log.debug("{}", seq);
+			if (log.isDebugEnabled()) {
+				synchronized (outstandingRequests) {
+					log.debug("current waiting on requests with seq's ");
+					for (int seq : outstandingRequests.keySet()) {
+						log.debug("{}", seq);
+					}
+				}
 			}
 			return;
 		}
@@ -487,7 +530,11 @@ public class SCPRequestPipeline {
 
 		// If there is a timeout, all packets remaining are resent
 		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
-		for (int seq : new ArrayList<>(outstandingRequests.keySet())) {
+		ArrayList<Integer> currentSeqs;
+		synchronized (outstandingRequests) {
+			currentSeqs = new ArrayList<>(outstandingRequests.keySet());
+		}
+		for (int seq : currentSeqs) {
 			log.debug("resending seq {}", seq);
 			Request<?> req = outstandingRequests.get(seq);
 			if (req == null) {
@@ -506,7 +553,9 @@ public class SCPRequestPipeline {
 		}
 		log.debug("finish resending");
 
-		toRemove.stream().forEach(outstandingRequests::remove);
+		synchronized (outstandingRequests) {
+			toRemove.stream().forEach(outstandingRequests::remove);
+		}
 	}
 
 	private void resend(Request<?> req, Object reason, int seq)

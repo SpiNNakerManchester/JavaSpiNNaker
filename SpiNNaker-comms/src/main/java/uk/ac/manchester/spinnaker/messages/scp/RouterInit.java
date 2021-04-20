@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
-import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.HALF1;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 
 import java.nio.ByteBuffer;
@@ -28,6 +28,9 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to initialise the router on a chip. */
 public class RouterInit extends SCPRequest<CheckOKResponse> {
+	/** One reserved for SCAMP. */
+	private static final int MAX_ENTRIES = 1023;
+
 	/**
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of
@@ -39,15 +42,13 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 *            The base address containing the entries
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
+	 * @throws IllegalArgumentException
+	 *             If a bad address or entry count is given
 	 */
 	public RouterInit(HasChipLocation chip, int numEntries, int tableAddress,
 			int baseAddress, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
 				tableAddress, baseAddress);
-		if (numEntries < 1) {
-			throw new IllegalArgumentException(
-					"numEntries must be more than 0");
-		}
 		if (baseAddress < 0) {
 			throw new IllegalArgumentException(
 					"baseAddress must not be negative");
@@ -59,7 +60,14 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument1(int numEntries, AppID appID) {
-		return (numEntries << BYTE2) | (appID.appID << BYTE1) | (2 << BYTE0);
+		if (numEntries < 1) {
+			throw new IllegalArgumentException(
+					"numEntries must be more than 0");
+		} else if (numEntries > MAX_ENTRIES) {
+			throw new IllegalArgumentException(
+					"numEntries must be no more than " + MAX_ENTRIES);
+		}
+		return (numEntries << HALF1) | (appID.appID << BYTE1) | (2 << BYTE0);
 	}
 
 	@Override

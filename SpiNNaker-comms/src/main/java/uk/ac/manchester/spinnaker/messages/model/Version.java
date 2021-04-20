@@ -85,7 +85,11 @@ public final class Version implements Comparable<Version> {
 	 * Create a version number.
 	 *
 	 * @param threePartVersion
-	 *            the version identifier, as X or X.Y or X.Y.Z
+	 *            the version identifier, as {@code X} or {@code X.Y} or
+	 *            {@code X.Y.Z}.
+	 * @throws IllegalArgumentException
+	 *             If the version string doesn't match one of the supported
+	 *             patterns.
 	 */
 	public Version(String threePartVersion) {
 		Matcher m = VERSION_RE.matcher(threePartVersion);

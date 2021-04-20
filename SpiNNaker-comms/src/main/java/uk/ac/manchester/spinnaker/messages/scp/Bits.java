@@ -31,4 +31,8 @@ abstract class Bits {
 	static final int BYTE1 = 8;
 	/** Bits 7&ndash;0. */
 	static final int BYTE0 = 0;
+	/** Bits 31&ndash;16. */
+	static final int HALF1 = 16;
+	/** Bits 15&ndash;0. */
+	static final int HALF0 = 0;
 }

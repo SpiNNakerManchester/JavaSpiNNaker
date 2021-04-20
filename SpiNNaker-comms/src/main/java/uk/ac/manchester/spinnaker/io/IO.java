@@ -51,6 +51,9 @@ public interface IO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             If the index is out of the range supported by this IO
+	 *             object.
 	 */
 	IO get(int slice) throws IOException, ProcessException;
 
@@ -65,6 +68,9 @@ public interface IO extends AutoCloseable {
 	 *             If the communications with SpiNNaker fails
 	 * @throws IOException
 	 *             If something goes wrong
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             If the indices are out of the range supported by this IO
+	 *             object.
 	 */
 	IO get(Slice slice) throws IOException, ProcessException;
 

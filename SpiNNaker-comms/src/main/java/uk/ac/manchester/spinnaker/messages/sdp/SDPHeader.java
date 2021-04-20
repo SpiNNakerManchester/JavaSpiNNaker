@@ -68,6 +68,8 @@ public class SDPHeader implements SerializableMessage {
 	 *            the <i>SDP port</i> that the message routes through. Note that
 	 *            this is <b>not</b> a UDP port! Those are associated with a
 	 *            connection, not a message.
+	 * @throws IllegalArgumentException
+	 *             if a bad SDP port is given
 	 */
 	public SDPHeader(Flag flags, HasCoreLocation destination,
 			int destinationPort) {

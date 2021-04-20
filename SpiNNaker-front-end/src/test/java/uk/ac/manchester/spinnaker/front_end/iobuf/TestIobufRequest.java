@@ -29,7 +29,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -75,7 +75,7 @@ public class TestIobufRequest {
 				+ "}";
 
 		ObjectMapper mapper = MapperFactory.createMapper();
-		Exception e = assertThrows(InvalidDefinitionException.class,
+		Exception e = assertThrows(ValueInstantiationException.class,
 				() -> mapper.readValue(input, IobufRequest.class));
 		assertNotNull(e.getCause());
 		assertEquals(IllegalArgumentException.class, e.getCause().getClass());
