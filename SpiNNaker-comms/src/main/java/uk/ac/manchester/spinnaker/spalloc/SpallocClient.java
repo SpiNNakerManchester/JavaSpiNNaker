@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
@@ -172,7 +172,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	public static ObjectMapper createMapper() {
         ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
+		module.addDeserializer(Response.class, new ResponseDeserializer());
 		mapper.registerModule(module);
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -215,6 +215,16 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			log.debug("version result: {}", json);
 		}
 		return new Version(json);
+	}
+
+	@Override
+	public int createJob(CreateJob builder, Integer timeout)
+			throws IOException, SpallocServerException {
+		String json = call(builder.build(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("create result: {}", json);
+		}
+		return parseInt(json);
 	}
 
 	@Override
@@ -444,12 +454,12 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return MAPPER.readValue(json, WhereIs.class);
 	}
 
-	private static class ResponseBasedDeserializer
+	private static class ResponseDeserializer
 			extends PropertyBasedDeserialiser<Response> {
 		// This class should never be serialised
 		private static final long serialVersionUID = 1L;
 
-		ResponseBasedDeserializer() {
+		ResponseDeserializer() {
 			super(Response.class);
 			register("jobs_changed", JobsChangedNotification.class);
 			register("machines_changed", MachinesChangedNotification.class);
