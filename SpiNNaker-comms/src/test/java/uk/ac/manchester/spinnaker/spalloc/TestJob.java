@@ -18,9 +18,6 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
@@ -93,7 +90,7 @@ class TestJob {
 
 			// The actual flow that we'd expect from normal usage
 			try (SpallocJob j = new SpallocJob("localhost",
-					new CreateJobBuilder(1, 2, 3).owner(OWNER).keepAlive(1))) {
+					new CreateJob(1, 2, 3).owner(OWNER).keepAlive(1))) {
 				id = j.getID();
 				sleep(1200);
 				j.setPower(true);

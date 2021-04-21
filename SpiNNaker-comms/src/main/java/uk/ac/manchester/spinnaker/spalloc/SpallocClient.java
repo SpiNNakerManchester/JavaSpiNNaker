@@ -218,7 +218,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	}
 
 	@Override
-	public int createJob(CreateJobBuilder builder, Integer timeout)
+	public int createJob(CreateJob builder, Integer timeout)
 			throws IOException, SpallocServerException {
 		String json = call(builder.build(), timeout);
 		if (log.isDebugEnabled()) {

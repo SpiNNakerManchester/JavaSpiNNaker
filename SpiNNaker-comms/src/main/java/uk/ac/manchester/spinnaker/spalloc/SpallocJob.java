@@ -67,9 +67,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * <p>
  *
  * <pre>
- * try (SpallocJob j = new SpallocJob(new CreateJobRequest(6).owner(me))) {
- *     myApplication.boot(j.getHostname(), j.getDimensions());
- *     myApplication.run(j.getHostname());
+ * try (SpallocJob j = new SpallocJob(new CreateJob(6).owner(me))) {
+ * 	myApplication.boot(j.getHostname(), j.getDimensions());
+ * 	myApplication.run(j.getHostname());
  * }
  * </pre>
  * <p>
@@ -83,7 +83,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * various methods:
  *
  * <pre>
- * SpallocJob j = new SpallocJob(new CreateJobRequest(6).owner(me)));
+ * SpallocJob j = new SpallocJob(new CreateJob(6).owner(me)));
  * j.waitUntilReady();
  * myApplication.boot(j.getHostname(), j.getDimensions());
  * myApplication.run(j.getHostname());
@@ -102,6 +102,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * to find out the physical locations of the boards used.
  * </ul>
  * </blockquote>
+ *
+ * @see CreateJob {@code CreateJob}: How to describe the job to create.
  */
 public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private static final Logger log = getLogger(SpallocJob.class);
@@ -178,7 +180,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(String hostname, Integer timeout,
-			CreateJobBuilder builder)
+			CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(hostname, config.getPort(), timeout, builder);
 	}
@@ -195,7 +197,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
-	public SpallocJob(String hostname, CreateJobBuilder builder)
+	public SpallocJob(String hostname, CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), builder);
 	}
@@ -210,7 +212,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
-	public SpallocJob(CreateJobBuilder builder)
+	public SpallocJob(CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
 				builder);
@@ -235,7 +237,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *             If a bad builder is given.
 	 */
 	public SpallocJob(String hostname, Integer port, Integer timeout,
-			CreateJobBuilder builder)
+			CreateJob builder)
 			throws IOException, SpallocServerException {
 		if (builder == null) {
 			throw new IllegalArgumentException("a builder must be specified");

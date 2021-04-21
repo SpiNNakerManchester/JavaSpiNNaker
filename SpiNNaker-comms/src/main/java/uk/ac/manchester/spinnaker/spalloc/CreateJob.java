@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * @author Donal Fellows
  */
-public class CreateJobBuilder {
+public class CreateJob {
 	private final List<Integer> args = new ArrayList<>();
 	private final Map<String, Object> kwargs = new HashMap<>();
 	private boolean setTags = false;
@@ -49,7 +49,7 @@ public class CreateJobBuilder {
 	/**
 	 * Build a request for a single board.
 	 */
-	public CreateJobBuilder() {
+	public CreateJob() {
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class CreateJobBuilder {
 	 * @param numBoards
 	 *            How many boards to request.
 	 */
-	public CreateJobBuilder(int numBoards) {
+	public CreateJob(int numBoards) {
 		args.add(numBoards);
 	}
 
@@ -70,7 +70,7 @@ public class CreateJobBuilder {
 	 * @param height
 	 *            Vertical size of rectangle
 	 */
-	public CreateJobBuilder(int width, int height) {
+	public CreateJob(int width, int height) {
 		args.add(width);
 		args.add(height);
 	}
@@ -86,7 +86,8 @@ public class CreateJobBuilder {
 	 *            Third coordinate
 	 * @see WhereIs
 	 */
-	public CreateJobBuilder(int x, int y, int z) {
+	public CreateJob(int x, int y, int z) {
+		WhereIs.class.hashCode(); // NEEDED FOR JAVADOC @see ABOVE
 		args.add(x);
 		args.add(y);
 		args.add(z);
@@ -112,7 +113,7 @@ public class CreateJobBuilder {
 	 *            The name of the owner of this job. <strong>Required.</strong>
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder owner(String owner) {
+	public CreateJob owner(String owner) {
 
 		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
@@ -126,7 +127,7 @@ public class CreateJobBuilder {
 	 *            {@code null}, no timeout is used. (Default: 60.0)
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder keepAlive(Double keepalive) {
+	public CreateJob keepAlive(Double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
 	}
@@ -138,7 +139,7 @@ public class CreateJobBuilder {
 	 *            60.0)
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder keepAlive(double keepalive) {
+	public CreateJob keepAlive(double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
 	}
@@ -153,7 +154,7 @@ public class CreateJobBuilder {
 	 * @throws IllegalStateException
 	 *             If tags are already given
 	 */
-	public CreateJobBuilder machine(String machine) {
+	public CreateJob machine(String machine) {
 		if (setTags) {
 			throw new IllegalStateException("tags already set");
 		}
@@ -172,7 +173,7 @@ public class CreateJobBuilder {
 	 * @throws IllegalStateException
 	 *             If machine is already given
 	 */
-	public CreateJobBuilder tags(String... tags) {
+	public CreateJob tags(String... tags) {
 		if (setMachine) {
 			throw new IllegalStateException("machine already set");
 		}
@@ -189,7 +190,7 @@ public class CreateJobBuilder {
 	 *            allocating single boards or specific rectangles of triads.
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder minRatio(double minRatio) {
+	public CreateJob minRatio(double minRatio) {
 		kwargs.put(MIN_RATIO_PROPERTY, minRatio);
 		return this;
 	}
@@ -202,7 +203,7 @@ public class CreateJobBuilder {
 	 *            corner is alive.
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder maxDeadBoards(int maxDeadBoards) {
+	public CreateJob maxDeadBoards(int maxDeadBoards) {
 		kwargs.put(MAX_DEAD_BOARDS_PROPERTY, maxDeadBoards);
 		return this;
 	}
@@ -215,7 +216,7 @@ public class CreateJobBuilder {
 	 *            If unspecified, any number of broken links is allowed.
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder maxDeadLinks(int maxDeadLinks) {
+	public CreateJob maxDeadLinks(int maxDeadLinks) {
 		kwargs.put(MAX_DEAD_LINKS_PROPERTY, maxDeadLinks);
 		return this;
 	}
@@ -225,7 +226,7 @@ public class CreateJobBuilder {
 	 *
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder requireTorus() {
+	public CreateJob requireTorus() {
 		return requireTorus(true);
 	}
 
@@ -237,7 +238,7 @@ public class CreateJobBuilder {
 	 *            Must be {@code false} (the default) when allocating boards.
 	 * @return {@code this} (fluent interface)
 	 */
-	public CreateJobBuilder requireTorus(boolean requireTorus) {
+	public CreateJob requireTorus(boolean requireTorus) {
 		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);
 		return this;
 	}

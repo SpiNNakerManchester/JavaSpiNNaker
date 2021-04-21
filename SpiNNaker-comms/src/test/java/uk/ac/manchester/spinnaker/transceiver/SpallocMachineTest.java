@@ -35,7 +35,7 @@ import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
-import uk.ac.manchester.spinnaker.spalloc.CreateJobBuilder;
+import uk.ac.manchester.spinnaker.spalloc.CreateJob;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 
 @NotThreadSafe
@@ -59,9 +59,8 @@ class SpallocMachineTest {
 	void testSpallocMachine() throws Exception {
 		assumeTrue(ping(SPALLOC) == 0);
 
-		CreateJobBuilder cj = new CreateJobBuilder().owner(OWNER);
-
-		try (SpallocJob job = new SpallocJob(SPALLOC, PORT, TEN_S, cj)) {
+		try (SpallocJob job = new SpallocJob(SPALLOC, PORT, TEN_S,
+				new CreateJob().owner(OWNER))) {
 			job.waitUntilReady(null);
 
 			System.out.println(job.getState());

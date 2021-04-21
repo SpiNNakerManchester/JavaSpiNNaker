@@ -34,7 +34,7 @@ import org.opentest4j.TestAbortedException;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
-import uk.ac.manchester.spinnaker.spalloc.CreateJobBuilder;
+import uk.ac.manchester.spinnaker.spalloc.CreateJob;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
@@ -105,12 +105,11 @@ public class BoardTestConfiguration {
 		}
 	}
 
-	private CreateJobBuilder jobDesc(int size, double keepAlive, String tag) {
+	private CreateJob jobDesc(int size, double keepAlive, String tag) {
 		if (tag == null) {
 			tag = "default";
 		}
-		return new CreateJobBuilder(size).owner(OWNER).keepAlive(keepAlive)
-				.tags(tag);
+		return new CreateJob(size).owner(OWNER).keepAlive(keepAlive).tags(tag);
 	}
 
 	public SpallocJob setUpSpallocedBoard()
