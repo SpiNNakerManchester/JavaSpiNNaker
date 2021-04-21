@@ -173,7 +173,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	public static ObjectMapper createMapper() {
         ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
+		module.addDeserializer(Response.class, new ResponseDeserializer());
 		mapper.registerModule(module);
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -455,12 +455,12 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return MAPPER.readValue(json, WhereIs.class);
 	}
 
-	private static class ResponseBasedDeserializer
+	private static class ResponseDeserializer
 			extends PropertyBasedDeserialiser<Response> {
 		// This class should never be serialised
 		private static final long serialVersionUID = 1L;
 
-		ResponseBasedDeserializer() {
+		ResponseDeserializer() {
 			super(Response.class);
 			register("jobs_changed", JobsChangedNotification.class);
 			register("machines_changed", MachinesChangedNotification.class);

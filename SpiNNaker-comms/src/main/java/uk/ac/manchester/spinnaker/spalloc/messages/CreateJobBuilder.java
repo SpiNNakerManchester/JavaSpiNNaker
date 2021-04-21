@@ -16,8 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_BOARDS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MAX_DEAD_LINKS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
+import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +42,6 @@ public class CreateJobBuilder {
 	private boolean setTags = false;
 	private boolean setMachine = false;
 	private boolean setOwner = false;
-
-	private static final double DEFAULT_KEEPALIVE = 60;
 
 	/**
 	 * Build a request for a single board.
@@ -103,7 +110,8 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder owner(String owner) {
-		kwargs.put("owner", owner);
+
+		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
 		return this;
 	}
@@ -116,7 +124,19 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder keepAlive(Double keepalive) {
-		kwargs.put("keepalive", keepalive);
+		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
+		return this;
+	}
+
+	/**
+	 * @param keepalive
+	 *            The maximum number of seconds which may elapse between a query
+	 *            on this job before it is automatically destroyed. (Default:
+	 *            60.0)
+	 * @return {@code this} (fluent interface)
+	 */
+	public CreateJobBuilder keepAlive(double keepalive) {
+		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
 	}
 
@@ -134,7 +154,7 @@ public class CreateJobBuilder {
 		if (setTags) {
 			throw new IllegalStateException("tags already set");
 		}
-		kwargs.put("machine", machine);
+		kwargs.put(MACHINE_PROPERTY, machine);
 		setMachine = true;
 		return this;
 	}
@@ -153,7 +173,7 @@ public class CreateJobBuilder {
 		if (setMachine) {
 			throw new IllegalStateException("machine already set");
 		}
-		kwargs.put("tags", Arrays.asList(tags));
+		kwargs.put(TAGS_PROPERTY, tags);
 		setTags = true;
 		return this;
 	}
@@ -167,7 +187,7 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder minRatio(double minRatio) {
-		kwargs.put("min_ratio", minRatio);
+		kwargs.put(MIN_RATIO_PROPERTY, minRatio);
 		return this;
 	}
 
@@ -180,7 +200,7 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder maxDeadBoards(int maxDeadBoards) {
-		kwargs.put("max_dead_boards", maxDeadBoards);
+		kwargs.put(MAX_DEAD_BOARDS_PROPERTY, maxDeadBoards);
 		return this;
 	}
 
@@ -193,7 +213,7 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder maxDeadLinks(int maxDeadLinks) {
-		kwargs.put("max_dead_links", maxDeadLinks);
+		kwargs.put(MAX_DEAD_LINKS_PROPERTY, maxDeadLinks);
 		return this;
 	}
 
@@ -215,7 +235,7 @@ public class CreateJobBuilder {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJobBuilder requireTorus(boolean requireTorus) {
-		kwargs.put("require_torus", requireTorus);
+		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);
 		return this;
 	}
 
@@ -223,6 +243,7 @@ public class CreateJobBuilder {
 	 * @return The current keepalive value in the builder.
 	 */
 	public Double getKeepAlive() {
-		return (Double) kwargs.getOrDefault("keepalive", DEFAULT_KEEPALIVE);
+		return (Double) kwargs.getOrDefault(KEEPALIVE_PROPERTY,
+				KEEPALIVE_DEFAULT);
 	}
 }

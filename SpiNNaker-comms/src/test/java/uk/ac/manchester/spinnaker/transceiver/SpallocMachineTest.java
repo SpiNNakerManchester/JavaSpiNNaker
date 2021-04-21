@@ -16,35 +16,31 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.jcip.annotations.NotThreadSafe;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static testconfig.BoardTestConfiguration.OWNER;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
+import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.net.InetAddress;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
-
-import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
-import static uk.ac.manchester.spinnaker.utils.Ping.ping;
+import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 
 @NotThreadSafe
 class SpallocMachineTest {
-	static Machine jsonMachine;
+	private static Machine jsonMachine;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -54,17 +50,18 @@ class SpallocMachineTest {
 		jsonMachine = new Machine(fromJson);
 	}
 
+	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+	private static final int PORT = 22245;
+	private static final int TEN_S = 10000;
+
 	@Test
 	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/53")
 	void testSpallocMachine() throws Exception {
-		assumeTrue(ping("spinnaker.cs.man.ac.uk") == 0);
+		assumeTrue(ping(SPALLOC) == 0);
 
-		List<Integer> args = new ArrayList<>();
-		Map<String, Object> kwargs = new HashMap<>();
-		kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
+		CreateJobBuilder cj = new CreateJobBuilder().owner(OWNER);
 
-		try (SpallocJob job = new SpallocJob("spinnaker.cs.man.ac.uk", 22245,
-				10000, args, kwargs)) {
+		try (SpallocJob job = new SpallocJob(SPALLOC, PORT, TEN_S, cj)) {
 			job.waitUntilReady(null);
 
 			System.out.println(job.getState());
