@@ -34,11 +34,11 @@ import org.opentest4j.TestAbortedException;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.spalloc.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
-import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 

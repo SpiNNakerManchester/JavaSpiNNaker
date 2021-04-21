@@ -52,7 +52,6 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
-import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.DestroyJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;

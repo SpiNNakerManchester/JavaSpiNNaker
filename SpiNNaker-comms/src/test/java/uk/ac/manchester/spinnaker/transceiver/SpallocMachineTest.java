@@ -35,8 +35,8 @@ import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
+import uk.ac.manchester.spinnaker.spalloc.CreateJobBuilder;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
-import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobBuilder;
 
 @NotThreadSafe
 class SpallocMachineTest {

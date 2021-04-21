@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.spalloc.messages;
+package uk.ac.manchester.spinnaker.spalloc;
 
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
  * An abstract, high-level request to create a job.
