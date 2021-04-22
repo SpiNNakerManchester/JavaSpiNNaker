@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
+import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.DEFAULT_CONFIGURATION_SOURCE;
 import static uk.ac.manchester.spinnaker.spalloc.SpallocJob.setConfigurationSource;
@@ -89,8 +89,8 @@ class TestJob {
 			s.advancedEmulationMode(send, received, keepalives, bgAccept);
 
 			// The actual flow that we'd expect from normal usage
-			try (SpallocJob j = new SpallocJob("localhost", asList(1, 2, 3),
-					singletonMap("keepalive", 1.0))) {
+			try (SpallocJob j = new SpallocJob("localhost",
+					new CreateJob(1, 2, 3).owner(OWNER).keepAlive(1))) {
 				id = j.getID();
 				sleep(1200);
 				j.setPower(true);
@@ -145,7 +145,10 @@ class TestJob {
 		assertTrue(send.isEmpty(), "must have sent all expected responses");
 
 		// Check the number of keepalives
-		assertEquals(3, keepalives.size());
+		assertTrue(Math.abs(3 - keepalives.size()) <= 1, () -> {
+			return "number of keepalives needs to be close to 3, but was "
+					+ keepalives.size();
+		});
 		// All should have the same message sent
 		JSONObject first = keepalives.take();
 		assertNotNull(first, "null in keepalive queue!");

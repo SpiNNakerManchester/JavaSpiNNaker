@@ -21,7 +21,7 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
- * Hard codes all the FPGA Link Ids.
+ * Hard codes all the supported FPGA Link IDs.
  * <p>
  * <img src="doc-files/spin4-5-1.png" width="600" height="600"
  *      alt="Diagram of the FPGA links">
@@ -83,7 +83,6 @@ public enum FpgaEnum implements HasChipLocation {
 
     /**  Link 15 on FPGA 1/Left From Chip(4,7) towards the West. */
     FOUR_SEVEN_W(4, 7, Direction.WEST, FpgaId.LEFT, 15),
-
 
     // Top
     /**  Link 0 on FPGA 2/TopRight From Chip(4,7) towards the North. */
@@ -192,21 +191,25 @@ public enum FpgaEnum implements HasChipLocation {
     /** Direction of the link as it comes out of the source Chip. */
     public final Direction direction;
 
-    /** Id of the FPGA. */
+    /** ID of the FPGA. */
     public final FpgaId fpgaId;
 
-    /** Id of the FPGA link. */
+    /** ID of the FPGA link. */
     public final int id;
 
     /**
      * Constructor for the enum.
      *
-     * @param x x coordinate of the source Chip.
-     * @param y y coordinate of the source Chip.
+     * @param x
+     *            X coordinate of the source Chip.
+     * @param y
+     *            Y coordinate of the source Chip.
      * @param direction
-     *      Direction of the link as it comes out of the source Chip.
-     * @param fpgaId Id of the FPGA device.
-     * @param id  Id of the link on this FPGA device.
+     *            Direction of the link as it comes out of the source Chip.
+     * @param fpgaId
+     *            ID of the FPGA device.
+     * @param id
+     *            ID of the link on this FPGA device.
      */
     FpgaEnum(int x, int y, Direction direction, FpgaId fpgaId, int id) {
         this.x = x;
@@ -232,35 +235,42 @@ public enum FpgaEnum implements HasChipLocation {
     }
 
     /**
-     * Find the Enum by chip coordinates and the direction.
+     * Find the enum by chip coordinates and the direction.
      *
-     * @param x X coordinate of chip.
-     * @param y X coordinate of chip.
-     * @param direction Direction of the link covered buy the fpga.
-     *
-     * @return The corresponding Enum.
+     * @param x
+     *            X coordinate of chip.
+     * @param y
+     *            X coordinate of chip.
+     * @param direction
+     *            Direction of the link covered by the FPGA.
+     * @return The corresponding enum value.
+     * @throws IllegalArgumentException
+     *             If the arguments don't describe a supported FPGA link.
      */
     public static FpgaEnum findId(int x, int y, Direction direction) {
-        for (FpgaEnum linkId:FpgaEnum.values()) {
+        for (FpgaEnum linkId : FpgaEnum.values()) {
             if (linkId.x == x && linkId.y == y
                     && linkId.direction == direction) {
                 return linkId;
             }
         }
-        throw new IllegalArgumentException(
-                "No FPGA link found for y: " + x + " x: " + y
-                + " direction: " + direction);
+        throw new IllegalArgumentException("No FPGA link found for y: " + x
+                + " x: " + y + " direction: " + direction);
     }
 
     /**
-     * Find the Enum by fpga and link ids.
+     * Find the enum by FPGA and link IDs.
      *
-     * @param fpgaId Id of the fpga device.
-     * @param id Id of the link on that device.
-     * @return The corresponding Enum.
+     * @param fpgaId
+     *            ID of the FPGA device.
+     * @param id
+     *            ID of the link on that device.
+     * @return The corresponding enum value.
+     * @throws IllegalArgumentException
+     *             If the arguments don't describe a supported FPGA link.
      */
     public static FpgaEnum findId(FpgaId fpgaId, int id) {
-        for (FpgaEnum linkId:FpgaEnum.values()) {
+        for (FpgaEnum linkId : FpgaEnum.values()) {
             if (linkId.fpgaId == fpgaId && linkId.id == id) {
                 return linkId;
             }

@@ -68,6 +68,8 @@ public class Configuration {
 	 *
 	 * @param configFilename
 	 *            The name of file to load from.
+	 * @throws RuntimeException
+	 *             If the configuration could not be loaded.
 	 */
 	public Configuration(String configFilename) {
 		configurationMap = initDefaultValues();
@@ -121,7 +123,8 @@ public class Configuration {
 	}
 
 	public double getReconnectDelay() {
-		return (Double) configurationMap.get(RECONNECT_DELAY_PROPERTY);
+		return (Double) configurationMap.getOrDefault(RECONNECT_DELAY_PROPERTY,
+				RECONNECT_DELAY_DEFAULT);
 	}
 
 	public double getTimeout() {
@@ -162,7 +165,6 @@ public class Configuration {
 		Map<String, Object> defaults = new HashMap<>();
 		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
 		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
-		defaults.put(RECONNECT_DELAY_PROPERTY, RECONNECT_DELAY_DEFAULT);
 		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
 		defaults.put(MACHINE_PROPERTY, MACHINE_DEFAULT);
 		defaults.put(TAGS_PROPERTY, TAGS_DEFAULT);

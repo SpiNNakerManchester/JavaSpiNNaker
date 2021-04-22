@@ -20,6 +20,11 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  * Request to get the location of a chip in a machine.
+ *
+ * @see <a href=
+ *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.where_is"
+ *      >Spalloc Server documentation</a>
+ * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsMachineChipCommand extends Command<Integer> {
 	/**

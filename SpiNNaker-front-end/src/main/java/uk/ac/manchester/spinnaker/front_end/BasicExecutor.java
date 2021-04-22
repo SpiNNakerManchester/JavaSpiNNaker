@@ -128,7 +128,10 @@ public class BasicExecutor implements AutoCloseable {
 		 * @throws Exception
 		 *             If anything fails. If multiple tasks fail, the exception
 		 *             from first to fail is thrown and the other exceptions are
-		 *             added as suppressed exceptions.
+		 *             added as suppressed exceptions; all succeeding tasks are
+		 *             still awaited-for.
+		 * @throws IllegalStateException
+		 *             If the tasks have already been awaited-for.
 		 */
 		public void awaitAndCombineExceptions() throws Exception {
 			// Combine the possibly multiple exceptions into one

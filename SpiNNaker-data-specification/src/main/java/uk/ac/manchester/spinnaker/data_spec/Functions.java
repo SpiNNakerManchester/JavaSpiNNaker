@@ -164,6 +164,10 @@ class Functions implements FunctionAPI {
      *
      * @throws DataSpecificationException
      *             If execution fails
+	 * @throws RegionInUseException
+	 *             If the region has already been reserved
+	 * @throws IllegalArgumentException
+	 *             If the size of reservation is not sensible
      */
     @Operation(RESERVE)
     public void reserve() throws DataSpecificationException {
@@ -272,6 +276,8 @@ class Functions implements FunctionAPI {
      *
      * @throws DataSpecificationException
      *             If execution fails
+	 * @throws RegionUnfilledException
+	 *             If the current region is not marked for filling
      */
     @Operation(SWITCH_FOCUS)
     public void switchFocus() throws DataSpecificationException {
@@ -308,6 +314,10 @@ class Functions implements FunctionAPI {
      *
      * @throws DataSpecificationException
      *             If execution fails
+	 * @throws NoRegionSelectedException
+	 *             If there is no current region
+	 * @throws RegionUnfilledException
+	 *             If the current region is not marked for filling
      */
     @Operation(SET_WR_PTR)
     public void setWritePointer() throws DataSpecificationException {

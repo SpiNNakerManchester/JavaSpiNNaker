@@ -48,13 +48,16 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	 * @param numRequests
 	 *            The expected number of requests.
 	 * @param channel
-	 *            The channel IDd.
+	 *            The channel IDs.
 	 * @param regionID
-	 *            The region IDd.
+	 *            The region IDs.
 	 * @param startAddress
 	 *            The start addresses to read from.
 	 * @param spaceRead
 	 *            The number of bytes to read from each.
+	 * @throws IllegalArgumentException
+	 *             if the number of channels, regionIDs, addresses and sizes
+	 *             don't match the number of requests.
 	 */
 	public SpinnakerRequestReadData(HasCoreLocation core, int sequenceNum,
 			int numRequests, int[] channel, int[] regionID,

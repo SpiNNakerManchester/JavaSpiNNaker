@@ -284,6 +284,8 @@ public abstract class SpallocConnection implements Closeable {
 	 * @return The unpacked response from the line received.
 	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs.
+	 * @throws SpallocProtocolException
+	 *             If the socket gets an empty response.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 */
