@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-
 /**
  * A simple <i>one-shot</i> iterable wrapper for a reader.
  * <p>

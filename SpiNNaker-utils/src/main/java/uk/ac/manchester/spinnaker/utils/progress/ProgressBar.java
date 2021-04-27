@@ -93,7 +93,6 @@ public class ProgressBar implements Closeable {
         printHeader();
     }
 
-
     /**
 	 * Creates a Progress bar which outputs to {@link System#out}.
 	 *

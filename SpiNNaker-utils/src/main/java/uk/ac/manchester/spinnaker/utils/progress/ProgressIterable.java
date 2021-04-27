@@ -41,10 +41,12 @@ import java.util.Iterator;
  *            Type of elements to be iterated over.
  */
 public class ProgressIterable<E> implements Iterable<E>, Closeable {
-
 	private final Collection<E> things;
+
 	private final String description;
+
 	private final ArrayList<ProgressIterator<E>> progressIterables;
+
 	private final PrintStream output;
 
 	/**
@@ -70,7 +72,7 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable {
 	}
 
 	/**
-	 * Creates an terable wrapper but not yet a ProgressBar. The progress bar
+	 * Creates an iterable wrapper but not yet a ProgressBar. The progress bar
 	 * will write to {@link System#out}.
 	 *
 	 * @param things
