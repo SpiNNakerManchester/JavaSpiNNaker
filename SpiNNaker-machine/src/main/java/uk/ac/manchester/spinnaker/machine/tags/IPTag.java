@@ -180,14 +180,18 @@ public final class IPTag extends Tag {
      */
     @SuppressWarnings("checkstyle:ParameterNumber")
     public IPTag(
-            @JsonProperty(value = "boardAddress", required = true) String boardAddress,
+            @JsonProperty(value = "boardAddress", required = true)
+            String boardAddress,
             @JsonProperty(value = "tagID", required = true) int tagID,
             @JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "targetAddress", required = true) String targetAddress,
+            @JsonProperty(value = "targetAddress", required = true)
+            String targetAddress,
             @JsonProperty(value = "port", required = false) Integer port,
-            @JsonProperty(value = "stripSDP", required = false) Boolean stripSDP,
-            @JsonProperty(value = "trafficIdentifier", required = false) String trafficIdentifier)
+            @JsonProperty(value = "stripSDP", required = false)
+            Boolean stripSDP,
+            @JsonProperty(value = "trafficIdentifier", required = false)
+            String trafficIdentifier)
             throws UnknownHostException {
         super(InetAddress.getByName(boardAddress), tagID,
                 (port == null ? DEFAULT_PORT : port));

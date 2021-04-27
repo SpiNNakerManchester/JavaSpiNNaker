@@ -329,6 +329,7 @@ public final class SpiNNakerTriadGeometry {
      */
     private static final class Location {
         final int x;
+
         final int y;
 
         Location(int x, int y) {

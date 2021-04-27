@@ -38,7 +38,8 @@ import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
  * @author Christian-B
  */
 public class CoreSubsets implements Iterable<CoreLocation> {
-    private final TreeMap<ChipLocation, TreeMap<Integer, CoreLocation>> locations;
+    private final TreeMap<ChipLocation, TreeMap<Integer, CoreLocation>>
+        locations;
 
     private boolean immutable;
 
@@ -332,8 +333,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      */
     public CoreSubsets intersection(CoreSubsets other) {
         CoreSubsets results = new CoreSubsets();
-        for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry : locations
-                .entrySet()) {
+        for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry :
+                locations.entrySet()) {
             if (other.locations.containsKey(entry.getKey())) {
                 TreeMap<Integer, CoreLocation> otherSubset = other.locations
                         .get(entry.getKey());
