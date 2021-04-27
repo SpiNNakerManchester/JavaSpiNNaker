@@ -328,13 +328,13 @@ public class CoreSubsets implements Iterable<CoreLocation> {
      *
      * @param other
      *            A second CoreSubsets with possibly overlapping cores.
-     * @return A new Coresubsets Objects with only the cores present in both.
+     * @return A new CoreSubsets object with only the cores present in both.
      *         Therefore the result may be empty.
      */
     public CoreSubsets intersection(CoreSubsets other) {
         CoreSubsets results = new CoreSubsets();
-        for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry :
-                locations.entrySet()) {
+        for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry
+                : locations.entrySet()) {
             if (other.locations.containsKey(entry.getKey())) {
                 TreeMap<Integer, CoreLocation> otherSubset = other.locations
                         .get(entry.getKey());
