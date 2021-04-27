@@ -30,7 +30,6 @@ import java.util.Map;
  *            class of objects to be supplied by the final iterator.
  */
 public final class TripleMapIterable<V> implements Iterable<V> {
-
 	private final Iterable<? extends Map<?, ? extends Map<?, V>>> outer;
 
 	/**
@@ -59,5 +58,4 @@ public final class TripleMapIterable<V> implements Iterable<V> {
 	public Iterator<V> iterator() {
 		return new TripleMapIterator<>(outer.iterator());
 	}
-
 }

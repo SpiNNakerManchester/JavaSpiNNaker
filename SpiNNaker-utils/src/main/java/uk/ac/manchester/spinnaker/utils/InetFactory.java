@@ -27,7 +27,6 @@ import java.net.UnknownHostException;
  * @author Christian-B
  */
 public abstract class InetFactory {
-
     private InetFactory() {
     }
 

@@ -36,8 +36,11 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	private static final long serialVersionUID = -3805864660424802906L;
 
 	private final boolean direct;
+
 	private final V defValue;
+
 	private final Supplier<? extends V> defFactory;
+
 	private final KeyAwareFactory<? super K, ? extends V> advFactory;
 
 	/**

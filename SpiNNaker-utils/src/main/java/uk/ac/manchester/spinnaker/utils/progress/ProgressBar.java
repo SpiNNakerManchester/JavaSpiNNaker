@@ -33,31 +33,42 @@ import uk.ac.manchester.spinnaker.utils.UnitConstants;
  * @author Christian-B
  */
 public class ProgressBar implements Closeable {
-
     // An int when we need an index
     private static final int MAX_LENGTH_IN_CHARS = 60;
+
     // A float to force float division
     private static final float MAX_LENGTH = MAX_LENGTH_IN_CHARS;
+
     // The space between 0% and 50% is the mid-point minus the width of
     // 0% and ~half the width of 50%
     private static final int LEFT_SPACES = MAX_LENGTH_IN_CHARS / 2 - 4;
+
     // The space between 50% and 100% is the mid-point minus the rest of
     // the width of 50% and the width of 100%
     private static final int RIGHT_SPACES = MAX_LENGTH_IN_CHARS / 2 - 5;
+
     private static final String DISTANCE_INDICATOR = distanceIndicator();
 
     private static final char STEP_CHAR = '-';
+
     private static final char END_CHAR = '|';
+
     private static final char START_CHAR = '|';
 
     private final int numberOfThings;
+
     private final String description;
+
     private final PrintStream output;
 
     private final float charsPerThing;
+
     private int currentlyCompleted = 0;
+
     private int charsDone = 0;
+
     private boolean closed = false;
+
     private final long startTime;
 
     /**

@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
  * @author Donal Fellows
  */
 public final class UnitConstants {
+	private UnitConstants() {
+	}
 
-    private UnitConstants() { }
-
-    /** The number of megahertz in each kilohertz. */
+	/** The number of megahertz in each kilohertz. */
     public static final int MEGAHERTZ_PER_KILOHERTZ = 1000;
 
     /** The number of megahertz in each hertz. */
@@ -48,15 +48,15 @@ public final class UnitConstants {
 	/** The number of nanoseconds per microsecond. */
 	public static final double NSEC_PER_USEC = 1000.0;
 
-    /**
-     * Formats a Duration with hours, minutes seconds and milliseconds
-     *      as required.
-     *
-     * @param durationInMillis A time interval in milliseconds
-     *
-     * @return A formatted String with only the relative units.
-     */
-    public static String formatDuration(long durationInMillis) {
+	/**
+	 * Formats a duration with hours, minutes seconds and milliseconds as
+	 * required.
+	 *
+	 * @param durationInMillis
+	 *            A time interval in milliseconds
+	 * @return A formatted String with only the relative units.
+	 */
+	public static String formatDuration(long durationInMillis) {
         long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
         long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis)
                 % MINUTE_PER_HOUR;
