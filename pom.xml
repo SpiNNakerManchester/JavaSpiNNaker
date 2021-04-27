@@ -220,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 						<propertyExpansion>
-							checkstyle.config.path=${basedir}/src/support/checkstyle
+							checkstyle.config.path=${spinnaker.basedir}/src/support/checkstyle
 						</propertyExpansion>
 					</configuration>
 					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
@@ -342,6 +342,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<goals>
 							<goal>check</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.commonjava.maven.plugins</groupId>
+				<artifactId>directory-maven-plugin</artifactId>
+				<version>0.3.1</version>
+				<executions>
+					<execution>
+						<id>find-root</id>
+						<goals>
+							<goal>highest-basedir</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<property>spinnaker.basedir</property>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
