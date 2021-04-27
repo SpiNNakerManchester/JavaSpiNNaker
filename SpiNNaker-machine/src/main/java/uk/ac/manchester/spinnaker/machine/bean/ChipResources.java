@@ -32,11 +32,17 @@ public class ChipResources {
      * This allows the value 0 to be declared as specifically set.
      */
     public static final int NOT_SET = -1;
+
     private int cores;
+
     private int monitors;
+
     private int sdram;
+
     private List<Integer> tags;
+
     private int routerEntries;
+
     private Boolean virtual;
 
     /**

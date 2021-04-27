@@ -34,17 +34,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class ChipLocation implements
         HasChipLocation, Comparable<ChipLocation> {
     private final int x;
+
     private final int y;
 
     /**
-     * The location (0,0).
-     * Which is in the bottom/left corner and typically the ethernet chip.
+     * The location (0,0), which is in the bottom/left corner and typically the
+     * ethernet chip for the lead board of an allocation.
      */
     public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
 
     /**
-     * The location (1,0).
-     * Which is the one to the east/right of the bottom/left corner.
+     * The location (1,0), which is the one to the east/right of the bottom/left
+     * corner.
      * <p>
      * This location has special meaning on a 4 chip board.
      */
@@ -53,10 +54,12 @@ public final class ChipLocation implements
     /**
      * Create the location of a chip on a SpiNNaker machine.
      *
-     * @param x The X coordinate
-     * @param y The Y coordinate
+     * @param x
+     *            The X coordinate
+     * @param y
+     *            The Y coordinate
      * @throws IllegalArgumentException
-     *      Thrown is either x or y is negative or too big.
+     *             Thrown is either x or y is negative or too big.
      */
     @JsonCreator
     public ChipLocation(@JsonProperty(value = "x", required = true) int x,
@@ -113,5 +116,4 @@ public final class ChipLocation implements
     public ChipLocation asChipLocation() {
         return this;
     }
-
 }

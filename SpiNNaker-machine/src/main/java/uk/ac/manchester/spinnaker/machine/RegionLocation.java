@@ -21,43 +21,39 @@ package uk.ac.manchester.spinnaker.machine;
  *
  * @author Christian
  */
-public class RegionLocation implements HasCoreLocation,
-        Comparable<RegionLocation> {
-
-    /**
-     * The Chip / Core's X value.
-     */
+public class RegionLocation
+        implements HasCoreLocation, Comparable<RegionLocation> {
+    /** The Chip / Core's X value. */
     public final int x;
-    /**
-     * The Chip / Core's Y value.
-     */
+
+    /** The Chip / Core's Y value. */
     public final int y;
-    /**
-     * The Core's P value.
-     */
+
+    /** The Core's P value. */
     public final int p;
-    /**
-     * The recording Region.
-     */
+
+    /** The recording Region. */
     public final int region;
-    /**
-     * Precalculated hashcode.
-     */
+
+    /** Precalculated hashcode. */
     public final int hashcode;
 
     /**
      * Creates the Region based on a Core and a region.
-     * @param core The Core to use
-     * @param region The Region to use.
+     *
+     * @param core
+     *            The Core to use
+     * @param region
+     *            The Region to use.
      */
     public RegionLocation(HasCoreLocation core, int region) {
         this.x = core.getX();
         this.y = core.getY();
         this.p = core.getP();
         this.region = region;
-        this.hashcode = ((((x << MachineDefaults.COORD_SHIFT) ^ y)
-                << MachineDefaults.CORE_SHIFT) ^ p)
-                << MachineDefaults.REGION_SHIFT ^ region;
+        this.hashcode = ((((x << MachineDefaults.COORD_SHIFT)
+                ^ y) << MachineDefaults.CORE_SHIFT)
+                ^ p) << MachineDefaults.REGION_SHIFT ^ region;
     }
 
     @Override

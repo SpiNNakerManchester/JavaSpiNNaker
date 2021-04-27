@@ -27,11 +27,14 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
  * @author Christian-B
  */
 public class MachineBean {
-
     private final MachineDimensions dimensions;
+
     private final ChipLocation root;
+
     private final ChipResources ethernetResources;
+
     private final ChipResources standardResources;
+
     private final List<ChipBean> chips;
 
     /**
@@ -86,7 +89,7 @@ public class MachineBean {
     }
 
     /**
-     * @return the default none ethernet resources
+     * @return the default non-ethernet resources
      */
     public ChipResources getStandardResources() {
         return standardResources;

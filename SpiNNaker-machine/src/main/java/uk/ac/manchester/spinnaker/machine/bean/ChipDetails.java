@@ -39,10 +39,14 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 public class ChipDetails {
     /** Total number of working core on this Chip. */
     public final int cores;
+
     /** Location of the nearest Ethernet Chip. */
     public final ChipLocation ethernet;
+
     private final InetAddress ipAddress;
+
     private final Set<Direction> deadDirections;
+
     private final List<LinkBean> links;
 
     /**

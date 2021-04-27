@@ -20,6 +20,7 @@ package uk.ac.manchester.spinnaker.machine;
 public final class MachineDimensions {
     /** The width of the machine in chips. */
     public final int width;
+
     /** The height of the machine in chips. */
     public final int height;
 

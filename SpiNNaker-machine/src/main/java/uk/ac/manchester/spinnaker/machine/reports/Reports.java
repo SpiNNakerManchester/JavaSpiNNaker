@@ -41,6 +41,7 @@ public abstract class Reports {
     }
 
     private static final Logger log = getLogger(Reports.class);
+
     private static final String FILENAME = "machine_structure.rpt";
 
     /**

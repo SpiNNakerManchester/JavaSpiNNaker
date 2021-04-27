@@ -25,22 +25,24 @@ import java.util.Map;
  * @author Christian-B
  */
 public final class TrafficIdentifier {
-
     private static final Map<String, TrafficIdentifier> MAP = new HashMap<>();
 
-    /** Default if not provided.
+    /**
+     * Default if not provided.
      *
      * @see <a href=
-     * "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/tags/iptag.py">
-     * Python IPTag</a>
+     *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/tags/iptag.py">
+     *      Python IPTag</a>
      */
     public static final TrafficIdentifier DEFAULT = new TrafficIdentifier(
             "DEFAULT");
-    /** Used to identify buffered traffic.
+
+    /**
+     * Used to identify buffered traffic.
      *
      * @see <a href=
-     * "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/recording_utilities.py">
-     * Python Recording Utilities</a>
+     *      "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/recording_utilities.py">
+     *      Python Recording Utilities</a>
      */
     public static final TrafficIdentifier BUFFERED = new TrafficIdentifier(
             "BufferTraffic");

@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 public class LinkBean {
     /** Where the link is going. */
     public final ChipLocation destination;
+
     /** What direction the link is going in. */
     public final Direction sourceDirection;
 

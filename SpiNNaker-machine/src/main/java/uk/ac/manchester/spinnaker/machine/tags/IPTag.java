@@ -33,15 +33,20 @@ public final class IPTag extends Tag {
     /** Default traffic identifier. */
     public static final TrafficIdentifier DEFAULT_TRAFFIC_IDENTIFIER =
             TrafficIdentifier.DEFAULT;
+
     private static final boolean DEFAULT_STRIP_SDP = false;
+
     private static final Integer DEFAULT_PORT = null;
 
     /** The IP address to which SDP packets with the tag will be sent. */
     private final InetAddress ipAddress;
+
     /** Indicates whether the SDP header should be removed. */
     private final boolean stripSDP;
+
     /** The identifier for traffic transmitted using this tag. */
     private final TrafficIdentifier trafficIdentifier;
+
     /** The coordinates where users of this tag should send packets to. */
     private final ChipLocation destination;
 
@@ -175,22 +180,18 @@ public final class IPTag extends Tag {
      */
     @SuppressWarnings("checkstyle:ParameterNumber")
     public IPTag(
-            @JsonProperty(value = "boardAddress", required = true)
-                    String boardAddress,
+            @JsonProperty(value = "boardAddress", required = true) String boardAddress,
             @JsonProperty(value = "tagID", required = true) int tagID,
             @JsonProperty(value = "x", required = true) int x,
             @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "targetAddress", required = true)
-                    String targetAddress,
+            @JsonProperty(value = "targetAddress", required = true) String targetAddress,
             @JsonProperty(value = "port", required = false) Integer port,
-            @JsonProperty(value = "stripSDP", required = false)
-                    Boolean stripSDP,
-            @JsonProperty(value = "trafficIdentifier", required = false)
-                    String trafficIdentifier)
+            @JsonProperty(value = "stripSDP", required = false) Boolean stripSDP,
+            @JsonProperty(value = "trafficIdentifier", required = false) String trafficIdentifier)
             throws UnknownHostException {
         super(InetAddress.getByName(boardAddress), tagID,
                 (port == null ? DEFAULT_PORT : port));
-        this.destination =  new ChipLocation(x, y);
+        this.destination = new ChipLocation(x, y);
         this.ipAddress = InetAddress.getByName(targetAddress);
         if (stripSDP == null) {
             this.stripSDP = DEFAULT_STRIP_SDP;
@@ -200,8 +201,8 @@ public final class IPTag extends Tag {
         if (trafficIdentifier == null) {
             this.trafficIdentifier = null;
         } else {
-            this.trafficIdentifier =
-                    TrafficIdentifier.getInstance(trafficIdentifier);
+            this.trafficIdentifier = TrafficIdentifier
+                    .getInstance(trafficIdentifier);
         }
     }
 

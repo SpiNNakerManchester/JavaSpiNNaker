@@ -30,8 +30,10 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 public class ChipBean {
     /** The location of this Chip. */
     public final ChipLocation location;
+
     /** The details for this Chip. */
     public final ChipDetails details;
+
     /** The resources for this Chip.
      *
      * Not final as will be filled in with the defaults.

@@ -47,6 +47,7 @@ public final class SpiNNakerTriadGeometry {
 
     /** Height of a triad in chips. */
     public final int triadHeight;
+
     /** Width of a triad in chips. */
     public final int triadWidth;
 
@@ -58,6 +59,7 @@ public final class SpiNNakerTriadGeometry {
     private final Collection<ChipLocation> singleBoardCoordinates;
 
     private final float xCentre;
+
     private final float yCentre;
 
     /**
@@ -275,7 +277,6 @@ public final class SpiNNakerTriadGeometry {
         return Collections.unmodifiableCollection(singleBoardCoordinates);
     }
 
-
     /**
      * An Iterator all the chips on a Single board with a root of 0, 0.
      *
@@ -320,6 +321,7 @@ public final class SpiNNakerTriadGeometry {
     }
 
     private static final float VIRTUAL_CENTRE_X = 3.6F;
+
     private static final float VIRTUAL_CENTRE_Y = 3.4F;
 
     /**

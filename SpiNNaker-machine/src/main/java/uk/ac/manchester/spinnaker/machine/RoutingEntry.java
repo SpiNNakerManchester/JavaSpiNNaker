@@ -28,6 +28,7 @@ import java.util.Set;
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
     private final Set<Integer> processorIDs = new LinkedHashSet<>();
+
     private final Set<Direction> linkIDs = new LinkedHashSet<>();
 
     private static boolean bitset(int word, int bit) {

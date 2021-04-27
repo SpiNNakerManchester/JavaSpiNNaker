@@ -29,39 +29,38 @@ import java.util.Set;
 
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
-
 /**
- * A representation of a SpiNNaker Machine with a number of Chips.
+ * A representation of a SpiNNaker Machine with a number of {@link Chip}s. This
+ * machine is one that has been constructed to model the real world, but which
+ * is not actually based truly on real-world data.
  * <p>
- * Machine is also iterable, providing ((x, y), chip) where:
- * x is the x-coordinate of a chip.
- * y is the y-coordinate of a chip.
- * chip is the chip with the given x, y coordinates.
+ * Machine is also iterable, providing {@code ((x, y), chip)} where: {@code x}
+ * is the x-coordinate of a chip. {@code y} is the y-coordinate of a chip, and
+ * {@chip chip} is the chip with the given {@code x, y} coordinates.
  *
- * <p>
- * @see <a
- * href="https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
- * Python Version</a>
-
+ * @see <a href=
+ *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
+ *      Python Version</a>
  * @author Christian-B
  */
 public class VirtualMachine extends Machine {
-
-     /**
+    /**
      * Creates a virtual machine to fill the machine dimensions.
      *
      * @param machineDimensions
-     *      Size of the machine along the x and y axes in Chips.
-     * @param ignoreChips A set of chips to ignore in the machine.
-     *      Requests for a "machine" will have these chips excluded,
-     *      as if they never existed.
-     *      The processor IDs of the specified chips are ignored.
-     * @param ignoreCores A map of cores to ignore in the machine.
-     *      Requests for a "machine" will have these cores excluded,
-     *      as if they never existed.
-     * @param ignoreLinks A set of links to ignore in the machine.
-     *      Requests for a "machine" will have these links excluded,
-     *      as if they never existed.
+     *            Size of the machine along the x and y axes in Chips.
+     * @param ignoreChips
+     *            A set of chips to ignore in the machine. Requests for a
+     *            "machine" will have these chips excluded, as if they never
+     *            existed. The processor IDs of the specified chips are ignored.
+     * @param ignoreCores
+     *            A map of cores to ignore in the machine. Requests for a
+     *            "machine" will have these cores excluded, as if they never
+     *            existed.
+     * @param ignoreLinks
+     *            A set of links to ignore in the machine. Requests for a
+     *            "machine" will have these links excluded, as if they never
+     *            existed.
      */
     public VirtualMachine(MachineDimensions machineDimensions,
             Set<ChipLocation> ignoreChips,
@@ -81,17 +80,17 @@ public class VirtualMachine extends Machine {
 
         addVersionIgnores(ignoreLinks);
 
-        SpiNNakerTriadGeometry geometry =
-                SpiNNakerTriadGeometry.getSpinn5Geometry();
+        SpiNNakerTriadGeometry geometry = SpiNNakerTriadGeometry
+                .getSpinn5Geometry();
 
         // Get all the root and therefore ethernet locations
-        Set<ChipLocation> roots =
-                geometry.getPotentialRootChips(machineDimensions);
+        Set<ChipLocation> roots = geometry
+                .getPotentialRootChips(machineDimensions);
 
         // Get all the valid locations
         Map<ChipLocation, ChipLocation> allChips = new HashMap<>();
         for (ChipLocation root : roots) {
-            for (ChipLocation local: geometry.singleBoard()) {
+            for (ChipLocation local : geometry.singleBoard()) {
                 ChipLocation normalized = normalizedLocation(
                         root.getX() + local.getX(), root.getY() + local.getY());
                 if (!ignoreChips.contains(normalized)) {
@@ -99,29 +98,29 @@ public class VirtualMachine extends Machine {
                 }
             }
         }
-        for (ChipLocation location: allChips.keySet()) {
+        for (ChipLocation location : allChips.keySet()) {
             Router router = getRouter(location, allChips, ignoreLinks);
             InetAddress ipAddress = getIpaddress(location, roots);
-            addChip(getChip(location, router, ipAddress,
-                    allChips.get(location), ignoreCores));
+            addChip(getChip(location, router, ipAddress, allChips.get(location),
+                    ignoreCores));
         }
     }
 
-     /**
+    /**
      * Creates a virtual machine to fill the machine dimensions with no ignores.
      *
      * @param machineDimensions
-     *      Size of the machine along the x and y axes in Chips.
+     *            Size of the machine along the x and y axes in Chips.
      */
     public VirtualMachine(MachineDimensions machineDimensions) {
         this(machineDimensions, null, null, null);
     }
 
-     /**
+    /**
      * Creates a virtual machine based on the MachineVersion.
      *
      * @param version
-     *      A version which specifies fixed size.
+     *            A version which specifies fixed size.
      */
     public VirtualMachine(MachineVersion version) {
         this(version.machineDimensions, null, null, null);
@@ -196,14 +195,19 @@ public class VirtualMachine extends Machine {
 
     // Hide magic numbers
     private static final int BYTES_PER_IP_ADDRESS = 4;
+
     private static final int LOCAL_HOST_ONE = 127;
+
     private static final int FIRST_BYTE = 0;
+
     private static final int SECOND_BYTE = 1;
+
     private static final int THIRD_BYTE = 2;
+
     private static final int FOURTH_BYTE = 3;
 
-    private Inet4Address getIpaddress(
-            ChipLocation location, Set<ChipLocation> roots) {
+    private Inet4Address getIpaddress(ChipLocation location,
+            Set<ChipLocation> roots) {
         if (roots.contains(location)) {
             byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
             bytes[FIRST_BYTE] = LOCAL_HOST_ONE;
@@ -213,7 +217,7 @@ public class VirtualMachine extends Machine {
             try {
                 return InetFactory.getByAddress(bytes);
             } catch (UnknownHostException ex) {
-                //Should never happen so convert to none catchable
+                // Should never happen so convert to none catchable
                 throw new Error(ex);
             }
         } else {

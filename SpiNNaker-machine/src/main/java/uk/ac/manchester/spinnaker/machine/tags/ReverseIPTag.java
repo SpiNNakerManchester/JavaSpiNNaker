@@ -29,7 +29,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class ReverseIPTag extends Tag {
     private static final int DEFAULT_SDP_PORT = 1;
+
     private final CoreLocation destination;
+
     private final int sdpPort;
 
     /**
@@ -114,7 +116,6 @@ public final class ReverseIPTag extends Tag {
         h ^= rotateLeft(destination.hashCode(), 19);
         return h;
     }
-
 
     @Override
     public String toString() {

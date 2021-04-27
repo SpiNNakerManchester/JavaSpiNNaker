@@ -29,7 +29,6 @@ import uk.ac.manchester.spinnaker.machine.MachineDefaults;
  * @author Christian-B
  */
 public class AbstractDataLink implements HasChipLocation {
-
     /** IP address of the Datalink on the board. */
     public final InetAddress boardAddress;
 
@@ -38,7 +37,6 @@ public class AbstractDataLink implements HasChipLocation {
 
     /** link Direction/id for this link. */
     public final Direction direction;
-
 
     /**
      * Main Constructor of a DataLink.
@@ -118,5 +116,4 @@ public class AbstractDataLink implements HasChipLocation {
         }
         return location.onSameChipAs(other.location);
     }
-
 }
