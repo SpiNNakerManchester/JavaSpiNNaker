@@ -112,7 +112,8 @@ public class TestReaderLineIterable {
     /**
      * test that close method is not called if used simply
      */
-    @Test
+	@Test
+	@SuppressWarnings("resource")
     public void testNoClose() {
         Reader reader = new CloseError();
         for (String line:new ReaderLineIterable(reader)) {

@@ -16,20 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.backgroundAccept;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
+import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.io.EOFException;
 import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -37,15 +36,25 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
+import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
+import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
+import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
+import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
+import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
+import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 class TestClient {
 	static class MockCommand extends Command<Integer> {
@@ -275,19 +284,267 @@ class TestClient {
 	}
 
 	@Test
-	void testCommandsAsMethods() throws Exception {
+	@SuppressWarnings("deprecation")
+	void testCommandCreateJob() throws Exception {
 		withConnection((s, c, bgAccept) -> {
 			c.connect();
 			bgAccept.join();
 
+			// Old style create_job
 			s.send("{\"return\": 123}");
 			Map<String, Object> kwargs = new HashMap<>();
 			kwargs.put("bar", 2);
 			kwargs.put("owner", "dummy");
-		    assertEquals(123, c.createJob(Arrays.asList(1), kwargs));
+			assertEquals(123, c.createJob(Arrays.asList(1), kwargs));
 			JSONAssert.assertEquals(
 					"{\"command\": \"create_job\", \"args\": [1], "
-					+ "\"kwargs\": {\"owner\": \"dummy\"}}",
+							+ "\"kwargs\": {\"owner\": \"dummy\"}}",
+					s.recv(), true);
+
+			// New style create_job
+			s.send("{\"return\": 123}");
+			assertEquals(123, c.createJob(new CreateJob(1).owner("dummy")));
+			JSONAssert.assertEquals(
+					"{\"command\": \"create_job\", \"args\": [1], "
+							+ "\"kwargs\": {\"owner\": \"dummy\"}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandListJobs() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":[{\"job_id\":123},{\"job_id\":99}]}");
+			List<JobDescription> result = c.listJobs();
+			assertEquals(2, result.size());
+			assertEquals(123, result.get(0).getJobID());
+			assertEquals(99, result.get(1).getJobID());
+			JSONAssert.assertEquals("{\"command\": \"list_jobs\", "
+					+ "\"args\": [], \"kwargs\": {}}", s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandListMachines() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":[{\"name\":\"foo\"},{\"name\":\"bar\"}]}");
+			List<Machine> result = c.listMachines();
+			assertEquals(2, result.size());
+			assertEquals("foo", result.get(0).getName());
+			assertEquals("bar", result.get(1).getName());
+			JSONAssert.assertEquals("{\"command\": \"list_machines\", "
+					+ "\"args\": [], \"kwargs\": {}}", s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandDestroyJob() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":null}");
+			c.destroyJob(123, "gorp");
+			JSONAssert.assertEquals(
+					"{\"command\": \"destroy_job\", " + "\"args\": [123], "
+							+ "\"kwargs\": {\"reason\":\"gorp\"}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandGetBoardPosition() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":[4,5,6]}");
+			BoardPhysicalCoordinates pc =
+					c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
+			assertEquals(new BoardPhysicalCoordinates(4, 5, 6), pc);
+			JSONAssert.assertEquals("{\"command\": \"get_board_position\", "
+					+ "\"args\": [], \"kwargs\": "
+					+ "{\"machine_name\":\"gorp\",\"x\":1,\"y\":2,\"z\":3}}",
+					s.recv(), true);
+
+			s.send("{\"return\":[7,8,9]}");
+			BoardCoordinates lc = c.getBoardPosition("gorp", pc);
+			assertEquals(new BoardCoordinates(7, 8, 9), lc);
+			JSONAssert.assertEquals("{\"command\": \"get_board_at_position\", "
+					+ "\"args\": [], \"kwargs\": "
+					+ "{\"machine_name\":\"gorp\",\"x\":4,\"y\":5,\"z\":6}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandGetJobMachineInfo() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":{\"boards\": [[1,2,3]],"
+					+ "\"connections\": [[[1,2],\"gorp\"]]}}");
+			JobMachineInfo result = c.getJobMachineInfo(123);
+			List<BoardCoordinates> boards = result.getBoards();
+			assertEquals(1, boards.size());
+			assertEquals(new BoardCoordinates(1, 2, 3), boards.get(0));
+			List<Connection> conns = result.getConnections();
+			assertEquals(1, conns.size());
+			assertEquals(new ChipLocation(1, 2), conns.get(0).getChip());
+			assertEquals("gorp", conns.get(0).getHostname());
+			JSONAssert.assertEquals(
+					"{\"command\": \"get_job_machine_info\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandGetJobState() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":{\"state\":3,\"power\":true}}");
+			JobState result = c.getJobState(123);
+			assertEquals(true, result.getPower());
+			assertEquals(READY, result.getState());
+			JSONAssert.assertEquals(
+					"{\"command\": \"get_job_state\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandNotifyJob() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":null}");
+			c.notifyJob(123, false);
+			JSONAssert.assertEquals(
+					"{\"command\": \"no_notify_job\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+			s.send("{\"return\":null}");
+			c.notifyJob(123, true);
+			JSONAssert.assertEquals(
+					"{\"command\": \"notify_job\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandNotifyMachine() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":null}");
+			c.notifyMachine("foo", false);
+			JSONAssert.assertEquals(
+					"{\"command\": \"no_notify_machine\", "
+							+ "\"args\": [\"foo\"], \"kwargs\": {}}",
+					s.recv(), true);
+			s.send("{\"return\":null}");
+			c.notifyMachine("foo", true);
+			JSONAssert.assertEquals(
+					"{\"command\": \"notify_machine\", "
+							+ "\"args\": [\"foo\"], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandPower() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":null}");
+			c.powerOffJobBoards(123);
+			JSONAssert.assertEquals(
+					"{\"command\": \"power_off_job_boards\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+			s.send("{\"return\":null}");
+			c.powerOnJobBoards(123);
+			JSONAssert.assertEquals(
+					"{\"command\": \"power_on_job_boards\", "
+							+ "\"args\": [123], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandVersion() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+
+			s.send("{\"return\":\"1.2.3\"}");
+			Version result = c.version();
+			assertEquals(1, result.majorVersion);
+			assertEquals(2, result.minorVersion);
+			assertEquals(3, result.revision);
+			JSONAssert.assertEquals(
+					"{\"command\": \"version\", \"args\": [], \"kwargs\": {}}",
+					s.recv(), true);
+		});
+	}
+
+	@Test
+	void testCommandWhereIs() throws Exception {
+		withConnection((s, c, bgAccept) -> {
+			c.connect();
+			bgAccept.join();
+			WhereIs result;
+
+			s.send("{\"return\":{\"machine\":\"gorp\",\"logical\":[2,3,4]}}");
+			result = c.whereIs(123, new ChipLocation(1, 2));
+			assertEquals("gorp", result.getMachine());
+			assertEquals(new BoardCoordinates(2, 3, 4), result.getLogical());
+			JSONAssert.assertEquals(
+					"{\"command\": \"where_is\", \"args\": [], \"kwargs\": {"
+							+ "\"chip_x\":1,\"chip_y\":2,\"job_id\":123}}",
+					s.recv(), true);
+
+			s.send("{\"return\":{\"physical\":[2,3,4]}}");
+			result = c.whereIs("gorp", new BoardCoordinates(1, 2, 3));
+			assertEquals(new BoardPhysicalCoordinates(2, 3, 4),
+					result.getPhysical());
+			JSONAssert.assertEquals(
+					"{\"command\": \"where_is\", \"args\": [], \"kwargs\": {"
+							+ "\"x\":1,\"y\":2,\"z\":3,\"machine\":\"gorp\""
+							+ "}}",
+					s.recv(), true);
+
+			s.send("{\"return\":{\"logical\":[2,3,4]}}");
+			result = c.whereIs("gorp", new BoardPhysicalCoordinates(1, 2, 3));
+			assertEquals(new BoardCoordinates(2, 3, 4), result.getLogical());
+			JSONAssert.assertEquals(
+					"{\"command\": \"where_is\", \"args\": [], \"kwargs\": {"
+							+ "\"cabinet\":1,\"frame\":2,\"board\":3,"
+							+ "\"machine\":\"gorp\"}}",
+					s.recv(), true);
+
+			s.send("{\"return\":{\"logical\":[2,3,4]}}");
+			result = c.whereIs("gorp", new ChipLocation(0, 1));
+			assertEquals(new BoardCoordinates(2, 3, 4), result.getLogical());
+			JSONAssert.assertEquals(
+					"{\"command\": \"where_is\", \"args\": [], \"kwargs\": {"
+							+ "\"chip_x\":0,\"chip_y\":1,"
+							+ "\"machine\":\"gorp\"}}",
 					s.recv(), true);
 		});
 	}
