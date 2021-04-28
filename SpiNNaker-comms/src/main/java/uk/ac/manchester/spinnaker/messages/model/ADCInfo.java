@@ -32,58 +32,83 @@ public final class ADCInfo {
 	/** fan<sub>0</sub> rotation rate. */
 	@SARKField("fan_0")
 	public final Double fan0;
+
 	/** fan<sub>1</sub> rotation rate. */
 	@SARKField("fan_1")
 	public final Double fan1;
+
 	/** temperature bottom. */
 	@SARKField("temp_btm")
 	public final double tempBottom;
+
 	/** temperature external<sub>0</sub>. */
 	@SARKField("temp_ext_0")
 	public final Double tempExt0;
+
 	/** temperature external<sub>1</sub>. */
 	@SARKField("temp_ext_1")
 	public final Double tempExt1;
+
 	/** temperature top. */
 	@SARKField("temp_top")
 	public final double tempTop;
+
 	/** Actual voltage of the 1.2V<sub>a</sub> supply rail. */
 	@SARKField("voltage_1_2a")
 	public final double voltage12a;
+
 	/** Actual voltage of the 1.2V<sub>b</sub> supply rail. */
 	@SARKField("voltage_1_2b")
 	public final double voltage12b;
+
 	/** Actual voltage of the 1.2V<sub>c</sub> supply rail. */
 	@SARKField("voltage_1_2c")
 	public final double voltage12c;
+
 	/** Actual voltage of the 1.8V supply rail. */
 	@SARKField("voltage_1_8")
 	public final double voltage18;
+
 	/** Actual voltage of the 3.3V supply rail. */
 	@SARKField("voltage_3_3")
 	public final double voltage33;
+
 	/** Actual voltage of the main power supply (nominally 12V?). */
 	@SARKField("voltage_supply")
 	public final double voltageSupply;
 
 	// Sizes of arrays
 	private static final int ADC_SIZE = 8;
+
 	private static final int T_INT_SIZE = 4;
+
 	private static final int T_EXT_SIZE = 4;
+
 	private static final int FAN_SIZE = 4;
 
 	// Indices into arrays
 	private static final int V_1_2C = 1;
+
 	private static final int V_1_2B = 2;
+
 	private static final int V_1_2A = 3;
+
 	private static final int V_1_8 = 4;
+
 	private static final int V_3_3 = 6;
+
 	private static final int VS = 7;
+
 	private static final int T_TOP = 0;
+
 	private static final int T_BTM = 1;
+
 	private static final int T_X0 = 0;
+
 	private static final int T_X1 = 1;
+
 	private static final int FAN0 = 0;
+
 	private static final int FAN1 = 1;
 
 	/**

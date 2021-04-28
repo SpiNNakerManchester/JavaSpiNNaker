@@ -58,8 +58,10 @@ public enum CPUState {
     CPU_STATE_14,
     /** */
     IDLE;
+
     /** The canonical SARK value for the state. */
     public final int value;
+
     private static final Map<Integer, CPUState> MAP = new HashMap<>();
 
     CPUState() {

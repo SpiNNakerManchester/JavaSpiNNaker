@@ -26,13 +26,17 @@ import static uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus.SHIFT;
  */
 public final class RouterTimeout {
 	private static final int MANTISSA_OFFSET = 16;
+
 	private static final int EXPONENT_OFFSET = 4;
+
 	/** An infinite timeout. */
 	public static final RouterTimeout INF = new RouterTimeout(15, 15);
+
 	private static final double CLOCK_INTERVAL = 1e9 / 133e6;
 
 	/** The mantissa of the timeout. */
 	public final int mantissa;
+
 	/** The exponent of the timeout. */
 	public final int exponent;
 

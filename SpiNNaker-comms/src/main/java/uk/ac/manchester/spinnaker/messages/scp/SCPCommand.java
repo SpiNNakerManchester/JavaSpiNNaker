@@ -113,6 +113,7 @@ public enum SCPCommand implements CommandCode {
 
 	/** The SCAMP encoding. */
 	public final short value;
+
 	private static final Map<Short, SCPCommand> MAP = new HashMap<>();
 
 	SCPCommand(int value) {

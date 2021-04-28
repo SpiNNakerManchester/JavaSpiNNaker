@@ -32,8 +32,10 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 public class SCPRequestHeader implements SerializableMessage {
 	/** The command of the SCP packet. */
 	public final CommandCode command;
+
 	/** The sequence number of the packet, between 0 and 65535. */
 	private short sequence;
+
 	private boolean sequenceSet;
 
 	public SCPRequestHeader(CommandCode command) {

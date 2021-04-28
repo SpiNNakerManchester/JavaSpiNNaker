@@ -36,35 +36,52 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 public final class ChipSummaryInfo {
     /** The state of the cores on the chip (list of one per core). */
     public final List<CPUState> coreStates;
+
     /** The IP address of the Ethernet if up, or {@code null} if not. */
     public final InetAddress ethernetIPAddress;
+
     /** Determines if the Ethernet connection is available on this chip. */
     public final boolean isEthernetAvailable;
+
     /** The size of the largest block of free SDRAM in bytes. */
     public final int largestFreeSDRAMBlock;
+
     /** The size of the largest block of free SRAM in bytes. */
     public final int largestFreeSRAMBlock;
+
     /** The number of cores working on the chip (including monitors). */
     public final int numCores;
+
     /** The number of multicast routing entries free on this chip. */
     public final int numFreeMulticastRoutingEntries;
+
     /** The location of the nearest Ethernet chip. */
     public final ChipLocation nearestEthernetChip;
+
     /** The IDs of the working links outgoing from this chip. */
     public final Set<Direction> workingLinks;
+
     /** The chip that this data is from. */
     public final HasChipLocation chip;
 
     private static final int ADDRESS_SIZE = 4;
-	private static final byte[] NO_ADDRESS = new byte[] {
+
+    private static final byte[] NO_ADDRESS = new byte[] {
 		0, 0, 0, 0
 	};
+
     private static final int NUM_CORES = 18;
+
     private static final int NUM_LINKS = 6;
+
     private static final int LINKS_FIELD_SHIFT = 8;
+
     private static final int NUM_CORES_FIELD_MASK = 0b00011111;
+
     private static final int FREE_ENTRIES_FIELD_SHIFT = 14;
+
     private static final int FREE_ENTRIES_FIELD_MASK = 0x7FF;
+
     private static final int ETH_AVAIL_FIELD_BIT = 25;
 
     private static boolean bitset(int value, int bitnum) {

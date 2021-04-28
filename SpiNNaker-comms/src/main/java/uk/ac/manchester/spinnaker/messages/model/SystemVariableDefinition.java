@@ -209,11 +209,13 @@ public enum SystemVariableDefinition {
 
 	/** The data type of the variable. */
 	public final DataType type;
+
 	/**
 	 * The offset from the start of the system variable structure where the
 	 * variable is found.
 	 */
 	public final int offset;
+
 	/**
 	 * The default value assigned to the variable if not overridden; this can be
 	 * an integer or a byte array.
@@ -286,6 +288,7 @@ abstract class SVDConstants {
 	 * Width of arrays that have an element per core.
 	 */
 	static final int PER_CORE_WIDTH = 20;
+
 	/**
 	 * Width of arrays that hold an IPv4 address.
 	 */

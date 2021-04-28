@@ -118,17 +118,27 @@ public class ChipInfo implements HasChipLocation {
 	private static final byte[] NO_IP = {
 		0, 0, 0, 0
 	};
+
 	private static final int UNMAPPED = 0xFF;
+
 	private static final int TEN_MS = 10;
+
 	private final ByteBuffer systemData;
 
 	private InetAddress ipAddress;
+
 	private int ledFlashPeriod;
+
 	private int[] leds;
+
 	private BitSet linksAvailable;
+
 	private byte[] physicalToVirtualCoreMap;
+
 	private byte[] statusMap;
+
 	private List<Integer> virtualCoreIDs;
+
 	private byte[] virtualToPhysicalCoreMap;
 
 	/**

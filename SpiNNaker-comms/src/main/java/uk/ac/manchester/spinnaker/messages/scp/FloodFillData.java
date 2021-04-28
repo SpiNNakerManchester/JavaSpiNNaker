@@ -28,7 +28,9 @@ import java.nio.ByteBuffer;
 /** A request to start a flood fill of data. */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	private static final int MAGIC1 = 0x3f;
+
 	private static final int MAGIC2 = 0x1A;
+
 	private static final int NNP_FORWARD_RETRY =
 			(MAGIC1 << BYTE3) | (MAGIC2 << BYTE2);
 

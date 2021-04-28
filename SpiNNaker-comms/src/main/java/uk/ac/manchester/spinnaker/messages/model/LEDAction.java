@@ -27,6 +27,7 @@ public enum LEDAction {
 
 	/** The SCAMP-encoded value. */
 	public final byte value;
+
 	LEDAction(int value) {
 		this.value = (byte) value;
 	}

@@ -38,6 +38,7 @@ public enum MailboxCommand {
 
 	/** The SARK value. */
 	public final int value;
+
 	private static final Map<Integer, MailboxCommand> MAP = new HashMap<>();
 	static {
 		for (MailboxCommand v : values()) {
