@@ -72,8 +72,10 @@ class TestClient {
 	void testConnectNoServer() throws Exception {
 		withConnection((s, c, bgAccept) -> {
 			s.close();
-			// If the server has gone, we're not going to successfully connect
-			// to it
+			/*
+			 * If the server has gone, we're not going to successfully connect
+			 * to it
+			 */
 			assertThrows(ConnectException.class, () -> c.connect());
 			c.close();
 		});
@@ -92,7 +94,7 @@ class TestClient {
 						new SpallocClient("localhost", s.getPort(), null)) {
 					Joinable t = backgroundAccept(s);
 					try (AutoCloseable context = c.withConnection()) {
-						return;
+						return; // do nothing
 					} finally {
 						t.join();
 					}
