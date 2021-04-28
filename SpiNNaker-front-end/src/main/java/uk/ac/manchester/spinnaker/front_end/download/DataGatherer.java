@@ -226,6 +226,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * Monitor that is used to download the regions.
 		 */
 		private final Monitor monitor;
+
 		/**
 		 * List of information about where to download. The inner sub-lists are
 		 * ordered, and are either one or two items long to represent what
