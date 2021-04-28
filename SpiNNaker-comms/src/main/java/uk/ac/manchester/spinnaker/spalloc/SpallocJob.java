@@ -221,6 +221,60 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	/**
 	 * Create a spalloc job that requests a SpiNNaker machine.
 	 *
+	 * @param client
+	 *            The spalloc client
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalArgumentException
+	 *             If a bad builder is given.
+	 */
+	public SpallocJob(SpallocClient client, CreateJob builder)
+			throws IOException, SpallocServerException {
+		this(client, f2ms(config.getTimeout()), builder);
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
+	 * @param client
+	 *            The spalloc client
+	 * @param timeout
+	 *            The communications timeout
+	 * @param builder
+	 *            The job-creation request builder.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws IllegalArgumentException
+	 *             If a bad builder is given.
+	 */
+	public SpallocJob(SpallocClient client, Integer timeout, CreateJob builder)
+			throws IOException, SpallocServerException {
+		if (builder == null) {
+			throw new IllegalArgumentException("a builder must be specified");
+		}
+		this.client = client;
+		this.timeout = timeout;
+		client.connect();
+		reconnectDelay = f2ms(config.getReconnectDelay());
+		id = client.createJob(builder, timeout);
+		/*
+		 * We also need the keepalive configuration so we know when to send
+		 * keepalive messages.
+		 */
+		keepaliveTime = f2ms(builder.getKeepAlive());
+		log.info("created spalloc job with ID: {}", id);
+		launchKeepaliveDaemon();
+	}
+
+	/**
+	 * Create a spalloc job that requests a SpiNNaker machine.
+	 *
 	 * @param hostname
 	 *            The spalloc server host
 	 * @param port
