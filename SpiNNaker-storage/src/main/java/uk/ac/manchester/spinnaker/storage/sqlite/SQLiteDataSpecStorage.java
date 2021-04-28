@@ -36,10 +36,15 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 		implements DSEStorage {
 	private static final int FIRST = 1;
+
 	private static final int SECOND = 2;
+
 	private static final int THIRD = 3;
+
 	private static final int FOURTH = 4;
+
 	private static final int FIFTH = 5;
+
 	private static final int SIXTH = 6;
 
 	/**

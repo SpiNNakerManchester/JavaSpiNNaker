@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final Logger log = getLogger(SQLiteConnectionManager.class);
+
 	private final ConnectionProvider<APIType> connProvider;
 
 	/**

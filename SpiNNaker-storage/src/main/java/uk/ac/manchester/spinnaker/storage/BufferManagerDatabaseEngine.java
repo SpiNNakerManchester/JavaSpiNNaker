@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
 public class BufferManagerDatabaseEngine
 		extends DatabaseEngine<BufferManagerStorage> {
 	private static String sqlDDL;
+
 	static {
 		try {
 			sqlDDL = resourceToString("/buffer_manager.sql", UTF_8);

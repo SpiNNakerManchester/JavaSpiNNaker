@@ -40,6 +40,7 @@ import org.sqlite.SQLiteConfig;
 public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 		implements ConnectionProvider<APIType> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
+
 	/** Busy timeout for SQLite, in milliseconds. */
 	private static final int BUSY_TIMEOUT = 500;
 
