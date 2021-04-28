@@ -47,9 +47,13 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  */
 class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int REGISTER = 4;
+
 	private static final int NUM_REGISTERS = 16;
+
 	private static final int ROUTER_CONTROL_REGISTER = 0xe1000000;
+
 	private static final int ROUTER_ERROR_STATUS = 0xe1000014;
+
 	private static final int ROUTER_REGISTERS = 0xe1000300;
 
 	/**

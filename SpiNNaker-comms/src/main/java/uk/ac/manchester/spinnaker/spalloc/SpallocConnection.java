@@ -436,6 +436,7 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	private static class TextSocket extends Socket {
 		private BufferedReader br;
+
 		private PrintWriter pw;
 
 		PrintWriter getWriter() throws IOException {

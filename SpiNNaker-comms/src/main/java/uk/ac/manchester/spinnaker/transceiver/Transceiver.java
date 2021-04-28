@@ -2391,8 +2391,10 @@ public class Transceiver extends UDPTransceiver
 	public static final class ConnectionDescriptor {
 		/** What host to talk to. */
 		private InetAddress hostname;
+
 		/** What port to talk to, or {@code null} for default. */
 		private Integer portNumber;
+
 		/** What chip to talk to. */
 		private ChipLocation chip;
 

@@ -158,6 +158,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	private static class BootValues {
 		private static final SystemVariableBootValues[] MAP;
+
 		/**
 		 * Deeply magical values, used to configure board LED states. Note that
 		 * index 0 corresponds to board hardware version 1, index 1 to hardware

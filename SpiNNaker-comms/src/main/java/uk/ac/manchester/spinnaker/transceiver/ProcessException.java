@@ -26,6 +26,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public class ProcessException extends SpinnmanException {
 	private static final long serialVersionUID = 7759365416594564702L;
+
 	private static final String S = "     "; // five spaces
 
 	/** Where does the code believe this exception originated? */
