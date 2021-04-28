@@ -77,23 +77,28 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * Logger for the gatherer.
 	 */
 	protected static final Logger log = getLogger(DataGatherer.class);
+
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 100;
+
 	/**
 	 * The time delay between sending each message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int DELAY_PER_SEND = 10;
+
 	/**
 	 * The timeout when receiving a message. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int TIMEOUT_PER_RECEIVE = 2000;
+
 	/**
 	 * The <i>extra</i> timeout for processing the message queue. In
 	 * {@linkplain java.util.concurrent.TimeUnit#MILLISECONDS milliseconds}.
 	 */
 	private static final int INTERNAL_DELAY = 100;
+
 	/**
 	 * What is the maximum number of payload <em>words</em> in a packet that
 	 * also has a sequence number? This is one less than the total maximum
@@ -101,20 +106,26 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * which encodes the sequence number and the end-of-stream flag.
 	 */
 	private static final int DATA_WORDS_PER_PACKET = SDP_PAYLOAD_WORDS - 2;
+
 	/**
 	 * Mask used to pick out the bit that says whether a sequence number is the
 	 * last in a stream.
 	 */
 	private static final int LAST_MESSAGE_FLAG_BIT_MASK = 0x80000000;
+
 	/** Message used to report problems. */
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
+
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			System.getProperty("spinnaker.compare.download");
 
 	private final Transceiver txrx;
+
 	private final BasicExecutor pool;
+
 	private int missCount;
+
 	private Machine machine;
 
 	/**
@@ -142,6 +153,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	private static final String META_LABEL = "reading region metadata";
+
 	private static final String FAST_LABEL = "high-speed transfers";
 
 	/**
@@ -575,12 +587,18 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * failure.
 		 */
 		private boolean received;
+
 		private int timeoutcount;
+
 		/** A flag for each packet sequence number that is expected. */
 		private BitSet expectedSeqNums;
+
 		private int maxSeqNum;
+
 		private ByteBuffer dataReceiver;
+
 		private Monitor monitorCore;
+
 		private List<Integer> lastRequested;
 
 		/**
@@ -830,9 +848,12 @@ final class TimeoutException extends Exception {
  */
 final class InsaneSequenceNumberException extends IllegalStateException {
 	private static final long serialVersionUID = 2L;
+
 	private static final String TMPL =
 			"got insane sequence number %d: expected maximum %d (%s)";
+
 	private static final String MID = "totally bad sequence";
+
 	private static final String END = "non-empty terminal-only packet";
 
 	InsaneSequenceNumberException(int maxNum, int seqNum) {

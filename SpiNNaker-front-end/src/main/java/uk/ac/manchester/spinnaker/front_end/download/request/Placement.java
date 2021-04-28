@@ -30,11 +30,14 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public class Placement implements HasCoreLocation {
     /** The X coordinate of the core this vertex is placed on. */
 	private final int x;
-    /** The Y coordinate of the core this vertex is placed on. */
+
+	/** The Y coordinate of the core this vertex is placed on. */
 	private final int y;
-    /** The processor ID of the core this vertex is placed on. */
+
+	/** The processor ID of the core this vertex is placed on. */
 	private final int p;
-    /** Minimal vertex info. */
+
+	/** Minimal vertex info. */
 	private final Vertex vertex;
 
 	/**

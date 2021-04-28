@@ -59,15 +59,19 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";
+
 	private static final Logger log =
 			getLogger(HostExecuteDataSpecification.class);
+
 	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	/**
 	 * Global thread pool for DSE execution.
 	 */
 	private final BasicExecutor executor;
+
 	private final Machine machine;
+
 	private final Transceiver txrx;
 
 	/**
@@ -244,7 +248,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 	private class BoardWorker {
 		private final Ethernet board;
+
 		private final DSEStorage storage;
+
 		private final Progress bar;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar) {

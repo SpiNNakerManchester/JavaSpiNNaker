@@ -114,6 +114,7 @@ public class MemoryRegion {
 	public int getIndex() {
 		return index;
 	}
+
 	/**
 	 * Set the write pointer. The write pointer is where the next block of data
 	 * to be written will actually be written.
