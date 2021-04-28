@@ -65,6 +65,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * The hostname and port of the spalloc server.
 	 */
 	private final InetSocketAddress addr;
+
 	private final Integer defaultTimeout;
 
 	/**
@@ -78,12 +79,15 @@ public abstract class SpallocConnection implements Closeable {
 	 * down all sockets at once.
 	 */
 	private final Map<Thread, TextSocket> socks = new HashMap<>();
+
 	/** Lock for access to {@link #socks}. */
 	private final Object socksLock = new Object();
+
 	/**
 	 * The thread-aware socket factory. Every thread gets exactly one socket.
 	 */
 	private final TextSocketFactory local = new TextSocketFactory();
+
 	/** A queue of unprocessed notifications. */
 	protected final Queue<Notification> notifications =
 			new ConcurrentLinkedQueue<>();

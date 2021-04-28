@@ -26,13 +26,17 @@ import java.util.List;
  * Describes a machine by its name, tags, width and height.
  */
 public class Machine {
-
 	private String name;
+
 	private List<String> tags = emptyList();
+
 	private int width;
+
 	private int height;
+
 	private List<BoardCoordinates> deadBoards = Collections.emptyList();
-    private List<BoardLink> deadLinks = Collections.emptyList();
+
+	private List<BoardLink> deadLinks = Collections.emptyList();
 
 	public String getName() {
 		return name;

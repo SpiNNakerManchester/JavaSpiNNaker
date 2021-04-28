@@ -177,23 +177,34 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
 	private static final Logger log = getLogger(Transceiver.class);
+
 	/**
 	 * Where executables are written to prior to launching them.
 	 */
 	private static final int EXECUTABLE_ADDRESS = 0x67800000;
+
 	private static final String SCAMP_NAME = "SC&MP";
+
 	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
+
 	private static final String BMP_NAME = "BC&MP";
+
 	private static final Set<Integer> BMP_MAJOR_VERSIONS =
 			unmodifiableSet(new HashSet<>(asList(1, 2)));
+
 	/**
 	 * How many times do we try to find SCAMP?
 	 */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
+
 	private static final int CONNECTION_CHECK_RETRY_COUNT = 3;
+
 	private static final int CONNECTION_CHECK_DELAY = 100;
+
 	private static final int NNID_MAX = 0x7F;
+
 	private static final int POST_BOOT_DELAY = 2000;
+
 	/**
 	 * The number of milliseconds after powering on the machine to wait before
 	 * attempting to boot SCAMP on its chips. This is time to allow the code on
@@ -201,16 +212,20 @@ public class Transceiver extends UDPTransceiver
 	 * for booting to be viable.
 	 */
 	private static final int POST_POWER_ON_DELAY = 2000;
+
 	private static final int ENABLE_SHIFT = 16;
+
 	/**
 	 * Where to read router diagnostic counters from.
 	 */
 	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
+
 	/**
 	 * How much data to pile into SCAMP before reducing the number of messages
 	 * in flight at a time.
 	 */
 	private static final int LARGE_DATA_WRITE_THRESHOLD = 16 * 1024;
+
 	/**
 	 * The maximum number of SCP messages to have in flight in a large data
 	 * write.
@@ -219,15 +234,19 @@ public class Transceiver extends UDPTransceiver
 
 	/** The version of the board being connected to. */
 	private MachineVersion version;
+
 	/** The discovered machine model. */
 	private Machine machine;
+
 	private MachineDimensions dimensions;
+
 	/**
 	 * A set of chips to ignore in the machine. Requests for a "machine" will
 	 * have these chips excluded, as if they never existed. The processor IDs of
 	 * the specified chips are ignored.
 	 */
 	private final Set<ChipLocation> ignoreChips = new HashSet<>();
+
 	/**
 	 * A set of cores to ignore in the machine. Requests for a "machine" will
 	 * have these cores excluded, as if they never existed.
@@ -248,18 +267,23 @@ public class Transceiver extends UDPTransceiver
 	private final Integer maxSDRAMSize;
 
 	private Integer iobufSize;
+
 	private AppIdTracker appIDTracker;
+
 	/**
 	 * A set of the original connections. Used to determine what can be closed.
 	 */
 	private final Set<Connection> originalConnections = new HashSet<>();
+
 	/** A set of all connections. Used for closing. */
 	private final Set<Connection> allConnections = new HashSet<>();
+
 	/**
 	 * A boot send connection. There can only be one in the current system, or
 	 * otherwise bad things can happen!
 	 */
 	private BootSender bootSendConnection;
+
 	/**
 	 * A list of all connections that can be used to send SCP messages.
 	 * <p>
@@ -268,35 +292,45 @@ public class Transceiver extends UDPTransceiver
 	 * response.
 	 */
 	private final List<SCPSender> scpSenderConnections = new ArrayList<>();
+
 	/** A list of all connections that can be used to send SDP messages. */
 	private final List<SDPSender> sdpSenderConnections = new ArrayList<>();
+
 	/**
 	 * A map of IP address &rarr; SCAMP connection. These are those that can be
 	 * used for setting up IP Tags.
 	 */
 	private final Map<InetAddress, SCPConnection> udpScpConnections =
 			new HashMap<>();
+
 	/**
 	 * A list of all connections that can be used to send and receive SCP
 	 * messages for SCAMP interaction.
 	 */
 	private final List<SCPConnection> scpConnections = new ArrayList<>();
+
 	/** The BMP connections. */
 	private final List<BMPConnection> bmpConnections = new ArrayList<>();
+
 	/** Connection selectors for the BMP processes. */
 	private final Map<BMPCoords,
 			ConnectionSelector<BMPConnection>> bmpSelectors = new HashMap<>();
+
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
+
 	/** The nearest neighbour start ID. */
 	private int nearestNeighbourID = 1;
+
 	/** The nearest neighbour lock. */
 	private final Object nearestNeighbourLock = new Object();
+
 	/**
 	 * A lock against multiple flood fill writes. This is needed as SCAMP cannot
 	 * cope with this.
 	 */
 	private final Object floodWriteLock = new Object();
+
 	/**
 	 * Lock against single chip executions. The condition should be acquired
 	 * before the locks are checked or updated.
@@ -306,8 +340,11 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private final Map<ChipLocation, Semaphore> chipExecuteLocks =
 			new HashMap<>();
+
 	private final FloodLock executeFloodLock = new FloodLock();
+
 	private boolean machineOff = false;
+
 	private long retryCount = 0L;
 
 	/**

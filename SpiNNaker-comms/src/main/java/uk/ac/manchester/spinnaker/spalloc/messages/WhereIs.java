@@ -24,11 +24,17 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public class WhereIs {
 	private ChipLocation jobChip;
+
 	private int jobId;
+
 	private ChipLocation chip;
+
 	private BoardCoordinates logical;
+
 	private String machine;
+
 	private ChipLocation boardChip;
+
 	private BoardPhysicalCoordinates physical;
 
 	/**

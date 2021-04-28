@@ -37,6 +37,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	static final int BOOT_VARIABLE_SIZE = 256;
 
 	private final Map<SystemVariableDefinition, Object> values;
+
 	private boolean unmodifiable;
 
 	/** Create a set of boot values using all the defaults. */
@@ -177,7 +178,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 				MAP[hwver] = bv;
 				hwver++;
 			}
-		};
+		}
 
 		/**
 		 * Look up the defaults for a particular version of board.

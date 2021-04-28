@@ -97,9 +97,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  */
 public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
+
 	/** The default communication timeout. (This is no timeout at all.) */
 	private static final Integer DEFAULT_TIMEOUT = null;
+
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
+
 	private static final ObjectMapper MAPPER =  createMapper();
 
 	static {

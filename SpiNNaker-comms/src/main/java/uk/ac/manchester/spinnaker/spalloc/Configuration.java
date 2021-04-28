@@ -58,8 +58,11 @@ import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 /** A spalloc configuration loaded from a file. */
 public class Configuration {
 	private static final char LIST_SEPARATOR = ' ';
+
 	private static final String SECTION_NAME = "spalloc";
+
 	private Map<String, Object> configurationMap;
+
 	private SubnodeConfiguration section;
 
 	/**
