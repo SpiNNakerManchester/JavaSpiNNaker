@@ -39,9 +39,11 @@ import org.slf4j.Logger;
  */
 abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
+
 	/** Cache of what methods implement operations in a class. */
 	private static final Map<Class<? extends FunctionAPI>,
 			Map<Commands, Method>> OPS_MAP = synchronizedMap(new HashMap<>());
+
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
 	 */
