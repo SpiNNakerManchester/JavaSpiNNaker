@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.Math.max;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
 
@@ -27,7 +28,7 @@ import java.nio.ByteBuffer;
  * As memory regions are modifiable objects, their equality is defined in terms
  * of their fundamental object identity.
  */
-public class MemoryRegionReal implements MemoryRegion {
+public final class MemoryRegionReal extends MemoryRegion {
     /** The write pointer position, saying where the start of the block is. */
     private int memPointer;
     /** The maximum point where writes have happened up to within the region. */
@@ -43,7 +44,7 @@ public class MemoryRegionReal implements MemoryRegion {
     private int regionBaseAddress;
     /** The index of the memory region. */
     private final int index;
-    /** A reference for the region, null if none. */
+    /** A reference for the region, {@code null} if none. */
     private final Integer reference;
 
     /**
@@ -80,7 +81,7 @@ public class MemoryRegionReal implements MemoryRegion {
      * @param size
      *            the allocated size of the memory region
      * @param reference
-     *            the reference of the memory refion
+     *            the reference of the memory region
      */
     MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size,
             int reference) {
@@ -138,43 +139,36 @@ public class MemoryRegionReal implements MemoryRegion {
         return index;
     }
 
-    /**
-     * Set the write pointer. The write pointer is where the next block of data
-     * to be written will actually be written.
-     *
-     * @param address
-     *            The address to set.
-     */
-    public void setWritePointer(int address) {
-        buffer.position(address);
-        maxWritePointer = max(maxWritePointer, address);
-    }
+	/**
+	 * Set the write pointer. The write pointer is where the next block of data
+	 * to be written will actually be written.
+	 *
+	 * @param address
+	 *            The address to set.
+	 */
+	public void setWritePointer(int address) {
+		buffer.position(address);
+		maxWritePointer = max(maxWritePointer, address);
+	}
 
-    /**
-     * Get the address of the first byte in the region.
-     *
-     * @return The address.
-     */
-    public int getRegionBase() {
-        return regionBaseAddress;
-    }
+	@Override
+	public int getRegionBase() {
+		return regionBaseAddress;
+	}
 
-    /**
-     * Set the address of the first byte in the region.
-     *
-     * @param address
-     *            The address to set.
-     */
-    public void setRegionBase(int address) {
-        regionBaseAddress = address;
-    }
+	@Override
+	protected void setRegionBase(int address) {
+		regionBaseAddress = address;
+	}
 
-    /**
-     * Get the reference of the region.
-     * @return The reference
-     * @throws NullPointerException if there is no reference.
-     */
-    public int getReference() {
-        return reference;
-    }
+	/**
+	 * Get the reference of the region.
+	 *
+	 * @return The reference.
+	 * @throws NullPointerException
+	 *             if there is no reference.
+	 */
+	public int getReference() {
+		return requireNonNull(reference, "no such reference").intValue();
+	}
 }

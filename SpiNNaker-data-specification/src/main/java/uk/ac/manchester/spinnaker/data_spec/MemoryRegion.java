@@ -19,18 +19,22 @@ package uk.ac.manchester.spinnaker.data_spec;
 /**
  * Marker of something that is a memory region.
  */
-public interface MemoryRegion {
+public abstract class MemoryRegion {
+	/** @return the index of the memory region. */
+	public abstract int getIndex();
 
-    /** @return the index of the memory region. */
-    int getIndex();
+	/**
+	 * Get the address of the first byte in the region.
+	 *
+	 * @return The address.
+	 */
+	public abstract int getRegionBase();
 
-    /** @return the base address of the region. */
-    int getRegionBase();
-
-    /**
-     * Set the base address of the region.
-     * @param baseAddress The base address to set.
-     */
-    void setRegionBase(int baseAddress);
-
+	/**
+	 * Set the address of the first byte in the region.
+	 *
+	 * @param address
+	 *            The address to set.
+	 */
+	protected abstract void setRegionBase(int baseAddress);
 }

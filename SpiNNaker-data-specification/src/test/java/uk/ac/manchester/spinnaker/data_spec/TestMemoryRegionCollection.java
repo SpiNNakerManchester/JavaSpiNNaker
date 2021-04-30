@@ -80,8 +80,8 @@ class TestMemoryRegionCollection {
 		assertArrayEquals(new Object[] {
 			null, null, mr1, null, mr2, null, null
 		}, c.toArray(new Object[7]));
-		assertFalse(c.containsAll(
-				Arrays.asList(mr1, mr2, new MemoryRegionReal(5, 123, true, 123))));
+		assertFalse(c.containsAll(Arrays.asList(mr1, mr2,
+				new MemoryRegionReal(5, 123, true, 123))));
 		assertThrows(IllegalArgumentException.class,
 				() -> c.needsToWriteRegion(6));
 	}

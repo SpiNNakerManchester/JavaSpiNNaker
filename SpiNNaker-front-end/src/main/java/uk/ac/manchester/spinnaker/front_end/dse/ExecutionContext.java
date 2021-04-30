@@ -43,129 +43,172 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  * cross-references.
  */
 class ExecutionContext implements AutoCloseable {
+	/** The size of the region table. **/
+	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
-    /** The size of the region table. **/
-    private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
+	/** The size of everything before the first region starts. */
+	static final int TOTAL_HEADER_SIZE =
+			APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE;
 
-    /** The size of everything before the first region starts. */
-    public static final int TOTAL_HEADER_SIZE =
-            APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE;
+	private final Transceiver txrx;
 
-    private final Transceiver txrx;
-    private final Map<Integer, RegionToRef> regionsToRef = new HashMap<>();
-    private final List<CoreToFill> regionsToFill = new ArrayList<>();
+	private final Map<Integer, RegionToRef> regionsToRef = new HashMap<>();
 
-    ExecutionContext(Transceiver txrx) {
-        this.txrx = txrx;
-    }
+	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
-    void execute(Executor executor, CoreLocation core, int start)
-            throws DataSpecificationException, ProcessException, IOException {
-        executor.execute();
-        executor.setBaseAddress(start);
+	ExecutionContext(Transceiver txrx) {
+		this.txrx = txrx;
+	}
 
-        for (int region : executor.getReferenceableRegions()) {
-            MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
-            int ref = r.getReference();
-            if (regionsToRef.containsKey(ref)) {
-                RegionToRef reg = regionsToRef.get(ref);
-                throw new DataSpecificationException("Reference " + ref
-                        + " from " + core + ", " + region
-                        + " already exists from " + reg);
-            }
-            regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
-        }
+	/**
+	 * Execute a data spec and arrange for the header to be written. This is
+	 * complex because we may need to postpone writing the header until another
+	 * core on the chip has had its memory written, due to memory region
+	 * sharing.
+	 *
+	 * @param executor
+	 *            How the execute.
+	 * @param core
+	 *            What core are we executing for.
+	 * @param start
+	 *            Where does the core's memory start.
+	 * @throws DataSpecificationException
+	 *             If something is wrong with the data specification.
+	 * @throws ProcessException
+	 *             If something goes wrong SpiNNaker-side with the write.
+	 * @throws IOException
+	 *             If there's a problem with I/O.
+	 */
+	void execute(Executor executor, CoreLocation core, int start)
+			throws DataSpecificationException, ProcessException, IOException {
+		executor.execute();
+		executor.setBaseAddress(start);
 
-        CoreToFill coreToFill = new CoreToFill(executor, start, core);
-        for (int region : executor.getRegionsToFill()) {
-            MemoryRegionReference r =
-                    (MemoryRegionReference) executor.getRegion(region);
-            int ref = r.getReference();
-            if (regionsToRef.containsKey(ref)) {
-                RegionToRef reg = regionsToRef.get(ref);
-                if (!reg.core.onSameChipAs(core)) {
-                    throw new DataSpecificationException(
-                            "Region " + ref + " on " + reg + " cannot be"
-                            + " referenced from " + core + ", " + region);
-                }
-                r.setRegionBase(reg.pointer);
-            } else {
-                coreToFill.refs.add(r);
-            }
-        }
+		CoreToFill coreToFill = linkRegionReferences(executor, core, start);
+		if (coreToFill.refs.isEmpty()) {
+			writeHeader(core, executor, start);
+		} else {
+			regionsToFill.add(coreToFill);
+		}
+	}
 
-        if (coreToFill.refs.isEmpty()) {
-            writeHeader(core, executor, start);
-        } else {
-            regionsToFill.add(coreToFill);
-        }
-    }
+	private CoreToFill linkRegionReferences(Executor executor,
+			CoreLocation core, int start) throws DataSpecificationException {
+		for (int region : executor.getReferenceableRegions()) {
+			MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
+			int ref = r.getReference();
+			if (regionsToRef.containsKey(ref)) {
+				RegionToRef reg = regionsToRef.get(ref);
+				throw new DataSpecificationException(
+						"Reference " + ref + " from " + core + ", " + region
+								+ " already exists from " + reg);
+			}
+			regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
+		}
 
-    private void writeHeader(HasCoreLocation core, Executor executor,
-            int startAddress) throws IOException, ProcessException {
-        ByteBuffer b =
-                allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
-                        .order(LITTLE_ENDIAN);
+		CoreToFill coreToFill = new CoreToFill(executor, start, core);
+		for (int region : executor.getRegionsToFill()) {
+			MemoryRegionReference r =
+					(MemoryRegionReference) executor.getRegion(region);
+			int ref = r.getReference();
+			if (regionsToRef.containsKey(ref)) {
+				RegionToRef reg = regionsToRef.get(ref);
+				if (!reg.core.onSameChipAs(core)) {
+					throw new DanglingReferenceException(ref, reg, core,
+							region);
+				}
+				r.setRegionBase(reg.pointer);
+			} else {
+				coreToFill.refs.add(r);
+			}
+		}
+		return coreToFill;
+	}
 
-        executor.addHeader(b);
-        executor.addPointerTable(b);
+	private void writeHeader(HasCoreLocation core, Executor executor,
+			int startAddress) throws IOException, ProcessException {
+		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
+				.order(LITTLE_ENDIAN);
 
-        b.flip();
-        txrx.writeMemory(core.getScampCore(), startAddress, b);
-    }
+		executor.addHeader(b);
+		executor.addPointerTable(b);
 
-    @Override
-    public void close() throws Exception {
-        for (CoreToFill toFill : regionsToFill) {
-            for (MemoryRegionReference ref : toFill.refs) {
-                int reference = ref.getReference();
-                if (!regionsToRef.containsKey(reference)) {
-                    throw new DataSpecificationException(
-                            "Reference " + reference + " from " + toFill
-                            + " not found");
-                }
-                RegionToRef reg = regionsToRef.get(reference);
-                if (!reg.core.onSameChipAs(toFill.core)) {
-                    throw new DataSpecificationException(
-                            "Region " + ref + " on " + reg + " cannot be"
-                            + " referenced from " + toFill);
-                }
-                ref.setRegionBase(reg.pointer);
-            }
-            writeHeader(toFill.core, toFill.executor, toFill.start);
-        }
-    }
+		b.flip();
+		txrx.writeMemory(core.getScampCore(), startAddress, b);
+	}
 
-    private class RegionToRef  {
-        final CoreLocation core;
-        final int pointer;
+	@Override
+	public void close() throws Exception {
+		for (CoreToFill toFill : regionsToFill) {
+			for (MemoryRegionReference ref : toFill.refs) {
+				int reference = ref.getReference();
+				if (!regionsToRef.containsKey(reference)) {
+					throw new DataSpecificationException("Reference "
+							+ reference + " from " + toFill + " not found");
+				}
+				RegionToRef reg = regionsToRef.get(reference);
+				if (!reg.core.onSameChipAs(toFill.core)) {
+					throw new DanglingReferenceException(ref, reg, toFill);
+				}
+				ref.setRegionBase(reg.pointer);
+			}
+			writeHeader(toFill.core, toFill.executor, toFill.start);
+		}
+	}
 
-        RegionToRef(CoreLocation core, int pointer) {
-            this.core = core;
-            this.pointer = pointer;
-        }
+	static class DanglingReferenceException
+			extends DataSpecificationException {
+		private static final long serialVersionUID = 3954605254603357775L;
 
-        @Override
-        public String toString() {
-            return "RegionToRef(" + core + ", " + pointer + ")";
-        }
-    }
+		DanglingReferenceException(int ref, RegionToRef reg, CoreLocation core,
+				int region) {
+			super("Region " + ref + " on " + reg + " cannot be"
+					+ " referenced from " + core + ", " + region);
+		}
 
-    private class CoreToFill {
-        final Executor executor;
-        final int start;
-        final CoreLocation core;
-        final List<MemoryRegionReference> refs = new ArrayList<>();
+		DanglingReferenceException(MemoryRegionReference ref, RegionToRef reg,
+				CoreToFill toFill) {
+			super("Region " + ref + " on " + reg + " cannot be"
+					+ " referenced from " + toFill);
+		}
+	}
 
-        CoreToFill(Executor executor, int start, CoreLocation core) {
-            this.executor = executor;
-            this.start = start;
-            this.core = core;
-        }
+	// Migrate to record in new enough Java
+	private static class RegionToRef {
+		final CoreLocation core;
 
-        @Override
-        public String toString() {
-            return "CoreToFill(" + core + ", " + refs + ")";
-        }
-    }
+		final int pointer;
+
+		RegionToRef(CoreLocation core, int pointer) {
+			this.core = core;
+			this.pointer = pointer;
+		}
+
+		@Override
+		public String toString() {
+			return "RegionToRef(" + core + ", " + pointer + ")";
+		}
+	}
+
+	// Migrate to record in new enough Java
+	private static class CoreToFill {
+		final Executor executor;
+
+		final int start;
+
+		final CoreLocation core;
+
+		final List<MemoryRegionReference> refs = new ArrayList<>();
+
+		CoreToFill(Executor executor, int start, CoreLocation core) {
+			this.executor = executor;
+			this.start = start;
+			this.core = core;
+		}
+
+		@Override
+		public String toString() {
+			return "CoreToFill(" + core + ", " + refs + ")";
+		}
+	}
 }
