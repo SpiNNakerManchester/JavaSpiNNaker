@@ -44,12 +44,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<property name="tabWidth" value="4" />
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
-			<property name="scope" value="protected" />
+			<property name="accessModifiers" value="public, protected" />
 			<property name="validateThrows" value="true" />
 		</module>
 		<module name="JavadocMethod">
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
-			<property name="scope" value="package" />
+			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
 		</module>
 		<module name="JavadocType">
