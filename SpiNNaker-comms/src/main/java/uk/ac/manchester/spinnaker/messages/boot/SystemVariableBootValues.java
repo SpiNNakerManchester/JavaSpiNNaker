@@ -133,8 +133,8 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
-		SystemVariableBootValues bv = BootValues.get(
-                boardVersion.hardwareVersion());
+		SystemVariableBootValues bv =
+				BootValues.get(boardVersion.hardwareVersion());
 		if (bv != null) {
 			return bv;
 		}
