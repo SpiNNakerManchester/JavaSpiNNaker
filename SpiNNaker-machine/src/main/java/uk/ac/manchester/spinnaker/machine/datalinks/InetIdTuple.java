@@ -28,7 +28,7 @@ public class InetIdTuple {
     /** The InetAddress of this tuple which may be {@code null}. */
     public final InetAddress address;
 
-    /** The id of this tuple. */
+    /** The ID of this tuple. */
     public final int id;
 
     /**
@@ -37,7 +37,7 @@ public class InetIdTuple {
      * @param address
      *            The InetAddress of this tuple which may be {@code null}.
      * @param id
-     *            The id of this tuple.
+     *            The ID of this tuple.
      */
     public InetIdTuple(InetAddress address, int id) {
         this.address = address;
