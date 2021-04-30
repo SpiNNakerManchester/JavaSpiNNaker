@@ -110,11 +110,11 @@ public class Executor implements Closeable {
 		IntBuffer b = input.asIntBuffer();
 		int[] a = new int[b.limit()];
 		b.get(a);
-        if (log.isDebugEnabled()) {
-    		log.debug("processing input: {}",
-                    stream(a).mapToObj(Integer::toHexString).
-                            collect(Collectors.toList()));
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("processing input: {}",
+					stream(a).mapToObj(Integer::toHexString)
+							.collect(Collectors.toList()));
+		}
 	}
 
 	/**

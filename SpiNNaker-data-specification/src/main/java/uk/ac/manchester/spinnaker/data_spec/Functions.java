@@ -199,10 +199,10 @@ class Functions implements FunctionAPI {
 		int region = REGION.getValue(packedCommand);
 		if (cmdSize != LEN2) {
 			throw new DataSpecificationException(format(
-                "Command %s requires one word as argument (total 2 words),"
-                    + " but the current encoding (%08X) is specified"
-                    + " to be %d words long",
-                RESERVE, packedCommand, cmdSize));
+					"Command %s requires one word as argument (total 2 words),"
+							+ " but the current encoding (%08X) is specified"
+							+ " to be %d words long",
+					RESERVE, packedCommand, cmdSize));
 		}
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
@@ -212,9 +212,9 @@ class Functions implements FunctionAPI {
 		int size = (spec.getInt() + SIZE_LOW_BITS) & ~SIZE_LOW_BITS;
 		if (size < 0 || size >= memorySpace) {
 			throw new IllegalArgumentException(
-                "region size is out of bounds; is " + size
-                    + " but needs to be in 0 to " + (memorySpace - 1)
-                    + " (inclusive)");
+					"region size is out of bounds; is " + size
+							+ " but needs to be in 0 to " + (memorySpace - 1)
+							+ " (inclusive)");
 		}
 		memRegions.set(new MemoryRegion(region, 0, unfilled, size));
 		spaceAllocated += size;
@@ -240,11 +240,11 @@ class Functions implements FunctionAPI {
 			value = spec.getLong();
 		} else {
 			throw new DataSpecificationException(String.format(
-                "Command %s requires a value as an argument, but the "
-                    + "current encoding (%08X) is specified to be %d "
-                    + "words long and the data length command argument "
-                    + "is specified to be %d bytes long",
-                WRITE, packedCommand, cmdSize, dataLength));
+					"Command %s requires a value as an argument, but the "
+							+ "current encoding (%08X) is specified to be %d "
+							+ "words long and the data length command argument "
+							+ "is specified to be %d bytes long",
+					WRITE, packedCommand, cmdSize, dataLength));
 		}
 		writeToMemory(value, dataLength, numRepeats, WRITE);
 	}
@@ -274,7 +274,7 @@ class Functions implements FunctionAPI {
 	@Operation(SWITCH_FOCUS)
 	public void switchFocus() throws DataSpecificationException {
 		int region =
-            (src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
+				(src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
 		if (memRegions.isEmpty(region)) {
 			throw new RegionUnfilledException(region, SWITCH_FOCUS);
 		}
@@ -292,7 +292,7 @@ class Functions implements FunctionAPI {
 	public void move() throws DataSpecificationException {
 		if (dest == null) {
 			throw new DataSpecificationException(
-                "destination register not correctly specified");
+					"destination register not correctly specified");
 		}
 		if (src1 != null) {
 			registers[dest] = registers[src1];
@@ -354,9 +354,9 @@ class Functions implements FunctionAPI {
 		int value = spec.getInt();
 		if (value != END_SPEC_EXECUTOR) {
 			throw new DataSpecificationException(format(
-                "Command END_SPEC requires an argument equal to -1. The "
-                    + "current argument value is %d (from %d)",
-                value, p));
+					"Command END_SPEC requires an argument equal to -1. The "
+							+ "current argument value is %d (from %d)",
+					value, p));
 		}
 		return END_SPEC_EXECUTOR;
 	}
@@ -401,7 +401,7 @@ class Functions implements FunctionAPI {
 		// It must have enough space
 		if (r.getRemainingSpace() < array.length) {
 			throw new NoMoreException(r.getRemainingSpace(), array.length,
-                currentRegion);
+					currentRegion);
 		}
 
 		// We can safely write

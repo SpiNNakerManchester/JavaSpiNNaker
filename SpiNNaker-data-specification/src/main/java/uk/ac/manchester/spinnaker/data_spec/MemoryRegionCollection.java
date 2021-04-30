@@ -78,13 +78,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @throws RegionInUseException
 	 *             if the region has already been set to a non-empty region.
 	 */
-	void set(MemoryRegion region)
-			throws RegionInUseException {
+	void set(MemoryRegion region) throws RegionInUseException {
 		if (!isEmpty(region.getIndex())) {
 			throw new RegionInUseException(region.getIndex());
 		}
 		regions[region.getIndex()] =
-            requireNonNull(region, "must not set an empty region");
+				requireNonNull(region, "must not set an empty region");
 	}
 
 	/**
@@ -119,7 +118,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 */
 	public int getSize(int regionID) {
 		return regions[regionID] == null ? 0
-            : regions[regionID].getAllocatedSize();
+				: regions[regionID].getAllocatedSize();
 	}
 
 	/**
@@ -144,8 +143,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	public boolean needsToWriteRegion(int regionID) {
 		if (regionID < 0 || regionID >= regions.length) {
 			throw new IllegalArgumentException(
-                "the region ID requested is beyond the supported number "
-                    + "of available region IDs");
+					"the region ID requested is beyond the supported number "
+							+ "of available region IDs");
 		}
 		if (!isUnfilled(regionID)) {
 			return true;
