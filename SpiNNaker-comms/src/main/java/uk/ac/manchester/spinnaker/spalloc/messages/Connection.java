@@ -82,7 +82,7 @@ public final class Connection {
 	 *            The chip to set.
 	 */
 	public void setChip(ChipLocation chip) {
-        this.chip = chip;
+		this.chip = chip;
 	}
 
 	public String getHostname() {
@@ -98,7 +98,7 @@ public final class Connection {
 		if (other instanceof Connection) {
 			Connection c = (Connection) other;
 			return Objects.equals(chip, c.chip)
-                    && Objects.equals(hostname, c.hostname);
+					&& Objects.equals(hostname, c.hostname);
 		}
 		return false;
 	}

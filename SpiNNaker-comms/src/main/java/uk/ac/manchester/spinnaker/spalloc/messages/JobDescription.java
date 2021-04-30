@@ -55,7 +55,7 @@ public class JobDescription {
 
 	private String keepAliveHost;
 
-    /** Number of boards to list individually in the toString. */
+	/** Number of boards to list individually in the toString. */
 	private static final int PRINT_EXACT_BOARDS_THRESHOLD = 6;
 
 	public State getState() {
@@ -170,15 +170,13 @@ public class JobDescription {
 		builder.append(" machine: ").append(machine);
 		builder.append(" args: ").append(args);
 		builder.append(" kwargs: ").append(kwargs);
-        if (boards == null) {
-            builder.append("No Boards");
-        } else {
-            if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
-                builder.append(" boards: ").append(boards);
-            } else {
-                builder.append(" # boards: ").append(boards.size());
-            }
-        }
+		if (boards == null) {
+			builder.append("No Boards");
+		} else if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
+			builder.append(" boards: ").append(boards);
+		} else {
+			builder.append(" # boards: ").append(boards.size());
+		}
 		builder.append(" keepAliveHost ").append(keepAliveHost);
 		return builder.toString();
 	}

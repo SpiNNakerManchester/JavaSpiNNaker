@@ -304,8 +304,7 @@ public abstract class SpallocConnection implements Closeable {
 		String line = readLine(sock);
 		Response response = parseResponse(line);
 		if (response == null) {
-			throw new SpallocProtocolException(
-					"unexpected response: " + line);
+			throw new SpallocProtocolException("unexpected response: " + line);
 		}
 		return response;
 	}
@@ -329,8 +328,8 @@ public abstract class SpallocConnection implements Closeable {
 			timeout = 0;
 		}
 		if (log.isDebugEnabled()) {
-    		log.debug("sending a {}", command.getClass());
-        }
+			log.debug("sending a {}", command.getClass());
+		}
 		TextSocket sock = getConnection(timeout);
 
 		// Send the line

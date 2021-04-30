@@ -66,12 +66,12 @@ public class JobState {
 		this.reason = reason;
 	}
 
-    /**
-     * @return the startTime
-     */
-    public float getStartTime() {
-        return startTime;
-    }
+	/**
+	 * @return the startTime
+	 */
+	public float getStartTime() {
+		return startTime;
+	}
 
 	/**
 	 * @param startTime
