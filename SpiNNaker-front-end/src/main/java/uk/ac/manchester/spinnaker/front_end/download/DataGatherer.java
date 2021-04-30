@@ -770,7 +770,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *             If we have a full timeout.
 		 */
 		private boolean processTimeout(int transactionId)
-		        throws IOException, TimeoutException {
+				throws IOException, TimeoutException {
 			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
@@ -814,8 +814,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = missingSeqs;
 
 			// Transmit missing sequences as a new SDP Packet
-			for (MissingSequenceNumbersMessage msg : createMessages(
-			        monitorCore, missingSeqs, transactionId)) {
+			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
+					missingSeqs, transactionId)) {
 				snooze(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
