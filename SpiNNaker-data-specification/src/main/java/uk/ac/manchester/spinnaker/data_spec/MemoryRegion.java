@@ -30,17 +30,22 @@ import java.nio.ByteBuffer;
 public class MemoryRegion {
 	/** The write pointer position, saying where the start of the block is. */
 	private int memPointer;
+
 	/** The maximum point where writes have happened up to within the region. */
 	private int maxWritePointer;
+
 	/** The buffer storing the written data. */
 	private ByteBuffer buffer;
+
 	/**
 	 * Whether this is an unfilled region. Unfilled regions can be written
 	 * efficiently as a block of zeroes.
 	 */
 	private boolean unfilled;
+
 	/** The base address of the region. Set after the fact. */
 	private int regionBaseAddress;
+
 	/** The index of the memory region. */
 	private final int index;
 
@@ -109,6 +114,7 @@ public class MemoryRegion {
 	public int getIndex() {
 		return index;
 	}
+
 	/**
 	 * Set the write pointer. The write pointer is where the next block of data
 	 * to be written will actually be written.

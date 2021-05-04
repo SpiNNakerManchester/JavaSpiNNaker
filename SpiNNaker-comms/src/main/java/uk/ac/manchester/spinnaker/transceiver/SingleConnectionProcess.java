@@ -37,8 +37,11 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 abstract class SingleConnectionProcess<T extends SCPConnection>
 		extends Process {
 	private final ConnectionSelector<T> connectionSelector;
+
 	private SCPRequestPipeline requestPipeline;
+
 	private final int timeout;
+
 	private final RetryTracker retryTracker;
 
 	/**

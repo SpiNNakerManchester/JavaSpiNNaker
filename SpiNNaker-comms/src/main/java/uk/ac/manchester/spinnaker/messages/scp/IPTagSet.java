@@ -44,7 +44,9 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	private static final Logger log = getLogger(IPTagSet.class);
-	private static final int INADDRSZ = 4;;
+
+	private static final int INADDRSZ = 4;
+
 	private static final byte[] INADDR_ANY = new byte[INADDRSZ];
 
 	/**

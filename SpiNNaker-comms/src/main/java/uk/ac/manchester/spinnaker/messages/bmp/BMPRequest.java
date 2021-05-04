@@ -185,5 +185,5 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 			super(buffer);
 			throwIfNotOK(operation, command);
 		}
-	};
+	}
 }

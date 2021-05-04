@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /** An SCP request to read the chip information from a core. */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int FLAGS = 0x5F;
+
 	private static final int SIZE_FLAG = 0x20;
 
 	/**

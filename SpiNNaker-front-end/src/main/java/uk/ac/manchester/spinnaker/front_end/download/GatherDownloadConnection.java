@@ -40,11 +40,14 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  */
 final class GatherDownloadConnection extends SDPConnection {
 	private long lastSend = 0L;
+
 	private static final Logger log = getLogger(GatherDownloadConnection.class);
+
 	/**
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
 	private static final int INTER_SEND_INTERVAL_NS = 60000;
+
 	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
 

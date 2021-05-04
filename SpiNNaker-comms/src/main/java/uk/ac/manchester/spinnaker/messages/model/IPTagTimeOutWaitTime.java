@@ -49,6 +49,7 @@ public enum IPTagTimeOutWaitTime {
 
 	/** The SCAMP-encoded value. */
 	public final int value;
+
 	private static final Map<Integer, IPTagTimeOutWaitTime> MAP =
 			new HashMap<>();
 

@@ -26,6 +26,7 @@ package uk.ac.manchester.spinnaker.utils;
 public final class Slice {
 	/** The index where the slice starts. */
 	public final Integer start;
+
 	/**
 	 * The index where the slice stops. (One after the last accessible byte.)
 	 */

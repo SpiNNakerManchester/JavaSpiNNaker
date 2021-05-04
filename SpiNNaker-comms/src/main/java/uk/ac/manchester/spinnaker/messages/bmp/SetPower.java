@@ -51,7 +51,7 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 
 	private static int argument1(double delay, PowerCommand powerCommand) {
 		return ((int) (delay * MSEC_PER_SEC) << DELAY_SHIFT)
-                | powerCommand.value;
+				| powerCommand.value;
 	}
 
 	private static int argument2(Collection<Integer> boards) {

@@ -26,13 +26,17 @@ import java.util.List;
  * Describes a machine by its name, tags, width and height.
  */
 public class Machine {
-
 	private String name;
+
 	private List<String> tags = emptyList();
+
 	private int width;
+
 	private int height;
+
 	private List<BoardCoordinates> deadBoards = Collections.emptyList();
-    private List<BoardLink> deadLinks = Collections.emptyList();
+
+	private List<BoardLink> deadLinks = Collections.emptyList();
 
 	public String getName() {
 		return name;
@@ -81,24 +85,25 @@ public class Machine {
 		this.deadBoards = deadBoards;
 	}
 
-    /**
-     * @return the deadLinks
-     */
-    public List<BoardLink> getDeadLinks() {
-        return deadLinks;
-    }
+	/**
+	 * @return the deadLinks
+	 */
+	public List<BoardLink> getDeadLinks() {
+		return deadLinks;
+	}
 
-    /**
-     * @param deadLinks the deadLinks to set
-     */
-    public void setDeadLinks(List<BoardLink> deadLinks) {
-        this.deadLinks = deadLinks;
-    }
+	/**
+	 * @param deadLinks
+	 *            the deadLinks to set
+	 */
+	public void setDeadLinks(List<BoardLink> deadLinks) {
+		this.deadLinks = deadLinks;
+	}
 
-    @Override
-    public String toString() {
-        return name + " " + width + "," + height + " # tags: " + tags.size()
-                + " deadBoards: " + deadBoards.size()
-                + " deadLinks: " + deadLinks.size();
-    }
+	@Override
+	public String toString() {
+		return name + " " + width + "," + height + " # tags: " + tags.size()
+				+ " deadBoards: " + deadBoards.size() + " deadLinks: "
+				+ deadLinks.size();
+	}
 }

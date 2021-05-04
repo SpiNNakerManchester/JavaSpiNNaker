@@ -32,13 +32,17 @@ import uk.ac.manchester.spinnaker.messages.model.CPUState;
  */
 public class CoresNotInStateException extends SpinnmanException {
 	private static final long serialVersionUID = 1790369744408178478L;
+
 	private static final String OP_TMPL =
 			"waiting for cores to reach one of %s";
+
 	private static final String TMPL =
 			"operation '" + OP_TMPL + "' timed out after %f seconds";
 
 	private float timeout;
+
 	private String operation;
+
 	private CoreSubsets failedCores;
 
 	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,

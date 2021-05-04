@@ -25,175 +25,180 @@ import java.util.List;
  * @author Christian-B
  */
 public class ChipResources {
+	/**
+	 * Symbolic value to specify no specific value has been set.
+	 *
+	 * This allows the value 0 to be declared as specifically set.
+	 */
+	public static final int NOT_SET = -1;
 
-    /**
-     * Symbolic value to specify no specific value has been set.
-     *
-     * This allows the value 0 to be declared as specifically set.
-     */
-    public static final int NOT_SET = -1;
-    private int cores;
-    private int monitors;
-    private int sdram;
-    private List<Integer> tags;
-    private int routerEntries;
-    private Boolean virtual;
+	private int cores;
 
-    /**
-     * Default constructor which sets all values to not set.
-     */
-    public ChipResources() {
-        cores = NOT_SET;
-        monitors = NOT_SET;
-        sdram = NOT_SET;
-        routerEntries = NOT_SET;
-    }
+	private int monitors;
 
-    /**
-     * Adds the default values if and only if no value had been specifically
-     * set. If a value is not set in both this and the defaults it will remain
-     * as not set. No Exception is thrown.
-     *
-     * @param defaults
-     *            Another resources whose values should replace those which have
-     *            not been set.
-     */
-    @JsonIgnore
-    public void addDefaults(ChipResources defaults) {
-        if (cores == NOT_SET) {
-            cores = defaults.cores;
-        }
-        if (monitors == NOT_SET) {
-            monitors = defaults.monitors;
-        }
-        if (sdram == NOT_SET) {
-            sdram = defaults.sdram;
-        }
-        if (tags == null) {
-            tags = defaults.tags;
-        }
-        if (routerEntries == NOT_SET) {
-            routerEntries = defaults.routerEntries;
-        }
-        if (virtual == null) {
-            virtual = defaults.getVirtual();
-        }
-    }
+	private int sdram;
 
-    /**
-     * @return the number of cores.
-     */
-    public int getCores() {
-        return cores;
-    }
+	private List<Integer> tags;
 
-    /**
-     * @param cores
-     *            the cores to set
-     */
-    public void setCores(int cores) {
-        this.cores = cores;
-    }
+	private int routerEntries;
 
-    /**
-     * @return the monitors
-     */
-    public int getMonitors() {
-        return monitors;
-    }
+	private Boolean virtual;
 
-    /**
-     * @param monitors
-     *            the monitors to set
-     */
-    public void setMonitors(int monitors) {
-        this.monitors = monitors;
-    }
+	/**
+	 * Default constructor which sets all values to not set.
+	 */
+	public ChipResources() {
+		cores = NOT_SET;
+		monitors = NOT_SET;
+		sdram = NOT_SET;
+		routerEntries = NOT_SET;
+	}
 
-    /**
-     * @return the sdram
-     */
-    public int getSdram() {
-        return sdram;
-    }
+	/**
+	 * Adds the default values if and only if no value had been specifically
+	 * set. If a value is not set in both this and the defaults it will remain
+	 * as not set. No Exception is thrown.
+	 *
+	 * @param defaults
+	 *            Another resources whose values should replace those which have
+	 *            not been set.
+	 */
+	@JsonIgnore
+	public void addDefaults(ChipResources defaults) {
+		if (cores == NOT_SET) {
+			cores = defaults.cores;
+		}
+		if (monitors == NOT_SET) {
+			monitors = defaults.monitors;
+		}
+		if (sdram == NOT_SET) {
+			sdram = defaults.sdram;
+		}
+		if (tags == null) {
+			tags = defaults.tags;
+		}
+		if (routerEntries == NOT_SET) {
+			routerEntries = defaults.routerEntries;
+		}
+		if (virtual == null) {
+			virtual = defaults.getVirtual();
+		}
+	}
 
-    /**
-     * @param sdram
-     *            the sdram to set
-     */
-    public void setSdram(int sdram) {
-        this.sdram = sdram;
-    }
+	/**
+	 * @return the number of cores.
+	 */
+	public int getCores() {
+		return cores;
+	}
 
-    /**
-     * @return the tags
-     */
-    public List<Integer> getTags() {
-        return tags;
-    }
+	/**
+	 * @param cores
+	 *            the cores to set
+	 */
+	public void setCores(int cores) {
+		this.cores = cores;
+	}
 
-    /**
-     * @param tags
-     *            the tags to set
-     */
-    public void setTags(List<Integer> tags) {
-        this.tags = tags;
-    }
+	/**
+	 * @return the monitors
+	 */
+	public int getMonitors() {
+		return monitors;
+	}
 
-    /**
-     * @return the router_entries
-     */
-    public int getRouterEntries() {
-        return routerEntries;
-    }
+	/**
+	 * @param monitors
+	 *            the monitors to set
+	 */
+	public void setMonitors(int monitors) {
+		this.monitors = monitors;
+	}
 
-    /**
-     * @param routerEntries
-     *            the router_entries to set
-     */
-    public void setRouterEntries(int routerEntries) {
-        this.routerEntries = routerEntries;
-    }
+	/**
+	 * @return the sdram
+	 */
+	public int getSdram() {
+		return sdram;
+	}
 
-    /**
-     * @return the virtual
-     */
-    public Boolean getVirtual() {
-        return virtual;
-    }
+	/**
+	 * @param sdram
+	 *            the sdram to set
+	 */
+	public void setSdram(int sdram) {
+		this.sdram = sdram;
+	}
 
-    /**
-     * @param virtual
-     *            the virtual to set
-     */
-    public void setVirtual(Boolean virtual) {
-        this.virtual = virtual;
-    }
+	/**
+	 * @return the tags
+	 */
+	public List<Integer> getTags() {
+		return tags;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder("[");
-        if (cores != NOT_SET) {
-            builder.append("cores: ").append(cores).append(", ");
-        }
-        if (monitors != NOT_SET) {
-            builder.append("monitors: ").append(monitors).append(", ");
-        }
-        if (sdram != NOT_SET) {
-            builder.append("sdram: ").append(sdram).append(", ");
-        }
-        if (tags != null) {
-            builder.append("tags: ").append(tags).append(", ");
-        }
-        if (routerEntries != NOT_SET) {
-            builder.append("router_entries: ").append(routerEntries)
-                    .append(", ");
-        }
-        if (builder.length() < 2) {
-            builder.append("EMPTY");
-        }
-        builder.setLength(builder.length() - 2);
-        builder.append("]");
-        return builder.toString();
-    }
+	/**
+	 * @param tags
+	 *            the tags to set
+	 */
+	public void setTags(List<Integer> tags) {
+		this.tags = tags;
+	}
+
+	/**
+	 * @return the router_entries
+	 */
+	public int getRouterEntries() {
+		return routerEntries;
+	}
+
+	/**
+	 * @param routerEntries
+	 *            the router_entries to set
+	 */
+	public void setRouterEntries(int routerEntries) {
+		this.routerEntries = routerEntries;
+	}
+
+	/**
+	 * @return the virtual
+	 */
+	public Boolean getVirtual() {
+		return virtual;
+	}
+
+	/**
+	 * @param virtual
+	 *            the virtual to set
+	 */
+	public void setVirtual(Boolean virtual) {
+		this.virtual = virtual;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[");
+		if (cores != NOT_SET) {
+			builder.append("cores: ").append(cores).append(", ");
+		}
+		if (monitors != NOT_SET) {
+			builder.append("monitors: ").append(monitors).append(", ");
+		}
+		if (sdram != NOT_SET) {
+			builder.append("sdram: ").append(sdram).append(", ");
+		}
+		if (tags != null) {
+			builder.append("tags: ").append(tags).append(", ");
+		}
+		if (routerEntries != NOT_SET) {
+			builder.append("router_entries: ").append(routerEntries)
+					.append(", ");
+		}
+		if (builder.length() < 2) {
+			builder.append("EMPTY");
+		}
+		builder.setLength(builder.length() - 2);
+		builder.append("]");
+		return builder.toString();
+	}
 }

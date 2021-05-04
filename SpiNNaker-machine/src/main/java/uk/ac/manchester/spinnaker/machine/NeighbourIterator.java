@@ -24,20 +24,20 @@ import java.util.Iterator;
  */
 class NeighbourIterator implements Iterator<ChipLocation> {
 
-    private Iterator<Link> linksIter;
+	private Iterator<Link> linksIter;
 
-    NeighbourIterator(Iterator<Link> linksIter) {
-        this.linksIter = linksIter;
-    }
+	NeighbourIterator(Iterator<Link> linksIter) {
+		this.linksIter = linksIter;
+	}
 
-    @Override
-    public boolean hasNext() {
-        return linksIter.hasNext();
-    }
+	@Override
+	public boolean hasNext() {
+		return linksIter.hasNext();
+	}
 
-    @Override
-    public ChipLocation next() {
-        return linksIter.next().destination;
-    }
+	@Override
+	public ChipLocation next() {
+		return linksIter.next().destination;
+	}
 
 }

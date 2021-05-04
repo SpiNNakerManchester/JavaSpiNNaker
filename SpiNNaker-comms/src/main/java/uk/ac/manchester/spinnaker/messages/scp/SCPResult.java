@@ -56,6 +56,7 @@ public enum SCPResult {
 
 	/** The encoded result value. */
 	public final short value;
+
 	private static final Map<Short, SCPResult> MAP = new HashMap<>();
 
 	SCPResult(int value) {

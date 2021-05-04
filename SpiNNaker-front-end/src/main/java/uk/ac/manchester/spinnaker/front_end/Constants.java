@@ -34,8 +34,10 @@ public abstract class Constants {
 	 * If a property with this name is absent, a default is used ({@code 4}).
 	 */
 	public static final String PARALLEL_PROPERTY = "spinnaker.parallel_tasks";
+
 	/** Default value of {@link #PARALLEL_SIZE}. */
 	private static final int PARALLEL_DEFAULT = 4;
+
 	/**
 	 * The number of parallel tasks that should be executed at once. The
 	 * fundamental unit of parallelisation is the SpiNNaker board, as there's a
@@ -58,8 +60,10 @@ public abstract class Constants {
 	 * If a property with this name is absent, a default is used ({@code 7}).
 	 */
 	public static final String NEXT_MSGS_PROPERTY = "spinnaker.next_messages";
+
 	/** Default value of {@link #PARALLEL_SIZE}. */
 	private static final int NEXT_MSGS_DEFAULT = 7;
+
 	/**
 	 * The number of <em>next messages</em> that should be used in the data
 	 * speed up gatherer protocol's retransmission mode.
@@ -79,8 +83,10 @@ public abstract class Constants {
 	 */
 	public static final String SMALL_RETRIEVE_PROPERTY =
 			"spinnaker.small_retrieve";
+
 	/** Default value of {@link #SMALL_RETRIEVE_THRESHOLD}. */
 	private static final int SMALL_RETRIEVE_DEFAULT = 40000;
+
 	/**
 	 * Retrieves of data that is less than this many bytes are done via a normal
 	 * SCAMP memory read.

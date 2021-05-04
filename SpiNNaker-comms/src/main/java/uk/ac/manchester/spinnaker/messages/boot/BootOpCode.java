@@ -32,6 +32,7 @@ public enum BootOpCode {
 
 	/** The encoded form of the opcode. */
 	public final int value;
+
 	private static final Map<Integer, BootOpCode> MAP = new HashMap<>();
 
 	BootOpCode(int value) {

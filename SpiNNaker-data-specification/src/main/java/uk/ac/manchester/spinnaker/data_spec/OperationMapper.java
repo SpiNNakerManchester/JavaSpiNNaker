@@ -39,9 +39,11 @@ import org.slf4j.Logger;
  */
 abstract class OperationMapper {
 	private static final Logger log = getLogger(OperationMapper.class);
+
 	/** Cache of what methods implement operations in a class. */
 	private static final Map<Class<? extends FunctionAPI>,
 			Map<Commands, Method>> OPS_MAP = synchronizedMap(new HashMap<>());
+
 	/**
 	 * Cache of callables for a particular operation on a particular executor.
 	 */
@@ -126,11 +128,11 @@ abstract class OperationMapper {
 						format("bad Operation annotation on method %s of %s",
 								m.getName(), cls));
 			}
-            if (log.isDebugEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.debug(
 						"discovered operation {} on {} is implemented by {}()",
 						c.name(), cls, m.getName());
-            }
+			}
 			ops.put(c, m);
 		}
 		OPS_MAP.put(cls, ops);
@@ -148,8 +150,8 @@ abstract class OperationMapper {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
 		if (log.isDebugEnabled()) {
-    		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
-        }
+			log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+		}
 		try {
 			try {
 				return (int) method.invoke(funcs);
@@ -178,8 +180,8 @@ abstract class OperationMapper {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
 		if (log.isDebugEnabled()) {
-    		log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
-        }
+			log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+		}
 		try {
 			try {
 				method.invoke(funcs);

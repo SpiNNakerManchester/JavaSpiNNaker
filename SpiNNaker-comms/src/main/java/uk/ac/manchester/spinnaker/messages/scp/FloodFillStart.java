@@ -31,13 +31,20 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 /** A request to start a flood fill of data. */
 public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	private static final int MAGIC1 = 0x3F;
+
 	private static final int MAGIC2 = 0x18;
+
 	private static final int MAGIC3 = 3;
+
 	private static final int NNP_FLOOD_FILL_START = 6;
+
 	private static final int NNP_FORWARD_RETRY =
 			(1 << TOP_BIT) | (MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
+
 	private static final int NO_CHIP = 0xFFFF;
+
 	private static final int LOW_BITS_MASK = 0b00000011;
+
 	private static final int HIGH_BITS_MASK = 0b11111100;
 
 	/**

@@ -41,14 +41,18 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** Number of words of overhead in a first message. */
 	private static final int FIRST_OVERHEAD_WORDS = 3;
+
 	/** Number of words of overhead in a subsequent message. */
 	private static final int NEXT_OVERHEAD_WORDS = 2;
+
 	/** How many sequence numbers fit in the first message. */
 	private static final int MAX_FIRST_SIZE =
 			SDP_PAYLOAD_WORDS - FIRST_OVERHEAD_WORDS;
+
 	/** How many sequence numbers fit in each subsequent message. */
 	private static final int MAX_NEXT_SIZE =
 			SDP_PAYLOAD_WORDS - NEXT_OVERHEAD_WORDS;
+
 	/**
 	 * Max number of sequence numbers to send in one go when asking for
 	 * retransmission.

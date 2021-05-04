@@ -54,15 +54,21 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 public class IobufRetriever extends BoardLocalSupport {
 	private static final Logger log = getLogger(IobufRetriever.class);
+
 	private static final Pattern ERROR_ENTRY =
 			Pattern.compile("\\[ERROR\\]\\s+\\((.*)\\):\\s+(.*)");
+
 	private static final Pattern WARNING_ENTRY =
 			Pattern.compile("\\[WARNING\\]\\s+\\((.*)\\):\\s+(.*)");
+
 	private static final int ENTRY_FILE = 1;
+
 	private static final int ENTRY_TEXT = 2;
 
 	private Transceiver txrx;
+
 	private Machine machine;
+
 	private BasicExecutor executor;
 
 	/**

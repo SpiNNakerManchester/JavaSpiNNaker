@@ -72,7 +72,8 @@ public class TestJobDescription {
         assertThat(map, IsMapContaining.hasEntry("max_dead_links", null));
         assertThat(map, IsMapContaining.hasEntry("require_torus", false));
         assertEquals("Spin24b-223", fromJson.getMachine());
-        assertThat(fromJson.getBoards(), contains(new BoardCoordinates(1,1,2)));
+        assertThat(fromJson.getBoards(),
+        		contains(new BoardCoordinates(1, 1, 2)));
         assertEquals("130.88.198.171", fromJson.getKeepAliveHost());
     }
 

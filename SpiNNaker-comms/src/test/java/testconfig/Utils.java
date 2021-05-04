@@ -38,10 +38,13 @@ public abstract class Utils {
 		System.out.println(sb.toString());
 	}
 
+	private static final int BITS_IN_WORD = 32;
+	private static final int IN_TENS = 10;
+
 	public static void printWordAsBinary(String name, int word,
 			Field[] fields) {
 		int start = 0;
-		int end = 32;
+		int end = BITS_IN_WORD;
 
 		Set<Integer> startFields = new HashSet<>();
 		Set<Integer> endFields = new HashSet<>();
@@ -64,8 +67,8 @@ public abstract class Utils {
 				header3.append("|");
 				mainline.append("|");
 			}
-			header1.append(i % 10 == 0 ? i / 10 : " ");
-			header2.append(i % 10);
+			header1.append(i % IN_TENS == 0 ? i / IN_TENS : " ");
+			header2.append(i % IN_TENS);
 			header3.append("=");
 			mainline.append((word >>> i) & 0x1);
 			sep = endFields.contains(i);
@@ -98,7 +101,8 @@ public abstract class Utils {
 		 *            The field bit index.
 		 */
 		public Field(int value) {
-			from = to = value;
+			from = value;
+			to = value;
 		}
 
 		/**

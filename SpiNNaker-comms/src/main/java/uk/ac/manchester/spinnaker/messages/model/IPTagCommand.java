@@ -31,6 +31,7 @@ public enum IPTagCommand {
 
 	/** The SCAMP-encoded value. */
 	public final byte value;
+
 	IPTagCommand(int value) {
 		this.value = (byte) value;
 	}

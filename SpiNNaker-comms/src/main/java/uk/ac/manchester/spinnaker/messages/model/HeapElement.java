@@ -21,18 +21,24 @@ package uk.ac.manchester.spinnaker.messages.model;
 public class HeapElement {
 	/** The address of the block. */
 	public final int blockAddress;
+
 	/** A pointer to the next block, or 0 if none. */
 	@SARKField("next")
 	public final int nextAddress;
+
 	/** The usable size of this block (not including the header). */
 	public final int size;
+
 	// Note that multiple fields are encoded in the free field.
+
 	/** True if the block is free. */
 	@SARKField("free")
 	public final boolean isFree;
+
 	/** The tag of the block if allocated, or {@code null} if not. */
 	@SARKField("free")
 	public final Integer tag;
+
 	/**
 	 * The application ID of the block if allocated, or {@code null} if not.
 	 */
@@ -40,9 +46,12 @@ public class HeapElement {
 	public final AppID appID;
 
 	private static final int FREE_MASK = 0xFFFF0000;
+
 	private static final int BYTE_MASK = 0x000000FF;
+
 	// WORD := [ BYTE3 | BYTE2 | BYTE1 | BYTE0 ]
 	private static final int BYTE1_SHIFT = 8;
+
 	private static final int BLOCK_HEADER_SIZE = 8;
 
 	/**

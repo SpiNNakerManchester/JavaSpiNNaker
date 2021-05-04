@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
  */
 public class HostDataRead extends EIEIOCommandMessage {
 	private final Header header;
+
 	private final Ack acks;
 
 	/**
@@ -141,6 +142,7 @@ public class HostDataRead extends EIEIOCommandMessage {
 	 */
 	private static class Header {
 		final byte numRequests;
+
 		final byte sequenceNumber;
 
 		Header(byte numRequests, byte sequenceNumber) {
@@ -152,7 +154,9 @@ public class HostDataRead extends EIEIOCommandMessage {
 	/** Contains a set of acks which refer to each of the channels read. */
 	private static class Ack {
 		final byte[] channel;
+
 		final byte[] regionID;
+
 		final int[] spaceRead;
 
 		Ack(int numRequests, byte[] channel, byte[] regionID, int[] spaceRead) {

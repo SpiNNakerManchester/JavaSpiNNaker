@@ -47,10 +47,15 @@ public class SQLiteBufferStorage
 		extends SQLiteConnectionManager<BufferManagerStorage>
 		implements BufferManagerStorage {
 	private static final Logger log = getLogger(SQLiteBufferStorage.class);
+
 	private static final int FIRST = 1;
+
 	private static final int SECOND = 2;
+
 	private static final int THIRD = 3;
+
 	private static final int FOURTH = 4;
+
 	private static final int FIFTH = 5;
 
 	/**

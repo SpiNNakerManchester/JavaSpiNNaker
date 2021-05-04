@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
  */
 class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int HEAP_HEADER_SIZE = 16;
+
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
 
 	/**
@@ -167,10 +168,13 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class HeapHeader {
 		@SARKField("free")
 		final long free;
+
 		@SARKField("first")
 		final long first;
+
 		@SARKField("last")
 		final long last;
+
 		@SARKField("free_bytes")
 		final int freeBytes;
 
@@ -187,6 +191,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private static class BlockHeader {
 		@SARKField("next")
 		final int next;
+
 		@SARKField("free")
 		final int free;
 

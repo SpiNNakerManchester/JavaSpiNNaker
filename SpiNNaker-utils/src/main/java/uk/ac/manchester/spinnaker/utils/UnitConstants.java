@@ -24,57 +24,55 @@ import java.util.concurrent.TimeUnit;
  * @author Donal Fellows
  */
 public final class UnitConstants {
+	private UnitConstants() {
+	}
 
-    private UnitConstants() { }
+	/** The number of megahertz in each kilohertz. */
+	public static final int MEGAHERTZ_PER_KILOHERTZ = 1000;
 
-    /** The number of megahertz in each kilohertz. */
-    public static final int MEGAHERTZ_PER_KILOHERTZ = 1000;
+	/** The number of megahertz in each hertz. */
+	public static final int MEGAHERTZ_PER_HERTZ = 1000000;
 
-    /** The number of megahertz in each hertz. */
-    public static final int MEGAHERTZ_PER_HERTZ = 1000000;
-
-    /** The number of milliseconds per second. */
+	/** The number of milliseconds per second. */
 	public static final int MSEC_PER_SEC = 1000;
 
-    /** The number of nanoseconds per second. */
+	/** The number of nanoseconds per second. */
 	public static final int NSEC_PER_SEC = 1000000000;
 
-   /** The number of second per minute. */
+	/** The number of second per minute. */
 	public static final int SEC_PER_MINUTE = 60;
 
-    /** The number of minute per hour. */
+	/** The number of minute per hour. */
 	public static final int MINUTE_PER_HOUR = 60;
 
 	/** The number of nanoseconds per microsecond. */
 	public static final double NSEC_PER_USEC = 1000.0;
 
-    /**
-     * Formats a Duration with hours, minutes seconds and milliseconds
-     *      as required.
-     *
-     * @param durationInMillis A time interval in milliseconds
-     *
-     * @return A formatted String with only the relative units.
-     */
-    public static String formatDuration(long durationInMillis) {
-        long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
-        long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis)
-                % MINUTE_PER_HOUR;
-        long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis)
-                % SEC_PER_MINUTE;
-        long ms = TimeUnit.MILLISECONDS.toMillis(durationInMillis)
-                % MSEC_PER_SEC;
-        if (hr > 0) {
-            return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
-        }
-        if (min > 0) {
-            return String.format("%d:%02d.%03d m", min, sec, ms);
-
-        }
-        if (sec > 0) {
-            return String.format("%d.%03d s", sec, ms);
-
-        }
-        return durationInMillis + " ms";
-    }
+	/**
+	 * Formats a duration with hours, minutes seconds and milliseconds as
+	 * required.
+	 *
+	 * @param durationInMillis
+	 *            A time interval in milliseconds
+	 * @return A formatted String with only the relative units.
+	 */
+	public static String formatDuration(long durationInMillis) {
+		long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
+		long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis)
+				% MINUTE_PER_HOUR;
+		long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis)
+				% SEC_PER_MINUTE;
+		long ms =
+				TimeUnit.MILLISECONDS.toMillis(durationInMillis) % MSEC_PER_SEC;
+		if (hr > 0) {
+			return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
+		}
+		if (min > 0) {
+			return String.format("%d:%02d.%03d m", min, sec, ms);
+		}
+		if (sec > 0) {
+			return String.format("%d.%03d s", sec, ms);
+		}
+		return durationInMillis + " ms";
+	}
 }

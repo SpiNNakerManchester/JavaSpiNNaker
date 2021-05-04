@@ -27,115 +27,114 @@ import java.util.Set;
 
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
-    private final Set<Integer> processorIDs = new LinkedHashSet<>();
-    private final Set<Direction> linkIDs = new LinkedHashSet<>();
+	private final Set<Integer> processorIDs = new LinkedHashSet<>();
 
-    private static boolean bitset(int word, int bit) {
-        return (word & (1 << bit)) != 0;
-    }
+	private final Set<Direction> linkIDs = new LinkedHashSet<>();
 
-    /**
-     * Create a routing entry from its encoded form.
-     *
-     * @param route
-     *            the encoded route
-     */
-    public RoutingEntry(int route) {
-        range(0, MAX_NUM_CORES)
-                .filter(pidx -> bitset(route, MAX_LINKS_PER_ROUTER + pidx))
-                .forEach(processorIDs::add);
-        range(0, MAX_LINKS_PER_ROUTER).filter(lidx -> bitset(route, lidx))
-                .forEach(this::addLinkID);
-    }
+	private static boolean bitset(int word, int bit) {
+		return (word & (1 << bit)) != 0;
+	}
 
-    /**
-     * Create a routing entry from its expanded description.
-     *
-     * @param processorIDs
-     *            The IDs of the processors that this entry routes to. The
-     *            Duplicate IDs are ignored.
-     * @param linkIDs
-     *            The IDs of the links that this entry routes to. The Duplicate
-     *            IDs are ignored.
-     * @throws IllegalArgumentException
-     *             If a bad processor ID is given (i.e., one that doesn't match
-     *             SpiNNaker hardware).
-     */
-    public RoutingEntry(
-            Iterable<Integer> processorIDs, Iterable<Direction> linkIDs) {
-        for (int procId : processorIDs) {
-            if (procId >= MAX_NUM_CORES || procId < 0) {
-                throw new IllegalArgumentException(
-                    "Processor IDs must be between 0 and "
-                            + (MAX_NUM_CORES - 1) + " found " + procId);
-            }
-            this.processorIDs.add(procId);
-        }
-        for (Direction linkIds: linkIDs) {
-            this.linkIDs.add(linkIds);
-        }
-    }
+	/**
+	 * Create a routing entry from its encoded form.
+	 *
+	 * @param route
+	 *            the encoded route
+	 */
+	public RoutingEntry(int route) {
+		range(0, MAX_NUM_CORES)
+				.filter(pidx -> bitset(route, MAX_LINKS_PER_ROUTER + pidx))
+				.forEach(processorIDs::add);
+		range(0, MAX_LINKS_PER_ROUTER).filter(lidx -> bitset(route, lidx))
+				.forEach(this::addLinkID);
+	}
 
-    /**
-     * gets the Entry as a single word.
-     *
-     * @return The word-encoded form of the routing entry.
-     */
-    public int encode() {
-        int route = 0;
-        for (Integer processorID : processorIDs) {
-            route |= 1 << (MAX_LINKS_PER_ROUTER + processorID);
-        }
-        for (Direction linkID : linkIDs) {
-            route |= 1 << linkID.id;
-        }
-        return route;
-    }
+	/**
+	 * Create a routing entry from its expanded description.
+	 *
+	 * @param processorIDs
+	 *            The IDs of the processors that this entry routes to. The
+	 *            Duplicate IDs are ignored.
+	 * @param linkIDs
+	 *            The IDs of the links that this entry routes to. The Duplicate
+	 *            IDs are ignored.
+	 * @throws IllegalArgumentException
+	 *             If a bad processor ID is given (i.e., one that doesn't match
+	 *             SpiNNaker hardware).
+	 */
+	public RoutingEntry(Iterable<Integer> processorIDs,
+			Iterable<Direction> linkIDs) {
+		for (int procId : processorIDs) {
+			if (procId >= MAX_NUM_CORES || procId < 0) {
+				throw new IllegalArgumentException(
+						"Processor IDs must be between 0 and "
+								+ (MAX_NUM_CORES - 1) + " found " + procId);
+			}
+			this.processorIDs.add(procId);
+		}
+		for (Direction linkIds : linkIDs) {
+			this.linkIDs.add(linkIds);
+		}
+	}
 
-    /**
-     * The IDs of the processors that this entry routes to.
-     * <p>
-     * If the RoutingEntry was created from its encoded form
-     * and unmodified after that, the list is guaranteed to be sorted in
-     * natural order and contain no duplicates.
-     *
-     * @return An unmodifiable over the processor IDs.
-     */
-    public Collection<Direction> getLinkIDs() {
-        return unmodifiableCollection(linkIDs);
-    }
+	/**
+	 * gets the Entry as a single word.
+	 *
+	 * @return The word-encoded form of the routing entry.
+	 */
+	public int encode() {
+		int route = 0;
+		for (Integer processorID : processorIDs) {
+			route |= 1 << (MAX_LINKS_PER_ROUTER + processorID);
+		}
+		for (Direction linkID : linkIDs) {
+			route |= 1 << linkID.id;
+		}
+		return route;
+	}
 
-    /**
-     * The ID/Directions of the links that this entry routes to.
-     * <p>
-     * If the RoutingEntry was created from its encoded form
-     * and unmodified after that, the list is guaranteed to be sorted in
-     * natural order and contain no duplicates.
-     *
-     * @return An unmodifiable view over the link IDs in natural order.
-     */
-    public Collection<Integer> getProcessorIDs() {
-        return unmodifiableCollection(processorIDs);
-    }
+	/**
+	 * The IDs of the processors that this entry routes to.
+	 * <p>
+	 * If the RoutingEntry was created from its encoded form and unmodified
+	 * after that, the list is guaranteed to be sorted in natural order and
+	 * contain no duplicates.
+	 *
+	 * @return An unmodifiable over the processor IDs.
+	 */
+	public Collection<Direction> getLinkIDs() {
+		return unmodifiableCollection(linkIDs);
+	}
 
-    /**
-     * Adds extra link ID/Directions to the entry.
-     *
-     * @param newValues
-     *            The IDs of the links to add.
-     *            Duplicate ID will be ignored.
-     */
+	/**
+	 * The ID/Directions of the links that this entry routes to.
+	 * <p>
+	 * If the RoutingEntry was created from its encoded form and unmodified
+	 * after that, the list is guaranteed to be sorted in natural order and
+	 * contain no duplicates.
+	 *
+	 * @return An unmodifiable view over the link IDs in natural order.
+	 */
+	public Collection<Integer> getProcessorIDs() {
+		return unmodifiableCollection(processorIDs);
+	}
 
-    /**
-     * Adds an extra link ID/Direction to the entry.
-     *
-     * @param newValue
-     *            The ID of the links to add.
-     *            The Duplicate IDs are ignored.
-      * @throws ArrayIndexOutOfBoundsException
-     *      If the new Value does not map to a Direction.
-     */
-    private void addLinkID(int newValue) {
-        linkIDs.add(Direction.byId(newValue));
-    }
+	/**
+	 * Adds extra link ID/Directions to the entry.
+	 *
+	 * @param newValues
+	 *            The IDs of the links to add. Duplicate ID will be ignored.
+	 */
+
+	/**
+	 * Adds an extra link ID/Direction to the entry.
+	 *
+	 * @param newValue
+	 *            The ID of the links to add. The Duplicate IDs are ignored.
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             If the new Value does not map to a Direction.
+	 */
+	private void addLinkID(int newValue) {
+		linkIDs.add(Direction.byId(newValue));
+	}
 }

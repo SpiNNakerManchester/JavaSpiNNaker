@@ -29,7 +29,9 @@ import java.util.Map;
  */
 public abstract class Command<A> {
 	private final String command;
+
 	private final List<A> args = new ArrayList<>();
+
 	private final Map<String, Object> kwargs = new HashMap<>();
 
 	/**

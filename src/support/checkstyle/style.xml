@@ -32,6 +32,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<property name="maximum" value="0" />
 		<property name="message" value="Line has trailing spaces." />
 	</module>
+	<module name="Header">
+		<property name="fileExtensions" value="java" />
+		<property name="severity" value="error" />
+		<property name="ignoreLines" value="2" />
+		<property name="headerFile" value="${checkstyle.config.path}/java-header.txt" />
+	</module>
+	<module name="SuppressionFilter">
+		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
+	</module>
 	<module name="SuppressWarningsFilter" />
 	<module name="SuppressWithPlainTextCommentFilter"/>
 	<module name="LineLength">
@@ -42,14 +51,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<module name="TreeWalker">
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
+		<module name="RegexpSinglelineJava">
+			<property name="format" value="^\t* "/>
+			<property name="message" value="Indent must use tab characters"/>
+			<property name="ignoreComments" value="true"/>
+		</module>
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
-			<property name="scope" value="protected" />
+			<property name="accessModifiers" value="public, protected" />
 			<property name="validateThrows" value="true" />
 		</module>
 		<module name="JavadocMethod">
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
-			<property name="scope" value="package" />
+			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
 		</module>
 		<module name="JavadocType">
@@ -72,7 +86,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module name="ParameterName" />
 		<module name="StaticVariableName" />
 		<module name="TypeName" />
-		<module name="AvoidStarImport" />
 		<module name="IllegalImport" />
 		<module name="RedundantImport" />
 		<module name="UnusedImports">
@@ -103,9 +116,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module name="EqualsHashCode" />
 		<module name="IllegalInstantiation" />
 		<module name="InnerAssignment" />
-		<module name="MagicNumber">
-			<property name="ignoreHashCodeMethod" value="true" />
-		</module>
 		<module name="MissingSwitchDefault" />
 		<module name="SimplifyBooleanExpression" />
 		<module name="SimplifyBooleanReturn" />
@@ -117,9 +127,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</module>
 		<module name="ArrayTypeStyle" />
 		<module name="UpperEll" />
-        <module name="Indentation">
-            <property name="forceStrictCondition" value="false"/>
-            <property name="caseIndent" value="0"/>
+        <module name="EmptyLineSeparator">
+        	<property name="allowMultipleEmptyLines" value="false"/>
+        	<property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+        	<property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
+	</module>
+	<module name="TreeWalker">
+		<!-- These are not applied to test code -->
+		<module name="SuppressWarningsHolder" />
+		<property name="id" value="mainOnly" />
+		<property name="tabWidth" value="4" />
+
+		<module name="AvoidStarImport" />
+        <module name="Indentation">
+            <property name="forceStrictCondition" value="false" />
+            <property name="caseIndent" value="0" />
+        </module>
+		<module name="MagicNumber">
+			<property name="ignoreHashCodeMethod" value="true" />
+		</module>
 	</module>
 </module>

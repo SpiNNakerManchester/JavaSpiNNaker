@@ -47,43 +47,66 @@ import org.apache.commons.lang3.BitField;
 @SuppressWarnings("unused")
 class Functions implements FunctionAPI {
 	private static final int SIZE_FIELD = 28;
+
 	private static final int OPCODE_FIELD = 20;
+
 	private static final int DEST_FLAG = 18;
+
 	private static final int SRC1_FLAG = 17;
+
 	private static final int SRC2_FLAG = 16;
+
 	private static final int DEST_FIELD = 12;
+
 	private static final int SRC1_FIELD = 8;
+
 	private static final int SRC2_FIELD = 4;
+
 	private static final int BIT_MASK = 0b00000001;
+
 	private static final int SIZE_MASK = 0b00000011;
+
 	private static final int REG_MASK = 0b00001111;
+
 	private static final int OPCODE_MASK = 0b11111111;
 
 	/** How to extract the size field from the bit-encoded form. */
 	private static final BitField SIZE = new BitField(SIZE_MASK << SIZE_FIELD);
+
 	/** How to extract the opcode field from the bit-encoded form. */
 	static final BitField OPCODE = new BitField(OPCODE_MASK << OPCODE_FIELD);
+
 	/** How to extract the dest-is-register flag from the bit-encoded form. */
 	private static final BitField DEST_BIT = new BitField(1 << DEST_FLAG);
+
 	/** How to extract the src1-is-register flag from the bit-encoded form. */
 	private static final BitField SRC1_BIT = new BitField(1 << SRC1_FLAG);
+
 	/** How to extract the src2-is-register flag from the bit-encoded form. */
 	private static final BitField SRC2_BIT = new BitField(1 << SRC2_FLAG);
+
 	/** How to extract the dest field from the bit-encoded form. */
 	private static final BitField DEST = new BitField(REG_MASK << DEST_FIELD);
+
 	/** How to extract the src1 field from the bit-encoded form. */
 	private static final BitField SRC1 = new BitField(REG_MASK << SRC1_FIELD);
+
 	/** How to extract the src2 field from the bit-encoded form. */
 	private static final BitField SRC2 = new BitField(REG_MASK << SRC2_FIELD);
+
 	/** How to extract the data length field from the bit-encoded form. */
 	private static final BitField DATA_LEN =
 			new BitField(SIZE_MASK << DEST_FIELD);
+
 	/** How to extract the region field from the bit-encoded form. */
 	private static final BitField REGION = new BitField(0b00011111);
+
 	/** How to extract the unfilled flag from the bit-encoded form. */
 	private static final BitField UNFILLED = new BitField(0b10000000);
+
 	/** How to extract the relative flag from the bit-encoded form. */
 	private static final BitField RELATIVE = new BitField(0b00000001);
+
 	/** How to extract the repeats field from the bit-encoded form. */
 	private static final BitField REPEATS = new BitField(0b11111111);
 
@@ -91,23 +114,34 @@ class Functions implements FunctionAPI {
 
 	/** Where we are reading the data spec from. */
 	private final ByteBuffer spec;
+
 	/** How much space do we have available? Maximum <i>per region</i>. */
 	private int memorySpace;
+
 	/** How much space has been allocated. */
 	int spaceAllocated;
+
 	/** What is the current region that we're writing to. */
 	private Integer currentRegion;
+
 	/** The model registers, an array of 16 ints. */
 	private final int[] registers;
+
 	/** The collection of memory regions that can be written to. */
 	private final MemoryRegionCollection memRegions;
 
 	private int packedCommand;
+
 	private int cmdSize;
+
 	private int opcode;
+
 	private Integer dest;
+
 	private Integer src1;
+
 	private Integer src2;
+
 	private int dataLength;
 
 	/**
@@ -165,10 +199,10 @@ class Functions implements FunctionAPI {
 		int region = REGION.getValue(packedCommand);
 		if (cmdSize != LEN2) {
 			throw new DataSpecificationException(format(
-                "Command %s requires one word as argument (total 2 words),"
-                    + " but the current encoding (%08X) is specified"
-                    + " to be %d words long",
-                RESERVE, packedCommand, cmdSize));
+					"Command %s requires one word as argument (total 2 words),"
+							+ " but the current encoding (%08X) is specified"
+							+ " to be %d words long",
+					RESERVE, packedCommand, cmdSize));
 		}
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
@@ -178,9 +212,9 @@ class Functions implements FunctionAPI {
 		int size = (spec.getInt() + SIZE_LOW_BITS) & ~SIZE_LOW_BITS;
 		if (size < 0 || size >= memorySpace) {
 			throw new IllegalArgumentException(
-                "region size is out of bounds; is " + size
-                    + " but needs to be in 0 to " + (memorySpace - 1)
-                    + " (inclusive)");
+					"region size is out of bounds; is " + size
+							+ " but needs to be in 0 to " + (memorySpace - 1)
+							+ " (inclusive)");
 		}
 		memRegions.set(new MemoryRegion(region, 0, unfilled, size));
 		spaceAllocated += size;
@@ -206,11 +240,11 @@ class Functions implements FunctionAPI {
 			value = spec.getLong();
 		} else {
 			throw new DataSpecificationException(String.format(
-                "Command %s requires a value as an argument, but the "
-                    + "current encoding (%08X) is specified to be %d "
-                    + "words long and the data length command argument "
-                    + "is specified to be %d bytes long",
-                WRITE, packedCommand, cmdSize, dataLength));
+					"Command %s requires a value as an argument, but the "
+							+ "current encoding (%08X) is specified to be %d "
+							+ "words long and the data length command argument "
+							+ "is specified to be %d bytes long",
+					WRITE, packedCommand, cmdSize, dataLength));
 		}
 		writeToMemory(value, dataLength, numRepeats, WRITE);
 	}
@@ -240,7 +274,7 @@ class Functions implements FunctionAPI {
 	@Operation(SWITCH_FOCUS)
 	public void switchFocus() throws DataSpecificationException {
 		int region =
-            (src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
+				(src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
 		if (memRegions.isEmpty(region)) {
 			throw new RegionUnfilledException(region, SWITCH_FOCUS);
 		}
@@ -258,7 +292,7 @@ class Functions implements FunctionAPI {
 	public void move() throws DataSpecificationException {
 		if (dest == null) {
 			throw new DataSpecificationException(
-                "destination register not correctly specified");
+					"destination register not correctly specified");
 		}
 		if (src1 != null) {
 			registers[dest] = registers[src1];
@@ -320,9 +354,9 @@ class Functions implements FunctionAPI {
 		int value = spec.getInt();
 		if (value != END_SPEC_EXECUTOR) {
 			throw new DataSpecificationException(format(
-                "Command END_SPEC requires an argument equal to -1. The "
-                    + "current argument value is %d (from %d)",
-                value, p));
+					"Command END_SPEC requires an argument equal to -1. The "
+							+ "current argument value is %d (from %d)",
+					value, p));
 		}
 		return END_SPEC_EXECUTOR;
 	}
@@ -367,7 +401,7 @@ class Functions implements FunctionAPI {
 		// It must have enough space
 		if (r.getRemainingSpace() < array.length) {
 			throw new NoMoreException(r.getRemainingSpace(), array.length,
-                currentRegion);
+					currentRegion);
 		}
 
 		// We can safely write

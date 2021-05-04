@@ -20,118 +20,121 @@ import java.net.InetAddress;
 
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
 public abstract class Tag implements Comparable<Tag> {
-    /** The board address associated with this tagID. */
-    private final InetAddress boardAddress;
-    /** The tagID ID associated with this tagID. */
-    private final int tagID;
-    /** The port number associated with this tagID. */
-    private Integer port;
+	/** The board address associated with this tagID. */
+	private final InetAddress boardAddress;
 
-    /**
-     * Create a tag.
-     *
-     * @param boardAddress
-     *            The address of the board where the tag is.
-     * @param tagID
-     *            The ID of the tag (0-7?)
-     * @param port
-     *            The port of the tag.
-     */
-    Tag(InetAddress boardAddress, int tagID, Integer port) {
-        this.boardAddress = boardAddress;
-        this.tagID = tagID;
-        this.port = port;
-    }
+	/** The tagID ID associated with this tagID. */
+	private final int tagID;
 
-    /** @return The board address of the tag. */
-    public InetAddress getBoardAddress() {
-        return boardAddress;
-    }
+	/** The port number associated with this tagID. */
+	private Integer port;
 
-    /**
-     * @return The ID of the tag. Note that this is the only property used for
-     *         determining order.
-     */
-    public int getTag() {
-        return tagID;
-    }
+	/**
+	 * Create a tag.
+	 *
+	 * @param boardAddress
+	 *            The address of the board where the tag is.
+	 * @param tagID
+	 *            The ID of the tag (0-7?)
+	 * @param port
+	 *            The port of the tag.
+	 */
+	Tag(InetAddress boardAddress, int tagID, Integer port) {
+		this.boardAddress = boardAddress;
+		this.tagID = tagID;
+		this.port = port;
+	}
 
-    /**
-     * @return The port of the tagID, or {@code null} if there isn't one yet.
-     */
-    public Integer getPort() {
-        return port;
-    }
+	/** @return The board address of the tag. */
+	public InetAddress getBoardAddress() {
+		return boardAddress;
+	}
 
-    /**
-     * Set the port.
-     *
-     * @param port
-     *            the port to set
-     * @throws IllegalStateException
-     *             If the port has already been set.
-     */
-    public void setPort(int port) {
-        if (this.port != null && this.port != port) {
-            throw new IllegalStateException("port cannot be changed to " + port
-                    + " once set to " + this.port);
-        }
-        this.port = port;
-    }
+	/**
+	 * @return The ID of the tag. Note that this is the only property used for
+	 *         determining order.
+	 */
+	public int getTag() {
+		return tagID;
+	}
 
-    // Subclasses *must* create an equality test and hash code
-    /** {@inheritDoc} */
-    @Override
-    public abstract boolean equals(Object other);
+	/**
+	 * @return The port of the tagID, or {@code null} if there isn't one yet.
+	 */
+	public Integer getPort() {
+		return port;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public abstract int hashCode();
+	/**
+	 * Set the port.
+	 *
+	 * @param port
+	 *            the port to set
+	 * @throws IllegalStateException
+	 *             If the port has already been set.
+	 */
+	public void setPort(int port) {
+		if (this.port != null && this.port != port) {
+			throw new IllegalStateException("port cannot be changed to " + port
+					+ " once set to " + this.port);
+		}
+		this.port = port;
+	}
 
-    /**
-     * Partial equality test between two tags. Only compares on fields defined
-     * in the {@link Tag} class. Used to make implementing a full equality test
-     * simpler.
-     *
-     * @param otherTag
-     *            The other tag to compare to.
-     * @return Whether the two tags are partially equal.
-     */
-    protected final boolean partialEquals(Tag otherTag) {
-        return tagID == otherTag.tagID
-                && boardAddress.equals(otherTag.boardAddress)
-                && (port == null ? otherTag.port == null
-                        : (otherTag.port != null
-                                && port.equals(otherTag.port)));
-    }
+	// Subclasses *must* create an equality test and hash code
+	/** {@inheritDoc} */
+	@Override
+	public abstract boolean equals(Object other);
 
-    private static final int MAGIC1 = 43;
-    private static final int MAGIC2 = 17;
+	/** {@inheritDoc} */
+	@Override
+	public abstract int hashCode();
 
-    /**
-     * Partial hash code of a tag. Used to make implementing a full hash
-     * simpler.
-     *
-     * @return The hash of this class's fields.
-     */
-    protected final int partialHashCode() {
-        int h = (tagID * MAGIC1) ^ boardAddress.hashCode();
-        if (port != null) {
-            h ^= port * MAGIC2;
-        }
-        return h;
-    }
+	/**
+	 * Partial equality test between two tags. Only compares on fields defined
+	 * in the {@link Tag} class. Used to make implementing a full equality test
+	 * simpler.
+	 *
+	 * @param otherTag
+	 *            The other tag to compare to.
+	 * @return Whether the two tags are partially equal.
+	 */
+	protected final boolean partialEquals(Tag otherTag) {
+		return tagID == otherTag.tagID
+				&& boardAddress.equals(otherTag.boardAddress)
+				&& (port == null ? otherTag.port == null
+						: (otherTag.port != null
+								&& port.equals(otherTag.port)));
+	}
 
-    /**
-     * Compare this tag to another one for ordering <strong>Note:</strong> this
-     * class has a natural ordering that is inconsistent with equals; ordering
-     * is by the tag ID only (this is fine for tags obtained from the same chip
-     * at the same time, which is the primary use case).
-     * <p>
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(Tag o) {
-        return getTag() - o.getTag();
-    }
+	private static final int MAGIC1 = 43;
+
+	private static final int MAGIC2 = 17;
+
+	/**
+	 * Partial hash code of a tag. Used to make implementing a full hash
+	 * simpler.
+	 *
+	 * @return The hash of this class's fields.
+	 */
+	protected final int partialHashCode() {
+		int h = (tagID * MAGIC1) ^ boardAddress.hashCode();
+		if (port != null) {
+			h ^= port * MAGIC2;
+		}
+		return h;
+	}
+
+	/**
+	 * Compare this tag to another one for ordering <strong>Note:</strong> this
+	 * class has a natural ordering that is inconsistent with equals; ordering
+	 * is by the tag ID only (this is fine for tags obtained from the same chip
+	 * at the same time, which is the primary use case).
+	 * <p>
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int compareTo(Tag o) {
+		return getTag() - o.getTag();
+	}
 }

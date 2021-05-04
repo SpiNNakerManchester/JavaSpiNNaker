@@ -33,8 +33,11 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /** An SCP Request to get a count of the cores in a particular state. */
 public class CountState extends SCPRequest<CountState.Response> {
 	private static final int COUNT_OPERATION = 1;
+
 	private static final int COUNT_MODE = 2;
+
 	private static final int OP_SHIFT = 22;
+
 	private static final int MODE_SHIFT = 20;
 
 	/**

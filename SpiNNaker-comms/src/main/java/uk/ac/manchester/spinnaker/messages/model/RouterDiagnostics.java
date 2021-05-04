@@ -41,12 +41,16 @@ import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.Router
 public class RouterDiagnostics {
 	/** The "mon" part of the control register. */
 	public final int mon;
+
 	/** The "wait_1" part of the control register. */
 	public final int wait1;
+
 	/** The "wait_2" part of the control register. */
 	public final int wait2;
+
 	/** The error status. */
 	public final int errorStatus;
+
 	/**
 	 * The values in all of the registers. Can be used to directly access the
 	 * registers if they have been programmed to give different values.
@@ -54,10 +58,15 @@ public class RouterDiagnostics {
 	public final int[] registerValues;
 
 	private static final int NUM_REGISTERS = 16;
+
 	private static final int NUM_USER_CONTROL_REGISTERS = 4;
+
 	private static final int MON_MASK = 0x1F;
+
 	private static final int MON_SHIFT = 8;
+
 	private static final int WAIT1_SHIFT = 16;
+
 	private static final int WAIT2_SHIFT = 24;
 
 	/**

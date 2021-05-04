@@ -17,8 +17,7 @@
 package testconfig;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.*;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -29,14 +28,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.opentest4j.TestAbortedException;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.spalloc.CreateJob;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
@@ -44,6 +42,9 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutEx
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
+@SuppressWarnings({
+	"checkstyle:JavadocVariable", "checkstyle:VisibilityModifier"
+})
 public class BoardTestConfiguration {
 	public static final String LOCALHOST = "127.0.0.1";
 	/**
@@ -59,6 +60,8 @@ public class BoardTestConfiguration {
 			BoardTestConfiguration.class.getResource("test.cfg"));
 	private static final String MCSEC = "Machine";
 	private static final String SPSEC = "Spalloc";
+	private static final int KEEPALIVE_SECS = 60;
+	public static final String OWNER = "java test harness";
 
 	public String localhost;
 	public Integer localport;
@@ -87,7 +90,7 @@ public class BoardTestConfiguration {
 			throws SocketException, UnknownHostException {
 		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
-				() -> "test board (" + remotehost + ") appears to be down");
+			() -> "test board (" + remotehost + ") appears to be down");
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {
@@ -105,6 +108,13 @@ public class BoardTestConfiguration {
 		}
 	}
 
+	private CreateJob jobDesc(int size, double keepAlive, String tag) {
+		if (tag == null) {
+			tag = "default";
+		}
+		return new CreateJob(size).owner(OWNER).keepAlive(keepAlive).tags(tag);
+	}
+
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
 			SpallocStateChangeTimeoutException, InterruptedException {
@@ -115,17 +125,8 @@ public class BoardTestConfiguration {
 		Integer port = config.getInt(SPSEC, "port");
 		Integer timeout = config.getInt(SPSEC, "timeout");
 		String tag = config.get(SPSEC, "tag");
-		Map<String, Object> kwargs = new HashMap<>();
-		kwargs.put("owner", "java test harness");
-		kwargs.put("keepalive", 60);
-		if (tag != null) {
-			tag = "default";
-		}
-		kwargs.put("tags", new String[] {
-				tag
-		});
-		SpallocJob job =
-				new SpallocJob(spalloc, port, timeout, asList(1), kwargs);
+		SpallocJob job = new SpallocJob(spalloc, port, timeout,
+				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);
 		try {
 			remotehost = InetFactory.getByName(job.getHostname());

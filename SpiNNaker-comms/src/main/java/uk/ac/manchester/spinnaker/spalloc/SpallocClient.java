@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
@@ -99,10 +99,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  */
 public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
+
 	/** The default communication timeout. (This is no timeout at all.) */
 	private static final Integer DEFAULT_TIMEOUT = null;
+
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
-	private static final ObjectMapper MAPPER =  createMapper();
+
+	private static final ObjectMapper MAPPER = createMapper();
 
 	static {
 		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
@@ -160,7 +163,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, Integer port, Integer timeout) {
-        super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
+		super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
 	}
 
 	/**
@@ -172,15 +175,15 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @return The Object Mapper used by the Spalloc client,
 	 */
 	public static ObjectMapper createMapper() {
-        ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Response.class, new ResponseBasedDeserializer());
+		module.addDeserializer(Response.class, new ResponseDeserializer());
 		mapper.registerModule(module);
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        return mapper;
-    }
+		return mapper;
+	}
 
 	@Override
 	public Notification waitForNotification(Integer timeout)
@@ -217,6 +220,16 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			log.debug("version result: {}", json);
 		}
 		return new Version(json);
+	}
+
+	@Override
+	public int createJob(CreateJob builder, Integer timeout)
+			throws IOException, SpallocServerException {
+		String json = call(builder.build(), timeout);
+		if (log.isDebugEnabled()) {
+			log.debug("create result: {}", json);
+		}
+		return parseInt(json);
 	}
 
 	@Override
@@ -401,7 +414,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return MAPPER.readValue(json, BoardCoordinates.class);
 	}
 
-    @Override
+	@Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
 		String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
@@ -475,12 +488,12 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		}
 	}
 
-	private static class ResponseBasedDeserializer
+	private static class ResponseDeserializer
 			extends PropertyBasedDeserialiser<Response> {
 		// This class should never be serialised
 		private static final long serialVersionUID = 1L;
 
-		ResponseBasedDeserializer() {
+		ResponseDeserializer() {
 			super(Response.class);
 			register("jobs_changed", JobsChangedNotification.class);
 			register("machines_changed", MachinesChangedNotification.class);

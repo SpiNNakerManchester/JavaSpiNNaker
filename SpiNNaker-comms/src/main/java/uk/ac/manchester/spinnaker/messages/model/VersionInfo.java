@@ -36,25 +36,32 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public final class VersionInfo {
 	/** The build date of the software, in seconds since 1st January 1970. */
 	public final int buildDate;
+
 	/** The hardware being run on. */
 	public final String hardware;
+
 	/** The name of the software. */
 	public final String name;
+
 	/**
 	 * The physical CPU ID. Note that this is only really useful for debugging,
 	 * as core IDs are remapped by SCAMP so that SCAMP is always running on
 	 * virtual core zero.
 	 */
 	public final int physicalCPUID;
+
 	/** The version number of the software. */
 	public final Version versionNumber;
+
 	/** The version information as text. */
 	public final String versionString;
+
 	/** The location of the core where the information was obtained. */
 	public final HasCoreLocation core;
 
 	private static final Pattern VERSION_RE = Pattern
 			.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)");
+
 	private static final String NUL = "\u0000";
 
 	private static Version parseVersionString(String versionString) {
@@ -110,8 +117,11 @@ public final class VersionInfo {
 	}
 
 	private static final int H = 100;
+
 	private static final int FULL_BITS = 3;
+
 	private static final int NAME_BITS = 2;
+
 	private static final int MAGIC_VERSION = 0xFFFF;
 
 	@Override

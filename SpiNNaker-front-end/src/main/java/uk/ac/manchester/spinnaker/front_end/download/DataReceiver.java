@@ -54,7 +54,9 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 public class DataReceiver extends BoardLocalSupport {
 	private final Transceiver txrx;
+
 	private final BufferedReceivingData receivedData;
+
 	private final Machine machine;
 
 	private static final Logger log = getLogger(DataReceiver.class);

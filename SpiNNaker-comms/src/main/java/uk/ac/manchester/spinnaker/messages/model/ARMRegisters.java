@@ -54,6 +54,7 @@ enum ARMRegisters {
 	pc,
 	/** Status register. */
 	apsr;
+
 	int get(int[] registers) {
 		return registers[ordinal()];
 	}

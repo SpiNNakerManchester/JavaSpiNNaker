@@ -65,9 +65,13 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  */
 public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
+
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
+
 	private static final int PING_COUNT = 5;
+
 	private static final int PACKET_MAX_SIZE = 300;
+
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
 			ThreadLocal.withInitial(() -> {
 				try {
@@ -79,10 +83,15 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			});
 
 	private boolean canSend;
+
 	private Inet4Address remoteIPAddress;
+
 	private InetSocketAddress remoteAddress;
+
 	private final DatagramChannel channel;
+
 	private boolean receivable;
+
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
 	/**

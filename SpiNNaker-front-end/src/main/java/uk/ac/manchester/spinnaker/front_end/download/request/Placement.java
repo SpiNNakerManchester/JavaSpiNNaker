@@ -28,13 +28,16 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 @JsonFormat(shape = OBJECT)
 public class Placement implements HasCoreLocation {
-    /** The X coordinate of the core this vertex is placed on. */
+	/** The X coordinate of the core this vertex is placed on. */
 	private final int x;
-    /** The Y coordinate of the core this vertex is placed on. */
+
+	/** The Y coordinate of the core this vertex is placed on. */
 	private final int y;
-    /** The processor ID of the core this vertex is placed on. */
+
+	/** The processor ID of the core this vertex is placed on. */
 	private final int p;
-    /** Minimal vertex info. */
+
+	/** Minimal vertex info. */
 	private final Vertex vertex;
 
 	/**
@@ -51,33 +54,33 @@ public class Placement implements HasCoreLocation {
 	 * @param vertex
 	 *            Vertex recording region information.
 	 */
-    Placement(@JsonProperty(value = "x", required = true) int x,
-            @JsonProperty(value = "y", required = true) int y,
-            @JsonProperty(value = "p", required = true) int p,
-            @JsonProperty(value = "vertex", required = true) Vertex vertex) {
-        this.x = x;
-        this.y = y;
-        this.p = p;
-        this.vertex = vertex;
-    }
+	Placement(@JsonProperty(value = "x", required = true) int x,
+			@JsonProperty(value = "y", required = true) int y,
+			@JsonProperty(value = "p", required = true) int p,
+			@JsonProperty(value = "vertex", required = true) Vertex vertex) {
+		this.x = x;
+		this.y = y;
+		this.p = p;
+		this.vertex = vertex;
+	}
 
-    @Override
-    public int getX() {
-        return x;
-    }
+	@Override
+	public int getX() {
+		return x;
+	}
 
-    @Override
-    public int getY() {
-        return y;
-    }
+	@Override
+	public int getY() {
+		return y;
+	}
 
-    @Override
-    public int getP() {
-        return p;
-    }
+	@Override
+	public int getP() {
+		return p;
+	}
 
-    /** @return The information about the vertex. */
-    public Vertex getVertex() {
-        return vertex;
-    }
+	/** @return The information about the vertex. */
+	public Vertex getVertex() {
+		return vertex;
+	}
 }

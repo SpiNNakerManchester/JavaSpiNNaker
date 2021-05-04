@@ -118,30 +118,36 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * from another core of the same chip.
 		 */
 		public final CoreLocation core;
+
 		/**
 		 * What was the index of the region in the table of regions for the
 		 * core?
 		 */
 		public final int regionIndex;
+
 		/**
 		 * Where should the data be downloaded from? <em>This is not necessarily
 		 * the start of the region.</em>
 		 */
 		public final int startAddress;
+
 		/**
 		 * How much data should be downloaded? <em>This is not necessarily the
 		 * size of the region.</em>
 		 */
 		public final int size;
+
 		/**
 		 * How much data was originally requested?
 		 */
 		public final int realSize;
+
 		/**
 		 * How many extra bytes are being read at the start of the region in
 		 * order to get an aligned read?
 		 */
 		public final int initialIgnore;
+
 		/**
 		 * How many extra bytes are being read at the end of the region in order
 		 * to get an aligned read?

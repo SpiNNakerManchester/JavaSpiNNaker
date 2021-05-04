@@ -31,8 +31,8 @@ import java.util.NoSuchElementException;
  * @author Christian-B
  */
 public final class DoubleMapIterator<V> implements Iterator<V> {
-
 	private final Iterator<? extends Map<?, V>> outer;
+
 	private Iterator<V> inner;
 
 	/**

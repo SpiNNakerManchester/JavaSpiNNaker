@@ -51,8 +51,10 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 		 * The timeout for transient IP tags (i.e., responses to SCP commands).
 		 */
 		public final IPTagTimeOutWaitTime transientTimeout;
+
 		/** The count of the IP tag pool size. */
 		public final int poolSize;
+
 		/** The count of the number of fixed IP tag entries. */
 		public final int fixedSize;
 

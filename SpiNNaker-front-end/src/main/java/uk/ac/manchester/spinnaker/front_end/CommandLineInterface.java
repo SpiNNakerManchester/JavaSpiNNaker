@@ -63,11 +63,14 @@ public final class CommandLineInterface {
 	}
 
 	private static final String JAR_FILE;
+
 	@SuppressWarnings("unused")
 	private static final String MAIN_CLASS;
+
 	private static final String VERSION;
 
 	private static final ObjectMapper MAPPER = createMapper();
+
 	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	static {
@@ -210,11 +213,17 @@ public final class CommandLineInterface {
 	}
 
 	private static final int NUM_DOWNLOAD_ARGS = 4;
+
 	private static final int THIRD = 3;
+
 	private static final int FOURTH = 4;
+
 	private static final int NUM_DSE_ARGS = 3;
+
 	private static final int NUM_DSE_APP_MON_ARGS = 4;
+
 	private static final String DSE_DB_FILE = "ds.sqlite3";
+
 	private static final int NUM_IOBUF_ARGS = 4;
 
 	/**
@@ -445,22 +454,31 @@ public final class CommandLineInterface {
 interface CLICommands {
 	/** The fast-data-out download command name. */
 	String GATHER = "gather";
+
 	/** The SCP-based download command name. */
 	String DOWNLOAD = "download";
+
 	/** The basic DSE command name. */
 	String DSE = "dse";
+
 	/** The system DSE command name. */
 	String DSE_SYS = "dse_sys";
+
 	/** The application DSE command name. */
 	String DSE_APP = "dse_app";
+
 	/** The application DSE (with fast-data-in) command name. */
 	String DSE_APP_MON = "dse_app_mon";
+
 	/** The IOBUF-retrieval command name. */
 	String IOBUF = "iobuf";
+
 	/** The listen-for-an-unbooted-machine command name. */
 	String LISTEN = "listen_for_unbooted";
+
 	/** The version command name. */
 	String VERSION = "version";
+
 	/** All the command names. Sorted. */
 	String[] ALL = {
 		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, LISTEN,

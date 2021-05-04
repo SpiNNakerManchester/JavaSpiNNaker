@@ -40,18 +40,25 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	/** The default for the number of parallel channels. */
 	public static final int DEFAULT_NUM_CHANNELS = 8;
+
 	/** The default for the number of instantaneously active channels. */
 	public static final int DEFAULT_INTERMEDIATE_CHANNEL_WAITS = 7;
 
 	private final int numWaits;
+
 	private final int numChannels;
+
 	private final int numRetries;
+
 	/**
 	 * How to select how to communicate.
 	 */
 	final ConnectionSelector<T> selector;
+
 	private final Map<T, SCPRequestPipeline> requestPipelines;
+
 	private final int timeout;
+
 	private final RetryTracker retryTracker;
 
 	/**

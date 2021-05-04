@@ -42,7 +42,7 @@ public interface SpallocJobAPI {
 	 */
 	default void destroy() throws IOException, SpallocServerException {
 		destroy(null);
-	};
+	}
 
 	/**
 	 * Destroy the job and disconnect from the server.

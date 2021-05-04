@@ -24,11 +24,17 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public class WhereIs {
 	private ChipLocation jobChip;
+
 	private int jobId;
+
 	private ChipLocation chip;
+
 	private BoardCoordinates logical;
+
 	private String machine;
+
 	private ChipLocation boardChip;
+
 	private BoardPhysicalCoordinates physical;
 
 	/**
@@ -37,7 +43,7 @@ public class WhereIs {
 	public WhereIs() {
 	}
 
-    /**
+	/**
 	 * Create.
 	 *
 	 * @param jobChip
@@ -121,7 +127,7 @@ public class WhereIs {
 	 *            the chip to set
 	 */
 	public void setChip(ChipLocation chip) {
-        this.chip = chip;
+		this.chip = chip;
 	}
 
 	/**
@@ -178,7 +184,7 @@ public class WhereIs {
 	 *            the board chip location to set
 	 */
 	public void setBoardChip(ChipLocation boardChip) {
-        this.boardChip = boardChip;
+		this.boardChip = boardChip;
 	}
 
 	/**
@@ -205,12 +211,11 @@ public class WhereIs {
 		if (o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
 			return Objects.equals(jobChip, other.jobChip)
-                    && jobId == other.jobId
-                    && Objects.equals(chip, other.chip)
-                    && Objects.equals(logical, other.logical)
-                    && Objects.equals(machine, other.machine)
-                    && Objects.equals(boardChip, other.boardChip)
-                    && Objects.equals(physical, other.physical);
+					&& jobId == other.jobId && Objects.equals(chip, other.chip)
+					&& Objects.equals(logical, other.logical)
+					&& Objects.equals(machine, other.machine)
+					&& Objects.equals(boardChip, other.boardChip)
+					&& Objects.equals(physical, other.physical);
 		}
 		return false;
 	}

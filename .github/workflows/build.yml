@@ -62,6 +62,7 @@ jobs:
         CI_BUILD_NUMBER: ${{ github.run_id }}
         CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
         COVERALLS_SECRET: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
     - name: Upload Build (JDK 8 only)
       if: matrix.java == 8
       uses: actions/upload-artifact@v2
@@ -102,7 +103,8 @@ jobs:
     - name: "Check: copyright declarations"
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: Code Style"
-      run: mvn checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true
+      # Dependencies are such that compile needs to run before checkstyle
+      run: mvn compile checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true
     - name: Build
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
     - name: "Check: Documentation"

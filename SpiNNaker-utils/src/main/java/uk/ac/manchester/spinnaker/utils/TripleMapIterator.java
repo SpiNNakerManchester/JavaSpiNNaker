@@ -31,8 +31,8 @@ import java.util.NoSuchElementException;
  * @author Christian-B
  */
 public class TripleMapIterator<V> implements Iterator<V> {
-
 	private final Iterator<? extends Map<?, ? extends Map<?, V>>> outer;
+
 	private Iterator<V> inner;
 
 	/**

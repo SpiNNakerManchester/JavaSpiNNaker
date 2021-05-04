@@ -90,6 +90,7 @@ public interface SpallocAPI {
 	 *            Additional arguments required. Must include the key
 	 *            {@code owner}. Values can be boxed primitive types or strings.
 	 * @return the ID of the created job.
+	 * @deprecated Consider using {@link #createJob(CreateJob)} instead.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
@@ -99,6 +100,41 @@ public interface SpallocAPI {
 			throws IOException, SpallocServerException {
 		return createJob(args, kwargs, null);
 	}
+
+	/**
+	 * Create a job.
+	 *
+	 * @param builder
+	 *            The builder saying what sort of job to create.
+	 * @return the ID of the created job.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	default int createJob(CreateJob builder)
+			throws IOException, SpallocServerException {
+		return createJob(builder, null);
+	}
+
+	/**
+	 * Create a job.
+	 *
+	 * @param builder
+	 *            The builder saying what sort of job to create.
+	 * @param timeout
+	 *            How long to wait for the request to complete, in milliseconds,
+	 *            or {@code null} to wait forever.
+	 * @return the ID of the created job.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             if the request times out.
+	 * @throws IOException
+	 *             if network communications fail.
+	 */
+	int createJob(CreateJob builder, Integer timeout) throws IOException,
+			SpallocProtocolTimeoutException, SpallocServerException;
 
 	/**
 	 * Create a job.
@@ -114,6 +150,8 @@ public interface SpallocAPI {
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or {@code null} to wait forever.
 	 * @return the ID of the created job.
+	 * @deprecated Consider using {@link #createJob(CreateJob, Integer)}
+	 *             instead.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException

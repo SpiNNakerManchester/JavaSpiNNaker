@@ -58,8 +58,11 @@ import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
 /** A spalloc configuration loaded from a file. */
 public class Configuration {
 	private static final char LIST_SEPARATOR = ' ';
+
 	private static final String SECTION_NAME = "spalloc";
+
 	private Map<String, Object> configurationMap;
+
 	private SubnodeConfiguration section;
 
 	/**
@@ -123,7 +126,8 @@ public class Configuration {
 	}
 
 	public double getReconnectDelay() {
-		return (Double) configurationMap.get(RECONNECT_DELAY_PROPERTY);
+		return (Double) configurationMap.getOrDefault(RECONNECT_DELAY_PROPERTY,
+				RECONNECT_DELAY_DEFAULT);
 	}
 
 	public double getTimeout() {
@@ -164,7 +168,6 @@ public class Configuration {
 		Map<String, Object> defaults = new HashMap<>();
 		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
 		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
-		defaults.put(RECONNECT_DELAY_PROPERTY, RECONNECT_DELAY_DEFAULT);
 		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
 		defaults.put(MACHINE_PROPERTY, MACHINE_DEFAULT);
 		defaults.put(TAGS_PROPERTY, TAGS_DEFAULT);
