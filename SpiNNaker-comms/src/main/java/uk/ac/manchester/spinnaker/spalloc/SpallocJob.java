@@ -67,8 +67,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * <pre>
  * try (SpallocJob j = new SpallocJob(new CreateJob(6).owner(me))) {
- * 	myApplication.boot(j.getHostname(), j.getDimensions());
- * 	myApplication.run(j.getHostname());
+ *     myApplication.boot(j.getHostname(), j.getDimensions());
+ *     myApplication.run(j.getHostname());
  * }
  * </pre>
  *
