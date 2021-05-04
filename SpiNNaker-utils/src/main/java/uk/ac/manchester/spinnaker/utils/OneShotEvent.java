@@ -27,7 +27,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class OneShotEvent {
 	private boolean flag;
+
 	private final Lock lock = new ReentrantLock();
+
 	private final Condition cond = lock.newCondition();
 
 	/**

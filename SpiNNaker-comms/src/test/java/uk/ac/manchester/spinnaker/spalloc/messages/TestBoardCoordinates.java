@@ -28,19 +28,20 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  */
 public class TestBoardCoordinates {
 
-    @Test
-    void testFromJson() throws IOException {
-        String json = "[2, 4, 6]";
-        ObjectMapper mapper = SpallocClient.createMapper();
-        BoardCoordinates fromJson = mapper.readValue(json, BoardCoordinates.class);
-        assertEquals(2, fromJson.getX());
-        assertEquals(4, fromJson.getY());
-        assertEquals(6, fromJson.getZ());
+	@Test
+	void testFromJson() throws IOException {
+		String json = "[2, 4, 6]";
+		ObjectMapper mapper = SpallocClient.createMapper();
+		BoardCoordinates fromJson =
+				mapper.readValue(json, BoardCoordinates.class);
+		assertEquals(2, fromJson.getX());
+		assertEquals(4, fromJson.getY());
+		assertEquals(6, fromJson.getZ());
 
-        BoardCoordinates direct = new BoardCoordinates(2, 4, 6);
-        assertEquals(direct, fromJson);
-        assertEquals(direct.hashCode(), fromJson.hashCode());
-        assertEquals(direct.toString(), fromJson.toString());
-    }
+		BoardCoordinates direct = new BoardCoordinates(2, 4, 6);
+		assertEquals(direct, fromJson);
+		assertEquals(direct.hashCode(), fromJson.hashCode());
+		assertEquals(direct.toString(), fromJson.toString());
+	}
 
 }

@@ -44,13 +44,17 @@ import org.slf4j.Logger;
  */
 class Replacer {
 	private static final Logger log = getLogger(Replacer.class);
+
 	private static final Pattern FORMAT_SEQUENCE =
 			Pattern.compile("%\\d*(?:\\.\\d+)?([cdfiksuxR])");
+
 	/** ASCII RS (record separator) token. */
 	private static final String RS_TOKEN = "\u001e";
+
 	private static final int NUM_PARTS = 3;
 
 	private Map<String, Template> messages = new HashMap<>();
+
 	/** Where the APLX file is that this replacer is working on. */
 	final File origin;
 
@@ -113,8 +117,11 @@ class Replacer {
 
 	private static final class Template {
 		private final String key;
+
 		private final String prefix;
+
 		private final String unescaped;
+
 		private final List<Replacement> matches;
 
 		private Template(String[] parts) throws NumberFormatException {
@@ -144,6 +151,7 @@ class Replacer {
 
 	private static final class Replacement {
 		private final String match;
+
 		private final int index;
 
 		private Replacement(MatchResult m, int index) {
@@ -165,6 +173,7 @@ class Replacer {
 	 */
 	public static final class WrappedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
+
 		private final IOException e;
 
 		private WrappedException(IOException e) {

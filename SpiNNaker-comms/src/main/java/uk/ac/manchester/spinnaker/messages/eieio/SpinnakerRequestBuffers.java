@@ -32,10 +32,13 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 		implements HasCoreLocation {
 	/** What core are we talking about. */
 	public final HasCoreLocation core;
+
 	/** What region of the core's memory. */
 	public final int regionID;
+
 	/** The message sequence number. */
 	public final int sequenceNum;
+
 	/** How much space is available. */
 	public final int spaceAvailable;
 
@@ -61,7 +64,9 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	}
 
 	private static final int PROC_SHIFT = 3;
+
 	private static final int PROC_MASK = 0b00011111;
+
 	private static final int REGION_MASK = 0b00001111;
 
 	SpinnakerRequestBuffers(ByteBuffer data) {

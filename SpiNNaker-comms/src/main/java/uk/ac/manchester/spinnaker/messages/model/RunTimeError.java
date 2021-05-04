@@ -70,7 +70,9 @@ public enum RunTimeError {
 
 	/** The SCAMP RTE code. */
 	public final int value;
+
 	private static final Map<Integer, RunTimeError> MAP = new HashMap<>();
+
 	static {
 		for (RunTimeError v : values()) {
 			MAP.put(v.value, v);

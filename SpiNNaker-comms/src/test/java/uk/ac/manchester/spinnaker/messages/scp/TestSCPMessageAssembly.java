@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 
 class TestSCPMessageAssembly {
-	static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 
 	@Test
 	void testCreateNewSCPHeader() {

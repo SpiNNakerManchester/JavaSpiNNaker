@@ -42,6 +42,9 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutEx
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
+@SuppressWarnings({
+	"checkstyle:JavadocVariable", "checkstyle:VisibilityModifier"
+})
 public class BoardTestConfiguration {
 	public static final String LOCALHOST = "127.0.0.1";
 	/**
@@ -87,7 +90,7 @@ public class BoardTestConfiguration {
 			throws SocketException, UnknownHostException {
 		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
-				() -> "test board (" + remotehost + ") appears to be down");
+			() -> "test board (" + remotehost + ") appears to be down");
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {

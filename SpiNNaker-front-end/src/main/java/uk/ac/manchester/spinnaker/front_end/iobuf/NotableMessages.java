@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonFormat(shape = OBJECT)
 public class NotableMessages {
 	private List<String> errors;
+
 	private List<String> warnings;
 
 	/**

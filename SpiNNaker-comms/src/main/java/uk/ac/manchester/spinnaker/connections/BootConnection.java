@@ -34,6 +34,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 		implements BootSender, BootReceiver {
 	// Determined by Ethernet MTU, not by SDP buffer size
 	private static final int BOOT_MESSAGE_SIZE = 1500;
+
 	private static final int ANTI_FLOOD_DELAY = 100;
 
 	/**

@@ -37,7 +37,9 @@ import java.util.NoSuchElementException;
 public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		Iterable<AbstractDataElement> {
 	private final Header header;
+
 	private ByteBuffer elements;
+
 	private ByteBuffer data;
 
 	/**
@@ -259,16 +261,22 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	public static class Header implements EIEIOHeader {
 		/** The type of packet (size of various fields). */
 		public final EIEIOType eieioType;
+
 		/** The tag on the message. */
 		public final byte tag;
+
 		/** The prefix on the message, or {@code null} for no prefix. */
 		public final Short prefix;
+
 		/** How to apply the prefix. */
 		public final EIEIOPrefix prefixType;
+
 		/** An offset for the payload. */
 		public final Integer payloadBase;
+
 		/** Whether payloads are times. */
 		public final boolean isTime;
+
 		/** The number of items in the packet. */
 		private byte count;
 
@@ -381,11 +389,17 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		}
 
 		private static final int PREFIX_BIT = 7;
+
 		private static final int PREFIX_TYPE_BIT = 6;
+
 		private static final int PAYLOAD_BIT = 5;
+
 		private static final int TIME_BIT = 4;
+
 		private static final int TYPE_BITS = 2;
+
 		private static final int TAG_BITS = 0;
+
 		private static final int TWO_BITS_MASK = 0b00000011;
 
 		@Override

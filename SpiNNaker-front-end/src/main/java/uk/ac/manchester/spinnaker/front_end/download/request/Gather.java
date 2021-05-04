@@ -41,14 +41,19 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 public class Gather implements HasCoreLocation {
 	/** The x value of the core this placement is on. */
 	private final int x;
+
 	/** The y value of the core this placement is on. */
 	private final int y;
+
 	/** The p value of the core this placement is on. */
 	private final int p;
+
 	/** The IPTag of the package gatherer. */
 	private final IPTag iptag;
+
 	/** The extra monitor cores, and what to retrieve from them. */
 	private final List<Monitor> monitors;
+
 	/** The current transaction id for the board. */
 	private int transactionId;
 

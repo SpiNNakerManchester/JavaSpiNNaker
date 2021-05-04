@@ -48,9 +48,13 @@ import org.slf4j.Logger;
  */
 public class Executor implements Closeable {
 	private static final Logger log = getLogger(Executor.class);
+
 	private InputStream inputStream;
+
 	private final ByteBuffer input;
+
 	private final Functions funcs;
+
 	/** The collection of memory regions that can be written to. */
 	private final MemoryRegionCollection memRegions;
 
@@ -106,11 +110,11 @@ public class Executor implements Closeable {
 		IntBuffer b = input.asIntBuffer();
 		int[] a = new int[b.limit()];
 		b.get(a);
-        if (log.isDebugEnabled()) {
-    		log.debug("processing input: {}",
-                    stream(a).mapToObj(Integer::toHexString).
-                            collect(Collectors.toList()));
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("processing input: {}",
+					stream(a).mapToObj(Integer::toHexString)
+							.collect(Collectors.toList()));
+		}
 	}
 
 	/**

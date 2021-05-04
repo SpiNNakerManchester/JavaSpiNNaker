@@ -31,8 +31,11 @@ import java.util.Set;
 /** The low-level format of SCP result message. */
 public class SCPResultMessage {
 	private static final int SDP_HEADER_LENGTH = 8;
+
 	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
+
 	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
+
 	static {
 		RETRY_CODES.add(RC_TIMEOUT);
 		RETRY_CODES.add(RC_P2P_TIMEOUT);
@@ -42,8 +45,10 @@ public class SCPResultMessage {
 
 	/** The response code. */
 	private final SCPResult result;
+
 	/** The sequence number of the request that this is a response to. */
 	private final int sequenceNumber;
+
 	/** The remaining data of the response. */
 	private ByteBuffer responseData;
 

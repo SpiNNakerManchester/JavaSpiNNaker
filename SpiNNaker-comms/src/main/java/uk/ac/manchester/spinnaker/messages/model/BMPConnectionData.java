@@ -34,15 +34,19 @@ import java.util.Collection;
 public class BMPConnectionData {
 	/** The boards to be addressed. Unmodifiable. */
 	public final Collection<Integer> boards;
+
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	public final int cabinet;
+
 	/**
 	 * The ID of the frame that contains the BMPs. Frames are contained within a
 	 * cabinet.
 	 */
 	public final int frame;
+
 	/** The IP address of the BMP. */
 	public final InetAddress ipAddress;
+
 	/**
 	 * The port number associated with the BMP connection, or {@code null} for
 	 * the default.

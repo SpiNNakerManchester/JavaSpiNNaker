@@ -31,11 +31,17 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		implements HasCoreLocation {
 	private final int numRequests;
+
 	private final int sequenceNumber;
+
 	private final HasCoreLocation core;
+
 	private final int[] channel;
+
 	private final int[] regionID;
+
 	private final int[] startAddress;
+
 	private final int[] spaceRead;
 
 	/**
@@ -110,6 +116,7 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	}
 
 	private static final int CORE_SHIFT = 3;
+
 	private static final int N_REQUESTS_MASK = (1 << CORE_SHIFT) - 1;
 
 	/**

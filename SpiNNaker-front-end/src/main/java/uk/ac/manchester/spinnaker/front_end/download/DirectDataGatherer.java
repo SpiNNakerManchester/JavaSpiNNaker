@@ -47,13 +47,17 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 public class DirectDataGatherer extends DataGatherer {
 	/** The number of memory regions in the DSE model. */
 	private static final int MAX_MEM_REGIONS = 16;
+
 	/** Application data magic number. */
 	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
+
 	/** Version of the file produced by the DSE. */
 	private static final int DSE_VERSION = 0x00010000;
 
 	private final Transceiver txrx;
+
 	private final BufferManagerStorage database;
+
 	private final Map<CoreLocation, Map<Long, ByteBuffer>> coreTableCache;
 
 	/**

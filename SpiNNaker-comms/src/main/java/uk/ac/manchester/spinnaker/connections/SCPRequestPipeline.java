@@ -74,6 +74,7 @@ public class SCPRequestPipeline {
 	 * to wait before timing out a communication.
 	 */
 	private static final String TIMEOUT_PROPERTY = "spinnaker.scp_timeout";
+
 	/**
 	 * The name of a <em>system property</em> that can override the default
 	 * retries. If specified as an integer, it gives the number of retries to
@@ -81,24 +82,31 @@ public class SCPRequestPipeline {
 	 * communication.
 	 */
 	private static final String RETRY_PROPERTY = "spinnaker.scp_retries";
+
 	private static final Logger log = getLogger(SCPRequestPipeline.class);
+
 	/** The default number of requests to send before checking for responses. */
 	public static final int DEFAULT_NUM_CHANNELS = 1;
+
 	/**
 	 * The default number of outstanding responses to wait for before continuing
 	 * sending requests.
 	 */
 	public static final int DEFAULT_INTERMEDIATE_TIMEOUT_WAITS = 0;
+
 	/**
 	 * The default number of times to resend any packet for any reason before an
 	 * error is triggered.
 	 */
 	public static final int SCP_RETRIES;
+
 	/**
 	 * How long to wait between retries, in milliseconds.
 	 */
 	public static final int RETRY_DELAY_MS = 1;
+
 	private static final String REASON_TIMEOUT = "timeout";
+
 	/**
 	 * Packet minimum send interval, in <em>nanoseconds</em>.
 	 */
@@ -114,39 +122,49 @@ public class SCPRequestPipeline {
 
 	/** The connection over which the communication is to take place. */
 	private SCPConnection connection;
+
 	/** The number of requests to send before checking for responses. */
 	private int numChannels;
+
 	/**
 	 * The number of outstanding responses to wait for before continuing sending
 	 * requests.
 	 */
 	private int intermediateChannelWaits;
+
 	/**
 	 * The number of times to resend any packet for any reason before an error
 	 * is triggered.
 	 */
 	private int numRetries;
+
 	/**
 	 * The number of elapsed milliseconds after sending a packet before it is
 	 * considered a timeout.
 	 */
 	private int packetTimeout;
+
 	/** The number of requests issued to this pipeline. */
 	private int numRequests;
+
 	/** The number of packets that have been resent. */
 	private int numResent;
+
 	/** The number of retries due to restartable errors. */
 	private int numRetryCodeResent;
+
 	/** The number of timeouts that occurred. */
 	private int numTimeouts;
 
 	/** A dictionary of sequence number &rarr; requests in progress. */
 	private final Map<Integer, Request<?>> outstandingRequests;
+
 	/**
 	 * An object used to track how many retries have been done, or {@code null}
 	 * if no such tracking is required.
 	 */
 	private final RetryTracker retryTracker;
+
 	private long nextSendTime = 0;
 
 	/**
@@ -158,14 +176,19 @@ public class SCPRequestPipeline {
 	private final class Request<T extends SCPResponse> {
 		/** Request in progress. */
 		private final SCPRequest<T> request;
+
 		/** Payload of request in progress. */
 		private final ByteBuffer requestData;
+
 		/** Callback function for response. */
 		private final Consumer<T> callback;
+
 		/** Callback function for errors. */
 		private final SCPErrorHandler errorCallback;
+
 		/** Retry reasons. */
 		private final List<String> retryReason;
+
 		/** Number of retries for the packet. */
 		private int retries;
 

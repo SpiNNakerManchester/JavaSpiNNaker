@@ -97,10 +97,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
  */
 public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	private static final Logger log = getLogger(SpallocClient.class);
+
 	/** The default communication timeout. (This is no timeout at all.) */
 	private static final Integer DEFAULT_TIMEOUT = null;
+
 	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
-	private static final ObjectMapper MAPPER =  createMapper();
+
+	private static final ObjectMapper MAPPER = createMapper();
 
 	static {
 		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
@@ -158,7 +161,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, Integer port, Integer timeout) {
-        super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
+		super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
 	}
 
 	/**
@@ -170,15 +173,15 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @return The Object Mapper used by the Spalloc client,
 	 */
 	public static ObjectMapper createMapper() {
-        ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(Response.class, new ResponseDeserializer());
 		mapper.registerModule(module);
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
 		mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        return mapper;
-    }
+		return mapper;
+	}
 
 	@Override
 	public Notification waitForNotification(Integer timeout)
@@ -409,7 +412,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return MAPPER.readValue(json, BoardCoordinates.class);
 	}
 
-    @Override
+	@Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
 		String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);

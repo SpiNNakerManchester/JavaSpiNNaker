@@ -44,7 +44,9 @@ public enum P2PTableRoute {
 
 	/** The SpiNNaker value. */
 	public final int value;
+
 	private static final Map<Integer, P2PTableRoute> MAP = new HashMap<>();
+
 	static {
 		for (P2PTableRoute r : values()) {
 			MAP.put(r.value, r);

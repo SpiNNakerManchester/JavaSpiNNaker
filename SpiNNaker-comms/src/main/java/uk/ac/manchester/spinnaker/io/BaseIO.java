@@ -31,8 +31,10 @@ import uk.ac.manchester.spinnaker.utils.Slice;
 abstract class BaseIO implements AbstractIO {
 	/** The start address of the region to write to. */
 	final int start;
+
 	/** The end of the region to write to. */
 	final int end;
+
 	/** The current pointer where read and writes are taking place. */
 	int current;
 

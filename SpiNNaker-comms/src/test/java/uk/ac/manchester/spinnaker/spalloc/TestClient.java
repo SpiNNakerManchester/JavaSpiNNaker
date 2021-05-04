@@ -16,10 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.assertTimeout;

@@ -33,8 +33,11 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  */
 public abstract class SpinnakerRequest implements SerializableMessage {
 	private static final int SDP_SOURCE_PORT = 7;
+
 	private static final int SDP_SOURCE_CPU = 31;
+
 	private static final byte SDP_TAG = (byte) 0xFF;
+
 	/** The SDP header of the message. */
 	public final SDPHeader sdpHeader;
 
@@ -81,7 +84,9 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	 * @author Donal Fellows
 	 */
 	private static class SDPSource implements HasCoreLocation {
-		private final int x, y;
+		private final int x;
+
+		private final int y;
 
 		/** Source for nominated location sending, needed for replies. */
 		SDPSource(HasChipLocation chip) {

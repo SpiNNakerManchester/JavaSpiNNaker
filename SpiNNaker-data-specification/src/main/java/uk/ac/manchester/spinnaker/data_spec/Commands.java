@@ -135,11 +135,13 @@ public enum Commands {
 	PRINT_STRUCT(0X82),
 	/** Cleanly ends the parsing of the data specs. */
 	END_SPEC(0XFF);
+
 	/**
 	 * The value of the command, from the Data Specification specification
 	 * itself.
 	 */
 	public final int value;
+
 	private static final Map<Integer, Commands> MAP;
 
 	Commands(int value) {

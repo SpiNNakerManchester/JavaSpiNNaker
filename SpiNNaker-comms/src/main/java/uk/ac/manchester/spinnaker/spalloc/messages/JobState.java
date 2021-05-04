@@ -23,10 +23,15 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  */
 public class JobState {
 	private State state;
+
 	private Boolean power;
+
 	private double keepAlive;
+
 	private float startTime;
+
 	private String reason;
+
 	private String keepalivehost;
 
 	public State getState() {
@@ -61,12 +66,12 @@ public class JobState {
 		this.reason = reason;
 	}
 
-    /**
-     * @return the startTime
-     */
-    public float getStartTime() {
-        return startTime;
-    }
+	/**
+	 * @return the startTime
+	 */
+	public float getStartTime() {
+		return startTime;
+	}
 
 	/**
 	 * @param startTime

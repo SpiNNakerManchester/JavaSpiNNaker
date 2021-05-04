@@ -46,20 +46,26 @@ import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
  */
 class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
+
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
+
 	/** 16 entries fit in a 256-byte read. */
 	private static final int ENTRIES_PER_READ =
 			UDP_MESSAGE_MAX_SIZE / BYTES_PER_ENTRY;
+
 	/** 64 reads of 16 entries are required for 1024 entries. */
 	private static final int NUM_READS =
 			ROUTER_AVAILABLE_ENTRIES / ENTRIES_PER_READ;
+
 	private static final int END = 0xFFFFFFFF;
+
 	/**
 	 * The maximum number of router entries we can write. A hardware constraint
 	 * for SpiNNaker 1 chips.
 	 */
 	private static final int MAX_ROUTER_ENTRIES = 1023;
+
 	private static final int ROUTING_TABLE_ADDRESS = 0x67800000;
 
 	/**

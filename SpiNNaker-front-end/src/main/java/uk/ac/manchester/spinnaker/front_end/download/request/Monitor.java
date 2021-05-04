@@ -41,14 +41,19 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 public class Monitor implements HasCoreLocation {
 	/** The X coordinate of the core this monitor is placed on. */
 	private final int x;
+
 	/** The Y coordinate of the core this monitor is placed on. */
 	private final int y;
+
 	/** The processor ID of the core this monitor is placed on. */
 	private final int p;
+
 	/** The vertex placements that this monitor will read. */
 	private final List<Placement> placements;
+
 	/** The transaction id for this extra monitor. */
 	private int transactionId = 0;
+
 	/** cap of where a transaction id will get to. */
 	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 

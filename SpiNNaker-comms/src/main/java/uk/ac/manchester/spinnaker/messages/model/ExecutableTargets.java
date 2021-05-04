@@ -28,7 +28,9 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 /** Encapsulate the binaries and cores on which to execute them. */
 public class ExecutableTargets {
 	private final Map<String, CoreSubsets> targets;
+
 	private int totalProcessors;
+
 	private final CoreSubsets allCoreSubsets;
 
 	/** Create. */

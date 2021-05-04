@@ -46,6 +46,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 public abstract class UDPTransceiver implements AutoCloseable {
 	private static final Logger log = getLogger(UDPTransceiver.class);
+
 	/**
 	 * A map of port &rarr; map of IP address &rarr; (connection, listener) for
 	 * UDP connections. Note listener might be {@code null} if the connection
@@ -56,6 +57,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 */
 	private final Map<Integer, Map<InetAddress, Pair<?>>> connectionsByPort =
 			new DefaultMap<>(HashMap::new);
+
 	/**
 	 * A map of class &rarr; list of (connection, listener) for UDP connections
 	 * that are listenable. Note that listener might be {@code null} if the
@@ -89,6 +91,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	private static final class Pair<MessageType> implements Cloneable {
 		UDPConnection<MessageType> connection;
+
 		ConnectionListener<MessageType> listener;
 
 		Pair(UDPConnection<MessageType> connection,
@@ -154,6 +157,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 
 	private static final InetAddress WILDCARD_ADDRESS;
+
 	static {
 		try {
 			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[IPV4_SIZE]);

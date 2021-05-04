@@ -41,9 +41,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  */
 public class CreateJob {
 	private final List<Integer> args = new ArrayList<>();
+
 	private final Map<String, Object> kwargs = new HashMap<>();
+
 	private boolean setTags = false;
+
 	private boolean setMachine = false;
+
 	private boolean setOwner = false;
 
 	/**

@@ -41,7 +41,7 @@ public interface SpallocJobAPI {
 	 */
 	default void destroy() throws IOException, SpallocServerException {
 		destroy(null);
-	};
+	}
 
 	/**
 	 * Destroy the job and disconnect from the server.
@@ -132,8 +132,8 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
-     * @throws IllegalStateException
-     *             If the spalloc job is not Ready.
+	 * @throws IllegalStateException
+	 *             If the spalloc job is not Ready.
 	 */
 	List<Connection> getConnections()
 			throws IOException, SpallocServerException, IllegalStateException;
@@ -154,8 +154,8 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
-     * @throws IllegalStateException
-     *             If the spalloc job is not Ready.
+	 * @throws IllegalStateException
+	 *             If the spalloc job is not Ready.
 	 */
 	MachineDimensions getDimensions()
 			throws IOException, SpallocServerException, IllegalStateException;
@@ -166,11 +166,11 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
-     * @throws IllegalStateException
-     *             If the spalloc job is not Ready.
+	 * @throws IllegalStateException
+	 *             If the spalloc job is not Ready.
 	 */
-	String getMachineName() throws IOException, SpallocServerException,
-            IllegalStateException;
+	String getMachineName()
+			throws IOException, SpallocServerException, IllegalStateException;
 
 	/**
 	 * @return All the boards allocated to the job.
@@ -178,8 +178,8 @@ public interface SpallocJobAPI {
 	 *             If communications fail.
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
-     * @throws IllegalStateException
-     *             If the spalloc job is not Ready.
+	 * @throws IllegalStateException
+	 *             If the spalloc job is not Ready.
 	 */
 	List<BoardCoordinates> getBoards()
 			throws IOException, SpallocServerException, IllegalStateException;

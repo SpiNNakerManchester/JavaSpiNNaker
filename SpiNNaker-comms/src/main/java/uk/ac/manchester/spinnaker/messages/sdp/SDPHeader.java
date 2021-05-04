@@ -33,18 +33,27 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  */
 public class SDPHeader implements SerializableMessage {
 	private static final int MAX_PORT = 7;
+
 	// Cpu:Port packing within port/cpu byte:
 	// [ P|P|P | C|C|C|C|C ]
 	private static final int CPU_ADDR_BITS = 5;
+
 	private static final int CPU_MASK = (1 << CPU_ADDR_BITS) - 1;
+
 	private static final int PORT_BITS = 8 - CPU_ADDR_BITS;
+
 	private static final int PORT_MASK = (1 << PORT_BITS) - 1;
 
 	private HasCoreLocation destination;
+
 	private int destinationPort;
+
 	private HasCoreLocation source;
+
 	private int sourcePort;
+
 	private Flag flags;
+
 	private int tag;
 
 	/**
@@ -280,11 +289,14 @@ public class SDPHeader implements SerializableMessage {
 		 * dinner jackets for a meeting at Pot Shrigley.
 		 */
 		private static final int BOND = 007;
+
 		/** Reply expected. */
 		private static final int SDPF_REPLY = 0x80;
+
 		/** Checksum before routing. */
 		@SuppressWarnings("unused")
 		private static final int SDPF_SUM = 0x40;
+
 		/** Don't route via P2P. */
 		private static final int SDPF_NR = 0x20;
 	}
@@ -305,8 +317,10 @@ public class SDPHeader implements SerializableMessage {
 		 * routed.
 		 */
 		REPLY_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_REPLY | SCAMP.SDPF_NR);
+
 		/** The SDP-encoded form of the flag. */
 		public final byte value;
+
 		private static final Map<Byte, Flag> MAP = new HashMap<>();
 
 		Flag(int value) {

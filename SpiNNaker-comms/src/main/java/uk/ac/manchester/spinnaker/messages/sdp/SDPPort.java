@@ -32,6 +32,7 @@ public enum SDPPort {
 	EXTRA_MONITOR_CORE_DATA_SPEED_UP(5),
 	/** Messages directed at the packet gatherer for the speed up protocols. */
 	GATHERER_DATA_SPEED_UP(6);
+
 	/** The port ID. */
 	public final int value;
 

@@ -36,7 +36,9 @@ import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 /** A process for filling memory. */
 class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final Logger log = getLogger(FillProcess.class);
+
 	private static final int ALIGNMENT = 4;
+
 	private static final int TWO_WORDS = 2 * WORD_SIZE;
 
 	/**

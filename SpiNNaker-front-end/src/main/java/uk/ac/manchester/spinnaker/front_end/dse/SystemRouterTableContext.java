@@ -38,8 +38,11 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 public class SystemRouterTableContext implements AutoCloseable {
 	private static final Logger log = getLogger(SystemRouterTableContext.class);
+
 	private final CoreSubsets monitorCores;
+
 	private final Transceiver txrx;
+
 	private final ChipLocation firstChip;
 
 	/**

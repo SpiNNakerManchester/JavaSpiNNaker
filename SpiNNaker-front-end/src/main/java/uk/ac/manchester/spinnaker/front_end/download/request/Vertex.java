@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonFormat(shape = OBJECT)
 public class Vertex {
 
-    /** Label as received from Python. */
-    private final String label;
+	/** Label as received from Python. */
+	private final String label;
 
 	/**
 	 * Address at which to find recording metadata. This was allocated during
@@ -40,10 +40,10 @@ public class Vertex {
 	 * actual buffers used to do the recording (which are <i>circular</i>
 	 * buffers).
 	 */
-    private final long recordingRegionBaseAddress;
+	private final long recordingRegionBaseAddress;
 
-    /** The IDs of the regions recording. */
-    private final int[] recordedRegionIds;
+	/** The IDs of the regions recording. */
+	private final int[] recordedRegionIds;
 
 	/**
 	 * Create a minimal vertex, possibly using an unmarshaller.
@@ -57,40 +57,40 @@ public class Vertex {
 	 * @param recordedRegionIds
 	 *            The IDs of the regions doing recording.
 	 */
-    public Vertex(@JsonProperty(value = "label", required = true) String label,
-            @JsonProperty(value = "recordingRegionBaseAddress", required = true)
-                    long recordingRegionBaseAddress,
-            @JsonProperty(value = "recordedRegionIds", required = true)
-                    int[] recordedRegionIds) {
-        this.label = label;
-        this.recordingRegionBaseAddress = recordingRegionBaseAddress;
-        this.recordedRegionIds = recordedRegionIds;
-    }
+	public Vertex(@JsonProperty(value = "label", required = true) String label,
+			@JsonProperty(value = "recordingRegionBaseAddress", required = true)
+			long recordingRegionBaseAddress,
+			@JsonProperty(value = "recordedRegionIds", required = true)
+			int[] recordedRegionIds) {
+		this.label = label;
+		this.recordingRegionBaseAddress = recordingRegionBaseAddress;
+		this.recordedRegionIds = recordedRegionIds;
+	}
 
-    /**
-     * Get the recording region IDs that have been recorded using buffering.
-     *
-     * @return The region numbers that have active recording
-     */
-    public int[] getRecordedRegionIds() {
-        return recordedRegionIds;
-    }
+	/**
+	 * Get the recording region IDs that have been recorded using buffering.
+	 *
+	 * @return The region numbers that have active recording
+	 */
+	public int[] getRecordedRegionIds() {
+		return recordedRegionIds;
+	}
 
-    /**
-     * Get the recording region base address.
-     * <p>
-     * Unlike the python this value is cached here.
-     *
-     * @return the base address of the recording region
-     */
-    public long getBaseAddress() {
-        return recordingRegionBaseAddress;
-    }
+	/**
+	 * Get the recording region base address.
+	 * <p>
+	 * Unlike the python this value is cached here.
+	 *
+	 * @return the base address of the recording region
+	 */
+	public long getBaseAddress() {
+		return recordingRegionBaseAddress;
+	}
 
-    /**
-     * @return The label, as received from Python.
-     */
-    public String getLabel() {
-    	return label;
-    }
+	/**
+	 * @return The label, as received from Python.
+	 */
+	public String getLabel() {
+		return label;
+	}
 }

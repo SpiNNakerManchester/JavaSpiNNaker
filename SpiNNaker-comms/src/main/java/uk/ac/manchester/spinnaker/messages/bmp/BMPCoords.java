@@ -23,6 +23,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 public final class BMPCoords {
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
 	private final int cabinet;
+
 	/**
 	 * The ID of the frame that contains the master BMP. Frames are contained
 	 * within a cabinet.

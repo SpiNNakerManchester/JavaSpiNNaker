@@ -36,7 +36,9 @@ import java.util.NoSuchElementException;
  */
 public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	private final ProgressBar bar;
+
 	private final Iterator<E> inner;
+
 	private boolean first;
 
 	/**
@@ -98,8 +100,8 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	/**
 	 * Closes the underlying {@link ProgressBar}.
 	 * <p>
-	 * Note: As {@code hasNext() == false} automatically calls close there is
-	 * no need to call this method unless you break out of the iterator early.
+	 * Note: As {@code hasNext() == false} automatically calls close there is no
+	 * need to call this method unless you break out of the iterator early.
 	 * <p>
 	 * If the bar is already closed then invoking this method has no effect.
 	 */
@@ -111,5 +113,4 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 		}
 		bar.close();
 	}
-
 }

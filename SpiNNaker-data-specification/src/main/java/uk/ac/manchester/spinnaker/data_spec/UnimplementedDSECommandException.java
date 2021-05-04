@@ -34,8 +34,10 @@ public class UnimplementedDSECommandException
 	 *            The command that was unimplemented.
 	 */
 	UnimplementedDSECommandException(int index, Commands command) {
-		super(format("Command %s (at index %d) in the data specification "
-            + "executor has not yet been implemented", command, index));
+		super(format(
+				"Command %s (at index %d) in the data specification "
+						+ "executor has not yet been implemented",
+				command, index));
 	}
 
 	/**
