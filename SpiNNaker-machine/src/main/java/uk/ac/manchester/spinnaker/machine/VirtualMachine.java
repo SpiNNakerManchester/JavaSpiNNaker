@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.utils.InetFactory;
  * <p>
  * Machine is also iterable, providing {@code ((x, y), chip)} where: {@code x}
  * is the x-coordinate of a chip. {@code y} is the y-coordinate of a chip, and
- * {@chip chip} is the chip with the given {@code x, y} coordinates.
+ * {@code chip} is the chip with the given {@code x, y} coordinates.
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
