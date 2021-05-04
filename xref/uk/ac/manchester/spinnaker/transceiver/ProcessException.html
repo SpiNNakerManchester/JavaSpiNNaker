@@ -34,28 +34,29 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> <strong class="jxr_keyword">extends</strong> <a name="SpinnmanException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/SpinnmanException.html#SpinnmanException">SpinnmanException</a> {
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 7759365416594564702L;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String S = <span class="jxr_string">"     "</span>; <em class="jxr_comment">// five spaces</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_javadoccomment">/** Where does the code believe this exception originated? */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> core;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 * Create an exception.</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 * @param core</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 *            What core were we talking to.</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 * @param cause</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 *            What exception caused problems.</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	ProcessException(<a name="HasCoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasCoreLocation.html#HasCoreLocation">HasCoreLocation</a> core, Throwable cause) {
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  		<strong class="jxr_keyword">super</strong>(format(
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  				<span class="jxr_string">"when sending to %d:%d:%d, received exception: %s\n"</span> + S
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  						+ <span class="jxr_string">"with message: %s"</span>,
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  				core.getX(), core.getY(), core.getP(),
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  				cause.getClass().getName(), cause.getMessage()), cause);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  		<strong class="jxr_keyword">this</strong>.core = core.asCoreLocation();
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	}
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  }
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String S = <span class="jxr_string">"     "</span>; <em class="jxr_comment">// five spaces</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<em class="jxr_javadoccomment">/** Where does the code believe this exception originated? */</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a> core;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">	 * Create an exception.</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * @param core</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 *            What core were we talking to.</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 * @param cause</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 *            What exception caused problems.</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	ProcessException(<a name="HasCoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasCoreLocation.html#HasCoreLocation">HasCoreLocation</a> core, Throwable cause) {
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  		<strong class="jxr_keyword">super</strong>(format(
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  				<span class="jxr_string">"when sending to %d:%d:%d, received exception: %s\n"</span> + S
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  						+ <span class="jxr_string">"with message: %s"</span>,
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  				core.getX(), core.getY(), core.getP(),
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  				cause.getClass().getName(), cause.getMessage()), cause);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  		<strong class="jxr_keyword">this</strong>.core = core.asCoreLocation();
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	}
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2021 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
