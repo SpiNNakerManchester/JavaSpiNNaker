@@ -1,5 +1,5 @@
 package uk.ac.manchester.spinnaker.alloc;
 
-public class MachinePowerResponse {
-
+public enum PowerState {
+	OFF, ON
 }

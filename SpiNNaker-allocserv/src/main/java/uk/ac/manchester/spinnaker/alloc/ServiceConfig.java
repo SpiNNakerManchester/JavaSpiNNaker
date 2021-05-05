@@ -12,8 +12,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
+import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.web.SpallocImpl;
 
 /**
  * Builds the Spring beans in the application.
@@ -22,6 +26,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 // @EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)
 // @EnableWebSecurity
 @Import(JaxRsConfig.class)
+@PropertySource("classpath:service.properties")
 public class ServiceConfig {
 
 	/**
@@ -36,6 +41,9 @@ public class ServiceConfig {
 	@Value("${cxf.rest.path}")
 	private String restPath;
 
+	@Value("${version}")
+	private String version;
+
 	/**
 	 * The implementation of the Spalloc service.
 	 *
@@ -43,7 +51,12 @@ public class ServiceConfig {
 	 */
 	@Bean
 	public SpallocAPI service() {
-		return new SpallocImpl();
+		return new SpallocImpl(version);
+	}
+
+	@Bean
+	public SpallocInterface core() {
+		return new Spalloc();
 	}
 
 	/**

@@ -20,6 +20,15 @@
 	<packaging>war</packaging>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/resources-filtered</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<finalName>spalloc</finalName>
 		<plugins>
 			<plugin>
@@ -55,6 +64,10 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>uk.ac.manchester.spinnaker</groupId>
+			<artifactId>SpiNNaker-comms</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
