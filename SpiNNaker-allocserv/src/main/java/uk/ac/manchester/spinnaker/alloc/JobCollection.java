@@ -9,7 +9,7 @@ public class JobCollection {
 
 	}
 
-	public List<Integer> ids() {
+	public List<Integer> ids(int start, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}

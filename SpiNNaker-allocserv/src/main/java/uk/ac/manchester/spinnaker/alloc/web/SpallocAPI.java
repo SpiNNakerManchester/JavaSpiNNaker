@@ -16,16 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static javax.ws.rs.core.Response.noContent;
 import static uk.ac.manchester.spinnaker.alloc.web.Constants.ID;
 import static uk.ac.manchester.spinnaker.alloc.web.Constants.JSON;
 import static uk.ac.manchester.spinnaker.alloc.web.Constants.NAME;
 import static uk.ac.manchester.spinnaker.alloc.web.Constants.TEXT;
 import static uk.ac.manchester.spinnaker.alloc.web.Constants.WAIT;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -42,68 +45,102 @@ import javax.ws.rs.core.UriInfo;
 @Path("/spalloc")
 public interface SpallocAPI {
 	@GET
-	@Path("version")
 	@Produces(JSON)
-	Response getVersion();
+	Response describeService(@Context UriInfo ui);
+
+	@OPTIONS
+	default Response optionsService() {
+		return noContent().allow("GET").build();
+	}
 
 	@GET
-	@Path("machine")
+	@Path("machines")
 	@Produces(JSON)
 	Response getMachines(@Context UriInfo ui);
+	// No paging; not expecting very many!
 
-	@Path("machine/{name}")
-	MachineAPI getMachine(@PathParam(NAME) String name);
+	@Path("machines/{name}")
+	MachineAPI getMachine(@PathParam(NAME) String name, @Context UriInfo ui);
+
+	@OPTIONS
+	@Path("machines")
+	default Response optionsMachines() {
+		return noContent().allow("GET").build();
+	}
 
 	@GET
-	@Path("job")
+	@Path("jobs")
 	@Produces(JSON)
 	Response listJobs(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
+			@QueryParam("limit") @DefaultValue("100") int limit,
+			@QueryParam("start") @DefaultValue("0") int start,
 			@Context UriInfo ui);
 
 	@POST
-	@Path("job")
+	@Path("jobs")
 	@Consumes(JSON)
 	@Produces(JSON)
 	Response createJob(CreateJobRequest req, @Context UriInfo ui);
 
-	@Path("job/{id}")
+	@OPTIONS
+	default Response optionsJobs() {
+		return noContent().allow("GET", "POST").build();
+	}
+
+	@Path("jobs/{id}")
 	@Produces(JSON)
-	JobAPI getJob(@PathParam(ID) int id);
+	JobAPI getJob(@PathParam(ID) int id, @Context UriInfo ui,
+			@Context HttpServletRequest request);
 
 	interface MachineAPI {
 		@GET
 		@Path("/")
 		@Produces(JSON)
 		Response describeMachine(
-				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Context UriInfo ui);
+				@QueryParam(WAIT) @DefaultValue("false") boolean wait);
 
-		@GET
-		@Path("physical-board")
-		@Produces(JSON)
-		Response getPhysicalPosition(@QueryParam("x") int x,
-				@QueryParam("y") int y,
-				@QueryParam("z") @DefaultValue("0") int z);
+		@OPTIONS
+		@Path("{path:.*}")
+		default Response optionsMachine(@PathParam("path") String ignored) {
+			// All paths beneath here are GET-only
+			return noContent().allow("GET").build();
+		}
 
 		@GET
 		@Path("logical-board")
 		@Produces(JSON)
-		Response getLogicalPosition(@QueryParam("cabinet") int cabinet,
-				@QueryParam("frame") int frame, @QueryParam("board") int board);
+		Response whereIsLogicalPosition(
+				@QueryParam("x") @DefaultValue("0") int x,
+				@QueryParam("y") @DefaultValue("0") int y,
+				@QueryParam("z") @DefaultValue("0") int z);
+
+		@GET
+		@Path("physical-board")
+		@Produces(JSON)
+		Response whereIsPhysicalPosition(
+				@QueryParam("cabinet") @DefaultValue("0") int cabinet,
+				@QueryParam("frame") @DefaultValue("0") int frame,
+				@QueryParam("board") @DefaultValue("0") int board);
 
 		@GET
 		@Path("chip")
 		@Produces(JSON)
-		Response getMachineChipLocation(@QueryParam("x") int x,
-				@QueryParam("y") int y);
+		Response whereIsMachineChipLocation(
+				@QueryParam("x") @DefaultValue("0") int x,
+				@QueryParam("y") @DefaultValue("0") int y);
 	}
 
 	interface JobAPI {
 		@GET
 		@Path("/")
 		@Produces(JSON)
-		Response getState(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Context UriInfo ui);
+		Response getState(
+				@QueryParam(WAIT) @DefaultValue("false") boolean wait);
+
+		@OPTIONS
+		default Response optionsRoot() {
+			return noContent().allow("GET", "DELETE").build();
+		}
 
 		@PUT
 		@Path("keepalive")
@@ -111,15 +148,27 @@ public interface SpallocAPI {
 		@Produces(TEXT)
 		Response keepAlive(String req);
 
+		@OPTIONS
+		default Response optionsKeepalive() {
+			return noContent().allow("PUT").build();
+		}
+
 		@DELETE
 		@Path("/")
 		@Produces(JSON)
-		Response deleteJob();
+		Response deleteJob(
+				@QueryParam("reason") @DefaultValue("") String reason);
 
 		@GET
 		@Path("machine")
 		@Produces(JSON)
-		Response getMachine(@Context UriInfo ui);
+		Response getMachine();
+
+		@OPTIONS
+		@Path("machine")
+		default Response optionsMachine() {
+			return noContent().allow("GET").build();
+		}
 
 		@GET
 		@Path("machine/power")
@@ -132,11 +181,23 @@ public interface SpallocAPI {
 		@Produces(JSON)
 		Response setMachinePower(MachinePower req);
 
+		@OPTIONS
+		@Path("machine/power")
+		default Response optionsPower() {
+			return noContent().allow("GET", "POST").build();
+		}
+
 		@GET
 		@Path("chip")
 		@Produces(JSON)
-		Response getJobChipLocation(@QueryParam("x") int x,
-				@QueryParam("y") int y);
+		Response getJobChipLocation(@QueryParam("x") @DefaultValue("0") int x,
+				@QueryParam("y") @DefaultValue("0") int y);
+
+		@OPTIONS
+		@Path("chip")
+		default Response optionsWhereIs() {
+			return noContent().allow("GET").build();
+		}
 	}
 }
 

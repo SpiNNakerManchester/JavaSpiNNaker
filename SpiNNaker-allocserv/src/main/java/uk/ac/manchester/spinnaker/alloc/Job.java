@@ -1,8 +1,11 @@
 package uk.ac.manchester.spinnaker.alloc;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.spalloc.messages.State;
+
 public class Job {
 
-	public void access() {
+	public void access(String keepaliveAddress) {
 		// TODO Auto-generated method stub
 
 	}
@@ -12,7 +15,7 @@ public class Job {
 		return null;
 	}
 
-	public void destroy() {
+	public void destroy(String reason) {
 		// TODO Auto-generated method stub
 
 	}
@@ -25,6 +28,36 @@ public class Job {
 	public int getId() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public State getState() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Float getStartTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getReason() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getKeepaliveHost() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public BoardLocation whereIs(int x, int y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ChipLocation getRootChip() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

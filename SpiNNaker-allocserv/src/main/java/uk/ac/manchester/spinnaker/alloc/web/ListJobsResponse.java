@@ -14,9 +14,11 @@ import uk.ac.manchester.spinnaker.alloc.JobCollection;
 public class ListJobsResponse {
 	public List<URI> jobs = new ArrayList<>();
 
-	public ListJobsResponse(JobCollection jc, UriInfo ui) {
+	public ListJobsResponse(JobCollection jc, int limit, int start,
+			UriInfo ui) {
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
-		jobs = jc.ids().stream().map(id -> b.build(id)).collect(toList());
+		jobs = jc.ids(start, limit).stream().map(id -> b.build(id))
+				.collect(toList());
 	}
 
 }

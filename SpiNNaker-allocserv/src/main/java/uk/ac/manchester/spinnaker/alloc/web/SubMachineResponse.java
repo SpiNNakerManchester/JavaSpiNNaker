@@ -8,8 +8,8 @@ import java.util.List;
 import javax.ws.rs.core.UriInfo;
 
 import uk.ac.manchester.spinnaker.alloc.SubMachine;
-import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;// TODO replace
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;// TODO replace
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public class SubMachineResponse {
 	public int width;
