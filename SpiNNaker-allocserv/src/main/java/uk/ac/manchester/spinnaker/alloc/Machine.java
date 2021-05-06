@@ -1,5 +1,6 @@
 package uk.ac.manchester.spinnaker.alloc;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class Machine {
@@ -9,6 +10,11 @@ public class Machine {
 	public int width;
 	public int height;
 	// TODO: dead boards, dead links
+	private Connection conn;
+
+	Machine(Connection conn) {
+		this.conn = conn;
+	}
 
 	public void waitForChange() {
 		// TODO Auto-generated method stub

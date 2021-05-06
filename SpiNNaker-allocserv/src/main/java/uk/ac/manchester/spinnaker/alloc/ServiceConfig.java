@@ -2,6 +2,8 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
+
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -41,6 +43,9 @@ public class ServiceConfig {
 	@Value("${cxf.rest.path}")
 	private String restPath;
 
+	@Value("${databasePath}")
+	private String dbPath;
+
 	@Value("${version}")
 	private String version;
 
@@ -57,6 +62,11 @@ public class ServiceConfig {
 	@Bean
 	public SpallocInterface core() {
 		return new Spalloc();
+	}
+
+	@Bean
+	public DatabaseEngine db() {
+		return new DatabaseEngine(new File(dbPath));
 	}
 
 	/**

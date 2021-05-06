@@ -8,6 +8,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.GONE;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.spinnaker.alloc.Job;
@@ -26,7 +29,10 @@ import uk.ac.manchester.spinnaker.alloc.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 public class SpallocImpl implements SpallocAPI {
+	private static final Log log = LogFactory.getLog(SpallocImpl.class);
+
 	private final Version v;
+
 	@Autowired
 	private SpallocInterface core;
 
@@ -41,12 +47,23 @@ public class SpallocImpl implements SpallocAPI {
 
 	@Override
 	public Response getMachines(UriInfo ui) {
-		return ok(new MachinesResponse(core.getMachines(), ui)).build();
+		try {
+			return ok(new MachinesResponse(core.getMachines(), ui)).build();
+		} catch (SQLException e) {
+			log.error("failed to list machines", e);
+			throw new WebApplicationException("failed to list machines");
+		}
 	}
 
 	@Override
 	public MachineAPI getMachine(String name, UriInfo ui) {
-		Machine machine = core.getMachine(name);
+		Machine machine;
+		try {
+			machine = core.getMachine(name);
+		} catch (SQLException e) {
+			log.error("failed to get machine", e);
+			throw new WebApplicationException("failed to get machine: " + name);
+		}
 		if (machine == null) {
 			throw new WebApplicationException("no such machine", NOT_FOUND);
 		}
@@ -88,7 +105,13 @@ public class SpallocImpl implements SpallocAPI {
 
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req) {
-		Job j = core.getJob(id);
+		Job j;
+		try {
+			j = core.getJob(id);
+		} catch (SQLException e) {
+			log.error("failed to get job", e);
+			throw new WebApplicationException("failed to get job: " + id);
+		}
 		if (j == null) {
 			throw new WebApplicationException("no such job", NOT_FOUND);
 		}
@@ -105,7 +128,13 @@ public class SpallocImpl implements SpallocAPI {
 				if (wait) {
 					j.waitForChange();
 					// Refresh the handle
-					nj = core.getJob(id);
+					try {
+						nj = core.getJob(id);
+					} catch (SQLException e) {
+						log.error("failed to get job", e);
+						throw new WebApplicationException(
+								"failed to get job: " + id);
+					}
 					if (nj == null) {
 						throw new WebApplicationException("no such job", GONE);
 					}
@@ -115,7 +144,13 @@ public class SpallocImpl implements SpallocAPI {
 
 			@Override
 			public Response deleteJob(String reason) {
-				core.getJob(id).destroy(reason);
+				try {
+					core.getJob(id).destroy(reason);
+				} catch (SQLException e) {
+					log.error("failed to destroy job", e);
+					throw new WebApplicationException(
+							"failed to destroy job: " + id);
+				}
 				return noContent().build();
 			}
 
@@ -165,11 +200,18 @@ public class SpallocImpl implements SpallocAPI {
 			throw new WebApplicationException("start must not be less than 0",
 					BAD_REQUEST);
 		}
-		JobCollection jc = core.getJobs();
-		if (wait) {
-			jc.waitForChange();
+		JobCollection jc;
+		try {
 			jc = core.getJobs();
+			if (wait) {
+				jc.waitForChange();
+				jc = core.getJobs();
+			}
+		} catch (SQLException e) {
+			log.error("failed to list jobs", e);
+			throw new WebApplicationException("failed to list jobs");
 		}
+
 		return ok(new ListJobsResponse(jc, limit, start, ui)).build();
 	}
 
@@ -191,14 +233,24 @@ public class SpallocImpl implements SpallocAPI {
 		}
 		if (req.tags == null) {
 			req.tags = new ArrayList<>();
+			if (req.machineName == null) {
+				req.tags.add("default");
+			}
 		}
 		if (req.machineName != null && req.tags.size() > 0) {
 			throw new WebApplicationException(
 					"must not specify machine name and tags together",
 					BAD_REQUEST);
 		}
-		Job j = core.createJob(req.owner, req.dimensions, req.machineName,
-				req.tags);
+		Job j;
+		try {
+			j = core.createJob(req.owner, req.dimensions, req.machineName,
+					req.tags);
+		} catch (SQLException e) {
+			log.error("failed to create job", e);
+			throw new WebApplicationException(
+					"failed to create job: " + req.dimensions);
+		}
 		return created(ui.getRequestUriBuilder().path("{id}").build(j.getId()))
 				.entity(new CreateJobResponse(j, ui)).build();
 	}
