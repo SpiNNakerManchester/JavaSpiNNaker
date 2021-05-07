@@ -4,12 +4,15 @@ import static org.apache.commons.logging.LogFactory.getLog;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.JobState.POWER;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ public class AllocatorTask {
 			"DELETE FROM job_request WHERE req_id = ";
 
 	public static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
-			+ "width = ?, height = ?, job_state = 1, num_pending = ?,"
+			+ "width = ?, height = ?, job_state = ?, num_pending = ?,"
 			+ "root_id = (SELECT board_id FROM boards WHERE "
 			+ "machine_id = ? AND root_x = ? AND root_y = ?) "
 			+ "WHERE job_id = ?";
@@ -163,19 +166,44 @@ public class AllocatorTask {
 				conn.prepareStatement(ALLOCATE_BOARDS_BOARD);
 				PreparedStatement allocJob =
 						conn.prepareStatement(ALLOCATE_BOARDS_JOB)) {
-			int numPending = 0;
+			List<int[]> perimeter = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 					runUpdate(allocBoard, jobId, machineId, x + rootX,
 							y + rootY);
+					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
+						perimeter.add(new int[] {
+							x, y
+						});
+					}
 				}
 			}
-			/*
-			 * TODO issue instructions to reconfigure the perimeter of the
-			 * allocated rectangle, incrementing numPending for each.
-			 */
-			runUpdate(allocJob, width, height, numPending, machineId, rootX,
-					rootY, jobId);
+			runUpdate(allocJob, width, height, POWER.ordinal(),
+					perimeter.size(), machineId, rootX, rootY, jobId);
+			for (int[] coord : perimeter) {
+				/*
+				 * TODO issue instructions to reconfigure the perimeter of the
+				 * allocated rectangle, incrementing numPending for each.
+				 *
+				 * @formatter:off
+				 *  /^\ /^\ /^\
+				 * | a | b | c |
+				 *  \ / \ / \ / \
+				 *   | d | e | f |
+				 *    \ / \ / \ / \
+				 *     | g | h | i |
+				 *      \./ \./ \./
+				 * @formatter:on
+				 */
+				int x = coord[0], y = coord[1];
+				boolean w = x > 0;
+				boolean se = y > 0;
+				boolean sw = w && se;
+				boolean e = x < width - 1;
+				boolean nw = y < height - 1;
+				boolean ne = e && nw;
+
+			}
 		}
 	}
 }

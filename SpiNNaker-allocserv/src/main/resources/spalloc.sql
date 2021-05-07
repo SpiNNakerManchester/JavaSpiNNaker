@@ -34,7 +34,10 @@ CREATE TABLE IF NOT EXISTS boards (
 	board_power INTEGER,
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
-	functioning INTEGER -- boolean
+	functioning INTEGER, -- boolean
+	cabinet INTEGER NOT NULL,
+	frame INTEGER NOT NULL,
+	board_num INTEGER NOT NULL
 );
 -- Every board has a unique location within its machine
 CREATE UNIQUE INDEX IF NOT EXISTS boardSanity ON boards(
