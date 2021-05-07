@@ -48,16 +48,24 @@ CREATE TABLE IF NOT EXISTS jobs (
 	root_id INTEGER REFERENCES boards(board_id) ON DELETE RESTRICT, -- set after allocation
 	job_state INTEGER DEFAULT (0),
 	keepalive_timestamp INTEGER, -- timestamp
-	keepalive_host TEXT -- IP address
+	keepalive_host TEXT, -- IP address
+	num_pending INTEGER NOT NULL DEFAULT (0)
 );
 
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	job_id INTEGER NOT NULL,
+	job_id INTEGER NOT NULL REFERENCES jobs(job_id),
 	num_boards INTEGER,
 	width INTEGER,
 	height INTEGER,
 	x INTEGER,
 	y INTEGER,
 	z INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS pending_changes (
+    change_id INTEGER NOT NULL AUTOINCREMENT,
+    board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE RESTRICT,
+    job_id INTEGER REFERENCES jobs(job_id) ON DELETE RESTRICT,
+    reconfiguration BLOB -- TODO
 );

@@ -1,12 +1,16 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,10 +55,9 @@ public class Spalloc implements SpallocInterface {
 			throws SQLException {
 		// Takes a prepared statement because that allows reuse
 		List<String> tags = new ArrayList<>();
-		ts.setInt(1, id);
-		try (ResultSet rs2 = ts.executeQuery()) {
-			while (rs2.next()) {
-				tags.add(rs2.getString("tag"));
+		try (ResultSet rs = runQuery(ts, id)) {
+			while (rs.next()) {
+				tags.add(rs.getString("tag"));
 			}
 		}
 		return tags;
@@ -97,8 +100,7 @@ public class Spalloc implements SpallocInterface {
 			throws SQLException {
 		try (PreparedStatement ms = conn.prepareStatement(GET_NAMED_MACHINE);
 				PreparedStatement ts = conn.prepareStatement(GET_TAGS)) {
-			ms.setString(1, name);
-			try (ResultSet rs = ms.executeQuery()) {
+			try (ResultSet rs = runQuery(ms, name)) {
 				while (rs.next()) {
 					Machine m = new Machine(conn);
 					m.id = rs.getInt("machine_id");
@@ -144,8 +146,7 @@ public class Spalloc implements SpallocInterface {
 
 	private Job getJob(int id, Connection conn) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(GET_JOB)) {
-			s.setInt(1, id);
-			try (ResultSet rs = s.executeQuery()) {
+			try (ResultSet rs = runQuery(s, id)) {
 				while (rs.next()) {
 					Job j = new Job(conn);
 					j.id = rs.getInt("machine_id");
@@ -167,21 +168,23 @@ public class Spalloc implements SpallocInterface {
 	public Job createJob(String owner, List<Integer> dimensions,
 			String machineName, List<String> tags) throws SQLException {
 		try (Connection conn = db.getConnection()) {
-			Machine m = selectMachine(machineName, tags, conn);
-			if (m == null) {
-				// Cannot find machine!
-				return null;
-			}
+			return transaction(conn, () -> {
+				Machine m = selectMachine(conn, machineName, tags);
+				if (m == null) {
+					// Cannot find machine!
+					return null;
+				}
 
-			int id = insertJob(conn, m);
-			if (id < 0) {
-				// Insert failed
-				return null;
-			}
+				int id = insertJob(conn, m);
+				if (id < 0) {
+					// Insert failed
+					return null;
+				}
 
-			// Ask the allocator engine to do the allocation
-			insertRequest(conn, id, dimensions);
-			return getJob(id);
+				// Ask the allocator engine to do the allocation
+				insertRequest(conn, id, dimensions);
+				return getJob(id);
+			});
 		}
 	}
 
@@ -192,30 +195,22 @@ public class Spalloc implements SpallocInterface {
 			// Request by number of boards
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_N_BOARDS)) {
-				ps.setInt(1, id);
-				ps.setInt(2, dimensions.get(0));
-				ps.executeUpdate();
+				runUpdate(ps, id, dimensions.get(0));
 			}
 			break;
 		case 2:
 			// Request by specific size
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_SIZE)) {
-				ps.setInt(1, id);
-				ps.setInt(2, dimensions.get(0));
-				ps.setInt(3, dimensions.get(1));
-				ps.executeUpdate();
+				runUpdate(ps, id, dimensions.get(0), dimensions.get(1));
 			}
 			break;
 		case 3:
 			// Request by specific (logical) location
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_LOCATION)) {
-				ps.setInt(1, id);
-				ps.setInt(2, dimensions.get(0));
-				ps.setInt(3, dimensions.get(1));
-				ps.setInt(4, dimensions.get(2));
-				ps.executeUpdate();
+				runUpdate(ps, id, dimensions.get(0), dimensions.get(1),
+						dimensions.get(2));
 			}
 			break;
 		default:
@@ -225,12 +220,10 @@ public class Spalloc implements SpallocInterface {
 
 	private int insertJob(Connection conn, Machine m) throws SQLException {
 		// TODO add in additional info
-		long timestamp = System.currentTimeMillis();
+		Date timestamp = new Date();
 		try (PreparedStatement ps =
 				conn.prepareStatement(INSERT_JOB, RETURN_GENERATED_KEYS)) {
-			ps.setInt(1, m.id);
-			ps.setLong(2, timestamp);
-			ps.executeUpdate();
+			runUpdate(ps, m.id, timestamp);
 			try (ResultSet rs = ps.getGeneratedKeys()) {
 				while (rs.next()) {
 					return rs.getInt(1);
@@ -240,8 +233,8 @@ public class Spalloc implements SpallocInterface {
 		return -1;
 	}
 
-	private Machine selectMachine(String machineName, List<String> tags,
-			Connection conn) throws SQLException {
+	private Machine selectMachine(Connection conn, String machineName,
+			List<String> tags) throws SQLException {
 		if (machineName != null) {
 			return getMachine(machineName, conn);
 		} else if (!tags.isEmpty()) {

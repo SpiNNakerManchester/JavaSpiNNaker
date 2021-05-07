@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -29,6 +30,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocImpl;
 // @EnableWebSecurity
 @Import(JaxRsConfig.class)
 @PropertySource("classpath:service.properties")
+@EnableScheduling
 public class ServiceConfig {
 
 	/**
@@ -67,6 +69,11 @@ public class ServiceConfig {
 	@Bean
 	public DatabaseEngine db() {
 		return new DatabaseEngine(new File(dbPath));
+	}
+
+	@Bean
+	public AllocatorTask allocator() {
+		return new AllocatorTask();
 	}
 
 	/**
