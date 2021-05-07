@@ -253,6 +253,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		private final DSEStorage storage;
 
 		private final Progress bar;
+
 		private final ExecutionContext context;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,

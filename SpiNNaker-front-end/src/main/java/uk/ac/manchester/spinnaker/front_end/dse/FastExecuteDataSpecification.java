@@ -423,6 +423,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private MissingRecorder missingSequenceNumbers;
 
 		private BoardLocal logContext;
+
 		private ExecutionContext execContext;
 
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,
