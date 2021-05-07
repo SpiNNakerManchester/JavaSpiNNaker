@@ -64,15 +64,14 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * <p>
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
  * like so:
- * <p>
  *
  * <pre>
  * try (SpallocJob j = new SpallocJob(new CreateJob(6).owner(me))) {
- * 	myApplication.boot(j.getHostname(), j.getDimensions());
- * 	myApplication.run(j.getHostname());
+ *     myApplication.boot(j.getHostname(), j.getDimensions());
+ *     myApplication.run(j.getHostname());
  * }
  * </pre>
- * <p>
+ *
  * In this example a six-board machine is requested and the
  * {@code try}-with-resources context is entered once the allocation has been
  * made and the allocated boards are fully powered on. When control leaves the
@@ -107,36 +106,49 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  */
 public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private static final Logger log = getLogger(SpallocJob.class);
+
 	/** Minimum supported server version. */
 	private static final Version MIN_VER = new Version(0, 4, 0);
+
 	/** Maximum supported server version. */
 	private static final Version MAX_VER = new Version(2, 0, 0);
+
 	private static final int STATUS_CACHE_PERIOD = 500;
 
 	private SpallocClient client;
+
 	private int id;
+
 	private Integer timeout;
+
 	private Integer keepaliveTime;
+
 	/** The keepalive thread. */
 	private Thread keepalive;
+
 	/** Used to signal that the keepalive thread should stop. */
 	private volatile boolean stopping;
+
 	/**
 	 * Cache of information about a job's state. This information can change,
 	 * but not usually extremely rapidly; it has a caching period, implemented
 	 * using the {@link #statusTimestamp} field.
 	 */
 	private JobState statusCache;
+
 	/**
 	 * The time when the information in {@link #statusCache} was last collected.
 	 */
 	private long statusTimestamp;
+
 	/**
 	 * Cache of information about a machine. This is information which doesn't
 	 * change once it is assigned, so there is no expiry mechanism.
 	 */
 	private JobMachineInfo machineInfoCache;
+
 	private int reconnectDelay = f2ms(RECONNECT_DELAY_DEFAULT);
+
 	private static final ThreadGroup SPALLOC_WORKERS =
 			new ThreadGroup("spalloc worker threads");
 

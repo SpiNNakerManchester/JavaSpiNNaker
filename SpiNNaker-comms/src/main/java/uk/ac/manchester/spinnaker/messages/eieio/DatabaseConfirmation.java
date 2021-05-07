@@ -33,6 +33,7 @@ public class DatabaseConfirmation extends EIEIOCommandMessage {
 	 * message must fit in a SpiNNaker UDP message.
 	 */
 	public final String databasePath;
+
 	/**
 	 * The encoding of the database path into bytes.
 	 */

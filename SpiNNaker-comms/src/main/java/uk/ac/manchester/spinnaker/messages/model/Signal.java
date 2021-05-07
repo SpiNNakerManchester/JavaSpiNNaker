@@ -54,8 +54,10 @@ public enum Signal {
 
 	/** The value used for the signal. */
 	public final byte value;
+
 	/** The "type" of the signal. */
 	public final Type type;
+
 	private static final Map<Byte, Signal> MAP = new HashMap<>();
 
 	/**
@@ -85,8 +87,10 @@ public enum Signal {
 		POINT_TO_POINT(1),
 		/** Signal is sent to all cores via NN packets. */
 		NEAREST_NEIGHBOUR(2);
+
 		/** The SARK encoding. */
 		public final int value;
+
 		Type(int value) {
 			this.value = value;
 		}

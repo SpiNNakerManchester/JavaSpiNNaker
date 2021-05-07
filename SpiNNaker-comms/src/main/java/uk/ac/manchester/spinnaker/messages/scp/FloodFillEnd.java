@@ -30,10 +30,14 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 /** A request to start a flood fill of data. */
 public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	private static final int MAGIC1 = 0x3f;
+
 	private static final int MAGIC2 = 0x18;
+
 	private static final int NNP_FORWARD_RETRY =
 			(MAGIC1 << BYTE1) | (MAGIC2 << BYTE0);
+
 	private static final int NNP_FLOOD_FILL_END = 15;
+
 	private static final int WAIT_BIT = 18;
 
 	/**

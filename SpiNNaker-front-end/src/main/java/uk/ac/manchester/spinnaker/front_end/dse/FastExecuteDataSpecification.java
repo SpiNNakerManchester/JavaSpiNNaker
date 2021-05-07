@@ -90,13 +90,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
+
 	private static final String SPINNAKER_COMPARE_UPLOAD =
 			getProperty("spinnaker.compare.upload");
 
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";
+
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.tsv";
+
 	/** One kilo-binary unit multiplier. */
 	private static final int ONE_KI = 1024;
 
@@ -109,12 +112,19 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private static final int MISSING_SEQS_END = -1;
 
 	private final Transceiver txrx;
+
 	private final Map<ChipLocation, Gather> gathererForChip;
+
 	private final Map<ChipLocation, Monitor> monitorForChip;
+
 	private final Map<ChipLocation, CoreSubsets> monitorsForBoard;
+
 	private final BasicExecutor executor;
+
 	private final Machine machine;
+
 	private boolean writeReports = false;
+
 	private File reportPath = null;
 
 	/**
@@ -403,10 +413,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 */
 	private class BoardWorker implements AutoCloseable {
 		private Ethernet board;
+
 		private DSEStorage storage;
+
 		private Progress bar;
+
 		private ThrottledConnection connection;
+
 		private MissingRecorder missingSequenceNumbers;
+
 		private BoardLocal logContext;
 		private ExecutionContext execContext;
 
@@ -864,6 +879,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 */
 	private static class SeenFlags {
 		boolean seenEnd;
+
 		boolean seenAll;
 	}
 

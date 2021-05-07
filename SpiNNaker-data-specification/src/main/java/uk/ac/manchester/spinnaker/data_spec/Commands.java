@@ -143,6 +143,7 @@ public enum Commands {
 	 * itself.
 	 */
 	public final int value;
+
 	private static final Map<Integer, Commands> MAP;
 
 	Commands(int value) {

@@ -49,18 +49,26 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 public class NoDropPacketContext implements AutoCloseable {
 	private static final Logger log = getLogger(NoDropPacketContext.class);
+
 	private ReinjectionStatus lastStatus;
+
 	private final CoreSubsets monitorCores;
+
 	private final Transceiver txrx;
+
 	private final ChipLocation firstChip;
+
 	private final CoreSubsets gatherers;
 
 	/**
 	 * Standard short timeout for emergency routing.
 	 */
 	private static final RouterTimeout SHORT_TIMEOUT = new RouterTimeout(1, 1);
+
 	private static final RouterTimeout LONG_TIMEOUT = new RouterTimeout(14, 14);
+
 	private static final RouterTimeout TEMP_TIMEOUT = new RouterTimeout(15, 4);
+
 	private static final RouterTimeout ZERO_TIMEOUT = new RouterTimeout(0, 0);
 
 	/**

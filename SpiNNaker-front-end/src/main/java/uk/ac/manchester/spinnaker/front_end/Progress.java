@@ -33,6 +33,7 @@ public final class Progress implements AutoCloseable {
 	 * bars.
 	 */
 	public static final String PROGRESS_PROP = "spinnaker.progress_bar";
+
 	private static final boolean DO_PROGRESS =
 			Boolean.getBoolean(PROGRESS_PROP);
 

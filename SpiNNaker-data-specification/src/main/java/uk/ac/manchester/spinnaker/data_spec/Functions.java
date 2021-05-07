@@ -50,45 +50,69 @@ import org.apache.commons.lang3.BitField;
 @SuppressWarnings("unused")
 class Functions implements FunctionAPI {
 	private static final int SIZE_FIELD = 28;
+
 	private static final int OPCODE_FIELD = 20;
+
 	private static final int DEST_FLAG = 18;
+
 	private static final int SRC1_FLAG = 17;
+
 	private static final int SRC2_FLAG = 16;
+
 	private static final int DEST_FIELD = 12;
+
 	private static final int SRC1_FIELD = 8;
+
 	private static final int SRC2_FIELD = 4;
+
 	private static final int BIT_MASK = 0b00000001;
+
 	private static final int SIZE_MASK = 0b00000011;
+
 	private static final int REG_MASK = 0b00001111;
+
 	private static final int OPCODE_MASK = 0b11111111;
 
 	/** How to extract the size field from the bit-encoded form. */
 	private static final BitField SIZE = new BitField(SIZE_MASK << SIZE_FIELD);
+
 	/** How to extract the opcode field from the bit-encoded form. */
 	static final BitField OPCODE = new BitField(OPCODE_MASK << OPCODE_FIELD);
+
 	/** How to extract the dest-is-register flag from the bit-encoded form. */
 	private static final BitField DEST_BIT = new BitField(1 << DEST_FLAG);
+
 	/** How to extract the src1-is-register flag from the bit-encoded form. */
 	private static final BitField SRC1_BIT = new BitField(1 << SRC1_FLAG);
+
 	/** How to extract the src2-is-register flag from the bit-encoded form. */
 	private static final BitField SRC2_BIT = new BitField(1 << SRC2_FLAG);
+
 	/** How to extract the dest field from the bit-encoded form. */
 	private static final BitField DEST = new BitField(REG_MASK << DEST_FIELD);
+
 	/** How to extract the src1 field from the bit-encoded form. */
 	private static final BitField SRC1 = new BitField(REG_MASK << SRC1_FIELD);
+
 	/** How to extract the src2 field from the bit-encoded form. */
 	private static final BitField SRC2 = new BitField(REG_MASK << SRC2_FIELD);
+
 	/** How to extract the data length field from the bit-encoded form. */
 	private static final BitField DATA_LEN =
 			new BitField(SIZE_MASK << DEST_FIELD);
+
 	/** How to extract the region field from the bit-encoded form. */
 	private static final BitField REGION = new BitField(0b00011111);
+
 	/** How to extract the unfilled flag from the bit-encoded form. */
 	private static final BitField UNFILLED = new BitField(0b10000000);
+	
 	/** How to extract the referenceable flag from the bit-encoded form. */
 	private static final BitField REFERENCEABLE = new BitField(0b01000000);
+	
 	/** How to extract the relative flag from the bit-encoded form. */
 	private static final BitField RELATIVE = new BitField(0b00000001);
+
 	/** How to extract the repeats field from the bit-encoded form. */
 	private static final BitField REPEATS = new BitField(0b11111111);
 
@@ -96,14 +120,19 @@ class Functions implements FunctionAPI {
 
 	/** Where we are reading the data spec from. */
 	private final ByteBuffer spec;
+
 	/** How much space do we have available? Maximum <i>per region</i>. */
 	private int memorySpace;
+
 	/** How much space has been allocated. */
 	int spaceAllocated;
+
 	/** What is the current region that we're writing to. */
 	private Integer currentRegion;
+
 	/** The model registers, an array of 16 ints. */
 	private final int[] registers;
+
 	/** The collection of memory regions that can be written to. */
 	private final MemoryRegionCollection memRegions;
 	/** A list of regions that can be referenced. */
@@ -112,11 +141,17 @@ class Functions implements FunctionAPI {
 	private final List<Integer> regionsToFill = new ArrayList<>();
 
 	private int packedCommand;
+
 	private int cmdSize;
+
 	private int opcode;
+
 	private Integer dest;
+
 	private Integer src1;
+
 	private Integer src2;
+
 	private int dataLength;
 
 	/**

@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  */
 abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final Logger log = getLogger(SQLiteConnectionManager.class);
+
 	private final ConnectionProvider<APIType> connProvider;
 
 	/**
@@ -160,9 +161,9 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 				return;
 			} catch (SQLiteException e) {
 				if (e.getResultCode() == SQLITE_BUSY) {
-                    if (log.isDebugEnabled()) {
-    					log.debug("database busy; trying to relock");
-                    }
+					if (log.isDebugEnabled()) {
+						log.debug("database busy; trying to relock");
+					}
 					continue;
 				}
 				throw e;

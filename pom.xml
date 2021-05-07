@@ -219,6 +219,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<version>3.1.2</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
+						<propertyExpansion>
+							checkstyle.config.path=${spinnaker.basedir}/src/support/checkstyle
+						</propertyExpansion>
 					</configuration>
 					<!-- Next bit because of https://github.com/checkstyle/checkstyle/pull/3207 -->
 					<dependencies>
@@ -310,6 +313,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<consoleOutput>true</consoleOutput>
 					</configuration>
 				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.commonjava.maven.plugins
+										</groupId>
+										<artifactId>
+											directory-maven-plugin
+										</artifactId>
+										<versionRange>[0.1,)</versionRange>
+										<goals>
+											<goal>highest-basedir</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -339,6 +371,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<goals>
 							<goal>check</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.commonjava.maven.plugins</groupId>
+				<artifactId>directory-maven-plugin</artifactId>
+				<version>0.3.1</version>
+				<executions>
+					<execution>
+						<id>find-root</id>
+						<goals>
+							<goal>highest-basedir</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<property>spinnaker.basedir</property>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -475,7 +524,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.1.2</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->

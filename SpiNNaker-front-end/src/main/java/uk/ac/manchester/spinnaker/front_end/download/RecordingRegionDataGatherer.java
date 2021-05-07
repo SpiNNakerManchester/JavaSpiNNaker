@@ -58,13 +58,19 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 * milliseconds.
 	 */
 	private static final int TERMINATION_REPORT_THRESHOLD = 250;
+
 	protected static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
+
 	private final Transceiver txrx;
+
 	private final BufferManagerStorage database;
+
 	private Map<Placement, List<RecordingRegion>> recordingRegions =
 			new HashMap<>();
+
 	private final ExecutorService dbWorker = newSingleThreadExecutor();
+
 	private int numWrites = 0;
 
 	/**

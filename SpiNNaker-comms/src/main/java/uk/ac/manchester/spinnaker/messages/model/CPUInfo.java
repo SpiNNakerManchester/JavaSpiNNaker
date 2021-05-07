@@ -42,49 +42,72 @@ public class CPUInfo implements HasCoreLocation {
 
 	@SARKField("r")
 	private final int[] registers;
+
 	@SARKField("psr")
 	private final int processorStateRegister;
+
 	@SARKField("sp")
 	private final int stackPointer;
+
 	@SARKField("lr")
 	private final int linkRegister;
+
 	@SARKField("rt_code")
 	private final RunTimeError runTimeError;
+
 	@SARKField("phys_cpu")
 	private final byte physicalCPUID;
+
 	@SARKField("cpu_state")
 	private final CPUState state;
+
 	@SARKField("app_id")
 	private final int applicationID;
+
 	@SARKField("mbox_ap_msg")
 	private final int applicationMailboxDataAddress;
+
 	@SARKField("mbox_mp_msg")
 	private final int monitorMailboxDataAddress;
+
 	@SARKField("mbox_ap_cmd")
 	private final MailboxCommand applicationMailboxCommand;
+
 	@SARKField("mbox_mp_cmd")
 	private final MailboxCommand monitorMailboxCommand;
+
 	@SARKField("sw_count")
 	private final short softwareErrorCount;
+
 	@SARKField("sw_file")
 	private final int softwareSourceFilenameAddress;
+
 	@SARKField("sw_line")
 	private final int softwareSourceLineNumber;
+
 	@SARKField("time")
 	private final int time;
+
 	@SARKField("app_name")
 	private final String applicationName;
+
 	@SARKField("iobuf")
 	private final int iobufAddress;
+
 	@SARKField("sw_ver")
 	private final int softwareVersion;
+
 	@SARKField("user0...user3")
 	private final int[] user;
 
 	private static final Charset ASCII = Charset.forName("ascii");
+
 	private static final int NUM_REGISTERS = 8;
+
 	private static final int APP_NAME_WIDTH = 16;
+
 	private static final int SKIP_BYTES = 16;
+
 	private static final int NUM_USER_VALUES = 4;
 
 	private static int[] getInts(ByteBuffer buffer, int fieldLength) {

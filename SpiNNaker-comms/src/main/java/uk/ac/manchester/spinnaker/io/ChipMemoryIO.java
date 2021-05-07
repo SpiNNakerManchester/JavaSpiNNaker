@@ -51,6 +51,7 @@ final class ChipMemoryIO {
 	 * happened at the time of the response. </blockquote>
 	 */
 	private static final int UNBUFFERED_SDRAM_START = 0x60000000;
+
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
 	 * transceiver, x and y (thus two transceivers might not see the same
@@ -79,6 +80,7 @@ final class ChipMemoryIO {
 
 	/** The transceiver for speaking to the machine. */
 	private final WeakReference<Transceiver> transceiver;
+
 	/**
 	 * A strong reference to the transceiver, held while there is data to flush.
 	 */

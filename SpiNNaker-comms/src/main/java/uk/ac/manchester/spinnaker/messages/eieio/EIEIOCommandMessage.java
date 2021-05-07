@@ -30,7 +30,9 @@ public class EIEIOCommandMessage
 		implements EIEIOMessage<EIEIOCommandMessage.Header> {
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
+
 	private static final int FLAG1_BIT = 15;
+
 	private static final int FLAG2_BIT = 14;
 
 	/** The header of the message. */

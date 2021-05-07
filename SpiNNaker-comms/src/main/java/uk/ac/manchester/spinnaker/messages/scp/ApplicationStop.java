@@ -32,8 +32,11 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 public final class ApplicationStop extends SCPRequest<CheckOKResponse> {
 	// TODO Better names for these constants
 	private static final int SHIFT = 28;
+
 	private static final int MAGIC1 = 0x3f;
+
 	private static final int MAGIC2 = 5;
+
 	private static final int MAGIC3 = 0x3f;
 
 	private static int argument1() {

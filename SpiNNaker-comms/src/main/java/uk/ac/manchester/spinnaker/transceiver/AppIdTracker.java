@@ -27,9 +27,13 @@ import uk.ac.manchester.spinnaker.messages.model.AppID;
 /** A tracker of application IDs to make it easier to allocate new IDs. */
 public class AppIdTracker {
 	private static final int MIN_APP_ID = 17;
+
 	private static final int MAX_APP_ID = 254;
+
 	private final Set<AppID> freeIDs;
+
 	private final int maxID;
+
 	private final int minID;
 
 	/**

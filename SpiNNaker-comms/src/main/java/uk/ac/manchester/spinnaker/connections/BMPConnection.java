@@ -39,8 +39,10 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 		implements SCPSenderReceiver {
 	/** Defined to satisfy the SCPSender; always 0,0 for a BMP. */
 	private static final ChipLocation BMP_LOCATION = new ChipLocation(0, 0);
+
 	/** The coordinates of the BMP. */
 	private final BMPCoords coords;
+
 	/**
 	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
 	 */

@@ -30,8 +30,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
 class TestIptag {
-	static BoardTestConfiguration boardConfig;
-	static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
+	private static BoardTestConfiguration boardConfig;
+	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {

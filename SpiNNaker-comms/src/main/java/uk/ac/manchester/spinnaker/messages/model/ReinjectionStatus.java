@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 public class ReinjectionStatus {
 	/** Used to pick low nybble of value. */
 	static final int MASK = 0xF;
+
 	/** Used to move value by one nybble. */
 	static final int SHIFT = 4;
 

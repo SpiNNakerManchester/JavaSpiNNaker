@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.transceiver.UDPTransceiver.ConnectionFactory;
 public abstract class ReflectiveConnectionFactory<Conn extends UDPConnection<?>>
 		implements ConnectionFactory<Conn> {
 	private static final String BAD_EXCEPTION = "failed to build instance";
+
 	private final Class<Conn> connClass;
 
 	/**

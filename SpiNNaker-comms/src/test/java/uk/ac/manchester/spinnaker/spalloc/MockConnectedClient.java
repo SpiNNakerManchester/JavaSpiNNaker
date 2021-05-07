@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 public class MockConnectedClient extends SpallocClient {
 	private static final Logger log = getLogger(MockConnectedClient.class);
 
-    static final String LIST_JOBS_R = "["
+    private static final String LIST_JOBS_R = "["
             + "{\"job_id\":47224,"
                 + "\"owner\":\"someone@manchester.ac.uk\","
                 + "\"start_time\":1.536925243666607E9,"
@@ -81,7 +81,7 @@ public class MockConnectedClient extends SpallocClient {
                 + "\"boards\":[[2,0,2]],"
                 + "\"keepalivehost\":\"130.88.198.171\"}]";
 
-    static final String LIST_MACHINE_R = "["
+    private static final String LIST_MACHINE_R = "["
         + "{\"name\":\"Spin24b-223\","
             + "\"tags\":[\"default\",\"machine-room\"],"
             + "\"width\":4,"
@@ -103,16 +103,17 @@ public class MockConnectedClient extends SpallocClient {
             + "\"dead_links\":[]}"
         + "]";
 
+    /** ID used by mock job. */
     public static final int MOCK_ID = 9999;
 
-    static final String JOB_MACHINE_INFO_R =
+    private static final String JOB_MACHINE_INFO_R =
             "{\"connections\":[[[0,0],\"10.11.223.33\"]],"
             + "\"width\":8,"
             + "\"machine_name\":\"Spin24b-223\","
             + "\"boards\":[[0,0,2]],"
             + "\"height\":8}";
 
-    static final String STATE_POWER_R =
+    private static final String STATE_POWER_R =
             "{\"state\":2,"
             + "\"power\":true,"
             + "\"keepalive\":60.0,"
@@ -121,7 +122,7 @@ public class MockConnectedClient extends SpallocClient {
             + "\"keepalivehost\":\"86.82.216.229\"}";
 
 
-    static final String WHERE_IS_R =
+    private static final String WHERE_IS_R =
             "{\"job_chip\":[1,1],"
             + "\"job_id\":9999,"
             + "\"chip\":[5,9],"
@@ -130,9 +131,9 @@ public class MockConnectedClient extends SpallocClient {
             + "\"board_chip\":[1,1],"
             + "\"physical\":[0,0,4]}";
 
-    static final String POSITION_R = "[0,0,8]";
+    private static final String POSITION_R = "[0,0,8]";
 
-    static final String AT_R = "[0,0,1]";
+    private static final String AT_R = "[0,0,1]";
 
     /**
      * The version as it comes from spalloc.
@@ -145,11 +146,13 @@ public class MockConnectedClient extends SpallocClient {
 
     private boolean actual;
 
+    private static final int PORT = 22245;
+
     public MockConnectedClient(int timeout) {
         // Main
         //super("spinnaker.cs.man.ac.uk", 22244, timeout);
         // Spin2
-        super("spinnaker.cs.man.ac.uk", 22245, timeout);
+        super("spinnaker.cs.man.ac.uk", PORT, timeout);
         // Bad
         // super("127.0.0.0", 22244, timeout);
         actual = true;

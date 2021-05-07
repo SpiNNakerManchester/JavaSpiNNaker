@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
  */
 public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	private static String sqlDDL;
+
 	static {
 		try {
 			sqlDDL = resourceToString("/dse.sql", UTF_8);

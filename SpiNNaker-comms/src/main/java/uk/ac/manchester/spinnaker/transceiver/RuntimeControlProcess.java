@@ -53,10 +53,15 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  */
 class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int BUF_HEADER_BYTES = 16;
+
 	private static final int BLOCK_HEADER_BYTES = 16;
+
 	private static final int WORD = 4;
+
 	private final Queue<NextRead> nextReads = new LinkedList<>();
+
 	private final Queue<ExtraRead> extraReads = new LinkedList<>();
+
 	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf =
 			new DefaultMap<>(TreeMap::new);
 
@@ -283,8 +288,11 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private static class NextRead {
 		final CoreLocation core;
+
 		final int blockID;
+
 		final int base;
+
 		final int size;
 
 		NextRead(CoreLocation core, int blockID, int base, int size) {
@@ -304,9 +312,13 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private static class ExtraRead {
 		final CoreLocation core;
+
 		final int blockID;
+
 		final int base;
+
 		final int size;
+
 		final int offset;
 
 		ExtraRead(NextRead head, int base, int size, int offset) {

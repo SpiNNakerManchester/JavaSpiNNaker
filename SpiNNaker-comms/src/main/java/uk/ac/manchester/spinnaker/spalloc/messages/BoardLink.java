@@ -30,72 +30,79 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 @JsonFormat(shape = ARRAY)
 public class BoardLink {
-    // TODO verify format and meaning.
+	// TODO verify format and meaning.
 
-    private int x;
-    private int y;
-    private int z;
-    private int link;
+	private int x;
 
-    /**
-     * Empty constructor for unmarshaller.
-     */
-    public BoardLink() {
-    }
+	private int y;
 
-    /**
-     * @return the x
-     */
-    public int getX() {
-        return x;
-    }
+	private int z;
 
-    /**
-     * @param x the x to set
-     */
-    public void setX(int x) {
-        this.x = x;
-    }
+	private int link;
 
-    /**
-     * @return the y
-     */
-    public int getY() {
-        return y;
-    }
+	/**
+	 * Empty constructor for unmarshaller.
+	 */
+	public BoardLink() {
+	}
 
-    /**
-     * @param y the y to set
-     */
-    public void setY(int y) {
-        this.y = y;
-    }
+	/**
+	 * @return the x
+	 */
+	public int getX() {
+		return x;
+	}
 
-    /**
-     * @return the z
-     */
-    public int getZ() {
-        return z;
-    }
+	/**
+	 * @param x
+	 *            the x to set
+	 */
+	public void setX(int x) {
+		this.x = x;
+	}
 
-    /**
-     * @param z the z to set
-     */
-    public void setZ(int z) {
-        this.z = z;
-    }
+	/**
+	 * @return the y
+	 */
+	public int getY() {
+		return y;
+	}
 
-    /**
-     * @return the link
-     */
-    public int getLink() {
-        return link;
-    }
+	/**
+	 * @param y
+	 *            the y to set
+	 */
+	public void setY(int y) {
+		this.y = y;
+	}
 
-    /**
-     * @param link the link to set
-     */
-    public void setLink(int link) {
-        this.link = link;
-    }
+	/**
+	 * @return the z
+	 */
+	public int getZ() {
+		return z;
+	}
+
+	/**
+	 * @param z
+	 *            the z to set
+	 */
+	public void setZ(int z) {
+		this.z = z;
+	}
+
+	/**
+	 * @return the link
+	 */
+	public int getLink() {
+		return link;
+	}
+
+	/**
+	 * @param link
+	 *            the link to set
+	 */
+	public void setLink(int link) {
+		this.link = link;
+	}
 }

@@ -55,11 +55,15 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
+
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
 	public static final long THROTTLE_NS = 35000;
+
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 2000;
+
 	private static final ScheduledExecutorService CLOSER;
+
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {
 			Thread t = new Thread(r, "ThrottledConnection.Closer");
@@ -71,8 +75,11 @@ class ThrottledConnection implements Closeable {
 	}
 
 	private final ChipLocation location;
+
 	private final InetAddress addr;
+
 	private SCPConnection connection;
+
 	private long lastSend = nanoTime();
 
 	/**

@@ -37,6 +37,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	static final int BOOT_VARIABLE_SIZE = 256;
 
 	private final Map<SystemVariableDefinition, Object> values;
+
 	private boolean unmodifiable;
 
 	/** Create a set of boot values using all the defaults. */
@@ -132,8 +133,8 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
-		SystemVariableBootValues bv = BootValues.get(
-                boardVersion.hardwareVersion());
+		SystemVariableBootValues bv =
+				BootValues.get(boardVersion.hardwareVersion());
 		if (bv != null) {
 			return bv;
 		}
@@ -157,6 +158,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 
 	private static class BootValues {
 		private static final SystemVariableBootValues[] MAP;
+
 		/**
 		 * Deeply magical values, used to configure board LED states. Note that
 		 * index 0 corresponds to board hardware version 1, index 1 to hardware
@@ -177,7 +179,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 				MAP[hwver] = bv;
 				hwver++;
 			}
-		};
+		}
 
 		/**
 		 * Look up the defaults for a particular version of board.

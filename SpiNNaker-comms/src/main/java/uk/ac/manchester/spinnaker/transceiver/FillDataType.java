@@ -28,6 +28,7 @@ public enum FillDataType {
 	HALF_WORD(2),
 	/** Fill by single bytes. */
 	BYTE(1);
+
 	/** The encoding of the fill unit size. */
 	public final int size;
 

@@ -60,6 +60,7 @@ public abstract class GatherProtocolMessage extends SDPMessage {
 		 * ID of the clear message used to stop the extra monitor transmitting.
 		 */
 		CLEAR_TRANSMISSIONS(2000);
+
 		/** The value of the ID. */
 		public final int value;
 

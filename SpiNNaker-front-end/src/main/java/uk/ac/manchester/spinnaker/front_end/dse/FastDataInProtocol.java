@@ -48,6 +48,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 class FastDataInProtocol {
 	/** Items of data a SDP packet can hold when SCP header removed. */
 	static final int BYTES_PER_FULL_PACKET = SDP_PAYLOAD_WORDS * WORD_SIZE;
+
 	// 272 bytes as removed SCP header
 
 	/**
@@ -73,6 +74,7 @@ class FastDataInProtocol {
 	static final int BYTES_FOR_TELL_PACKET = 2 * WORD_SIZE;
 
 	private final HasCoreLocation gathererCore;
+
 	private final HasChipLocation boardLocalDestination;
 
 	/**
