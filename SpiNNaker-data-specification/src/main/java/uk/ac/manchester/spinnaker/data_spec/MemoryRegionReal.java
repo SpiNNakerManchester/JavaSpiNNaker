@@ -29,115 +29,122 @@ import java.nio.ByteBuffer;
  * of their fundamental object identity.
  */
 public final class MemoryRegionReal extends MemoryRegion {
-    /** The write pointer position, saying where the start of the block is. */
-    private int memPointer;
-    /** The maximum point where writes have happened up to within the region. */
-    private int maxWritePointer;
-    /** The buffer storing the written data. */
-    private ByteBuffer buffer;
-    /**
-     * Whether this is an unfilled region. Unfilled regions can be written
-     * efficiently as a block of zeroes.
-     */
-    private boolean unfilled;
-    /** The base address of the region. Set after the fact. */
-    private int regionBaseAddress;
-    /** The index of the memory region. */
-    private final int index;
-    /** A reference for the region, {@code null} if none. */
-    private final Integer reference;
 
-    /**
-     * Create a memory region.
-     *
-     * @param index
-     *            the index of the memory region
-     * @param memoryPointer
-     *            where the start of the block is
-     * @param unfilled
-     *            whether this is an unfilled region
-     * @param size
-     *            the allocated size of the memory region
-     */
-    MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size) {
-        this.index = index;
-        memPointer = memoryPointer;
-        maxWritePointer = 0;
-        regionBaseAddress = 0;
-        this.unfilled = unfilled;
-        reference = null;
-        buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
-    }
+	/** The write pointer position, saying where the start of the block is. */
+	private int memPointer;
 
-    /**
-     * Create a memory region with a reference.
-     *
-     * @param index
-     *            the index of the memory region
-     * @param memoryPointer
-     *            where the start of the block is
-     * @param unfilled
-     *            whether this is an unfilled region
-     * @param size
-     *            the allocated size of the memory region
-     * @param reference
-     *            the reference of the memory region
-     */
-    MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size,
-            int reference) {
-        this.index = index;
-        memPointer = memoryPointer;
-        maxWritePointer = 0;
-        regionBaseAddress = 0;
-        this.unfilled = unfilled;
-        this.reference = reference;
-        buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
-    }
+	/** The maximum point where writes have happened up to within the region. */
+	private int maxWritePointer;
 
-    public int getMemoryPointer() {
-        return memPointer;
-    }
+	/** The buffer storing the written data. */
+	private ByteBuffer buffer;
 
-    public int getAllocatedSize() {
-        return buffer.capacity();
-    }
+	/**
+	 * Whether this is an unfilled region. Unfilled regions can be written
+	 * efficiently as a block of zeroes.
+	 */
+	private boolean unfilled;
 
-    public int getRemainingSpace() {
-        return buffer.remaining();
-    }
+	/** The base address of the region. Set after the fact. */
+	private int regionBaseAddress;
 
-    public boolean isUnfilled() {
-        return unfilled;
-    }
+	/** The index of the memory region. */
+	private final int index;
 
-    public ByteBuffer getRegionData() {
-        return buffer;
-    }
+	/** A reference for the region, {@code null} if none. */
+	private final Integer reference;
 
-    /**
-     * Write a chunk of data into the region, updating the maximum point where
-     * the writes occurred.
-     *
-     * @param data
-     *            The chunk of data to write at the current write pointer.
-     */
-    public void writeIntoRegionData(byte[] data) {
-        buffer.put(data);
-        maxWritePointer = max(maxWritePointer, buffer.position());
-    }
+	/**
+	 * Create a memory region.
+	 *
+	 * @param index
+	 *            the index of the memory region
+	 * @param memoryPointer
+	 *            where the start of the block is
+	 * @param unfilled
+	 *            whether this is an unfilled region
+	 * @param size
+	 *            the allocated size of the memory region
+	 */
+	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size) {
+		this.index = index;
+		memPointer = memoryPointer;
+		maxWritePointer = 0;
+		regionBaseAddress = 0;
+		this.unfilled = unfilled;
+		reference = null;
+		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+	}
 
-    public int getWritePointer() {
-        return buffer.position();
-    }
+	/**
+	 * Create a memory region with a reference.
+	 *
+	 * @param index
+	 *            the index of the memory region
+	 * @param memoryPointer
+	 *            where the start of the block is
+	 * @param unfilled
+	 *            whether this is an unfilled region
+	 * @param size
+	 *            the allocated size of the memory region
+	 * @param reference
+	 *            the reference of the memory region
+	 */
+	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size,
+			int reference) {
+		this.index = index;
+		memPointer = memoryPointer;
+		maxWritePointer = 0;
+		regionBaseAddress = 0;
+		this.unfilled = unfilled;
+		this.reference = reference;
+		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+	}
 
-    public int getMaxWritePointer() {
-        return maxWritePointer;
-    }
+	public int getMemoryPointer() {
+		return memPointer;
+	}
 
-    @Override
-    public int getIndex() {
-        return index;
-    }
+	public int getAllocatedSize() {
+		return buffer.capacity();
+	}
+
+	public int getRemainingSpace() {
+		return buffer.remaining();
+	}
+
+	public boolean isUnfilled() {
+		return unfilled;
+	}
+
+	public ByteBuffer getRegionData() {
+		return buffer;
+	}
+
+	/**
+	 * Write a chunk of data into the region, updating the maximum point where
+	 * the writes occurred.
+	 *
+	 * @param data
+	 *            The chunk of data to write at the current write pointer.
+	 */
+	public void writeIntoRegionData(byte[] data) {
+		buffer.put(data);
+		maxWritePointer = max(maxWritePointer, buffer.position());
+	}
+
+	public int getWritePointer() {
+		return buffer.position();
+	}
+
+	public int getMaxWritePointer() {
+		return maxWritePointer;
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
+	}
 
 	/**
 	 * Set the write pointer. The write pointer is where the next block of data

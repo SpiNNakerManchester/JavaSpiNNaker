@@ -106,10 +106,10 @@ class Functions implements FunctionAPI {
 
 	/** How to extract the unfilled flag from the bit-encoded form. */
 	private static final BitField UNFILLED = new BitField(0b10000000);
-	
+
 	/** How to extract the referenceable flag from the bit-encoded form. */
 	private static final BitField REFERENCEABLE = new BitField(0b01000000);
-	
+
 	/** How to extract the relative flag from the bit-encoded form. */
 	private static final BitField RELATIVE = new BitField(0b00000001);
 
@@ -135,8 +135,10 @@ class Functions implements FunctionAPI {
 
 	/** The collection of memory regions that can be written to. */
 	private final MemoryRegionCollection memRegions;
+
 	/** A list of regions that can be referenced. */
 	private final List<Integer> referenceableRegions = new ArrayList<>();
+
 	/** A list of regions with references to be filled. */
 	private final List<Integer> regionsToFill = new ArrayList<>();
 
@@ -218,9 +220,9 @@ class Functions implements FunctionAPI {
 		}
 		if (referenceable && cmdSize != LEN3) {
 			throw new DataSpecificationException(format(
-					"Command %s requires two words as arguments (total 3 words),"
-							+ " but the current encoding (%08X) is specified"
-							+ " to be %d words long",
+					"Command %s requires two words as arguments (total 3"
+							+ " words), but the current encoding (%08X) is"
+							+ " specified to be %d words long",
 					RESERVE, packedCommand, cmdSize));
 		}
 		if (!memRegions.isEmpty(region)) {
