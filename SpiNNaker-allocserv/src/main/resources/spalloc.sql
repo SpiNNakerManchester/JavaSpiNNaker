@@ -24,9 +24,10 @@ CREATE TABLE IF NOT EXISTS tags (
 	tag TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS boards (
-	board_id INTEGER NOT NULL AUTOINCREMENT,
-	address TEXT UNIQUE NOT NULL,
-	bmp_address TEXT UNIQUE NOT NULL,
+	board_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	address TEXT UNIQUE NOT NULL, -- IP address
+	bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
+	board_num INTEGER NOT NULL, -- for use with the BMP
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
 	root_x INTEGER NOT NULL,
 	root_y INTEGER NOT NULL,
@@ -35,13 +36,25 @@ CREATE TABLE IF NOT EXISTS boards (
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
 	functioning INTEGER, -- boolean
-	cabinet INTEGER NOT NULL,
-	frame INTEGER NOT NULL,
-	board_num INTEGER NOT NULL
+	may_be_allocated INTEGER GENERATED ALWAYS AS ( -- generated column
+		allocated_job IS NULL AND (functioning IS NULL OR functioning != 0)
+		) VIRTUAL
 );
 -- Every board has a unique location within its machine
 CREATE UNIQUE INDEX IF NOT EXISTS boardSanity ON boards(
 	root_x ASC, root_y ASC, machine_id ASC);
+
+CREATE TABLE IF NOT EXISTS bmp (
+	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
+	address TEXT UNIQUE NOT NULL, -- IP address
+	cabinet INTEGER NOT NULL,
+	frame INTEGER NOT NULL
+);
+-- Every BMP has a unique location within its machine
+CREATE UNIQUE INDEX IF NOT EXISTS bmpSanity ON bmp(
+    machine_id, cabinet, frame
+);
 
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,8 +80,8 @@ CREATE TABLE IF NOT EXISTS job_request (
 );
 
 CREATE TABLE IF NOT EXISTS pending_changes (
-    change_id INTEGER NOT NULL AUTOINCREMENT,
-    board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE RESTRICT,
+    change_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
     job_id INTEGER REFERENCES jobs(job_id) ON DELETE RESTRICT,
     reconfiguration BLOB -- TODO
 );

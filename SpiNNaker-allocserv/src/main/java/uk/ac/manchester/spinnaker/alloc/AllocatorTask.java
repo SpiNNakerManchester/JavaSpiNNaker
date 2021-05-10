@@ -1,6 +1,9 @@
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.sqrt;
 import static org.apache.commons.logging.LogFactory.getLog;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.readSQL;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
@@ -16,6 +19,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 
 public class AllocatorTask {
@@ -46,10 +51,16 @@ public class AllocatorTask {
 			"UPDATE jobs SET allocated_job = ? "
 					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ?";
 
-	public static final String GET_FREE_BOARD =
+	public static final String GET_FREE_BOARD_AT =
 			"SELECT board_id, root_x, root_y FROM boards "
 					+ "WHERE machine_id = ? AND allocated_job IS NULL "
 					+ "AND functioning > 0 ORDER BY root_x ASC, root_y ASC";
+
+	@Value("classpath:find_rectangle.sql")
+	private Resource findRectangle;
+
+	@Value("classpath:find_location.sql")
+	private Resource findLocation;
 
 	/**
 	 * Allocate all current requests for resources.
@@ -110,14 +121,17 @@ public class AllocatorTask {
 		Integer width = (Integer) task.getObject("width");
 		Integer height = (Integer) task.getObject("height");
 		if (width != null && height != null) {
-			return allocateDimensions(conn, jobId, machineId, width, height);
+			int numDeadBoards = 0;// FIXME
+			return allocateDimensions(conn, jobId, machineId, width, height,
+					numDeadBoards);
 		}
 
-		Integer x = (Integer) task.getObject("x");
-		Integer y = (Integer) task.getObject("y");
-		Integer z = (Integer) task.getObject("z");
-		if (x != null && y != null && z != null) {
-			return allocateCoords(conn, jobId, machineId, x, y, z);
+		Integer cabinet = (Integer) task.getObject("x");
+		Integer frame = (Integer) task.getObject("y");
+		Integer board = (Integer) task.getObject("z");
+		if (cabinet != null && frame != null && board != null) {
+			return allocateCoords(conn, jobId, machineId, cabinet, frame,
+					board);
 		}
 
 		log.warn("job " + jobId + " could not be allocated; "
@@ -127,36 +141,53 @@ public class AllocatorTask {
 
 	private boolean allocateSingleBoard(Connection conn, int jobId,
 			int machineId) throws SQLException {
-		return transaction(conn, () -> {
-			try (PreparedStatement s = conn.prepareStatement(GET_FREE_BOARD);
-					ResultSet rs = runQuery(s, machineId)) {
-				while (rs.next()) {
-					int x = rs.getInt("root_x");
-					int y = rs.getInt("root_y");
-					setAllocation(conn, jobId, 1, 1, machineId, x, y);
-					return true;
-				}
-			}
-			return false;
-		});
+		return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
 	}
 
 	private boolean allocateBoards(Connection conn, int jobId, int machineId,
 			int numBoards) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		double w = ceil(sqrt(numBoards));
+		double h = ceil(numBoards / w);
+		int tolerance = ((int) w) * ((int) h) - numBoards;
+		return allocateDimensions(conn, jobId, machineId, (int) w, (int) h,
+				tolerance);
 	}
 
 	private boolean allocateDimensions(Connection conn, int jobId,
-			int machineId, int width, int height) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+			int machineId, int width, int height, int tolerance)
+			throws SQLException {
+		return transaction(conn, () -> {
+			try (PreparedStatement s =
+					conn.prepareStatement(readSQL(findRectangle));
+					ResultSet rs =
+							runQuery(s, width, height, machineId, tolerance)) {
+				while (rs.next()) {
+					int x = rs.getInt("x");
+					int y = rs.getInt("y");
+					setAllocation(conn, jobId, 1, 1, machineId, x, y);
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
-			int x, int y, int z) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+			int cabinet, int frame, int board) throws SQLException {
+		return transaction(conn, () -> {
+			try (PreparedStatement s =
+					conn.prepareStatement(readSQL(findLocation));
+					ResultSet rs =
+							runQuery(s, machineId, cabinet, frame, board)) {
+				while (rs.next()) {
+					int x = rs.getInt("x");
+					int y = rs.getInt("y");
+					setAllocation(conn, jobId, 1, 1, machineId, x, y);
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	private static void setAllocation(Connection conn, int jobId, int width,
@@ -202,7 +233,7 @@ public class AllocatorTask {
 				boolean e = x < width - 1;
 				boolean nw = y < height - 1;
 				boolean ne = e && nw;
-
+				// TODO: Actually use this information...
 			}
 		}
 	}

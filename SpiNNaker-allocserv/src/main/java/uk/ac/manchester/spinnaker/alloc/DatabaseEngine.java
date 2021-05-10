@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
@@ -29,8 +30,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
 import org.sqlite.SQLiteConfig;
 
 /**
@@ -41,7 +45,9 @@ import org.sqlite.SQLiteConfig;
 public class DatabaseEngine {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
-	private static String sqlDDL;
+	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
+
+	private static final String sqlDDL;
 
 	static {
 		try {
@@ -214,5 +220,33 @@ public class DatabaseEngine {
 	@FunctionalInterface
 	public interface TransactedWithResult<T> {
 		T act() throws SQLException;
+	}
+
+	/**
+	 * Simple reader that loads a complex SQL query from a file.
+	 *
+	 * @param resource
+	 *            The resource to load from
+	 * @return The content of the resource
+	 * @throws SQLException
+	 *             If anything goes wrong
+	 */
+	public static String readSQL(Resource resource) throws SQLException {
+		synchronized(QUERY_CACHE) {
+			if (QUERY_CACHE.containsKey(resource)) {
+				return QUERY_CACHE.get(resource);
+			}
+		}
+		try {
+			String s = readFileToString(resource.getFile(), UTF_8);
+			synchronized(QUERY_CACHE) {
+				// Not really a problem if it is put in twice
+				QUERY_CACHE.put(resource, s);
+			}
+			return s;
+		} catch (IOException e) {
+			throw new SQLException("could not load SQL file from " + resource,
+					e);
+		}
 	}
 }
