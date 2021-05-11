@@ -7,6 +7,7 @@ import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.GONE;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,8 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.spinnaker.alloc.Job;
@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.alloc.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 public class SpallocImpl implements SpallocAPI {
-	private static final Log log = LogFactory.getLog(SpallocImpl.class);
+	private static final Logger log = getLogger(SpallocImpl.class);
 
 	private final Version v;
 
@@ -83,22 +83,38 @@ public class SpallocImpl implements SpallocAPI {
 
 			@Override
 			public Response whereIsLogicalPosition(int x, int y, int z) {
-				return ok(new WhereIsResponse(
-						machine.getBoardByLogicalCoords(x, y, z), ui)).build();
+				try {
+					return ok(new WhereIsResponse(
+							machine.getBoardByLogicalCoords(x, y, z), ui))
+									.build();
+				} catch (SQLException e) {
+					log.error("failed to locate board", e);
+					throw new WebApplicationException("failed to locate board");
+				}
 			}
 
 			@Override
 			public Response whereIsPhysicalPosition(int cabinet, int frame,
 					int board) {
-				return ok(new WhereIsResponse(
-						machine.getBoardByPhysicalCoords(cabinet, frame, board),
-						ui)).build();
+				try {
+					return ok(new WhereIsResponse(machine
+							.getBoardByPhysicalCoords(cabinet, frame, board),
+							ui)).build();
+				} catch (SQLException e) {
+					log.error("failed to locate board", e);
+					throw new WebApplicationException("failed to locate board");
+				}
 			}
 
 			@Override
 			public Response whereIsMachineChipLocation(int x, int y) {
-				return ok(new WhereIsResponse(machine.getBoardByChip(x, y), ui))
-						.build();
+				try {
+					return ok(new WhereIsResponse(machine.getBoardByChip(x, y),
+							ui)).build();
+				} catch (SQLException e) {
+					log.error("failed to locate board", e);
+					throw new WebApplicationException("failed to locate board");
+				}
 			}
 		};
 	}

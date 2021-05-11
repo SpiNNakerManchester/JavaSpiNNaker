@@ -29,7 +29,7 @@ public class AllocatorTask {
 	DatabaseEngine db;
 
 	/**
-	 * Time, in seconds, between runs of {@link #allocate()}.
+	 * Time, in milliseconds, between runs of {@link #allocate()}.
 	 */
 	public static final long INTER_ALLOCATE_DELAY = 5000;
 

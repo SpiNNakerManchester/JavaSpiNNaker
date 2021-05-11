@@ -19,5 +19,5 @@ INSERT INTO pending_changes(
 SELECT
 	VALUES (?, (
 		SELECT board_id FROM boards
-		WHERE machine_id = ? AND root_x = ? AND root_y = ?
+		WHERE machine_id = ? AND x = ? AND y = ?
 			AND may_be_allocated > 0), ?, ?, ?, ?, ?, ?, ?);

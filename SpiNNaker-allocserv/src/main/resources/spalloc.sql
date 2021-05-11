@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_name TEXT UNIQUE NOT NULL,
 	width INTEGER NOT NULL,
-	height INTEGER NOT NULL
+	height INTEGER NOT NULL,
+	board_model INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
@@ -29,8 +30,10 @@ CREATE TABLE IF NOT EXISTS boards (
 	bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
 	board_num INTEGER NOT NULL, -- for use with the BMP
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
-	root_x INTEGER NOT NULL,
-	root_y INTEGER NOT NULL,
+	x INTEGER NOT NULL, -- Board coordinate
+	y INTEGER NOT NULL, -- Board coordinate
+	root_x INTEGER NOT NULL, -- Chip coordinate
+	root_y INTEGER NOT NULL, -- Chip coordinate
 	allocated_job INTEGER REFERENCES jobs(job_id),
 	board_power INTEGER,
 	power_off_timestamp INTEGER, -- timestamp
@@ -92,3 +95,32 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     fpga_nw INTEGER NOT NULL, -- Whether to switch the nothwest FPGA on
     fpga_se INTEGER NOT NULL -- Whether to switch the southeast FPGA on
 );
+
+CREATE TABLE IF NOT EXISTS board_model_coords(
+	-- We never need the identitites of the rows
+	model INTEGER NOT NULL,
+	chip_x INTEGER NOT NULL,
+	chip_y INTEGER NOT NULL
+);
+
+-- The information about chip configuration of boards
+INSERT INTO board_model_coords(model, chip_x, chip_y)
+VALUES
+	-- Version 3 boards
+	(3, 0, 0), (3, 0, 1),
+	(3, 1, 0), (3, 1, 1),
+	-- Version 5 boards
+	(5, 0, 0), (5, 0, 1), (5, 0, 2), (5, 0, 3),
+	(5, 1, 0), (5, 1, 1), (5, 1, 2), (5, 1, 3), (5, 1, 4),
+	(5, 2, 0), (5, 2, 1), (5, 2, 2), (5, 2, 3), (5, 2, 4), (5, 2, 5),
+	(5, 3, 0), (5, 3, 1), (5, 3, 2), (5, 3, 3), (5, 3, 4), (5, 3, 5), (5, 3, 6),
+	(5, 4, 0), (5, 4, 1), (5, 4, 2), (5, 4, 3), (5, 4, 4), (5, 4, 5), (5, 4, 6), (5, 4, 7),
+			   (5, 5, 1), (5, 5, 2), (5, 5, 3), (5, 5, 4), (5, 5, 5), (5, 5, 6), (5, 5, 7),
+						  (5, 6, 2), (5, 6, 3), (5, 6, 4), (5, 6, 5), (5, 6, 6), (5, 6, 7),
+									 (5, 7, 3), (5, 7, 4), (5, 7, 5), (5, 7, 6), (5, 7, 7);
+
+-- Create boards rarely seen in the wild
+INSERT INTO board_model_coords(model, chip_x, chip_y)
+	SELECT 2, chip_x, chip_y FROM board_model_coords WHERE model = 3;
+INSERT INTO board_model_coords(model, chip_x, chip_y)
+	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;

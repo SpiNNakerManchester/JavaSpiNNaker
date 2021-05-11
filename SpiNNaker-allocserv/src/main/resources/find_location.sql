@@ -16,7 +16,7 @@
 WITH
 	args(machine_id, cabinet, frame, board) AS (VALUES (?, ?, ?, ?))
 SELECT
-	root_x AS x, root_y AS y
+	x, y
 FROM args
 	JOIN boards
 	JOIN bmp

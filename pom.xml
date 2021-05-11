@@ -40,7 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.6</jacoco.version>
 		<javadoc.version>3.2.0</javadoc.version>
-  	</properties>
+		<cxf.version>3.4.3</cxf.version>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>
@@ -172,7 +173,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-				<version>3.3.6</version>
+				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -193,6 +194,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<version>8.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
+				<version>${cxf.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

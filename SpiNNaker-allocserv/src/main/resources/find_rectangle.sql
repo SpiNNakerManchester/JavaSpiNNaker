@@ -33,10 +33,10 @@ SELECT board_id AS id, x, y, available FROM args, (
 		-- Form the sequences into grids of points
 		c(x,y) AS (SELECT x, y FROM cx, cy),
 		g(x,y) AS (SELECT x, y FROM gx, gy)
-	SELECT board_id, bs.root_x AS x, bs.root_y AS y,
+	SELECT board_id, bs.x AS x, bs.y AS y,
 		SUM(bs.may_be_allocated) AS available
 	FROM bs, c, g, args
-	WHERE bs.root_x=c.x+g.x AND bs.root_y=c.y+g.y
+	WHERE bs.x = c.x + g.x AND bs.y = c.y + g.y
 	GROUP BY g.x, g.y)
 WHERE available >= args.width * args.height - args.max_dead_boards
 ORDER BY y ASC, x ASC;
