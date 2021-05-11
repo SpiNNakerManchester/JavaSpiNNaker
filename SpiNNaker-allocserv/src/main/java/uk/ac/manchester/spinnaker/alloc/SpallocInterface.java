@@ -15,6 +15,6 @@ public interface SpallocInterface {
 	Job getJob(int id) throws SQLException;
 
 	Job createJob(String owner, List<Integer> dimensions, String machineName,
-			List<String> tags) throws SQLException;
+			List<String> tags, Integer maxDeadBoards) throws SQLException;
 
 }

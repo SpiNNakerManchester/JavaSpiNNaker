@@ -40,13 +40,16 @@ public class Spalloc implements SpallocInterface {
 			"INSERT INTO jobs(machine_id, keepalive_timestamp) VALUES (?, ?)";
 
 	private static final String INSERT_REQ_N_BOARDS =
-			"INSERT INTO job_request(job_id, num_boards) VALUES (?, ?)";
+			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
+					+ "VALUES (?, ?, ?)";
 
 	private static final String INSERT_REQ_SIZE =
-			"INSERT INTO job_request(job_id, width, height) VALUES (?, ?, ?)";
+			"INSERT INTO job_request(job_id, width, height, max_dead_boards) "
+					+ "VALUES (?, ?, ?, ?)";
 
 	private static final String INSERT_REQ_LOCATION =
-			"INSERT INTO job_request(job_id, x, y, z) VALUES (?, ?, ?, ?)";
+			"INSERT INTO job_request(job_id, cabinet, frame, board) "
+					+ "VALUES (?, ?, ?, ?)";
 
 	@Autowired
 	DatabaseEngine db;
@@ -166,7 +169,8 @@ public class Spalloc implements SpallocInterface {
 
 	@Override
 	public Job createJob(String owner, List<Integer> dimensions,
-			String machineName, List<String> tags) throws SQLException {
+			String machineName, List<String> tags, Integer maxDeadBoards)
+			throws SQLException {
 		try (Connection conn = db.getConnection()) {
 			return transaction(conn, () -> {
 				Machine m = selectMachine(conn, machineName, tags);
@@ -182,27 +186,29 @@ public class Spalloc implements SpallocInterface {
 				}
 
 				// Ask the allocator engine to do the allocation
-				insertRequest(conn, id, dimensions);
+				insertRequest(conn, id, dimensions, maxDeadBoards);
 				return getJob(id);
 			});
 		}
 	}
 
 	private void insertRequest(Connection conn, int id,
-			List<Integer> dimensions) throws SQLException {
+			List<Integer> dimensions, Integer numDeadBoards)
+			throws SQLException {
 		switch (dimensions.size()) {
 		case 1:
 			// Request by number of boards
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_N_BOARDS)) {
-				runUpdate(ps, id, dimensions.get(0));
+				runUpdate(ps, id, dimensions.get(0), numDeadBoards);
 			}
 			break;
 		case 2:
 			// Request by specific size
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_SIZE)) {
-				runUpdate(ps, id, dimensions.get(0), dimensions.get(1));
+				runUpdate(ps, id, dimensions.get(0), dimensions.get(1),
+						numDeadBoards);
 			}
 			break;
 		case 3:

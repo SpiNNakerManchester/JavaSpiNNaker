@@ -74,9 +74,10 @@ CREATE TABLE IF NOT EXISTS job_request (
 	num_boards INTEGER,
 	width INTEGER,
 	height INTEGER,
-	x INTEGER,
-	y INTEGER,
-	z INTEGER
+	cabinet INTEGER,
+	frame INTEGER,
+	board INTEGER,
+	max_dead_boards INTEGER NOT NULL DEFAULT (0)
 );
 
 CREATE TABLE IF NOT EXISTS pending_changes (

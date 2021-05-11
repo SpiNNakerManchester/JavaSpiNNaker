@@ -242,10 +242,12 @@ public class SpallocImpl implements SpallocAPI {
 					"must not specify machine name and tags together",
 					BAD_REQUEST);
 		}
+		Integer maxDeadBoards = null; // FIXME
+		Integer maxDeadLinks = null; // FIXME
 		Job j;
 		try {
 			j = core.createJob(req.owner, req.dimensions, req.machineName,
-					req.tags);
+					req.tags, maxDeadBoards);
 		} catch (SQLException e) {
 			log.error("failed to create job", e);
 			throw new WebApplicationException(
