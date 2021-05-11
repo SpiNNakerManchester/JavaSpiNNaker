@@ -49,18 +49,24 @@ public class AllocatorTask {
 
 	public static final String ALLOCATE_BOARDS_BOARD =
 			"UPDATE jobs SET allocated_job = ? "
-					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ?";
+					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ? "
+					+ "AND may_be_allocated > 0";
 
 	public static final String GET_FREE_BOARD_AT =
 			"SELECT board_id, root_x, root_y FROM boards "
 					+ "WHERE machine_id = ? AND allocated_job IS NULL "
 					+ "AND functioning > 0 ORDER BY root_x ASC, root_y ASC";
+	private static final String SET_NUM_PENDING =
+			"UPDATE jobs SET num_pending = ? WHERE job_id = ?";
 
 	@Value("classpath:find_rectangle.sql")
 	private Resource findRectangle;
 
 	@Value("classpath:find_location.sql")
 	private Resource findLocation;
+
+	@Value("classpath:issue_change_for_job.sql")
+	private Resource issueChangeForJob;
 
 	/**
 	 * Allocate all current requests for resources.
@@ -113,9 +119,18 @@ public class AllocatorTask {
 		Integer numBoards = (Integer) task.getObject("num_boards");
 		if (numBoards != null) {
 			if (numBoards.intValue() == 1) {
-				return allocateSingleBoard(conn, jobId, machineId);
+				return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
 			}
-			return allocateBoards(conn, jobId, machineId, numBoards);
+			/*
+			 * Convert a number of boards into a close-to-square size to search
+			 * for. With the big machine's level of resources, that's good
+			 * enough. For now.
+			 */
+			double w = ceil(sqrt(numBoards));
+			double h = ceil(numBoards / w);
+			int tolerance = ((int) w) * ((int) h) - numBoards;
+			return allocateDimensions(conn, jobId, machineId, (int) w, (int) h,
+					tolerance);
 		}
 
 		Integer width = (Integer) task.getObject("width");
@@ -137,20 +152,6 @@ public class AllocatorTask {
 		log.warn("job " + jobId + " could not be allocated; "
 				+ "bad request will be cleared from queue");
 		return true;
-	}
-
-	private boolean allocateSingleBoard(Connection conn, int jobId,
-			int machineId) throws SQLException {
-		return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
-	}
-
-	private boolean allocateBoards(Connection conn, int jobId, int machineId,
-			int numBoards) throws SQLException {
-		double w = ceil(sqrt(numBoards));
-		double h = ceil(numBoards / w);
-		int tolerance = ((int) w) * ((int) h) - numBoards;
-		return allocateDimensions(conn, jobId, machineId, (int) w, (int) h,
-				tolerance);
 	}
 
 	private boolean allocateDimensions(Connection conn, int jobId,
@@ -190,13 +191,18 @@ public class AllocatorTask {
 		});
 	}
 
-	private static void setAllocation(Connection conn, int jobId, int width,
+	// Must be called inside a transaction
+	private void setAllocation(Connection conn, int jobId, int width,
 			int height, int machineId, int rootX, int rootY)
 			throws SQLException {
 		try (PreparedStatement allocBoard =
 				conn.prepareStatement(ALLOCATE_BOARDS_BOARD);
 				PreparedStatement allocJob =
-						conn.prepareStatement(ALLOCATE_BOARDS_JOB)) {
+						conn.prepareStatement(ALLOCATE_BOARDS_JOB);
+				PreparedStatement issueChange =
+						conn.prepareStatement(readSQL(issueChangeForJob));
+				PreparedStatement setNumPending =
+						conn.prepareStatement(SET_NUM_PENDING)) {
 			List<int[]> perimeter = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
@@ -211,30 +217,33 @@ public class AllocatorTask {
 			}
 			runUpdate(allocJob, width, height, POWER.ordinal(),
 					perimeter.size(), machineId, rootX, rootY, jobId);
+			int numPending = 0;
 			for (int[] coord : perimeter) {
 				/*
-				 * TODO issue instructions to reconfigure the perimeter of the
+				 * Issues instructions to reconfigure the perimeter of the
 				 * allocated rectangle, incrementing numPending for each.
 				 *
 				 * @formatter:off
 				 *  /^\ /^\ /^\
 				 * | a | b | c |
-				 *  \ / \ / \ / \
-				 *   | d | e | f |
-				 *    \ / \ / \ / \
+				 *  \ / \ / \ / \            n/^\e
+				 *   | d | e | f |         nw|   |se
+				 *    \ / \ / \ / \          w\./s
 				 *     | g | h | i |
 				 *      \./ \./ \./
 				 * @formatter:on
 				 */
 				int x = coord[0], y = coord[1];
-				boolean w = x > 0;
-				boolean se = y > 0;
-				boolean sw = w && se;
-				boolean e = x < width - 1;
-				boolean nw = y < height - 1;
-				boolean ne = e && nw;
-				// TODO: Actually use this information...
+				boolean nw = x > 0;
+				boolean s = y > 0;
+				boolean w = nw && s;
+				boolean se = x < width - 1;
+				boolean n = y < height - 1;
+				boolean e = se && n;
+				numPending += runUpdate(issueChange, jobId, machineId, rootX,
+						rootY, true, n, s, e, w, nw, se);
 			}
+			runUpdate(setNumPending, numPending, jobId);
 		}
 	}
 }

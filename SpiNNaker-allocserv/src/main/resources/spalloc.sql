@@ -81,7 +81,13 @@ CREATE TABLE IF NOT EXISTS job_request (
 
 CREATE TABLE IF NOT EXISTS pending_changes (
     change_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
     job_id INTEGER REFERENCES jobs(job_id) ON DELETE RESTRICT,
-    reconfiguration BLOB -- TODO
+    board_id INTEGER UNIQUE NOT NULL REFERENCES boards(board_id) ON DELETE RESTRICT,
+    "power" INTEGER NOT NULL, -- Whether to switch the board on
+    fpga_n INTEGER NOT NULL, -- Whether to switch the northward FPGA on
+    fpga_s INTEGER NOT NULL, -- Whether to switch the southward FPGA on
+    fpga_e INTEGER NOT NULL, -- Whether to switch the eastward FPGA on
+    fpga_w INTEGER NOT NULL, -- Whether to switch the westward FPGA on
+    fpga_nw INTEGER NOT NULL, -- Whether to switch the nothwest FPGA on
+    fpga_se INTEGER NOT NULL -- Whether to switch the southeast FPGA on
 );

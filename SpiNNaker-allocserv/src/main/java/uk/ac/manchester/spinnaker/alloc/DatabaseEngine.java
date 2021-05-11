@@ -108,6 +108,17 @@ public class DatabaseEngine {
 		}
 	}
 
+	/**
+	 * Set the arguments and run an SQL "update" (DML) statement.
+	 *
+	 * @param s
+	 *            The statement to run
+	 * @param arguments
+	 *            The arguments to supply to the statement
+	 * @return The number of affected rows
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public static int runUpdate(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		int idx = 0;
@@ -117,6 +128,17 @@ public class DatabaseEngine {
 		return s.executeUpdate();
 	}
 
+	/**
+	 * Set the arguments and run an SQL "query" (DQL) statement.
+	 *
+	 * @param s
+	 *            The statement to run
+	 * @param arguments
+	 *            The arguments to supply to the statement
+	 * @return The result set of the query
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public static ResultSet runQuery(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		int idx = 0;
