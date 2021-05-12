@@ -48,14 +48,20 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 @EnableScheduling
 public class ServiceConfig {
 	/**
-	 * The JAX-RS interface.
+	 * The JAX-RS interface. Note that this is only used when not in test mode.
 	 *
-	 * @return bean
+	 * @param restPath
+	 *            Where to deploy services in resource-space
+	 * @param service
+	 *            The service implementation
+	 * @param bus
+	 *            The CXF core
+	 * @return The REST service core, configured.
 	 */
 	@Bean
-    @Profile("!test")
+	@Profile("!unittest")
 	@DependsOn("bus")
-	public Server jaxRsServer(@Value("${cxf.rest.path}") String restPath,
+	public Server jaxRsServer(@Value("${cxf.rest.path:/}") String restPath,
 			SpallocAPI service, SpringBus bus) {
 		final JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setAddress(restPath);

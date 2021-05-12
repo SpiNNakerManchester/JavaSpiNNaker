@@ -23,18 +23,52 @@ import javax.ws.rs.core.UriInfo;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
+/**
+ * The description of the overall service.
+ *
+ * @author Donal Fellows
+ */
 public class ServiceDescription {
-	public Version version;
-	public URI jobsRef;
-	public URI machinesRef;
+	private Version version;
+
+	private URI jobsRef;
+
+	private URI machinesRef;
 
 	public ServiceDescription() {
 	}
 
-	public ServiceDescription(Version version, UriInfo ui) {
+	ServiceDescription(Version version, UriInfo ui) {
 		this.version = version;
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
 		jobsRef = ub.build("jobs");
 		machinesRef = ub.build("machines");
+	}
+
+	/** @return The service version */
+	public Version getVersion() {
+		return version;
+	}
+
+	public void setVersion(Version version) {
+		this.version = version;
+	}
+
+	/** @return Where to work with jobs */
+	public URI getJobsRef() {
+		return jobsRef;
+	}
+
+	public void setJobsRef(URI jobsRef) {
+		this.jobsRef = jobsRef;
+	}
+
+	/** @return Where to work with machines */
+	public URI getMachinesRef() {
+		return machinesRef;
+	}
+
+	public void setMachinesRef(URI machinesRef) {
+		this.machinesRef = machinesRef;
 	}
 }

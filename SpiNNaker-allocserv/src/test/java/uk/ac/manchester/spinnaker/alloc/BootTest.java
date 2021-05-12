@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 
 @SpringJUnitWebConfig(BootTest.Config.class)
-@ActiveProfiles("test")
+@ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = "databasePath=boot_test.sqlite3")
 @TestInstance(PER_CLASS)
 class BootTest {

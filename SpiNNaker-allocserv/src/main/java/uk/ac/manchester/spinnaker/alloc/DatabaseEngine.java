@@ -203,6 +203,7 @@ public class DatabaseEngine {
 	 *            The database connection
 	 * @param operation
 	 *            The operation to run
+	 * @return the value returned by {@code operation}
 	 * @throws SQLException
 	 *             If something goes wrong with database access.
 	 * @throws RuntimeException
@@ -238,14 +239,30 @@ public class DatabaseEngine {
 	 */
 	@FunctionalInterface
 	public interface Transacted {
+		/**
+		 * The operation to run.
+		 *
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
 		void act() throws SQLException;
 	}
 
 	/**
 	 * Some code that may be run within a transaction that returns a result.
+	 *
+	 * @param <T>
+	 *            The type of the result of the code.
 	 */
 	@FunctionalInterface
 	public interface TransactedWithResult<T> {
+		/**
+		 * The operation to run.
+		 *
+		 * @return The result of the operation.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
 		T act() throws SQLException;
 	}
 
@@ -259,14 +276,14 @@ public class DatabaseEngine {
 	 *             If anything goes wrong
 	 */
 	public static String readSQL(Resource resource) throws SQLException {
-		synchronized(QUERY_CACHE) {
+		synchronized (QUERY_CACHE) {
 			if (QUERY_CACHE.containsKey(resource)) {
 				return QUERY_CACHE.get(resource);
 			}
 		}
 		try {
 			String s = readFileToString(resource.getFile(), UTF_8);
-			synchronized(QUERY_CACHE) {
+			synchronized (QUERY_CACHE) {
 				// Not really a problem if it is put in twice
 				QUERY_CACHE.put(resource, s);
 			}
