@@ -24,22 +24,43 @@ import javax.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.Job;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
+/**
+ * The state of a job.
+ *
+ * @author Donal Fellows
+ */
 public class StateResponse {
-	public State state;
-	public Float startTime;
-	public String reason;
-	public String keepaliveHost;
+	private State state;
 
-	public URI keepaliveRef;
-	public URI machineRef;
-	public URI powerRef;
-	public URI chipRef;
+	private String owner;
 
-	public StateResponse(Job j, UriInfo ui) {
+	private Float startTime; // TODO Why is this a float? It's a time, damnit!
+
+	private String reason;
+
+	private String keepaliveHost;
+
+	public final URI keepaliveRef;
+
+	public final URI machineRef;
+
+	public final URI powerRef;
+
+	public final URI chipRef;
+
+	public StateResponse() {
+		keepaliveRef = null;
+		machineRef = null;
+		powerRef = null;
+		chipRef = null;
+	}
+
+	StateResponse(Job j, UriInfo ui) {
 		state = j.getState();
 		startTime = j.getStartTime();
 		reason = j.getReason();
 		keepaliveHost = j.getKeepaliveHost();
+		owner = j.getOwner();
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 		keepaliveRef = b.build("keepalive");
@@ -48,4 +69,48 @@ public class StateResponse {
 		chipRef = b.build("chip");
 	}
 
+	/** @return The formal state of the job */
+	public State getState() {
+		return state;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	/** @return When the job started */
+	public Float getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Float startTime) {
+		this.startTime = startTime;
+	}
+
+	/** @return The reason the job was destroyed */
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	/** @return What host is keeping the job alive? */
+	public String getKeepaliveHost() {
+		return keepaliveHost;
+	}
+
+	public void setKeepaliveHost(String keepaliveHost) {
+		this.keepaliveHost = keepaliveHost;
+	}
+
+	/** @return Who claimed to create the job? */
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 }

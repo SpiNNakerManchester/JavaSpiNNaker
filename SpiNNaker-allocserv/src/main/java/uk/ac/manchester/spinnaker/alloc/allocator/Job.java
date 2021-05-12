@@ -28,6 +28,7 @@ public class Job {
 	Integer height;
 	int state;
 	Integer root;
+	String owner;
 	long keepaliveTime;
 	String keepaliveHost;
 
@@ -88,6 +89,11 @@ public class Job {
 	public ChipLocation getRootChip() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public String getOwner() {
+		// TODO Auto-generated method stub
+		return owner;
 	}
 
 }
