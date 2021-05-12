@@ -14,20 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
-
-import java.net.URI;
-
-import javax.ws.rs.core.UriInfo;
-
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
-
-public class CreateJobResponse {
-	public int jobId;
-	public URI jobRef;
-
-	public CreateJobResponse(Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
-	}
-}
+/**
+ * The core allocation system.
+ */
+package uk.ac.manchester.spinnaker.alloc.allocator;

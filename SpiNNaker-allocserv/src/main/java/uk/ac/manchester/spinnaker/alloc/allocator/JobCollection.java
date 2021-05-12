@@ -14,20 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
+package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import java.net.URI;
+import java.sql.Connection;
+import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
+public class JobCollection {
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
 
-public class CreateJobResponse {
-	public int jobId;
-	public URI jobRef;
-
-	public CreateJobResponse(Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+	JobCollection(Connection conn) {
+		// TODO Auto-generated constructor stub
 	}
+
+	public void waitForChange() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public List<Integer> ids(int start, int limit) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	 void addJob(int job_id, int int2, long int3) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

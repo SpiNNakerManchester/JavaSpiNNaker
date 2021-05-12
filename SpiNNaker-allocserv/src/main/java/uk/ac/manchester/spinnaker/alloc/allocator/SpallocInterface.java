@@ -14,20 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
+package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
+public interface SpallocInterface {
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
+	Map<String, Machine> getMachines() throws SQLException;
 
-public class CreateJobResponse {
-	public int jobId;
-	public URI jobRef;
+	Machine getMachine(String name) throws SQLException;
 
-	public CreateJobResponse(Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
-	}
+	JobCollection getJobs() throws SQLException;
+
+	Job getJob(int id) throws SQLException;
+
+	Job createJob(String owner, List<Integer> dimensions, String machineName,
+			List<String> tags, Integer maxDeadBoards) throws SQLException;
+
 }

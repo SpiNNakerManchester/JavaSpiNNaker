@@ -14,20 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
+package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import java.net.URI;
+import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
+public class SubMachine {
+	public Machine machine;
+	public int width;
+	public int height;
+	public List<Connection> connections;//FIXME
+	public List<BoardCoordinates> boards;//FIXME
 
-public class CreateJobResponse {
-	public int jobId;
-	public URI jobRef;
+	public PowerState getPower() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	public CreateJobResponse(Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+	public void setPower(PowerState ps) {
+
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2021 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
@@ -33,7 +32,10 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.sqlite.SQLiteConfig;
 
@@ -47,17 +49,6 @@ public class DatabaseEngine {
 
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
 
-	private static final String sqlDDL;
-
-	static {
-		try {
-			sqlDDL = resourceToString("/spalloc.sql", UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("failed to read database definition SQL",
-					e);
-		}
-	}
-
 	/** Busy timeout for SQLite, in milliseconds. */
 	private static final int BUSY_TIMEOUT = 500;
 
@@ -67,15 +58,25 @@ public class DatabaseEngine {
 
 	private SQLiteConfig config = new SQLiteConfig();
 
+	@Value("classpath:/spalloc.sql")
+	private Resource sqlDDLFile;
+
+	private String sqlDDL;
+
+	@PostConstruct
+	private void loadDDL() throws SQLException {
+		sqlDDL = readSQL(sqlDDLFile);
+	}
+
 	/**
 	 * Create an engine interface for a particular database.
 	 *
 	 * @param dbFile
 	 *            The file containing the database.
 	 */
-	public DatabaseEngine(File dbFile) {
+	public DatabaseEngine(@Value("${databasePath}") File dbFile) {
 		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-		log.info("will manage database at " + dbFile.getAbsolutePath());
+		log.info("will manage database at {}", dbFile.getAbsolutePath());
 		config.enforceForeignKeys(true);
 		config.setSynchronous(NORMAL);
 		config.setBusyTimeout(BUSY_TIMEOUT);
@@ -84,10 +85,7 @@ public class DatabaseEngine {
 	}
 
 	public Connection getConnection() throws SQLException {
-		if (log.isDebugEnabled()) {
-			log.debug("opening database connection {}", dbConnectionUrl);
-		}
-
+		log.debug("opening database connection {}", dbConnectionUrl);
 		Connection conn = config.createConnection(dbConnectionUrl);
 		synchronized (this) {
 			if (!initialised) {

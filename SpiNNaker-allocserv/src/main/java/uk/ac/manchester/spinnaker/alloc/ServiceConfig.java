@@ -1,8 +1,22 @@
+/*
+ * Copyright (c) 2014-2021 The University of Manchester
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.util.Arrays.asList;
-
-import java.io.File;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
@@ -10,9 +24,10 @@ import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,7 +35,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.web.SpallocImpl;
 
 /**
  * Builds the Spring beans in the application.
@@ -29,52 +43,12 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocImpl;
 // @EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)
 // @EnableWebSecurity
 @Import(JaxRsConfig.class)
+@ComponentScan
 @PropertySource("classpath:service.properties")
 @EnableScheduling
 public class ServiceConfig {
-
-	/**
-	 * The context of the application.
-	 */
 	@Autowired
-	private ApplicationContext ctx;
-
-	/**
-	 * The REST path of the server.
-	 */
-	@Value("${cxf.rest.path}")
-	private String restPath;
-
-	@Value("${databasePath}")
-	private String dbPath;
-
-	@Value("${version}")
-	private String version;
-
-	/**
-	 * The implementation of the Spalloc service.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public SpallocAPI service() {
-		return new SpallocImpl(version);
-	}
-
-	@Bean
-	public SpallocInterface core() {
-		return new Spalloc();
-	}
-
-	@Bean
-	public DatabaseEngine db() {
-		return new DatabaseEngine(new File(dbPath));
-	}
-
-	@Bean
-	public AllocatorTask allocator() {
-		return new AllocatorTask();
-	}
+	private SpringBus bus;
 
 	/**
 	 * The JAX-RS interface.
@@ -82,11 +56,13 @@ public class ServiceConfig {
 	 * @return bean
 	 */
 	@Bean
-	public Server jaxRsServer() {
+	@DependsOn("bus")
+	public Server jaxRsServer(@Value("${cxf.rest.path}") String restPath,
+			SpallocAPI service) {
 		final JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setAddress(restPath);
-		factory.setBus(ctx.getBean(SpringBus.class));
-		factory.setServiceBeans(asList(service()));
+		factory.setBus(bus);
+		factory.setServiceBeans(asList(service));
 		factory.setProviders(asList(new JacksonJsonProvider()));
 		return factory.create();
 	}
