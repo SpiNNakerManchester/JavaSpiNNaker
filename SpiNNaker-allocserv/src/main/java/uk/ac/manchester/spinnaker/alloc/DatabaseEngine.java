@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteConfig;
 
 /**
@@ -44,6 +45,7 @@ import org.sqlite.SQLiteConfig;
  *
  * @author Donal Fellows
  */
+@Component
 public class DatabaseEngine {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
