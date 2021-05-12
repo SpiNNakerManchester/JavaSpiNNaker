@@ -17,29 +17,81 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("test")
+@TestPropertySource(properties = "databasePath=boot_test.sqlite3")
+@TestInstance(PER_CLASS)
 class BootTest {
 	@Configuration
 	@ComponentScan
-	static class Config {};
+	static class Config {
+	};
 
 	@Autowired
 	private SpallocAPI service;
 
-	@Test
-	void testContextBoot() {
-		assertNotNull(service);
+	@Autowired
+	private SpallocInterface core;
+
+	@Autowired
+	private DatabaseEngine db;
+
+	@Value("@{databasePath}")
+	private File dbPath;
+
+	@BeforeAll
+	void clearDB() {
+		dbPath.delete();
 	}
 
+	@Test
+	@DisplayName("Spring context startup")
+	void testContextBoot() {
+		assertNotNull(service);
+		assertNotNull(core);
+		assertNotNull(db);
+	}
+
+	@Nested
+	@DisplayName("Database tests")
+	class DbTest {
+		@Test
+		void testDbConn() throws SQLException {
+			try (Connection c = db.getConnection()) {
+				assertFalse(c.isReadOnly());
+				try (Statement s = c.createStatement();
+						ResultSet rs = s.executeQuery(
+								"SELECT COUNT(*) FROM board_model_coords")) {
+					// For v2, v3, v4 and v5 board configs
+					assertTrue(rs.getInt(1) == 104);
+				}
+			}
+		}
+
+		// TODO add tests of the queries
+	}
 }

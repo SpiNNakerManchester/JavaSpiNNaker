@@ -65,6 +65,8 @@ public class DatabaseEngine {
 
 	private String sqlDDL;
 
+	private File dbFile;
+
 	@PostConstruct
 	private void loadDDL() throws SQLException {
 		sqlDDL = readSQL(sqlDDLFile);
@@ -76,7 +78,8 @@ public class DatabaseEngine {
 	 * @param dbFile
 	 *            The file containing the database.
 	 */
-	public DatabaseEngine(@Value("${databasePath}") File dbFile) {
+	public DatabaseEngine(@Value("${databasePath:db.sqlite3}") File dbFile) {
+		this.dbFile = dbFile.getAbsoluteFile();
 		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 		log.info("will manage database at {}", dbFile.getAbsolutePath());
 		config.enforceForeignKeys(true);
@@ -88,16 +91,18 @@ public class DatabaseEngine {
 
 	public Connection getConnection() throws SQLException {
 		log.debug("opening database connection {}", dbConnectionUrl);
-		Connection conn = config.createConnection(dbConnectionUrl);
 		synchronized (this) {
-			if (!initialised) {
+			boolean doInit = !initialised || !dbFile.exists();
+			Connection conn = config.createConnection(dbConnectionUrl);
+			if (doInit) {
 				try (Statement statement = conn.createStatement()) {
+					log.info("initalising DB from {}", sqlDDLFile);
 					statement.executeUpdate(sqlDDL);
 				}
 				initialised = true;
 			}
+			return conn;
 		}
-		return conn;
 	}
 
 	public static void setParams(PreparedStatement s, Object... arguments)

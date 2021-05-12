@@ -102,9 +102,13 @@ CREATE TABLE IF NOT EXISTS board_model_coords(
 	chip_x INTEGER NOT NULL,
 	chip_y INTEGER NOT NULL
 );
+-- Board chip descriptors are unique
+CREATE UNIQUE INDEX IF NOT EXISTS chipUniqueness ON board_model_coords(
+    model, chip_x, chip_y
+);
 
 -- The information about chip configuration of boards
-INSERT INTO board_model_coords(model, chip_x, chip_y)
+INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 VALUES
 	-- Version 3 boards
 	(3, 0, 0), (3, 0, 1),
@@ -120,7 +124,7 @@ VALUES
 									 (5, 7, 3), (5, 7, 4), (5, 7, 5), (5, 7, 6), (5, 7, 7);
 
 -- Create boards rarely seen in the wild
-INSERT INTO board_model_coords(model, chip_x, chip_y)
+INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 2, chip_x, chip_y FROM board_model_coords WHERE model = 3;
-INSERT INTO board_model_coords(model, chip_x, chip_y)
+INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;

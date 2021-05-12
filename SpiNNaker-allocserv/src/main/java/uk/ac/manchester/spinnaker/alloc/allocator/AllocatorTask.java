@@ -54,10 +54,14 @@ public class AllocatorTask {
 	public static final long INTER_ALLOCATE_DELAY = 5000;
 
 	public static final String GET_TASKS =
-			"SELECT req_id, job_id, num_boards, width, height, x, y, z, "
-					+ "jobs.machine_id AS machine_id, max_dead_boards"
-					+ "FROM job_request JOIN jobs USING (job_id) "
-					+ "ORDER_BY req_id";
+			"SELECT job_request.req_id, job_request.job_id,"
+					+ "  job_request.num_boards,"
+					+ "	 job_request.width, job_request.height,"
+					+ "  job_request.cabinet, job_request.frame,"
+					+ "	 job_request.board, jobs.machine_id AS machine_id,"
+					+ "  job_request.max_dead_boards "
+					+ "FROM job_request JOIN jobs"
+					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
 	public static final String DELETE_TASK =
 			"DELETE FROM job_request WHERE req_id = ";
 
