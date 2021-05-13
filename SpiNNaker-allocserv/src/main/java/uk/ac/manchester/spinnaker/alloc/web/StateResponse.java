@@ -22,7 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Job;
-import uk.ac.manchester.spinnaker.spalloc.messages.State;
+import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 
 /**
  * The state of a job.
@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
  * @author Donal Fellows
  */
 public class StateResponse {
-	private State state;
+	private JobState state;
 
 	private String owner;
 
@@ -40,12 +40,16 @@ public class StateResponse {
 
 	private String keepaliveHost;
 
+	/** Where the keepalives go. */
 	public final URI keepaliveRef;
 
+	/** Where the machine details are. */
 	public final URI machineRef;
 
+	/** Where the power controls are. */
 	public final URI powerRef;
 
+	/** Where the chip info is. */
 	public final URI chipRef;
 
 	public StateResponse() {
@@ -70,11 +74,11 @@ public class StateResponse {
 	}
 
 	/** @return The formal state of the job */
-	public State getState() {
+	public JobState getState() {
 		return state;
 	}
 
-	public void setState(State state) {
+	public void setState(JobState state) {
 		this.state = state;
 	}
 

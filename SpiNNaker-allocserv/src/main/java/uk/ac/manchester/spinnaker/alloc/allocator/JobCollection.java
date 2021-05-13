@@ -36,7 +36,7 @@ public class JobCollection {
 		return null;
 	}
 
-	 void addJob(int job_id, int int2, long int3) {
+	void addJob(int job_id, int int2, long int3) {
 		// TODO Auto-generated method stub
 
 	}

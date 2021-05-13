@@ -22,10 +22,19 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public class SubMachine {
+	/** The machine that this sub-machine is part of. */
 	public Machine machine;
+
+	/** The width of this sub-machine. */
 	public int width;
+
+	/** The height of this sub-machine. */
 	public int height;
+
+	/** The connection details of this sub-machine. */
 	public List<Connection> connections;//FIXME
+
+	/** The board locations of this sub-machine. */
 	public List<BoardCoordinates> boards;//FIXME
 
 	public PowerState getPower() {
@@ -34,6 +43,6 @@ public class SubMachine {
 	}
 
 	public void setPower(PowerState ps) {
-
+		// TODO Auto-generated method stub
 	}
 }

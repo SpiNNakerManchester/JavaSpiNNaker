@@ -25,11 +25,14 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 public class BoardLocation {
-
 	public Job job;
+
 	public String machine;
+
 	public ChipLocation chip;
+
 	public BoardCoordinates logical;
+
 	public BoardPhysicalCoordinates physical;
 
 	public static BoardLocation buildFromBoardQuery(Connection conn,

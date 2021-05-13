@@ -16,6 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+/**
+ * The state of the boards of a machine.
+ *
+ * @author Donal Fellows
+ */
 public enum PowerState {
-	OFF, ON
+	/** Switched off */
+	OFF,
+	/** Switched on */
+	ON
 }

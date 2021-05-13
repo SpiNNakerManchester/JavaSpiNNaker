@@ -27,13 +27,21 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 public class WhereIsResponse {
 	public Integer jobId;
+
 	public URI jobRef;
+
 	public ChipLocation jobChip;
+
 	public ChipLocation chip;
+
 	public BoardCoordinates logicalBoardCoordinates;
+
 	public String machine;
+
 	public URI machineRef;
+
 	public ChipLocation boardChip;
+
 	public BoardPhysicalCoordinates physicalBoardCoordinates;
 
 	public WhereIsResponse(BoardLocation location, UriInfo ui) {
@@ -50,4 +58,6 @@ public class WhereIsResponse {
 		// TODO Auto-generated constructor stub
 	}
 
+	public WhereIsResponse() {
+	}
 }

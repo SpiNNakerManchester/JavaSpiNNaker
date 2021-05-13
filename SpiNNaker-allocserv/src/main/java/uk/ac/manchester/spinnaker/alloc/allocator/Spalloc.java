@@ -176,7 +176,7 @@ public class Spalloc implements SpallocInterface {
 					j.width = getInteger(rs, "width");
 					j.height = getInteger(rs, "height");
 					j.root = getInteger(rs, "root_id");
-					j.state = rs.getInt("job_state");
+					j.state = JobState.values()[rs.getInt("job_state")];
 					j.keepaliveTime = rs.getLong("keepalive_timestamp");
 					j.keepaliveHost = rs.getString("keepalive_host");
 					// TODO fill this out

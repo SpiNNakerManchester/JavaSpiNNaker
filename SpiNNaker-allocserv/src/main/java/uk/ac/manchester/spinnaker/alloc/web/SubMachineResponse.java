@@ -29,11 +29,17 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public class SubMachineResponse {
 	public int width;
+
 	public int height;
+
 	public String machineName;
+
 	public List<Connection> connections;
+
 	public List<BoardCoordinates> boards;
+
 	public URI power;
+
 	public URI machineRef;
 
 	public SubMachineResponse(SubMachine m, UriInfo ui) {

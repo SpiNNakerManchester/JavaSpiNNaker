@@ -38,6 +38,7 @@ public class Machine {
 					+ "ON m.board_model = bmc.model "
 					+ "WHERE boards.machine_id = ? "
 					+ "AND chip_x = ? AND chip_y = ? LIMIT 1";
+
 	private static final String FIND_BOARD_BY_CFB =
 			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
@@ -46,6 +47,7 @@ public class Machine {
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "WHERE boards.machine_id = ? AND bmp.cabinet = ? "
 					+ "AND bmp.frame = ? AND boards.board_num = ? LIMIT 1";
+
 	private static final String FIND_BOARD_BY_XYZ =
 			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
@@ -54,12 +56,24 @@ public class Machine {
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "WHERE boards.machine_id = ? AND boards.x = ? "
 					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
+
+	/** The ID of the machine */
 	public int id;
+
+	/** The name of the machine */
 	public String name;
+
+	/** The tags associated with the machine. */
 	public List<String> tags = new ArrayList<>();
+
+	/** The width of the machine. */
 	public int width;
+
+	/** The height of the machine. */
 	public int height;
+
 	// TODO: dead boards, dead links
+
 	private volatile Connection conn;
 
 	/** Don't use this constructor; just there for serialization engine */

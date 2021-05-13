@@ -45,14 +45,16 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 @Component
 public class AllocatorTask {
 	private static final Logger log = getLogger(AllocatorTask.class);
+
 	@Autowired
-	DatabaseEngine db;
+	private DatabaseEngine db;
 
 	/**
 	 * Time, in milliseconds, between runs of {@link #allocate()}.
 	 */
 	public static final long INTER_ALLOCATE_DELAY = 5000;
 
+	/** How we get the list of allocation tasks. */
 	public static final String GET_TASKS =
 			"SELECT job_request.req_id, job_request.job_id,"
 					+ "  job_request.num_boards,"
@@ -62,24 +64,25 @@ public class AllocatorTask {
 					+ "  job_request.max_dead_boards "
 					+ "FROM job_request JOIN jobs"
 					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
+
+	/** How we delete an allocation task. */
 	public static final String DELETE_TASK =
 			"DELETE FROM job_request WHERE req_id = ";
 
+	/** How we tell a job that it is allocated. */
 	public static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = ?, height = ?, job_state = ?, num_pending = ?,"
 			+ "root_id = (SELECT board_id FROM boards WHERE "
 			+ "machine_id = ? AND root_x = ? AND root_y = ?) "
 			+ "WHERE job_id = ?";
 
+	/** How we tell a board that it is allocated. */
 	public static final String ALLOCATE_BOARDS_BOARD =
 			"UPDATE jobs SET allocated_job = ? "
 					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ? "
 					+ "AND may_be_allocated > 0";
 
-	public static final String GET_FREE_BOARD_AT =
-			"SELECT board_id, root_x, root_y FROM boards "
-					+ "WHERE machine_id = ? AND allocated_job IS NULL "
-					+ "AND functioning > 0 ORDER BY root_x ASC, root_y ASC";
+	/** How we set the number of pending changes for a job. */
 	private static final String SET_NUM_PENDING =
 			"UPDATE jobs SET num_pending = ? WHERE job_id = ?";
 
@@ -284,7 +287,7 @@ public class AllocatorTask {
 	 * @author Donal Fellows
 	 */
 	// @formatter:on
-	static class LinkDirections {
+	private static class LinkDirections {
 		int x;
 		int y;
 		boolean nw;

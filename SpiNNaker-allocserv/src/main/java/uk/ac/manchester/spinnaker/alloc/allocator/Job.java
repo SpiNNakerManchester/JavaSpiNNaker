@@ -19,17 +19,29 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import java.sql.Connection;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 public class Job {
-
+	/** Job ID */
 	int id;
+
+	/** If not {@code null}, the allocated width of the job's rectangle. */
 	Integer width;
+
+	/** If not {@code null}, the allocated height of the job's rectangle. */
 	Integer height;
-	int state;
+
+	JobState state;
+
+	/** If not {@code null}, the ID of the root board of the job. */
 	Integer root;
+
+	/** The creator of the job. */
 	String owner;
+
+	/** Timestamp of last event keeping job alive. (ms from epoch) */
 	long keepaliveTime;
+
+	/** Host address that issued last keepalive event, if any. */
 	String keepaliveHost;
 
 	Job(Connection conn) {
@@ -58,12 +70,12 @@ public class Job {
 
 	public int getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return id;
 	}
 
-	public State getState() {
+	public JobState getState() {
 		// TODO Auto-generated method stub
-		return null;
+		return state;
 	}
 
 	public Float getStartTime() {

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.machine;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author dkf
  */
 @JsonFormat(shape = ARRAY)
+@JsonIgnoreProperties("scamp-core")
 public final class ChipLocation
 		implements HasChipLocation, Comparable<ChipLocation> {
 	private final int x;
