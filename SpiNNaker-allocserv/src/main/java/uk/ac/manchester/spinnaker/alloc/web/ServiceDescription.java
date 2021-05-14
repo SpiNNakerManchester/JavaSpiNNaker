@@ -16,10 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
@@ -31,8 +35,10 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 public class ServiceDescription {
 	private Version version;
 
+	@JsonInclude(NON_NULL)
 	private URI jobsRef;
 
+	@JsonInclude(NON_NULL)
 	private URI machinesRef;
 
 	public ServiceDescription() {

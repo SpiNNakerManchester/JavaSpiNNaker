@@ -20,7 +20,9 @@ import java.sql.Connection;
 import java.util.List;
 
 public class JobCollection {
-
+	/** Do not call this constructor outside of tests. */
+	JobCollection() {
+	}
 
 	JobCollection(Connection conn) {
 		// TODO Auto-generated constructor stub

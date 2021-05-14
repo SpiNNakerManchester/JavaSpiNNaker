@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.readSQL;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
 
 import java.sql.Connection;
@@ -31,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -49,10 +51,18 @@ public class AllocatorTask {
 	@Autowired
 	private DatabaseEngine db;
 
+	@Autowired
+	private Epochs epochs;
+
 	/**
-	 * Time, in milliseconds, between runs of {@link #allocate()}.
+	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
 	 */
 	public static final long INTER_ALLOCATE_DELAY = 5000;
+
+	/**
+	 * Time, in milliseconds, between runs of {@link #cleanUp()}. (30s)
+	 */
+	private static final long INTER_DESTROY_DELAY = 30000;
 
 	/** How we get the list of allocation tasks. */
 	public static final String GET_TASKS =
@@ -78,12 +88,16 @@ public class AllocatorTask {
 
 	/** How we tell a board that it is allocated. */
 	public static final String ALLOCATE_BOARDS_BOARD =
-			"UPDATE jobs SET allocated_job = ? "
+			"UPDATE boards SET allocated_job = ? "
 					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ? "
 					+ "AND may_be_allocated > 0";
 
+	public static final String FIND_EXPIRED_JOBS =
+			"SELECT job_id FROM jobs WHERE "
+					+ "job_state != ? AND keepalive_timestamp < ? - 30000";
+
 	/** How we set the number of pending changes for a job. */
-	private static final String SET_NUM_PENDING =
+	public static final String SET_NUM_PENDING =
 			"UPDATE jobs SET num_pending = ? WHERE job_id = ?";
 
 	@Value("classpath:find_rectangle.sql")
@@ -103,33 +117,77 @@ public class AllocatorTask {
 	 */
 	@Scheduled(fixedDelay = INTER_ALLOCATE_DELAY)
 	public void allocate() throws SQLException {
-		try (Connection conn = db.getConnection();
-				Statement s = conn.createStatement();
-				ResultSet rs = s.executeQuery(GET_TASKS)) {
-			while (rs.next()) {
-				int id = rs.getInt("req_id");
-				boolean handled = true;
-				try {
-					handled = allocate(conn, rs);
-					/*
-					 * NB: having an exception counts as handled; we will nuke
-					 * the task.
-					 */
-				} finally {
-					if (handled) {
-						s.executeUpdate(DELETE_TASK + id);
+		try (Connection conn = db.getConnection()) {
+			transaction(conn, () -> {
+				boolean changed = false;
+				try (Statement s = conn.createStatement();
+						ResultSet rs = s.executeQuery(GET_TASKS)) {
+					while (rs.next()) {
+						int id = rs.getInt("req_id");
+						boolean handled = true;
+						try {
+							handled = allocate(conn, rs);
+							/*
+							 * NB: having an exception counts as handled; we
+							 * will nuke the task.
+							 */
+						} finally {
+							if (handled) {
+								s.executeUpdate(DELETE_TASK + id);
+								changed = true;
+							}
+						}
 					}
 				}
-			}
+				if (changed) {
+					epochs.nextJobsEpoch();
+				}
+			});
 		}
+	}
+
+	@Scheduled(fixedDelay = INTER_DESTROY_DELAY)
+	public void cleanUp() throws SQLException {
+		Date now = new Date();
+		try (Connection conn = db.getConnection()) {
+			transaction(conn, () -> {
+				boolean changed = false;
+				try (PreparedStatement s =
+						conn.prepareStatement(FIND_EXPIRED_JOBS);
+						ResultSet rs = runQuery(s, DESTROYED, now)) {
+					while (rs.next()) {
+						int id = rs.getInt("job_id");
+						changed |= destroyJob(conn, id);
+					}
+				}
+				if (changed) {
+					epochs.nextJobsEpoch();
+					epochs.nextMachineEpoch();
+				}
+			});
+		}
+	}
+
+	public void destroyJob(int id) throws SQLException {
+		try (Connection conn = db.getConnection()) {
+			transaction(conn, () -> {
+				if (destroyJob(conn, id)) {
+					epochs.nextJobsEpoch();
+					epochs.nextMachineEpoch();
+				}
+			});
+		}
+	}
+
+	private boolean destroyJob(Connection conn, int id) throws SQLException {
+		//FIXME do the actual destroy
+		return false;
 	}
 
 	/**
 	 * Perform the allocation for a particular task. Note that allocation does
 	 * not actually send any messages to the board's BMP (though it does
 	 * schedule them). That's an entirely different thing.
-	 * <p>
-	 * Called <em>without</em> a transaction open.
 	 *
 	 * @param conn
 	 *            The database connection
@@ -158,10 +216,8 @@ public class AllocatorTask {
 			double w = ceil(sqrt(numBoards));
 			double h = ceil(numBoards / w);
 			int tolerance = ((int) w) * ((int) h) - numBoards;
-			return transaction(conn, () -> {
-				return allocateDimensions(conn, jobId, machineId, (int) w,
-						(int) h, maxDeadBoards + tolerance);
-			});
+			return allocateDimensions(conn, jobId, machineId, (int) w, (int) h,
+					maxDeadBoards + tolerance);
 		}
 
 		Integer width = (Integer) task.getObject("width");
@@ -170,21 +226,17 @@ public class AllocatorTask {
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
-			return transaction(conn, () -> {
-				return allocateDimensions(conn, jobId, machineId, width, height,
-						maxDeadBoards);
-			});
+			return allocateDimensions(conn, jobId, machineId, width, height,
+					maxDeadBoards);
 		}
 
 		Integer cabinet = (Integer) task.getObject("cabinet");
 		Integer frame = (Integer) task.getObject("frame");
 		Integer board = (Integer) task.getObject("board");
 		if (cabinet != null && frame != null && board != null) {
-			return transaction(conn, () -> {
-				// Ignores maxDeadBoards; is a single-board allocate
-				return allocateCoords(conn, jobId, machineId, cabinet, frame,
-						board);
-			});
+			// Ignores maxDeadBoards; is a single-board allocate
+			return allocateCoords(conn, jobId, machineId, cabinet, frame,
+					board);
 		}
 
 		log.warn("job {} could not be allocated; "
@@ -192,15 +244,11 @@ public class AllocatorTask {
 		return true;
 	}
 
-	// Creates a transaction
 	private boolean allocateOneBoard(Connection conn, int jobId, int machineId)
 			throws SQLException {
-		return transaction(conn, () -> {
-			return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
-		});
+		return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
 	}
 
-	// Must be called inside a transaction
 	private boolean allocateDimensions(Connection conn, int jobId,
 			int machineId, int width, int height, int tolerance)
 			throws SQLException {
@@ -218,7 +266,6 @@ public class AllocatorTask {
 		}
 	}
 
-	// Must be called inside a transaction
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
 			int cabinet, int frame, int board) throws SQLException {
 		try (PreparedStatement s = conn.prepareStatement(readSQL(findLocation));
@@ -233,7 +280,6 @@ public class AllocatorTask {
 		}
 	}
 
-	// Must be called inside a transaction
 	private void setAllocation(Connection conn, int jobId, int width,
 			int height, int machineId, int rootX, int rootY)
 			throws SQLException {
@@ -245,11 +291,12 @@ public class AllocatorTask {
 						conn.prepareStatement(readSQL(issueChangeForJob));
 				PreparedStatement setNumPending =
 						conn.prepareStatement(SET_NUM_PENDING)) {
+			boolean changed = false;
 			List<LinkDirections> perimeter = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
-					runUpdate(allocBoard, jobId, machineId, x + rootX,
-							y + rootY);
+					changed |= runUpdate(allocBoard, jobId, machineId,
+							x + rootX, y + rootY) > 0;
 					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
 						perimeter.add(new LinkDirections(width, height, x, y));
 					}
@@ -268,6 +315,9 @@ public class AllocatorTask {
 						ld.w, ld.nw, ld.se);
 			}
 			runUpdate(setNumPending, numPending, jobId);
+			if (changed || numPending > 0) {
+				epochs.nextMachineEpoch();
+			}
 		}
 	}
 

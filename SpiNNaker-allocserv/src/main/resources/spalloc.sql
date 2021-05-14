@@ -62,10 +62,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS bmpSanity ON bmp(
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
+	create_timestamp INTEGER NOT NULL,
 	width INTEGER, -- set after allocation
 	height INTEGER, -- set after allocation
 	root_id INTEGER REFERENCES boards(board_id) ON DELETE RESTRICT, -- set after allocation
 	job_state INTEGER DEFAULT (0),
+	keepalive_interval INTEGER NOT NULL,
 	keepalive_timestamp INTEGER, -- timestamp
 	keepalive_host TEXT, -- IP address
 	num_pending INTEGER NOT NULL DEFAULT (0)

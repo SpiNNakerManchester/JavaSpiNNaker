@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Collections.unmodifiableList;
 
 import java.net.URI;
@@ -23,23 +24,32 @@ import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import uk.ac.manchester.spinnaker.alloc.allocator.SubMachine;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public class SubMachineResponse {
+	/** Rectangle width. */ //FIXME
 	public int width;
 
+	/** Rectangle height. */ //FIXME
 	public int height;
 
+	/** On what machine. */ //FIXME
 	public String machineName;
 
+	/** How to talk to boards. */ //FIXME
 	public List<Connection> connections;
 
+	/** Where the boards are. */ //FIXME
 	public List<BoardCoordinates> boards;
 
+	@JsonInclude(NON_NULL)
 	public URI power;
 
+	@JsonInclude(NON_NULL)
 	public URI machineRef;
 
 	public SubMachineResponse(SubMachine m, UriInfo ui) {

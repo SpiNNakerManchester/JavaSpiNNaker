@@ -16,22 +16,36 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import uk.ac.manchester.spinnaker.alloc.allocator.Machine;
 
 public class MachineResponse {
 	public String name;
+
 	public List<String> tags;
+
 	public int width;
+
 	public int height;
+
 	// TODO: dead boards, dead links
+
+	@JsonInclude(NON_NULL)
 	public URI physicalBoard;
+
+	@JsonInclude(NON_NULL)
 	public URI logicalBoard;
+
+	@JsonInclude(NON_NULL)
 	public URI chip;
 
 	public MachineResponse() {

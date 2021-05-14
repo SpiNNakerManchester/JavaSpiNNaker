@@ -65,8 +65,7 @@ class JsonTest {
 			d.setVersion(new Version("1.2.3"));
 			JSONAssert.assertEquals(
 					"{ \"version\": { \"major-version\": 1,"
-							+ "\"minor-version\": 2, \"revision\": 3 },"
-							+ "\"jobs-ref\": null, \"machines-ref\": null }",
+							+ "\"minor-version\": 2, \"revision\": 3 } }",
 					serialize(d), false);
 		}
 

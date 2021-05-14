@@ -49,15 +49,17 @@ public class Spalloc implements SpallocInterface {
 			"SELECT tag FROM tags WHERE machine_id = ?";
 
 	private static final String GET_JOB_IDS =
-			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs";
+			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
+					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
 
 	private static final String GET_JOB =
 			"SELECT machine_id, width, height, root_id, job_state, "
 					+ "keepalive_timestamp, keepalive_host FROM jobs "
 					+ "WHERE job_id = ? LIMIT 1";
 
-	private static final String INSERT_JOB =
-			"INSERT INTO jobs(machine_id, keepalive_timestamp) VALUES (?, ?)";
+	private static final String INSERT_JOB = "INSERT INTO jobs("
+			+ "machine_id, keepalive_timestamp, create_timestamp) "
+			+ "VALUES (?, ?, ?)";
 
 	private static final String INSERT_REQ_N_BOARDS =
 			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
@@ -73,6 +75,9 @@ public class Spalloc implements SpallocInterface {
 
 	@Autowired
 	DatabaseEngine db;
+
+	@Autowired
+	Epochs epochs;
 
 	private List<String> getMachineTags(PreparedStatement ts, int id)
 			throws SQLException {
@@ -139,13 +144,13 @@ public class Spalloc implements SpallocInterface {
 	}
 
 	@Override
-	public JobCollection getJobs() throws SQLException {
+	public JobCollection getJobs(int limit, int start) throws SQLException {
 		try (Connection conn = db.getConnection()) {
 			JobCollection jc = new JobCollection(conn);
 			try (PreparedStatement s = conn.prepareStatement(GET_JOB_IDS);
-					ResultSet rs = s.executeQuery()) {
+					ResultSet rs = runQuery(s, limit, start)) {
 				while (rs.next()) {
-					jc.addJob(rs.getInt("machine_id"), rs.getInt("job_state"),
+					jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
 							rs.getLong("keepalive_timestamp"));
 				}
 			}
@@ -249,7 +254,7 @@ public class Spalloc implements SpallocInterface {
 		Date timestamp = new Date();
 		try (PreparedStatement ps =
 				conn.prepareStatement(INSERT_JOB, RETURN_GENERATED_KEYS)) {
-			runUpdate(ps, m.id, timestamp);
+			runUpdate(ps, m.id, timestamp, timestamp);
 			try (ResultSet rs = ps.getGeneratedKeys()) {
 				while (rs.next()) {
 					return rs.getInt(1);

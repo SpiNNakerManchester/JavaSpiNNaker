@@ -16,10 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
@@ -36,20 +40,25 @@ public class StateResponse {
 
 	private Float startTime; // TODO Why is this a float? It's a time, damnit!
 
+	@JsonInclude(NON_NULL)
 	private String reason;
 
 	private String keepaliveHost;
 
 	/** Where the keepalives go. */
+	@JsonInclude(NON_NULL)
 	public final URI keepaliveRef;
 
 	/** Where the machine details are. */
+	@JsonInclude(NON_NULL)
 	public final URI machineRef;
 
 	/** Where the power controls are. */
+	@JsonInclude(NON_NULL)
 	public final URI powerRef;
 
 	/** Where the chip info is. */
+	@JsonInclude(NON_NULL)
 	public final URI chipRef;
 
 	public StateResponse() {

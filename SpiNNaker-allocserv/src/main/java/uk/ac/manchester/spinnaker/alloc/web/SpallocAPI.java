@@ -35,6 +35,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -71,16 +73,17 @@ public interface SpallocAPI {
 	@GET
 	@Path("jobs")
 	@Produces(JSON)
-	Response listJobs(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
+	void listJobs(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
 			@QueryParam("limit") @DefaultValue("100") int limit,
 			@QueryParam("start") @DefaultValue("0") int start,
-			@Context UriInfo ui);
+			@Context UriInfo ui, @Suspended AsyncResponse response);
 
 	@POST
 	@Path("jobs")
 	@Consumes(JSON)
 	@Produces(JSON)
-	Response createJob(CreateJobRequest req, @Context UriInfo ui);
+	void createJob(CreateJobRequest req, @Context UriInfo ui,
+			@Suspended AsyncResponse response);
 
 	@OPTIONS
 	default Response optionsJobs() {
@@ -96,8 +99,9 @@ public interface SpallocAPI {
 		@GET
 		@Path("/")
 		@Produces(JSON)
-		Response describeMachine(
-				@QueryParam(WAIT) @DefaultValue("false") boolean wait);
+		void describeMachine(
+				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
+				@Suspended AsyncResponse response);
 
 		@OPTIONS
 		@Path("{path:.*}")
@@ -134,8 +138,8 @@ public interface SpallocAPI {
 		@GET
 		@Path("/")
 		@Produces(JSON)
-		Response getState(
-				@QueryParam(WAIT) @DefaultValue("false") boolean wait);
+		void getState(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
+				@Suspended AsyncResponse response);
 
 		@OPTIONS
 		default Response optionsRoot() {

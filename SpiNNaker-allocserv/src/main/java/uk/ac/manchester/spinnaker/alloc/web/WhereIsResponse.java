@@ -16,15 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.net.URI;
 
 import javax.ws.rs.core.UriInfo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.BoardLocation;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
+@JsonInclude(NON_NULL)
 public class WhereIsResponse {
 	public Integer jobId;
 
