@@ -21,7 +21,11 @@ WITH
 		JOIN args ON machines.machine_id = args.machine_id LIMIT 1),
 	bs AS (SELECT boards.* FROM boards
 		JOIN args ON boards.machine_id = args.machine_id)
-SELECT board_id AS id, x, y, available FROM args, (
+SELECT
+	root.board_id AS id,
+	root.x AS x, root.y AS y,
+	root.available AS available
+FROM args, bs, (
 	WITH RECURSIVE
 		-- Generate sequences of right size
 		cx(x) AS (SELECT 0 UNION SELECT x+1 FROM cx, args
@@ -37,6 +41,7 @@ SELECT board_id AS id, x, y, available FROM args, (
 		SUM(bs.may_be_allocated) AS available
 	FROM bs, c, g, args
 	WHERE bs.x = c.x + g.x AND bs.y = c.y + g.y
-	GROUP BY g.x, g.y)
+	GROUP BY g.x, g.y) AS root
 WHERE available >= args.width * args.height - args.max_dead_boards
+	AND bs.board_id = id AND bs.may_be_allocated > 0
 ORDER BY y ASC, x ASC;

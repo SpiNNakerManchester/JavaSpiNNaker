@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,9 @@ public class BMPController {
 	private static final int SECONDS_BETWEEN_TRIES = 15;
 
 	private static final int N_REQUEST_TRIES = 2;
+
+	private static final Collection<Integer> FPGA_IDS =
+			unmodifiableCollection(asList(0, 1, 2));
 
 	private Map<Machine, Transceiver> txrxMap = new HashMap<>();
 
@@ -134,7 +139,7 @@ public class BMPController {
 			List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		List<Integer> boardsToPower = boards;
-		for (int _try = 0; _try < NUM_FPGA_RETRIES; _try++) {
+		for (int attempt = 1; attempt <= NUM_FPGA_RETRIES; attempt++) {
 			txrx.power(POWER_ON, new BMPCoords(0, 0), boardsToPower);
 			List<Integer> retryBoards = new ArrayList<>();
 			for (int board : boardsToPower) {
@@ -144,7 +149,7 @@ public class BMPController {
 					continue;
 				}
 
-				for (int fpga = 0; fpga <= 2; fpga++) {
+				for (int fpga : FPGA_IDS) {
 					if (!isGoodFPGA(machine, txrx, board, fpga)) {
 						retryBoards.add(board);
 						break;
@@ -161,39 +166,177 @@ public class BMPController {
 				+ NUM_FPGA_RETRIES + " tries");
 	}
 
+	/**
+	 * Describes a request to modify the power status of a collection of boards.
+	 * The boards must be on a single machine.
+	 *
+	 * @author Donal Fellows
+	 */
 	public static class Request {
 		private final Machine machine;
+
 		private final List<Integer> powerOnBoards;
+
 		private final List<Integer> powerOffBoards;
-		private final List<LR> link_requests;
+
+		private final List<LinkRequest> linkRequests;
+
 		private final OnDone onDone;
 
+		/**
+		 * Create a request.
+		 *
+		 * @param machine
+		 *            What machine are the boards on?
+		 * @param powerOnBoards
+		 *            What boards (by physical ID) are to be powered on?
+		 * @param powerOffBoards
+		 *            What boards (by physical ID) are to be powered off?
+		 * @param linkRequests
+		 *            Any link power control requests. By default, links are on
+		 *            if their board is on and they are connected; it is
+		 *            <em>useful and relevant</em> to modify the power state of
+		 *            links on the periphery of an allocation.
+		 * @param onDone
+		 *            An optional callback for when the changes are fully
+		 *            processed (whether successfully or not). May be
+		 *            {@code null} if there is no callback.
+		 */
 		public Request(Machine machine, List<Integer> powerOnBoards,
-				List<Integer> powerOffBoards, List<LR> linkRequests,
+				List<Integer> powerOffBoards, List<LinkRequest> linkRequests,
 				OnDone onDone) {
 			this.machine = machine;
-			this.powerOnBoards = powerOnBoards;
-			this.powerOffBoards = powerOffBoards;
-			this.link_requests = linkRequests;
+			this.powerOnBoards = new ArrayList<>(powerOnBoards);
+			this.powerOffBoards = new ArrayList<>(powerOffBoards);
+			this.linkRequests = new ArrayList<>(linkRequests);
 			this.onDone = onDone;
+		}
+
+		/**
+		 * Create a request.
+		 *
+		 * @param machine
+		 *            What machine are the boards on?
+		 * @param powerOnBoards
+		 *            What boards (by physical ID) are to be powered on?
+		 * @param powerOffBoards
+		 *            What boards (by physical ID) are to be powered off?
+		 * @param linkRequests
+		 *            Any link power control requests. By default, links are on
+		 *            if their board is on and they are connected; it is
+		 *            <em>useful and relevant</em> to modify the power state of
+		 *            links on the periphery of an allocation.
+		 */
+		public Request(Machine machine, List<Integer> powerOnBoards,
+				List<Integer> powerOffBoards, List<LinkRequest> linkRequests) {
+			this.machine = machine;
+			this.powerOnBoards = new ArrayList<>(powerOnBoards);
+			this.powerOffBoards = new ArrayList<>(powerOffBoards);
+			this.linkRequests = new ArrayList<>(linkRequests);
+			this.onDone = null;
+		}
+
+		/**
+		 * Create a request.
+		 *
+		 * @param machine
+		 *            What machine are the boards on?
+		 * @param powerOnBoards
+		 *            What boards (by physical ID) are to be powered on?
+		 * @param linkRequests
+		 *            Any link power control requests. By default, links are on
+		 *            if their board is on and they are connected; it is
+		 *            <em>useful and relevant</em> to modify the power state of
+		 *            links on the periphery of an allocation.
+		 * @param onDone
+		 *            An optional callback for when the changes are fully
+		 *            processed (whether successfully or not). May be
+		 *            {@code null} if there is no callback.
+		 */
+		public Request(Machine machine, List<Integer> powerOnBoards,
+				List<LinkRequest> linkRequests, OnDone onDone) {
+			this.machine = machine;
+			this.powerOnBoards = new ArrayList<>(powerOnBoards);
+			this.powerOffBoards = new ArrayList<>();
+			this.linkRequests = new ArrayList<>(linkRequests);
+			this.onDone = onDone;
+		}
+
+		/**
+		 * Create a request.
+		 *
+		 * @param machine
+		 *            What machine are the boards on?
+		 * @param powerOnBoards
+		 *            What boards (by physical ID) are to be powered on?
+		 * @param linkRequests
+		 *            Any link power control requests. By default, links are on
+		 *            if their board is on and they are connected; it is
+		 *            <em>useful and relevant</em> to modify the power state of
+		 *            links on the periphery of an allocation.
+		 */
+		public Request(Machine machine, List<Integer> powerOnBoards,
+				List<LinkRequest> linkRequests) {
+			this.machine = machine;
+			this.powerOnBoards = new ArrayList<>(powerOnBoards);
+			this.powerOffBoards = new ArrayList<>();
+			this.linkRequests = new ArrayList<>(linkRequests);
+			this.onDone = null;
 		}
 	}
 
-	public static class LR {
+	/**
+	 * Describes a part of a request that modifies the power of an FPGA-managed
+	 * inter-board link.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class LinkRequest {
 		private final int board;
+
 		private final LinkInfo link;
+
 		private final PowerState power;
 
-		public LR(int board, LinkInfo link, PowerState power) {
+		/**
+		 * Create a request.
+		 *
+		 * @param board
+		 *            The physical ID of the board that the FPGA is located on.
+		 * @param link
+		 *            Which link (and hence which FPGA).
+		 * @param power
+		 *            What state is the link to be put into?
+		 */
+		public LinkRequest(int board, LinkInfo link, PowerState power) {
 			this.board = board;
 			this.link = link;
 			this.power = power;
 		}
 	}
 
+	/**
+	 * A callback handler that can be used to notify code that a BMP request has
+	 * completed. Note that the callback will be processed on a BMP controller
+	 * worker thread.
+	 *
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
-	interface OnDone {
-		void call(boolean success, String failureReason);
+	public interface OnDone {
+		/**
+		 * The callback.
+		 *
+		 * @param failureReason
+		 *            Will be {@code null} on success. If the request failed,
+		 *            summary information about why.
+		 * @param exception
+		 *            The details of the reason for the failure. {@code null} on
+		 *            success. Note that the exception <em>will</em> have been
+		 *            logged if it is appropriate to do so; callbacks should not
+		 *            log.
+		 */
+		void call(String failureReason, Exception exception);
 	}
 
 	private void processRequest(Request request) throws InterruptedException {
@@ -205,7 +348,7 @@ public class BMPController {
 			return;
 		}
 		MDC.put("changes", asList(request.powerOnBoards.size(),
-				request.powerOffBoards.size(), request.link_requests.size()));
+				request.powerOffBoards.size(), request.linkRequests.size()));
 		try {
 			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
 				try {
@@ -216,7 +359,7 @@ public class BMPController {
 					}
 
 					// Process link requests next
-					for (LR linkReq : request.link_requests) {
+					for (LinkRequest linkReq : request.linkRequests) {
 						// Set the link state, as required
 						setLinkState(txrx, linkReq.board, linkReq.link,
 								linkReq.power);
@@ -229,14 +372,14 @@ public class BMPController {
 
 					// Exit the retry loop if the requests all worked
 					if (request.onDone != null) {
-						request.onDone.call(true, null);
+						request.onDone.call(null, null);
 					}
 					break;
 				} catch (InterruptedException e) {
 					String reason = "Requests failed on BMP " + request.machine;
 					log.error(reason, e);
 					if (request.onDone != null) {
-						request.onDone.call(false, reason);
+						request.onDone.call(reason, e);
 					}
 					throw e;
 				} catch (Exception e) {
@@ -245,7 +388,7 @@ public class BMPController {
 								"Requests failed on BMP " + request.machine;
 						log.error(reason, e);
 						if (request.onDone != null) {
-							request.onDone.call(false, reason);
+							request.onDone.call(reason, e);
 						}
 						currentThread().interrupt();
 						break;

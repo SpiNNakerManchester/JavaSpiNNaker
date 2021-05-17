@@ -16,11 +16,22 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 public class Job {
+	@JsonIgnore
+	private final Connection conn;
+
 	/** Job ID */
 	int id;
 
@@ -45,12 +56,22 @@ public class Job {
 	String keepaliveHost;
 
 	Job(Connection conn) {
-		// TODO Auto-generated constructor stub
+		this.conn = conn;
 	}
 
-	public void access(String keepaliveAddress) {
-		// TODO Auto-generated method stub
+	private static final String UPDATE_KEEPALIVE =
+			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
+					+ "WHERE job_id = ? AND job_state != ?";
 
+	private static final String DESTROY_JOB = "UPDATE jobs SET "
+			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
+			+ "WHERE job_id = ? AND job_state != ?";
+
+	public void access(String keepaliveAddress) throws SQLException {
+		Date now = new Date();
+		try (PreparedStatement s = conn.prepareStatement(UPDATE_KEEPALIVE)) {
+			runUpdate(s, now, keepaliveAddress, id, DESTROYED);
+		}
 	}
 
 	public SubMachine getMachine() {
@@ -58,9 +79,11 @@ public class Job {
 		return null;
 	}
 
-	public void destroy(String reason) {
-		// TODO Auto-generated method stub
-
+	public void destroy(String reason) throws SQLException {
+		Date now = new Date();
+		try (PreparedStatement s = conn.prepareStatement(DESTROY_JOB)) {
+			runUpdate(s, DESTROYED, reason, now, id, DESTROYED);
+		}
 	}
 
 	public void waitForChange() {

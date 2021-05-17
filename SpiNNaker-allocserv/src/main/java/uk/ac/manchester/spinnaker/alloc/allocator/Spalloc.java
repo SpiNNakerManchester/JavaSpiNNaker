@@ -58,8 +58,8 @@ public class Spalloc implements SpallocInterface {
 					+ "WHERE job_id = ? LIMIT 1";
 
 	private static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, keepalive_timestamp, create_timestamp) "
-			+ "VALUES (?, ?, ?)";
+			+ "machine_id, owner, keepalive_timestamp, create_timestamp) "
+			+ "VALUES (?, ?, ?, ?)";
 
 	private static final String INSERT_REQ_N_BOARDS =
 			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
@@ -204,7 +204,7 @@ public class Spalloc implements SpallocInterface {
 					return null;
 				}
 
-				int id = insertJob(conn, m);
+				int id = insertJob(conn, m, owner);
 				if (id < 0) {
 					// Insert failed
 					return null;
@@ -249,12 +249,13 @@ public class Spalloc implements SpallocInterface {
 		}
 	}
 
-	private int insertJob(Connection conn, Machine m) throws SQLException {
+	private int insertJob(Connection conn, Machine m, String owner)
+			throws SQLException {
 		// TODO add in additional info
 		Date timestamp = new Date();
 		try (PreparedStatement ps =
 				conn.prepareStatement(INSERT_JOB, RETURN_GENERATED_KEYS)) {
-			runUpdate(ps, m.id, timestamp, timestamp);
+			runUpdate(ps, m.id, owner, timestamp, timestamp);
 			try (ResultSet rs = ps.getGeneratedKeys()) {
 				while (rs.next()) {
 					return rs.getInt(1);

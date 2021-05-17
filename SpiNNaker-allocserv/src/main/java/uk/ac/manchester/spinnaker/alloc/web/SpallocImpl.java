@@ -208,7 +208,12 @@ public class SpallocImpl implements SpallocAPI {
 		return new JobAPI() {
 			@Override
 			public Response keepAlive(String reqBody) {
-				j.access(req.getRemoteAddr());
+				try {
+					j.access(req.getRemoteAddr());
+				} catch (SQLException e) {
+					log.error("failed to update job record", e);
+					throw new WebApplicationException("failed");
+				}
 				return ok("ok").build();
 			}
 
@@ -249,32 +254,57 @@ public class SpallocImpl implements SpallocAPI {
 
 			@Override
 			public Response getMachine() {
-				j.access(req.getRemoteAddr());
-				SubMachine m = j.getMachine();
-				if (m == null) {
-					// No machine allocated yet
-					return noContent().build();
+				try {
+					j.access(req.getRemoteAddr());
+					SubMachine m = j.getMachine();
+					if (m == null) {
+						// No machine allocated yet
+						return noContent().build();
+					}
+					return ok(new SubMachineResponse(m, ui)).build();
+				} catch (SQLException e) {
+					log.error("failed to get machine description", e);
+					throw new WebApplicationException(
+							"failed to get machine description");
 				}
-				return ok(new SubMachineResponse(m, ui)).build();
 			}
 
 			@Override
 			public Response getMachinePower() {
-				j.access(req.getRemoteAddr());
-				return ok(new MachinePower(j.getMachine().getPower())).build();
+				try {
+					j.access(req.getRemoteAddr());
+					return ok(new MachinePower(j.getMachine().getPower()))
+							.build();
+				} catch (SQLException e) {
+					log.error("failed to get power status", e);
+					throw new WebApplicationException(
+							"failed to get power status");
+				}
 			}
 
 			@Override
 			public Response setMachinePower(MachinePower reqBody) {
-				j.access(req.getRemoteAddr());
-				j.getMachine().setPower(reqBody.power);
-				return accepted().build();
+				try {
+					j.access(req.getRemoteAddr());
+					j.getMachine().setPower(reqBody.power);
+					return accepted().build();
+				} catch (SQLException e) {
+					log.error("failed to set power status", e);
+					throw new WebApplicationException(
+							"failed to set power status");
+				}
 			}
 
 			@Override
 			public Response getJobChipLocation(int x, int y) {
-				j.access(req.getRemoteAddr());
-				return ok(new WhereIsResponse(j.whereIs(x, y), ui)).build();
+				try {
+					j.access(req.getRemoteAddr());
+					return ok(new WhereIsResponse(j.whereIs(x, y), ui)).build();
+				} catch (SQLException e) {
+					log.error("failed to get location info", e);
+					throw new WebApplicationException(
+							"failed to get location info");
+				}
 			}
 		};
 	}
@@ -317,7 +347,7 @@ public class SpallocImpl implements SpallocAPI {
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			AsyncResponse response) {
-		if (req.owner == null) {
+		if (req.owner == null || req.owner.trim().isEmpty()) {
 			throw new WebApplicationException("owner must be supplied",
 					BAD_REQUEST);
 		}
@@ -347,8 +377,8 @@ public class SpallocImpl implements SpallocAPI {
 		bgAction(response, () -> {
 			Job j;
 			try {
-				j = core.createJob(req.owner, req.dimensions, req.machineName,
-						req.tags, maxDeadBoards);
+				j = core.createJob(req.owner.trim(), req.dimensions,
+						req.machineName, req.tags, maxDeadBoards);
 			} catch (SQLException e) {
 				log.error("failed to create job", e);
 				throw new WebApplicationException(
