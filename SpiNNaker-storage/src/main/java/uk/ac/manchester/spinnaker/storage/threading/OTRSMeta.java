@@ -33,127 +33,127 @@ final class OTRSMeta extends OTWrapper implements ResultSetMetaData {
 	}
 
 	@Override
-	public final int getColumnCount() throws SQLException {
+	public int getColumnCount() throws SQLException {
 		validateThread();
 		return m.getColumnCount();
 	}
 
 	@Override
-	public final boolean isAutoIncrement(int column) throws SQLException {
+	public boolean isAutoIncrement(int column) throws SQLException {
 		validateThread();
 		return m.isAutoIncrement(column);
 	}
 
 	@Override
-	public final boolean isCaseSensitive(int column) throws SQLException {
+	public boolean isCaseSensitive(int column) throws SQLException {
 		validateThread();
 		return m.isCaseSensitive(column);
 	}
 
 	@Override
-	public final boolean isSearchable(int column) throws SQLException {
+	public boolean isSearchable(int column) throws SQLException {
 		validateThread();
 		return m.isSearchable(column);
 	}
 
 	@Override
-	public final boolean isCurrency(int column) throws SQLException {
+	public boolean isCurrency(int column) throws SQLException {
 		validateThread();
 		return m.isCurrency(column);
 	}
 
 	@Override
-	public final int isNullable(int column) throws SQLException {
+	public int isNullable(int column) throws SQLException {
 		validateThread();
 		return m.isNullable(column);
 	}
 
 	@Override
-	public final boolean isSigned(int column) throws SQLException {
+	public boolean isSigned(int column) throws SQLException {
 		validateThread();
 		return m.isSigned(column);
 	}
 
 	@Override
-	public final int getColumnDisplaySize(int column) throws SQLException {
+	public int getColumnDisplaySize(int column) throws SQLException {
 		validateThread();
 		return m.getColumnDisplaySize(column);
 	}
 
 	@Override
-	public final String getColumnLabel(int column) throws SQLException {
+	public String getColumnLabel(int column) throws SQLException {
 		validateThread();
 		return m.getColumnLabel(column);
 	}
 
 	@Override
-	public final String getColumnName(int column) throws SQLException {
+	public String getColumnName(int column) throws SQLException {
 		validateThread();
 		return m.getColumnName(column);
 	}
 
 	@Override
-	public final String getSchemaName(int column) throws SQLException {
+	public String getSchemaName(int column) throws SQLException {
 		validateThread();
 		return m.getSchemaName(column);
 	}
 
 	@Override
-	public final int getPrecision(int column) throws SQLException {
+	public int getPrecision(int column) throws SQLException {
 		validateThread();
 		return m.getPrecision(column);
 	}
 
 	@Override
-	public final int getScale(int column) throws SQLException {
+	public int getScale(int column) throws SQLException {
 		validateThread();
 		return m.getScale(column);
 	}
 
 	@Override
-	public final String getTableName(int column) throws SQLException {
+	public String getTableName(int column) throws SQLException {
 		validateThread();
 		return m.getTableName(column);
 	}
 
 	@Override
-	public final String getCatalogName(int column) throws SQLException {
+	public String getCatalogName(int column) throws SQLException {
 		validateThread();
 		return m.getCatalogName(column);
 	}
 
 	@Override
-	public final int getColumnType(int column) throws SQLException {
+	public int getColumnType(int column) throws SQLException {
 		validateThread();
 		return m.getColumnType(column);
 	}
 
 	@Override
-	public final String getColumnTypeName(int column) throws SQLException {
+	public String getColumnTypeName(int column) throws SQLException {
 		validateThread();
 		return m.getColumnTypeName(column);
 	}
 
 	@Override
-	public final boolean isReadOnly(int column) throws SQLException {
+	public boolean isReadOnly(int column) throws SQLException {
 		validateThread();
 		return m.isReadOnly(column);
 	}
 
 	@Override
-	public final boolean isWritable(int column) throws SQLException {
+	public boolean isWritable(int column) throws SQLException {
 		validateThread();
 		return m.isWritable(column);
 	}
 
 	@Override
-	public final boolean isDefinitelyWritable(int column) throws SQLException {
+	public boolean isDefinitelyWritable(int column) throws SQLException {
 		validateThread();
 		return m.isDefinitelyWritable(column);
 	}
 
 	@Override
-	public final String getColumnClassName(int column) throws SQLException {
+	public String getColumnClassName(int column) throws SQLException {
 		validateThread();
 		return m.getColumnClassName(column);
 	}

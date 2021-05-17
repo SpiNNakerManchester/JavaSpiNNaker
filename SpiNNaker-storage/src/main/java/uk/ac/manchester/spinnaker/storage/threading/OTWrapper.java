@@ -35,6 +35,7 @@ import java.sql.Wrapper;
  */
 abstract class OTWrapper implements Wrapper {
 	private final OneThread ot;
+
 	private final Wrapper w;
 
 	OTWrapper(OneThread ot, Wrapper w) {
@@ -56,6 +57,9 @@ abstract class OTWrapper implements Wrapper {
 
 	/**
 	 * The point that enforces the single-threaded nature of the wrapper.
+	 *
+	 * @throws IllegalStateException
+	 *             When the current thread is the wrong thread.
 	 */
 	final void validateThread() {
 		if (currentThread() != ot.thread) {
