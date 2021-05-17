@@ -113,4 +113,14 @@ public class Machine {
 		}
 	}
 
+	public String getRootBoardBMPAddress() throws SQLException {
+		// FIXME Auto-generated method stub
+		return null;
+	}
+
+	public List<Integer> getBoardNumbers() throws SQLException {
+		// FIXME Auto-generated method stub
+		return null;
+	}
+
 }

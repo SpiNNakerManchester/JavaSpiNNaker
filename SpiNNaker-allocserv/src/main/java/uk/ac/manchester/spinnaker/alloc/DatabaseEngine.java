@@ -21,6 +21,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
+import static uk.ac.manchester.spinnaker.alloc.OneThread.threadBound;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class DatabaseEngine {
 				}
 				initialised = true;
 			}
-			return conn;
+			return threadBound(conn);
 		}
 	}
 

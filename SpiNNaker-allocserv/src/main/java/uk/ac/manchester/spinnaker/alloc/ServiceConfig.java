@@ -70,9 +70,21 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 public class ServiceConfig {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
+	private static final String REST_PATH = "/";
+
+	private static final int POOL_SIZE = 16;
+
+	/**
+	 * The thread pool.
+	 *
+	 * @param numThreads
+	 *            The size of the pool. From {@code num.threads} property;
+	 *            defaults to {@code 16}.
+	 * @return The set up thread pool bean.
+	 */
 	@Bean(destroyMethod = "shutdown")
-	ScheduledExecutorService scheduledThreadPoolExecutor(
-			@Value("${num.threads:16}") int numThreads) {
+	public ScheduledExecutorService scheduledThreadPoolExecutor(
+			@Value("${num.threads:" + POOL_SIZE + "}") int numThreads) {
 		return newScheduledThreadPool(numThreads);
 	}
 
@@ -83,6 +95,8 @@ public class ServiceConfig {
 	 *            Where to deploy services in resource-space
 	 * @param service
 	 *            The service implementation
+	 * @param executor
+	 *            The thread pool
 	 * @param bus
 	 *            The CXF core
 	 * @return The REST service core, configured.
@@ -90,7 +104,8 @@ public class ServiceConfig {
 	@Bean
 	@Profile("!unittest")
 	@DependsOn("bus")
-	public Server jaxRsServer(@Value("${cxf.rest.path:/}") String restPath,
+	public Server jaxRsServer(
+			@Value("${cxf.rest.path:" + REST_PATH + "}") String restPath,
 			SpallocAPI service, Executor executor, SpringBus bus) {
 		final JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setAddress(restPath);
@@ -103,10 +118,14 @@ public class ServiceConfig {
 	}
 
 	@Autowired
-	ApplicationContext ctx;
+	private ApplicationContext ctx;
 
+	/**
+	 * Log what beans are actually there, ignoring the bits and pieces of
+	 * framework. Useful for debugging!
+	 */
 	@PostConstruct
-	void logBeans() {
+	private void logBeans() {
 		if (log.isInfoEnabled()) {
 			log.info("beans defined: {}", stream(ctx.getBeanDefinitionNames())
 					// Remove Spring internal beans
