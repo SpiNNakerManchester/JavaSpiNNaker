@@ -21,7 +21,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
-import static uk.ac.manchester.spinnaker.alloc.OneThread.threadBound;
+import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 
 import java.io.File;
 import java.io.IOException;
