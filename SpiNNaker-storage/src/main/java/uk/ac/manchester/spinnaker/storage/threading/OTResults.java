@@ -47,6 +47,7 @@ import java.util.Map;
  */
 final class OTResults extends OTWrapper implements ResultSet {
 	private final ResultSet r;
+
 	private final Statement s;
 
 	OTResults(OneThread ot, Statement s, ResultSet r) {

@@ -27,6 +27,7 @@ import java.sql.Connection;
  * @author Donal Fellows
  */
 public final class OneThread {
+	/** The thread to which a connection (and related classes) are bound. */
 	final Thread thread;
 
 	/**
@@ -34,6 +35,7 @@ public final class OneThread {
 	 *
 	 * @param conn
 	 *            The connection that is being protected.
+	 * @return The wrapped connection.
 	 */
 	public static Connection threadBound(Connection conn) {
 		OneThread ot = new OneThread();
