@@ -44,8 +44,11 @@ CREATE TABLE IF NOT EXISTS boards (
 		) VIRTUAL
 );
 -- Every board has a unique location within its machine
-CREATE UNIQUE INDEX IF NOT EXISTS boardSanity ON boards(
+CREATE UNIQUE INDEX IF NOT EXISTS boardCoordinateSanity ON boards(
 	root_x ASC, root_y ASC, machine_id ASC);
+-- Every board has a unique board number within its BMP
+CREATE UNIQUE INDEX IF NOT EXISTS boardBmpSanity ON boards(
+	bmp_id ASC, board_num ASC);
 
 CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,7 +81,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	job_id INTEGER NOT NULL REFERENCES jobs(job_id),
+	job_id INTEGER NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,
 	num_boards INTEGER,
 	width INTEGER,
 	height INTEGER,
@@ -90,7 +93,7 @@ CREATE TABLE IF NOT EXISTS job_request (
 
 CREATE TABLE IF NOT EXISTS pending_changes (
     change_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    job_id INTEGER REFERENCES jobs(job_id) ON DELETE RESTRICT,
+    job_id INTEGER REFERENCES jobs(job_id) ON DELETE CASCADE,
     board_id INTEGER UNIQUE NOT NULL REFERENCES boards(board_id) ON DELETE RESTRICT,
     "power" INTEGER NOT NULL, -- Whether to switch the board on
     fpga_n INTEGER NOT NULL, -- Whether to switch the northward FPGA on

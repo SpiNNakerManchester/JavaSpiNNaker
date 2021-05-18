@@ -20,6 +20,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,6 +51,11 @@ public class Spalloc implements SpallocInterface {
 
 	private static final String GET_JOB_IDS =
 			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
+					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
+
+	private static final String GET_LIVE_JOB_IDS =
+			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
+					+ "WHERE job_state != ? "
 					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
 
 	private static final String GET_JOB =
@@ -144,14 +150,26 @@ public class Spalloc implements SpallocInterface {
 	}
 
 	@Override
-	public JobCollection getJobs(int limit, int start) throws SQLException {
+	public JobCollection getJobs(boolean deleted, int limit, int start)
+			throws SQLException {
 		try (Connection conn = db.getConnection()) {
 			JobCollection jc = new JobCollection(conn);
-			try (PreparedStatement s = conn.prepareStatement(GET_JOB_IDS);
-					ResultSet rs = runQuery(s, limit, start)) {
-				while (rs.next()) {
-					jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
-							rs.getLong("keepalive_timestamp"));
+			if (deleted) {
+				try (PreparedStatement s = conn.prepareStatement(GET_JOB_IDS);
+						ResultSet rs = runQuery(s, limit, start)) {
+					while (rs.next()) {
+						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
+								rs.getLong("keepalive_timestamp"));
+					}
+				}
+			} else {
+				try (PreparedStatement s =
+						conn.prepareStatement(GET_LIVE_JOB_IDS);
+						ResultSet rs = runQuery(s, DESTROYED, limit, start)) {
+					while (rs.next()) {
+						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
+								rs.getLong("keepalive_timestamp"));
+					}
 				}
 			}
 			return jc;

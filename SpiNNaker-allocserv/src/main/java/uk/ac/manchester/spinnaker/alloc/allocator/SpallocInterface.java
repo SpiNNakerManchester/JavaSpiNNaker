@@ -26,7 +26,8 @@ public interface SpallocInterface {
 
 	Machine getMachine(String name) throws SQLException;
 
-	JobCollection getJobs(int limit, int start) throws SQLException;
+	JobCollection getJobs(boolean deleted, int limit, int start)
+			throws SQLException;
 
 	Job getJob(int id) throws SQLException;
 

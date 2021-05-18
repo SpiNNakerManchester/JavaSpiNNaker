@@ -312,8 +312,8 @@ public class SpallocImpl implements SpallocAPI {
 	private static final int LIMIT_LIMIT = 200;
 
 	@Override
-	public void listJobs(boolean wait, int limit, int start, UriInfo ui,
-			AsyncResponse response) {
+	public void listJobs(boolean wait, boolean destroyed, int limit, int start,
+			UriInfo ui, AsyncResponse response) {
 		if (limit > LIMIT_LIMIT || limit < 1) {
 			throw new WebApplicationException(
 					"limit must not be bigger than " + LIMIT_LIMIT,
@@ -327,13 +327,13 @@ public class SpallocImpl implements SpallocAPI {
 			JobCollection jc;
 			try {
 				JobsEpoch epoch = epochs.getJobsEpoch();
-				jc = core.getJobs(limit, start);
+				jc = core.getJobs(destroyed, limit, start);
 				if (wait) {
 					try {
 						epoch.waitForChange(WAIT_TIMEOUT);
 					} catch (InterruptedException ignored) {
 					}
-					jc = core.getJobs(limit, start);
+					jc = core.getJobs(destroyed, limit, start);
 				}
 			} catch (SQLException e) {
 				log.error("failed to list jobs", e);
@@ -372,8 +372,8 @@ public class SpallocImpl implements SpallocAPI {
 					"must not specify machine name and tags together",
 					BAD_REQUEST);
 		}
-		Integer maxDeadBoards = null; // FIXME
-		Integer maxDeadLinks = null; // FIXME
+		Integer maxDeadBoards = null; // FIXME fill out
+		Integer maxDeadLinks = null; // FIXME fill out and pass on
 		bgAction(response, () -> {
 			Job j;
 			try {

@@ -337,24 +337,26 @@ public class AllocatorTask {
 	 * @author Donal Fellows
 	 */
 	// @formatter:on
-	private static class LinkDirections {
-		int x;
+	private static final class LinkDirections {
+		final int x;
 
-		int y;
+		final int y;
 
-		boolean nw;
+		final boolean nw;
 
-		boolean s;
+		final boolean s;
 
-		boolean w;
+		final boolean w;
 
-		boolean se;
+		final boolean se;
 
-		boolean n;
+		final boolean n;
 
-		boolean e;
+		final boolean e;
 
 		LinkDirections(int width, int height, int x, int y) {
+			this.x = x;
+			this.y = y;
 			nw = x > 0;
 			s = y > 0;
 			w = nw && s;
