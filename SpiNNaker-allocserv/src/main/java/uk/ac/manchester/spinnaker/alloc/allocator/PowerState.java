@@ -22,8 +22,8 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
  * @author Donal Fellows
  */
 public enum PowerState {
-	/** Switched off */
+	/** Switched off. */
 	OFF,
-	/** Switched on */
+	/** Switched on. */
 	ON
 }

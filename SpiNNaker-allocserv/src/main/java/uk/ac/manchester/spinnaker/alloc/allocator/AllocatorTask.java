@@ -339,12 +339,19 @@ public class AllocatorTask {
 	// @formatter:on
 	private static class LinkDirections {
 		int x;
+
 		int y;
+
 		boolean nw;
+
 		boolean s;
+
 		boolean w;
+
 		boolean se;
+
 		boolean n;
+
 		boolean e;
 
 		LinkDirections(int width, int height, int x, int y) {

@@ -68,6 +68,8 @@ public class BMPController {
 
 	private static final int N_REQUEST_TRIES = 2;
 
+	private static final int MS_PER_S = 1000;
+
 	private static final Collection<Integer> FPGA_IDS =
 			unmodifiableCollection(asList(0, 1, 2));
 
@@ -397,7 +399,7 @@ public class BMPController {
 							"Retrying requests on BMP {} after {} seconds: {}",
 							request.machine, SECONDS_BETWEEN_TRIES,
 							e.getMessage());
-					sleep(SECONDS_BETWEEN_TRIES * 1000);
+					sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
 				}
 			}
 		} finally {
@@ -433,8 +435,8 @@ public class BMPController {
 	/**
 	 * The background thread for interacting with the BMP.
 	 *
-	 * @throws Exception
-	 *             if anything goes wrong
+	 * @param machine
+	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(Machine machine) {
 		MDC.put("machine", machine.name);
@@ -516,7 +518,7 @@ public class BMPController {
 
 		private final int addr;
 
-		private LinkInfo(int fpga, int offset) {
+		LinkInfo(int fpga, int offset) {
 			this.fpga = fpga;
 			this.addr = offset * OFFSET_FACTOR + REG_STOP_OFFSET;
 		}
