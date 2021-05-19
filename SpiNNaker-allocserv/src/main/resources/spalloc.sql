@@ -119,20 +119,39 @@ CREATE UNIQUE INDEX IF NOT EXISTS chipUniqueness ON board_model_coords(
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 VALUES
 	-- Version 3 boards
-	(3, 0, 0), (3, 0, 1),
-	(3, 1, 0), (3, 1, 1),
+	(3, 0, 1), (3, 1, 1),
+	(3, 0, 0), (3, 1, 0),
 	-- Version 5 boards
-	(5, 0, 0), (5, 0, 1), (5, 0, 2), (5, 0, 3),
-	(5, 1, 0), (5, 1, 1), (5, 1, 2), (5, 1, 3), (5, 1, 4),
-	(5, 2, 0), (5, 2, 1), (5, 2, 2), (5, 2, 3), (5, 2, 4), (5, 2, 5),
-	(5, 3, 0), (5, 3, 1), (5, 3, 2), (5, 3, 3), (5, 3, 4), (5, 3, 5), (5, 3, 6),
-	(5, 4, 0), (5, 4, 1), (5, 4, 2), (5, 4, 3), (5, 4, 4), (5, 4, 5), (5, 4, 6), (5, 4, 7),
-			   (5, 5, 1), (5, 5, 2), (5, 5, 3), (5, 5, 4), (5, 5, 5), (5, 5, 6), (5, 5, 7),
-						  (5, 6, 2), (5, 6, 3), (5, 6, 4), (5, 6, 5), (5, 6, 6), (5, 6, 7),
-									 (5, 7, 3), (5, 7, 4), (5, 7, 5), (5, 7, 6), (5, 7, 7);
+	                                            (5, 4, 7), (5, 5, 7), (5, 6, 7), (5, 7, 7),
+	                                 (5, 3, 6), (5, 4, 6), (5, 5, 6), (5, 6, 6), (5, 7, 6),
+	                      (5, 2, 5), (5, 3, 5), (5, 4, 5), (5, 5, 5), (5, 6, 5), (5, 7, 5),
+	           (5, 1, 4), (5, 2, 4), (5, 3, 4), (5, 4, 4), (5, 5, 4), (5, 6, 4), (5, 7, 4),
+	(5, 0, 3), (5, 1, 3), (5, 2, 3), (5, 3, 3), (5, 4, 3), (5, 5, 3), (5, 6, 3), (5, 7, 3),
+	(5, 0, 2), (5, 1, 2), (5, 2, 2), (5, 3, 2), (5, 4, 2), (5, 5, 2), (5, 6, 2),
+	(5, 0, 1), (5, 1, 1), (5, 2, 1), (5, 3, 1), (5, 4, 1), (5, 5, 1),
+	(5, 0, 0), (5, 1, 0), (5, 2, 0), (5, 3, 0), (5, 4, 0);
 
 -- Create boards rarely seen in the wild
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 2, chip_x, chip_y FROM board_model_coords WHERE model = 3;
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;
+
+-- Lock down the board_model_coords table
+CREATE TRIGGER board_layout_is_static_no_update
+BEFORE UPDATE ON board_model_coords
+BEGIN
+    SELECT RAISE(ABORT, 'board layout is static');
+END;
+
+CREATE TRIGGER board_layout_is_static_no_insert
+BEFORE INSERT ON board_model_coords
+BEGIN
+    SELECT RAISE(ABORT, 'board layout is static');
+END;
+
+CREATE TRIGGER board_layout_is_static_no_delete
+BEFORE DELETE ON board_model_coords
+BEGIN
+    SELECT RAISE(ABORT, 'board layout is static');
+END;

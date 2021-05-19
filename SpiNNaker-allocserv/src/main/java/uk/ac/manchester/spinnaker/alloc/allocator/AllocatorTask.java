@@ -155,8 +155,11 @@ public class AllocatorTask {
 				try (PreparedStatement s =
 						conn.prepareStatement(FIND_EXPIRED_JOBS);
 						ResultSet rs = runQuery(s, DESTROYED, now)) {
+					List<Integer> toKill = new ArrayList<>();
 					while (rs.next()) {
-						int id = rs.getInt("job_id");
+						toKill.add(rs.getInt("job_id"));
+					}
+					for (int id : toKill) {
 						changed |= destroyJob(conn, id);
 					}
 				}
@@ -179,9 +182,39 @@ public class AllocatorTask {
 		}
 	}
 
+	private static final String MARK_JOB_DESTROYED =
+			"UPDATE jobs SET job_state = ?, death_timestamp = ? "
+			+ "WHERE job_id = ? AND job_state != ?";
+
+	private static final String KILL_JOB_ALLOC_TASK =
+			"DELETE FROM job_request WHERE job_id = ?";
+
+	private static final String KILL_JOB_PENDING =
+			"DELETE FROM pending_changes WHERE job_id = ?";
+
+	private static final String ISSUE_BOARD_OFF_FOR_JOB =
+			"INSERT INTO pending_changes(job_id, \"power\", board_id) "
+					+ "SELECT ?, ?, board_id FROM boards "
+					+ "WHERE job_id = ? AND power_state != ?";
+
 	private boolean destroyJob(Connection conn, int id) throws SQLException {
-		//FIXME do the actual destroy
-		return false;
+		Date now = new Date();
+		try (PreparedStatement mark = conn.prepareStatement(MARK_JOB_DESTROYED);
+				PreparedStatement kill_alloc =
+						conn.prepareStatement(KILL_JOB_ALLOC_TASK);
+				PreparedStatement kill_pending =
+						conn.prepareStatement(KILL_JOB_PENDING);
+				PreparedStatement issueOff =
+						conn.prepareStatement(ISSUE_BOARD_OFF_FOR_JOB)) {
+			boolean success =
+					runUpdate(mark, DESTROYED, now, id, DESTROYED) > 0;
+			if (success) {
+				runUpdate(kill_alloc, id);
+				runUpdate(kill_pending, id);
+				runUpdate(issueOff, id, PowerState.OFF, id, PowerState.OFF);
+			}
+			return success;
+		}
 	}
 
 	/**

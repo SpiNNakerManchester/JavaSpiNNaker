@@ -70,7 +70,7 @@ public class Epochs {
 		}
 	}
 
-	public class JobsEpoch {
+	public final class JobsEpoch {
 		private final long epoch;
 
 		private JobsEpoch() {
@@ -88,7 +88,7 @@ public class Epochs {
 		}
 	}
 
-	public class MachinesEpoch {
+	public final class MachinesEpoch {
 		private final long epoch;
 
 		private MachinesEpoch() {

@@ -235,18 +235,24 @@ public class Spalloc implements SpallocInterface {
 		}
 	}
 
+	private static final int N_COORDS_COUNT = 1;
+
+	private static final int N_COORDS_RECTANGLE = 2;
+
+	private static final int N_COORDS_LOCATION = 3;
+
 	private void insertRequest(Connection conn, int id,
 			List<Integer> dimensions, Integer numDeadBoards)
 			throws SQLException {
 		switch (dimensions.size()) {
-		case 1:
+		case N_COORDS_COUNT:
 			// Request by number of boards
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_N_BOARDS)) {
 				runUpdate(ps, id, dimensions.get(0), numDeadBoards);
 			}
 			break;
-		case 2:
+		case N_COORDS_RECTANGLE:
 			// Request by specific size
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_SIZE)) {
@@ -254,8 +260,8 @@ public class Spalloc implements SpallocInterface {
 						numDeadBoards);
 			}
 			break;
-		case 3:
-			// Request by specific (logical) location
+		case N_COORDS_LOCATION:
+			// Request by specific (physical) location
 			try (PreparedStatement ps =
 					conn.prepareStatement(INSERT_REQ_LOCATION)) {
 				runUpdate(ps, id, dimensions.get(0), dimensions.get(1),

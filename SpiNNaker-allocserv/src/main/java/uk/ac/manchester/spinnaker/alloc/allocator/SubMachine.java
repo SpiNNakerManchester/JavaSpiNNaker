@@ -32,10 +32,10 @@ public class SubMachine {
 	public int height;
 
 	/** The connection details of this sub-machine. */
-	public List<Connection> connections;//FIXME
+	public List<Connection> connections; // FIXME
 
 	/** The board locations of this sub-machine. */
-	public List<BoardCoordinates> boards;//FIXME
+	public List<BoardCoordinates> boards; // FIXME
 
 	public PowerState getPower() {
 		// TODO Auto-generated method stub
