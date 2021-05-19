@@ -26,6 +26,7 @@ public class JobCollection {
 
 	JobCollection(Connection conn) {
 		// TODO Auto-generated constructor stub
+		// DO NOT SAVE THE CONNECTION!
 	}
 
 	public void waitForChange() {

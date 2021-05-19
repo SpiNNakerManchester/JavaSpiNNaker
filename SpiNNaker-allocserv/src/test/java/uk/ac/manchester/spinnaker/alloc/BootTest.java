@@ -18,12 +18,12 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 
@@ -83,12 +84,16 @@ class BootTest {
 		void testDbConn() throws SQLException {
 			try (Connection c = db.getConnection()) {
 				assertFalse(c.isReadOnly());
-				try (Statement s = c.createStatement();
-						ResultSet rs = s.executeQuery(
-								"SELECT COUNT(*) FROM board_model_coords")) {
-					// For v2, v3, v4 and v5 board configs
-					assertTrue(rs.getInt(1) == 104);
+				int rows = 0;
+				try (Query q =
+						query(c, "SELECT COUNT(*) FROM board_model_coords")) {
+					for (ResultSet row : q.call()) {
+						// For v2, v3, v4 and v5 board configs
+						assertTrue(row.getInt(1) == 104);
+						rows++;
+					}
 				}
+				assertEquals(1, rows, "should be only one row in query result");
 			}
 		}
 

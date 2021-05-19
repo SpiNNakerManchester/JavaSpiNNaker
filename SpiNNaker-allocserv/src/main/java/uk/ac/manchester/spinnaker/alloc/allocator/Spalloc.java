@@ -16,14 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 
 @Component
 public class Spalloc implements SpallocInterface {
@@ -85,14 +85,11 @@ public class Spalloc implements SpallocInterface {
 	@Autowired
 	Epochs epochs;
 
-	private List<String> getMachineTags(PreparedStatement ts, int id)
-			throws SQLException {
+	private List<String> getMachineTags(Query ts, int id) throws SQLException {
 		// Takes a prepared statement because that allows reuse
 		List<String> tags = new ArrayList<>();
-		try (ResultSet rs = runQuery(ts, id)) {
-			while (rs.next()) {
-				tags.add(rs.getString("tag"));
-			}
+		for (ResultSet rs : ts.call(id)) {
+			tags.add(rs.getString("tag"));
 		}
 		return tags;
 	}
@@ -107,16 +104,15 @@ public class Spalloc implements SpallocInterface {
 	private Map<String, Machine> getMachines(Connection conn)
 			throws SQLException {
 		Map<String, Machine> map = new HashMap<>();
-		try (PreparedStatement ms = conn.prepareStatement(GET_ALL_MACHINES);
-				PreparedStatement ts = conn.prepareStatement(GET_TAGS);
-				ResultSet rs = ms.executeQuery()) {
-			while (rs.next()) {
+		try (Query listMachines = query(conn, GET_ALL_MACHINES);
+				Query tags = query(conn, GET_TAGS)) {
+			for (ResultSet rs : listMachines.call()) {
 				Machine m = new Machine(conn);
 				m.id = rs.getInt("machine_id");
 				m.name = rs.getString("machine_name");
 				m.width = rs.getInt("width");
 				m.height = rs.getInt("height");
-				m.tags = getMachineTags(ts, m.id);
+				m.tags = getMachineTags(tags, m.id);
 				map.put(m.name, m);
 			}
 		}
@@ -132,18 +128,16 @@ public class Spalloc implements SpallocInterface {
 
 	private Machine getMachine(String name, Connection conn)
 			throws SQLException {
-		try (PreparedStatement ms = conn.prepareStatement(GET_NAMED_MACHINE);
-				PreparedStatement ts = conn.prepareStatement(GET_TAGS)) {
-			try (ResultSet rs = runQuery(ms, name)) {
-				while (rs.next()) {
-					Machine m = new Machine(conn);
-					m.id = rs.getInt("machine_id");
-					m.name = rs.getString("machine_name");
-					m.width = rs.getInt("width");
-					m.height = rs.getInt("height");
-					m.tags = getMachineTags(ts, m.id);
-					return m;
-				}
+		try (Query namedMachine = query(conn, GET_NAMED_MACHINE);
+				Query tags = query(conn, GET_TAGS)) {
+			for (ResultSet rs : namedMachine.call(name)) {
+				Machine m = new Machine(conn);
+				m.id = rs.getInt("machine_id");
+				m.name = rs.getString("machine_name");
+				m.width = rs.getInt("width");
+				m.height = rs.getInt("height");
+				m.tags = getMachineTags(tags, m.id);
+				return m;
 			}
 		}
 		return null;
@@ -155,18 +149,15 @@ public class Spalloc implements SpallocInterface {
 		try (Connection conn = db.getConnection()) {
 			JobCollection jc = new JobCollection(conn);
 			if (deleted) {
-				try (PreparedStatement s = conn.prepareStatement(GET_JOB_IDS);
-						ResultSet rs = runQuery(s, limit, start)) {
-					while (rs.next()) {
+				try (Query jobs = query(conn, GET_JOB_IDS)) {
+					for (ResultSet rs : jobs.call(limit, start)) {
 						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
 								rs.getLong("keepalive_timestamp"));
 					}
 				}
 			} else {
-				try (PreparedStatement s =
-						conn.prepareStatement(GET_LIVE_JOB_IDS);
-						ResultSet rs = runQuery(s, DESTROYED, limit, start)) {
-					while (rs.next()) {
+				try (Query jobs = query(conn, GET_LIVE_JOB_IDS)) {
+					for (ResultSet rs : jobs.call(DESTROYED, limit, start)) {
 						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
 								rs.getLong("keepalive_timestamp"));
 					}
@@ -191,20 +182,18 @@ public class Spalloc implements SpallocInterface {
 	}
 
 	private Job getJob(int id, Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_JOB)) {
-			try (ResultSet rs = runQuery(s, id)) {
-				while (rs.next()) {
-					Job j = new Job(conn);
-					j.id = rs.getInt("machine_id");
-					j.width = getInteger(rs, "width");
-					j.height = getInteger(rs, "height");
-					j.root = getInteger(rs, "root_id");
-					j.state = JobState.values()[rs.getInt("job_state")];
-					j.keepaliveTime = rs.getLong("keepalive_timestamp");
-					j.keepaliveHost = rs.getString("keepalive_host");
-					// TODO fill this out
-					return j;
-				}
+		try (Query s = query(conn, GET_JOB)) {
+			for (ResultSet rs : s.call(id)) {
+				Job j = new Job(conn);
+				j.id = rs.getInt("machine_id");
+				j.width = getInteger(rs, "width");
+				j.height = getInteger(rs, "height");
+				j.root = getInteger(rs, "root_id");
+				j.state = JobState.values()[rs.getInt("job_state")];
+				j.keepaliveTime = rs.getLong("keepalive_timestamp");
+				j.keepaliveHost = rs.getString("keepalive_host");
+				// TODO fill this out
+				return j;
 			}
 		}
 		return null;
@@ -241,31 +230,25 @@ public class Spalloc implements SpallocInterface {
 
 	private static final int N_COORDS_LOCATION = 3;
 
-	private void insertRequest(Connection conn, int id,
-			List<Integer> dimensions, Integer numDeadBoards)
-			throws SQLException {
-		switch (dimensions.size()) {
+	private void insertRequest(Connection conn, int id, List<Integer> dims,
+			Integer numDeadBoards) throws SQLException {
+		switch (dims.size()) {
 		case N_COORDS_COUNT:
 			// Request by number of boards
-			try (PreparedStatement ps =
-					conn.prepareStatement(INSERT_REQ_N_BOARDS)) {
-				runUpdate(ps, id, dimensions.get(0), numDeadBoards);
+			try (Update ps = update(conn, INSERT_REQ_N_BOARDS)) {
+				ps.call(id, dims.get(0), numDeadBoards);
 			}
 			break;
 		case N_COORDS_RECTANGLE:
 			// Request by specific size
-			try (PreparedStatement ps =
-					conn.prepareStatement(INSERT_REQ_SIZE)) {
-				runUpdate(ps, id, dimensions.get(0), dimensions.get(1),
-						numDeadBoards);
+			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
+				ps.call(id, dims.get(0), dims.get(1), numDeadBoards);
 			}
 			break;
 		case N_COORDS_LOCATION:
 			// Request by specific (physical) location
-			try (PreparedStatement ps =
-					conn.prepareStatement(INSERT_REQ_LOCATION)) {
-				runUpdate(ps, id, dimensions.get(0), dimensions.get(1),
-						dimensions.get(2));
+			try (Update ps = update(conn, INSERT_REQ_LOCATION)) {
+				ps.call(id, dims.get(0), dims.get(1), dims.get(2));
 			}
 			break;
 		default:
@@ -276,17 +259,15 @@ public class Spalloc implements SpallocInterface {
 	private int insertJob(Connection conn, Machine m, String owner)
 			throws SQLException {
 		// TODO add in additional info
-		Date timestamp = new Date();
-		try (PreparedStatement ps =
-				conn.prepareStatement(INSERT_JOB, RETURN_GENERATED_KEYS)) {
-			runUpdate(ps, m.id, owner, timestamp, timestamp);
-			try (ResultSet rs = ps.getGeneratedKeys()) {
-				while (rs.next()) {
-					return rs.getInt(1);
-				}
+		Date now = new Date();
+		int pk = -1;
+		try (Update makeJob = update(conn, INSERT_JOB)) {
+			for (int key : makeJob.keys(m.id, owner, now, now)) {
+				pk = key;
+				break;
 			}
 		}
-		return -1;
+		return pk;
 	}
 
 	private Machine selectMachine(Connection conn, String machineName,

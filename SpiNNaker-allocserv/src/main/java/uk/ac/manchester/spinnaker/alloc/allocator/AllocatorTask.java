@@ -19,18 +19,15 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.ceil;
 import static java.lang.Math.sqrt;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.readSQL;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +40,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 
 @Component
 public class AllocatorTask {
@@ -77,7 +76,7 @@ public class AllocatorTask {
 
 	/** How we delete an allocation task. */
 	public static final String DELETE_TASK =
-			"DELETE FROM job_request WHERE req_id = ";
+			"DELETE FROM job_request WHERE req_id = ?";
 
 	/** How we tell a job that it is allocated. */
 	public static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
@@ -120,9 +119,9 @@ public class AllocatorTask {
 		try (Connection conn = db.getConnection()) {
 			transaction(conn, () -> {
 				boolean changed = false;
-				try (Statement s = conn.createStatement();
-						ResultSet rs = s.executeQuery(GET_TASKS)) {
-					while (rs.next()) {
+				try (Query getTasks = query(conn, GET_TASKS);
+						Update delete = update(conn, DELETE_TASK)) {
+					for (ResultSet rs : getTasks.call()) {
 						int id = rs.getInt("req_id");
 						boolean handled = true;
 						try {
@@ -133,8 +132,7 @@ public class AllocatorTask {
 							 */
 						} finally {
 							if (handled) {
-								s.executeUpdate(DELETE_TASK + id);
-								changed = true;
+								changed = delete.call(id) > 0;
 							}
 						}
 					}
@@ -152,11 +150,9 @@ public class AllocatorTask {
 		try (Connection conn = db.getConnection()) {
 			transaction(conn, () -> {
 				boolean changed = false;
-				try (PreparedStatement s =
-						conn.prepareStatement(FIND_EXPIRED_JOBS);
-						ResultSet rs = runQuery(s, DESTROYED, now)) {
+				try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 					List<Integer> toKill = new ArrayList<>();
-					while (rs.next()) {
+					for (ResultSet rs : find.call(DESTROYED, now)) {
 						toKill.add(rs.getInt("job_id"));
 					}
 					for (int id : toKill) {
@@ -184,7 +180,7 @@ public class AllocatorTask {
 
 	private static final String MARK_JOB_DESTROYED =
 			"UPDATE jobs SET job_state = ?, death_timestamp = ? "
-			+ "WHERE job_id = ? AND job_state != ?";
+					+ "WHERE job_id = ? AND job_state != ?";
 
 	private static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = ?";
@@ -199,19 +195,15 @@ public class AllocatorTask {
 
 	private boolean destroyJob(Connection conn, int id) throws SQLException {
 		Date now = new Date();
-		try (PreparedStatement mark = conn.prepareStatement(MARK_JOB_DESTROYED);
-				PreparedStatement kill_alloc =
-						conn.prepareStatement(KILL_JOB_ALLOC_TASK);
-				PreparedStatement kill_pending =
-						conn.prepareStatement(KILL_JOB_PENDING);
-				PreparedStatement issueOff =
-						conn.prepareStatement(ISSUE_BOARD_OFF_FOR_JOB)) {
-			boolean success =
-					runUpdate(mark, DESTROYED, now, id, DESTROYED) > 0;
+		try (Update mark = update(conn, MARK_JOB_DESTROYED);
+				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
+				Update killPending = update(conn, KILL_JOB_PENDING);
+				Update issueOff = update(conn, ISSUE_BOARD_OFF_FOR_JOB)) {
+			boolean success = mark.call(DESTROYED, now, id, DESTROYED) > 0;
 			if (success) {
-				runUpdate(kill_alloc, id);
-				runUpdate(kill_pending, id);
-				runUpdate(issueOff, id, PowerState.OFF, id, PowerState.OFF);
+				killAlloc.call(id);
+				killPending.call(id);
+				issueOff.call(id, PowerState.OFF, id, PowerState.OFF);
 			}
 			return success;
 		}
@@ -285,11 +277,8 @@ public class AllocatorTask {
 	private boolean allocateDimensions(Connection conn, int jobId,
 			int machineId, int width, int height, int tolerance)
 			throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(readSQL(findRectangle));
-				ResultSet rs =
-						runQuery(s, width, height, machineId, tolerance)) {
-			while (rs.next()) {
+		try (Query s = query(conn, findRectangle)) {
+			for (ResultSet rs : s.call(width, height, machineId, tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				setAllocation(conn, jobId, 1, 1, machineId, x, y);
@@ -301,9 +290,8 @@ public class AllocatorTask {
 
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
 			int cabinet, int frame, int board) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(readSQL(findLocation));
-				ResultSet rs = runQuery(s, machineId, cabinet, frame, board)) {
-			while (rs.next()) {
+		try (Query s = query(conn, findLocation)) {
+			for (ResultSet rs : s.call(machineId, cabinet, frame, board)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				setAllocation(conn, jobId, 1, 1, machineId, x, y);
@@ -316,38 +304,34 @@ public class AllocatorTask {
 	private void setAllocation(Connection conn, int jobId, int width,
 			int height, int machineId, int rootX, int rootY)
 			throws SQLException {
-		try (PreparedStatement allocBoard =
-				conn.prepareStatement(ALLOCATE_BOARDS_BOARD);
-				PreparedStatement allocJob =
-						conn.prepareStatement(ALLOCATE_BOARDS_JOB);
-				PreparedStatement issueChange =
-						conn.prepareStatement(readSQL(issueChangeForJob));
-				PreparedStatement setNumPending =
-						conn.prepareStatement(SET_NUM_PENDING)) {
+		try (Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
+				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB);
+				Update issueChange = update(conn, issueChangeForJob);
+				Update setNumPending = update(conn, SET_NUM_PENDING)) {
 			boolean changed = false;
 			List<LinkDirections> perimeter = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
-					changed |= runUpdate(allocBoard, jobId, machineId,
-							x + rootX, y + rootY) > 0;
+					changed |= allocBoard.call(jobId, machineId, x + rootX,
+							y + rootY) > 0;
 					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
 						perimeter.add(new LinkDirections(width, height, x, y));
 					}
 				}
 			}
-			runUpdate(allocJob, width, height, POWER.ordinal(),
-					perimeter.size(), machineId, rootX, rootY, jobId);
+			allocJob.call(width, height, POWER, perimeter.size(), machineId,
+					rootX, rootY, jobId);
 			int numPending = 0;
 			for (LinkDirections ld : perimeter) {
 				/*
 				 * Issues instructions to reconfigure the perimeter of the
 				 * allocated rectangle, incrementing numPending for each.
 				 */
-				numPending += runUpdate(issueChange, jobId, machineId,
-						rootX + ld.x, rootY + ld.y, true, ld.n, ld.s, ld.e,
-						ld.w, ld.nw, ld.se);
+				numPending += issueChange.call(jobId, machineId, rootX + ld.x,
+						rootY + ld.y, true, ld.n, ld.s, ld.e, ld.w, ld.nw,
+						ld.se);
 			}
-			runUpdate(setNumPending, numPending, jobId);
+			setNumPending.call(numPending, jobId);
 			if (changed || numPending > 0) {
 				epochs.nextMachineEpoch();
 			}
@@ -371,21 +355,29 @@ public class AllocatorTask {
 	 */
 	// @formatter:on
 	private static final class LinkDirections {
+		/** Coordinates of the board; X direction. */
 		final int x;
 
+		/** Coordinates of the board; Y direction. */
 		final int y;
 
-		final boolean nw;
-
-		final boolean s;
-
-		final boolean w;
-
-		final boolean se;
-
+		/** Whether to switch on the link in the N direction. */
 		final boolean n;
 
+		/** Whether to switch on the link in the S direction. */
+		final boolean s;
+
+		/** Whether to switch on the link in the E direction. */
 		final boolean e;
+
+		/** Whether to switch on the link in the W direction. */
+		final boolean w;
+
+		/** Whether to switch on the link in the NW direction. */
+		final boolean nw;
+
+		/** Whether to switch on the link in the SE direction. */
+		final boolean se;
 
 		LinkDirections(int width, int height, int x, int y) {
 			this.x = x;
