@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +35,8 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
 
 @Component
 public class Spalloc implements SpallocInterface {
@@ -45,9 +46,6 @@ public class Spalloc implements SpallocInterface {
 	private static final String GET_NAMED_MACHINE =
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_name = ? LIMIT 1";
-
-	private static final String GET_TAGS =
-			"SELECT tag FROM tags WHERE machine_id = ?";
 
 	private static final String GET_JOB_IDS =
 			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
@@ -85,15 +83,6 @@ public class Spalloc implements SpallocInterface {
 	@Autowired
 	Epochs epochs;
 
-	private List<String> getMachineTags(Query ts, int id) throws SQLException {
-		// Takes a prepared statement because that allows reuse
-		List<String> tags = new ArrayList<>();
-		for (ResultSet rs : ts.call(id)) {
-			tags.add(rs.getString("tag"));
-		}
-		return tags;
-	}
-
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
 		try (Connection conn = db.getConnection()) {
@@ -103,16 +92,11 @@ public class Spalloc implements SpallocInterface {
 
 	private Map<String, Machine> getMachines(Connection conn)
 			throws SQLException {
+		MachinesEpoch me = epochs.getMachineEpoch();
 		Map<String, Machine> map = new HashMap<>();
-		try (Query listMachines = query(conn, GET_ALL_MACHINES);
-				Query tags = query(conn, GET_TAGS)) {
+		try (Query listMachines = query(conn, GET_ALL_MACHINES)) {
 			for (ResultSet rs : listMachines.call()) {
-				Machine m = new Machine(conn);
-				m.id = rs.getInt("machine_id");
-				m.name = rs.getString("machine_name");
-				m.width = rs.getInt("width");
-				m.height = rs.getInt("height");
-				m.tags = getMachineTags(tags, m.id);
+				Machine m = new Machine(db, conn, rs, me);
 				map.put(m.name, m);
 			}
 		}
@@ -128,26 +112,23 @@ public class Spalloc implements SpallocInterface {
 
 	private Machine getMachine(String name, Connection conn)
 			throws SQLException {
-		try (Query namedMachine = query(conn, GET_NAMED_MACHINE);
-				Query tags = query(conn, GET_TAGS)) {
+		MachinesEpoch me = epochs.getMachineEpoch();
+		Machine m = null;
+		try (Query namedMachine = query(conn, GET_NAMED_MACHINE)) {
 			for (ResultSet rs : namedMachine.call(name)) {
-				Machine m = new Machine(conn);
-				m.id = rs.getInt("machine_id");
-				m.name = rs.getString("machine_name");
-				m.width = rs.getInt("width");
-				m.height = rs.getInt("height");
-				m.tags = getMachineTags(tags, m.id);
-				return m;
+				m = new Machine(db, conn, rs, me);
+				break;
 			}
 		}
-		return null;
+		return m;
 	}
 
 	@Override
 	public JobCollection getJobs(boolean deleted, int limit, int start)
 			throws SQLException {
+		JobsEpoch je = epochs.getJobsEpoch();
 		try (Connection conn = db.getConnection()) {
-			JobCollection jc = new JobCollection(conn);
+			JobCollection jc = new JobCollection(conn, je);
 			if (deleted) {
 				try (Query jobs = query(conn, GET_JOB_IDS)) {
 					for (ResultSet rs : jobs.call(limit, start)) {
@@ -182,9 +163,10 @@ public class Spalloc implements SpallocInterface {
 	}
 
 	private Job getJob(int id, Connection conn) throws SQLException {
+		JobsEpoch epoch = epochs.getJobsEpoch();
 		try (Query s = query(conn, GET_JOB)) {
 			for (ResultSet rs : s.call(id)) {
-				Job j = new Job(conn);
+				Job j = new Job(conn, epoch);
 				j.id = rs.getInt("machine_id");
 				j.width = getInteger(rs, "width");
 				j.height = getInteger(rs, "height");

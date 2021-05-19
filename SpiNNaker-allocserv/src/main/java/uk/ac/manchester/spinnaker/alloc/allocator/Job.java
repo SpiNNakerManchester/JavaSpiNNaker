@@ -26,11 +26,15 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 public class Job {
 	@JsonIgnore
 	private final Connection conn;
+
+	@JsonIgnore
+	private JobsEpoch epoch;
 
 	/** Job ID */
 	int id;
@@ -55,8 +59,9 @@ public class Job {
 	/** Host address that issued last keepalive event, if any. */
 	String keepaliveHost;
 
-	Job(Connection conn) {
-		this.conn = conn;
+	Job(Connection conn, JobsEpoch epoch) {
+		this.conn = conn; // TODO do not retain this!
+		this.epoch = epoch;
 	}
 
 	private static final String UPDATE_KEEPALIVE =
@@ -86,9 +91,11 @@ public class Job {
 		}
 	}
 
-	public void waitForChange() {
-		// TODO Auto-generated method stub
-
+	public void waitForChange(long timeout) {
+		try {
+			epoch.waitForChange(timeout);
+		} catch (InterruptedException ignored) {
+		}
 	}
 
 	public int getId() {

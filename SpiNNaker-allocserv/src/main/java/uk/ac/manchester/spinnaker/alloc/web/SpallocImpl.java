@@ -41,8 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
-import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.alloc.allocator.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobCollection;
 import uk.ac.manchester.spinnaker.alloc.allocator.Machine;
@@ -60,9 +58,6 @@ public class SpallocImpl implements SpallocAPI {
 
 	@Autowired
 	private SpallocInterface core;
-
-	@Autowired
-	private Epochs epochs;
 
 	@Autowired
 	private Executor executor;
@@ -140,11 +135,7 @@ public class SpallocImpl implements SpallocAPI {
 			public void describeMachine(boolean wait, AsyncResponse response) {
 				bgAction(response, () -> {
 					if (wait) {
-						try {
-							epochs.getMachineEpoch()
-									.waitForChange(WAIT_TIMEOUT);
-						} catch (InterruptedException ignored) {
-						}
+						machine.waitForChange(WAIT_TIMEOUT);
 						/*
 						 * Assume that machines don't change often enough for us
 						 * to care about whether they vanish; therefore handle
@@ -158,8 +149,9 @@ public class SpallocImpl implements SpallocAPI {
 			@Override
 			public Response whereIsLogicalPosition(int x, int y, int z) {
 				try {
+					// No epoch; value not retained
 					return ok(new WhereIsResponse(
-							machine.getBoardByLogicalCoords(x, y, z), ui))
+							machine.getBoardByLogicalCoords(x, y, z, null), ui))
 									.build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
@@ -171,8 +163,10 @@ public class SpallocImpl implements SpallocAPI {
 			public Response whereIsPhysicalPosition(int cabinet, int frame,
 					int board) {
 				try {
-					return ok(new WhereIsResponse(machine
-							.getBoardByPhysicalCoords(cabinet, frame, board),
+					// No epoch; value not retained
+					return ok(new WhereIsResponse(
+							machine.getBoardByPhysicalCoords(cabinet, frame,
+									board, null),
 							ui)).build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
@@ -183,8 +177,9 @@ public class SpallocImpl implements SpallocAPI {
 			@Override
 			public Response whereIsMachineChipLocation(int x, int y) {
 				try {
-					return ok(new WhereIsResponse(machine.getBoardByChip(x, y),
-							ui)).build();
+					// No epoch; value not retained
+					return ok(new WhereIsResponse(
+							machine.getBoardByChip(x, y, null), ui)).build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
 					throw new WebApplicationException("failed to locate board");
@@ -222,7 +217,7 @@ public class SpallocImpl implements SpallocAPI {
 				bgAction(response, () -> {
 					Job nj = j;
 					if (wait) {
-						j.waitForChange();
+						j.waitForChange(WAIT_TIMEOUT);
 						// Refresh the handle
 						try {
 							nj = core.getJob(id);
@@ -326,13 +321,9 @@ public class SpallocImpl implements SpallocAPI {
 		bgAction(response, () -> {
 			JobCollection jc;
 			try {
-				JobsEpoch epoch = epochs.getJobsEpoch();
 				jc = core.getJobs(destroyed, limit, start);
 				if (wait) {
-					try {
-						epoch.waitForChange(WAIT_TIMEOUT);
-					} catch (InterruptedException ignored) {
-					}
+					jc.waitForChange(WAIT_TIMEOUT);
 					jc = core.getJobs(destroyed, limit, start);
 				}
 			} catch (SQLException e) {

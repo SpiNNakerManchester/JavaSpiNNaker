@@ -19,19 +19,29 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import java.sql.Connection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
+
 public class JobCollection {
+	@JsonIgnore
+	private JobsEpoch epoch;
+
 	/** Do not call this constructor outside of tests. */
 	JobCollection() {
 	}
 
-	JobCollection(Connection conn) {
+	JobCollection(Connection conn, JobsEpoch je) {
 		// TODO Auto-generated constructor stub
 		// DO NOT SAVE THE CONNECTION!
+		epoch = je;
 	}
 
-	public void waitForChange() {
-		// TODO Auto-generated method stub
-
+	public void waitForChange(long timeout) {
+		try {
+			epoch.waitForChange(timeout);
+		} catch (InterruptedException ignored) {
+		}
 	}
 
 	public List<Integer> ids(int start, int limit) {

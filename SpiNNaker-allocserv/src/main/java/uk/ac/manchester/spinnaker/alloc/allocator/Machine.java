@@ -16,15 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runQuery;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.allocator.BoardLocation.buildFromBoardQuery;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
 
 public class Machine {
 	private static final String FIND_BOARD_BY_CHIP =
@@ -57,10 +63,13 @@ public class Machine {
 					+ "WHERE boards.machine_id = ? AND boards.x = ? "
 					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
 
-	/** The ID of the machine */
+	private static final String GET_TAGS =
+			"SELECT tag FROM tags WHERE machine_id = ?";
+
+	/** The ID of the machine. */
 	public int id;
 
-	/** The name of the machine */
+	/** The name of the machine. */
 	public String name;
 
 	/** The tags associated with the machine. */
@@ -74,43 +83,70 @@ public class Machine {
 
 	// TODO: dead boards, dead links
 
-	private volatile Connection conn;
+	@JsonIgnore
+	private DatabaseEngine db;
 
-	/** Don't use this constructor; just there for serialization engine */
+	@JsonIgnore
+	private MachinesEpoch epoch;
+
+	/** Don't use this constructor; just there for serialization engine. */
 	public Machine() {
 		throw new UnsupportedOperationException();
 	}
 
-	Machine(Connection conn) {
-		this.conn = conn;
-	}
-
-	public void waitForChange() {
-		// TODO Auto-generated method stub
-		// Use an epoch counter? Or a timestamp?
-	}
-
-	public BoardLocation getBoardByChip(int x, int y) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(FIND_BOARD_BY_CHIP);
-				ResultSet rs = runQuery(s, id, x, y)) {
-			return buildFromBoardQuery(conn, rs);
+	Machine(DatabaseEngine db, Connection conn, ResultSet rs,
+			MachinesEpoch epoch) throws SQLException {
+		this.db = db;
+		this.epoch = epoch;
+		id = rs.getInt("machine_id");
+		name = rs.getString("machine_name");
+		width = rs.getInt("width");
+		height = rs.getInt("height");
+		try (Query getTags = DatabaseEngine.query(conn, GET_TAGS)) {
+			for (ResultSet tagSet : getTags.call(id)) {
+				tags.add(tagSet.getString("tag"));
+			}
 		}
+	}
+
+	public void waitForChange(long timeout) {
+		try {
+			epoch.waitForChange(timeout);
+		} catch (InterruptedException ignored) {
+		}
+	}
+
+	public BoardLocation getBoardByChip(int x, int y, JobsEpoch je)
+			throws SQLException {
+		try (Connection conn = db.getConnection();
+				Query q = query(conn, FIND_BOARD_BY_CHIP)) {
+			for (ResultSet rs : q.call(id, x, y)) {
+				return buildFromBoardQuery(conn, rs, je);
+			}
+		}
+		return null; // Query failed
 	}
 
 	public BoardLocation getBoardByPhysicalCoords(int cabinet, int frame,
-			int board) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(FIND_BOARD_BY_CFB);
-				ResultSet rs = runQuery(s, id, cabinet, frame, board)) {
-			return buildFromBoardQuery(conn, rs);
+			int board, JobsEpoch je) throws SQLException {
+		try (Connection conn = db.getConnection();
+				Query q = query(conn, FIND_BOARD_BY_CFB)) {
+			for (ResultSet rs : q.call(id, cabinet, frame, board)) {
+				return buildFromBoardQuery(conn, rs, je);
+			}
 		}
+		return null; // Query failed
 	}
 
-	public BoardLocation getBoardByLogicalCoords(int x, int y, int z)
-			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(FIND_BOARD_BY_XYZ);
-				ResultSet rs = runQuery(s, id, x, y, z)) {
-			return buildFromBoardQuery(conn, rs);
+	public BoardLocation getBoardByLogicalCoords(int x, int y, int z,
+			JobsEpoch je) throws SQLException {
+		try (Connection conn = db.getConnection();
+				Query q = query(conn, FIND_BOARD_BY_XYZ)) {
+			for (ResultSet rs : q.call(id, x, y, z)) {
+				return buildFromBoardQuery(conn, rs, je);
+			}
 		}
+		return null; // Query failed
 	}
 
 	public String getRootBoardBMPAddress() throws SQLException {
