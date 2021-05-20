@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -25,28 +24,48 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
-public class BoardLocation {
+/**
+ * Describes the locations of boards in a machine.
+ *
+ * @author Donal Fellows
+ */
+public final class BoardLocation {
 	public Job job;
 
-	public String machine;
+	/** What machine is the board on? */
+	public final String machine;
 
-	public ChipLocation chip;
+	/** Where is the chip of interest? Usually the root chip of the board. */
+	public final ChipLocation chip;
 
-	public BoardCoordinates logical;
+	/** Where is the board logically within its machine? */
+	public final BoardCoordinates logical;
 
-	public BoardPhysicalCoordinates physical;
+	/** Where is the board physically in its machine? */
+	public final BoardPhysicalCoordinates physical;
 
-	public static BoardLocation buildFromBoardQuery(Connection conn,
-			ResultSet row, JobsEpoch epoch) throws SQLException {
-		BoardLocation l = new BoardLocation();
-		l.machine = (String) row.getObject("machine_name");
-		l.logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"), 0);
-		l.physical = new BoardPhysicalCoordinates();
-		l.chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+	private BoardLocation(String machine, BoardCoordinates logical,
+			BoardPhysicalCoordinates physical, ChipLocation chip) {
+		this.machine = machine;
+		this.logical = logical;
+		this.physical = physical;
+		this.chip = chip;
+	}
+
+	static BoardLocation buildFromBoardQuery(Spalloc spallocCore, ResultSet row,
+			JobsEpoch epoch) throws SQLException {
+		String name = row.getString("machine_name");
+		BoardCoordinates logical =
+				new BoardCoordinates(row.getInt("x"), row.getInt("y"), 0);
+		BoardPhysicalCoordinates physical =
+				new BoardPhysicalCoordinates(0, 0, 0); // FIXME
+		ChipLocation chip =
+				new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+
+		BoardLocation l = new BoardLocation(name, logical, physical, chip);
 		Integer job = (Integer) row.getObject("job_id");
 		if (job != null) {
-			l.job = new Job(conn, epoch);
-			l.job.id = job;
+			l.job = new Job(spallocCore, epoch, job);
 			// FIXME
 		}
 		return l;
@@ -60,5 +79,4 @@ public class BoardLocation {
 		return new ChipLocation(chip.getX() - rootChip.getX(),
 				chip.getY() - rootChip.getY());
 	}
-
 }

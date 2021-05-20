@@ -26,6 +26,7 @@ import static javax.ws.rs.core.Response.Status.GONE;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -66,41 +67,69 @@ public class SpallocImpl implements SpallocAPI {
 		v = new Version(version.replaceAll("-.*", ""));
 	}
 
+	/**
+	 * An action that produces a response, usually handled asynchronously. Care
+	 * should be taken as the action may be run on a thread other than the
+	 * thread that creates it.
+	 *
+	 * @author Donal Fellows
+	 */
 	@FunctionalInterface
 	private static interface BackgroundAction {
 		/**
 		 * Does the action that produces the result.
 		 *
 		 * @return The result of the action. A {@code null} is mapped as a
-		 *         generic 404.
+		 *         generic 404 with no special message. Custom messages should
+		 *         be supported by throwing a suitable
+		 *         {@link WebApplicationException}.
 		 * @throws WebApplicationException
 		 *             If anything goes wrong. This is the <em>expected</em>
-		 *             exception type.
+		 *             exception type; it is <em>not</em> logged.
 		 * @throws Exception
 		 *             If anything goes wrong. This is reported as an
-		 *             <em>unexpected</em> exception;
+		 *             <em>unexpected</em> exception and logged.
 		 */
 		Response respond() throws WebApplicationException, Exception;
 	}
 
+	/**
+	 * Run the action in the background and wrap it into the response when it
+	 * completes.
+	 *
+	 * @param response
+	 *            The asynchronous response.
+	 * @param action
+	 *            The action that generates a {@link Response}
+	 */
 	private void bgAction(AsyncResponse response, BackgroundAction action) {
-		executor.execute(() -> {
-			try {
-				Response r = action.respond();
-				if (r == null) {
-					// If you want something else, don't return null
-					response.resume(status(NOT_FOUND));
-				} else {
-					response.resume(r);
-				}
-			} catch (WebApplicationException e) {
-				response.resume(e);
-			} catch (Exception e) {
-				log.warn("unexpected exception", e);
-				response.resume(new WebApplicationException(
-						"unexpected server problem"));
+		executor.execute(() -> fgAction(response, action));
+	}
+
+	/**
+	 * Run the action immediately and wrap it into the response
+	 *
+	 * @param response
+	 *            The asynchronous response.
+	 * @param action
+	 *            The action that generates a {@link Response}
+	 */
+	private void fgAction(AsyncResponse response, BackgroundAction action) {
+		try {
+			Response r = action.respond();
+			if (r == null) {
+				// If you want something else, don't return null
+				response.resume(status(NOT_FOUND));
+			} else {
+				response.resume(r);
 			}
-		});
+		} catch (WebApplicationException e) {
+			response.resume(e);
+		} catch (Exception e) {
+			log.warn("unexpected exception", e);
+			response.resume(
+					new WebApplicationException("unexpected server problem"));
+		}
 	}
 
 	@Override
@@ -133,17 +162,20 @@ public class SpallocImpl implements SpallocAPI {
 		return new MachineAPI() {
 			@Override
 			public void describeMachine(boolean wait, AsyncResponse response) {
-				bgAction(response, () -> {
-					if (wait) {
+				if (wait) {
+					bgAction(response, () -> {
 						machine.waitForChange(WAIT_TIMEOUT);
 						/*
 						 * Assume that machines don't change often enough for us
 						 * to care about whether they vanish; therefore handle
 						 * still valid after wait
 						 */
-					}
-					return ok(new MachineResponse(machine, ui)).build();
-				});
+						return ok(new MachineResponse(machine, ui)).build();
+					});
+				} else {
+					fgAction(response,
+							() -> ok(new MachineResponse(machine, ui)).build());
+				}
 			}
 
 			@Override
@@ -214,25 +246,27 @@ public class SpallocImpl implements SpallocAPI {
 
 			@Override
 			public void getState(boolean wait, AsyncResponse response) {
-				bgAction(response, () -> {
-					Job nj = j;
-					if (wait) {
+				if (wait) {
+					bgAction(response, () -> {
 						j.waitForChange(WAIT_TIMEOUT);
 						// Refresh the handle
 						try {
-							nj = core.getJob(id);
+							Job nj = core.getJob(id);
+							if (nj == null) {
+								throw new WebApplicationException("no such job",
+										GONE);
+							}
+							return ok(new StateResponse(nj, ui)).build();
 						} catch (SQLException e) {
 							log.error("failed to get job", e);
 							throw new WebApplicationException(
 									"failed to get job: " + id);
 						}
-						if (nj == null) {
-							throw new WebApplicationException("no such job",
-									GONE);
-						}
-					}
-					return ok(new StateResponse(nj, ui)).build();
-				});
+					});
+				} else {
+					fgAction(response,
+							() -> ok(new StateResponse(j, ui)).build());
+				}
 			}
 
 			@Override
@@ -366,18 +400,18 @@ public class SpallocImpl implements SpallocAPI {
 		Integer maxDeadBoards = null; // FIXME fill out
 		Integer maxDeadLinks = null; // FIXME fill out and pass on
 		bgAction(response, () -> {
-			Job j;
 			try {
-				j = core.createJob(req.owner.trim(), req.dimensions,
+				Job j = core.createJob(req.owner.trim(), req.dimensions,
 						req.machineName, req.tags, maxDeadBoards);
+				URI where =
+						ui.getRequestUriBuilder().path("{id}").build(j.getId());
+				return created(where).entity(new CreateJobResponse(j, ui))
+						.build();
 			} catch (SQLException e) {
 				log.error("failed to create job", e);
 				throw new WebApplicationException(
 						"failed to create job: " + req.dimensions);
 			}
-			return created(
-					ui.getRequestUriBuilder().path("{id}").build(j.getId()))
-							.entity(new CreateJobResponse(j, ui)).build();
 		});
 	}
 

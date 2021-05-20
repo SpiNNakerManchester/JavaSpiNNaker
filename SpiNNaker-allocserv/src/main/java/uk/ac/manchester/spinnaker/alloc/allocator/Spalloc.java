@@ -96,7 +96,7 @@ public class Spalloc implements SpallocInterface {
 		Map<String, Machine> map = new HashMap<>();
 		try (Query listMachines = query(conn, GET_ALL_MACHINES)) {
 			for (ResultSet rs : listMachines.call()) {
-				Machine m = new Machine(db, conn, rs, me);
+				Machine m = new Machine(this, db, conn, rs, me);
 				map.put(m.name, m);
 			}
 		}
@@ -116,7 +116,7 @@ public class Spalloc implements SpallocInterface {
 		Machine m = null;
 		try (Query namedMachine = query(conn, GET_NAMED_MACHINE)) {
 			for (ResultSet rs : namedMachine.call(name)) {
-				m = new Machine(db, conn, rs, me);
+				m = new Machine(this, db, conn, rs, me);
 				break;
 			}
 		}
@@ -148,13 +148,6 @@ public class Spalloc implements SpallocInterface {
 		}
 	}
 
-	private static Integer getInteger(ResultSet rs, String column)
-			throws SQLException {
-		// This is nuts!
-		int value = rs.getInt(column);
-		return rs.wasNull() ? null : value;
-	}
-
 	@Override
 	public Job getJob(int id) throws SQLException {
 		try (Connection conn = db.getConnection()) {
@@ -166,15 +159,7 @@ public class Spalloc implements SpallocInterface {
 		JobsEpoch epoch = epochs.getJobsEpoch();
 		try (Query s = query(conn, GET_JOB)) {
 			for (ResultSet rs : s.call(id)) {
-				Job j = new Job(conn, epoch);
-				j.id = rs.getInt("machine_id");
-				j.width = getInteger(rs, "width");
-				j.height = getInteger(rs, "height");
-				j.root = getInteger(rs, "root_id");
-				j.state = JobState.values()[rs.getInt("job_state")];
-				j.keepaliveTime = rs.getLong("keepalive_timestamp");
-				j.keepaliveHost = rs.getString("keepalive_host");
-				// TODO fill this out
+				Job j = new Job(this, epoch, rs);
 				return j;
 			}
 		}
@@ -271,4 +256,26 @@ public class Spalloc implements SpallocInterface {
 		return null;
 	}
 
+	private static final String UPDATE_KEEPALIVE =
+			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
+					+ "WHERE job_id = ? AND job_state != ?";
+
+	void jobAccess(Job job, Date now, String keepaliveAddress)
+			throws SQLException {
+		try (Connection conn = db.getConnection();
+				Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
+			keepAlive.call(now, keepaliveAddress, job.id, DESTROYED);
+		}
+	}
+
+	private static final String DESTROY_JOB = "UPDATE jobs SET "
+			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
+			+ "WHERE job_id = ? AND job_state != ?";
+
+	void jobDestroy(Job job, Date now, String reason) throws SQLException {
+		try (Connection conn = db.getConnection();
+				Update destroyJob = update(conn, DESTROY_JOB)) {
+			destroyJob.call(DESTROYED, reason, now, job.id, DESTROYED);
+		}
+	}
 }

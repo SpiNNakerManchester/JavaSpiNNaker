@@ -16,11 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.runUpdate;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -29,66 +25,57 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
-public class Job {
-	@JsonIgnore
-	private final Connection conn;
-
+public final class Job {
 	@JsonIgnore
 	private JobsEpoch epoch;
+
+	@JsonIgnore
+	private final Spalloc coreService;
 
 	/** Job ID */
 	int id;
 
 	/** If not {@code null}, the allocated width of the job's rectangle. */
-	Integer width;
+	private Integer width;
 
 	/** If not {@code null}, the allocated height of the job's rectangle. */
-	Integer height;
+	private Integer height;
 
-	JobState state;
+	/** The state of the job. */
+	private JobState state;
 
 	/** If not {@code null}, the ID of the root board of the job. */
-	Integer root;
+	private Integer root;
 
 	/** The creator of the job. */
-	String owner;
-
-	/** Timestamp of last event keeping job alive. (ms from epoch) */
-	long keepaliveTime;
+	private String owner;
 
 	/** Host address that issued last keepalive event, if any. */
-	String keepaliveHost;
+	private String keepaliveHost;
 
-	Job(Connection conn, JobsEpoch epoch) {
-		this.conn = conn; // TODO do not retain this!
+	Job(Spalloc coreService, JobsEpoch epoch, int id) {
+		this.coreService = coreService;
 		this.epoch = epoch;
+		this.id = id;
 	}
 
-	private static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
-					+ "WHERE job_id = ? AND job_state != ?";
-
-	private static final String DESTROY_JOB = "UPDATE jobs SET "
-			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
-			+ "WHERE job_id = ? AND job_state != ?";
+	Job(Spalloc coreService, JobsEpoch epoch, ResultSet row)
+			throws SQLException {
+		this(coreService, epoch, row.getInt("machine_id"));
+		width = (Integer) row.getObject("width");
+		height = (Integer) row.getObject("height");
+		root = (Integer) row.getObject("root_id");
+		state = JobState.values()[row.getInt("job_state")];
+		keepaliveHost = row.getString("keepalive_host");
+		// TODO fill this out
+	}
 
 	public void access(String keepaliveAddress) throws SQLException {
-		Date now = new Date();
-		try (PreparedStatement s = conn.prepareStatement(UPDATE_KEEPALIVE)) {
-			runUpdate(s, now, keepaliveAddress, id, DESTROYED);
-		}
-	}
-
-	public SubMachine getMachine() {
-		// TODO Auto-generated method stub
-		return null;
+		coreService.jobAccess(this, new Date(), keepaliveAddress);
 	}
 
 	public void destroy(String reason) throws SQLException {
-		Date now = new Date();
-		try (PreparedStatement s = conn.prepareStatement(DESTROY_JOB)) {
-			runUpdate(s, DESTROYED, reason, now, id, DESTROYED);
-		}
+		coreService.jobDestroy(this, new Date(), reason);
 	}
 
 	public void waitForChange(long timeout) {
@@ -99,12 +86,10 @@ public class Job {
 	}
 
 	public int getId() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 
 	public JobState getState() {
-		// TODO Auto-generated method stub
 		return state;
 	}
 
@@ -119,23 +104,42 @@ public class Job {
 	}
 
 	public String getKeepaliveHost() {
+		return keepaliveHost;
+	}
+
+	public SubMachine getMachine() {
+		if (root == null) {
+			return null;
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public BoardLocation whereIs(int x, int y) {
+		if (root == null) {
+			return null;
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ChipLocation getRootChip() {
+		if (root == null) {
+			return null;
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getOwner() {
-		// TODO Auto-generated method stub
 		return owner;
 	}
 
+	public Integer getWidth() {
+		return width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
 }

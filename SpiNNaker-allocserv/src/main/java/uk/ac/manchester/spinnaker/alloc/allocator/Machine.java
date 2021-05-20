@@ -89,20 +89,24 @@ public class Machine {
 	@JsonIgnore
 	private MachinesEpoch epoch;
 
+	@JsonIgnore
+	private Spalloc spalloc;
+
 	/** Don't use this constructor; just there for serialization engine. */
 	public Machine() {
 		throw new UnsupportedOperationException();
 	}
 
-	Machine(DatabaseEngine db, Connection conn, ResultSet rs,
+	Machine(Spalloc spalloc, DatabaseEngine db, Connection conn, ResultSet rs,
 			MachinesEpoch epoch) throws SQLException {
+		this.spalloc = spalloc;
 		this.db = db;
 		this.epoch = epoch;
 		id = rs.getInt("machine_id");
 		name = rs.getString("machine_name");
 		width = rs.getInt("width");
 		height = rs.getInt("height");
-		try (Query getTags = DatabaseEngine.query(conn, GET_TAGS)) {
+		try (Query getTags = query(conn, GET_TAGS)) {
 			for (ResultSet tagSet : getTags.call(id)) {
 				tags.add(tagSet.getString("tag"));
 			}
@@ -121,7 +125,7 @@ public class Machine {
 		try (Connection conn = db.getConnection();
 				Query q = query(conn, FIND_BOARD_BY_CHIP)) {
 			for (ResultSet rs : q.call(id, x, y)) {
-				return buildFromBoardQuery(conn, rs, je);
+				return buildFromBoardQuery(spalloc, rs, je);
 			}
 		}
 		return null; // Query failed
@@ -132,7 +136,7 @@ public class Machine {
 		try (Connection conn = db.getConnection();
 				Query q = query(conn, FIND_BOARD_BY_CFB)) {
 			for (ResultSet rs : q.call(id, cabinet, frame, board)) {
-				return buildFromBoardQuery(conn, rs, je);
+				return buildFromBoardQuery(spalloc, rs, je);
 			}
 		}
 		return null; // Query failed
@@ -143,7 +147,7 @@ public class Machine {
 		try (Connection conn = db.getConnection();
 				Query q = query(conn, FIND_BOARD_BY_XYZ)) {
 			for (ResultSet rs : q.call(id, x, y, z)) {
-				return buildFromBoardQuery(conn, rs, je);
+				return buildFromBoardQuery(spalloc, rs, je);
 			}
 		}
 		return null; // Query failed
