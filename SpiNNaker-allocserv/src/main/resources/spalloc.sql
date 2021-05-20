@@ -62,6 +62,21 @@ CREATE UNIQUE INDEX IF NOT EXISTS bmpSanity ON bmp(
     machine_id, cabinet, frame
 );
 
+CREATE TABLE IF NOT EXISTS links (
+	link_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	board_1 INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	dir_1 INTEGER NOT NULL CHECK (dir_1 >= 0 AND dir_1 <= 2),
+	board_2 INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	dir_2 INTEGER NOT NULL CHECK (dir_2 >= 0 AND dir_2 <= 2),
+	live INTEGER NOT NULL DEFAULT (1)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS link_1 ON links(
+	board_1 ASC, dir_1 ASC);
+CREATE UNIQUE INDEX IF NOT EXISTS link_2 ON links(
+	board_2 ASC, dir_2 ASC);
+CREATE UNIQUE INDEX IF NOT EXISTS only_one_link_between_boards ON links(
+	board_1 ASC, board_2 ASC);
+
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
@@ -115,6 +130,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS chipUniqueness ON board_model_coords(
     model, chip_x, chip_y
 );
 
+BEGIN;
+
 -- The information about chip configuration of boards
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 VALUES
@@ -137,21 +154,23 @@ INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;
 
+COMMIT;
+
 -- Lock down the board_model_coords table
-CREATE TRIGGER board_layout_is_static_no_update
+CREATE TRIGGER IF NOT EXISTS board_layout_is_static_no_update
 BEFORE UPDATE ON board_model_coords
 BEGIN
-    SELECT RAISE(ABORT, 'board layout is static');
+    SELECT RAISE(IGNORE);
 END;
 
-CREATE TRIGGER board_layout_is_static_no_insert
+CREATE TRIGGER IF NOT EXISTS board_layout_is_static_no_insert
 BEFORE INSERT ON board_model_coords
 BEGIN
-    SELECT RAISE(ABORT, 'board layout is static');
+    SELECT RAISE(IGNORE);
 END;
 
-CREATE TRIGGER board_layout_is_static_no_delete
+CREATE TRIGGER IF NOT EXISTS board_layout_is_static_no_delete
 BEFORE DELETE ON board_model_coords
 BEGIN
-    SELECT RAISE(ABORT, 'board layout is static');
+    SELECT RAISE(IGNORE);
 END;

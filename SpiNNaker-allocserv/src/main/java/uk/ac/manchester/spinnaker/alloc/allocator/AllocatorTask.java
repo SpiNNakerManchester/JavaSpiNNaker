@@ -108,6 +108,9 @@ public class AllocatorTask {
 	@Value("classpath:issue_change_for_job.sql")
 	private Resource issueChangeForJob;
 
+	@Value("classpath:allocation_connected.sql")
+	private Resource countConnected;
+
 	/**
 	 * Allocate all current requests for resources.
 	 *
@@ -281,7 +284,23 @@ public class AllocatorTask {
 			for (ResultSet rs : s.call(width, height, machineId, tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
-				setAllocation(conn, jobId, 1, 1, machineId, x, y);
+				if (width * height > 1) {
+					/*
+					 * Check that a minimum number of boards are reachable from
+					 * the proposed root board.
+					 */
+					int size = -1;
+					try (Query connected = query(conn, countConnected)) {
+						for (ResultSet row : connected.call(machineId, x, y,
+								width, height)) {
+							size = row.getInt("connected_size");
+						}
+					}
+					if (size < width * height - tolerance) {
+						continue;
+					}
+				}
+				setAllocation(conn, jobId, width, height, machineId, x, y);
 				return true;
 			}
 			return false;
@@ -290,8 +309,8 @@ public class AllocatorTask {
 
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
 			int cabinet, int frame, int board) throws SQLException {
-		try (Query s = query(conn, findLocation)) {
-			for (ResultSet rs : s.call(machineId, cabinet, frame, board)) {
+		try (Query find = query(conn, findLocation)) {
+			for (ResultSet rs : find.call(machineId, cabinet, frame, board)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				setAllocation(conn, jobId, 1, 1, machineId, x, y);

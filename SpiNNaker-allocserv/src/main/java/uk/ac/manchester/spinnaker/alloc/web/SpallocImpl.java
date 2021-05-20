@@ -55,6 +55,13 @@ public class SpallocImpl implements SpallocAPI {
 
 	private static final int WAIT_TIMEOUT = 30000; // 30s
 
+	/**
+	 * Maximum number of dimensions that can be used in
+	 * {@link #createJob(CreateJobRequest, UriInfo, AsyncResponse)
+	 * createJob(...)}
+	 */
+	private static final int MAX_CREATE_DIMENSIONS = 3;
+
 	private final Version v;
 
 	@Autowired
@@ -379,8 +386,9 @@ public class SpallocImpl implements SpallocAPI {
 		if (req.dimensions == null) {
 			req.dimensions = new ArrayList<>();
 		}
-		if (req.dimensions.size() > 3) {
-			throw new WebApplicationException("must be zero to 3 dimensions",
+		if (req.dimensions.size() > MAX_CREATE_DIMENSIONS) {
+			throw new WebApplicationException(
+					"must be zero to " + MAX_CREATE_DIMENSIONS + " dimensions",
 					BAD_REQUEST);
 		}
 		if (req.dimensions.size() == 0) {
