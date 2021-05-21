@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest;
@@ -42,13 +42,15 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 class JsonTest {
-	ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper;
 
 	JsonTest() {
 		// Set up the mapper in the same way that ServiceConfig does
-		mapper.setPropertyNamingStrategy(KEBAB_CASE);
-		mapper.registerModule(new JavaTimeModule());
-		mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
+		mapper = JsonMapper.builder()
+			    .findAndAddModules()
+			    .disable(WRITE_DATES_AS_TIMESTAMPS)
+			    .propertyNamingStrategy(KEBAB_CASE)
+			    .build();
 	}
 
 	private String serialize(Object obj) throws IOException {

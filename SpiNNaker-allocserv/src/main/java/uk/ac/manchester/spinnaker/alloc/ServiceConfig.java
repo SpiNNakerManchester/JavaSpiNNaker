@@ -47,7 +47,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
@@ -110,12 +110,12 @@ public class ServiceConfig {
 	 *      Overflow</a>
 	 */
 	@Bean("ObjectMapper")
-	ObjectMapper mapper() {
-		ObjectMapper m = new ObjectMapper();
-		m.setPropertyNamingStrategy(KEBAB_CASE);
-		m.registerModule(new JavaTimeModule());
-		m.disable(WRITE_DATES_AS_TIMESTAMPS);
-		return m;
+	JsonMapper mapper() {
+		return JsonMapper.builder()
+			    .findAndAddModules()
+			    .disable(WRITE_DATES_AS_TIMESTAMPS)
+			    .propertyNamingStrategy(KEBAB_CASE)
+			    .build();
 	}
 
 	/**
