@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,8 @@ public interface SpallocInterface {
 	Job getJob(int id) throws SQLException;
 
 	Job createJob(String owner, List<Integer> dimensions, String machineName,
-			List<String> tags, Integer maxDeadBoards) throws SQLException;
+			List<String> tags, Duration keepaliveInterval,
+			Integer maxDeadBoards) throws SQLException;
 
 	/**
 	 * A thing that may be waited upon.

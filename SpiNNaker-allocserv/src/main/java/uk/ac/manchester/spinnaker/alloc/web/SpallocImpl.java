@@ -28,6 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
@@ -61,6 +62,9 @@ public class SpallocImpl implements SpallocAPI {
 	 * createJob(...)}
 	 */
 	private static final int MAX_CREATE_DIMENSIONS = 3;
+
+	private static final Duration MIN_KEEPALIVE_DURATION =
+			Duration.parse("PT30S");
 
 	private final Version v;
 
@@ -383,6 +387,13 @@ public class SpallocImpl implements SpallocAPI {
 			throw new WebApplicationException("owner must be supplied",
 					BAD_REQUEST);
 		}
+		if (req.keepaliveInterval == null || req.keepaliveInterval
+				.compareTo(MIN_KEEPALIVE_DURATION) < 0) {
+			throw new WebApplicationException(
+					"keepalive interval must be at least "
+							+ MIN_KEEPALIVE_DURATION,
+					BAD_REQUEST);
+		}
 		if (req.dimensions == null) {
 			req.dimensions = new ArrayList<>();
 		}
@@ -405,12 +416,13 @@ public class SpallocImpl implements SpallocAPI {
 					"must not specify machine name and tags together",
 					BAD_REQUEST);
 		}
-		Integer maxDeadBoards = null; // FIXME fill out
+		Integer maxDeadBoards = 0; // FIXME fill out
 		Integer maxDeadLinks = null; // FIXME fill out and pass on
 		bgAction(response, () -> {
 			try {
 				Job j = core.createJob(req.owner.trim(), req.dimensions,
-						req.machineName, req.tags, maxDeadBoards);
+						req.machineName, req.tags, req.keepaliveInterval,
+						maxDeadBoards);
 				URI where =
 						ui.getRequestUriBuilder().path("{id}").build(j.getId());
 				return created(where).entity(new CreateJobResponse(j, ui))

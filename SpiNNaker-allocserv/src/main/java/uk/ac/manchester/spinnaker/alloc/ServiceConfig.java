@@ -111,11 +111,9 @@ public class ServiceConfig {
 	 */
 	@Bean("ObjectMapper")
 	JsonMapper mapper() {
-		return JsonMapper.builder()
-			    .findAndAddModules()
-			    .disable(WRITE_DATES_AS_TIMESTAMPS)
-			    .propertyNamingStrategy(KEBAB_CASE)
-			    .build();
+		return JsonMapper.builder().findAndAddModules()
+				.disable(WRITE_DATES_AS_TIMESTAMPS)
+				.propertyNamingStrategy(KEBAB_CASE).build();
 	}
 
 	/**

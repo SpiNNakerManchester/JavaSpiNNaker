@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,8 +71,9 @@ public class Spalloc implements SpallocInterface {
 					+ "WHERE job_id = ? LIMIT 1";
 
 	private static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, owner, keepalive_timestamp, create_timestamp) "
-			+ "VALUES (?, ?, ?, ?)";
+			+ "machine_id, owner, keepalive_interval, keepalive_timestamp, "
+			+ "create_timestamp) " //
+			+ "VALUES (?, ?, ?, ?, ?)";
 
 	private static final String INSERT_REQ_N_BOARDS =
 			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
@@ -133,10 +135,10 @@ public class Spalloc implements SpallocInterface {
 	private static final int N_COORDS_LOCATION = 3;
 
 	@Autowired
-	DatabaseEngine db;
+	private DatabaseEngine db;
 
 	@Autowired
-	Epochs epochs;
+	private Epochs epochs;
 
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
@@ -223,8 +225,8 @@ public class Spalloc implements SpallocInterface {
 
 	@Override
 	public Job createJob(String owner, List<Integer> dimensions,
-			String machineName, List<String> tags, Integer maxDeadBoards)
-			throws SQLException {
+			String machineName, List<String> tags, Duration keepaliveInterval,
+			Integer maxDeadBoards) throws SQLException {
 		try (Connection conn = db.getConnection()) {
 			return transaction(conn, () -> {
 				MachineImpl m = selectMachine(conn, machineName, tags);
@@ -233,7 +235,7 @@ public class Spalloc implements SpallocInterface {
 					return null;
 				}
 
-				int id = insertJob(conn, m, owner);
+				int id = insertJob(conn, m, owner, keepaliveInterval);
 				if (id < 0) {
 					// Insert failed
 					return null;
@@ -272,13 +274,14 @@ public class Spalloc implements SpallocInterface {
 		}
 	}
 
-	private int insertJob(Connection conn, MachineImpl m, String owner)
-			throws SQLException {
+	private int insertJob(Connection conn, MachineImpl m, String owner,
+			Duration keepaliveInterval) throws SQLException {
 		// TODO add in additional info
 		Date now = new Date();
+		long interval = keepaliveInterval.getSeconds();
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, now, now)) {
+			for (int key : makeJob.keys(m.id, owner, interval, now, now)) {
 				pk = key;
 				break;
 			}
@@ -501,7 +504,7 @@ public class Spalloc implements SpallocInterface {
 		}
 
 		JobImpl(JobsEpoch epoch, ResultSet row) throws SQLException {
-			this(epoch, row.getInt("machine_id"));// FIXME wtf? job_id surely?
+			this(epoch, row.getInt("machine_id")); // FIXME wtf? job_id surely?
 			width = (Integer) row.getObject("width");
 			height = (Integer) row.getObject("height");
 			root = (Integer) row.getObject("root_id");
