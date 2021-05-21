@@ -55,12 +55,12 @@ public class SubMachineResponse {
 	public SubMachineResponse(SubMachine m, UriInfo ui) {
 		width = m.width;
 		height = m.height;
-		machineName = m.machine.name;
+		machineName = m.machine.getName();
 		connections = unmodifiableList(m.connections);
 		boards = unmodifiableList(m.boards);
 		power = ui.getAbsolutePathBuilder().path("power").build();
 		machineRef = ui.getBaseUriBuilder().path("machine/{name}")
-				.build(m.machine.name);
+				.build(m.machine.getName());
 	}
 
 }

@@ -42,8 +42,8 @@ import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
@@ -121,7 +121,7 @@ public class BMPController {
 		boolean ok = (fpgaId & FPGA_FLAG_ID_MASK) == fpga;
 		if (!ok) {
 			log.warn("FPGA {} on board {} of {} has incorrect FPGA ID flag {}",
-					fpga, board, machine.name, fpgaId & FPGA_FLAG_ID_MASK);
+					fpga, board, machine.getName(), fpgaId & FPGA_FLAG_ID_MASK);
 		}
 		return ok;
 	}
@@ -439,7 +439,7 @@ public class BMPController {
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(Machine machine) {
-		MDC.put("machine", machine.name);
+		MDC.put("machine", machine.getName());
 		try {
 			if (onThreadStart != null) {
 				onThreadStart.run();

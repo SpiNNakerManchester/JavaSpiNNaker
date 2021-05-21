@@ -42,10 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.JobCollection;
-import uk.ac.manchester.spinnaker.alloc.allocator.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Jobs;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
@@ -360,7 +360,7 @@ public class SpallocImpl implements SpallocAPI {
 					BAD_REQUEST);
 		}
 		bgAction(response, () -> {
-			JobCollection jc;
+			Jobs jc;
 			try {
 				jc = core.getJobs(destroyed, limit, start);
 				if (wait) {

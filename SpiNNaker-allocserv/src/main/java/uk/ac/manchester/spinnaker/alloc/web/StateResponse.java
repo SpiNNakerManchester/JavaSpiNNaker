@@ -25,8 +25,8 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
 
 /**
  * The state of a job.
@@ -68,12 +68,12 @@ public class StateResponse {
 		chipRef = null;
 	}
 
-	StateResponse(Job j, UriInfo ui) {
-		state = j.getState();
-		startTime = j.getStartTime();
-		reason = j.getReason();
-		keepaliveHost = j.getKeepaliveHost();
-		owner = j.getOwner();
+	StateResponse(Job nj, UriInfo ui) {
+		state = nj.getState();
+		startTime = nj.getStartTime();
+		reason = nj.getReason();
+		keepaliveHost = nj.getKeepaliveHost();
+		owner = nj.getOwner();
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 		keepaliveRef = b.build("keepalive");

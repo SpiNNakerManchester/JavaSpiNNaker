@@ -17,7 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 /**
- * The state of the boards of a machine.
+ * The state of the boards or links of a machine, or what they should be
+ * switched to.
  *
  * @author Donal Fellows
  */

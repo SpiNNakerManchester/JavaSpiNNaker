@@ -24,7 +24,8 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -50,15 +51,16 @@ public class WhereIsResponse {
 	public BoardPhysicalCoordinates physicalBoardCoordinates;
 
 	public WhereIsResponse(BoardLocation location, UriInfo ui) {
-		machine = location.machine;
-		chip = location.chip;
+		machine = location.getMachine();
+		chip = location.getChip();
 		boardChip = location.getBoardChip();
-		logicalBoardCoordinates = location.logical;
-		physicalBoardCoordinates = location.physical;
-		if (location.job != null) {
-			jobId = location.job.getId();
+		logicalBoardCoordinates = location.getLogical();
+		physicalBoardCoordinates = location.getPhysical();
+		Job j = location.getJob();
+		if (j != null) {
+			jobId = j.getId();
 			jobRef = ui.getBaseUriBuilder().path("jobs/{id}").build(jobId);
-			jobChip = location.getChipRelativeTo(location.job.getRootChip());
+			jobChip = location.getChipRelativeTo(j.getRootChip());
 		}
 		// TODO Auto-generated constructor stub
 	}

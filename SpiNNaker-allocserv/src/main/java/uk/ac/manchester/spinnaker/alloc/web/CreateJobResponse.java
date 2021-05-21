@@ -24,7 +24,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 
 public class CreateJobResponse {
 	public int jobId;
@@ -32,7 +32,7 @@ public class CreateJobResponse {
 	@JsonInclude(NON_NULL)
 	public URI jobRef;
 
-	public CreateJobResponse(Job j, UriInfo ui) {
+	public CreateJobResponse(Spalloc.Job j, UriInfo ui) {
 		jobId = j.getId();
 		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
 	}

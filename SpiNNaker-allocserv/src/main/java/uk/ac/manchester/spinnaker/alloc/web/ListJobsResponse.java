@@ -25,12 +25,12 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.JobCollection;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Jobs;
 
 public class ListJobsResponse {
 	public List<URI> jobs = new ArrayList<>();
 
-	public ListJobsResponse(JobCollection jc, int limit, int start,
+	public ListJobsResponse(Jobs jc, int limit, int start,
 			UriInfo ui) {
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
 		jobs = jc.ids(start, limit).stream().map(id -> b.build(id))

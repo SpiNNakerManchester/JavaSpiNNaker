@@ -26,7 +26,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Machine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
 
 public class MachineResponse {
 	public String name;
@@ -51,11 +51,11 @@ public class MachineResponse {
 	public MachineResponse() {
 	}
 
-	public MachineResponse(Machine machine, UriInfo ui) {
-		name = machine.name;
-		tags = machine.tags;
-		width = machine.width;
-		height = machine.height;
+	public MachineResponse(SpallocInterface.Machine machine, UriInfo ui) {
+		name = machine.getName();
+		tags = machine.getTags();
+		width = machine.getWidth();
+		height = machine.getHeight();
 		// FIXME pull info out of machine
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{element}");
 		physicalBoard = b.build("physical-board");
