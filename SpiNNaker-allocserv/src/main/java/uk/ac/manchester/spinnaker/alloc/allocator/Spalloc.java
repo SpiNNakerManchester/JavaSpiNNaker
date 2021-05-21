@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -353,6 +354,7 @@ public class Spalloc implements SpallocInterface {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
+				Thread.currentThread().interrupt();
 			}
 		}
 
@@ -437,6 +439,8 @@ public class Spalloc implements SpallocInterface {
 		@JsonIgnore
 		private JobsEpoch epoch;
 
+		private List<Job> jobs = new ArrayList<>();
+
 		JobCollection(JobsEpoch je) {
 			epoch = je;
 		}
@@ -446,6 +450,7 @@ public class Spalloc implements SpallocInterface {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
+				Thread.currentThread().interrupt();
 			}
 		}
 
@@ -455,9 +460,8 @@ public class Spalloc implements SpallocInterface {
 			return null;
 		}
 
-		void addJob(int jobId, int int2, long int3) {
-			// TODO Auto-generated method stub
-
+		void addJob(int jobId, int jobState, long keepalive) {
+			jobs.add(new JobImpl(epoch, jobId, jobState, keepalive));
 		}
 	}
 
@@ -465,34 +469,39 @@ public class Spalloc implements SpallocInterface {
 		@JsonIgnore
 		private JobsEpoch epoch;
 
-		/** Job ID */
-		int id;
+		private final int id;
 
-		/** If not {@code null}, the allocated width of the job's rectangle. */
 		private Integer width;
 
-		/** If not {@code null}, the allocated height of the job's rectangle. */
 		private Integer height;
 
-		/** The state of the job. */
 		private JobState state;
 
 		/** If not {@code null}, the ID of the root board of the job. */
 		private Integer root;
 
-		/** The creator of the job. */
 		private String owner;
 
-		/** Host address that issued last keepalive event, if any. */
 		private String keepaliveHost;
+
+		private Instant startTime;
+
+		private Instant keepaliveTime;
 
 		JobImpl(JobsEpoch epoch, int id) {
 			this.epoch = epoch;
 			this.id = id;
 		}
 
+		JobImpl(JobsEpoch epoch, int jobId, int jobState,
+				long keepalive) {
+			this(epoch, jobId);
+			state = JobState.values()[jobState];
+			keepaliveTime = Instant.ofEpochSecond(keepalive);
+		}
+
 		JobImpl(JobsEpoch epoch, ResultSet row) throws SQLException {
-			this(epoch, row.getInt("machine_id"));
+			this(epoch, row.getInt("machine_id"));// FIXME wtf? job_id surely?
 			width = (Integer) row.getObject("width");
 			height = (Integer) row.getObject("height");
 			root = (Integer) row.getObject("root_id");
@@ -516,6 +525,7 @@ public class Spalloc implements SpallocInterface {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
+				Thread.currentThread().interrupt();
 			}
 		}
 
@@ -530,9 +540,9 @@ public class Spalloc implements SpallocInterface {
 		}
 
 		@Override
-		public Float getStartTime() {
+		public Instant getStartTime() {
 			// TODO Auto-generated method stub
-			return null;
+			return startTime;
 		}
 
 		@Override
@@ -610,7 +620,7 @@ public class Spalloc implements SpallocInterface {
 			Integer jobId = (Integer) row.getObject("job_id");
 			if (jobId != null) {
 				job = new JobImpl(epoch, jobId);
-				// FIXME
+				// FIXME also pass other basic values
 			}
 		}
 

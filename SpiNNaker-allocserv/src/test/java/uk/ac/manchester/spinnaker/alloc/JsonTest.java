@@ -17,21 +17,22 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
-// import static org.junit.jupiter.api.Assertions.*;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.time.Instant;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
+import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest;
 import uk.ac.manchester.spinnaker.alloc.web.ServiceDescription;
 import uk.ac.manchester.spinnaker.alloc.web.StateResponse;
 import uk.ac.manchester.spinnaker.alloc.web.WhereIsResponse;
@@ -41,20 +42,21 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 class JsonTest {
-	JsonFactory f = new JsonFactory();
+	ObjectMapper mapper = new ObjectMapper();
 
 	JsonTest() {
-		ObjectMapper m = new ObjectMapper();
-		m.setPropertyNamingStrategy(KEBAB_CASE);
-		f.setCodec(m);
+		// Set up the mapper in the same way that ServiceConfig does
+		mapper.setPropertyNamingStrategy(KEBAB_CASE);
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
 	}
 
-	String serialize(Object obj) throws IOException {
-		try (StringWriter w = new StringWriter();
-				JsonGenerator g = f.createGenerator(w)) {
-			g.writeObject(obj);
-			return w.getBuffer().toString();
-		}
+	private String serialize(Object obj) throws IOException {
+		return mapper.writeValueAsString(obj);
+	}
+
+	private <T> T deserialize(String string, Class<T> cls) throws IOException {
+		return mapper.readValue(string, cls);
 	}
 
 	@Nested
@@ -73,11 +75,12 @@ class JsonTest {
 		void testStateResponse() throws IOException, JSONException {
 			StateResponse r = new StateResponse();
 			r.setState(JobState.READY);
-			r.setStartTime(123F);
+			r.setStartTime(Instant.ofEpochSecond(1633954394));
 			r.setKeepaliveHost("127.0.0.1");
 			r.setOwner("gorp");
 			JSONAssert.assertEquals(
-					"{ \"state\": \"READY\", \"start-time\": 123.0, "
+					"{ \"state\": \"READY\", "
+							+ "\"start-time\": \"2021-10-11T12:13:14Z\", "
 							+ "\"owner\": \"gorp\", "
 							+ "\"keepalive-host\": \"127.0.0.1\" }",
 					serialize(r), false);
@@ -109,4 +112,17 @@ class JsonTest {
 		}
 	}
 
+	@Nested
+	class Deserialization {
+		@Test
+		void testCreateJobRequest() throws IOException {
+			String obj =
+					"{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
+			CreateJobRequest cjr = deserialize(obj, CreateJobRequest.class);
+			assertNotNull(cjr);
+			assertEquals("bob", cjr.owner);
+			assertNotNull(cjr.keepaliveInterval);
+			assertEquals(30, cjr.keepaliveInterval.getSeconds());
+		}
+	}
 }

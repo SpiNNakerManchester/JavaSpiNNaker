@@ -16,10 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import java.time.Duration;
 import java.util.List;
 
 public class CreateJobRequest {
 	public String owner;
+
+	public Duration keepaliveInterval;
 
 	public List<Integer> dimensions;
 

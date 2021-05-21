@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
+import java.time.Instant;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -38,7 +39,7 @@ public class StateResponse {
 
 	private String owner;
 
-	private Float startTime; // TODO Why is this a float? It's a time, damnit!
+	private Instant startTime;
 
 	@JsonInclude(NON_NULL)
 	private String reason;
@@ -68,12 +69,12 @@ public class StateResponse {
 		chipRef = null;
 	}
 
-	StateResponse(Job nj, UriInfo ui) {
-		state = nj.getState();
-		startTime = nj.getStartTime();
-		reason = nj.getReason();
-		keepaliveHost = nj.getKeepaliveHost();
-		owner = nj.getOwner();
+	StateResponse(Job job, UriInfo ui) {
+		state = job.getState();
+		startTime = job.getStartTime();
+		reason = job.getReason();
+		keepaliveHost = job.getKeepaliveHost();
+		owner = job.getOwner();
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 		keepaliveRef = b.build("keepalive");
@@ -92,11 +93,11 @@ public class StateResponse {
 	}
 
 	/** @return When the job started */
-	public Float getStartTime() {
+	public Instant getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Float startTime) {
+	public void setStartTime(Instant startTime) {
 		this.startTime = startTime;
 	}
 

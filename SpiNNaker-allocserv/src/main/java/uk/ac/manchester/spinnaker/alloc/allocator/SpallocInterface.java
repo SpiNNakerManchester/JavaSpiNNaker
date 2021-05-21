@@ -17,11 +17,11 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.BoardLocation;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -39,25 +39,47 @@ public interface SpallocInterface {
 			List<String> tags, Integer maxDeadBoards) throws SQLException;
 
 	/**
+	 * A thing that may be waited upon.
+	 *
+	 * @author Donal Fellows
+	 */
+	interface Waitable {
+		/**
+		 * Wait for the object to (maybe) change, or for the timeout to expire.
+		 * This is a best-effort method.
+		 * <p>
+		 * This method does <em>not</em> throw {@link InterruptedException}; on
+		 * interruption, it simply returns early (but the
+		 * {@linkplain Thread#interrupted() interrupted status} of the thread is
+		 * set).
+		 *
+		 * @param timeout
+		 *            How long to wait (in milliseconds).
+		 */
+		void waitForChange(long timeout);
+	}
+
+	/**
 	 * Describes a particular job known to the allocator.
 	 *
 	 * @author Donal Fellows
 	 */
-	interface Job {
+	interface Job extends Waitable {
 		void access(String keepaliveAddress) throws SQLException;
 
 		void destroy(String reason) throws SQLException;
 
-		void waitForChange(long timeout);
-
+		/** @return Job ID */
 		int getId();
 
+		/** @return The state of the job. */
 		JobState getState();
 
-		Float getStartTime();
+		Instant getStartTime();
 
 		String getReason();
 
+		/** @return Host address that issued last keepalive event, if any. */
 		String getKeepaliveHost();
 
 		SubMachine getMachine();
@@ -66,31 +88,38 @@ public interface SpallocInterface {
 
 		ChipLocation getRootChip();
 
+		/** @return The creator of the job. */
 		String getOwner();
 
+		/**
+		 * @return the allocated width of the job's rectangle, or {@code null}
+		 *         if not allocated (or not known).
+		 */
 		Integer getWidth();
 
+		/**
+		 * @return the allocated height of the job's rectangle, or {@code null}
+		 *         if not allocated (or not known).
+		 */
 		Integer getHeight();
 	}
 
 	/**
-	 * Describes list set of jobs known to the allocator.
+	 * Describes a list of jobs known to the allocator.
 	 *
 	 * @author Donal Fellows
 	 */
-	interface Jobs {
-		void waitForChange(long timeout);
-
+	interface Jobs extends Waitable {
 		List<Integer> ids(int start, int limit);
 	}
 
 	/**
-	 * Describes a particular machine known to the allocator.
-	 * Must implement equality by ID or name (both are unique).
+	 * Describes a particular machine known to the allocator. Must implement
+	 * equality by ID or name (both are unique).
 	 *
 	 * @author Donal Fellows
 	 */
-	interface Machine {
+	interface Machine extends Waitable {
 		/** The ID of the machine. Unique. */
 		int getId();
 
@@ -107,8 +136,6 @@ public interface SpallocInterface {
 		int getHeight();
 
 		// TODO: dead boards, dead links
-
-		void waitForChange(long timeout);
 
 		BoardLocation getBoardByChip(int x, int y, JobsEpoch je)
 				throws SQLException;
