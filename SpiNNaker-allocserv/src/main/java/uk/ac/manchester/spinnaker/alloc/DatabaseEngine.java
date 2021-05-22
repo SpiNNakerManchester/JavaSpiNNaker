@@ -297,6 +297,37 @@ public class DatabaseEngine {
 	}
 
 	/**
+	 * Run some SQL where the result is of no interest.
+	 *
+	 * @param conn
+	 *            The connection.
+	 * @param sql
+	 *            The SQL to run. Probably DDL.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public static void exec(Connection conn, String sql) throws SQLException {
+		try (Statement s = conn.createStatement()) {
+			s.execute(sql);
+		}
+	}
+
+	/**
+	 * Run some SQL where the result is of no interest.
+	 *
+	 * @param conn
+	 *            The connection.
+	 * @param sql
+	 *            Reference to the SQL to run. Probably DDL.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public static void exec(Connection conn, Resource sqlResource)
+			throws SQLException {
+		exec(conn, readSQL(sqlResource));
+	}
+
+	/**
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
 	 *
 	 * @author Donal Fellows
@@ -490,6 +521,7 @@ public class DatabaseEngine {
 				s.setObject(++idx, arg);
 			}
 			closeResults();
+			s.executeUpdate();
 			rs = s.getGeneratedKeys();
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;

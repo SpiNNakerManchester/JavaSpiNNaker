@@ -46,47 +46,116 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.storage.GeneratesID;
+import uk.ac.manchester.spinnaker.storage.Parameter;
+import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @Component
 public class Spalloc implements SpallocInterface {
+	@ResultColumn("machine_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("width")
+	@ResultColumn("height")
 	private static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height FROM machines";
 
+	@Parameter("machine_name")
+	@ResultColumn("machine_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("width")
+	@ResultColumn("height")
 	private static final String GET_NAMED_MACHINE =
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_name = ? LIMIT 1";
 
+	@Parameter("limit")
+	@Parameter("offset")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("job_state")
+	@ResultColumn("keepalive_timestamp")
 	private static final String GET_JOB_IDS =
-			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
-					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
+			"SELECT job_id, machine_id, job_state, keepalive_timestamp "
+					+ "FROM jobs ORDER BY job_id DESC LIMIT ? OFFSET ?";
 
+	@Parameter("job_state:DESTROYED")
+	@Parameter("limit")
+	@Parameter("offset")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("job_state")
+	@ResultColumn("keepalive_timestamp")
 	private static final String GET_LIVE_JOB_IDS =
-			"SELECT machine_id, job_state, keepalive_timestamp FROM jobs "
-					+ "WHERE job_state != ? "
+			"SELECT job_id, machine_id, job_state, keepalive_timestamp "
+					+ "FROM jobs WHERE job_state != ? "
 					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
 
+	@Parameter("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@ResultColumn("root_id")
+	@ResultColumn("job_state")
+	@ResultColumn("keepalive_timestamp")
+	@ResultColumn("keepalive_host")
 	private static final String GET_JOB =
 			"SELECT machine_id, width, height, root_id, job_state, "
 					+ "keepalive_timestamp, keepalive_host FROM jobs "
 					+ "WHERE job_id = ? LIMIT 1";
 
+	@Parameter("machine_id")
+	@Parameter("owner")
+	@Parameter("keepalive_interval")
+	@Parameter("keepalive_timestamp")
+	@Parameter("create_timestamp")
+	@GeneratesID
 	private static final String INSERT_JOB = "INSERT INTO jobs("
 			+ "machine_id, owner, keepalive_interval, keepalive_timestamp, "
 			+ "create_timestamp) " //
 			+ "VALUES (?, ?, ?, ?, ?)";
 
+	@Parameter("job_id")
+	@Parameter("num_boards")
+	@Parameter("max_dead_boards")
+	@GeneratesID
 	private static final String INSERT_REQ_N_BOARDS =
 			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
 					+ "VALUES (?, ?, ?)";
 
+	@Parameter("job_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("max_dead_boards")
+	@GeneratesID
 	private static final String INSERT_REQ_SIZE =
 			"INSERT INTO job_request(job_id, width, height, max_dead_boards) "
 					+ "VALUES (?, ?, ?, ?)";
 
+	@Parameter("job_id")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@Parameter("board")
+	@GeneratesID
 	private static final String INSERT_REQ_LOCATION =
 			"INSERT INTO job_request(job_id, cabinet, frame, board) "
 					+ "VALUES (?, ?, ?, ?)";
 
+	@Parameter("machine_id")
+	@Parameter("chip_x")
+	@Parameter("chip_y")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("board_nnum")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
 	private static final String FIND_BOARD_BY_CHIP =
 			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
@@ -99,6 +168,23 @@ public class Spalloc implements SpallocInterface {
 					+ "WHERE boards.machine_id = ? "
 					+ "AND chip_x = ? AND chip_y = ? LIMIT 1";
 
+	@Parameter("machine_id")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@Parameter("board")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("board_nnum")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
 	private static final String FIND_BOARD_BY_CFB =
 			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
@@ -108,6 +194,23 @@ public class Spalloc implements SpallocInterface {
 					+ "WHERE boards.machine_id = ? AND bmp.cabinet = ? "
 					+ "AND bmp.frame = ? AND boards.board_num = ? LIMIT 1";
 
+	@Parameter("machine_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("board_nnum")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
 	private static final String FIND_BOARD_BY_XYZ =
 			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
@@ -117,13 +220,24 @@ public class Spalloc implements SpallocInterface {
 					+ "WHERE boards.machine_id = ? AND boards.x = ? "
 					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
 
+	@Parameter("machine_id")
+	@ResultColumn("tag")
 	private static final String GET_TAGS =
 			"SELECT tag FROM tags WHERE machine_id = ?";
 
+	@Parameter("keepalive_timestamp")
+	@Parameter("keepalive_host")
+	@Parameter("job_id")
+	@Parameter("job_state:DESTROYED")
 	private static final String UPDATE_KEEPALIVE =
 			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
 					+ "WHERE job_id = ? AND job_state != ?";
 
+	@Parameter("job_state:DESTROYED")
+	@Parameter("death_reason")
+	@Parameter("death_timestamp")
+	@Parameter("job_id")
+	@Parameter("job_state:DESTROYED")
 	private static final String DESTROY_JOB = "UPDATE jobs SET "
 			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
 			+ "WHERE job_id = ? AND job_state != ?";

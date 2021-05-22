@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.exec;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.io.File;
 import java.sql.Connection;
@@ -39,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
 
@@ -94,6 +97,38 @@ class BootTest {
 					}
 				}
 				assertEquals(1, rows, "should be only one row in query result");
+			}
+		}
+
+		@Test
+		void testDbChanges() throws SQLException {
+			int rows;
+			try (Connection c = db.getConnection()) {
+				exec(c, "CREATE TEMPORARY TABLE foo(x)");
+				try (Update u = update(c, "INSERT INTO foo(x) VALUES(?)");
+						Query q = query(c, "SELECT * FROM foo")) {
+					rows = 0;
+					for (ResultSet row : q.call()) {
+						assertFalse(row.isClosed());
+						rows++;
+					}
+					assertEquals(0, rows);
+
+					int keyCount = 0;
+					for (Integer key : u.keys(123)) {
+						// Tricky: assumes how SQLite generates keys
+						assertEquals(Integer.valueOf(1), key);
+						keyCount++;
+					}
+					assertEquals(1, keyCount);
+
+					rows = 0;
+					for (ResultSet row : q.call()) {
+						assertEquals(123, row.getInt("x"));
+						rows++;
+					}
+					assertEquals(1, rows);
+				}
 			}
 		}
 

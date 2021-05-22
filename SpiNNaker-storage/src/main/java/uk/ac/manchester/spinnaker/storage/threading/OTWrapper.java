@@ -55,6 +55,21 @@ abstract class OTWrapper implements Wrapper {
 		return w.isWrapperFor(iface);
 	}
 
+	@Override
+	public final String toString() {
+		return w.toString();
+	}
+
+	@Override
+	public final int hashCode() {
+		return w.hashCode();
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		return w.equals(o);
+	}
+
 	/**
 	 * The point that enforces the single-threaded nature of the wrapper.
 	 *

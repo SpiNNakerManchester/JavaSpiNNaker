@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Thread management.
+ * Thread management. These are mostly classes that delegate to wrapped and
+ * protected objects.
  */
 package uk.ac.manchester.spinnaker.storage.threading;
