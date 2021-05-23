@@ -43,16 +43,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Jobs;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Machine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 @Component("service")
-public class SpallocImpl implements SpallocAPI {
-	private static final Logger log = getLogger(SpallocImpl.class);
+public class SpallocServiceImpl implements SpallocServiceAPI {
+	private static final Logger log = getLogger(SpallocServiceImpl.class);
 
 	private static final int WAIT_TIMEOUT = 30000; // 30s
 
@@ -69,12 +69,12 @@ public class SpallocImpl implements SpallocAPI {
 	private final Version v;
 
 	@Autowired
-	private SpallocInterface core;
+	private SpallocAPI core;
 
 	@Autowired
 	private Executor executor;
 
-	public SpallocImpl(@Value("${version}") String version) {
+	public SpallocServiceImpl(@Value("${version}") String version) {
 		v = new Version(version.replaceAll("-.*", ""));
 	}
 

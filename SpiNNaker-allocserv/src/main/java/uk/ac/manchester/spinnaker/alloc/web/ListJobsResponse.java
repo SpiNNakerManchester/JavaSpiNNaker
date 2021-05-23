@@ -19,19 +19,20 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static java.util.stream.Collectors.toList;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Jobs;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 
 public class ListJobsResponse {
 	public List<URI> jobs = new ArrayList<>();
 
 	public ListJobsResponse(Jobs jc, int limit, int start,
-			UriInfo ui) {
+			UriInfo ui) throws SQLException {
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
 		jobs = jc.ids(start, limit).stream().map(id -> b.build(id))
 				.collect(toList());

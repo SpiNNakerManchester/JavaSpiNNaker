@@ -45,7 +45,7 @@ import javax.ws.rs.core.UriInfo;
  * The REST API for the SpiNNaker machine allocation service.
  */
 @Path("/spalloc")
-public interface SpallocAPI {
+public interface SpallocServiceAPI {
 	/**
 	 * Get a description of the overall service.
 	 *

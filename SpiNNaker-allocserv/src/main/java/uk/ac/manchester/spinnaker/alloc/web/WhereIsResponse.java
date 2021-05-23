@@ -19,13 +19,14 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
+import java.sql.SQLException;
 
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.BoardLocation;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -50,7 +51,8 @@ public class WhereIsResponse {
 
 	public BoardPhysicalCoordinates physicalBoardCoordinates;
 
-	public WhereIsResponse(BoardLocation location, UriInfo ui) {
+	public WhereIsResponse(BoardLocation location, UriInfo ui)
+			throws SQLException {
 		machine = location.getMachine();
 		chip = location.getChip();
 		boardChip = location.getBoardChip();

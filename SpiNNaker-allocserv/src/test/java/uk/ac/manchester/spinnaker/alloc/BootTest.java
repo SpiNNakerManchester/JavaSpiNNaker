@@ -42,8 +42,8 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
-import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
@@ -56,10 +56,10 @@ class BootTest {
 	};
 
 	@Autowired
-	private SpallocAPI service;
+	private SpallocServiceAPI service;
 
 	@Autowired
-	private SpallocInterface core;
+	private SpallocAPI core;
 
 	@Autowired
 	private DatabaseEngine db;

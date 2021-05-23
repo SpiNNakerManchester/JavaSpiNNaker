@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Machine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;

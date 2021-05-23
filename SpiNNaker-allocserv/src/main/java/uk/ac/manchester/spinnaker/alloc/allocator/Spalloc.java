@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @Component
-public class Spalloc implements SpallocInterface {
+public class Spalloc implements SpallocAPI {
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")

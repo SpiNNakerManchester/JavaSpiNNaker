@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -26,7 +27,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 
 public class MachineResponse {
 	public String name;
@@ -51,7 +52,8 @@ public class MachineResponse {
 	public MachineResponse() {
 	}
 
-	public MachineResponse(SpallocInterface.Machine machine, UriInfo ui) {
+	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui)
+			throws SQLException {
 		name = machine.getName();
 		tags = machine.getTags();
 		width = machine.getWidth();

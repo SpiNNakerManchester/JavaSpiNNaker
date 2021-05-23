@@ -27,15 +27,20 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
-public interface SpallocInterface {
+public interface SpallocAPI {
+	/** List the machines. */
 	Map<String, Machine> getMachines() throws SQLException;
 
+	/** Get a specific machine. */
 	Machine getMachine(String name) throws SQLException;
 
+	/** List the jobs. */
 	Jobs getJobs(boolean deleted, int limit, int start) throws SQLException;
 
+	/** Get a specific job. */
 	Job getJob(int id) throws SQLException;
 
+	/** Create a job. */
 	Job createJob(String owner, List<Integer> dimensions, String machineName,
 			List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards) throws SQLException;
@@ -75,35 +80,53 @@ public interface SpallocInterface {
 		int getId();
 
 		/** @return The state of the job. */
-		JobState getState();
+		JobState getState() throws SQLException;
 
-		Instant getStartTime();
+		/** @return When the job started. */
+		Instant getStartTime() throws SQLException;
 
-		String getReason();
+		/**
+		 * @return Why the job died. Might be {@code null} if this isn't known
+		 *         (including if the job is alive).
+		 */
+		String getReason() throws SQLException;
 
 		/** @return Host address that issued last keepalive event, if any. */
-		String getKeepaliveHost();
+		String getKeepaliveHost() throws SQLException;
 
-		SubMachine getMachine();
+		/**
+		 * @return The (sub-)machine allocated to the job. {@code null} if no
+		 *         resources allocated.
+		 */
+		SubMachine getMachine() throws SQLException;
 
-		BoardLocation whereIs(int x, int y);
+		/**
+		 * Locate a board within the allocation.
+		 *
+		 * @return The location, or {@code null} if no resources allocated.
+		 */
+		BoardLocation whereIs(int x, int y) throws SQLException;
 
-		ChipLocation getRootChip();
+		/**
+		 * @return The absolute location of root chip. {@code null} if no
+		 *         resources allocated.
+		 */
+		ChipLocation getRootChip() throws SQLException;
 
 		/** @return The creator of the job. */
-		String getOwner();
+		String getOwner() throws SQLException;
 
 		/**
 		 * @return the allocated width of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
 		 */
-		Integer getWidth();
+		Integer getWidth() throws SQLException;
 
 		/**
 		 * @return the allocated height of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
 		 */
-		Integer getHeight();
+		Integer getHeight() throws SQLException;
 	}
 
 	/**
@@ -112,7 +135,8 @@ public interface SpallocInterface {
 	 * @author Donal Fellows
 	 */
 	interface Jobs extends Waitable {
-		List<Integer> ids(int start, int limit);
+		/** The job IDs. */
+		List<Integer> ids(int start, int limit) throws SQLException;
 	}
 
 	/**
@@ -129,13 +153,13 @@ public interface SpallocInterface {
 		String getName();
 
 		/** The tags associated with the machine. */
-		List<String> getTags();
+		List<String> getTags() throws SQLException;
 
 		/** The width of the machine. */
-		int getWidth();
+		int getWidth() throws SQLException;
 
 		/** The height of the machine. */
-		int getHeight();
+		int getHeight() throws SQLException;
 
 		// TODO: dead boards, dead links
 

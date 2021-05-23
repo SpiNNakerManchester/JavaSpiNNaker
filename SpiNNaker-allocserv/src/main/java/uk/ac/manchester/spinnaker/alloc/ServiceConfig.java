@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import uk.ac.manchester.spinnaker.alloc.web.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 /**
  * Builds the Spring beans in the application that are not auto-detected. There
@@ -136,7 +136,7 @@ public class ServiceConfig {
 	@DependsOn("bus")
 	Server jaxRsServer(
 			@Value("${cxf.rest.path:" + REST_PATH + "}") String restPath,
-			SpallocAPI service, Executor executor, ObjectMapper mapper,
+			SpallocServiceAPI service, Executor executor, ObjectMapper mapper,
 			SpringBus bus) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setAddress(restPath);

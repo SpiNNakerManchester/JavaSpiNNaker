@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import java.util.List;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Machine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 

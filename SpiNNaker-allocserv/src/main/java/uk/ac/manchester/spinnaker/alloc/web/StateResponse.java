@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.time.Instant;
 
 import javax.ws.rs.core.UriBuilder;
@@ -27,7 +28,7 @@ import javax.ws.rs.core.UriInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocInterface.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 
 /**
  * The state of a job.
@@ -69,7 +70,7 @@ public class StateResponse {
 		chipRef = null;
 	}
 
-	StateResponse(Job job, UriInfo ui) {
+	StateResponse(Job job, UriInfo ui) throws SQLException {
 		state = job.getState();
 		startTime = job.getStartTime();
 		reason = job.getReason();
