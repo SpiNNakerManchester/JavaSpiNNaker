@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.7</jacoco.version>
-		<javadoc.version>3.2.0</javadoc.version>
+		<javadoc.version>3.3.0</javadoc.version>
   	</properties>
 
 	<dependencyManagement>
