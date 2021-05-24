@@ -59,6 +59,15 @@ public class Spalloc implements SpallocAPI {
 	private static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height FROM machines";
 
+	@Parameter("machine_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	private static final String GET_MACHINE_BY_ID =
+			"SELECT machine_id, machine_name, width, height FROM machines "
+					+ "WHERE machine_id = ? LIMIT 1";
+
 	@Parameter("machine_name")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
@@ -221,6 +230,14 @@ public class Spalloc implements SpallocAPI {
 					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
 
 	@Parameter("machine_id")
+	@ResultColumn("address")
+	private static final String GET_ROOT_BMP_ADDRESS =
+			"SELECT bmp.address FROM bmp "
+					+ "JOIN boards ON boards.bmp_id = bmp.bmp_id WHERE "
+					+ "boards.machine_id = ? AND boards.x = 0 AND boards.y = 0 "
+					+ "LIMIT 1";
+
+	@Parameter("machine_id")
 	@ResultColumn("tag")
 	private static final String GET_TAGS =
 			"SELECT tag FROM tags WHERE machine_id = ?";
@@ -279,6 +296,19 @@ public class Spalloc implements SpallocAPI {
 		try (Connection conn = db.getConnection()) {
 			return getMachine(name, conn);
 		}
+	}
+
+	private MachineImpl getMachine(int id, Connection conn)
+			throws SQLException {
+		MachinesEpoch me = epochs.getMachineEpoch();
+		MachineImpl m = null;
+		try (Query idMachine = query(conn, GET_MACHINE_BY_ID)) {
+			for (ResultSet rs : idMachine.call(id)) {
+				m = new MachineImpl(conn, rs, me);
+				break;
+			}
+		}
+		return m;
 	}
 
 	private MachineImpl getMachine(String name, Connection conn)
@@ -516,8 +546,14 @@ public class Spalloc implements SpallocAPI {
 
 		@Override
 		public String getRootBoardBMPAddress() throws SQLException {
-			// FIXME Auto-generated method stub
-			return null;
+			String address = null;
+			try (Connection conn = db.getConnection();
+					Query q = query(conn, GET_ROOT_BMP_ADDRESS)) {
+				for (ResultSet rs : q.call(id)) {
+					address = rs.getString("address");
+				}
+			}
+			return address;
 		}
 
 		@Override
@@ -588,6 +624,8 @@ public class Spalloc implements SpallocAPI {
 
 		private final int id;
 
+		private Integer machineId;
+
 		private Integer width;
 
 		private Integer height;
@@ -618,7 +656,8 @@ public class Spalloc implements SpallocAPI {
 		}
 
 		JobImpl(JobsEpoch epoch, ResultSet row) throws SQLException {
-			this(epoch, row.getInt("machine_id")); // FIXME wtf? job_id surely?
+			this(epoch, row.getInt("job_id"));
+			machineId = row.getInt("machine_id");
 			width = (Integer) row.getObject("width");
 			height = (Integer) row.getObject("height");
 			root = (Integer) row.getObject("root_id");
@@ -674,12 +713,12 @@ public class Spalloc implements SpallocAPI {
 		}
 
 		@Override
-		public SubMachine getMachine() {
+		public SubMachine getMachine() throws SQLException {
 			if (root == null) {
 				return null;
 			}
 			// TODO Auto-generated method stub
-			return null;
+			return new SubMachineImpl();
 		}
 
 		@Override
@@ -713,6 +752,84 @@ public class Spalloc implements SpallocAPI {
 		@Override
 		public Integer getHeight() {
 			return height;
+		}
+
+
+		private final class SubMachineImpl implements SubMachine {
+			/** The machine that this sub-machine is part of. */
+			private final Machine machine;
+
+			/** The root X coordinate of this sub-machine. */
+			private int rootX;
+
+			/** The root Y coordinate of this sub-machine. */
+			private int rootY;
+
+			/** The connection details of this sub-machine. */
+			private List<uk.ac.manchester.spinnaker.spalloc.messages.Connection>
+				connections; // FIXME
+
+			/** The board locations of this sub-machine. */
+			private List<BoardCoordinates> boards; // FIXME
+
+			SubMachineImpl() throws SQLException {
+				try (Connection conn = db.getConnection()) {
+					// TODO Auto-generated method stub
+					machine = Spalloc.this.getMachine(machineId, conn);
+					// FIXME get rootX and Y from root
+					connections = new ArrayList<>();
+					// FIXME fill out connections
+					boards = new ArrayList<>();
+					// FIXME fill out boards
+				}
+			}
+
+			@Override
+			public Machine getMachine() {
+				return machine;
+			}
+
+			@Override
+			public int getRootX() {
+				return rootX;
+			}
+
+			@Override
+			public int getRootY() {
+				return rootY;
+			}
+
+			@Override
+			public int getWidth() {
+				return width;
+			}
+
+			@Override
+			public int getHeight() {
+				return height;
+			}
+
+			@Override
+			public List<uk.ac.manchester.spinnaker.spalloc.messages.Connection>
+					getConnections() {
+				return connections;
+			}
+
+			@Override
+			public List<BoardCoordinates> getBoards() {
+				return boards;
+			}
+
+			@Override
+			public PowerState getPower() {
+				// FIXME Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void setPower(PowerState ps) {
+				// FIXME Auto-generated method stub
+			}
 		}
 	}
 

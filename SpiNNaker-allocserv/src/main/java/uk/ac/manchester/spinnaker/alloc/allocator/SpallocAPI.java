@@ -26,6 +26,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public interface SpallocAPI {
 	/** List the machines. */
@@ -210,5 +211,54 @@ public interface SpallocAPI {
 		 * unallocated board.
 		 */
 		Job getJob();
+	}
+
+	interface SubMachine {
+		/**
+		 * @return The machine that this sub-machine is part of.
+		 */
+		Machine getMachine() throws SQLException;
+
+		/**
+		 * @return The root X coordinate of this sub-machine.
+		 */
+		int getRootX() throws SQLException;
+
+		/**
+		 * @return The root Y coordinate of this sub-machine.
+		 */
+		int getRootY() throws SQLException;
+
+		/**
+		 * @return The width of this sub-machine.
+		 */
+		int getWidth() throws SQLException;
+
+		/**
+		 * @return The height of this sub-machine.
+		 */
+		int getHeight() throws SQLException;
+
+		/**
+		 * @return The connection details of this sub-machine.
+		 */
+		List<Connection> getConnections() throws SQLException;
+
+		/**
+		 * @return The board locations of this sub-machine.
+		 */
+		List<BoardCoordinates> getBoards() throws SQLException;
+
+		/** @return Whether this sub-machine is switched on. */
+		PowerState getPower() throws SQLException;
+
+		/**
+		 * Set whether this sub-machine is switched on. Note that actually changing
+		 * the power of a sub-machine can take some time.
+		 *
+		 * @param ps
+		 *            What to set the power state to.
+		 */
+		void setPower(PowerState ps) throws SQLException;
 	}
 }

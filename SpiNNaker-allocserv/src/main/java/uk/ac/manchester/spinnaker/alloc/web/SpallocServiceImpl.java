@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
-import uk.ac.manchester.spinnaker.alloc.allocator.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 @Component("service")

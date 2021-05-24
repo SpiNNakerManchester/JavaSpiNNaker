@@ -20,13 +20,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Collections.unmodifiableList;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
@@ -52,15 +53,15 @@ public class SubMachineResponse {
 	@JsonInclude(NON_NULL)
 	public URI machineRef;
 
-	public SubMachineResponse(SubMachine m, UriInfo ui) {
-		width = m.width;
-		height = m.height;
-		machineName = m.machine.getName();
-		connections = unmodifiableList(m.connections);
-		boards = unmodifiableList(m.boards);
+	public SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
+		width = m.getWidth();
+		height = m.getHeight();
+		machineName = m.getMachine().getName();
+		connections = unmodifiableList(m.getConnections());
+		boards = unmodifiableList(m.getBoards());
 		power = ui.getAbsolutePathBuilder().path("power").build();
 		machineRef = ui.getBaseUriBuilder().path("machine/{name}")
-				.build(m.machine.getName());
+				.build(m.getMachine().getName());
 	}
 
 }
