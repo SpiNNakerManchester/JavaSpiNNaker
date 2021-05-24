@@ -27,9 +27,9 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import uk.ac.manchester.spinnaker.alloc.allocator.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public class SubMachineResponse {
 	/** Rectangle width. */ //FIXME
@@ -42,7 +42,7 @@ public class SubMachineResponse {
 	public String machineName;
 
 	/** How to talk to boards. */ //FIXME
-	public List<Connection> connections;
+	public List<ConnectionInfo> connections;
 
 	/** Where the boards are. */ //FIXME
 	public List<BoardCoordinates> boards;

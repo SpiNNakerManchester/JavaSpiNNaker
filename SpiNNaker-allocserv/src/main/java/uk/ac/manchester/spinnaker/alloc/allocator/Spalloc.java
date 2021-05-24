@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -46,219 +47,9 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.storage.GeneratesID;
-import uk.ac.manchester.spinnaker.storage.Parameter;
-import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @Component
-public class Spalloc implements SpallocAPI {
-	@ResultColumn("machine_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	private static final String GET_ALL_MACHINES =
-			"SELECT machine_id, machine_name, width, height FROM machines";
-
-	@Parameter("machine_id")
-	@ResultColumn("machine_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	private static final String GET_MACHINE_BY_ID =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_id = ? LIMIT 1";
-
-	@Parameter("machine_name")
-	@ResultColumn("machine_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	private static final String GET_NAMED_MACHINE =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_name = ? LIMIT 1";
-
-	@Parameter("limit")
-	@Parameter("offset")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_id")
-	@ResultColumn("job_state")
-	@ResultColumn("keepalive_timestamp")
-	private static final String GET_JOB_IDS =
-			"SELECT job_id, machine_id, job_state, keepalive_timestamp "
-					+ "FROM jobs ORDER BY job_id DESC LIMIT ? OFFSET ?";
-
-	@Parameter("job_state:DESTROYED")
-	@Parameter("limit")
-	@Parameter("offset")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_id")
-	@ResultColumn("job_state")
-	@ResultColumn("keepalive_timestamp")
-	private static final String GET_LIVE_JOB_IDS =
-			"SELECT job_id, machine_id, job_state, keepalive_timestamp "
-					+ "FROM jobs WHERE job_state != ? "
-					+ "ORDER BY job_id DESC LIMIT ? OFFSET ?";
-
-	@Parameter("job_id")
-	@ResultColumn("machine_id")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	@ResultColumn("root_id")
-	@ResultColumn("job_state")
-	@ResultColumn("keepalive_timestamp")
-	@ResultColumn("keepalive_host")
-	private static final String GET_JOB =
-			"SELECT machine_id, width, height, root_id, job_state, "
-					+ "keepalive_timestamp, keepalive_host FROM jobs "
-					+ "WHERE job_id = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@Parameter("owner")
-	@Parameter("keepalive_interval")
-	@Parameter("keepalive_timestamp")
-	@Parameter("create_timestamp")
-	@GeneratesID
-	private static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, owner, keepalive_interval, keepalive_timestamp, "
-			+ "create_timestamp) " //
-			+ "VALUES (?, ?, ?, ?, ?)";
-
-	@Parameter("job_id")
-	@Parameter("num_boards")
-	@Parameter("max_dead_boards")
-	@GeneratesID
-	private static final String INSERT_REQ_N_BOARDS =
-			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
-					+ "VALUES (?, ?, ?)";
-
-	@Parameter("job_id")
-	@Parameter("width")
-	@Parameter("height")
-	@Parameter("max_dead_boards")
-	@GeneratesID
-	private static final String INSERT_REQ_SIZE =
-			"INSERT INTO job_request(job_id, width, height, max_dead_boards) "
-					+ "VALUES (?, ?, ?, ?)";
-
-	@Parameter("job_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
-	@GeneratesID
-	private static final String INSERT_REQ_LOCATION =
-			"INSERT INTO job_request(job_id, cabinet, frame, board) "
-					+ "VALUES (?, ?, ?, ?)";
-
-	@Parameter("machine_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("board_nnum")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	private static final String FIND_BOARD_BY_CHIP =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
-					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
-					+ "boards.board_num, root_x + bmc.chip_x AS chip_x,"
-					+ "root_y + bmc.chip_y AS chip_y FROM boards "
-					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "JOIN board_model_coords AS bmc "
-					+ "ON m.board_model = bmc.model "
-					+ "WHERE boards.machine_id = ? "
-					+ "AND chip_x = ? AND chip_y = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("board_nnum")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	private static final String FIND_BOARD_BY_CFB =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
-					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
-					+ "boards.board_num, root_x AS chip_x, root_y AS chip_y "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "WHERE boards.machine_id = ? AND bmp.cabinet = ? "
-					+ "AND bmp.frame = ? AND boards.board_num = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("z")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("board_nnum")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	private static final String FIND_BOARD_BY_XYZ =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
-					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
-					+ "boards.board_num, root_x AS chip_x, root_y AS chip_y "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "WHERE boards.machine_id = ? AND boards.x = ? "
-					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@ResultColumn("address")
-	private static final String GET_ROOT_BMP_ADDRESS =
-			"SELECT bmp.address FROM bmp "
-					+ "JOIN boards ON boards.bmp_id = bmp.bmp_id WHERE "
-					+ "boards.machine_id = ? AND boards.x = 0 AND boards.y = 0 "
-					+ "LIMIT 1";
-
-	@Parameter("machine_id")
-	@ResultColumn("tag")
-	private static final String GET_TAGS =
-			"SELECT tag FROM tags WHERE machine_id = ?";
-
-	@Parameter("keepalive_timestamp")
-	@Parameter("keepalive_host")
-	@Parameter("job_id")
-	@Parameter("job_state:DESTROYED")
-	private static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
-					+ "WHERE job_id = ? AND job_state != ?";
-
-	@Parameter("job_state:DESTROYED")
-	@Parameter("death_reason")
-	@Parameter("death_timestamp")
-	@Parameter("job_id")
-	@Parameter("job_state:DESTROYED")
-	private static final String DESTROY_JOB = "UPDATE jobs SET "
-			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
-			+ "WHERE job_id = ? AND job_state != ?";
-
+public class Spalloc extends SQLQueries implements SpallocAPI {
 	private static final int N_COORDS_COUNT = 1;
 
 	private static final int N_COORDS_RECTANGLE = 2;
@@ -332,16 +123,14 @@ public class Spalloc implements SpallocAPI {
 			JobCollection jc = new JobCollection(je);
 			if (deleted) {
 				try (Query jobs = query(conn, GET_JOB_IDS)) {
-					for (ResultSet rs : jobs.call(limit, start)) {
-						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
-								rs.getLong("keepalive_timestamp"));
+					for (ResultSet row : jobs.call(limit, start)) {
+						jc.addJob(row);
 					}
 				}
 			} else {
 				try (Query jobs = query(conn, GET_LIVE_JOB_IDS)) {
-					for (ResultSet rs : jobs.call(DESTROYED, limit, start)) {
-						jc.addJob(rs.getInt("job_id"), rs.getInt("job_state"),
-								rs.getLong("keepalive_timestamp"));
+					for (ResultSet row : jobs.call(DESTROYED, limit, start)) {
+						jc.addJob(row);
 					}
 				}
 			}
@@ -427,7 +216,6 @@ public class Spalloc implements SpallocAPI {
 		try (Update makeJob = update(conn, INSERT_JOB)) {
 			for (int key : makeJob.keys(m.id, owner, interval, now, now)) {
 				pk = key;
-				break;
 			}
 		}
 		return pk;
@@ -466,6 +254,15 @@ public class Spalloc implements SpallocAPI {
 				Update destroyJob = update(conn, DESTROY_JOB)) {
 			destroyJob.call(DESTROYED, reason, now, job.id, DESTROYED);
 		}
+	}
+
+	private static Instant instant(ResultSet row, String column)
+			throws SQLException {
+		Number l = (Number) row.getObject(column);
+		if (l == null) {
+			return null;
+		}
+		return Instant.ofEpochSecond(l.longValue());
 	}
 
 	private class MachineImpl implements Machine {
@@ -512,7 +309,7 @@ public class Spalloc implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_CHIP)) {
 				for (ResultSet rs : q.call(id, x, y)) {
-					loc = new BoardLocationImpl(rs, je);
+					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
 			return loc;
@@ -525,7 +322,7 @@ public class Spalloc implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_CFB)) {
 				for (ResultSet rs : q.call(id, cabinet, frame, board)) {
-					loc = new BoardLocationImpl(rs, je);
+					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
 			return loc;
@@ -538,7 +335,7 @@ public class Spalloc implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_XYZ)) {
 				for (ResultSet rs : q.call(id, x, y, z)) {
-					loc = new BoardLocationImpl(rs, je);
+					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
 			return loc;
@@ -608,13 +405,21 @@ public class Spalloc implements SpallocAPI {
 		}
 
 		@Override
-		public List<Integer> ids(int start, int limit) {
-			// TODO Auto-generated method stub
-			return null;
+		public List<Job> jobs() {
+			return unmodifiableList(jobs);
 		}
 
-		void addJob(int jobId, int jobState, long keepalive) {
-			jobs.add(new JobImpl(epoch, jobId, jobState, keepalive));
+		@Override
+		public List<Integer> ids() {
+			return jobs.stream().map(Job::getId).collect(toList());
+		}
+
+		void addJob(ResultSet row) throws SQLException {
+			int jobId = row.getInt("job_id");
+			int machineId = row.getInt("machine_id");
+			int jobState = row.getInt("job_state");
+			long keepalive = row.getLong("keepalive_timestamp");
+			jobs.add(new JobImpl(epoch, jobId, machineId, jobState, keepalive));
 		}
 	}
 
@@ -624,7 +429,7 @@ public class Spalloc implements SpallocAPI {
 
 		private final int id;
 
-		private Integer machineId;
+		private final int machineId;
 
 		private Integer width;
 
@@ -643,27 +448,34 @@ public class Spalloc implements SpallocAPI {
 
 		private Instant keepaliveTime;
 
-		JobImpl(JobsEpoch epoch, int id) {
+		private Instant finishTime;
+
+		private String deathReason;
+
+		JobImpl(JobsEpoch epoch, int id, int machineId) {
 			this.epoch = epoch;
 			this.id = id;
+			this.machineId = machineId;
 		}
 
-		JobImpl(JobsEpoch epoch, int jobId, int jobState,
+		JobImpl(JobsEpoch epoch, int jobId, int machineId, int jobState,
 				long keepalive) {
-			this(epoch, jobId);
+			this(epoch, jobId, machineId);
 			state = JobState.values()[jobState];
 			keepaliveTime = Instant.ofEpochSecond(keepalive);
 		}
 
 		JobImpl(JobsEpoch epoch, ResultSet row) throws SQLException {
-			this(epoch, row.getInt("job_id"));
-			machineId = row.getInt("machine_id");
+			this(epoch, row.getInt("job_id"), row.getInt("machine_id"));
 			width = (Integer) row.getObject("width");
 			height = (Integer) row.getObject("height");
 			root = (Integer) row.getObject("root_id");
 			state = JobState.values()[row.getInt("job_state")];
 			keepaliveHost = row.getString("keepalive_host");
-			// TODO fill this out
+			keepaliveTime = instant(row, "keepalive_timestamp");
+			startTime = instant(row, "create_timestamp");
+			finishTime = instant(row, "death_timestamp");
+			deathReason = row.getString("death_reason");
 		}
 
 		@Override
@@ -697,14 +509,17 @@ public class Spalloc implements SpallocAPI {
 
 		@Override
 		public Instant getStartTime() {
-			// TODO Auto-generated method stub
 			return startTime;
 		}
 
 		@Override
+		public Instant getFinishTime() {
+			return finishTime;
+		}
+
+		@Override
 		public String getReason() {
-			// TODO Auto-generated method stub
-			return null;
+			return deathReason;
 		}
 
 		@Override
@@ -713,12 +528,18 @@ public class Spalloc implements SpallocAPI {
 		}
 
 		@Override
+		public Instant getKeepaliveTimestamp() {
+			return keepaliveTime;
+		}
+
+		@Override
 		public SubMachine getMachine() throws SQLException {
 			if (root == null) {
 				return null;
 			}
-			// TODO Auto-generated method stub
-			return new SubMachineImpl();
+			try (Connection conn = db.getConnection()) {
+				return new SubMachineImpl(conn);
+			}
 		}
 
 		@Override
@@ -754,7 +575,6 @@ public class Spalloc implements SpallocAPI {
 			return height;
 		}
 
-
 		private final class SubMachineImpl implements SubMachine {
 			/** The machine that this sub-machine is part of. */
 			private final Machine machine;
@@ -766,21 +586,39 @@ public class Spalloc implements SpallocAPI {
 			private int rootY;
 
 			/** The connection details of this sub-machine. */
-			private List<uk.ac.manchester.spinnaker.spalloc.messages.Connection>
-				connections; // FIXME
+			private List<ConnectionInfo> connections;
 
 			/** The board locations of this sub-machine. */
-			private List<BoardCoordinates> boards; // FIXME
+			private List<BoardCoordinates> boards;
 
-			SubMachineImpl() throws SQLException {
-				try (Connection conn = db.getConnection()) {
-					// TODO Auto-generated method stub
-					machine = Spalloc.this.getMachine(machineId, conn);
-					// FIXME get rootX and Y from root
-					connections = new ArrayList<>();
-					// FIXME fill out connections
-					boards = new ArrayList<>();
-					// FIXME fill out boards
+			private List<Integer> boardIds;
+
+			private SubMachineImpl(Connection conn) throws SQLException {
+				machine = Spalloc.this.getMachine(machineId, conn);
+				try (Query getRootXY = query(conn, GET_ROOT_COORDS);
+						Query getBoardInfo =
+								query(conn, GET_BOARD_CONNECT_INFO)) {
+					ChipLocation chipRoot = new ChipLocation(0, 0);
+					for (ResultSet row : getRootXY.call(root)) {
+						rootX = row.getInt("x");
+						rootY = row.getInt("y");
+						chipRoot = new ChipLocation(row.getInt("root_x"),
+								row.getInt("root_y"));
+					}
+					int capacityEstimate = width * height;
+					connections = new ArrayList<>(capacityEstimate);
+					boards = new ArrayList<>(capacityEstimate);
+					boardIds = new ArrayList<>(capacityEstimate);
+					for (ResultSet row : getBoardInfo.call(id)) {
+						boardIds.add(row.getInt("board_id"));
+						boards.add(new BoardCoordinates(row.getInt("x"),
+								row.getInt("y"), 0));
+						connections.add(new ConnectionInfo(
+								new ChipLocation(
+										row.getInt("root_x") - chipRoot.getX(),
+										row.getInt("root_y") - chipRoot.getY()),
+								row.getString("address")));
+					}
 				}
 			}
 
@@ -810,8 +648,7 @@ public class Spalloc implements SpallocAPI {
 			}
 
 			@Override
-			public List<uk.ac.manchester.spinnaker.spalloc.messages.Connection>
-					getConnections() {
+			public List<ConnectionInfo> getConnections() {
 				return connections;
 			}
 
@@ -821,9 +658,19 @@ public class Spalloc implements SpallocAPI {
 			}
 
 			@Override
-			public PowerState getPower() {
-				// FIXME Auto-generated method stub
-				return null;
+			public PowerState getPower() throws SQLException {
+				PowerState result = null;
+				try (Connection conn = db.getConnection();
+						Query power = query(conn, GET_BOARD_POWER)) {
+					for (ResultSet row : power.call(id)) {
+						if (row.getInt("total_on") < boardIds.size()) {
+							result = PowerState.OFF;
+						} else {
+							result = PowerState.ON;
+						}
+					}
+				}
+				return result;
 			}
 
 			@Override
@@ -844,7 +691,7 @@ public class Spalloc implements SpallocAPI {
 
 		private final BoardPhysicalCoordinates physical;
 
-		private BoardLocationImpl(ResultSet row, JobsEpoch epoch)
+		private BoardLocationImpl(ResultSet row, JobsEpoch epoch, int machineId)
 				throws SQLException {
 			machine = row.getString("machine_name");
 			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"), 0);
@@ -853,7 +700,7 @@ public class Spalloc implements SpallocAPI {
 
 			Integer jobId = (Integer) row.getObject("job_id");
 			if (jobId != null) {
-				job = new JobImpl(epoch, jobId);
+				job = new JobImpl(epoch, jobId, machineId);
 				// FIXME also pass other basic values
 			}
 		}

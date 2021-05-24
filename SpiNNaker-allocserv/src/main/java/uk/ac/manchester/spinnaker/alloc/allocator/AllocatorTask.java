@@ -34,20 +34,15 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.storage.GeneratesID;
-import uk.ac.manchester.spinnaker.storage.Parameter;
-import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @Component
-public class AllocatorTask {
+public class AllocatorTask extends SQLQueries {
 	/**
 	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
 	 */
@@ -58,71 +53,6 @@ public class AllocatorTask {
 	 */
 	private static final long INTER_DESTROY_DELAY = 30000;
 
-	/** How we get the list of allocation tasks. */
-	@ResultColumn("req_id")
-	@ResultColumn("job_id")
-	@ResultColumn("num_boards")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board")
-	@ResultColumn("machine_id")
-	@ResultColumn("max_dead_boards")
-	public static final String GET_TASKS =
-			"SELECT job_request.req_id, job_request.job_id,"
-					+ "  job_request.num_boards,"
-					+ "	 job_request.width, job_request.height,"
-					+ "  job_request.cabinet, job_request.frame,"
-					+ "	 job_request.board, jobs.machine_id AS machine_id,"
-					+ "  job_request.max_dead_boards "
-					+ "FROM job_request JOIN jobs"
-					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
-
-	/** How we delete an allocation task. */
-	@Parameter("request_id")
-	public static final String DELETE_TASK =
-			"DELETE FROM job_request WHERE req_id = ?";
-
-	/** How we tell a job that it is allocated. */
-	@Parameter("width")
-	@Parameter("height")
-	@Parameter("job_state")
-	@Parameter("num_pending")
-	@Parameter("machine_id")
-	@Parameter("root_x")
-	@Parameter("root_y")
-	@Parameter("job_id")
-	public static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
-			+ "width = ?, height = ?, job_state = ?, num_pending = ?,"
-			+ "root_id = (SELECT board_id FROM boards WHERE "
-			+ "machine_id = ? AND root_x = ? AND root_y = ?) "
-			+ "WHERE job_id = ?";
-
-	/** How we tell a board that it is allocated. */
-	@Parameter("job_id")
-	@Parameter("machine_id")
-	@Parameter("root_x")
-	@Parameter("root_y")
-	public static final String ALLOCATE_BOARDS_BOARD =
-			"UPDATE boards SET allocated_job = ? "
-					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ? "
-					+ "AND may_be_allocated > 0";
-
-	@Parameter("job_state:DESTROYED")
-	@Parameter("now")
-	@ResultColumn("job_id")
-	public static final String FIND_EXPIRED_JOBS = //
-			"SELECT job_id FROM jobs " //
-					+ "WHERE job_state != ? "
-					+ "AND keepalive_timestamp + keepalive_interval < ?";
-
-	/** How we set the number of pending changes for a job. */
-	@Parameter("num_pending")
-	@Parameter("job_id")
-	public static final String SET_NUM_PENDING =
-			"UPDATE jobs SET num_pending = ? WHERE job_id = ?";
-
 	private static final Logger log = getLogger(AllocatorTask.class);
 
 	@Autowired
@@ -130,50 +60,6 @@ public class AllocatorTask {
 
 	@Autowired
 	private Epochs epochs;
-
-	@Parameter("width")
-	@Parameter("height")
-	@Parameter("machine_id")
-	@Parameter("max_dead_boards")
-	@ResultColumn("id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("available")
-	@Value("classpath:find_rectangle.sql")
-	private Resource findRectangle;
-
-	@Parameter("machine_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@Value("classpath:find_location.sql")
-	private Resource findLocation;
-
-	@Parameter("job_id")
-	@Parameter("machine_id")
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("power")
-	@Parameter("fpga_n")
-	@Parameter("fpga_s")
-	@Parameter("fpga_e")
-	@Parameter("fpga_w")
-	@Parameter("fpga_nw")
-	@Parameter("fpga_se")
-	@GeneratesID
-	@Value("classpath:issue_change_for_job.sql")
-	private Resource issueChangeForJob;
-
-	@Parameter("machine_id")
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("width")
-	@Parameter("height")
-	@ResultColumn("connected_size")
-	@Value("classpath:allocation_connected.sql")
-	private Resource countConnected;
 
 	/**
 	 * Allocate all current requests for resources.
@@ -244,21 +130,6 @@ public class AllocatorTask {
 			});
 		}
 	}
-
-	private static final String MARK_JOB_DESTROYED =
-			"UPDATE jobs SET job_state = ?, death_timestamp = ? "
-					+ "WHERE job_id = ? AND job_state != ?";
-
-	private static final String KILL_JOB_ALLOC_TASK =
-			"DELETE FROM job_request WHERE job_id = ?";
-
-	private static final String KILL_JOB_PENDING =
-			"DELETE FROM pending_changes WHERE job_id = ?";
-
-	private static final String ISSUE_BOARD_OFF_FOR_JOB =
-			"INSERT INTO pending_changes(job_id, \"power\", board_id) "
-					+ "SELECT ?, ?, board_id FROM boards "
-					+ "WHERE job_id = ? AND power_state != ?";
 
 	private boolean destroyJob(Connection conn, int id) throws SQLException {
 		Date now = new Date();

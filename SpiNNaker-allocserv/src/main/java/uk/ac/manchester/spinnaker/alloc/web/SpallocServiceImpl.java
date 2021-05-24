@@ -66,6 +66,9 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	private static final Duration MIN_KEEPALIVE_DURATION =
 			Duration.parse("PT30S");
 
+	private static final Duration MAX_KEEPALIVE_DURATION =
+			Duration.parse("PT300S");
+
 	private final Version v;
 
 	@Autowired
@@ -376,7 +379,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 				throw new WebApplicationException("failed to list jobs");
 			}
 
-			return ok(new ListJobsResponse(jc, limit, start, ui)).build();
+			return ok(new ListJobsResponse(jc, ui)).build();
 		});
 	}
 
@@ -392,6 +395,12 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			throw new WebApplicationException(
 					"keepalive interval must be at least "
 							+ MIN_KEEPALIVE_DURATION,
+					BAD_REQUEST);
+		}
+		if (req.keepaliveInterval.compareTo(MAX_KEEPALIVE_DURATION) > 0) {
+			throw new WebApplicationException(
+					"keepalive interval must be no more than "
+							+ MAX_KEEPALIVE_DURATION,
 					BAD_REQUEST);
 		}
 		if (req.dimensions == null) {

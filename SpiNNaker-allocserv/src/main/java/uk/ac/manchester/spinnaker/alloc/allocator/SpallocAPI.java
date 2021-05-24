@@ -26,7 +26,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 
 public interface SpallocAPI {
 	/** List the machines. */
@@ -86,6 +85,9 @@ public interface SpallocAPI {
 		/** @return When the job started. */
 		Instant getStartTime() throws SQLException;
 
+		/** @return When the job finished. */
+		Instant getFinishTime();
+
 		/**
 		 * @return Why the job died. Might be {@code null} if this isn't known
 		 *         (including if the job is alive).
@@ -94,6 +96,9 @@ public interface SpallocAPI {
 
 		/** @return Host address that issued last keepalive event, if any. */
 		String getKeepaliveHost() throws SQLException;
+
+		/** @return Time of the last keepalive event, if any. */
+		Instant getKeepaliveTimestamp() throws SQLException;
 
 		/**
 		 * @return The (sub-)machine allocated to the job. {@code null} if no
@@ -137,7 +142,10 @@ public interface SpallocAPI {
 	 */
 	interface Jobs extends Waitable {
 		/** The job IDs. */
-		List<Integer> ids(int start, int limit) throws SQLException;
+		List<Integer> ids() throws SQLException;
+
+		/** The jobs. Simplified view only */
+		List<Job> jobs() throws SQLException;
 	}
 
 	/**
@@ -242,7 +250,7 @@ public interface SpallocAPI {
 		/**
 		 * @return The connection details of this sub-machine.
 		 */
-		List<Connection> getConnections() throws SQLException;
+		List<ConnectionInfo> getConnections() throws SQLException;
 
 		/**
 		 * @return The board locations of this sub-machine.

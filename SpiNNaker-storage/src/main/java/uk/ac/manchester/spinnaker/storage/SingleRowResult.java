@@ -14,26 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
+package uk.ac.manchester.spinnaker.storage;
 
-import static java.util.stream.Collectors.toList;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
-
-public class ListJobsResponse {
-	public List<URI> jobs = new ArrayList<>();
-
-	public ListJobsResponse(Jobs jc, UriInfo ui) throws SQLException {
-		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
-		jobs = jc.ids().stream().map(id -> b.build(id))
-				.collect(toList());
-	}
+/**
+ * Marks a query that will only produce <em>at most</em> one row.
+ *
+ * @author Donal Fellows
+ */
+@Retention(SOURCE)
+@Target(FIELD)
+@Documented
+public @interface SingleRowResult {
 }
