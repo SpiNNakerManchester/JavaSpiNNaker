@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.sqrt;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
@@ -26,11 +27,17 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +46,9 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 @Component
 public class AllocatorTask extends SQLQueries {
@@ -61,6 +70,13 @@ public class AllocatorTask extends SQLQueries {
 	@Autowired
 	private Epochs epochs;
 
+	@PostConstruct
+	private void setUp() throws SQLException {
+		try (Connection conn = db.getConnection()) {
+			DirInfo.load(conn);
+		}
+	}
+
 	/**
 	 * Allocate all current requests for resources.
 	 *
@@ -74,7 +90,7 @@ public class AllocatorTask extends SQLQueries {
 				boolean changed = false;
 				try (Query getTasks = query(conn, GET_TASKS);
 						Update delete = update(conn, DELETE_TASK)) {
-					for (ResultSet rs : getTasks.call()) {
+					for (Row rs : getTasks.call()) {
 						int id = rs.getInt("req_id");
 						boolean handled = true;
 						try {
@@ -105,7 +121,7 @@ public class AllocatorTask extends SQLQueries {
 				boolean changed = false;
 				try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 					List<Integer> toKill = new ArrayList<>();
-					for (ResultSet rs : find.call(DESTROYED, now)) {
+					for (Row rs : find.call(DESTROYED, now)) {
 						toKill.add(rs.getInt("job_id"));
 					}
 					for (int id : toKill) {
@@ -162,7 +178,7 @@ public class AllocatorTask extends SQLQueries {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	boolean allocate(Connection conn, ResultSet task) throws SQLException {
+	boolean allocate(Connection conn, Row task) throws SQLException {
 		int jobId = task.getInt("job_id");
 		int machineId = task.getInt("machine_id");
 		int maxDeadBoards = task.getInt("max_dead_boards");
@@ -216,7 +232,7 @@ public class AllocatorTask extends SQLQueries {
 			int machineId, int width, int height, int tolerance)
 			throws SQLException {
 		try (Query s = query(conn, findRectangle)) {
-			for (ResultSet rs : s.call(width, height, machineId, tolerance)) {
+			for (Row rs : s.call(width, height, machineId, tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				if (width * height > 1) {
@@ -226,7 +242,7 @@ public class AllocatorTask extends SQLQueries {
 					 */
 					int size = -1;
 					try (Query connected = query(conn, countConnected)) {
-						for (ResultSet row : connected.call(machineId, x, y,
+						for (Row row : connected.call(machineId, x, y,
 								width, height)) {
 							size = row.getInt("connected_size");
 						}
@@ -245,7 +261,7 @@ public class AllocatorTask extends SQLQueries {
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
 			int cabinet, int frame, int board) throws SQLException {
 		try (Query find = query(conn, findLocation)) {
-			for (ResultSet rs : find.call(machineId, cabinet, frame, board)) {
+			for (Row rs : find.call(machineId, cabinet, frame, board)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				setAllocation(conn, jobId, 1, 1, machineId, x, y);
@@ -263,6 +279,7 @@ public class AllocatorTask extends SQLQueries {
 				Update issueChange = update(conn, issueChangeForJob);
 				Update setNumPending = update(conn, SET_NUM_PENDING)) {
 			boolean changed = false;
+			// TODO Mark edges of interior holes as perimeter too
 			List<LinkDirections> perimeter = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
@@ -293,9 +310,131 @@ public class AllocatorTask extends SQLQueries {
 	}
 
 	// @formatter:off
+	/*
+	void issuePowerRequest(Connection conn, int jobId, PowerState power)
+			throws SQLException {
+		try (Query jobBoards = query(conn,
+				"SELECT board_id, x, y, board_power FROM boards "
+						+ "WHERE allocated_job = ?");
+				Update issueChange = update(conn, issueChangeForJob);
+				Update setNumPending = update(conn, SET_NUM_PENDING)) {
+			// TODO Cancel queued changes
+			Map<Integer, ChipLocation> boardsInJob = new HashMap<>();
+			Map<ChipLocation, Integer> boardsAtPlaces = new HashMap<>();
+			List<Integer> toSwitch = new ArrayList<>();
+			List<LinkDirections> perimeter = new ArrayList<>();
+			for (Row row : jobBoards.call(jobId)) {
+				int b = row.getInt("board_id");
+				ChipLocation loc =
+						new ChipLocation(row.getInt("x"), row.getInt("y"));
+				boardsInJob.put(b, loc);
+				boardsAtPlaces.put(loc, b);
+				if (row.getInt("board_power") != power.ordinal()) {
+					toSwitch.add(row.getInt("board_id"));
+				}
+			}
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					changed |= allocBoard.call(jobId, machineId, x + rootX,
+							y + rootY) > 0;
+					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
+						perimeter.add(new LinkDirections(width, height, x, y));
+					}
+				}
+			}
+			int numPending = 0;
+			for (LinkDirections ld : perimeter) {
+				 // Issues instructions to reconfigure the perimeter of the
+				 // allocated rectangle, incrementing numPending for each.
+				numPending += issueChange.call(jobId, machineId, rootX + ld.x,
+						rootY + ld.y, true, ld.n, ld.s, ld.e, ld.w, ld.nw,
+						ld.se);
+			}
+			setNumPending.call(numPending, jobId);
+			if (numPending > 0) {
+				epochs.nextMachineEpoch();
+			}
+		}
+	}
+	 */
+	// @formatter:on
+
+	enum Direction {
+		N, NE, SE, S, SW, NW
+	}
+
+	final static class DirInfo {
+		final int z;
+
+		final Direction dir;
+
+		final int dx;
+
+		final int dy;
+
+		final int dz;
+
+		private static final Map<Integer, Map<Direction, DirInfo>> map =
+				new HashMap<>();
+
+		private DirInfo(int z, Direction d, int dx, int dy, int dz) {
+			this.z = z;
+			this.dir = requireNonNull(d);
+			this.dx = dx;
+			this.dy = dy;
+			this.dz = dz;
+
+			map.computeIfAbsent(z, key -> new HashMap<>()).put(d, this);
+		}
+
+		static DirInfo get(int z, Direction d) {
+			return map.get(z).get(d);
+		}
+
+		private static void load(Connection conn) throws SQLException {
+			if (map.isEmpty()) {
+				try (Query di = query(conn, LOAD_DIR_INFO)) {
+					for (Row row : di.call()) {
+						new DirInfo(row.getInt("z"),
+								row.getEnum("direction", Direction.class),
+								row.getInt("dx"), row.getInt("dy"),
+								row.getInt("dz"));
+					}
+				}
+				log.info("created {} DirInfo instances",
+						map.values().stream().mapToInt(Map::size).sum());
+			}
+		}
+	}
+
+	// @formatter:off
 	/**
 	 * Represents link directions of a board.
 	 * <pre>
+	 *  ___     ___     ___     ___
+	 * / . \___/ . \___/ . \___/ . \___
+	 * \___/ . \___/ . \___/ . \___/ . \
+	 * /0,1\___/1,1\___/2,1\___/3,1\___/
+	 * \___/ . \___/ . \___/ . \___/ . \___
+	 *     \_2_/ . \___/ . \___/ . \___/ . \
+	 *     /0,0\_1_/1,0\___/2,0\___/3,0\___/
+	 *     \_0_/   \___/   \___/   \___/
+
+	 *
+	 *          ___
+	 *      ___/ b \___
+	 *     / a \___/ c \
+	 *     \___/ x \___/
+	 *     / f \___/ d \
+	 *     \___/ e \___/
+	 *         \___/
+	 *
+	 *      _____
+	 *     /x,y,2\_____
+	 *     \_____/x,y,1\
+	 *     /x,y,0\_____/
+	 *     \_____/
+	 *
 	 *  /^\ /^\ /^\
 	 * | a | b | c |
 	 *  \ / \ / \ / \            n/^\e

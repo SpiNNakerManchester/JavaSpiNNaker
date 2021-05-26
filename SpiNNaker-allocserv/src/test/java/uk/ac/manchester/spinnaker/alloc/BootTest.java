@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +40,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
@@ -88,11 +88,11 @@ class BootTest {
 			try (Connection c = db.getConnection()) {
 				assertFalse(c.isReadOnly());
 				int rows = 0;
-				try (Query q =
-						query(c, "SELECT COUNT(*) FROM board_model_coords")) {
-					for (ResultSet row : q.call()) {
+				try (Query q = query(c,
+						"SELECT COUNT(*) AS c FROM board_model_coords")) {
+					for (Row row : q.call()) {
 						// For v2, v3, v4 and v5 board configs
-						assertTrue(row.getInt(1) == 104);
+						assertTrue(row.getInt("c") == 104);
 						rows++;
 					}
 				}
@@ -106,10 +106,10 @@ class BootTest {
 			try (Connection c = db.getConnection()) {
 				exec(c, "CREATE TEMPORARY TABLE foo(x)");
 				try (Update u = update(c, "INSERT INTO foo(x) VALUES(?)");
-						Query q = query(c, "SELECT * FROM foo")) {
+						Query q = query(c, "SELECT x FROM foo")) {
 					rows = 0;
-					for (ResultSet row : q.call()) {
-						assertFalse(row.isClosed());
+					for (Row row : q.call()) {
+						assertNotNull(row.getObject("x"));
 						rows++;
 					}
 					assertEquals(0, rows);
@@ -123,7 +123,7 @@ class BootTest {
 					assertEquals(1, keyCount);
 
 					rows = 0;
-					for (ResultSet row : q.call()) {
+					for (Row row : q.call()) {
 						assertEquals(123, row.getInt("x"));
 						rows++;
 					}

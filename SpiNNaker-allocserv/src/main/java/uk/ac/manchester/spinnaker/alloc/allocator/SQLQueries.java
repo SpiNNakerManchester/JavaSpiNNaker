@@ -97,6 +97,13 @@ public abstract class SQLQueries {
 					+ "death_reason, death_timestamp "
 					+ "FROM jobs WHERE job_id = ? LIMIT 1";
 
+	@Parameter("board_id")
+	@ResultColumn("root_x")
+	@ResultColumn("root_y")
+	@SingleRowResult
+	protected static final String GET_ROOT_OF_BOARD =
+			"SELECT root_x, root_y FROM boards WHERE board_id = ? LIMIT 1";
+
 	@Parameter("machine_id")
 	@Parameter("owner")
 	@Parameter("keepalive_interval")
@@ -225,6 +232,12 @@ public abstract class SQLQueries {
 					+ "JOIN boards ON boards.bmp_id = bmp.bmp_id WHERE "
 					+ "boards.machine_id = ? AND boards.x = 0 AND boards.y = 0 "
 					+ "LIMIT 1";
+
+	@Parameter("machine_id")
+	@ResultColumn("board_num")
+	protected static final String GET_BOARD_NUMBERS =
+			"SELECT board_num FROM boards WHERE machine_id = ? "
+					+ "ORDER BY board_num ASC";
 
 	@Parameter("machine_id")
 	@ResultColumn("tag")
@@ -366,6 +379,17 @@ public abstract class SQLQueries {
 			"INSERT INTO pending_changes(job_id, \"power\", board_id) "
 					+ "SELECT ?, ?, board_id FROM boards "
 					+ "WHERE job_id = ? AND power_state != ?";
+
+	/**
+	 * Get descriptions of how to move from a board to its neighbours.
+	 */
+	@ResultColumn("z")
+	@ResultColumn("direction")
+	@ResultColumn("dx")
+	@ResultColumn("dy")
+	@ResultColumn("dz")
+	protected static final String LOAD_DIR_INFO =
+			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

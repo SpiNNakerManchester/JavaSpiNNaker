@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +40,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
@@ -74,7 +74,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		MachinesEpoch me = epochs.getMachineEpoch();
 		Map<String, Machine> map = new HashMap<>();
 		try (Query listMachines = query(conn, GET_ALL_MACHINES)) {
-			for (ResultSet rs : listMachines.call()) {
+			for (Row rs : listMachines.call()) {
 				MachineImpl m = new MachineImpl(conn, rs, me);
 				map.put(m.name, m);
 			}
@@ -94,7 +94,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		MachinesEpoch me = epochs.getMachineEpoch();
 		MachineImpl m = null;
 		try (Query idMachine = query(conn, GET_MACHINE_BY_ID)) {
-			for (ResultSet rs : idMachine.call(id)) {
+			for (Row rs : idMachine.call(id)) {
 				m = new MachineImpl(conn, rs, me);
 				break;
 			}
@@ -107,7 +107,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		MachinesEpoch me = epochs.getMachineEpoch();
 		MachineImpl m = null;
 		try (Query namedMachine = query(conn, GET_NAMED_MACHINE)) {
-			for (ResultSet rs : namedMachine.call(name)) {
+			for (Row rs : namedMachine.call(name)) {
 				m = new MachineImpl(conn, rs, me);
 				break;
 			}
@@ -123,13 +123,13 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			JobCollection jc = new JobCollection(je);
 			if (deleted) {
 				try (Query jobs = query(conn, GET_JOB_IDS)) {
-					for (ResultSet row : jobs.call(limit, start)) {
+					for (Row row : jobs.call(limit, start)) {
 						jc.addJob(row);
 					}
 				}
 			} else {
 				try (Query jobs = query(conn, GET_LIVE_JOB_IDS)) {
-					for (ResultSet row : jobs.call(DESTROYED, limit, start)) {
+					for (Row row : jobs.call(DESTROYED, limit, start)) {
 						jc.addJob(row);
 					}
 				}
@@ -149,8 +149,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		JobsEpoch epoch = epochs.getJobsEpoch();
 		JobImpl j = null;
 		try (Query s = query(conn, GET_JOB)) {
-			for (ResultSet rs : s.call(id)) {
-				j = new JobImpl(epoch, rs);
+			for (Row rs : s.call(id)) {
+				j = new JobImpl(epoch, conn, rs);
 			}
 		}
 		return j;
@@ -256,15 +256,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 	}
 
-	private static Instant instant(ResultSet row, String column)
-			throws SQLException {
-		Number l = (Number) row.getObject(column);
-		if (l == null) {
-			return null;
-		}
-		return Instant.ofEpochSecond(l.longValue());
-	}
-
 	private class MachineImpl implements Machine {
 		private final int id;
 
@@ -279,7 +270,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@JsonIgnore
 		private final MachinesEpoch epoch;
 
-		MachineImpl(Connection conn, ResultSet rs, MachinesEpoch epoch)
+		MachineImpl(Connection conn, Row rs, MachinesEpoch epoch)
 				throws SQLException {
 			this.epoch = epoch;
 			id = rs.getInt("machine_id");
@@ -287,7 +278,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			try (Query getTags = query(conn, GET_TAGS)) {
-				for (ResultSet tagSet : getTags.call(id)) {
+				for (Row tagSet : getTags.call(id)) {
 					tags.add(tagSet.getString("tag"));
 				}
 			}
@@ -308,7 +299,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_CHIP)) {
-				for (ResultSet rs : q.call(id, x, y)) {
+				for (Row rs : q.call(id, x, y)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -321,7 +312,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_CFB)) {
-				for (ResultSet rs : q.call(id, cabinet, frame, board)) {
+				for (Row rs : q.call(id, cabinet, frame, board)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -334,7 +325,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
 					Query q = query(conn, FIND_BOARD_BY_XYZ)) {
-				for (ResultSet rs : q.call(id, x, y, z)) {
+				for (Row rs : q.call(id, x, y, z)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -345,8 +336,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public String getRootBoardBMPAddress() throws SQLException {
 			String address = null;
 			try (Connection conn = db.getConnection();
-					Query q = query(conn, GET_ROOT_BMP_ADDRESS)) {
-				for (ResultSet rs : q.call(id)) {
+					Query rootBMPaddr = query(conn, GET_ROOT_BMP_ADDRESS)) {
+				for (Row rs : rootBMPaddr.call(id)) {
 					address = rs.getString("address");
 				}
 			}
@@ -355,8 +346,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public List<Integer> getBoardNumbers() throws SQLException {
-			// FIXME Auto-generated method stub
-			return null;
+			// TODO add paging
+			List<Integer> boards = new ArrayList<>();
+			try (Connection conn = db.getConnection();
+					Query boardNumbers = query(conn, GET_BOARD_NUMBERS)) {
+				for (Row row : boardNumbers.call(id)) {
+					boards.add((Integer) row.getObject("board_num"));
+				}
+			}
+			return boards;
 		}
 
 		@Override
@@ -414,11 +412,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return jobs.stream().map(Job::getId).collect(toList());
 		}
 
-		void addJob(ResultSet row) throws SQLException {
+		void addJob(Row row) throws SQLException {
 			int jobId = row.getInt("job_id");
 			int machineId = row.getInt("machine_id");
 			int jobState = row.getInt("job_state");
-			long keepalive = row.getLong("keepalive_timestamp");
+			Instant keepalive = row.getInstant("keepalive_timestamp");
 			jobs.add(new JobImpl(epoch, jobId, machineId, jobState, keepalive));
 		}
 	}
@@ -440,6 +438,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		/** If not {@code null}, the ID of the root board of the job. */
 		private Integer root;
 
+		private ChipLocation chipRoot;
+
 		private String owner;
 
 		private String keepaliveHost;
@@ -459,22 +459,31 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		JobImpl(JobsEpoch epoch, int jobId, int machineId, int jobState,
-				long keepalive) {
+				Instant keepalive) {
 			this(epoch, jobId, machineId);
 			state = JobState.values()[jobState];
-			keepaliveTime = Instant.ofEpochSecond(keepalive);
+			keepaliveTime = keepalive;
 		}
 
-		JobImpl(JobsEpoch epoch, ResultSet row) throws SQLException {
+		JobImpl(JobsEpoch epoch, Connection conn, Row row)
+				throws SQLException {
 			this(epoch, row.getInt("job_id"), row.getInt("machine_id"));
 			width = (Integer) row.getObject("width");
 			height = (Integer) row.getObject("height");
 			root = (Integer) row.getObject("root_id");
-			state = JobState.values()[row.getInt("job_state")];
+			if (root != null) {
+				try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
+					for (Row subrow : boardRoot.call(root)) {
+						chipRoot = new ChipLocation(subrow.getInt("root_x"),
+								subrow.getInt("root_y"));
+					}
+				}
+			}
+			state = row.getEnum("job_state", JobState.class);
 			keepaliveHost = row.getString("keepalive_host");
-			keepaliveTime = instant(row, "keepalive_timestamp");
-			startTime = instant(row, "create_timestamp");
-			finishTime = instant(row, "death_timestamp");
+			keepaliveTime = row.getInstant("keepalive_timestamp");
+			startTime = row.getInstant("create_timestamp");
+			finishTime = row.getInstant("death_timestamp");
 			deathReason = row.getString("death_reason");
 		}
 
@@ -553,11 +562,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public ChipLocation getRootChip() {
-			if (root == null) {
-				return null;
-			}
-			// TODO Auto-generated method stub
-			return null;
+			return chipRoot;
 		}
 
 		@Override
@@ -598,18 +603,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				try (Query getRootXY = query(conn, GET_ROOT_COORDS);
 						Query getBoardInfo =
 								query(conn, GET_BOARD_CONNECT_INFO)) {
-					ChipLocation chipRoot = new ChipLocation(0, 0);
-					for (ResultSet row : getRootXY.call(root)) {
+					for (Row row : getRootXY.call(root)) {
 						rootX = row.getInt("x");
 						rootY = row.getInt("y");
-						chipRoot = new ChipLocation(row.getInt("root_x"),
-								row.getInt("root_y"));
 					}
 					int capacityEstimate = width * height;
 					connections = new ArrayList<>(capacityEstimate);
 					boards = new ArrayList<>(capacityEstimate);
 					boardIds = new ArrayList<>(capacityEstimate);
-					for (ResultSet row : getBoardInfo.call(id)) {
+					for (Row row : getBoardInfo.call(id)) {
 						boardIds.add(row.getInt("board_id"));
 						boards.add(new BoardCoordinates(row.getInt("x"),
 								row.getInt("y"), 0));
@@ -662,7 +664,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				PowerState result = null;
 				try (Connection conn = db.getConnection();
 						Query power = query(conn, GET_BOARD_POWER)) {
-					for (ResultSet row : power.call(id)) {
+					for (Row row : power.call(id)) {
 						if (row.getInt("total_on") < boardIds.size()) {
 							result = PowerState.OFF;
 						} else {
@@ -691,7 +693,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private final BoardPhysicalCoordinates physical;
 
-		private BoardLocationImpl(ResultSet row, JobsEpoch epoch, int machineId)
+		private BoardLocationImpl(Row row, JobsEpoch epoch, int machineId)
 				throws SQLException {
 			machine = row.getString("machine_name");
 			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"), 0);

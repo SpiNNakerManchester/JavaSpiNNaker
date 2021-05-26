@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -37,9 +38,11 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
 
 /**
@@ -65,13 +68,137 @@ public class DatabaseEngine {
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
 
-	private String sqlDDL;
+	@Autowired(required = false)
+	private Map<String, Function> functions = new HashMap<>();
 
 	private File dbFile;
 
+	/**
+	 * A restricted form of result set. Note that this object <em>must not</em>
+	 * be saved outside the context of iteration over its' query's results.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class Row {
+		private final ResultSet rs;
+
+		private Row(ResultSet rs) {
+			this.rs = rs;
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return A string, or {@code null} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public String getString(String columnLabel) throws SQLException {
+			return rs.getString(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return A boolean, or {@code false} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public boolean getBoolean(String columnLabel) throws SQLException {
+			return rs.getBoolean(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return An integer, or {@code 0} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public int getInt(String columnLabel) throws SQLException {
+			return rs.getInt(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return A byte array, or {@code null} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public byte[] getBytes(String columnLabel) throws SQLException {
+			return rs.getBytes(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return An instant, or {@code null} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public Instant getInstant(String columnLabel) throws SQLException {
+			long moment = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Instant.ofEpochSecond(moment);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return An automatically-decoded object, or {@code false} on
+		 *         {@code NULL}. (Only returns basic types.)
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public Object getObject(String columnLabel) throws SQLException {
+			return rs.getObject(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return An enum value, or {@code null} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type)
+				throws SQLException {
+			int value = rs.getInt(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return type.getEnumConstants()[value];
+		}
+	}
+
 	@PostConstruct
-	private void loadDDL() throws SQLException {
-		sqlDDL = readSQL(sqlDDLFile);
+	private void ensureDBsetup() throws SQLException {
+		try (Connection conn = getConnection()) {
+			try (Query q = query(conn,
+					"SELECT count(*) AS c FROM movement_directions")) {
+				for (Row row : q.call()) {
+					row.getInt("c");
+					log.debug("database {} ready", dbConnectionUrl);
+				}
+			}
+		}
 	}
 
 	/**
@@ -80,7 +207,8 @@ public class DatabaseEngine {
 	 * @param dbFile
 	 *            The file containing the database.
 	 */
-	public DatabaseEngine(@Value("${databasePath:db.sqlite3}") File dbFile) {
+	public DatabaseEngine(
+			@Value("${databasePath:spalloc.sqlite3}") File dbFile) {
 		this.dbFile = dbFile.getAbsoluteFile();
 		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 		log.info("will manage database at {}", dbFile.getAbsolutePath());
@@ -97,9 +225,10 @@ public class DatabaseEngine {
 			boolean doInit = !initialised || !dbFile.exists();
 			Connection conn = config.createConnection(dbConnectionUrl);
 			if (doInit) {
-				try (Statement statement = conn.createStatement()) {
-					log.info("initalising DB from {}", sqlDDLFile);
-					statement.executeUpdate(sqlDDL);
+				log.info("initalising DB from {}", sqlDDLFile);
+				exec(conn, sqlDDLFile);
+				for (String s : functions.keySet()) {
+					Function.create(conn, s, functions.get(s));
 				}
 				initialised = true;
 			}
@@ -284,6 +413,8 @@ public class DatabaseEngine {
 			}
 		}
 		try {
+			log.debug("{} is {}", resource,
+					resource.getFile().getAbsoluteFile());
 			String s = readFileToString(resource.getFile(), UTF_8);
 			synchronized (QUERY_CACHE) {
 				// Not really a problem if it is put in twice
@@ -302,13 +433,15 @@ public class DatabaseEngine {
 	 * @param conn
 	 *            The connection.
 	 * @param sql
-	 *            The SQL to run. Probably DDL.
+	 *            The SQL to run. Probably DDL. This may contain multiple
+	 *            statements.
 	 * @throws SQLException
 	 *             If anything goes wrong.
 	 */
 	public static void exec(Connection conn, String sql) throws SQLException {
 		try (Statement s = conn.createStatement()) {
-			s.execute(sql);
+			// MUST be executeUpdate() to run multiple statements at once!
+			s.executeUpdate(sql);
 		}
 	}
 
@@ -318,7 +451,8 @@ public class DatabaseEngine {
 	 * @param conn
 	 *            The connection.
 	 * @param sql
-	 *            Reference to the SQL to run. Probably DDL.
+	 *            Reference to the SQL to run. Probably DDL. This may contain
+	 *            multiple statements.
 	 * @throws SQLException
 	 *             If anything goes wrong.
 	 */
@@ -361,7 +495,7 @@ public class DatabaseEngine {
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
-		public Iterable<ResultSet> call(Object... arguments)
+		public Iterable<Row> call(Object... arguments)
 				throws SQLException {
 			int idx = 0;
 			for (Object arg : arguments) {
@@ -369,7 +503,8 @@ public class DatabaseEngine {
 			}
 			closeResults();
 			rs = s.executeQuery();
-			return () -> new Iterator<ResultSet>() {
+			Row row = new Row(rs);
+			return () -> new Iterator<Row>() {
 				private boolean finished = false;
 
 				@Override
@@ -395,11 +530,11 @@ public class DatabaseEngine {
 				}
 
 				@Override
-				public ResultSet next() {
+				public Row next() {
 					if (finished) {
 						return null;
 					}
-					return rs;
+					return row;
 				}
 			};
 		}
@@ -416,7 +551,7 @@ public class DatabaseEngine {
 	 * Create a new query. Usage pattern:
 	 * <pre>
 	 * try (Query q = query(conn, SQL_SELECT)) {
-	 *     for (ResultSet row : u.call(argument1, argument2)) {
+	 *     for (Row row : u.call(argument1, argument2)) {
 	 *         // Do something with the row
 	 *     }
 	 * }
@@ -440,7 +575,7 @@ public class DatabaseEngine {
 	 * Create a new query.
 	 * <pre>
 	 * try (Query q = query(conn, sqlSelectResource)) {
-	 *     for (ResultSet row : u.call(argument1, argument2)) {
+	 *     for (Row row : u.call(argument1, argument2)) {
 	 *         // Do something with the row
 	 *     }
 	 * }
@@ -509,8 +644,7 @@ public class DatabaseEngine {
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
-		public Iterable<Integer> keys(Object... arguments)
-				throws SQLException {
+		public Iterable<Integer> keys(Object... arguments) throws SQLException {
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver

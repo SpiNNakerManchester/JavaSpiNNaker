@@ -13,6 +13,27 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+CREATE TABLE IF NOT EXISTS directions(
+	"id" INTEGER PRIMARY KEY,
+	"name" TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS movement_directions(
+	z INTEGER NOT NULL,
+	direction INTEGER NOT NULL REFERENCES directions("id") ON DELETE RESTRICT,
+	dx INTEGER NOT NULL,
+	dy INTEGER NOT NULL,
+	dz INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS movementUniqueness ON movement_directions(
+	z ASC, direction ASC
+);
+
+CREATE VIEW IF NOT EXISTS motions AS
+SELECT z, directions.name AS dir, dx, dy, dz
+FROM movement_directions JOIN directions
+	ON movement_directions.direction = directions.id;
+
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_name TEXT UNIQUE NOT NULL,
@@ -65,9 +86,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS bmpSanity ON bmp(
 CREATE TABLE IF NOT EXISTS links (
 	link_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	board_1 INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
-	dir_1 INTEGER NOT NULL CHECK (dir_1 >= 0 AND dir_1 <= 2),
+	dir_1 INTEGER NOT NULL REFERENCES directions(id) ON DELETE RESTRICT,
 	board_2 INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
-	dir_2 INTEGER NOT NULL CHECK (dir_2 >= 0 AND dir_2 <= 2),
+	dir_2 INTEGER NOT NULL REFERENCES directions(id) ON DELETE RESTRICT,
 	live INTEGER NOT NULL DEFAULT (1)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS link_1 ON links(
@@ -113,10 +134,10 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     "power" INTEGER NOT NULL, -- Whether to switch the board on
     fpga_n INTEGER NOT NULL, -- Whether to switch the northward FPGA on
     fpga_s INTEGER NOT NULL, -- Whether to switch the southward FPGA on
-    fpga_e INTEGER NOT NULL, -- Whether to switch the eastward FPGA on
-    fpga_w INTEGER NOT NULL, -- Whether to switch the westward FPGA on
-    fpga_nw INTEGER NOT NULL, -- Whether to switch the nothwest FPGA on
-    fpga_se INTEGER NOT NULL -- Whether to switch the southeast FPGA on
+    fpga_ne INTEGER NOT NULL, -- Whether to switch the northeast FPGA on
+    fpga_nw INTEGER NOT NULL, -- Whether to switch the northwest FPGA on
+    fpga_se INTEGER NOT NULL, -- Whether to switch the southeast FPGA on
+    fpga_sw INTEGER NOT NULL -- Whether to switch the southwest FPGA on
 );
 
 CREATE TABLE IF NOT EXISTS board_model_coords(
@@ -154,6 +175,35 @@ INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 	SELECT 4, chip_x, chip_y FROM board_model_coords WHERE model = 5;
 
+-- Standard directions between boards
+INSERT OR IGNORE INTO directions("id", name)
+VALUES
+	(0, 'N'), (1, 'NE'), (2, 'SE'), (3, 'S'), (4, 'SW'), (5, 'NW');
+
+INSERT OR IGNORE INTO movement_directions(z, direction, dx, dy, dz)
+VALUES
+	-- Z = 0
+	(0, 0, 0, 0, +2),
+	(0, 1, 0, 0, +1),
+	(0, 2, 0, -1, +2),
+	(0, 3, -1, -1, +1),
+	(0, 4, -1, -1, +2),
+	(0, 5, -1, 0, +1),
+	-- Z = 1
+	(1, 0, +1, +1, -1),
+	(1, 1, +1, 0, +1),
+	(1, 2, +1, 0, -1),
+	(1, 3, 0, -1, +1),
+	(1, 4, 0, 0, -1),
+	(1, 5, 0, 0, +1),
+	-- Z = 2
+	(2, 0, 0, +1, -1),
+	(2, 1, +1, +1, -2),
+	(2, 2, 0, 0, -1),
+	(2, 3, 0, 0, -2),
+	(2, 4, -1, 0, -1),
+	(2, 5, 0, +1, -2);
+
 COMMIT;
 
 -- Lock down the board_model_coords table
@@ -174,3 +224,51 @@ BEFORE DELETE ON board_model_coords
 BEGIN
     SELECT RAISE(IGNORE);
 END;
+
+-- Lock down the movement directions
+CREATE TRIGGER IF NOT EXISTS directions_is_static_no_update
+BEFORE UPDATE ON directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS directions_is_static_no_insert
+BEFORE INSERT ON directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS directions_is_static_no_delete
+BEFORE DELETE ON directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+-- Lock down the inter-board movement patterns
+CREATE TRIGGER IF NOT EXISTS movement_directions_is_static_no_update
+BEFORE UPDATE ON movement_directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS movement_directions_is_static_no_insert
+BEFORE INSERT ON movement_directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS movement_directions_is_static_no_delete
+BEFORE DELETE ON movement_directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+-- Automatically suggested indices
+CREATE INDEX IF NOT EXISTS 'boards_allocated_job' ON 'boards'('allocated_job'); --> jobs(job_id)
+CREATE INDEX IF NOT EXISTS 'boards_machine_id' ON 'boards'('machine_id'); --> machines(machine_id)
+CREATE INDEX IF NOT EXISTS 'job_request_job_id' ON 'job_request'('job_id'); --> jobs(job_id)
+CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
+CREATE INDEX IF NOT EXISTS 'jobs_machine_id' ON 'jobs'('machine_id'); --> machines(machine_id)
+CREATE INDEX IF NOT EXISTS 'movement_directions_direction' ON 'movement_directions'('direction'); --> directions(id)
+CREATE INDEX IF NOT EXISTS 'pending_changes_job_id' ON 'pending_changes'('job_id'); --> jobs(job_id)
+CREATE INDEX IF NOT EXISTS 'tags_machine_id' ON 'tags'('machine_id'); --> machines(machine_id)
