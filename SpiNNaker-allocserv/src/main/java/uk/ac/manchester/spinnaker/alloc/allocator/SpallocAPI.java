@@ -238,6 +238,11 @@ public interface SpallocAPI {
 		int getRootY() throws SQLException;
 
 		/**
+		 * @return The root Z coordinate of this sub-machine.
+		 */
+		int getRootZ();
+
+		/**
 		 * @return The width of this sub-machine.
 		 */
 		int getWidth() throws SQLException;

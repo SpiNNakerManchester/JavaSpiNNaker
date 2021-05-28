@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -160,6 +161,23 @@ public class DatabaseEngine {
 		 *
 		 * @param columnLabel
 		 *            The name of the column.
+		 * @return A duration, or {@code null} on {@code NULL}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public Duration getDuration(String columnLabel) throws SQLException {
+			long span = rs.getLong(columnLabel);
+			if (rs.wasNull()) {
+				return null;
+			}
+			return Duration.ofSeconds(span);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
 		 * @return An automatically-decoded object, or {@code false} on
 		 *         {@code NULL}. (Only returns basic types.)
 		 * @throws SQLException
@@ -236,10 +254,28 @@ public class DatabaseEngine {
 		}
 	}
 
+	/**
+	 * Set the parameters for a prepared statement.
+	 *
+	 * @param s
+	 *            The statement to set the parameters for.
+	 * @param arguments
+	 *            The values to set the parameters to.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public static void setParams(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		int idx = 0;
+		s.clearParameters();
 		for (Object arg : arguments) {
+			if (arg instanceof Instant) {
+				arg = ((Instant) arg).getEpochSecond();
+			} else if (arg instanceof Duration) {
+				arg = ((Duration) arg).getSeconds();
+			} else if (arg instanceof Enum) {
+				arg = ((Enum<?>) arg).ordinal();
+			}
 			s.setObject(++idx, arg);
 		}
 	}
@@ -257,10 +293,7 @@ public class DatabaseEngine {
 	 */
 	public static int runUpdate(PreparedStatement s, Object... arguments)
 			throws SQLException {
-		int idx = 0;
-		for (Object arg : arguments) {
-			s.setObject(++idx, arg);
-		}
+		setParams(s, arguments);
 		return s.executeUpdate();
 	}
 
@@ -277,10 +310,7 @@ public class DatabaseEngine {
 	 */
 	public static ResultSet runQuery(PreparedStatement s, Object... arguments)
 			throws SQLException {
-		int idx = 0;
-		for (Object arg : arguments) {
-			s.setObject(++idx, arg);
-		}
+		setParams(s, arguments);
 		return s.executeQuery();
 	}
 
@@ -497,10 +527,7 @@ public class DatabaseEngine {
 		 */
 		public Iterable<Row> call(Object... arguments)
 				throws SQLException {
-			int idx = 0;
-			for (Object arg : arguments) {
-				s.setObject(++idx, arg);
-			}
+			setParams(s, arguments);
 			closeResults();
 			rs = s.executeQuery();
 			Row row = new Row(rs);
@@ -620,10 +647,7 @@ public class DatabaseEngine {
 		 *             If anything goes wrong.
 		 */
 		public int call(Object... arguments) throws SQLException {
-			int idx = 0;
-			for (Object arg : arguments) {
-				s.setObject(++idx, arg);
-			}
+			setParams(s, arguments);
 			closeResults();
 			return s.executeUpdate();
 		}
@@ -650,10 +674,7 @@ public class DatabaseEngine {
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
 			 * ignores that flag.
 			 */
-			int idx = 0;
-			for (Object arg : arguments) {
-				s.setObject(++idx, arg);
-			}
+			setParams(s, arguments);
 			closeResults();
 			s.executeUpdate();
 			rs = s.getGeneratedKeys();

@@ -22,13 +22,13 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.QUEUED;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,7 +197,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 			break;
 		case N_COORDS_LOCATION:
-			// Request by specific (physical) location
+			// Request by specific location
 			try (Update ps = update(conn, INSERT_REQ_LOCATION)) {
 				ps.call(id, dims.get(0), dims.get(1), dims.get(2));
 			}
@@ -210,11 +210,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private int insertJob(Connection conn, MachineImpl m, String owner,
 			Duration keepaliveInterval) throws SQLException {
 		// TODO add in additional info
-		Date now = new Date();
-		long interval = keepaliveInterval.getSeconds();
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, interval, now, now)) {
+			for (int key : makeJob.keys(m.id, owner, keepaliveInterval,
+					QUEUED)) {
 				pk = key;
 			}
 		}
@@ -239,21 +238,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 		}
 		return null;
-	}
-
-	void jobAccess(JobImpl job, Date now, String keepaliveAddress)
-			throws SQLException {
-		try (Connection conn = db.getConnection();
-				Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
-			keepAlive.call(now, keepaliveAddress, job.id, DESTROYED);
-		}
-	}
-
-	void jobDestroy(JobImpl job, Date now, String reason) throws SQLException {
-		try (Connection conn = db.getConnection();
-				Update destroyJob = update(conn, DESTROY_JOB)) {
-			destroyJob.call(DESTROYED, reason, now, job.id, DESTROYED);
-		}
 	}
 
 	private class MachineImpl implements Machine {
@@ -298,8 +282,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				throws SQLException {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
-					Query q = query(conn, FIND_BOARD_BY_CHIP)) {
-				for (Row rs : q.call(id, x, y)) {
+					Query findBoard = query(conn, FIND_BOARD_BY_CHIP)) {
+				for (Row rs : findBoard.call(id, x, y)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -311,8 +295,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				int board, JobsEpoch je) throws SQLException {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
-					Query q = query(conn, FIND_BOARD_BY_CFB)) {
-				for (Row rs : q.call(id, cabinet, frame, board)) {
+					Query findBoard = query(conn, FIND_BOARD_BY_CFB)) {
+				for (Row rs : findBoard.call(id, cabinet, frame, board)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -324,8 +308,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				JobsEpoch je) throws SQLException {
 			BoardLocation loc = null; // Default to null for query failed
 			try (Connection conn = db.getConnection();
-					Query q = query(conn, FIND_BOARD_BY_XYZ)) {
-				for (Row rs : q.call(id, x, y, z)) {
+					Query findBoard = query(conn, FIND_BOARD_BY_XYZ)) {
+				for (Row rs : findBoard.call(id, x, y, z)) {
 					loc = new BoardLocationImpl(rs, je, id);
 				}
 			}
@@ -415,7 +399,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		void addJob(Row row) throws SQLException {
 			int jobId = row.getInt("job_id");
 			int machineId = row.getInt("machine_id");
-			int jobState = row.getInt("job_state");
+			JobState jobState = row.getEnum("job_state", JobState.class);
 			Instant keepalive = row.getInstant("keepalive_timestamp");
 			jobs.add(new JobImpl(epoch, jobId, machineId, jobState, keepalive));
 		}
@@ -458,10 +442,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			this.machineId = machineId;
 		}
 
-		JobImpl(JobsEpoch epoch, int jobId, int machineId, int jobState,
+		JobImpl(JobsEpoch epoch, int jobId, int machineId, JobState jobState,
 				Instant keepalive) {
 			this(epoch, jobId, machineId);
-			state = JobState.values()[jobState];
+			state = jobState;
 			keepaliveTime = keepalive;
 		}
 
@@ -489,12 +473,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void access(String keepaliveAddress) throws SQLException {
-			jobAccess(this, new Date(), keepaliveAddress);
+			try (Connection conn = db.getConnection();
+					Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
+				keepAlive.call(keepaliveAddress, id, DESTROYED);
+			}
 		}
 
 		@Override
 		public void destroy(String reason) throws SQLException {
-			jobDestroy(this, new Date(), reason);
+			try (Connection conn = db.getConnection();
+					Update destroyJob = update(conn, DESTROY_JOB)) {
+				destroyJob.call(DESTROYED, reason, id, DESTROYED);
+			}
 		}
 
 		@Override
@@ -590,6 +580,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			/** The root Y coordinate of this sub-machine. */
 			private int rootY;
 
+			/** The root Z coordinate of this sub-machine. */
+			private int rootZ;
+
 			/** The connection details of this sub-machine. */
 			private List<ConnectionInfo> connections;
 
@@ -606,6 +599,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					for (Row row : getRootXY.call(root)) {
 						rootX = row.getInt("x");
 						rootY = row.getInt("y");
+						rootZ = row.getInt("z");
 					}
 					int capacityEstimate = width * height;
 					connections = new ArrayList<>(capacityEstimate);
@@ -614,7 +608,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					for (Row row : getBoardInfo.call(id)) {
 						boardIds.add(row.getInt("board_id"));
 						boards.add(new BoardCoordinates(row.getInt("x"),
-								row.getInt("y"), 0));
+								row.getInt("y"), row.getInt("z")));
 						connections.add(new ConnectionInfo(
 								new ChipLocation(
 										row.getInt("root_x") - chipRoot.getX(),
@@ -637,6 +631,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			@Override
 			public int getRootY() {
 				return rootY;
+			}
+
+			@Override
+			public int getRootZ() {
+				return rootZ;
 			}
 
 			@Override
@@ -696,8 +695,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private BoardLocationImpl(Row row, JobsEpoch epoch, int machineId)
 				throws SQLException {
 			machine = row.getString("machine_name");
-			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"), 0);
-			physical = new BoardPhysicalCoordinates(0, 0, 0); // FIXME
+			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
+					row.getInt("z"));
+			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
+					row.getInt("frame"), row.getInt("board_num"));
 			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
 
 			Integer jobId = (Integer) row.getObject("job_id");

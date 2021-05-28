@@ -13,11 +13,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-INSERT INTO pending_changes(
-	job_id, board_id,
-	"power", fpga_n, fpga_s, fpga_e, fpga_w, fpga_nw, fpga_se)
-SELECT
-	VALUES (?, (
-		SELECT board_id FROM boards
-		WHERE machine_id = ? AND x = ? AND y = ? AND z = ?
-			AND may_be_allocated > 0), ?, ?, ?, ?, ?, ?, ?);
+WITH
+	-- Boards that are allocated to the job
+	bs AS (SELECT boards.* FROM boards WHERE boards.allocated_job = ?)
+SELECT links.board_1 AS board_id, links.dir_1 AS direction
+	FROM links JOIN bs ON links.board_1 IN (SELECT board_id FROM bs)
+	WHERE links.live AND NOT links.board_2 IN (SELECT board_id FROM bs)
+UNION
+SELECT links.board_2 AS board_id, links.dir_2 AS direction
+	FROM links JOIN bs ON links.board_2 IN (SELECT board_id FROM bs)
+	WHERE links.live AND NOT links.board_1 IN (SELECT board_id FROM bs);

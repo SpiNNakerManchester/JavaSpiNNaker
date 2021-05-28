@@ -13,19 +13,23 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-WITH
+WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (VALUES (?, ?, ?, ?, ?)),
+	-- Boards on the machine in the rectangle of interest
 	bs AS (SELECT boards.* FROM boards
 		JOIN args ON boards.machine_id = args.machine_id
 		WHERE boards.x >= args.x AND boards.x < args.x + args.width
 			AND boards.y >= args.y AND boards.y < args.y + args.height
 			AND may_be_allocated > 0),
+	-- Links between boards of interest
 	ls AS (SELECT links.* FROM links
 		WHERE links.board_1 IN (SELECT board_id FROM bs)
 			AND links.board_2 IN (SELECT board_id FROM bs)
 			AND links.live),
+	-- Follow the connectivity graph; SQLite magic!
 	connected(b) AS (
-		SELECT board_id FROM bs,args WHERE bs.x=args.x AND bs.y=args.y
+		SELECT board_id FROM bs,args
+			WHERE bs.x = args.x AND bs.y = args.y AND bs.z = 0
 		UNION
 		SELECT ls.board_2 FROM connected JOIN ls ON board_1 == b
 		UNION

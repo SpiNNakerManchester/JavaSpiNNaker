@@ -51,8 +51,9 @@ CREATE TABLE IF NOT EXISTS boards (
 	bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
 	board_num INTEGER NOT NULL, -- for use with the BMP
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
-	x INTEGER NOT NULL, -- Board coordinate
-	y INTEGER NOT NULL, -- Board coordinate
+	x INTEGER NOT NULL, -- Board logical coordinate
+	y INTEGER NOT NULL, -- Board logical coordinate
+	z INTEGER NOT NULL, -- Board logical coordinate
 	root_x INTEGER NOT NULL, -- Chip coordinate
 	root_y INTEGER NOT NULL, -- Chip coordinate
 	allocated_job INTEGER REFERENCES jobs(job_id),
@@ -70,6 +71,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS boardCoordinateSanity ON boards(
 -- Every board has a unique board number within its BMP
 CREATE UNIQUE INDEX IF NOT EXISTS boardBmpSanity ON boards(
 	bmp_id ASC, board_num ASC);
+CREATE INDEX IF NOT EXISTS boardReuseTimestamps ON boards(
+	power_off_timestamp ASC);
 
 CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -98,6 +101,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS link_2 ON links(
 CREATE UNIQUE INDEX IF NOT EXISTS only_one_link_between_boards ON links(
 	board_1 ASC, board_2 ASC);
 
+CREATE TABLE IF NOT EXISTS job_states(
+	"id" INTEGER PRIMARY KEY,
+	"name" TEXT UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
@@ -106,7 +114,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 	width INTEGER, -- set after allocation
 	height INTEGER, -- set after allocation
 	root_id INTEGER REFERENCES boards(board_id) ON DELETE RESTRICT, -- set after allocation
-	job_state INTEGER DEFAULT (0),
+	job_state INTEGER NOT NULL REFERENCES job_states(id) ON DELETE RESTRICT,
 	keepalive_interval INTEGER NOT NULL,
 	keepalive_timestamp INTEGER, -- timestamp
 	keepalive_host TEXT, -- IP address
@@ -121,9 +129,9 @@ CREATE TABLE IF NOT EXISTS job_request (
 	num_boards INTEGER,
 	width INTEGER,
 	height INTEGER,
-	cabinet INTEGER,
-	frame INTEGER,
-	board INTEGER,
+	x INTEGER,
+	y INTEGER,
+	z INTEGER,
 	max_dead_boards INTEGER NOT NULL DEFAULT (0)
 );
 
@@ -179,6 +187,10 @@ INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 INSERT OR IGNORE INTO directions("id", name)
 VALUES
 	(0, 'N'), (1, 'NE'), (2, 'SE'), (3, 'S'), (4, 'SW'), (5, 'NW');
+
+INSERT OR IGNORE INTO jobStates("id", name)
+VALUES
+	(0, 'UNKNOWN'), (1, 'QUEUED'), (2, 'POWER'), (3, 'READY'), (4, 'DESTROYED');
 
 INSERT OR IGNORE INTO movement_directions(z, direction, dx, dy, dz)
 VALUES
@@ -240,6 +252,25 @@ END;
 
 CREATE TRIGGER IF NOT EXISTS directions_is_static_no_delete
 BEFORE DELETE ON directions
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+-- Lock down the job_states
+CREATE TRIGGER IF NOT EXISTS job_states_is_static_no_update
+BEFORE UPDATE ON job_states
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS job_states_is_static_no_insert
+BEFORE INSERT ON job_states
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS job_states_is_static_no_delete
+BEFORE DELETE ON job_states
 BEGIN
 	SELECT RAISE(IGNORE);
 END;

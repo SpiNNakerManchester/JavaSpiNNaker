@@ -29,11 +29,12 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -115,13 +116,12 @@ public class AllocatorTask extends SQLQueries {
 
 	@Scheduled(fixedDelay = INTER_DESTROY_DELAY)
 	public void cleanUp() throws SQLException {
-		Date now = new Date();
 		try (Connection conn = db.getConnection()) {
 			transaction(conn, () -> {
 				boolean changed = false;
 				try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 					List<Integer> toKill = new ArrayList<>();
-					for (Row rs : find.call(DESTROYED, now)) {
+					for (Row rs : find.call(DESTROYED)) {
 						toKill.add(rs.getInt("job_id"));
 					}
 					for (int id : toKill) {
@@ -148,12 +148,11 @@ public class AllocatorTask extends SQLQueries {
 	}
 
 	private boolean destroyJob(Connection conn, int id) throws SQLException {
-		Date now = new Date();
 		try (Update mark = update(conn, MARK_JOB_DESTROYED);
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 				Update killPending = update(conn, KILL_JOB_PENDING);
 				Update issueOff = update(conn, ISSUE_BOARD_OFF_FOR_JOB)) {
-			boolean success = mark.call(DESTROYED, now, id, DESTROYED) > 0;
+			boolean success = mark.call(DESTROYED, id, DESTROYED) > 0;
 			if (success) {
 				killAlloc.call(id);
 				killPending.call(id);
@@ -192,6 +191,7 @@ public class AllocatorTask extends SQLQueries {
 			 * for. With the big machine's level of resources, that's good
 			 * enough. For now.
 			 */
+			// FIXME update for triads
 			double w = ceil(sqrt(numBoards));
 			double h = ceil(numBoards / w);
 			int tolerance = ((int) w) * ((int) h) - numBoards;
@@ -209,13 +209,12 @@ public class AllocatorTask extends SQLQueries {
 					maxDeadBoards);
 		}
 
-		Integer cabinet = (Integer) task.getObject("cabinet");
-		Integer frame = (Integer) task.getObject("frame");
-		Integer board = (Integer) task.getObject("board");
-		if (cabinet != null && frame != null && board != null) {
+		Integer x = (Integer) task.getObject("x");
+		Integer y = (Integer) task.getObject("y");
+		Integer z = (Integer) task.getObject("z");
+		if (x != null && y != null && z != null) {
 			// Ignores maxDeadBoards; is a single-board allocate
-			return allocateCoords(conn, jobId, machineId, cabinet, frame,
-					board);
+			return allocateCoords(conn, jobId, machineId, x, y, z);
 		}
 
 		log.warn("job {} could not be allocated; "
@@ -225,16 +224,26 @@ public class AllocatorTask extends SQLQueries {
 
 	private boolean allocateOneBoard(Connection conn, int jobId, int machineId)
 			throws SQLException {
-		return allocateDimensions(conn, jobId, machineId, 1, 1, 0);
+		try (Query s = query(conn, FIND_FREE_BOARD)) {
+			for (Row rs : s.call(machineId)) {
+				int x = rs.getInt("x");
+				int y = rs.getInt("y");
+				int z = rs.getInt("z");
+				return setAllocation(conn, jobId, 1, 1, 1, machineId, x, y, z);
+			}
+			return false;
+		}
 	}
 
 	private boolean allocateDimensions(Connection conn, int jobId,
 			int machineId, int width, int height, int tolerance)
 			throws SQLException {
+		// FIXME for triads
 		try (Query s = query(conn, findRectangle)) {
 			for (Row rs : s.call(width, height, machineId, tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
+				int z = rs.getInt("z");
 				if (width * height > 1) {
 					/*
 					 * Check that a minimum number of boards are reachable from
@@ -242,8 +251,8 @@ public class AllocatorTask extends SQLQueries {
 					 */
 					int size = -1;
 					try (Query connected = query(conn, countConnected)) {
-						for (Row row : connected.call(machineId, x, y,
-								width, height)) {
+						for (Row row : connected.call(machineId, x, y, z, width,
+								height)) {
 							size = row.getInt("connected_size");
 						}
 					}
@@ -251,61 +260,86 @@ public class AllocatorTask extends SQLQueries {
 						continue;
 					}
 				}
-				setAllocation(conn, jobId, width, height, machineId, x, y);
-				return true;
+				return setAllocation(conn, jobId, width, height, 3, machineId,
+						x, y, z);
 			}
 			return false;
 		}
 	}
 
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
-			int cabinet, int frame, int board) throws SQLException {
+			int x, int y, int z) throws SQLException {
 		try (Query find = query(conn, findLocation)) {
-			for (Row rs : find.call(machineId, cabinet, frame, board)) {
-				int x = rs.getInt("x");
-				int y = rs.getInt("y");
-				setAllocation(conn, jobId, 1, 1, machineId, x, y);
-				return true;
+			for (Row row : find.call(machineId, x, y, z)) {
+				return setAllocation(conn, jobId, 1, 1, 1, machineId,
+						row.getInt("x"), row.getInt("y"), row.getInt("z"));
 			}
 			return false;
 		}
 	}
 
-	private void setAllocation(Connection conn, int jobId, int width,
-			int height, int machineId, int rootX, int rootY)
-			throws SQLException {
-		try (Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
+	private boolean setAllocation(Connection conn, int jobId, int width,
+			int height, int depth, int machineId, int rootX, int rootY,
+			int rootZ) throws SQLException {
+		try (Query getBoardID = query(conn, GET_BOARD_BY_COORDS);
+				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
 				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB);
 				Update issueChange = update(conn, issueChangeForJob);
-				Update setNumPending = update(conn, SET_NUM_PENDING)) {
-			boolean changed = false;
-			// TODO Mark edges of interior holes as perimeter too
-			List<LinkDirections> perimeter = new ArrayList<>();
+				Update setNumPending = update(conn, SET_NUM_PENDING);
+				Query getPerim = query(conn, getPerimeterLinks)) {
+			List<Integer> boardsToAllocate = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
-					changed |= allocBoard.call(jobId, machineId, x + rootX,
-							y + rootY) > 0;
-					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
-						perimeter.add(new LinkDirections(width, height, x, y));
+					for (int z = 0; z < depth; z++) {
+						int boardId = -1;
+						for (Row row : getBoardID.call(machineId,
+								x + rootX, y + rootY, z + rootZ)) {
+							boardId = row.getInt("board_id");
+							boardsToAllocate.add(boardId);
+						}
+						allocBoard.call(jobId, boardId);
 					}
 				}
 			}
-			allocJob.call(width, height, POWER, perimeter.size(), machineId,
-					rootX, rootY, jobId);
+			if (boardsToAllocate.isEmpty()) {
+				return false;
+			}
+
+			allocJob.call(width, height, POWER, boardsToAllocate.size(),
+					boardsToAllocate.get(0), jobId);
+
+			/*
+			 * Get the perimeter of the job, which is the set of links that lead
+			 * from a board in the allocation to a board outside.
+			 */
+			Map<Integer, EnumSet<Direction>> perimeterChanges = new HashMap<>();
+			for (Row row : getPerim.call(jobId)) {
+				perimeterChanges
+						.computeIfAbsent(row.getInt("board_id"),
+								k -> EnumSet.noneOf(Direction.class))
+						.add(row.getEnum("direction", Direction.class));
+			}
+
+			// Number of changes pending, one per board
 			int numPending = 0;
-			for (LinkDirections ld : perimeter) {
-				/*
-				 * Issues instructions to reconfigure the perimeter of the
-				 * allocated rectangle, incrementing numPending for each.
-				 */
-				numPending += issueChange.call(jobId, machineId, rootX + ld.x,
-						rootY + ld.y, true, ld.n, ld.s, ld.e, ld.w, ld.nw,
-						ld.se);
+
+			EnumSet<Direction> noPerimeter = EnumSet.noneOf(Direction.class);
+			for (int boardId : boardsToAllocate) {
+				EnumSet<Direction> toChange =
+						perimeterChanges.getOrDefault(boardId, noPerimeter);
+				numPending += issueChange.call(jobId, machineId, boardId, true,
+						toChange.contains(Direction.N),
+						toChange.contains(Direction.NE),
+						toChange.contains(Direction.SE),
+						toChange.contains(Direction.S),
+						toChange.contains(Direction.SW),
+						toChange.contains(Direction.NW));
 			}
 			setNumPending.call(numPending, jobId);
-			if (changed || numPending > 0) {
+			if (numPending > 0) {
 				epochs.nextMachineEpoch();
 			}
+			return true;
 		}
 	}
 
@@ -329,7 +363,7 @@ public class AllocatorTask extends SQLQueries {
 						new ChipLocation(row.getInt("x"), row.getInt("y"));
 				boardsInJob.put(b, loc);
 				boardsAtPlaces.put(loc, b);
-				if (row.getInt("board_power") != power.ordinal()) {
+				if (row.getEnum("board_power", PowerState.calss) != power) {
 					toSwitch.add(row.getInt("board_id"));
 				}
 			}
@@ -359,20 +393,66 @@ public class AllocatorTask extends SQLQueries {
 	 */
 	// @formatter:on
 
-	enum Direction {
-		N, NE, SE, S, SW, NW
+	// @formatter:on
+	/**
+	 * Represents link directions of a board.
+	 *
+	 * <pre>
+	 *      ___
+	 *  ___/ a \___
+	 * / f \___/ b \
+	 * \___/ x \___/
+	 * / e \___/ c \
+	 * \___/ d \___/
+	 *     \___/
+	 * </pre>
+	 *
+	 * Note that this is tilted over with respect to reality; to
+	 * <em>actually</em> go "vertically north", you have to go first {@link #N}
+	 * and then {@link #NW}, taking two boards to actually go straight north (by
+	 * an offset of 12 chips).
+	 *
+	 * @author Donal Fellows
+	 */
+	public enum Direction {
+		/** Northward, from {@code x} to {@code a}. */
+		N,
+		/** Northeast, from {@code x} to {@code b}. */
+		NE,
+		/** Southeast, from {@code x} to {@code c}. */
+		SE,
+		/** Southward, from {@code x} to {@code d}. */
+		S,
+		/** Southwest, from {@code x} to {@code e}. */
+		SW,
+		/** Northwest, from {@code x} to {@code f}. */
+		NW
 	}
 
-	final static class DirInfo {
-		final int z;
+	/**
+	 * A mapping that says how to go from one board's coordinates (only the Z
+	 * coordinate matters for this) to another when you move in a particular
+	 * direction.
+	 *
+	 * @author Donal Fellows
+	 */
+	public final static class DirInfo {
+		/**
+		 * When your Z coordinate is this.
+		 */
+		public final int z;
 
-		final Direction dir;
+		/** When you are moving in this direction. */
+		public final Direction dir;
 
-		final int dx;
+		/** Change your X coordinate by this. */
+		public final int dx;
 
-		final int dy;
+		/** Change your Y coordinate by this. */
+		public final int dy;
 
-		final int dz;
+		/** Change your Z coordinate by this. */
+		public final int dz;
 
 		private static final Map<Integer, Map<Direction, DirInfo>> map =
 				new HashMap<>();
@@ -387,8 +467,33 @@ public class AllocatorTask extends SQLQueries {
 			map.computeIfAbsent(z, key -> new HashMap<>()).put(d, this);
 		}
 
-		static DirInfo get(int z, Direction d) {
-			return map.get(z).get(d);
+		/**
+		 * Obtain the correct motion information given a starting point and a
+		 * direction.
+		 *
+		 * @param z
+		 *            The starting Z coordinate. (Motions are independent of X
+		 *            and Y.) Must be in range {@code 0..2}.
+		 * @param direction
+		 *            The direction to move in.
+		 * @return How to move.
+		 */
+		public static DirInfo get(int z, Direction direction) {
+			return map.get(z).get(direction);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof DirInfo)) {
+				return false;
+			}
+			DirInfo di = (DirInfo) o;
+			return z == di.z && dir == di.dir;
+		}
+
+		@Override
+		public int hashCode() {
+			return z ^ dir.hashCode();
 		}
 
 		private static void load(Connection conn) throws SQLException {

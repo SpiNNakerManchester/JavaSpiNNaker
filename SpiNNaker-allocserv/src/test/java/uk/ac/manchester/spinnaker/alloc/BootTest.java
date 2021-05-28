@@ -106,9 +106,9 @@ class BootTest {
 			try (Connection c = db.getConnection()) {
 				exec(c, "CREATE TEMPORARY TABLE foo(x)");
 				try (Update u = update(c, "INSERT INTO foo(x) VALUES(?)");
-						Query q = query(c, "SELECT x FROM foo")) {
+						Query q = query(c, "SELECT x FROM foo WHERE ? = ?")) {
 					rows = 0;
-					for (Row row : q.call()) {
+					for (Row row : q.call(1, 1)) {
 						assertNotNull(row.getObject("x"));
 						rows++;
 					}
@@ -123,7 +123,7 @@ class BootTest {
 					assertEquals(1, keyCount);
 
 					rows = 0;
-					for (Row row : q.call()) {
+					for (Row row : q.call(1, 1)) {
 						assertEquals(123, row.getInt("x"));
 						rows++;
 					}

@@ -51,8 +51,7 @@ public class WhereIsResponse {
 
 	public BoardPhysicalCoordinates physicalBoardCoordinates;
 
-	public WhereIsResponse(BoardLocation location, UriInfo ui)
-			throws SQLException {
+	WhereIsResponse(BoardLocation location, UriInfo ui) throws SQLException {
 		machine = location.getMachine();
 		chip = location.getChip();
 		boardChip = location.getBoardChip();

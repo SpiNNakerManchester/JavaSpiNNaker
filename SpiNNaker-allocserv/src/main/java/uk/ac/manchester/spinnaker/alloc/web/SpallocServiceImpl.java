@@ -425,13 +425,19 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 					"must not specify machine name and tags together",
 					BAD_REQUEST);
 		}
-		Integer maxDeadBoards = 0; // FIXME fill out
-		Integer maxDeadLinks = null; // FIXME fill out and pass on
+		if (req.maxDeadBoards == null) {
+			req.maxDeadBoards = 0;
+		}
+		if (req.maxDeadBoards < 0) {
+			throw new WebApplicationException(
+					"the maximum number of dead boards must not be negative",
+					BAD_REQUEST);
+		}
 		bgAction(response, () -> {
 			try {
 				Job j = core.createJob(req.owner.trim(), req.dimensions,
 						req.machineName, req.tags, req.keepaliveInterval,
-						maxDeadBoards);
+						req.maxDeadBoards);
 				URI where =
 						ui.getRequestUriBuilder().path("{id}").build(j.getId());
 				return created(where).entity(new CreateJobResponse(j, ui))

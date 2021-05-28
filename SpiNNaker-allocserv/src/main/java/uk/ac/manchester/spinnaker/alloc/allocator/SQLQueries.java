@@ -107,13 +107,12 @@ public abstract class SQLQueries {
 	@Parameter("machine_id")
 	@Parameter("owner")
 	@Parameter("keepalive_interval")
-	@Parameter("keepalive_timestamp")
-	@Parameter("create_timestamp")
+	@Parameter("job_state")
 	@GeneratesID
 	protected static final String INSERT_JOB = "INSERT INTO jobs("
 			+ "machine_id, owner, keepalive_interval, keepalive_timestamp, "
-			+ "create_timestamp) " //
-			+ "VALUES (?, ?, ?, ?, ?)";
+			+ "create_timestamp, job_state) VALUES "
+			+ "(?, ?, ?, strftime('%s','now'), strftime('%s','now'), ?)";
 
 	@Parameter("job_id")
 	@Parameter("num_boards")
@@ -133,13 +132,12 @@ public abstract class SQLQueries {
 					+ "VALUES (?, ?, ?, ?)";
 
 	@Parameter("job_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
 	@GeneratesID
 	protected static final String INSERT_REQ_LOCATION =
-			"INSERT INTO job_request(job_id, cabinet, frame, board) "
-					+ "VALUES (?, ?, ?, ?)";
+			"INSERT INTO job_request(job_id, x, y, z) VALUES (?, ?, ?, ?)";
 
 	@Parameter("machine_id")
 	@Parameter("chip_x")
@@ -150,6 +148,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_nnum")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("job_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("cabinet")
@@ -159,7 +158,7 @@ public abstract class SQLQueries {
 	@ResultColumn("chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_CHIP =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
+			"SELECT boards.board_id, address, bmp_id, board_num, x, y, z, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
 					+ "boards.board_num, root_x + bmc.chip_x AS chip_x,"
 					+ "root_y + bmc.chip_y AS chip_y FROM boards "
@@ -180,6 +179,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_nnum")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("job_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("cabinet")
@@ -189,7 +189,7 @@ public abstract class SQLQueries {
 	@ResultColumn("chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_CFB =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
+			"SELECT boards.board_id, address, bmp_id, board_num, x, y, z, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
 					+ "boards.board_num, root_x AS chip_x, root_y AS chip_y "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
@@ -207,6 +207,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_nnum")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("job_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("cabinet")
@@ -216,13 +217,13 @@ public abstract class SQLQueries {
 	@ResultColumn("chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_XYZ =
-			"SELECT boards.board_id, address, bmp_id, board_num, x, y, "
+			"SELECT boards.board_id, address, bmp_id, board_num, x, y, z, "
 					+ "job_id, m.machine_name, bmp.cabinet, bmp.frame, "
 					+ "boards.board_num, root_x AS chip_x, root_y AS chip_y "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "WHERE boards.machine_id = ? AND boards.x = ? "
-					+ "AND boards.y = ? AND 0 = ? LIMIT 1";
+					+ "AND boards.y = ? AND boards.z = ? LIMIT 1";
 
 	@Parameter("machine_id")
 	@ResultColumn("address")
@@ -244,22 +245,21 @@ public abstract class SQLQueries {
 	protected static final String GET_TAGS =
 			"SELECT tag FROM tags WHERE machine_id = ?";
 
-	@Parameter("keepalive_timestamp")
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	@Parameter("job_state:DESTROYED")
 	protected static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = ?, keepalive_host = ? "
-					+ "WHERE job_id = ? AND job_state != ?";
+			"UPDATE jobs SET keepalive_timestamp = strftime('%s','now'), "
+					+ "keepalive_host = ? WHERE job_id = ? AND job_state != ?";
 
 	@Parameter("job_state:DESTROYED")
 	@Parameter("death_reason")
-	@Parameter("death_timestamp")
 	@Parameter("job_id")
 	@Parameter("job_state:DESTROYED")
-	protected static final String DESTROY_JOB = "UPDATE jobs SET "
-			+ "job_state = ?, death_reason = ?, death_timestamp = ? "
-			+ "WHERE job_id = ? AND job_state != ?";
+	protected static final String DESTROY_JOB =
+			"UPDATE jobs SET " + "job_state = ?, death_reason = ?, "
+					+ "death_timestamp = strftime('%s','now') "
+					+ "WHERE job_id = ? AND job_state != ?";
 
 	@Parameter("job_id")
 	@ResultColumn("total_on")
@@ -273,21 +273,23 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("root_x")
 	@ResultColumn("root_y")
 	protected static final String GET_BOARD_CONNECT_INFO =
-			"SELECT board_id, address, x, y, root_x, root_y "
+			"SELECT board_id, address, x, y, z, root_x, root_y "
 					+ "FROM boards WHERE allocated_job = ? "
 					+ "ORDER BY x ASC, y ASC";
 
 	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("root_x")
 	@ResultColumn("root_y")
 	@SingleRowResult
 	protected static final String GET_ROOT_COORDS =
-			"SELECT x, y, root_x, root_y FROM boards "
+			"SELECT x, y, z, root_x, root_y FROM boards "
 					+ "WHERE board_id = ? LIMIT 1";
 
 	/** How we get the list of allocation tasks. */
@@ -296,17 +298,17 @@ public abstract class SQLQueries {
 	@ResultColumn("num_boards")
 	@ResultColumn("width")
 	@ResultColumn("height")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("machine_id")
 	@ResultColumn("max_dead_boards")
 	protected static final String GET_TASKS =
 			"SELECT job_request.req_id, job_request.job_id,"
 					+ "  job_request.num_boards,"
 					+ "	 job_request.width, job_request.height,"
-					+ "  job_request.cabinet, job_request.frame,"
-					+ "	 job_request.board, jobs.machine_id AS machine_id,"
+					+ "  job_request.x, job_request.y, job_request.z,"
+					+ "  jobs.machine_id AS machine_id,"
 					+ "  job_request.max_dead_boards "
 					+ "FROM job_request JOIN jobs"
 					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
@@ -316,38 +318,53 @@ public abstract class SQLQueries {
 	protected static final String DELETE_TASK =
 			"DELETE FROM job_request WHERE req_id = ?";
 
+	/** How do we find a single free board. */
+	@Parameter("machine_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String FIND_FREE_BOARD =
+			"SELECT x, y, z FROM boards "
+					+ "WHERE machine_id = ? AND may_be_allocated > 0 "
+					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
+
 	/** How we tell a job that it is allocated. */
 	@Parameter("width")
 	@Parameter("height")
 	@Parameter("job_state")
 	@Parameter("num_pending")
-	@Parameter("machine_id")
-	@Parameter("root_x")
-	@Parameter("root_y")
+	@Parameter("board_id")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = ?, height = ?, job_state = ?, num_pending = ?,"
-			+ "root_id = (SELECT board_id FROM boards WHERE "
-			+ "machine_id = ? AND root_x = ? AND root_y = ?) "
-			+ "WHERE job_id = ?";
+			+ "root_id = ? WHERE job_id = ?";
+
+	/** Get a board's ID by its coordinates. */
+	@Parameter("machine_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@ResultColumn("board_id")
+	@SingleRowResult
+	protected static final String GET_BOARD_BY_COORDS =
+			"SELECT board_id FROM boards "
+					+ "WHERE machine_id = ? AND x = ? AND y = ? AND z = ? "
+					+ "AND may_be_allocated > 0 LIMIT 1";
 
 	/** How we tell a board that it is allocated. */
 	@Parameter("job_id")
-	@Parameter("machine_id")
-	@Parameter("root_x")
-	@Parameter("root_y")
+	@Parameter("board_id")
 	protected static final String ALLOCATE_BOARDS_BOARD =
-			"UPDATE boards SET allocated_job = ? "
-					+ "WHERE machine_id = ? AND root_x = ? AND root_y = ? "
-					+ "AND may_be_allocated > 0";
+			"UPDATE boards SET allocated_job = ? WHERE board_id = ?";
 
 	@Parameter("job_state:DESTROYED")
-	@Parameter("now")
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
 			"SELECT job_id FROM jobs " //
 					+ "WHERE job_state != ? "
-					+ "AND keepalive_timestamp + keepalive_interval < ?";
+					+ "AND keepalive_timestamp + keepalive_interval < "
+					+ "strftime('%s','now')";
 
 	/** How we set the number of pending changes for a job. */
 	@Parameter("num_pending")
@@ -356,11 +373,11 @@ public abstract class SQLQueries {
 			"UPDATE jobs SET num_pending = ? WHERE job_id = ?";
 
 	@Parameter("job_state:DESTROYED")
-	@Parameter("timestamp:NOW")
 	@Parameter("job_id")
 	@Parameter("job_state:DESTROYED")
 	protected static final String MARK_JOB_DESTROYED =
-			"UPDATE jobs SET job_state = ?, death_timestamp = ? "
+			"UPDATE jobs SET job_state = ?, "
+					+ "death_timestamp = strftime('%s','now') "
 					+ "WHERE job_id = ? AND job_state != ?";
 
 	@Parameter("job_id")
@@ -400,6 +417,7 @@ public abstract class SQLQueries {
 	@ResultColumn("id")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@ResultColumn("available")
 	@Value("classpath:find_rectangle.sql")
 	protected Resource findRectangle;
@@ -410,6 +428,7 @@ public abstract class SQLQueries {
 	@Parameter("board")
 	@ResultColumn("x")
 	@ResultColumn("y")
+	@ResultColumn("z")
 	@SingleRowResult
 	@Value("classpath:find_location.sql")
 	protected Resource findLocation;
@@ -418,6 +437,7 @@ public abstract class SQLQueries {
 	@Parameter("machine_id")
 	@Parameter("x")
 	@Parameter("y")
+	@Parameter("z")
 	@Parameter("power")
 	@Parameter("fpga_n")
 	@Parameter("fpga_s")
@@ -438,4 +458,10 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	@Value("classpath:allocation_connected.sql")
 	protected Resource countConnected;
+
+	@Parameter("job_id")
+	@ResultColumn("board_id")
+	@ResultColumn("direction")
+	@Value("classpath:perimeter.sql")
+	protected Resource getPerimeterLinks;
 }

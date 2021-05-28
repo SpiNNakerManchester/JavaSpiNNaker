@@ -23,7 +23,7 @@ WITH
 		JOIN args ON boards.machine_id = args.machine_id)
 SELECT
 	root.board_id AS id,
-	root.x AS x, root.y AS y,
+	root.x AS x, root.y AS y, root.z AS z,
 	root.available AS available
 FROM args, bs, (
 	WITH RECURSIVE
@@ -32,16 +32,17 @@ FROM args, bs, (
 			WHERE x < args.width - 1),
 		cy(y) AS (SELECT 0 UNION SELECT y+1 FROM cy, args
 			WHERE y < args.height - 1),
+		triad(z) AS (VALUES (0), (1), (2)),
 		gx(x) AS (SELECT 0 UNION SELECT x+1 FROM gx, m WHERE x < m.width - 1),
 		gy(y) AS (SELECT 0 UNION SELECT y+1 FROM gy, m WHERE y < m.height - 1),
 		-- Form the sequences into grids of points
-		c(x,y) AS (SELECT x, y FROM cx, cy),
-		g(x,y) AS (SELECT x, y FROM gx, gy)
+		c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad),
+		g(x,y) AS (SELECT x, y, z FROM gx, gy)
 	SELECT board_id, bs.x AS x, bs.y AS y,
 		SUM(bs.may_be_allocated) AS available
 	FROM bs, c, g, args
-	WHERE bs.x = c.x + g.x AND bs.y = c.y + g.y
+	WHERE bs.x = c.x + g.x AND bs.y = c.y + g.y AND bs.z = c.z
 	GROUP BY g.x, g.y) AS root
 WHERE available >= args.width * args.height - args.max_dead_boards
 	AND bs.board_id = id AND bs.may_be_allocated > 0
-ORDER BY y ASC, x ASC;
+ORDER BY z ASC, y ASC, x ASC;
