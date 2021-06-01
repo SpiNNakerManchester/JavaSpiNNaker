@@ -21,8 +21,7 @@ import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.QUEUED;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.READY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,6 +57,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Autowired
 	private DatabaseEngine db;
+
+	@Autowired
+	private PowerController powerController;
 
 	@Autowired
 	private Epochs epochs;
@@ -129,7 +131,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 			} else {
 				try (Query jobs = query(conn, GET_LIVE_JOB_IDS)) {
-					for (Row row : jobs.call(DESTROYED, limit, start)) {
+					for (Row row : jobs.call(limit, start)) {
 						jc.addJob(row);
 					}
 				}
@@ -212,8 +214,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		// TODO add in additional info
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, keepaliveInterval,
-					QUEUED)) {
+			for (int key : makeJob.keys(m.id, owner, keepaliveInterval)) {
 				pk = key;
 			}
 		}
@@ -475,7 +476,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public void access(String keepaliveAddress) throws SQLException {
 			try (Connection conn = db.getConnection();
 					Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
-				keepAlive.call(keepaliveAddress, id, DESTROYED);
+				keepAlive.call(keepaliveAddress, id);
 			}
 		}
 
@@ -483,7 +484,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public void destroy(String reason) throws SQLException {
 			try (Connection conn = db.getConnection();
 					Update destroyJob = update(conn, DESTROY_JOB)) {
-				destroyJob.call(DESTROYED, reason, id, DESTROYED);
+				destroyJob.call(reason, id);
 			}
 		}
 
@@ -542,12 +543,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public BoardLocation whereIs(int x, int y) {
-			if (root == null) {
-				return null;
+		public BoardLocation whereIs(int x, int y) throws SQLException {
+			BoardLocation loc = null; // Default to null for query failed
+			if (root != null) {
+				try (Connection conn = db.getConnection();
+						Query findBoard = query(conn, findBoardByJobChip)) {
+					for (Row row : findBoard.call(id, root, x, y)) {
+						loc = new BoardLocationImpl(row, epoch,
+								machineId);
+					}
+				}
 			}
-			// TODO Auto-generated method stub
-			return null;
+			return loc;
 		}
 
 		@Override
@@ -675,8 +682,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 
 			@Override
-			public void setPower(PowerState ps) {
-				// FIXME Auto-generated method stub
+			public void setPower(PowerState ps) throws SQLException {
+				powerController.setPower(id, ps, READY);
 			}
 		}
 	}

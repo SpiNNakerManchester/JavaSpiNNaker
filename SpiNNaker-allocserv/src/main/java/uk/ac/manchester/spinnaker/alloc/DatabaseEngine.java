@@ -392,6 +392,7 @@ public class DatabaseEngine {
 			if (!done) {
 				conn.rollback();
 			}
+			conn.setAutoCommit(true);
 		}
 	}
 

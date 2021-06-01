@@ -25,18 +25,15 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
+import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.READY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -49,10 +46,9 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 @Component
-public class AllocatorTask extends SQLQueries {
+public class AllocatorTask extends SQLQueries implements PowerController {
 	/**
 	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
 	 */
@@ -62,6 +58,12 @@ public class AllocatorTask extends SQLQueries {
 	 * Time, in milliseconds, between runs of {@link #cleanUp()}. (30s)
 	 */
 	private static final long INTER_DESTROY_DELAY = 30000;
+
+	/**
+	 * @see #setPower(Connection,int,PowerState)
+	 */
+	private static final EnumSet<Direction> NO_PERIMETER =
+			EnumSet.noneOf(Direction.class);
 
 	private static final Logger log = getLogger(AllocatorTask.class);
 
@@ -121,7 +123,7 @@ public class AllocatorTask extends SQLQueries {
 				boolean changed = false;
 				try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 					List<Integer> toKill = new ArrayList<>();
-					for (Row rs : find.call(DESTROYED)) {
+					for (Row rs : find.call()) {
 						toKill.add(rs.getInt("job_id"));
 					}
 					for (int id : toKill) {
@@ -150,13 +152,12 @@ public class AllocatorTask extends SQLQueries {
 	private boolean destroyJob(Connection conn, int id) throws SQLException {
 		try (Update mark = update(conn, MARK_JOB_DESTROYED);
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
-				Update killPending = update(conn, KILL_JOB_PENDING);
-				Update issueOff = update(conn, ISSUE_BOARD_OFF_FOR_JOB)) {
-			boolean success = mark.call(DESTROYED, id, DESTROYED) > 0;
+				Update killPending = update(conn, KILL_JOB_PENDING)) {
+			setPower(conn, id, PowerState.OFF, DESTROYED);
+			boolean success = mark.call(id) > 0;
 			if (success) {
 				killAlloc.call(id);
 				killPending.call(id);
-				issueOff.call(id, PowerState.OFF, id, PowerState.OFF);
 			}
 			return success;
 		}
@@ -283,10 +284,8 @@ public class AllocatorTask extends SQLQueries {
 			int rootZ) throws SQLException {
 		try (Query getBoardID = query(conn, GET_BOARD_BY_COORDS);
 				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
-				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB);
-				Update issueChange = update(conn, issueChangeForJob);
-				Update setNumPending = update(conn, SET_NUM_PENDING);
-				Query getPerim = query(conn, getPerimeterLinks)) {
+				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
+			// Messy without RETURNING, but SQLite 3.35 not yet supported
 			List<Integer> boardsToAllocate = new ArrayList<>();
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
@@ -305,95 +304,86 @@ public class AllocatorTask extends SQLQueries {
 				return false;
 			}
 
-			allocJob.call(width, height, POWER, boardsToAllocate.size(),
-					boardsToAllocate.get(0), jobId);
+			allocJob.call(width, height, boardsToAllocate.get(0), jobId);
+			return setPower(conn, jobId, PowerState.ON, READY);
+		}
+	}
 
-			/*
-			 * Get the perimeter of the job, which is the set of links that lead
-			 * from a board in the allocation to a board outside.
-			 */
-			Map<Integer, EnumSet<Direction>> perimeterChanges = new HashMap<>();
-			for (Row row : getPerim.call(jobId)) {
-				perimeterChanges
-						.computeIfAbsent(row.getInt("board_id"),
-								k -> EnumSet.noneOf(Direction.class))
-						.add(row.getEnum("direction", Direction.class));
+	@Override
+	public boolean setPower(int jobId, PowerState power, JobState targetState)
+			throws SQLException {
+		try (Connection conn = db.getConnection()) {
+			return transaction(conn,
+					() -> setPower(conn, jobId, power, targetState));
+		}
+	}
+
+	private boolean setPower(Connection conn, int jobId, PowerState power,
+			JobState targetState) throws SQLException {
+		try (Query getJobBoards = query(conn, GET_JOB_BOARDS);
+				Query getPerim = query(conn, getPerimeterLinks);
+				Update issueChange = update(conn, issueChangeForJob);
+				Update setStatePending = update(conn, SET_STATE_PENDING)) {
+			List<Integer> boards = new ArrayList<>();
+			for (Row row : getJobBoards.call(jobId)) {
+				boards.add(row.getInt("board_id"));
+			}
+			if (boards.isEmpty()) {
+				return false;
 			}
 
 			// Number of changes pending, one per board
 			int numPending = 0;
 
-			EnumSet<Direction> noPerimeter = EnumSet.noneOf(Direction.class);
-			for (int boardId : boardsToAllocate) {
-				EnumSet<Direction> toChange =
-						perimeterChanges.getOrDefault(boardId, noPerimeter);
-				numPending += issueChange.call(jobId, machineId, boardId, true,
-						toChange.contains(Direction.N),
-						toChange.contains(Direction.NE),
-						toChange.contains(Direction.SE),
-						toChange.contains(Direction.S),
-						toChange.contains(Direction.SW),
-						toChange.contains(Direction.NW));
+			if (power == PowerState.ON) {
+				/*
+				 * This is a bit of a trickier case, as we need to say which
+				 * links are to be switched on or, more particularly, which are
+				 * to be switched off because they are links to boards that are
+				 * not allocated to the job. Off-board links are shut off by
+				 * default.
+				 */
+				Map<Integer, EnumSet<Direction>> perimeterLinks =
+						new HashMap<>();
+				for (Row row : getPerim.call(jobId)) {
+					perimeterLinks
+							.computeIfAbsent(row.getInt("board_id"),
+									k -> EnumSet.noneOf(Direction.class))
+							.add(row.getEnum("direction", Direction.class));
+				}
+
+				for (int boardId : boards) {
+					EnumSet<Direction> toChange =
+							perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
+					numPending += issueChange.call(jobId, boardId, true,
+							!toChange.contains(Direction.N),
+							!toChange.contains(Direction.NE),
+							!toChange.contains(Direction.SE),
+							!toChange.contains(Direction.S),
+							!toChange.contains(Direction.SW),
+							!toChange.contains(Direction.NW));
+				}
+			} else {
+				// Powering off; all links switch to off so no perimeter check
+				for (int boardId : boards) {
+					numPending += issueChange.call(jobId, boardId, false, false,
+							false, false, false, false, false);
+				}
 			}
-			setNumPending.call(numPending, jobId);
+
+			setStatePending.call(
+					targetState == DESTROYED ? DESTROYED
+							: numPending > 0 ? POWER : targetState,
+					numPending, jobId);
+
 			if (numPending > 0) {
 				epochs.nextMachineEpoch();
+				epochs.nextJobsEpoch();
 			}
-			return true;
+			return numPending > 0;
 		}
 	}
 
-	// @formatter:off
-	/*
-	void issuePowerRequest(Connection conn, int jobId, PowerState power)
-			throws SQLException {
-		try (Query jobBoards = query(conn,
-				"SELECT board_id, x, y, board_power FROM boards "
-						+ "WHERE allocated_job = ?");
-				Update issueChange = update(conn, issueChangeForJob);
-				Update setNumPending = update(conn, SET_NUM_PENDING)) {
-			// TODO Cancel queued changes
-			Map<Integer, ChipLocation> boardsInJob = new HashMap<>();
-			Map<ChipLocation, Integer> boardsAtPlaces = new HashMap<>();
-			List<Integer> toSwitch = new ArrayList<>();
-			List<LinkDirections> perimeter = new ArrayList<>();
-			for (Row row : jobBoards.call(jobId)) {
-				int b = row.getInt("board_id");
-				ChipLocation loc =
-						new ChipLocation(row.getInt("x"), row.getInt("y"));
-				boardsInJob.put(b, loc);
-				boardsAtPlaces.put(loc, b);
-				if (row.getEnum("board_power", PowerState.calss) != power) {
-					toSwitch.add(row.getInt("board_id"));
-				}
-			}
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					changed |= allocBoard.call(jobId, machineId, x + rootX,
-							y + rootY) > 0;
-					if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
-						perimeter.add(new LinkDirections(width, height, x, y));
-					}
-				}
-			}
-			int numPending = 0;
-			for (LinkDirections ld : perimeter) {
-				 // Issues instructions to reconfigure the perimeter of the
-				 // allocated rectangle, incrementing numPending for each.
-				numPending += issueChange.call(jobId, machineId, rootX + ld.x,
-						rootY + ld.y, true, ld.n, ld.s, ld.e, ld.w, ld.nw,
-						ld.se);
-			}
-			setNumPending.call(numPending, jobId);
-			if (numPending > 0) {
-				epochs.nextMachineEpoch();
-			}
-		}
-	}
-	 */
-	// @formatter:on
-
-	// @formatter:on
 	/**
 	 * Represents link directions of a board.
 	 *
@@ -433,6 +423,21 @@ public class AllocatorTask extends SQLQueries {
 	 * A mapping that says how to go from one board's coordinates (only the Z
 	 * coordinate matters for this) to another when you move in a particular
 	 * direction.
+	 *
+	 * <pre>
+	 *  ___     ___     ___     ___
+	 * / . \___/ . \___/ . \___/ . \___
+	 * \___/ . \___/ . \___/ . \___/ . \
+	 * /0,1\___/1,1\___/2,1\___/3,1\___/
+	 * \___/ . \___/ . \___/ . \___/ . \___
+	 *     \_2_/ . \___/ . \___/ . \___/ . \
+	 *     /0,0\_1_/1,0\___/2,0\___/3,0\___/
+	 *     \_0_/   \___/   \___/   \___/
+	 * </pre>
+	 *
+	 * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0
+	 * chips horizontally offset from 0,0,0; the hexagons are actually a
+	 * distorted shape.
 	 *
 	 * @author Donal Fellows
 	 */
@@ -509,83 +514,6 @@ public class AllocatorTask extends SQLQueries {
 				log.info("created {} DirInfo instances",
 						map.values().stream().mapToInt(Map::size).sum());
 			}
-		}
-	}
-
-	// @formatter:off
-	/**
-	 * Represents link directions of a board.
-	 * <pre>
-	 *  ___     ___     ___     ___
-	 * / . \___/ . \___/ . \___/ . \___
-	 * \___/ . \___/ . \___/ . \___/ . \
-	 * /0,1\___/1,1\___/2,1\___/3,1\___/
-	 * \___/ . \___/ . \___/ . \___/ . \___
-	 *     \_2_/ . \___/ . \___/ . \___/ . \
-	 *     /0,0\_1_/1,0\___/2,0\___/3,0\___/
-	 *     \_0_/   \___/   \___/   \___/
-
-	 *
-	 *          ___
-	 *      ___/ b \___
-	 *     / a \___/ c \
-	 *     \___/ x \___/
-	 *     / f \___/ d \
-	 *     \___/ e \___/
-	 *         \___/
-	 *
-	 *      _____
-	 *     /x,y,2\_____
-	 *     \_____/x,y,1\
-	 *     /x,y,0\_____/
-	 *     \_____/
-	 *
-	 *  /^\ /^\ /^\
-	 * | a | b | c |
-	 *  \ / \ / \ / \            n/^\e
-	 *   | d | e | f |         nw|   |se
-	 *    \ / \ / \ / \          w\./s
-	 *     | g | h | i |
-	 *      \./ \./ \./
-	 * </pre>
-	 *
-	 * @author Donal Fellows
-	 */
-	// @formatter:on
-	private static final class LinkDirections {
-		/** Coordinates of the board; X direction. */
-		final int x;
-
-		/** Coordinates of the board; Y direction. */
-		final int y;
-
-		/** Whether to switch on the link in the N direction. */
-		final boolean n;
-
-		/** Whether to switch on the link in the S direction. */
-		final boolean s;
-
-		/** Whether to switch on the link in the E direction. */
-		final boolean e;
-
-		/** Whether to switch on the link in the W direction. */
-		final boolean w;
-
-		/** Whether to switch on the link in the NW direction. */
-		final boolean nw;
-
-		/** Whether to switch on the link in the SE direction. */
-		final boolean se;
-
-		LinkDirections(int width, int height, int x, int y) {
-			this.x = x;
-			this.y = y;
-			nw = x > 0;
-			s = y > 0;
-			w = nw && s;
-			se = x < width - 1;
-			n = y < height - 1;
-			e = se && n;
 		}
 	}
 }
