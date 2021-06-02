@@ -189,7 +189,7 @@ INSERT OR IGNORE INTO directions("id", name)
 VALUES
 	(0, 'N'), (1, 'NE'), (2, 'SE'), (3, 'S'), (4, 'SW'), (5, 'NW');
 
-INSERT OR IGNORE INTO jobStates("id", name)
+INSERT OR IGNORE INTO job_states("id", name)
 VALUES
 	(0, 'UNKNOWN'), (1, 'QUEUED'), (2, 'POWER'), (3, 'READY'), (4, 'DESTROYED');
 
