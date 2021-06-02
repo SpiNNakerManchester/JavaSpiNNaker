@@ -21,13 +21,20 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.allocator.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.BANK_OFFSET_MULTIPLIER;
+import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,13 +43,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -53,7 +70,7 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 @Component
-public class BMPController {
+public class BMPController extends SQLQueries {
 	private static final Logger log = getLogger(BMPController.class);
 
 	private static final int FPGA_FLAG_REGISTER_ADDRESS = 0x40004;
@@ -73,6 +90,8 @@ public class BMPController {
 	private static final Collection<Integer> FPGA_IDS =
 			unmodifiableCollection(asList(0, 1, 2));
 
+	private static final long INTER_TAKE_DELAY = 10000;
+
 	private Map<Machine, Transceiver> txrxMap = new HashMap<>();
 
 	private boolean requestsPending;
@@ -85,6 +104,19 @@ public class BMPController {
 
 	private Map<Machine, Thread> workers = new HashMap<>();
 
+	@Autowired
+	private DatabaseEngine db;
+
+	@Autowired
+	private SpallocAPI spallocCore;
+
+	private Collection<Machine> machines;
+
+	@PostConstruct
+	private void discoverMachines() throws SQLException {
+		machines = spallocCore.getMachines().values();
+	}
+
 	@PreDestroy
 	private void shutDownWorkers() {
 		stop = true;
@@ -93,6 +125,13 @@ public class BMPController {
 		}
 		for (Thread worker : workers.values()) {
 			worker.interrupt();
+		}
+	}
+
+	@Scheduled(fixedDelay = INTER_TAKE_DELAY, initialDelay = INTER_TAKE_DELAY)
+	void mainSchedule() throws SQLException, IOException, SpinnmanException {
+		for (Request req : takeRequests()) {
+			addRequest(req);
 		}
 	}
 
@@ -315,6 +354,20 @@ public class BMPController {
 			this.link = link;
 			this.power = power;
 		}
+
+		@Override
+		public int hashCode() {
+			return board ^ link.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof LinkRequest) {
+				LinkRequest lr = (LinkRequest) other;
+				return board == lr.board && link == lr.link;
+			}
+			return false;
+		}
 	}
 
 	/**
@@ -407,6 +460,96 @@ public class BMPController {
 		}
 	}
 
+	List<Request> takeRequests() throws SQLException {
+		List<Request> requests = new ArrayList<>();
+		try (Connection conn = db.getConnection();
+				Query getJobIds = query(conn, GET_JOBS_WITH_CHANGES);
+				Query getChanges = query(conn, GET_CHANGES);
+				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
+			// TODO postpone changes if too close to board switch for any job
+			transaction(conn, () -> {
+				for (Machine machine : machines) {
+					for (Row jobIds : getJobIds.call(machine.getId())) {
+						int jobId = jobIds.getInt("job_id");
+						List<Integer> changeIds = new ArrayList<>();
+						List<Integer> boardsOn = new ArrayList<>();
+						List<Integer> boardsOff = new ArrayList<>();
+						List<LinkRequest> linksOff = new ArrayList<>();
+						for (Row row : getChanges.call(jobId)) {
+							changeIds.add(row.getInt("change_id"));
+							int board = row.getInt("board_id");
+							boolean switchOn = row.getBoolean("power");
+							if (switchOn) {
+								boardsOn.add(board);
+							} else {
+								boardsOff.add(board);
+							}
+							for (LinkInfo link : LinkInfo.values()) {
+								if (switchOn
+										&& !row.getBoolean(link.columnName)) {
+									linksOff.add(
+											new LinkRequest(board, link, OFF));
+								}
+							}
+						}
+						requests.add(new Request(machine, boardsOn, boardsOff,
+								linksOff, (fail, exn) -> {
+									doneRequest(jobId, boardsOn, boardsOff,
+											changeIds, fail, exn);
+								}));
+						for (int change : changeIds) {
+							setInProgress.call(true, change);
+						}
+					}
+				}
+			});
+		}
+		return requests;
+	}
+
+	void doneRequest(int jobId, List<Integer> boardsOn, List<Integer> boardsOff,
+			List<Integer> changeIds,
+			String fail, Exception exn) {
+		if (fail != null) {
+			log.error("failed to set power on BMPs: {}", fail, exn);
+		}
+		try (Connection conn = db.getConnection();
+				Update setBoardStateToOn = update(conn,
+						"UPDATE boards SET board_power = 1, "
+								+ "power_on_timestamp = strftime('%s','now') "
+								+ "WHERE board_id = ?");
+				Update setBoardStateToOff = update(conn,
+						"UPDATE boards SET board_power = 0, "
+								+ "power_off_timestamp = strftime('%s','now') "
+								+ "WHERE board_id = ?");
+				Update deleteChange = update(conn,
+						"DELETE FROM pending_changes WHERE change_id = ?");
+				Update setJobState = update(conn, SET_STATE_PENDING);
+				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
+			transaction(conn, () -> {
+				if (fail != null) {
+					for (int change : changeIds) {
+						setInProgress.call(false, change);
+					}
+					// TODO How should we change the job state?
+				} else {
+					for (int board : boardsOn) {
+						setBoardStateToOn.call(board);
+					}
+					for (int board : boardsOff) {
+						setBoardStateToOff.call(board);
+					}
+					for (int change : changeIds) {
+						deleteChange.call(change);
+					}
+					setJobState.call(JobState.READY, 0, jobId);
+				}
+			});
+		} catch (SQLException e) {
+			log.error("problem with database", e);
+		}
+	}
+
 	public void addRequest(Request request)
 			throws IOException, SpinnmanException, SQLException {
 		/*
@@ -496,31 +639,47 @@ public class BMPController {
 		}
 	}
 
+	/**
+	 * Boards are actually (logically) distorted hexagons like this:
+	 * <pre>
+	 * <small>               {@link #NORTH}
+	 *               +----+
+	 *         {@link #WEST} /     | {@link #NORTH_EAST}
+	 *             /      |
+	 *            +       +
+	 * {@link #SOUTH_WEST} |      / {@link #EAST}
+	 *            |     /
+	 *            +----+
+	 *             {@link #SOUTH}
+	 * </small>
+	 * </pre>
+	 *
+	 * @author Donal Fellows
+	 */
 	public enum LinkInfo {
-		/** Link to board to East. (x+1,y) */
-		EAST(0, 0),
-		/** Link to board to South. (x,y-1) */
-		SOUTH(0, 1),
-		/** Link to board to South West. (x-1,y-1) */
-		SOUTH_WEST(1, 0),
-		/** Link to board to West. (x-1,y) */
-		WEST(1, 1),
-		/** Link to board to North. (x,y+1) */
-		NORTH(2, 0),
-		/** Link to board to North East. (x+1,y-1) */
-		NORTH_EAST(2, 1);
-
-		private static final int REG_STOP_OFFSET = 0x5C;
-
-		private static final int OFFSET_FACTOR = 0x00010000;
+		/** Link to board to East. */
+		EAST(0, 0, "fpga_se"),
+		/** Link to board to North East. */
+		NORTH_EAST(2, 1, "fpga_ne"),
+		/** Link to board to North. */
+		NORTH(2, 0, "fpga_n"),
+		/** Link to board to West. */
+		WEST(1, 1, "fpga_nw"),
+		/** Link to board to South West. */
+		SOUTH_WEST(1, 0, "fpga_sw"),
+		/** Link to board to South. */
+		SOUTH(0, 1, "fpga_s");
 
 		private final int fpga;
 
 		private final int addr;
 
-		LinkInfo(int fpga, int offset) {
+		private final String columnName;
+
+		LinkInfo(int fpga, int bankSelect, String columnName) {
 			this.fpga = fpga;
-			this.addr = offset * OFFSET_FACTOR + REG_STOP_OFFSET;
+			this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
+			this.columnName = columnName;
 		}
 	}
 }

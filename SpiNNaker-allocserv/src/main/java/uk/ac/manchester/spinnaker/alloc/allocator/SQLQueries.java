@@ -403,6 +403,33 @@ public abstract class SQLQueries {
 	protected static final String LOAD_DIR_INFO =
 			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
+	@Parameter("machine_id")
+	@ResultColumn("job_id")
+	protected static final String GET_JOBS_WITH_CHANGES =
+			"SELECT UNIQUE job_id FROM pending_changes JOIN jobs "
+					+ "WHERE pending_changes.job_id == jobs.job_id "
+					+ "AND jobs.machine_id == ?";
+
+	@Parameter("job_id")
+	@ResultColumn("change_id")
+	@ResultColumn("job_id")
+	@ResultColumn("board_id")
+	@ResultColumn("power")
+	@ResultColumn("fpga_n")
+	@ResultColumn("fpga_s")
+	@ResultColumn("fpga_ne")
+	@ResultColumn("fpga_nw")
+	@ResultColumn("fpga_se")
+	@ResultColumn("fpga_sw")
+	@ResultColumn("in_progress")
+	protected static final String GET_CHANGES = "SELECT * FROM pending_changes "
+			+ "WHERE job_id = ? AND NOT in_progress";
+
+	@Parameter("in_progress")
+	@Parameter("change_id")
+	protected static final String SET_IN_PROGRESS =
+			"UPDATE pending_changes SET in_progress = ? WHERE change_id = ?";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	@Parameter("width")

@@ -437,7 +437,24 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *
 	 * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0
 	 * chips horizontally offset from 0,0,0; the hexagons are actually a
-	 * distorted shape.
+	 * distorted shape. This is closer:
+	 * <pre>
+	 *    __     __
+	 *   /  |   /  |
+	 *  /   |__/   |__
+	 *  | 2 /  | 2 /  |
+	 *  |__/   |__/   |
+	 *  /  | 1 /  | 1 /
+	 * /0,1|__/1,1|__/
+	 * | 0 /  | 0 /  |
+	 * |__/   |__/   |__
+	 *    | 2 /  | 2 /  |
+	 *    |__/   |__/   |
+	 *    /  | 1 /  | 1 /
+	 *   /0,0|__/1,0|__/
+	 *   | 0 /  | 0 /
+	 *   |__/   |__/
+	 * </pre>
 	 *
 	 * @author Donal Fellows
 	 */

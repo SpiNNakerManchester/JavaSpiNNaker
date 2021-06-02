@@ -183,6 +183,9 @@ public interface SpallocAPI {
 
 		String getRootBoardBMPAddress() throws SQLException;
 
+		/**
+		 * @return The boards supported by the machine.
+		 */
 		List<Integer> getBoardNumbers() throws SQLException;
 	}
 

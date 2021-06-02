@@ -331,7 +331,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public List<Integer> getBoardNumbers() throws SQLException {
-			// TODO add paging
 			List<Integer> boards = new ArrayList<>();
 			try (Connection conn = db.getConnection();
 					Query boardNumbers = query(conn, GET_BOARD_NUMBERS)) {

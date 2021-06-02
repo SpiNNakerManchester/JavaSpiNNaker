@@ -145,7 +145,8 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     fpga_ne INTEGER NOT NULL, -- Whether to switch the northeast FPGA on
     fpga_nw INTEGER NOT NULL, -- Whether to switch the northwest FPGA on
     fpga_se INTEGER NOT NULL, -- Whether to switch the southeast FPGA on
-    fpga_sw INTEGER NOT NULL -- Whether to switch the southwest FPGA on
+    fpga_sw INTEGER NOT NULL, -- Whether to switch the southwest FPGA ON
+    in_progress INTEGER NOT NULL DEFAULT (0)
 );
 
 CREATE TABLE IF NOT EXISTS board_model_coords(
