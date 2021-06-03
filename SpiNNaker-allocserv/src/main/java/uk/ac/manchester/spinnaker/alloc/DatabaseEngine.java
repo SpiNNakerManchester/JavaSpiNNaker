@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.exists;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
@@ -25,6 +27,7 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,7 +55,7 @@ import org.sqlite.SQLiteConfig;
  * @author Donal Fellows
  */
 @Component
-public class DatabaseEngine {
+public final class DatabaseEngine {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
@@ -72,7 +75,7 @@ public class DatabaseEngine {
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
 
-	private File dbFile;
+	private Path dbPath;
 
 	/**
 	 * A restricted form of result set. Note that this object <em>must not</em>
@@ -212,8 +215,12 @@ public class DatabaseEngine {
 			try (Query q = query(conn,
 					"SELECT count(*) AS c FROM movement_directions")) {
 				for (Row row : q.call()) {
-					row.getInt("c");
-					log.debug("database {} ready", dbConnectionUrl);
+					if (row.getInt("c") < 6) {
+						log.warn("database {} seems incomplete",
+								dbConnectionUrl);
+					} else {
+						log.debug("database {} ready", dbConnectionUrl);
+					}
 				}
 			}
 		}
@@ -227,9 +234,11 @@ public class DatabaseEngine {
 	 */
 	public DatabaseEngine(
 			@Value("${databasePath:spalloc.sqlite3}") File dbFile) {
-		this.dbFile = dbFile.getAbsoluteFile();
-		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-		log.info("will manage database at {}", dbFile.getAbsolutePath());
+		// We don't support :memory:
+		dbPath = requireNonNull(dbFile, "a database file must be given")
+				.getAbsoluteFile().toPath();
+		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
+		log.info("will manage database at {}", dbPath);
 		config.enforceForeignKeys(true);
 		config.setSynchronous(NORMAL);
 		config.setBusyTimeout(BUSY_TIMEOUT);
@@ -240,7 +249,7 @@ public class DatabaseEngine {
 	public Connection getConnection() throws SQLException {
 		log.debug("opening database connection {}", dbConnectionUrl);
 		synchronized (this) {
-			boolean doInit = !initialised || !dbFile.exists();
+			boolean doInit = !initialised || !exists(dbPath);
 			Connection conn = config.createConnection(dbConnectionUrl);
 			if (doInit) {
 				log.info("initalising DB from {}", sqlDDLFile);
@@ -252,6 +261,15 @@ public class DatabaseEngine {
 			}
 			return threadBound(conn);
 		}
+	}
+
+	/**
+	 * Get the location of the database.
+	 *
+	 * @return The path to the database.
+	 */
+	public Path getDatabasePath() {
+		return dbPath;
 	}
 
 	/**
@@ -359,7 +377,7 @@ public class DatabaseEngine {
 	 * exception is thrown, the transaction is rolled back.
 	 *
 	 * @param <T>
-	 *            The type of the result
+	 *            The type of the result of {@code operation}
 	 * @param conn
 	 *            The database connection
 	 * @param operation
@@ -397,6 +415,50 @@ public class DatabaseEngine {
 	}
 
 	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case.
+	 *
+	 * @param operation
+	 *            The operation to run
+	 * @throws SQLException
+	 *             If something goes wrong with database access.
+	 * @throws RuntimeException
+	 *             If something other than database access goes wrong with the
+	 *             contained code.
+	 */
+	public final void executeVoid(Connected operation) throws SQLException {
+		try (Connection conn = getConnection()) {
+			transaction(conn, () -> operation.act(conn));
+		}
+	}
+
+	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case.
+	 *
+	 * @param <T>
+	 *            The type of the result of {@code operation}
+	 * @param operation
+	 *            The operation to run
+	 * @return the value returned by {@code operation}
+	 * @throws SQLException
+	 *             If something goes wrong with database access.
+	 * @throws RuntimeException
+	 *             If something other than database access goes wrong with the
+	 *             contained code.
+	 */
+	public final <T> T execute(ConnectedWithResult<T> operation)
+			throws SQLException {
+		try (Connection conn = getConnection()) {
+			return transaction(conn, () -> operation.act(conn));
+		}
+	}
+
+	/**
 	 * Some code that may be run within a transaction.
 	 */
 	@FunctionalInterface
@@ -426,6 +488,46 @@ public class DatabaseEngine {
 		 *             If anything goes wrong.
 		 */
 		T act() throws SQLException;
+	}
+
+	/**
+	 * Some code that may be run within a transaction and which will be given a
+	 * new connection for the duration.
+	 */
+	@FunctionalInterface
+	public interface Connected {
+		/**
+		 * The operation to run.
+		 *
+		 * @param connection
+		 *            The newly-created connection. Do not save beyond the scope
+		 *            of this action.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		void act(Connection connection) throws SQLException;
+	}
+
+	/**
+	 * Some code that may be run within a transaction that returns a result and
+	 * which will be given a new connection for the duration.
+	 *
+	 * @param <T>
+	 *            The type of the result of the code.
+	 */
+	@FunctionalInterface
+	public interface ConnectedWithResult<T> {
+		/**
+		 * The operation to run.
+		 *
+		 * @param connection
+		 *            The newly-created connection. Do not save beyond the scope
+		 *            of this action.
+		 * @return The result of the operation.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		T act(Connection connection) throws SQLException;
 	}
 
 	/**
@@ -565,6 +667,28 @@ public class DatabaseEngine {
 					return row;
 				}
 			};
+		}
+
+		/**
+		 * Run the query on the given arguments. The query must be one that only
+		 * produces a single row result.
+		 *
+		 * @param arguments
+		 *            Positional argument to the query
+		 * @return The single row with the results, or {@code null} if there is
+		 *         no such row.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		public Row call1(Object... arguments) throws SQLException {
+			setParams(s, arguments);
+			closeResults();
+			rs = s.executeQuery();
+			if (rs.next()) {
+				return new Row(rs);
+			} else {
+				return null;
+			}
 		}
 
 		@Override

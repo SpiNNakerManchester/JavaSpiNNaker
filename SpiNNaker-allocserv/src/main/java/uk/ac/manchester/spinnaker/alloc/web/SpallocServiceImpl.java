@@ -41,7 +41,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
-@Component("service")
+@Service("service")
 public class SpallocServiceImpl implements SpallocServiceAPI {
 	private static final Logger log = getLogger(SpallocServiceImpl.class);
 

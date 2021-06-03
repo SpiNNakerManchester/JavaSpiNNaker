@@ -21,7 +21,6 @@ import static java.lang.Math.sqrt;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
@@ -46,6 +45,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.ServiceControl;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
@@ -58,6 +58,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * Time, in milliseconds, between runs of {@link #cleanUp()}. (30s)
 	 */
 	private static final long INTER_DESTROY_DELAY = 30000;
+
+	/** Triads contain three boards. */
+	private static final int TRIAD_DEPTH = 3;
 
 	/**
 	 * @see #setPower(Connection,int,PowerState)
@@ -72,6 +75,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Autowired
 	private Epochs epochs;
+
+	@Autowired
+	private ServiceControl serviceControl;
 
 	@PostConstruct
 	private void setUp() throws SQLException {
@@ -88,64 +94,68 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 */
 	@Scheduled(fixedDelay = INTER_ALLOCATE_DELAY)
 	public void allocate() throws SQLException {
-		try (Connection conn = db.getConnection()) {
-			transaction(conn, () -> {
-				boolean changed = false;
-				try (Query getTasks = query(conn, GET_TASKS);
-						Update delete = update(conn, DELETE_TASK)) {
-					for (Row rs : getTasks.call()) {
-						int id = rs.getInt("req_id");
-						boolean handled = true;
-						try {
-							handled = allocate(conn, rs);
-							/*
-							 * NB: having an exception counts as handled; we
-							 * will nuke the task.
-							 */
-						} finally {
-							if (handled) {
-								changed = delete.call(id) > 0;
-							}
-						}
+		if (serviceControl.isPaused()) {
+			return;
+		}
+
+		if (db.execute(this::allocate)) {
+			epochs.nextJobsEpoch();
+		}
+	}
+
+	private boolean allocate(Connection conn) throws SQLException {
+		try (Query getTasks = query(conn, GET_TASKS);
+				Update delete = update(conn, DELETE_TASK)) {
+			boolean changed = false;
+			for (Row rs : getTasks.call()) {
+				int id = rs.getInt("req_id");
+				boolean handled = true;
+				try {
+					handled = allocate(conn, rs);
+					/*
+					 * NB: having an exception counts as handled; we
+					 * will nuke the task.
+					 */
+				} finally {
+					if (handled) {
+						changed = delete.call(id) > 0;
 					}
 				}
-				if (changed) {
-					epochs.nextJobsEpoch();
-				}
-			});
+			}
+			return changed;
 		}
 	}
 
 	@Scheduled(fixedDelay = INTER_DESTROY_DELAY)
-	public void cleanUp() throws SQLException {
-		try (Connection conn = db.getConnection()) {
-			transaction(conn, () -> {
-				boolean changed = false;
-				try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
-					List<Integer> toKill = new ArrayList<>();
-					for (Row rs : find.call()) {
-						toKill.add(rs.getInt("job_id"));
-					}
-					for (int id : toKill) {
-						changed |= destroyJob(conn, id);
-					}
-				}
-				if (changed) {
-					epochs.nextJobsEpoch();
-					epochs.nextMachineEpoch();
-				}
-			});
+	public void expireJobs() throws SQLException {
+		if (serviceControl.isPaused()) {
+			return;
+		}
+
+		if (db.execute(this::expireJobs)) {
+			epochs.nextJobsEpoch();
+			epochs.nextMachineEpoch();
+		}
+	}
+
+	private boolean expireJobs(Connection conn) throws SQLException {
+		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
+			boolean changed = false;
+			List<Integer> toKill = new ArrayList<>();
+			for (Row rs : find.call()) {
+				toKill.add(rs.getInt("job_id"));
+			}
+			for (int id : toKill) {
+				changed |= destroyJob(conn, id);
+			}
+			return changed;
 		}
 	}
 
 	public void destroyJob(int id) throws SQLException {
-		try (Connection conn = db.getConnection()) {
-			transaction(conn, () -> {
-				if (destroyJob(conn, id)) {
-					epochs.nextJobsEpoch();
-					epochs.nextMachineEpoch();
-				}
-			});
+		if (db.execute(conn -> destroyJob(conn, id))) {
+			epochs.nextJobsEpoch();
+			epochs.nextMachineEpoch();
 		}
 	}
 
@@ -160,6 +170,58 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				killPending.call(id);
 			}
 			return success;
+		}
+	}
+
+	/**
+	 * Computes the estimate of what sort of allocation will be required.
+	 * Converts a number of boards into a close-to-square size to search for.
+	 * <p>
+	 * With the big machine's level of resources, that's good enough. For now.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static class DimensionEstimate {
+		private static final double HORIZONTAL_FACTOR = 1.5;
+
+		private static final double VERTICAL_FACTOR = 2.0;
+
+		/** The estimated width. */
+		final int width;
+
+		/** The estimated height. */
+		final int height;
+
+		/**
+		 * The number of boards in the rectangle of triads that we can tolerate
+		 * being down due to overallocation (due to the use of rectangles and
+		 * triads).
+		 */
+		final int tolerance;
+
+		DimensionEstimate(int numBoards) {
+			int numTriads = numBoards / TRIAD_DEPTH;
+			if (numBoards % TRIAD_DEPTH > 0) {
+				numTriads++;
+			}
+			width = (int) ceil(sqrt(numTriads));
+			height = (int) ceil(numTriads / width);
+			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
+			if (width < 1 || height < 1) {
+				throw new IllegalArgumentException(
+						"computed dimensions must be greater than zero");
+			}
+		}
+
+		DimensionEstimate(int w, int h) {
+			int numBoards = w * h;
+			width = (int) ceil(w / HORIZONTAL_FACTOR);
+			height = (int) ceil(h / VERTICAL_FACTOR);
+			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
+			if (width < 1 || height < 1) {
+				throw new IllegalArgumentException(
+						"computed dimensions must be greater than zero");
+			}
 		}
 	}
 
@@ -187,17 +249,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			if (numBoards == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
-			/*
-			 * Convert a number of boards into a close-to-square size to search
-			 * for. With the big machine's level of resources, that's good
-			 * enough. For now.
-			 */
-			// FIXME update for triads
-			double w = ceil(sqrt(numBoards));
-			double h = ceil(numBoards / w);
-			int tolerance = ((int) w) * ((int) h) - numBoards;
-			return allocateDimensions(conn, jobId, machineId, (int) w, (int) h,
-					maxDeadBoards + tolerance);
+			DimensionEstimate estimate = new DimensionEstimate(numBoards);
+			return allocateDimensions(conn, jobId, machineId, estimate, maxDeadBoards);
 		}
 
 		Integer width = (Integer) task.getObject("width");
@@ -206,7 +259,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
-			return allocateDimensions(conn, jobId, machineId, width, height,
+			DimensionEstimate estimate = new DimensionEstimate(width, height);
+			return allocateDimensions(conn, jobId, machineId, estimate,
 					maxDeadBoards);
 		}
 
@@ -226,43 +280,47 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private boolean allocateOneBoard(Connection conn, int jobId, int machineId)
 			throws SQLException {
 		try (Query s = query(conn, FIND_FREE_BOARD)) {
-			for (Row rs : s.call(machineId)) {
-				int x = rs.getInt("x");
-				int y = rs.getInt("y");
-				int z = rs.getInt("z");
-				return setAllocation(conn, jobId, 1, 1, 1, machineId, x, y, z);
+			for (Row row : s.call(machineId)) {
+				int x = row.getInt("x");
+				int y = row.getInt("y");
+				int z = row.getInt("z");
+				if (setAllocation(conn, jobId, 1, 1, 1, machineId, x, y, z)) {
+					return true;
+				}
 			}
 			return false;
 		}
 	}
 
 	private boolean allocateDimensions(Connection conn, int jobId,
-			int machineId, int width, int height, int tolerance)
+			int machineId, DimensionEstimate estimate, int userMaxDead)
 			throws SQLException {
-		// FIXME for triads
-		try (Query s = query(conn, findRectangle)) {
-			for (Row rs : s.call(width, height, machineId, tolerance)) {
+		int tolerance = userMaxDead + estimate.tolerance;
+		try (Query s = query(conn, findRectangle);
+				Query connected = query(conn, countConnected)) {
+			for (Row rs : s.call(estimate.width, estimate.height, machineId,
+					tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				int z = rs.getInt("z");
-				if (width * height > 1) {
+				if (estimate.width * estimate.height > 1) {
 					/*
 					 * Check that a minimum number of boards are reachable from
 					 * the proposed root board.
 					 */
 					int size = -1;
-					try (Query connected = query(conn, countConnected)) {
-						for (Row row : connected.call(machineId, x, y, z, width,
-								height)) {
-							size = row.getInt("connected_size");
-						}
+					for (Row row : connected.call(machineId, x, y, z,
+							estimate.width, estimate.height)) {
+						size = row.getInt("connected_size");
 					}
-					if (size < width * height - tolerance) {
+					if (size < estimate.width * estimate.height - tolerance) {
 						continue;
 					}
 				}
-				return setAllocation(conn, jobId, width, height, 3, machineId,
-						x, y, z);
+				if (setAllocation(conn, jobId, estimate.width, estimate.height,
+						TRIAD_DEPTH, machineId, x, y, z)) {
+					return true;
+				}
 			}
 			return false;
 		}
@@ -272,8 +330,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			int x, int y, int z) throws SQLException {
 		try (Query find = query(conn, findLocation)) {
 			for (Row row : find.call(machineId, x, y, z)) {
-				return setAllocation(conn, jobId, 1, 1, 1, machineId,
-						row.getInt("x"), row.getInt("y"), row.getInt("z"));
+				if (setAllocation(conn, jobId, 1, 1, 1, machineId,
+						row.getInt("x"), row.getInt("y"), row.getInt("z"))) {
+					return true;
+				}
 			}
 			return false;
 		}
@@ -312,10 +372,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState)
 			throws SQLException {
-		try (Connection conn = db.getConnection()) {
-			return transaction(conn,
-					() -> setPower(conn, jobId, power, targetState));
-		}
+		return db.execute(conn -> setPower(conn, jobId, power, targetState));
 	}
 
 	private boolean setPower(Connection conn, int jobId, PowerState power,

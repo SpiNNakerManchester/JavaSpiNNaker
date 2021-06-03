@@ -50,9 +50,10 @@ import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.ServiceControl;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
@@ -69,7 +70,7 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
-@Component
+@Service
 public class BMPController extends SQLQueries {
 	private static final Logger log = getLogger(BMPController.class);
 
@@ -110,6 +111,9 @@ public class BMPController extends SQLQueries {
 	@Autowired
 	private SpallocAPI spallocCore;
 
+	@Autowired
+	private ServiceControl serviceControl;
+
 	private Collection<Machine> machines;
 
 	@PostConstruct
@@ -130,6 +134,10 @@ public class BMPController extends SQLQueries {
 
 	@Scheduled(fixedDelay = INTER_TAKE_DELAY, initialDelay = INTER_TAKE_DELAY)
 	void mainSchedule() throws SQLException, IOException, SpinnmanException {
+		if (serviceControl.isPaused()) {
+			return;
+		}
+
 		for (Request req : takeRequests()) {
 			addRequest(req);
 		}

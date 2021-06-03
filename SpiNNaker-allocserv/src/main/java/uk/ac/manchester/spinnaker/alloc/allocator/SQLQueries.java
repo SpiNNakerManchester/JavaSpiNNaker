@@ -310,7 +310,7 @@ public abstract class SQLQueries {
 	protected static final String GET_TASKS =
 			"SELECT job_request.req_id, job_request.job_id,"
 					+ "  job_request.num_boards,"
-					+ "	 job_request.width, job_request.height,"
+					+ "  job_request.width, job_request.height,"
 					+ "  job_request.x, job_request.y, job_request.z,"
 					+ "  jobs.machine_id AS machine_id,"
 					+ "  job_request.max_dead_boards "

@@ -16,23 +16,29 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.nio.file.Files.delete;
+import static java.nio.file.Files.exists;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.exec;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
@@ -50,6 +56,8 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @TestPropertySource(properties = "databasePath=boot_test.sqlite3")
 @TestInstance(PER_CLASS)
 class BootTest {
+	private static final Logger log = getLogger(BootTest.class);
+
 	@Configuration
 	@ComponentScan
 	static class Config {
@@ -64,12 +72,13 @@ class BootTest {
 	@Autowired
 	private DatabaseEngine db;
 
-	@Value("@{databasePath}")
-	private File dbPath;
-
 	@BeforeAll
-	void clearDB() {
-		dbPath.delete();
+	void clearDB() throws IOException {
+		Path dbp = db.getDatabasePath();
+		if (exists(dbp)) {
+			log.info("deleting old database: {}", dbp);
+			delete(dbp);
+		}
 	}
 
 	@Test
