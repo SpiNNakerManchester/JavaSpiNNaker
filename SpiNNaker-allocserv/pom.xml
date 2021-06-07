@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spring.boot.version>2.4.6</spring.boot.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.root>/</jetty.root>
+		<jackson.version>2.12.3</jackson.version>
 	</properties>
 
 	<build>
@@ -71,8 +72,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.12.3</version>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-base</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
