@@ -406,7 +406,7 @@ public abstract class SQLQueries {
 	@Parameter("machine_id")
 	@ResultColumn("job_id")
 	protected static final String GET_JOBS_WITH_CHANGES =
-			"SELECT UNIQUE job_id FROM pending_changes JOIN jobs "
+			"SELECT DISTINCT jobs.job_id FROM pending_changes JOIN jobs "
 					+ "WHERE pending_changes.job_id == jobs.job_id "
 					+ "AND jobs.machine_id == ?";
 

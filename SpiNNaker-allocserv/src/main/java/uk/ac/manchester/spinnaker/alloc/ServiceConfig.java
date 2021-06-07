@@ -211,8 +211,8 @@ public class ServiceConfig {
 
 	private static boolean isSystemBean(String name) {
 		// Whether a bean name is for a Spring or CXF internal bean
-		return name.startsWith("org.springframework.")
-				|| name.startsWith("org.apache.cxf.");
+		return name.contains("org.springframework.")
+				|| name.contains("org.apache.cxf.");
 	}
 
 	/**
