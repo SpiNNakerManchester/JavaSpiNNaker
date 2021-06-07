@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -40,7 +41,31 @@ public interface SpallocAPI {
 	/** Get a specific job. */
 	Job getJob(int id) throws SQLException;
 
-	/** Create a job. */
+	/**
+	 * Create a job.
+	 *
+	 * @param owner
+	 *            Who is making this job. Note that this is a self-asserted
+	 *            identity.
+	 * @param dimensions
+	 *            List of dimensions. At least one element. No more than three.
+	 *            No negative elements.
+	 * @param machineName
+	 *            The name of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by tags.
+	 * @param tags
+	 *            The tags of the machine the user wants to allocate on, or
+	 *            {@code null} if they want to select by name.
+	 * @param keepaliveInterval
+	 *            The maximum interval between keepalive requests or the job
+	 *            becomes eligible for automated deletion.
+	 * @param maxDeadBoards
+	 *            The maximum number of dead boards tolerated in the allocation.
+	 *            Ignored when asking for a single board.
+	 * @return Handle to the job.
+	 * @throws SQLException
+	 *             If anything goes wrong at the database level.
+	 */
 	Job createJob(String owner, List<Integer> dimensions, String machineName,
 			List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards) throws SQLException;
@@ -172,14 +197,14 @@ public interface SpallocAPI {
 
 		// TODO: dead boards, dead links
 
-		BoardLocation getBoardByChip(int x, int y, JobsEpoch je)
+		Optional<BoardLocation> getBoardByChip(int x, int y, JobsEpoch je)
 				throws SQLException;
 
-		BoardLocation getBoardByPhysicalCoords(int cabinet, int frame,
+		Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet, int frame,
 				int board, JobsEpoch je) throws SQLException;
 
-		BoardLocation getBoardByLogicalCoords(int x, int y, int z, JobsEpoch je)
-				throws SQLException;
+		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z,
+				JobsEpoch je) throws SQLException;
 
 		String getRootBoardBMPAddress() throws SQLException;
 

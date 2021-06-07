@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.ws.rs.WebApplicationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SQLProblem;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.MachinesEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -79,10 +83,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		MachinesEpoch me = epochs.getMachineEpoch();
 		Map<String, Machine> map = new HashMap<>();
 		try (Query listMachines = query(conn, GET_ALL_MACHINES)) {
-			for (Row rs : listMachines.call()) {
-				MachineImpl m = new MachineImpl(conn, rs, me);
+			listMachines.call().forEach(row -> {
+				MachineImpl m = new MachineImpl(conn, row, me);
 				map.put(m.name, m);
-			}
+			});
 		}
 		return map;
 	}
@@ -95,27 +99,19 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private MachineImpl getMachine(int id, Connection conn)
 			throws SQLException {
 		MachinesEpoch me = epochs.getMachineEpoch();
-		MachineImpl m = null;
 		try (Query idMachine = query(conn, GET_MACHINE_BY_ID)) {
-			for (Row rs : idMachine.call(id)) {
-				m = new MachineImpl(conn, rs, me);
-				break;
-			}
+			return idMachine.call1(id)
+					.map(row -> new MachineImpl(conn, row, me)).orElse(null);
 		}
-		return m;
 	}
 
 	private MachineImpl getMachine(String name, Connection conn)
 			throws SQLException {
 		MachinesEpoch me = epochs.getMachineEpoch();
-		MachineImpl m = null;
 		try (Query namedMachine = query(conn, GET_NAMED_MACHINE)) {
-			for (Row rs : namedMachine.call(name)) {
-				m = new MachineImpl(conn, rs, me);
-				break;
-			}
+			return namedMachine.call1(name)
+					.map(row -> new MachineImpl(conn, row, me)).orElse(null);
 		}
-		return m;
 	}
 
 	@Override
@@ -148,13 +144,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private JobImpl getJob(int id, Connection conn) throws SQLException {
 		JobsEpoch epoch = epochs.getJobsEpoch();
-		JobImpl j = null;
 		try (Query s = query(conn, GET_JOB)) {
-			for (Row rs : s.call(id)) {
-				j = new JobImpl(epoch, conn, rs);
-			}
+			return s.call1(id).map(row -> new JobImpl(epoch, conn, row))
+					.orElse(null);
 		}
-		return j;
 	}
 
 	@Override
@@ -175,28 +168,44 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 
 			// Ask the allocator engine to do the allocation
-			insertRequest(conn, id, dimensions, maxDeadBoards);
+			insertRequest(conn, m, id, dimensions, maxDeadBoards);
 			return getJob(id, conn);
 		});
 	}
 
-	private void insertRequest(Connection conn, int id, List<Integer> dims,
-			Integer numDeadBoards) throws SQLException {
+	private static final int TRIAD_SIZE = 3;
+
+	private void insertRequest(Connection conn, MachineImpl machine, int id,
+			List<Integer> dims, Integer numDeadBoards) throws SQLException {
 		switch (dims.size()) {
 		case N_COORDS_COUNT:
 			// Request by number of boards
+			if (machine.getArea() < dims.get(0)) {
+				throw new IllegalArgumentException(
+						"request cannot fit on machine");
+			}
 			try (Update ps = update(conn, INSERT_REQ_N_BOARDS)) {
 				ps.call(id, dims.get(0), numDeadBoards);
 			}
 			break;
 		case N_COORDS_RECTANGLE:
-			// Request by specific size
+			// Request by specific size IN BOARDS
+			if (machine.getArea() < dims.get(0)
+					* dims.get(1)) {
+				throw new IllegalArgumentException(
+						"request cannot fit on machine");
+			}
 			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
 				ps.call(id, dims.get(0), dims.get(1), numDeadBoards);
 			}
 			break;
 		case N_COORDS_LOCATION:
 			// Request by specific location
+			if (machine.width < dims.get(0) || machine.height < dims.get(1)
+					|| TRIAD_SIZE <= dims.get(2)) {
+				throw new IllegalArgumentException(
+						"request cannot fit on machine");
+			}
 			try (Update ps = update(conn, INSERT_REQ_LOCATION)) {
 				ps.call(id, dims.get(0), dims.get(1), dims.get(2));
 			}
@@ -252,18 +261,25 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@JsonIgnore
 		private final MachinesEpoch epoch;
 
-		MachineImpl(Connection conn, Row rs, MachinesEpoch epoch)
-				throws SQLException {
+		MachineImpl(Connection conn, Row rs, MachinesEpoch epoch) {
 			this.epoch = epoch;
-			id = rs.getInt("machine_id");
-			name = rs.getString("machine_name");
-			width = rs.getInt("width");
-			height = rs.getInt("height");
-			try (Query getTags = query(conn, GET_TAGS)) {
-				for (Row tagSet : getTags.call(id)) {
-					tags.add(tagSet.getString("tag"));
+			try {
+				id = rs.getInt("machine_id");
+				name = rs.getString("machine_name");
+				width = rs.getInt("width");
+				height = rs.getInt("height");
+				try (Query getTags = query(conn, GET_TAGS)) {
+					for (Row tagSet : getTags.call(id)) {
+						tags.add(tagSet.getString("tag"));
+					}
 				}
+			} catch (SQLException e) {
+				throw new SQLProblem("creating machine object", e);
 			}
+		}
+
+		private int getArea() {
+			return width * height * TRIAD_SIZE;
 		}
 
 		@Override
@@ -276,47 +292,33 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public BoardLocation getBoardByChip(int x, int y, JobsEpoch je)
-				throws SQLException {
-			try (Connection conn = db.getConnection();
-					Query findBoard = query(conn, FIND_BOARD_BY_CHIP)) {
-				return transaction(conn, () -> {
-					BoardLocation loc = null;
-					for (Row rs : findBoard.call(id, x, y)) {
-						loc = new BoardLocationImpl(rs, je, id);
-					}
-					return loc;
-				});
-			}
-		}
-
-		@Override
-		public BoardLocation getBoardByPhysicalCoords(int cabinet, int frame,
-				int board, JobsEpoch je) throws SQLException {
-			try (Connection conn = db.getConnection();
-					Query findBoard = query(conn, FIND_BOARD_BY_CFB)) {
-				return transaction(conn, () -> {
-					BoardLocation loc = null;
-					for (Row rs : findBoard.call(id, cabinet, frame, board)) {
-						loc = new BoardLocationImpl(rs, je, id);
-					}
-					return loc;
-				});
-			}
-		}
-
-		@Override
-		public BoardLocation getBoardByLogicalCoords(int x, int y, int z,
+		public Optional<BoardLocation> getBoardByChip(int x, int y,
 				JobsEpoch je) throws SQLException {
 			try (Connection conn = db.getConnection();
+					Query findBoard = query(conn, FIND_BOARD_BY_CHIP)) {
+				return transaction(conn, () -> findBoard.call1(id, x, y)
+						.map(row -> new BoardLocationImpl(row, je, id)));
+			}
+		}
+
+		@Override
+		public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
+				int frame, int board, JobsEpoch je) throws SQLException {
+			try (Connection conn = db.getConnection();
+					Query findBoard = query(conn, FIND_BOARD_BY_CFB)) {
+				return transaction(conn,
+						() -> findBoard.call1(id, cabinet, frame, board).map(
+								row -> new BoardLocationImpl(row, je, id)));
+			}
+		}
+
+		@Override
+		public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
+				int z, JobsEpoch je) throws SQLException {
+			try (Connection conn = db.getConnection();
 					Query findBoard = query(conn, FIND_BOARD_BY_XYZ)) {
-				return transaction(conn, () -> {
-					BoardLocation loc = null;
-					for (Row rs : findBoard.call(id, x, y, z)) {
-						loc = new BoardLocationImpl(rs, je, id);
-					}
-					return loc;
-				});
+				return transaction(conn, () -> findBoard.call1(id, x, y, z)
+						.map(row -> new BoardLocationImpl(row, je, id)));
 			}
 		}
 
@@ -456,25 +458,31 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			keepaliveTime = keepalive;
 		}
 
-		JobImpl(JobsEpoch epoch, Connection conn, Row row) throws SQLException {
-			this(epoch, row.getInt("job_id"), row.getInt("machine_id"));
-			width = (Integer) row.getObject("width");
-			height = (Integer) row.getObject("height");
-			root = (Integer) row.getObject("root_id");
-			if (root != null) {
-				try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
-					for (Row subrow : boardRoot.call(root)) {
-						chipRoot = new ChipLocation(subrow.getInt("root_x"),
-								subrow.getInt("root_y"));
+		JobImpl(JobsEpoch epoch, Connection conn, Row row) {
+			try {
+				this.epoch = epoch;
+				this.id = row.getInt("job_id");
+				this.machineId = row.getInt("machine_id");
+				width = (Integer) row.getObject("width");
+				height = (Integer) row.getObject("height");
+				root = (Integer) row.getObject("root_id");
+				if (root != null) {
+					try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
+						for (Row subrow : boardRoot.call(root)) {
+							chipRoot = new ChipLocation(subrow.getInt("root_x"),
+									subrow.getInt("root_y"));
+						}
 					}
 				}
+				state = row.getEnum("job_state", JobState.class);
+				keepaliveHost = row.getString("keepalive_host");
+				keepaliveTime = row.getInstant("keepalive_timestamp");
+				startTime = row.getInstant("create_timestamp");
+				finishTime = row.getInstant("death_timestamp");
+				deathReason = row.getString("death_reason");
+			} catch (SQLException e) {
+				throw new SQLProblem("creating job object", e);
 			}
-			state = row.getEnum("job_state", JobState.class);
-			keepaliveHost = row.getString("keepalive_host");
-			keepaliveTime = row.getInstant("keepalive_timestamp");
-			startTime = row.getInstant("create_timestamp");
-			finishTime = row.getInstant("death_timestamp");
-			deathReason = row.getString("death_reason");
 		}
 
 		@Override
@@ -482,7 +490,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
 				transaction(conn, () -> {
-				keepAlive.call(keepaliveAddress, id);});
+					keepAlive.call(keepaliveAddress, id);
+				});
 			}
 		}
 
@@ -491,7 +500,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Update destroyJob = update(conn, DESTROY_JOB)) {
 				transaction(conn, () -> {
-				destroyJob.call(reason, id);});
+					destroyJob.call(reason, id);
+				});
 			}
 		}
 
@@ -556,13 +566,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 			try (Connection conn = db.getConnection();
 					Query findBoard = query(conn, findBoardByJobChip)) {
-				return transaction(conn, () -> {
-					BoardLocation loc = null;
-					for (Row row : findBoard.call(id, root, x, y)) {
-						loc = new BoardLocationImpl(row, epoch, machineId);
-					}
-					return loc;
-				});
+				return transaction(conn,
+						() -> findBoard.call1(id, root, x, y)
+								.map(row -> new BoardLocationImpl(row, epoch,
+										machineId))
+								.orElse(null));
 			}
 		}
 
@@ -711,19 +719,24 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final BoardPhysicalCoordinates physical;
 
 		// Transaction is open
-		private BoardLocationImpl(Row row, JobsEpoch epoch, int machineId)
-				throws SQLException {
-			machine = row.getString("machine_name");
-			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
-					row.getInt("z"));
-			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
-					row.getInt("frame"), row.getInt("board_num"));
-			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+		private BoardLocationImpl(Row row, JobsEpoch epoch, int machineId) {
+			try {
+				machine = row.getString("machine_name");
+				logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
+						row.getInt("z"));
+				physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
+						row.getInt("frame"), row.getInt("board_num"));
+				chip = new ChipLocation(row.getInt("chip_x"),
+						row.getInt("chip_y"));
 
-			Integer jobId = (Integer) row.getObject("job_id");
-			if (jobId != null) {
-				job = new JobImpl(epoch, jobId, machineId);
-				// FIXME also pass other basic values
+				Integer jobId = (Integer) row.getObject("job_id");
+				if (jobId != null) {
+					job = new JobImpl(epoch, jobId, machineId);
+					// FIXME also pass other basic values
+				}
+			} catch (SQLException e) {
+				throw new WebApplicationException(
+						"failed to construct board location descriptor", e);
 			}
 		}
 

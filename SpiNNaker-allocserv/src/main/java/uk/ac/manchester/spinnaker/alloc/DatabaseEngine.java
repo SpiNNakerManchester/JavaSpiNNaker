@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -675,19 +676,19 @@ public final class DatabaseEngine {
 		 *
 		 * @param arguments
 		 *            Positional argument to the query
-		 * @return The single row with the results, or {@code null} if there is
+		 * @return The single row with the results, or empty if there is
 		 *         no such row.
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
-		public Row call1(Object... arguments) throws SQLException {
+		public Optional<Row> call1(Object... arguments) throws SQLException {
 			setParams(s, arguments);
 			closeResults();
 			rs = s.executeQuery();
 			if (rs.next()) {
-				return new Row(rs);
+				return Optional.of(new Row(rs));
 			} else {
-				return null;
+				return Optional.empty();
 			}
 		}
 

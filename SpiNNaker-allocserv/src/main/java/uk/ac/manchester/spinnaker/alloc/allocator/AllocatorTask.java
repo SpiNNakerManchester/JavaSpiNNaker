@@ -107,14 +107,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query getTasks = query(conn, GET_TASKS);
 				Update delete = update(conn, DELETE_TASK)) {
 			boolean changed = false;
-			for (Row rs : getTasks.call()) {
-				int id = rs.getInt("req_id");
+			for (Row row : getTasks.call()) {
+				int id = row.getInt("req_id");
 				boolean handled = true;
 				try {
-					handled = allocate(conn, rs);
+					handled = allocate(conn, row);
 					/*
-					 * NB: having an exception counts as handled; we
-					 * will nuke the task.
+					 * NB: having an exception counts as handled; we will nuke
+					 * the task.
 					 */
 				} finally {
 					if (handled) {
@@ -142,8 +142,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 			boolean changed = false;
 			List<Integer> toKill = new ArrayList<>();
-			for (Row rs : find.call()) {
-				toKill.add(rs.getInt("job_id"));
+			for (Row row : find.call()) {
+				toKill.add(row.getInt("job_id"));
 			}
 			for (int id : toKill) {
 				changed |= destroyJob(conn, id);
@@ -296,23 +296,22 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			int machineId, DimensionEstimate estimate, int userMaxDead)
 			throws SQLException {
 		int tolerance = userMaxDead + estimate.tolerance;
-		try (Query s = query(conn, findRectangle);
+		try (Query getRectangles = query(conn, findRectangle);
 				Query connected = query(conn, countConnected)) {
-			for (Row rs : s.call(estimate.width, estimate.height, machineId,
-					tolerance)) {
+			for (Row rs : getRectangles.call(estimate.width, estimate.height,
+					machineId, tolerance)) {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				int z = rs.getInt("z");
 				if (estimate.width * estimate.height > 1) {
 					/*
 					 * Check that a minimum number of boards are reachable from
-					 * the proposed root board.
+					 * the proposed root board. If the root board is isolated,
+					 * we don't care if the rest of the allocation works because
+					 * the rest of the toolchain won't cope.
 					 */
-					int size = -1;
-					for (Row row : connected.call(machineId, x, y, z,
-							estimate.width, estimate.height)) {
-						size = row.getInt("connected_size");
-					}
+					int size = connectedSize(getRectangles, machineId, x, y, z,
+							estimate);
 					if (size < estimate.width * estimate.height - tolerance) {
 						continue;
 					}
@@ -324,6 +323,36 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			}
 			return false;
 		}
+	}
+
+	/**
+	 * Find the number of boards that are reachable from the proposed root
+	 * board.
+	 *
+	 * @param connected
+	 *            The query prepared from {@link #countConnected}
+	 * @param machineId
+	 *            The machine on which the allocation is happening
+	 * @param x
+	 *            Root logical X coordinate
+	 * @param y
+	 *            Root logical Y coordinate
+	 * @param z
+	 *            Root logical Z coordinate (usually, but not necessarily, 0)
+	 * @param estimate
+	 *            The planned allocation dimensions
+	 * @return How many boards in the allocation are reachable.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	private int connectedSize(Query connected, int machineId, int x, int y,
+			int z, DimensionEstimate estimate) throws SQLException {
+		int size = -1;
+		for (Row row : connected.call(machineId, x, y, z, estimate.width,
+				estimate.height)) {
+			size = row.getInt("connected_size");
+		}
+		return size;
 	}
 
 	private boolean allocateCoords(Connection conn, int jobId, int machineId,
@@ -342,6 +371,13 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private boolean setAllocation(Connection conn, int jobId, int width,
 			int height, int depth, int machineId, int rootX, int rootY,
 			int rootZ) throws SQLException {
+		/*
+		 * At this point, we've checked that there's enough boards AND we are
+		 * running in a transaction.
+		 *
+		 * TODO Should only allocate boards if they're connected to the root.
+		 * There's still definitely enough if we do that.
+		 */
 		try (Query getBoardID = query(conn, GET_BOARD_BY_COORDS);
 				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
 				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
@@ -372,7 +408,13 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState)
 			throws SQLException {
-		return db.execute(conn -> setPower(conn, jobId, power, targetState));
+		boolean updated =
+				db.execute(conn -> setPower(conn, jobId, power, targetState));
+		if (updated) {
+			epochs.nextMachineEpoch();
+			epochs.nextJobsEpoch();
+		}
+		return updated;
 	}
 
 	private boolean setPower(Connection conn, int jobId, PowerState power,
@@ -433,10 +475,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 							: numPending > 0 ? POWER : targetState,
 					numPending, jobId);
 
-			if (numPending > 0) {
-				epochs.nextMachineEpoch();
-				epochs.nextJobsEpoch();
-			}
 			return numPending > 0;
 		}
 	}

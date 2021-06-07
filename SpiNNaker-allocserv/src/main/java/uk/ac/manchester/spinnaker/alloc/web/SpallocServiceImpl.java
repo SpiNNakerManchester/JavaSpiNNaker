@@ -197,8 +197,13 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 				try {
 					// No epoch; value not retained
 					return ok(new WhereIsResponse(
-							machine.getBoardByLogicalCoords(x, y, z, null), ui))
-									.build();
+							machine.getBoardByLogicalCoords(x, y, z, null)
+									.orElseThrow(() -> {
+										return new WebApplicationException(
+												"failed to locate board",
+												NOT_FOUND);
+									}),
+							ui)).build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
 					throw new WebApplicationException("failed to locate board");
@@ -212,7 +217,11 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 					// No epoch; value not retained
 					return ok(new WhereIsResponse(
 							machine.getBoardByPhysicalCoords(cabinet, frame,
-									board, null),
+									board, null).orElseThrow(() -> {
+										return new WebApplicationException(
+												"failed to locate board",
+												NOT_FOUND);
+									}),
 							ui)).build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
@@ -224,8 +233,11 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public Response whereIsMachineChipLocation(int x, int y) {
 				try {
 					// No epoch; value not retained
-					return ok(new WhereIsResponse(
-							machine.getBoardByChip(x, y, null), ui)).build();
+					return ok(new WhereIsResponse(machine
+							.getBoardByChip(x, y, null).orElseThrow(() -> {
+								return new WebApplicationException(
+										"failed to locate board", NOT_FOUND);
+							}), ui)).build();
 				} catch (SQLException e) {
 					log.error("failed to locate board", e);
 					throw new WebApplicationException("failed to locate board");
@@ -413,6 +425,10 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		}
 		if (req.dimensions.size() == 0) {
 			req.dimensions.add(1);
+		}
+		if (req.dimensions.stream().anyMatch(x -> x < 0)) {
+			throw new WebApplicationException("dimensions must not be negative",
+					BAD_REQUEST);
 		}
 		if (req.tags == null) {
 			req.tags = new ArrayList<>();
