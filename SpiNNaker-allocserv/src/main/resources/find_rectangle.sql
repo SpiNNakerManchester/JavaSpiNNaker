@@ -37,11 +37,12 @@ FROM args, bs, (
 		gy(y) AS (SELECT 0 UNION SELECT y+1 FROM gy, m WHERE y < m.height - 1),
 		-- Form the sequences into grids of points
 		c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad),
-		g(x,y) AS (SELECT x, y, z FROM gx, gy)
+		g(x,y) AS (SELECT x, y FROM gx, gy)
 	SELECT board_id, bs.x AS x, bs.y AS y,
 		SUM(bs.may_be_allocated) AS available
-	FROM bs, c, g, args
-	WHERE bs.x = c.x + g.x AND bs.y = c.y + g.y AND bs.z = c.z
+	FROM bs, c, g, args, m
+	WHERE bs.x = (c.x + g.x) % m.width AND bs.y = (c.y + g.y) % m.height
+		AND bs.z = c.z
 	GROUP BY g.x, g.y) AS root
 WHERE available >= args.width * args.height - args.max_dead_boards
 	AND bs.board_id = id AND bs.may_be_allocated > 0

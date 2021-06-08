@@ -87,6 +87,7 @@ public class ServiceConfig extends Application {
 	 * @return The set up thread pool bean.
 	 */
 	@Bean(destroyMethod = "shutdown")
+	@DependsOn("databaseEngine")
 	ScheduledExecutorService scheduledThreadPoolExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
 		return newScheduledThreadPool(numThreads);

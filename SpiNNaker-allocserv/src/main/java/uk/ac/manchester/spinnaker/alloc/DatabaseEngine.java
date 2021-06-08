@@ -35,12 +35,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +75,9 @@ public final class DatabaseEngine {
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
+
+	@Value("classpath:/spalloc-static-data.sql")
+	private Resource sqlInitDataFile;
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
@@ -227,6 +233,16 @@ public final class DatabaseEngine {
 		}
 	}
 
+	@PreDestroy
+	private synchronized void closeConnections() throws SQLException {
+		log.info("closing all {} database connections",
+				openedConnections.size());
+		for (Connection c : openedConnections) {
+			c.close();
+		}
+		openedConnections = null;
+	}
+
 	/**
 	 * Create an engine interface for a particular database.
 	 *
@@ -247,21 +263,40 @@ public final class DatabaseEngine {
 		config.setDateClass("INTEGER");
 	}
 
+	private ThreadLocal<Connection> threadConnection = new ThreadLocal<>();
+	private List<Connection> openedConnections = new ArrayList<>();
+
 	public Connection getConnection() throws SQLException {
-		log.debug("opening database connection {}", dbConnectionUrl);
+		if (openedConnections == null) {
+			throw new IllegalStateException("database has been closed");
+		}
+		Connection cachedConn = threadConnection.get();
+		if (cachedConn != null && !cachedConn.isClosed()) {
+			return cachedConn;
+		}
+		log.info("opening database connection {}", dbConnectionUrl);
+		Connection threadConn;
 		synchronized (this) {
 			boolean doInit = !initialised || !exists(dbPath);
 			Connection conn = config.createConnection(dbConnectionUrl);
 			if (doInit) {
-				log.info("initalising DB from {}", sqlDDLFile);
+				log.info("initalising DB schema from {}", sqlDDLFile);
 				exec(conn, sqlDDLFile);
 				for (String s : functions.keySet()) {
 					Function.create(conn, s, functions.get(s));
 				}
+				transaction(conn, () -> {
+					log.info("initalising DB static data from {}",
+							sqlInitDataFile);
+					exec(conn, sqlInitDataFile);
+				});
 				initialised = true;
 			}
-			return threadBound(conn);
+			threadConn = threadBound(conn);
+			openedConnections.add(conn);
 		}
+		threadConnection.set(threadConn);
+		return threadConn;
 	}
 
 	/**

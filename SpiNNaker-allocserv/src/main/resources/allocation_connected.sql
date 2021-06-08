@@ -13,14 +13,16 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--- TODO: handle wraparounds
 WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (VALUES (?, ?, ?, ?, ?)),
+	m AS (SELECT machines.* FROM machines
+		JOIN args ON machines.machine_id = args.machine_id),
 	-- Boards on the machine in the rectangle of interest
 	bs AS (SELECT boards.* FROM boards
 		JOIN args ON boards.machine_id = args.machine_id
-		WHERE boards.x >= args.x AND boards.x < args.x + args.width
-			AND boards.y >= args.y AND boards.y < args.y + args.height
+		JOIN m
+		WHERE boards.x >= args.x AND boards.x < (args.x + args.width) % m.width
+			AND boards.y >= args.y AND boards.y < (args.y + args.height) % m.height
 			AND may_be_allocated > 0),
 	-- Links between boards of interest
 	ls AS (SELECT links.* FROM links

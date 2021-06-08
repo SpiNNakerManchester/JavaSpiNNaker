@@ -13,7 +13,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--- TODO: handle wraparounds
 WITH
 	args(job, root, x, y) AS (VALUES (?, ?, ?, ?)),
 	-- Boards that are allocated to the job
