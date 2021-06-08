@@ -19,37 +19,32 @@ package uk.ac.manchester.spinnaker.alloc;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.endpoint.Endpoint;
+import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
-import org.apache.cxf.transport.Destination;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -72,44 +67,28 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
  * Defaults to {@code /} ({@link #REST_PATH})
  * </dl>
  */
-@Configuration
 // @EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)
 // @EnableWebSecurity
 @Import(JaxRsConfig.class)
-@ComponentScan
 @PropertySource("classpath:service.properties")
 @EnableScheduling
-@EnableAutoConfiguration
-public class ServiceConfig {
+@SpringBootApplication
+@ApplicationPath("spalloc")
+public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
 	/**
-	 * Where to map the REST service core. Overridden by {@code cxf.rest.path}
-	 * property in service properties.
-	 */
-	public static final String REST_PATH = "/";
-
-	/**
-	 * Default thread pool size. Overridden by {@code num.threads} property in
-	 * service properties. Note that the thread pool is shared by many things
-	 * inside the service; if this value is too small, performance may be
-	 * severely impacted.
-	 */
-	public static final int POOL_SIZE = 16;
-
-	@Value("${cxf.rest.path:" + REST_PATH + "}") String restPath;
-
-	/**
-	 * The thread pool.
+	 * The thread pool. The rest of the application expects there to be a single
+	 * such pool.
 	 *
 	 * @param numThreads
-	 *            The size of the pool. From {@code num.threads} property;
-	 *            defaults to {@code 16}.
+	 *            The size of the pool. From
+	 *            {@code spring.task.scheduling.pool.size} property.
 	 * @return The set up thread pool bean.
 	 */
 	@Bean(destroyMethod = "shutdown")
 	ScheduledExecutorService scheduledThreadPoolExecutor(
-			@Value("${num.threads:" + POOL_SIZE + "}") int numThreads) {
+			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
 		return newScheduledThreadPool(numThreads);
 	}
 
@@ -133,13 +112,6 @@ public class ServiceConfig {
 		return provider;
 	}
 
-	private List<Object> getProviders(JacksonJsonProvider jsonProvider) {
-		List<Object> providers = new ArrayList<>();
-		providers.add(jsonProvider);
-		providers.addAll(ctx.getBeansWithAnnotation(Provider.class).values());
-		return providers;
-	}
-
 	/**
 	 * The JAX-RS interface. Note that this is only used when not in test mode.
 	 *
@@ -157,63 +129,21 @@ public class ServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnWebApplication
-	@Profile("!unittest")
-	Server jaxRsServer(
-			SpallocServiceAPI service, Executor executor,
-			JacksonJsonProvider jsonProvider, SpringBus bus) {
+	@DependsOn("JSONProvider")
+	Server jaxRsServer(SpallocServiceAPI service, Executor executor, Bus bus) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
-		factory.setAddress(restPath);
+		factory.setAddress("/");
 		factory.setBus(bus);
 		factory.setServiceBeans(asList(service));
-		factory.setProviders(getProviders(jsonProvider));
+		factory.setProviders(new ArrayList<>(
+				ctx.getBeansWithAnnotation(Provider.class).values()));
 		Server s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
 	}
 
-	@Bean
-	@Profile("unittest")
-	Server mockServer(SpallocServiceAPI service, Executor executor,
-			JacksonJsonProvider jsonProvider, SpringBus bus) {
-		getProviders(jsonProvider);
-		return new Server() {
-			@Override
-			public void start() {
-			}
-
-			@Override
-			public void stop() {
-			}
-
-			@Override
-			public void destroy() {
-			}
-
-			@Override
-			public boolean isStarted() {
-				return false;
-			}
-
-			@Override
-			public Destination getDestination() {
-				return null;
-			}
-
-			@Override
-			public Endpoint getEndpoint() {
-				return null;
-			}
-		};
-	}
-
 	@Autowired
 	private ApplicationContext ctx;
-
-	private static boolean isSystemBean(String name) {
-		// Whether a bean name is for a Spring or CXF internal bean
-		return name.contains("org.springframework.")
-				|| name.contains("org.apache.cxf.");
-	}
 
 	/**
 	 * Log what beans are actually there, ignoring the bits and pieces of
@@ -221,15 +151,7 @@ public class ServiceConfig {
 	 */
 	private void logBeans() {
 		if (log.isInfoEnabled()) {
-			log.info("beans defined: {}", stream(ctx.getBeanDefinitionNames())
-					// Remove Spring and CXF internal beans
-					.filter(name -> !ServiceConfig.isSystemBean(name))
-					.collect(toList()));
-			log.debug("system beans defined: {}",
-					stream(ctx.getBeanDefinitionNames())
-							// Just Spring and CXF internal beans
-							.filter(ServiceConfig::isSystemBean)
-							.collect(toList()));
+			log.info("beans defined: {}", asList(ctx.getBeanDefinitionNames()));
 		}
 	}
 

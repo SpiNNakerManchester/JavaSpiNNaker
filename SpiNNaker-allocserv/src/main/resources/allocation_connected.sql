@@ -13,6 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- TODO: handle wraparounds
 WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (VALUES (?, ?, ?, ?, ?)),
 	-- Boards on the machine in the rectangle of interest

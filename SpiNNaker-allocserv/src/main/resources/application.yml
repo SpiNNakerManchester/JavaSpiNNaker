@@ -13,18 +13,35 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+logging:
+  level:
+    root: INFO
+    org.springframework.boot.autoconfigure.logging: INFO
+    org.springframework.beans.factory.support: INFO
+
 spring:
+  main:
+    banner-mode: off
   application:
     name: spalloc
+  mvc:
+    servlet.path: /
+  task:
+    scheduling:
+      pool:
+        # Default thread pool size. Note that the thread pool is shared by many
+        # things inside the service; if this value is too small, performance
+        # may be severely impacted or requests may fail.
+        size: 16
 
 server:
   port: 8080
 
 cxf:
-  jaxrs:
-    server:
-      path: /
-    component-scan: true
+  path: /
+#  jaxrs:
+#    component-scan: true
+#    classes-scan-packages: uk.ac.manchester.spinnaker.alloc
 
 
 #cxf.rest.path: /

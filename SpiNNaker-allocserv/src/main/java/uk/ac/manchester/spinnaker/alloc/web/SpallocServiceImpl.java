@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
@@ -51,6 +52,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 @Service("service")
+@Path("spalloc")
 public class SpallocServiceImpl implements SpallocServiceAPI {
 	private static final Logger log = getLogger(SpallocServiceImpl.class);
 
