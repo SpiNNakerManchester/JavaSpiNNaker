@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
 import static java.util.Objects.requireNonNull;
@@ -23,10 +24,13 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
-import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
+import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,6 +56,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteConnection;
+
+import uk.ac.manchester.spinnaker.storage.ResultColumn;
+import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
 /**
  * The database engine interface. Based on SQLite.
@@ -65,7 +73,7 @@ public final class DatabaseEngine {
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
 
 	/** Busy timeout for SQLite, in milliseconds. */
-	private static final int BUSY_TIMEOUT = 500;
+	private static final int BUSY_TIMEOUT = 1000;
 
 	private boolean initialised;
 
@@ -216,31 +224,26 @@ public final class DatabaseEngine {
 		}
 	}
 
+	@ResultColumn("c")
+	@SingleRowResult
+	private static final String COUNT_MOVEMENTS =
+			"SELECT count(*) AS c FROM movement_directions";
+
 	@PostConstruct
 	private void ensureDBsetup() throws SQLException {
-		try (Connection conn = getConnection()) {
-			try (Query q = query(conn,
-					"SELECT count(*) AS c FROM movement_directions")) {
-				for (Row row : q.call()) {
-					if (row.getInt("c") < 6) {
-						log.warn("database {} seems incomplete",
-								dbConnectionUrl);
-					} else {
-						log.debug("database {} ready", dbConnectionUrl);
-					}
-				}
+		Thread cleaner =
+				new Thread(this::connectionCloser, "DatabaseEngineCleaner");
+		cleaner.setDaemon(true);
+		cleaner.start();
+		try (Connection conn = getConnection();
+				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
+			Row row = countMovements.call1().get();
+			if (row.getInt("c") < 6) {
+				log.warn("database {} seems incomplete", dbConnectionUrl);
+			} else {
+				log.debug("database {} ready", dbConnectionUrl);
 			}
 		}
-	}
-
-	@PreDestroy
-	private synchronized void closeConnections() throws SQLException {
-		log.info("closing all {} database connections",
-				openedConnections.size());
-		for (Connection c : openedConnections) {
-			c.close();
-		}
-		openedConnections = null;
 	}
 
 	/**
@@ -263,14 +266,53 @@ public final class DatabaseEngine {
 		config.setDateClass("INTEGER");
 	}
 
-	private ThreadLocal<Connection> threadConnection = new ThreadLocal<>();
-	private List<Connection> openedConnections = new ArrayList<>();
+	/**
+	 * How to initialise a connection opened on a database that didn't
+	 * previously exist.
+	 *
+	 * @param conn
+	 *            The connection to the database.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	private void initDBConn(SQLiteConnection conn) throws SQLException {
+		log.info("initalising DB ({}) schema from {}", conn.libversion(),
+				sqlDDLFile);
+		exec(conn, sqlDDLFile);
+		for (String s : functions.keySet()) {
+			Function.create(conn, s, functions.get(s));
+		}
+		transaction(conn, () -> {
+			log.info("initalising DB static data from {}", sqlInitDataFile);
+			exec(conn, sqlInitDataFile);
+		});
+	}
 
+	// Implement a per-thread connection cache
+
+	private ThreadLocal<SoftReference<SQLiteConnection>> threadConnection =
+			ThreadLocal.withInitial(() -> null);
+
+	private List<SoftReference<SQLiteConnection>> openedConnections =
+			new ArrayList<>();
+
+	private ReferenceQueue<SQLiteConnection> queue = new ReferenceQueue<>();
+
+	/**
+	 * Get a connection. This connection is thread-bound; it <em>must not</em>
+	 * be passed to other threads. They should get their own connections
+	 * instead.
+	 *
+	 * @return A configured initialised connection to the database.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
 	public Connection getConnection() throws SQLException {
 		if (openedConnections == null) {
 			throw new IllegalStateException("database has been closed");
 		}
-		Connection cachedConn = threadConnection.get();
+		SoftReference<SQLiteConnection> softRef = threadConnection.get();
+		Connection cachedConn = softRef == null ? null : softRef.get();
 		if (cachedConn != null && !cachedConn.isClosed()) {
 			return cachedConn;
 		}
@@ -278,25 +320,60 @@ public final class DatabaseEngine {
 		Connection threadConn;
 		synchronized (this) {
 			boolean doInit = !initialised || !exists(dbPath);
-			Connection conn = config.createConnection(dbConnectionUrl);
+			SQLiteConnection conn =
+					(SQLiteConnection) config.createConnection(dbConnectionUrl);
 			if (doInit) {
-				log.info("initalising DB schema from {}", sqlDDLFile);
-				exec(conn, sqlDDLFile);
-				for (String s : functions.keySet()) {
-					Function.create(conn, s, functions.get(s));
-				}
-				transaction(conn, () -> {
-					log.info("initalising DB static data from {}",
-							sqlInitDataFile);
-					exec(conn, sqlInitDataFile);
-				});
+				initDBConn(conn);
 				initialised = true;
 			}
-			threadConn = threadBound(conn);
-			openedConnections.add(conn);
+			softRef = new SoftReference<>(conn, queue);
+			threadConn = uncloseableThreadBound(conn);
+			openedConnections.add(softRef);
 		}
-		threadConnection.set(threadConn);
+		threadConnection.set(softRef);
 		return threadConn;
+	}
+
+	@PreDestroy
+	private synchronized void closeConnections() throws SQLException {
+		log.info("closing all {} database connections",
+				openedConnections.size());
+		for (SoftReference<SQLiteConnection> c : openedConnections) {
+			SQLiteConnection conn = c.get();
+			if (conn != null) {
+				// Alas, we can't do this on the originating thread; this is
+				// done on the raw SQLiteConnection
+				conn.close();
+			}
+		}
+		openedConnections = null;
+	}
+
+	private void connectionCloser() {
+		try {
+			while (true) {
+				Reference<? extends SQLiteConnection> softRef = queue.remove();
+				SQLiteConnection c = softRef.get();
+				try {
+					synchronized (this) {
+						/*
+						 * If it is already closed, closeConnections() has done
+						 * the job and we can just drop it silently. Good.
+						 */
+						if (c != null && !c.isClosed()) {
+							// Alas, we can't do this on the originating thread
+							c.close();
+							openedConnections.remove(softRef);
+							log.info("closed lost connection {}", c);
+						}
+					}
+				} catch (SQLException e) {
+					log.error("failed to close lost connection", e);
+				}
+			}
+		} catch (InterruptedException ignored) {
+			// ignore
+		}
 	}
 
 	/**
@@ -369,6 +446,36 @@ public final class DatabaseEngine {
 	}
 
 	/**
+	 * Get the stack frame description of the caller of the of the transaction.
+	 *
+	 * @return The (believed) caller of the transaction. {@code null} if this
+	 *         can't be determined.
+	 */
+	private static StackTraceElement getCaller() {
+		try {
+			boolean found = false;
+			for (StackTraceElement frame : currentThread().getStackTrace()) {
+				String name = frame.getClassName();
+				if (name.startsWith("java.") || name.startsWith("javax.")
+						// MAGIC!
+						|| name.startsWith("sun.")) {
+					continue;
+				}
+				boolean found1 = name.equals(DatabaseEngine.class.getName())
+						// Special case
+						&& !frame.getMethodName().contains("initDBConn");
+				found |= found1;
+				if (found && !found1) {
+					return frame;
+				}
+			}
+		} catch (SecurityException ignored) {
+			// Security manager says no? OK, we can cope.
+		}
+		return null;
+	}
+
+	/**
 	 * A nestable transaction runner. If the {@code operation} completes
 	 * normally (and this isn't a nested use), the transaction commits. If an
 	 * exception is thrown, the transaction is rolled back.
@@ -390,6 +497,9 @@ public final class DatabaseEngine {
 			operation.act();
 			return;
 		}
+		if (log.isDebugEnabled()) {
+			log.debug("start transaction:\n{}", getCaller());
+		}
 		conn.setAutoCommit(false);
 		boolean done = false;
 		try {
@@ -404,6 +514,8 @@ public final class DatabaseEngine {
 			if (!done) {
 				conn.rollback();
 			}
+			conn.setAutoCommit(true);
+			log.debug("finish transaction");
 		}
 	}
 
@@ -431,6 +543,9 @@ public final class DatabaseEngine {
 			// Already in a transaction; just run the operation
 			return operation.act();
 		}
+		if (log.isDebugEnabled()) {
+			log.debug("start transaction:\n{}", getCaller());
+		}
 		conn.setAutoCommit(false);
 		boolean done = false;
 		try {
@@ -447,6 +562,7 @@ public final class DatabaseEngine {
 				conn.rollback();
 			}
 			conn.setAutoCommit(true);
+			log.debug("finish transaction");
 		}
 	}
 

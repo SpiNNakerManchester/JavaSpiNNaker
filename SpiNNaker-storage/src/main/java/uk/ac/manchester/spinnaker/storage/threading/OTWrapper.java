@@ -96,7 +96,7 @@ abstract class OTWrapper implements Wrapper {
 	}
 
 	final Connection wrap(Connection c) {
-		return new OTConnection(ot, c);
+		return new OTConnection(ot, c, false);
 	}
 
 	final ResultSet wrap(ResultSet c) {

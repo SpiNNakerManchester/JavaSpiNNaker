@@ -42,10 +42,12 @@ import java.util.concurrent.Executor;
  */
 final class OTConnection extends OTWrapper implements Connection {
 	private final Connection conn;
+	final boolean closeable;
 
-	OTConnection(OneThread ot, Connection conn) {
+	OTConnection(OneThread ot, Connection conn, boolean closeable) {
 		super(ot, conn);
 		this.conn = conn;
+		this.closeable = closeable;
 	}
 
 	@Override
@@ -98,7 +100,9 @@ final class OTConnection extends OTWrapper implements Connection {
 	@Override
 	public void close() throws SQLException {
 		validateThread();
-		conn.close();
+		if (closeable) {
+			conn.close();
+		}
 	}
 
 	@Override

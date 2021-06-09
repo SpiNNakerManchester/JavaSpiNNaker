@@ -39,10 +39,24 @@ public final class OneThread {
 	 */
 	public static Connection threadBound(Connection conn) {
 		OneThread ot = new OneThread();
-		return new OTConnection(ot, conn);
+		return new OTConnection(ot, conn, true);
 	}
 
-	/** <em>Only</em> the factory can make this. */
+	/**
+	 * Create the wrapper. This wrapper cannot be closed (the
+	 * {@link Connection#close()} method fails silently); it is up to the caller
+	 * to save the wrapped connection and close it at the right time.
+	 *
+	 * @param conn
+	 *            The connection that is being protected.
+	 * @return The wrapped connection.
+	 */
+	public static Connection uncloseableThreadBound(Connection conn) {
+		OneThread ot = new OneThread();
+		return new OTConnection(ot, conn, false);
+	}
+
+	/** <em>Only</em> the factory methods can make this. */
 	private OneThread() {
 		this.thread = currentThread();
 	}
