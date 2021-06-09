@@ -403,13 +403,6 @@ public abstract class SQLQueries {
 	protected static final String LOAD_DIR_INFO =
 			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
-	@Parameter("machine_id")
-	@ResultColumn("job_id")
-	protected static final String GET_JOBS_WITH_CHANGES =
-			"SELECT DISTINCT jobs.job_id FROM pending_changes JOIN jobs "
-					+ "WHERE pending_changes.job_id == jobs.job_id "
-					+ "AND jobs.machine_id == ?";
-
 	@Parameter("job_id")
 	@ResultColumn("change_id")
 	@ResultColumn("job_id")
@@ -503,4 +496,11 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	@Value("classpath:find_board_by_job_chip.sql")
 	protected Resource findBoardByJobChip;
+
+	@Parameter("machine_id")
+	@Parameter("on_delay")
+	@Parameter("off_delay")
+	@ResultColumn("job_id")
+	@Value("classpath:get_jobs_with_changes.sql")
+	protected Resource getJobsWithChanges;
 }

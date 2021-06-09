@@ -36,11 +36,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.annotation.PostConstruct;
@@ -49,6 +51,9 @@ import javax.annotation.PreDestroy;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +75,23 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
-@Service
+/**
+ * Manages the BMPs of machines controlled by Spalloc.
+ * <p>
+ * Key configuration properties:
+ * <dl>
+ * <dt>spalloc.on_delay
+ * <dd>The delay from when a board is switched on to when it becomes eligible to
+ * be switched off again.
+ * <dt>spalloc.off_delay
+ * <dd>The delay from when a board is switched off to when it becomes eligible
+ * to be switched on again.
+ * </dl>
+ *
+ * @author Donal Fellows
+ */
+@Service("bmpController")
+@ManagedResource("Spalloc:type=BMPController,name=bmpController")
 public class BMPController extends SQLQueries {
 	private static final Logger log = getLogger(BMPController.class);
 
@@ -104,6 +125,12 @@ public class BMPController extends SQLQueries {
 	private Runnable onThreadStart;
 
 	private Map<Machine, Thread> workers = new HashMap<>();
+
+	@Value("${spalloc.on_delay:PT20S}")
+	private Duration onDelay;
+
+	@Value("${spalloc.off_delay:PT30S}")
+	private Duration offDelay;
 
 	@Autowired
 	private DatabaseEngine db;
@@ -141,6 +168,39 @@ public class BMPController extends SQLQueries {
 		for (Request req : takeRequests()) {
 			addRequest(req);
 		}
+	}
+
+	/**
+	 * Gets an estimate of the number of requests pending. This may include
+	 * active requests that are being processed.
+	 *
+	 * @return The number of requests in the database queue.
+	 * @throws SQLException
+	 *             If anything goes wrong with the DB access.
+	 */
+	@ManagedAttribute(description = "An estimate of the number of requests "
+			+ "pending.")
+	public int getPendingRequestLoading() throws SQLException {
+		try (Connection conn = db.getConnection();
+				Query countChanges = query(conn,
+						"SELECT count(*) AS c FROM pending_changes")) {
+			Optional<Row> row = countChanges.call1();
+			if (row.isPresent()) {
+				return row.get().getInt("c");
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Gets an estimate of the number of requests actually being processed.
+	 *
+	 * @return The number of requests on the active queue.
+	 */
+	@ManagedAttribute(description = "An estimate of the number of requests "
+			+ "actually being processed.")
+	public synchronized int getActiveRequestLoading() {
+		return requests.size();
 	}
 
 	private Transceiver txrx(Machine machine)
@@ -471,13 +531,13 @@ public class BMPController extends SQLQueries {
 	List<Request> takeRequests() throws SQLException {
 		List<Request> requests = new ArrayList<>();
 		try (Connection conn = db.getConnection();
-				Query getJobIds = query(conn, GET_JOBS_WITH_CHANGES);
+				Query getJobIds = query(conn, getJobsWithChanges);
 				Query getChanges = query(conn, GET_CHANGES);
 				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
-			// TODO postpone changes if too close to board switch for any job
 			transaction(conn, () -> {
 				for (Machine machine : machines) {
-					for (Row jobIds : getJobIds.call(machine.getId())) {
+					for (Row jobIds : getJobIds.call(machine.getId(), onDelay,
+							offDelay)) {
 						int jobId = jobIds.getInt("job_id");
 						List<Integer> changeIds = new ArrayList<>();
 						List<Integer> boardsOn = new ArrayList<>();

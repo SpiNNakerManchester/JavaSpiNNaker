@@ -28,9 +28,6 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseable
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,15 +36,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +61,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * @author Donal Fellows
  */
 @Component
-public final class DatabaseEngine {
+public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
@@ -231,10 +225,6 @@ public final class DatabaseEngine {
 
 	@PostConstruct
 	private void ensureDBsetup() throws SQLException {
-		Thread cleaner =
-				new Thread(this::connectionCloser, "DatabaseEngineCleaner");
-		cleaner.setDaemon(true);
-		cleaner.start();
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
 			Row row = countMovements.call1().get();
@@ -288,15 +278,11 @@ public final class DatabaseEngine {
 		});
 	}
 
-	// Implement a per-thread connection cache
-
-	private ThreadLocal<SoftReference<SQLiteConnection>> threadConnection =
-			ThreadLocal.withInitial(() -> null);
-
-	private List<SoftReference<SQLiteConnection>> openedConnections =
-			new ArrayList<>();
-
-	private ReferenceQueue<SQLiteConnection> queue = new ReferenceQueue<>();
+	@Override
+	SQLiteConnection openDatabaseConnection() throws SQLException {
+		log.info("opening database connection {}", dbConnectionUrl);
+		return (SQLiteConnection) config.createConnection(dbConnectionUrl);
+	}
 
 	/**
 	 * Get a connection. This connection is thread-bound; it <em>must not</em>
@@ -308,71 +294,14 @@ public final class DatabaseEngine {
 	 *             If anything goes wrong.
 	 */
 	public Connection getConnection() throws SQLException {
-		if (openedConnections == null) {
-			throw new IllegalStateException("database has been closed");
-		}
-		SoftReference<SQLiteConnection> softRef = threadConnection.get();
-		Connection cachedConn = softRef == null ? null : softRef.get();
-		if (cachedConn != null && !cachedConn.isClosed()) {
-			return cachedConn;
-		}
-		log.info("opening database connection {}", dbConnectionUrl);
-		Connection threadConn;
 		synchronized (this) {
 			boolean doInit = !initialised || !exists(dbPath);
-			SQLiteConnection conn =
-					(SQLiteConnection) config.createConnection(dbConnectionUrl);
+			SQLiteConnection conn = getCachedDatabaseConnection();
 			if (doInit) {
 				initDBConn(conn);
 				initialised = true;
 			}
-			softRef = new SoftReference<>(conn, queue);
-			threadConn = uncloseableThreadBound(conn);
-			openedConnections.add(softRef);
-		}
-		threadConnection.set(softRef);
-		return threadConn;
-	}
-
-	@PreDestroy
-	private synchronized void closeConnections() throws SQLException {
-		log.info("closing all {} database connections",
-				openedConnections.size());
-		for (SoftReference<SQLiteConnection> c : openedConnections) {
-			SQLiteConnection conn = c.get();
-			if (conn != null) {
-				// Alas, we can't do this on the originating thread; this is
-				// done on the raw SQLiteConnection
-				conn.close();
-			}
-		}
-		openedConnections = null;
-	}
-
-	private void connectionCloser() {
-		try {
-			while (true) {
-				Reference<? extends SQLiteConnection> softRef = queue.remove();
-				SQLiteConnection c = softRef.get();
-				try {
-					synchronized (this) {
-						/*
-						 * If it is already closed, closeConnections() has done
-						 * the job and we can just drop it silently. Good.
-						 */
-						if (c != null && !c.isClosed()) {
-							// Alas, we can't do this on the originating thread
-							c.close();
-							openedConnections.remove(softRef);
-							log.info("closed lost connection {}", c);
-						}
-					}
-				} catch (SQLException e) {
-					log.error("failed to close lost connection", e);
-				}
-			}
-		} catch (InterruptedException ignored) {
-			// ignore
+			return uncloseableThreadBound(conn);
 		}
 	}
 
