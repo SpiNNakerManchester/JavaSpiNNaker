@@ -51,6 +51,7 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
@@ -92,6 +93,10 @@ class BootTest {
 		assertNotNull(service);
 		assertNotNull(core);
 		assertNotNull(db);
+	}
+
+	private static boolean isFKFail(SQLException e) {
+		return e.getMessage().contains("[SQLITE_CONSTRAINT_FOREIGNKEY]");
 	}
 
 	@Nested
@@ -397,5 +402,113 @@ class BootTest {
 		}
 
 		// TODO add tests of the updates/inserts/deletes
+
+		@Test
+		void insertJob() throws SQLException {
+			Duration d = Duration.ofSeconds(100);
+			try (Update u = update(c, INSERT_JOB)) {
+				SQLException e = assertThrows(SQLException.class,
+						() -> u.keys(NO_MACHINE, "gorp", d));
+				assertTrue(isFKFail(e)); // machine doesn't exist
+			}
+		}
+
+		@Test
+		void insertReqNBoards() throws SQLException {
+			try (Update u = update(c, INSERT_REQ_N_BOARDS)) {
+				SQLException e = assertThrows(SQLException.class,
+						() -> u.keys(NO_JOB, -1, -1));
+				assertTrue(isFKFail(e)); // job doesn't exist
+			}
+		}
+
+		@Test
+		void insertReqSize() throws SQLException {
+			try (Update u = update(c, INSERT_REQ_SIZE)) {
+				SQLException e = assertThrows(SQLException.class,
+						() -> u.keys(NO_JOB, -1, -1, -1));
+				assertTrue(isFKFail(e)); // job doesn't exist
+			}
+		}
+
+		@Test
+		void insertReqLocation() throws SQLException {
+			try (Update u = update(c, INSERT_REQ_LOCATION)) {
+				SQLException e = assertThrows(SQLException.class,
+						() -> u.keys(NO_JOB, -1, -1, -1));
+				assertTrue(isFKFail(e)); // job doesn't exist
+			}
+		}
+
+		@Test
+		void updateKeepalive() throws SQLException {
+			try (Update u = update(c, UPDATE_KEEPALIVE)) {
+				assertEquals(0, u.call("gorp", NO_JOB));
+			}
+		}
+
+		@Test
+		void destroyJob() throws SQLException {
+			try (Update u = update(c, DESTROY_JOB)) {
+				assertEquals(0, u.call("gorp", NO_JOB));
+			}
+		}
+
+		@Test
+		void deleteTask() throws SQLException {
+			try (Update u = update(c, DELETE_TASK)) {
+				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
+		void allocateBoardsJob() throws SQLException {
+			try (Update u = update(c, ALLOCATE_BOARDS_JOB)) {
+				assertEquals(0, u.call(-1, -1, NO_BOARD, NO_JOB));
+			}
+		}
+
+		@Test
+		void allocateBoardsBoard() throws SQLException {
+			try (Update u = update(c, ALLOCATE_BOARDS_BOARD)) {
+				assertEquals(0, u.call(NO_JOB, NO_BOARD));
+			}
+		}
+
+		@Test
+		void setStatePending() throws SQLException {
+			try (Update u = update(c, SET_STATE_PENDING)) {
+				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+			}
+		}
+
+		@Test
+		void killJobAllocTask() throws SQLException {
+			try (Update u = update(c, KILL_JOB_ALLOC_TASK)) {
+				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
+		void killJobPending() throws SQLException {
+			try (Update u = update(c, KILL_JOB_PENDING)) {
+				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
+		void setInProgress() throws SQLException {
+			try (Update u = update(c, SET_IN_PROGRESS)) {
+				assertEquals(0, u.call(false, NO_JOB));
+			}
+		}
+
+		@Test
+		void issueChangeForJob() throws SQLException {
+			try (Update u = update(c, issueChangeForJob)) {
+				assertEquals(0, u.keys(NO_JOB, NO_BOARD, true, false, false,
+						false, false, false, false));
+			}
+		}
 	}
 }
