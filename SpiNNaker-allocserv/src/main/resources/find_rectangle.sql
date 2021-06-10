@@ -38,7 +38,7 @@ FROM args, bs, (
 		-- Form the sequences into grids of points
 		c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad),
 		g(x,y) AS (SELECT x, y FROM gx, gy)
-	SELECT board_id, bs.x AS x, bs.y AS y,
+	SELECT board_id, bs.x AS x, bs.y AS y, bs.z AS z,
 		SUM(bs.may_be_allocated) AS available
 	FROM bs, c, g, args, m
 	WHERE bs.x = (c.x + g.x) % m.width AND bs.y = (c.y + g.y) % m.height

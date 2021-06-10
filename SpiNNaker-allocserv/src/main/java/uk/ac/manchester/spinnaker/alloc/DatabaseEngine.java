@@ -32,14 +32,17 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -51,6 +54,7 @@ import org.springframework.stereotype.Component;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
@@ -97,6 +101,24 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private Row(ResultSet rs) {
 			this.rs = rs;
+		}
+
+		/**
+		 * Get the column names from this row.
+		 *
+		 * @return The set of column names; all lookup of columns is by name, so
+		 *         the order is unimportant. (The set returned will iterate over
+		 *         the names in the order they are in the underlying result set,
+		 *         but this is considered "unimportant".)
+		 * @throws SQLException
+		 */
+		public Set<String> getColumnNames() throws SQLException {
+			ResultSetMetaData md = rs.getMetaData();
+			Set<String> names = new LinkedHashSet<>();
+			for (int i = 1; i <= md.getColumnCount(); i++) {
+				names.add(md.getColumnName(i));
+			}
+			return names;
 		}
 
 		/**
@@ -327,6 +349,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static void setParams(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		int idx = 0;
+		int paramCount = s.getParameterMetaData().getParameterCount();
+		if (paramCount == 0 && arguments.length > 0) {
+			throw new SQLException("prepared statement takes no arguments");
+		} else if (paramCount != arguments.length) {
+			throw new SQLException("prepared statement takes " + paramCount
+					+ " arguments, not " + arguments.length);
+		}
 		s.clearParameters();
 		for (Object arg : arguments) {
 			if (arg instanceof Instant) {
@@ -354,7 +383,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static int runUpdate(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		setParams(s, arguments);
-		return s.executeUpdate();
+		try {
+			return s.executeUpdate();
+		} catch (SQLiteException e) {
+			throw rewriteException(e);
+		}
 	}
 
 	/**
@@ -371,7 +404,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static ResultSet runQuery(PreparedStatement s, Object... arguments)
 			throws SQLException {
 		setParams(s, arguments);
-		return s.executeQuery();
+		try {
+			return s.executeQuery();
+		} catch (SQLiteException e) {
+			throw rewriteException(e);
+		}
 	}
 
 	/**
@@ -656,6 +693,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try (Statement s = conn.createStatement()) {
 			// MUST be executeUpdate() to run multiple statements at once!
 			s.executeUpdate(sql);
+		} catch (SQLiteException e) {
+			throw rewriteException(e);
 		}
 	}
 
@@ -664,7 +703,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param conn
 	 *            The connection.
-	 * @param sql
+	 * @param sqlResource
 	 *            Reference to the SQL to run. Probably DDL. This may contain
 	 *            multiple statements.
 	 * @throws SQLException
@@ -673,6 +712,49 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static void exec(Connection conn, Resource sqlResource)
 			throws SQLException {
 		exec(conn, readSQL(sqlResource));
+	}
+
+	/**
+	 * Run some SQL where the result is of no interest.
+	 *
+	 * @param sql
+	 *            The SQL to run. Probably DDL. This may contain multiple
+	 *            statements.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public void exec(String sql) throws SQLException {
+		try (Connection conn = getConnection()) {
+			exec(conn, sql);
+		}
+	}
+
+	/**
+	 * Run some SQL where the result is of no interest.
+	 *
+	 * @param sqlResource
+	 *            Reference to the SQL to run. Probably DDL. This may contain
+	 *            multiple statements.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public void exec(Resource sqlResource) throws SQLException {
+		try (Connection conn = getConnection()) {
+			exec(conn, sqlResource);
+		}
+	}
+
+	private static SQLiteException rewriteException(SQLiteException e) {
+		// Sometimes, exception messages obscure rather than illuminate
+		String msg = e.getMessage();
+		if (msg.contains("SQL error or missing database (")) {
+			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
+					"$1");
+			SQLiteException e2 = new SQLiteException(msg, e.getResultCode());
+			e2.setStackTrace(e.getStackTrace());
+			return e2;
+		}
+		return e;
 	}
 
 	/**
@@ -686,7 +768,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		private ResultSet rs;
 
 		private Query(Connection conn, String sql) throws SQLException {
-			s = conn.prepareStatement(sql);
+			try {
+				s = conn.prepareStatement(sql);
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 			rs = null;
 		}
 
@@ -709,11 +795,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
-		public Iterable<Row> call(Object... arguments)
-				throws SQLException {
+		public Iterable<Row> call(Object... arguments) throws SQLException {
 			setParams(s, arguments);
 			closeResults();
-			rs = s.executeQuery();
+			try {
+				rs = s.executeQuery();
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 			Row row = new Row(rs);
 			return () -> new Iterator<Row>() {
 				private boolean finished = false;
@@ -764,7 +853,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public Optional<Row> call1(Object... arguments) throws SQLException {
 			setParams(s, arguments);
 			closeResults();
-			rs = s.executeQuery();
+			try {
+				rs = s.executeQuery();
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 			if (rs.next()) {
 				return Optional.of(new Row(rs));
 			} else {
@@ -839,7 +932,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		private ResultSet rs;
 
 		private Update(Connection conn, String sql) throws SQLException {
-			s = conn.prepareStatement(sql);
+			try {
+				s = conn.prepareStatement(sql);
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 			rs = null;
 		}
 
@@ -855,7 +952,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public int call(Object... arguments) throws SQLException {
 			setParams(s, arguments);
 			closeResults();
-			return s.executeUpdate();
+			try {
+				return s.executeUpdate();
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 		}
 
 		@Override
@@ -882,7 +983,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 */
 			setParams(s, arguments);
 			closeResults();
-			s.executeUpdate();
+			try {
+				s.executeUpdate();
+			} catch (SQLiteException e) {
+				throw rewriteException(e);
+			}
 			rs = s.getGeneratedKeys();
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;
