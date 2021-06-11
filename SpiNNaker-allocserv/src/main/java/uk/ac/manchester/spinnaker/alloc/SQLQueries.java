@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.allocator;
+package uk.ac.manchester.spinnaker.alloc;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

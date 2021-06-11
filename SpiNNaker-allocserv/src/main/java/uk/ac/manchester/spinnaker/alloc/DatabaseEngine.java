@@ -68,16 +68,31 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
+	@ResultColumn("c")
+	@SingleRowResult
+	private static final String COUNT_MOVEMENTS =
+			"SELECT count(*) AS c FROM movement_directions";
+
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
 
-	/** Busy timeout for SQLite, in milliseconds. */
-	private static final int BUSY_TIMEOUT = 1000;
+	/** Constant to use to create an in-memory database. */
+	public static final Memory MEMORY = new Memory();
+
+	private static class Memory {
+		private Memory() {}
+	}
+
+	private final Path dbPath;
+
+	private final String dbConnectionUrl;
+
+	private final SQLiteConfig config = new SQLiteConfig();
 
 	private boolean initialised;
 
-	private String dbConnectionUrl;
-
-	private SQLiteConfig config = new SQLiteConfig();
+	/** Busy timeout for SQLite. */
+	@Value("${sqlite.timeout:PT1S}")
+	private Duration busyTimeout;
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
@@ -87,8 +102,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
-
-	private Path dbPath;
 
 	/**
 	 * A restricted form of result set. Note that this object <em>must not</em>
@@ -240,13 +253,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	@ResultColumn("c")
-	@SingleRowResult
-	private static final String COUNT_MOVEMENTS =
-			"SELECT count(*) AS c FROM movement_directions";
-
 	@PostConstruct
 	private void ensureDBsetup() throws SQLException {
+		setupConfig();
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
 			Row row = countMovements.call1().get();
@@ -258,12 +267,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
+	private void setupConfig() {
+		config.enforceForeignKeys(true);
+		config.setSynchronous(NORMAL);
+		config.setBusyTimeout((int) busyTimeout.toMillis());
+		config.setTransactionMode(IMMEDIATE);
+		config.setDateClass("INTEGER");
+	}
+
 	/**
 	 * Create an engine interface for a particular database.
 	 *
 	 * @param dbFile
 	 *            The file containing the database.
 	 */
+	@Autowired
 	public DatabaseEngine(
 			@Value("${databasePath:spalloc.sqlite3}") File dbFile) {
 		// We don't support :memory:
@@ -271,11 +289,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				.getAbsoluteFile().toPath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
 		log.info("will manage database at {}", dbPath);
-		config.enforceForeignKeys(true);
-		config.setSynchronous(NORMAL);
-		config.setBusyTimeout(BUSY_TIMEOUT);
-		config.setTransactionMode(IMMEDIATE);
-		config.setDateClass("INTEGER");
+	}
+
+	/**
+	 * Create an engine interface for an in-memory database. This is intended
+	 * primarily for testing purposes.
+	 *
+	 * @param memory
+	 *            Must be {@link #MEMORY}.
+	 */
+	public DatabaseEngine(Memory memory) {
+		dbPath = null;
+		dbConnectionUrl = "jdbc:sqlite::memory:";
+		log.info("will manage pure in-memory database");
 	}
 
 	/**
@@ -310,12 +336,24 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * Get a connection. This connection is thread-bound; it <em>must not</em>
 	 * be passed to other threads. They should get their own connections
 	 * instead.
+	 * <p>
+	 * Note that if an in-memory database is used (see
+	 * {@link #DatabaseEngine(Memory)}, that DB can <em>only</em> be accessed
+	 * from the connection returned from this method; the next call to this
+	 * method (whether from the current thread or another one) will get an
+	 * independent database.
 	 *
 	 * @return A configured initialised connection to the database.
 	 * @throws SQLException
 	 *             If anything goes wrong.
 	 */
 	public Connection getConnection() throws SQLException {
+		if (dbPath == null) {
+			// In-memory DB (dbPath null) always must be initialised
+			SQLiteConnection conn = openDatabaseConnection();
+			initDBConn(conn);
+			return conn;
+		}
 		synchronized (this) {
 			boolean doInit = !initialised || !exists(dbPath);
 			SQLiteConnection conn = getCachedDatabaseConnection();
