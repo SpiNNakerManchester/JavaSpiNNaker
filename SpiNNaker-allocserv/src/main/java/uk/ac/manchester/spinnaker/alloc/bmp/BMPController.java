@@ -726,13 +726,13 @@ public class BMPController extends SQLQueries {
 	 */
 	public enum LinkInfo {
 		/** Link to board to East. */
-		EAST(0, 0, "fpga_se"),
+		EAST(0, 0, "fpga_e"),
 		/** Link to board to North East. */
 		NORTH_EAST(2, 1, "fpga_ne"),
 		/** Link to board to North. */
 		NORTH(2, 0, "fpga_n"),
 		/** Link to board to West. */
-		WEST(1, 1, "fpga_nw"),
+		WEST(1, 1, "fpga_w"),
 		/** Link to board to South West. */
 		SOUTH_WEST(1, 0, "fpga_sw"),
 		/** Link to board to South. */

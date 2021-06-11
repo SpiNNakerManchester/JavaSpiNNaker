@@ -38,7 +38,7 @@ INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 -- Standard directions between boards
 INSERT OR IGNORE INTO directions("id", name)
 VALUES
-	(0, 'N'), (1, 'NE'), (2, 'SE'), (3, 'S'), (4, 'SW'), (5, 'NW');
+	(0, 'N'), (1, 'E'), (2, 'SE'), (3, 'S'), (4, 'W'), (5, 'NW');
 
 INSERT OR IGNORE INTO job_states("id", name)
 VALUES

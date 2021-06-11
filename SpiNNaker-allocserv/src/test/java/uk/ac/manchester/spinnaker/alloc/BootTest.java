@@ -506,8 +506,10 @@ class BootTest {
 		@Test
 		void issueChangeForJob() throws SQLException {
 			try (Update u = update(c, issueChangeForJob)) {
-				assertEquals(0, u.keys(NO_JOB, NO_BOARD, true, false, false,
-						false, false, false, false));
+				SQLException e = assertThrows(SQLException.class,
+						() -> u.keys(NO_JOB, NO_BOARD, true, false, false,
+								false, false, false, false));
+				assertTrue(isFKFail(e)); // job doesn't exist
 			}
 		}
 	}

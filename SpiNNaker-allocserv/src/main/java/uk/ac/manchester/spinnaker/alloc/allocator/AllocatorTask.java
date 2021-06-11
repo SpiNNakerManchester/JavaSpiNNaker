@@ -456,10 +456,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 							perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
 					numPending += issueChange.call(jobId, boardId, true,
 							!toChange.contains(Direction.N),
-							!toChange.contains(Direction.NE),
+							!toChange.contains(Direction.E),
 							!toChange.contains(Direction.SE),
 							!toChange.contains(Direction.S),
-							!toChange.contains(Direction.SW),
+							!toChange.contains(Direction.W),
 							!toChange.contains(Direction.NW));
 				}
 			} else {
@@ -483,33 +483,40 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * Represents link directions of a board.
 	 *
 	 * <pre>
-	 *      ___
-	 *  ___/ a \___
-	 * / f \___/ b \
-	 * \___/ x \___/
-	 * / e \___/ c \
-	 * \___/ d \___/
-	 *     \___/
+	 *        __
+	 *       /  |
+	 *    __/   |__
+	 *   /  | a /  |
+	 *  /   |__/   |
+	 *  | f /  | b /
+	 *  |__/   |__/
+	 *  /  | x /  |
+	 * /   |__/   |
+	 * | e /  | c /
+	 * |__/   |__/
+	 *    | d /
+	 *    |__/
 	 * </pre>
 	 *
 	 * Note that this is tilted over with respect to reality; to
-	 * <em>actually</em> go "vertically north", you have to go first {@link #N}
-	 * and then {@link #NW}, taking two boards to actually go straight north (by
-	 * an offset of 12 chips).
+	 * <em>actually</em> go "true vertically north", you have to go first
+	 * {@link #N} and then {@link #NW}, taking two boards to actually go
+	 * straight north (by an offset of 12 chips).
 	 *
+	 * @see DirInfo
 	 * @author Donal Fellows
 	 */
 	public enum Direction {
 		/** Northward, from {@code x} to {@code a}. */
 		N,
-		/** Northeast, from {@code x} to {@code b}. */
-		NE,
+		/** Eastward, from {@code x} to {@code b}. */
+		E,
 		/** Southeast, from {@code x} to {@code c}. */
 		SE,
 		/** Southward, from {@code x} to {@code d}. */
 		S,
-		/** Southwest, from {@code x} to {@code e}. */
-		SW,
+		/** Westward, from {@code x} to {@code e}. */
+		W,
 		/** Northwest, from {@code x} to {@code f}. */
 		NW
 	}
@@ -534,21 +541,21 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * chips horizontally offset from 0,0,0; the hexagons are actually a
 	 * distorted shape. This is closer:
 	 * <pre>
-	 *    __     __
-	 *   /  |   /  |
-	 *  /   |__/   |__
-	 *  | 2 /  | 2 /  |
-	 *  |__/   |__/   |
-	 *  /  | 1 /  | 1 /
-	 * /0,1|__/1,1|__/
-	 * | 0 /  | 0 /  |
-	 * |__/   |__/   |__
-	 *    | 2 /  | 2 /  |
-	 *    |__/   |__/   |
-	 *    /  | 1 /  | 1 /
-	 *   /0,0|__/1,0|__/
-	 *   | 0 /  | 0 /
-	 *   |__/   |__/
+	 *    __     __     __     __
+	 *   /  |   /  |   /  |   /  |
+	 *  /   |__/   |__/   |__/   |__
+	 *  | 2 /  | 2 /  | 2 /  | 2 /  |
+	 *  |__/   |__/   |__/   |__/   |
+	 *  /  | 1 /  | 1 /  | 1 /  | 1 /
+	 * /0,1|__/1,1|__/2,1|__/3,1|__/
+	 * | 0 /  | 0 /  | 0 /  | 0 /  |
+	 * |__/   |__/   |__/   |__/   |__
+	 *    | 2 /  | 2 /  | 2 /  | 2 /  |
+	 *    |__/   |__/   |__/   |__/   |
+	 *    /  | 1 /  | 1 /  | 1 /  | 1 /
+	 *   /0,0|__/1,0|__/2,0|__/3,0|__/
+	 *   | 0 /  | 0 /  | 0 /  | 0 /
+	 *   |__/   |__/   |__/   |__/
 	 * </pre>
 	 *
 	 * @author Donal Fellows

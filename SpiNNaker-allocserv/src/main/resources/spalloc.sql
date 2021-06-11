@@ -142,10 +142,10 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     "power" INTEGER NOT NULL, -- Whether to switch the board on
     fpga_n INTEGER NOT NULL, -- Whether to switch the northward FPGA on
     fpga_s INTEGER NOT NULL, -- Whether to switch the southward FPGA on
-    fpga_ne INTEGER NOT NULL, -- Whether to switch the northeast FPGA on
+    fpga_e INTEGER NOT NULL, -- Whether to switch the eastward FPGA on
+    fpga_w INTEGER NOT NULL, -- Whether to switch the westward FPGA on
     fpga_nw INTEGER NOT NULL, -- Whether to switch the northwest FPGA on
-    fpga_se INTEGER NOT NULL, -- Whether to switch the southeast FPGA on
-    fpga_sw INTEGER NOT NULL, -- Whether to switch the southwest FPGA ON
+    fpga_se INTEGER NOT NULL, -- Whether to switch the southeast FPGA ON
     in_progress INTEGER NOT NULL DEFAULT (0)
 );
 
