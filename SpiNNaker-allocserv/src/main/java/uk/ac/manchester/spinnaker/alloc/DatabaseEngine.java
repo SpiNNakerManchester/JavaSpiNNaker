@@ -75,13 +75,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
 
-	/** Constant to use to create an in-memory database. */
-	public static final Memory MEMORY = new Memory();
-
-	private static class Memory {
-		private Memory() {}
-	}
-
 	private final Path dbPath;
 
 	private final String dbConnectionUrl;
@@ -92,7 +85,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/** Busy timeout for SQLite. */
 	@Value("${sqlite.timeout:PT1S}")
-	private Duration busyTimeout;
+	private Duration busyTimeout = Duration.ofSeconds(1);
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
@@ -293,15 +286,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/**
 	 * Create an engine interface for an in-memory database. This is intended
-	 * primarily for testing purposes.
+	 * for testing purposes.
 	 *
-	 * @param memory
-	 *            Must be {@link #MEMORY}.
+	 * @param prototype
+	 *            Used to initialise fields normally set by injection.
 	 */
-	public DatabaseEngine(Memory memory) {
+	public DatabaseEngine(DatabaseEngine prototype) {
 		dbPath = null;
 		dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage pure in-memory database");
+		busyTimeout = prototype.busyTimeout;
+		sqlDDLFile = prototype.sqlDDLFile;
+		sqlInitDataFile = prototype.sqlInitDataFile;
+		setupConfig();
 	}
 
 	/**
