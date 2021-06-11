@@ -82,6 +82,7 @@ public abstract class SQLQueries {
 	@ResultColumn("machine_id")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("depth")
 	@ResultColumn("root_id")
 	@ResultColumn("job_state")
 	@ResultColumn("keepalive_timestamp")
@@ -91,7 +92,7 @@ public abstract class SQLQueries {
 	@ResultColumn("death_timestamp")
 	@SingleRowResult
 	protected static final String GET_JOB =
-			"SELECT machine_id, width, height, root_id, job_state, "
+			"SELECT machine_id, width, height, depth, root_id, job_state, "
 					+ "keepalive_timestamp, keepalive_host, create_timestamp, "
 					+ "death_reason, death_timestamp "
 					+ "FROM jobs WHERE job_id = ? LIMIT 1";
@@ -342,10 +343,11 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("width")
 	@Parameter("height")
+	@Parameter("depth")
 	@Parameter("board_id")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
-			+ "width = ?, height = ?, num_pending = 0, root_id = ? "
+			+ "width = ?, height = ?, depth = ?, num_pending = 0, root_id = ? "
 			+ "WHERE job_id = ?";
 
 	/** Get a board's ID by its coordinates. */

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -73,7 +72,6 @@ class BootTest {
 	}
 
 	@Test
-	@DisplayName("Spring context startup")
 	void testContextBoot() {
 		assertNotNull(service);
 		assertNotNull(core);

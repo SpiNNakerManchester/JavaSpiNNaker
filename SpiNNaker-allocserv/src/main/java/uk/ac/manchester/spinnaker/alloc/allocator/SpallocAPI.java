@@ -158,6 +158,13 @@ public interface SpallocAPI {
 		 *         if not allocated (or not known).
 		 */
 		Integer getHeight() throws SQLException;
+
+		/**
+		 * @return the allocated depth of this sub-machine, or {@code null} if
+		 *         not allocated (or not known). When suppplied, will be 1
+		 *         (single board) or 3 (by triad)
+		 */
+		Integer getDepth() throws SQLException;
 	}
 
 	/**
@@ -268,17 +275,23 @@ public interface SpallocAPI {
 		/**
 		 * @return The root Z coordinate of this sub-machine.
 		 */
-		int getRootZ();
+		int getRootZ() throws SQLException;
 
 		/**
-		 * @return The width of this sub-machine.
+		 * @return The width of this sub-machine, in triads.
 		 */
 		int getWidth() throws SQLException;
 
 		/**
-		 * @return The height of this sub-machine.
+		 * @return The height of this sub-machine, in triads.
 		 */
 		int getHeight() throws SQLException;
+
+		/**
+		 * @return The depth of this sub-machine. 1 (single board) or 3 (by
+		 *         triad)
+		 */
+		int getDepth() throws SQLException;
 
 		/**
 		 * @return The connection details of this sub-machine.

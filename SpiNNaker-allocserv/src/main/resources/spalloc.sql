@@ -37,8 +37,9 @@ FROM movement_directions JOIN directions
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_name TEXT UNIQUE NOT NULL,
-	width INTEGER NOT NULL,
-	height INTEGER NOT NULL,
+	width INTEGER NOT NULL CHECK (width > 0),
+	height INTEGER NOT NULL CHECK (height > 0),
+	"depth" INTEGER NOT NULL CHECK ("depth" IN (1, 3)),
 	board_model INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS tags (
@@ -49,13 +50,13 @@ CREATE TABLE IF NOT EXISTS boards (
 	board_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	address TEXT UNIQUE NOT NULL, -- IP address
 	bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
-	board_num INTEGER NOT NULL, -- for use with the BMP
+	board_num INTEGER NOT NULL CHECK (board_num >= 0), -- for use with the BMP
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
-	x INTEGER NOT NULL, -- Board logical coordinate
-	y INTEGER NOT NULL, -- Board logical coordinate
-	z INTEGER NOT NULL, -- Board logical coordinate
-	root_x INTEGER NOT NULL, -- Chip coordinate
-	root_y INTEGER NOT NULL, -- Chip coordinate
+	x INTEGER NOT NULL CHECK (x >= 0), -- Board logical coordinate
+	y INTEGER NOT NULL CHECK (y >= 0), -- Board logical coordinate
+	z INTEGER NOT NULL CHECK (z >= 0), -- Board logical coordinate
+	root_x INTEGER NOT NULL CHECK (root_x >= 0), -- Chip coordinate
+	root_y INTEGER NOT NULL CHECK (root_y >= 0), -- Chip coordinate
 	allocated_job INTEGER REFERENCES jobs(job_id),
 	board_power INTEGER,
 	power_off_timestamp INTEGER, -- timestamp
@@ -78,8 +79,8 @@ CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
 	address TEXT UNIQUE NOT NULL, -- IP address
-	cabinet INTEGER NOT NULL,
-	frame INTEGER NOT NULL
+	cabinet INTEGER NOT NULL CHECK (cabinet >= 0),
+	frame INTEGER NOT NULL CHECK (frame >= 0)
 );
 -- Every BMP has a unique location within its machine
 CREATE UNIQUE INDEX IF NOT EXISTS bmpSanity ON bmp(
@@ -111,8 +112,9 @@ CREATE TABLE IF NOT EXISTS jobs (
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
 	owner TEXT NOT NULL,
 	create_timestamp INTEGER NOT NULL,
-	width INTEGER, -- set after allocation
-	height INTEGER, -- set after allocation
+	width INTEGER CHECK (width > 0), -- set after allocation
+	height INTEGER CHECK (height > 0), -- set after allocation
+	"depth" INTEGER CHECK ("depth" > 0), -- set after allocation
 	root_id INTEGER REFERENCES boards(board_id) ON DELETE RESTRICT, -- set after allocation
 	job_state INTEGER NOT NULL REFERENCES job_states(id) ON DELETE RESTRICT,
 	keepalive_interval INTEGER NOT NULL,
@@ -126,34 +128,34 @@ CREATE TABLE IF NOT EXISTS jobs (
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	job_id INTEGER NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,
-	num_boards INTEGER,
-	width INTEGER,
-	height INTEGER,
-	x INTEGER,
-	y INTEGER,
-	z INTEGER,
-	max_dead_boards INTEGER NOT NULL DEFAULT (0)
+	num_boards INTEGER CHECK (num_boards > 0),
+	width INTEGER CHECK (width > 0),
+	height INTEGER CHECK (height > 0),
+	x INTEGER CHECK (x >= 0),
+	y INTEGER CHECK (y >= 0),
+	z INTEGER CHECK (z >= 0),
+	max_dead_boards INTEGER NOT NULL DEFAULT (0) CHECK (max_dead_boards >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS pending_changes (
     change_id INTEGER PRIMARY KEY AUTOINCREMENT,
     job_id INTEGER REFERENCES jobs(job_id) ON DELETE CASCADE,
     board_id INTEGER UNIQUE NOT NULL REFERENCES boards(board_id) ON DELETE RESTRICT,
-    "power" INTEGER NOT NULL, -- Whether to switch the board on
-    fpga_n INTEGER NOT NULL, -- Whether to switch the northward FPGA on
-    fpga_s INTEGER NOT NULL, -- Whether to switch the southward FPGA on
-    fpga_e INTEGER NOT NULL, -- Whether to switch the eastward FPGA on
-    fpga_w INTEGER NOT NULL, -- Whether to switch the westward FPGA on
-    fpga_nw INTEGER NOT NULL, -- Whether to switch the northwest FPGA on
-    fpga_se INTEGER NOT NULL, -- Whether to switch the southeast FPGA ON
-    in_progress INTEGER NOT NULL DEFAULT (0)
+    "power" INTEGER NOT NULL CHECK ("power" IN (0, 1)), -- Whether to switch the board on
+    fpga_n INTEGER NOT NULL CHECK (fpga_n IN (0, 1)), -- Whether to switch the northward FPGA on
+    fpga_s INTEGER NOT NULL CHECK (fpga_s IN (0, 1)), -- Whether to switch the southward FPGA on
+    fpga_e INTEGER NOT NULL CHECK (fpga_e IN (0, 1)), -- Whether to switch the eastward FPGA on
+    fpga_w INTEGER NOT NULL CHECK (fpga_w IN (0, 1)), -- Whether to switch the westward FPGA on
+    fpga_nw INTEGER NOT NULL CHECK (fpga_nw IN (0, 1)), -- Whether to switch the northwest FPGA on
+    fpga_se INTEGER NOT NULL CHECK (fpga_se IN (0, 1)), -- Whether to switch the southeast FPGA on
+    in_progress INTEGER NOT NULL DEFAULT (0) CHECK (in_progress IN (0, 1))
 );
 
 CREATE TABLE IF NOT EXISTS board_model_coords(
 	-- We never need the identitites of the rows
-	model INTEGER NOT NULL,
-	chip_x INTEGER NOT NULL,
-	chip_y INTEGER NOT NULL
+	model INTEGER NOT NULL CHECK (model IN (2, 3, 4, 5)),
+	chip_x INTEGER NOT NULL CHECK (chip_x >= 0),
+	chip_y INTEGER NOT NULL CHECK (chip_y >= 0)
 );
 -- Board chip descriptors are unique
 CREATE UNIQUE INDEX IF NOT EXISTS chipUniqueness ON board_model_coords(

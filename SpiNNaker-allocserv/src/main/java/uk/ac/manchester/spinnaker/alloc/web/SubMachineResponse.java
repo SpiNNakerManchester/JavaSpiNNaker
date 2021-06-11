@@ -38,6 +38,9 @@ public class SubMachineResponse {
 	/** Rectangle height. */ //FIXME
 	public int height;
 
+	/** Depth of rectangle. 1 or 3. */
+	public int depth;
+
 	/** On what machine. */ //FIXME
 	public String machineName;
 
@@ -56,6 +59,7 @@ public class SubMachineResponse {
 	public SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
 		width = m.getWidth();
 		height = m.getHeight();
+		depth = m.getDepth();
 		machineName = m.getMachine().getName();
 		connections = unmodifiableList(m.getConnections());
 		boards = unmodifiableList(m.getBoards());

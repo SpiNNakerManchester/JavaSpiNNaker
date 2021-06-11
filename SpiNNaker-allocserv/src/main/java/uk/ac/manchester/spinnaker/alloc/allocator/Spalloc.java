@@ -427,6 +427,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private Integer height;
 
+		private Integer depth;
+
 		private JobState state;
 
 		/** If not {@code null}, the ID of the root board of the job. */
@@ -466,6 +468,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				this.machineId = row.getInt("machine_id");
 				width = (Integer) row.getObject("width");
 				height = (Integer) row.getObject("height");
+				depth = (Integer) row.getObject("depth");
 				root = (Integer) row.getObject("root_id");
 				if (root != null) {
 					try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
@@ -595,6 +598,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return height;
 		}
 
+		@Override
+		public Integer getDepth() {
+			return depth;
+		}
+
 		private final class SubMachineImpl implements SubMachine {
 			/** The machine that this sub-machine is part of. */
 			private final Machine machine;
@@ -671,6 +679,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			@Override
 			public int getHeight() {
 				return height;
+			}
+
+			@Override
+			public int getDepth() {
+				return depth;
 			}
 
 			@Override

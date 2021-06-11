@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.exec;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -43,6 +45,12 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 
+/**
+ * Test that the database engine interface works and that the queries are
+ * synchronised with the schema.
+ *
+ * @author Donal Fellows
+ */
 @SpringBootTest
 @TestInstance(PER_CLASS)
 class DbTest extends SQLQueries {
@@ -69,19 +77,33 @@ class DbTest extends SQLQueries {
 	 * @param op
 	 *            The executable operation being tested.
 	 */
-	private static void assertThrowsFKCheck(Executable op) {
+	private static void assertThrowsFK(Executable op) {
 		SQLiteException e = assertThrows(SQLiteException.class, op);
 		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, e.getResultCode());
 	}
 
+	/**
+	 * <em>Assert</em> that execution of the supplied executable throws an
+	 * exception due to a CHECK constraint failure.
+	 *
+	 * @param op
+	 *            The executable operation being tested.
+	 */
+	private static void assertThrowsCheck(Executable op) {
+		SQLiteException e = assertThrows(SQLiteException.class, op);
+		assertEquals(SQLITE_CONSTRAINT_CHECK, e.getResultCode());
+	}
+
 	@BeforeAll
 	void getMemoryDatabase() {
+		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = new DatabaseEngine(mainDBEngine);
 	}
 
 	@BeforeEach
 	void getConnection() throws SQLException {
 		c = memdb.getConnection();
+		assumeTrue(c != null, "connection not generated");
 	}
 
 	@AfterEach
@@ -91,7 +113,6 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void testDbConn() throws SQLException {
-		assertFalse(c.isReadOnly());
 		int rows = 0;
 		try (Query q =
 				query(c, "SELECT COUNT(*) AS c FROM board_model_coords")) {
@@ -106,6 +127,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void testDbChanges() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		int rows;
 		exec(c, "CREATE TEMPORARY TABLE foo(x)");
 		try (Update u = update(c, "INSERT INTO foo(x) VALUES(?)");
@@ -367,39 +389,47 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void insertJob() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		Duration d = Duration.ofSeconds(100);
 		try (Update u = update(c, INSERT_JOB)) {
 			// No such machine
-			assertThrowsFKCheck(() -> u.keys(NO_MACHINE, "gorp", d));
+			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", d));
 		}
 	}
 
 	@Test
 	void insertReqNBoards() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_N_BOARDS)) {
 			// No such job
-			assertThrowsFKCheck(() -> u.keys(NO_JOB, -1, -1));
+			assertThrowsFK(() -> u.keys(NO_JOB, 1, 0));
+			assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0));
 		}
 	}
 
 	@Test
 	void insertReqSize() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_SIZE)) {
 			// No such job
-			assertThrowsFKCheck(() -> u.keys(NO_JOB, -1, -1, -1));
+			assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0));
+			assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0));
 		}
 	}
 
 	@Test
 	void insertReqLocation() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_LOCATION)) {
 			// No such job
-			assertThrowsFKCheck(() -> u.keys(NO_JOB, -1, -1, -1));
+			assertThrowsFK(() -> u.keys(NO_JOB, 0, 0, 0));
+			assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, -1));
 		}
 	}
 
 	@Test
 	void updateKeepalive() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, UPDATE_KEEPALIVE)) {
 			assertEquals(0, u.call("gorp", NO_JOB));
 		}
@@ -407,6 +437,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void destroyJob() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, DESTROY_JOB)) {
 			assertEquals(0, u.call("gorp", NO_JOB));
 		}
@@ -414,6 +445,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void deleteTask() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, DELETE_TASK)) {
 			assertEquals(0, u.call(NO_JOB));
 		}
@@ -421,13 +453,15 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void allocateBoardsJob() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, ALLOCATE_BOARDS_JOB)) {
-			assertEquals(0, u.call(-1, -1, NO_BOARD, NO_JOB));
+			assertEquals(0, u.call(-1, -1, -1, NO_BOARD, NO_JOB));
 		}
 	}
 
 	@Test
 	void allocateBoardsBoard() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, ALLOCATE_BOARDS_BOARD)) {
 			assertEquals(0, u.call(NO_JOB, NO_BOARD));
 		}
@@ -435,6 +469,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void setStatePending() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, SET_STATE_PENDING)) {
 			assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
 		}
@@ -442,6 +477,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void killJobAllocTask() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, KILL_JOB_ALLOC_TASK)) {
 			assertEquals(0, u.call(NO_JOB));
 		}
@@ -449,6 +485,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void killJobPending() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, KILL_JOB_PENDING)) {
 			assertEquals(0, u.call(NO_JOB));
 		}
@@ -456,6 +493,7 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void setInProgress() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, SET_IN_PROGRESS)) {
 			assertEquals(0, u.call(false, NO_JOB));
 		}
@@ -463,9 +501,10 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void issueChangeForJob() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, issueChangeForJob)) {
 			// No such job
-			assertThrowsFKCheck(() -> u.keys(NO_JOB, NO_BOARD, true, false,
+			assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, true, false,
 					false, false, false, false, false));
 		}
 	}
