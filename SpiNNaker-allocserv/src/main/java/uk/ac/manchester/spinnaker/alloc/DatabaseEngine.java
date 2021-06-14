@@ -44,6 +44,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 
@@ -366,12 +368,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
+	 * Used to ensure that only one database connection is actually writing
+	 * serialisation stuff at a time. We can wait for each other.
+	 */
+	private Lock optimiseSerialisationLock = new ReentrantLock();
+
+	/**
 	 * Optimises the database. Called when the database connection is about to
 	 * be closed due to the thread (in the thread pool) that owns it going away.
 	 * <em>Called from the thread that owns the database connection in
 	 * question.</em>
 	 */
 	private void optimiseDB() {
+		optimiseSerialisationLock.lock();
 		try {
 			long start = System.currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
@@ -392,6 +401,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			log.debug("optimised the database in {}ms", end - start);
 		} catch (SQLException e) {
 			log.warn("failed to optimise DB pre-close", e);
+		} finally {
+			optimiseSerialisationLock.unlock();
 		}
 	}
 
