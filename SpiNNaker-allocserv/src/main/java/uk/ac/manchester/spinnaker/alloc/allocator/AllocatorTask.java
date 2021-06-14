@@ -147,25 +147,27 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				toKill.add(row.getInt("job_id"));
 			}
 			for (int id : toKill) {
-				changed |= destroyJob(conn, id);
+				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 			return changed;
 		}
 	}
 
-	public void destroyJob(int id) throws SQLException {
-		if (db.execute(conn -> destroyJob(conn, id))) {
+	@Override
+	public void destroyJob(int id, String reason) throws SQLException {
+		if (db.execute(conn -> destroyJob(conn, id, reason))) {
 			epochs.nextJobsEpoch();
 			epochs.nextMachineEpoch();
 		}
 	}
 
-	private boolean destroyJob(Connection conn, int id) throws SQLException {
-		try (Update mark = update(conn, MARK_JOB_DESTROYED);
+	private boolean destroyJob(Connection conn, int id, String reason)
+			throws SQLException {
+		try (Update mark = update(conn, DESTROY_JOB);
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 				Update killPending = update(conn, KILL_JOB_PENDING)) {
 			setPower(conn, id, PowerState.OFF, DESTROYED);
-			boolean success = mark.call(id) > 0;
+			boolean success = mark.call(reason, id) > 0;
 			if (success) {
 				killAlloc.call(id);
 				killPending.call(id);

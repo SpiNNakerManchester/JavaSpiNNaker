@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
-import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -29,6 +28,9 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,6 +64,9 @@ class DbTest extends SQLQueries {
 
 	// Not equal to any board_id
 	private static final int NO_BOARD = -1;
+
+	// Not equal to any change_id
+	private static final int NO_CHANGE = -1;
 
 	@Autowired
 	private DatabaseEngine mainDBEngine;
@@ -173,9 +178,16 @@ class DbTest extends SQLQueries {
 		}
 	}
 
+	private static Set<String> set(String... strings) {
+		return new HashSet<>(Arrays.asList(strings));
+	}
+
 	@Test
 	void getAllMachines() throws SQLException {
 		try (Query q = query(c, GET_ALL_MACHINES)) {
+			assertEquals(0, q.getNumArguments());
+			assertEquals(set("machine_id", "machine_name", "width", "height"),
+					q.getRowColumnNames());
 			q.call();
 			// Must not throw
 		}
@@ -184,6 +196,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getMachineById() throws SQLException {
 		try (Query q = query(c, GET_MACHINE_BY_ID)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("machine_id", "machine_name", "width", "height"),
+					q.getRowColumnNames());
 			q.call(NO_MACHINE);
 			// Must not throw
 		}
@@ -192,6 +207,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getNamedMachine() throws SQLException {
 		try (Query q = query(c, GET_NAMED_MACHINE)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("machine_id", "machine_name", "width", "height"),
+					q.getRowColumnNames());
 			q.call("gorp");
 			// Must not throw
 		}
@@ -200,6 +218,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getJobIds() throws SQLException {
 		try (Query q = query(c, GET_JOB_IDS)) {
+			assertEquals(2, q.getNumArguments());
+			assertEquals(set("job_id", "machine_id", "job_state",
+					"keepalive_timestamp"), q.getRowColumnNames());
 			q.call(0, 0);
 			// Must not throw
 		}
@@ -208,6 +229,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getLiveJobIds() throws SQLException {
 		try (Query q = query(c, GET_LIVE_JOB_IDS)) {
+			assertEquals(2, q.getNumArguments());
+			assertEquals(set("job_id", "machine_id", "job_state",
+					"keepalive_timestamp"), q.getRowColumnNames());
 			q.call(0, 0);
 			// Must not throw
 		}
@@ -216,6 +240,13 @@ class DbTest extends SQLQueries {
 	@Test
 	void getJob() throws SQLException {
 		try (Query q = query(c, GET_JOB)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(
+					set("machine_id", "width", "height", "depth", "root_id",
+							"job_state", "keepalive_timestamp",
+							"keepalive_host", "create_timestamp",
+							"death_reason", "death_timestamp"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -223,6 +254,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getJobBoards() throws SQLException {
 		try (Query q = query(c, GET_JOB_BOARDS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -230,6 +263,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getRootOfBoard() throws SQLException {
 		try (Query q = query(c, GET_ROOT_OF_BOARD)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("root_x", "root_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
 		}
 	}
@@ -237,6 +272,12 @@ class DbTest extends SQLQueries {
 	@Test
 	void findBoardByChip() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_CHIP)) {
+			assertEquals(3, q.getNumArguments());
+			assertEquals(
+					set("board_id", "address", "bmp_id", "x", "y", "z",
+							"job_id", "machine_name", "cabinet", "frame",
+							"board_num", "chip_x", "chip_y"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
 		}
 	}
@@ -244,6 +285,12 @@ class DbTest extends SQLQueries {
 	@Test
 	void findBoardByCFB() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_CFB)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(
+					set("board_id", "address", "bmp_id", "x", "y", "z",
+							"job_id", "machine_name", "cabinet", "frame",
+							"board_num", "chip_x", "chip_y"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -251,6 +298,12 @@ class DbTest extends SQLQueries {
 	@Test
 	void findBoardByXYZ() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_XYZ)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(
+					set("board_id", "address", "bmp_id", "x", "y", "z",
+							"job_id", "machine_name", "cabinet", "frame",
+							"board_num", "chip_x", "chip_y"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -258,6 +311,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getRootBMPAddress() throws SQLException {
 		try (Query q = query(c, GET_ROOT_BMP_ADDRESS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("address"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -265,6 +320,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getBoardNumbers() throws SQLException {
 		try (Query q = query(c, GET_BOARD_NUMBERS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -272,6 +329,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getTags() throws SQLException {
 		try (Query q = query(c, GET_TAGS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("tag"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -280,8 +339,9 @@ class DbTest extends SQLQueries {
 	void getBoardPower() throws SQLException {
 		// This query always produces one row
 		try (Query q = query(c, GET_BOARD_POWER)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("total_on"), q.getRowColumnNames());
 			Row row = q.call1(NO_JOB).get();
-			assertEquals(singleton("total_on"), row.getColumnNames());
 			assertEquals(0, row.getInt("total_on"));
 		}
 	}
@@ -289,6 +349,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getBoardConnectInfo() throws SQLException {
 		try (Query q = query(c, GET_BOARD_CONNECT_INFO)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_id", "address", "x", "y", "z", "root_x",
+					"root_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -296,6 +359,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void getRootCoords() throws SQLException {
 		try (Query q = query(c, GET_ROOT_COORDS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("x", "y", "z", "root_x", "root_y"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
 		}
 	}
@@ -303,6 +369,11 @@ class DbTest extends SQLQueries {
 	@Test
 	void getTasks() throws SQLException {
 		try (Query q = query(c, GET_TASKS)) {
+			assertEquals(0, q.getNumArguments());
+			assertEquals(
+					set("req_id", "job_id", "num_boards", "width", "height",
+							"x", "y", "z", "machine_id", "max_dead_boards"),
+					q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
 		}
 	}
@@ -310,6 +381,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void findFreeBoard() throws SQLException {
 		try (Query q = query(c, FIND_FREE_BOARD)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -317,6 +390,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void getBoardByCoords() throws SQLException {
 		try (Query q = query(c, GET_BOARD_BY_COORDS)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -324,6 +399,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void findExpiredJobs() throws SQLException {
 		try (Query q = query(c, FIND_EXPIRED_JOBS)) {
+			assertEquals(0, q.getNumArguments());
+			assertEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
 		}
 	}
@@ -331,6 +408,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void loadDirInfo() throws SQLException {
 		try (Query q = query(c, LOAD_DIR_INFO)) {
+			assertEquals(0, q.getNumArguments());
+			assertEquals(set("z", "direction", "dx", "dy", "dz"),
+					q.getRowColumnNames());
 			q.call();
 		}
 	}
@@ -338,6 +418,10 @@ class DbTest extends SQLQueries {
 	@Test
 	void getChanges() throws SQLException {
 		try (Query q = query(c, GET_CHANGES)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("change_id", "job_id", "board_id", "power",
+					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
+					"fpga_se", "in_progress"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -345,6 +429,9 @@ class DbTest extends SQLQueries {
 	@Test
 	void findRectangle() throws SQLException {
 		try (Query q = query(c, findRectangle)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(set("id", "x", "y", "z", "available"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(-1, -1, NO_MACHINE, 0).isPresent());
 		}
 	}
@@ -352,6 +439,8 @@ class DbTest extends SQLQueries {
 	@Test
 	void findLocation() throws SQLException {
 		try (Query q = query(c, findLocation)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -359,15 +448,28 @@ class DbTest extends SQLQueries {
 	@Test
 	void countConnected() throws SQLException {
 		try (Query q = query(c, countConnected)) {
+			assertEquals(5, q.getNumArguments());
+			assertEquals(set("connected_size"), q.getRowColumnNames());
 			Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
-			assertEquals(singleton("connected_size"), row.getColumnNames());
 			assertEquals(0, row.getInt("connected_size"));
+		}
+	}
+
+	@Test
+	void countPendingChanges() throws SQLException {
+		try (Query q = query(c, COUNT_PENDING_CHANGES)) {
+			assertEquals(0, q.getNumArguments());
+			assertEquals(set("c"), q.getRowColumnNames());
+			Row row = q.call1().get();
+			assertEquals(0, row.getInt("c"));
 		}
 	}
 
 	@Test
 	void getPerimeterLinks() throws SQLException {
 		try (Query q = query(c, getPerimeterLinks)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_id", "direction"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -375,6 +477,10 @@ class DbTest extends SQLQueries {
 	@Test
 	void findBoardByJobChip() throws SQLException {
 		try (Query q = query(c, findBoardByJobChip)) {
+			assertEquals(4, q.getNumArguments());
+			assertEquals(set("board_id", "address", "x", "y", "z", "job_id",
+					"machine_name", "cabinet", "frame", "board_num", "chip_x",
+					"chip_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
 		}
 	}
@@ -383,6 +489,8 @@ class DbTest extends SQLQueries {
 	void getJobsWithChanges() throws SQLException {
 		Duration d = Duration.ofSeconds(1);
 		try (Query q = query(c, getJobsWithChanges)) {
+			assertEquals(3, q.getNumArguments());
+			assertEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, d, d).isPresent());
 		}
 	}
@@ -392,6 +500,7 @@ class DbTest extends SQLQueries {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		Duration d = Duration.ofSeconds(100);
 		try (Update u = update(c, INSERT_JOB)) {
+			assertEquals(3, u.getNumArguments());
 			// No such machine
 			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", d));
 		}
@@ -401,6 +510,7 @@ class DbTest extends SQLQueries {
 	void insertReqNBoards() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_N_BOARDS)) {
+			assertEquals(3, u.getNumArguments());
 			// No such job
 			assertThrowsFK(() -> u.keys(NO_JOB, 1, 0));
 			assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0));
@@ -411,6 +521,7 @@ class DbTest extends SQLQueries {
 	void insertReqSize() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_SIZE)) {
+			assertEquals(4, u.getNumArguments());
 			// No such job
 			assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0));
 			assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0));
@@ -421,6 +532,7 @@ class DbTest extends SQLQueries {
 	void insertReqLocation() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, INSERT_REQ_LOCATION)) {
+			assertEquals(4, u.getNumArguments());
 			// No such job
 			assertThrowsFK(() -> u.keys(NO_JOB, 0, 0, 0));
 			assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, -1));
@@ -431,6 +543,7 @@ class DbTest extends SQLQueries {
 	void updateKeepalive() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, UPDATE_KEEPALIVE)) {
+			assertEquals(2, u.getNumArguments());
 			assertEquals(0, u.call("gorp", NO_JOB));
 		}
 	}
@@ -439,6 +552,7 @@ class DbTest extends SQLQueries {
 	void destroyJob() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, DESTROY_JOB)) {
+			assertEquals(2, u.getNumArguments());
 			assertEquals(0, u.call("gorp", NO_JOB));
 		}
 	}
@@ -447,6 +561,7 @@ class DbTest extends SQLQueries {
 	void deleteTask() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, DELETE_TASK)) {
+			assertEquals(1, u.getNumArguments());
 			assertEquals(0, u.call(NO_JOB));
 		}
 	}
@@ -455,6 +570,7 @@ class DbTest extends SQLQueries {
 	void allocateBoardsJob() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, ALLOCATE_BOARDS_JOB)) {
+			assertEquals(5, u.getNumArguments());
 			assertEquals(0, u.call(-1, -1, -1, NO_BOARD, NO_JOB));
 		}
 	}
@@ -463,6 +579,7 @@ class DbTest extends SQLQueries {
 	void allocateBoardsBoard() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, ALLOCATE_BOARDS_BOARD)) {
+			assertEquals(2, u.getNumArguments());
 			assertEquals(0, u.call(NO_JOB, NO_BOARD));
 		}
 	}
@@ -471,6 +588,7 @@ class DbTest extends SQLQueries {
 	void setStatePending() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, SET_STATE_PENDING)) {
+			assertEquals(3, u.getNumArguments());
 			assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
 		}
 	}
@@ -479,6 +597,7 @@ class DbTest extends SQLQueries {
 	void killJobAllocTask() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, KILL_JOB_ALLOC_TASK)) {
+			assertEquals(1, u.getNumArguments());
 			assertEquals(0, u.call(NO_JOB));
 		}
 	}
@@ -487,6 +606,7 @@ class DbTest extends SQLQueries {
 	void killJobPending() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, KILL_JOB_PENDING)) {
+			assertEquals(1, u.getNumArguments());
 			assertEquals(0, u.call(NO_JOB));
 		}
 	}
@@ -495,6 +615,7 @@ class DbTest extends SQLQueries {
 	void setInProgress() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, SET_IN_PROGRESS)) {
+			assertEquals(2, u.getNumArguments());
 			assertEquals(0, u.call(false, NO_JOB));
 		}
 	}
@@ -503,9 +624,28 @@ class DbTest extends SQLQueries {
 	void issueChangeForJob() throws SQLException {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		try (Update u = update(c, issueChangeForJob)) {
+			assertEquals(9, u.getNumArguments());
 			// No such job
-			assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, true, false,
-					false, false, false, false, false));
+			assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, true, false, false,
+					false, false, false, false));
+		}
+	}
+
+	@Test
+	void setBoardPower() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, SET_BOARD_POWER)) {
+			assertEquals(2, u.getNumArguments());
+			assertEquals(0, u.call(false, NO_BOARD));
+		}
+	}
+
+	@Test
+	void finishedPending() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, FINISHED_PENDING)) {
+			assertEquals(1, u.getNumArguments());
+			assertEquals(0, u.call(NO_CHANGE));
 		}
 	}
 }

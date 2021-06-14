@@ -104,7 +104,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 * @param connection
 	 *            The connection to close.
 	 */
-	private void closeDatabaseConnection(Conn connection) {
+	void closeDatabaseConnection(Conn connection) {
 		try {
 			connection.close();
 		} catch (SQLException e) {

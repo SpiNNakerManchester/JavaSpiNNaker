@@ -264,8 +264,7 @@ public abstract class SQLQueries {
 	@Parameter("death_reason")
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB =
-			"UPDATE jobs SET job_state = 4, death_reason = ?, "
-					+ "death_timestamp = strftime('%s','now') "
+			"UPDATE jobs SET job_state = 4, death_reason = ? "
 					+ "WHERE job_id = ? AND job_state != 4";
 
 	@Parameter("job_id")
@@ -368,6 +367,11 @@ public abstract class SQLQueries {
 	protected static final String ALLOCATE_BOARDS_BOARD =
 			"UPDATE boards SET allocated_job = ? WHERE board_id = ?";
 
+	@Parameter("board_power")
+	@Parameter("board_id")
+	protected static final String SET_BOARD_POWER =
+			"UPDATE boards SET board_power = ? WHERE board_id = ?";
+
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
 			"SELECT job_id FROM jobs " //
@@ -383,18 +387,16 @@ public abstract class SQLQueries {
 			"UPDATE jobs SET job_state = ?, num_pending = ? WHERE job_id = ?";
 
 	@Parameter("job_id")
-	protected static final String MARK_JOB_DESTROYED =
-			"UPDATE jobs SET job_state = 4, " // DESTROYED
-					+ "death_timestamp = strftime('%s','now') "
-					+ "WHERE job_id = ? AND job_state != 4"; // DESTROYED
-
-	@Parameter("job_id")
 	protected static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = ?";
 
 	@Parameter("job_id")
 	protected static final String KILL_JOB_PENDING =
 			"DELETE FROM pending_changes WHERE job_id = ?";
+
+	@Parameter("change_id")
+	protected static final String FINISHED_PENDING =
+			"DELETE FROM pending_changes WHERE change_id = ?";
 
 	/**
 	 * Get descriptions of how to move from a board to its neighbours.
@@ -406,6 +408,11 @@ public abstract class SQLQueries {
 	@ResultColumn("dz")
 	protected static final String LOAD_DIR_INFO =
 			"SELECT z, direction, dx, dy, dz FROM movement_directions";
+
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_PENDING_CHANGES =
+			"SELECT count(*) AS c FROM pending_changes";
 
 	@Parameter("job_id")
 	@ResultColumn("change_id")

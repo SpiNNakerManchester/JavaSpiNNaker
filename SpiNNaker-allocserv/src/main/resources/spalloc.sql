@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS boards (
 	root_x INTEGER NOT NULL CHECK (root_x >= 0), -- Chip coordinate
 	root_y INTEGER NOT NULL CHECK (root_y >= 0), -- Chip coordinate
 	allocated_job INTEGER REFERENCES jobs(job_id),
-	board_power INTEGER,
+	board_power INTEGER CHECK (board_power IN (0, 1)),
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
 	functioning INTEGER, -- boolean
@@ -74,6 +74,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS boardBmpSanity ON boards(
 	bmp_id ASC, board_num ASC);
 CREATE INDEX IF NOT EXISTS boardReuseTimestamps ON boards(
 	power_off_timestamp ASC);
+-- When the power is changed, update the right timestamp
+CREATE TRIGGER IF NOT EXISTS boardStateTimestamping
+AFTER UPDATE OF board_power ON boards
+BEGIN
+	UPDATE boards
+		SET power_off_timestamp = strftime('%s','now')
+		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 0 AND NEW.board_power IS 0;
+	UPDATE boards
+		SET power_on_timestamp = strftime('%s','now')
+		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 1 AND NEW.board_power IS 1;
+END;
 
 CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,6 +135,22 @@ CREATE TABLE IF NOT EXISTS jobs (
 	death_timestamp INTEGER, -- timestamp
 	num_pending INTEGER NOT NULL DEFAULT (0)
 );
+-- When the job is created, update the right timestamp
+CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
+AFTER INSERT ON jobs
+BEGIN
+	UPDATE jobs
+		SET create_timestamp = strftime('%s','now')
+		WHERE job_id = NEW.job_id;
+END;
+-- When the job is destroyed, update the right timestamp
+CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
+AFTER UPDATE OF job_state ON jobs
+BEGIN
+	UPDATE jobs
+		SET death_timestamp = strftime('%s','now')
+		WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 AND NEW.job_state IS 4;
+END;
 
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -25,6 +25,19 @@ import java.sql.SQLException;
  */
 public interface PowerController {
 	/**
+	 * Destroy a job. The power controller has the responsibility because it
+	 * releases any resources held by the job.
+	 *
+	 * @param jobId
+	 *            The ID of the job.
+	 * @param reason
+	 *            Why is the job being destroyed.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	void destroyJob(int jobId, String reason) throws SQLException;
+
+	/**
 	 * Issue a power change for a job.
 	 *
 	 * @param jobId

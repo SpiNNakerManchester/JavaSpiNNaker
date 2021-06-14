@@ -501,12 +501,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void destroy(String reason) throws SQLException {
-			try (Connection conn = db.getConnection();
-					Update destroyJob = update(conn, DESTROY_JOB)) {
-				transaction(conn, () -> {
-					destroyJob.call(reason, id);
-				});
-			}
+			powerController.destroyJob(id, reason);
 		}
 
 		@Override

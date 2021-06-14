@@ -182,8 +182,7 @@ public class BMPController extends SQLQueries {
 			+ "pending.")
 	public int getPendingRequestLoading() throws SQLException {
 		try (Connection conn = db.getConnection();
-				Query countChanges = query(conn,
-						"SELECT count(*) AS c FROM pending_changes")) {
+				Query countChanges = query(conn, COUNT_PENDING_CHANGES)) {
 			Optional<Row> row = countChanges.call1();
 			if (row.isPresent()) {
 				return row.get().getInt("c");
@@ -582,16 +581,8 @@ public class BMPController extends SQLQueries {
 			log.error("failed to set power on BMPs: {}", fail, exn);
 		}
 		try (Connection conn = db.getConnection();
-				Update setBoardStateToOn = update(conn,
-						"UPDATE boards SET board_power = 1, "
-								+ "power_on_timestamp = strftime('%s','now') "
-								+ "WHERE board_id = ?");
-				Update setBoardStateToOff = update(conn,
-						"UPDATE boards SET board_power = 0, "
-								+ "power_off_timestamp = strftime('%s','now') "
-								+ "WHERE board_id = ?");
-				Update deleteChange = update(conn,
-						"DELETE FROM pending_changes WHERE change_id = ?");
+				Update setBoardState = update(conn, SET_BOARD_POWER);
+				Update deleteChange = update(conn, FINISHED_PENDING);
 				Update setJobState = update(conn, SET_STATE_PENDING);
 				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
 			transaction(conn, () -> {
@@ -602,10 +593,10 @@ public class BMPController extends SQLQueries {
 					// TODO How should we change the job state?
 				} else {
 					for (int board : boardsOn) {
-						setBoardStateToOn.call(board);
+						setBoardState.call(true, board);
 					}
 					for (int board : boardsOff) {
-						setBoardStateToOff.call(board);
+						setBoardState.call(false, board);
 					}
 					for (int change : changeIds) {
 						deleteChange.call(change);
@@ -748,6 +739,14 @@ public class BMPController extends SQLQueries {
 			this.fpga = fpga;
 			this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
 			this.columnName = columnName;
+		}
+
+		/**
+		 * @return The name of the column in the {@code pending_changes} table
+		 *         that holds information pertaining to this link.
+		 */
+		public String getPendingChangesColumnName() {
+			return columnName;
 		}
 	}
 }
