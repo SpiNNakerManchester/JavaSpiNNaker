@@ -352,6 +352,35 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
+		public List<Integer> getDeadBoards() throws SQLException {
+			try (Connection conn = db.getConnection();
+					Query boardNumbers = query(conn, GET_DEAD_BOARD_NUMBERS)) {
+				return transaction(conn, () -> {
+					List<Integer> boards = new ArrayList<>();
+					for (Row row : boardNumbers.call(id)) {
+						boards.add((Integer) row.getObject("board_num"));
+					}
+					return boards;
+				});
+			}
+		}
+
+		@Override
+		public List<Integer> getAvailableBoards() throws SQLException {
+			try (Connection conn = db.getConnection();
+					Query boardNumbers =
+							query(conn, GET_AVAILABLE_BOARD_NUMBERS)) {
+				return transaction(conn, () -> {
+					List<Integer> boards = new ArrayList<>();
+					for (Row row : boardNumbers.call(id)) {
+						boards.add((Integer) row.getObject("board_num"));
+					}
+					return boards;
+				});
+			}
+		}
+
+		@Override
 		public int getId() {
 			return id;
 		}
@@ -751,6 +780,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public ChipLocation getBoardChip() {
+			// FIXME implement this
 			return null;
 		}
 

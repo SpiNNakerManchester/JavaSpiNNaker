@@ -202,7 +202,15 @@ public interface SpallocAPI {
 		/** The height of the machine. */
 		int getHeight() throws SQLException;
 
-		// TODO: dead boards, dead links
+		/**
+		 * The IDs of boards marked as dead or otherwise taken out of service.
+		 *
+		 * @throws SQLException
+		 *             If something goes wrong
+		 */
+		List<Integer> getDeadBoards() throws SQLException;
+
+		// TODO: dead links
 
 		Optional<BoardLocation> getBoardByChip(int x, int y, JobsEpoch je)
 				throws SQLException;
@@ -217,8 +225,19 @@ public interface SpallocAPI {
 
 		/**
 		 * @return The boards supported by the machine.
+		 *
+		 * @throws SQLException
+		 *             If something goes wrong
 		 */
 		List<Integer> getBoardNumbers() throws SQLException;
+
+		/**
+		 * The IDs of boards currently available to be allocated.
+		 *
+		 * @throws SQLException
+		 *             If something goes wrong
+		 */
+		List<Integer> getAvailableBoards() throws SQLException;
 	}
 
 	/**

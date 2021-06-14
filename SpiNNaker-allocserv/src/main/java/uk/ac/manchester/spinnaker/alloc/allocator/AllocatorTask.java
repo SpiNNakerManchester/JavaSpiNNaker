@@ -371,33 +371,55 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
+	/**
+	 * Does the actual allocation.
+	 * <p>
+	 * At this point, we've checked that there's enough boards <em>and</em> we
+	 * are running in a transaction. We take particular care that we only
+	 * actually allocate boards that are reachable from the root board; this is
+	 * assumed by the SpiNNaker tools, so we'd better conform to that
+	 * expectation. Fortunately, the bigger the allocation, the more likely that
+	 * is true (and it is trivially true for single-board allocations.)
+	 * <p>
+	 * If you want a multi-board allocation, you'd better be allocating a full
+	 * triad's-worth of depth or you'll get nothing.
+	 *
+	 * @param conn
+	 *            How to talk to the DB
+	 * @param jobId
+	 *            What job are we allocating for
+	 * @param width
+	 *            Proposed rectangle size (X dimension)
+	 * @param height
+	 *            Proposed rectangle size (Y dimension)
+	 * @param depth
+	 *            Proposed rectangle size (Z dimension)
+	 * @param machineId
+	 *            What machine are we allocating on
+	 * @param rootX
+	 *            Proposed root X coordinate
+	 * @param rootY
+	 *            Proposed root Y coordinate
+	 * @param rootZ
+	 *            Proposed root Z coordinate
+	 * @return Whether we have successfully allocated (the allocation is stored
+	 *         in the DB)
+	 * @throws SQLException
+	 *             If something goes wrong with talking to the DB
+	 */
 	private boolean setAllocation(Connection conn, int jobId, int width,
 			int height, int depth, int machineId, int rootX, int rootY,
 			int rootZ) throws SQLException {
-		/*
-		 * At this point, we've checked that there's enough boards AND we are
-		 * running in a transaction.
-		 *
-		 * TODO Should only allocate boards if they're connected to the root.
-		 * There's still definitely enough if we do that.
-		 */
-		try (Query getBoardID = query(conn, GET_BOARD_BY_COORDS);
+		try (Query getConnectedBoardIDs = query(conn, getConnectedBoards);
 				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
 				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
 			// Messy without RETURNING, but SQLite 3.35 not yet supported
 			List<Integer> boardsToAllocate = new ArrayList<>();
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					for (int z = 0; z < depth; z++) {
-						int boardId = -1;
-						for (Row row : getBoardID.call(machineId,
-								x + rootX, y + rootY, z + rootZ)) {
-							boardId = row.getInt("board_id");
-							boardsToAllocate.add(boardId);
-						}
-						allocBoard.call(jobId, boardId);
-					}
-				}
+			for (Row row : getConnectedBoardIDs.call(machineId, rootX, rootY,
+					rootZ, width, height, depth)) {
+				int boardId = row.getInt("board_id");
+				boardsToAllocate.add(boardId);
+				allocBoard.call(jobId, boardId);
 			}
 			if (boardsToAllocate.isEmpty()) {
 				return false;

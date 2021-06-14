@@ -24,6 +24,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
@@ -60,7 +61,20 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
 /**
- * The database engine interface. Based on SQLite.
+ * The database engine interface. Based on SQLite. Manages a pool of database
+ * connections, each of which is bound to a specific thread. The connections are
+ * closed when the thread in question terminates. <em>Assumes</em> that you are
+ * using a thread pool.
+ * <p>
+ * Key configuration properties:
+ * <dl>
+ * <dt>sqlite.analysis_limit
+ * <dd>The <a href="https://sqlite.org/lang_analyze.html">analysis limit</a>.
+ * Defaults to {@code 400}.
+ * <dt>sqlite.timeout
+ * <dd>The timeout for waiting for a transaction. Defaults to {@code PT1S} (a
+ * {@link Duration}).
+ * </dl>
  *
  * @author Donal Fellows
  */
@@ -106,6 +120,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Value("classpath:/spalloc-static-data.sql")
 	private Resource sqlInitDataFile;
+
+	@Autowired
+	private TerminationNotifyingThreadFactory threadFactory;
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
@@ -266,6 +283,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@PostConstruct
 	private void ensureDBsetup() throws SQLException {
+		threadFactory.setTerminationCallback(this::optimiseDB);
 		setupConfig();
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
@@ -343,20 +361,38 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Override
 	SQLiteConnection openDatabaseConnection() throws SQLException {
-		log.info("opening database connection {}", dbConnectionUrl);
+		log.debug("opening database connection {}", dbConnectionUrl);
 		return (SQLiteConnection) config.createConnection(dbConnectionUrl);
 	}
 
-	/** {@inheritDoc} Also optimises the database. */
-	@Override
-	void closeDatabaseConnection(SQLiteConnection conn) {
+	/**
+	 * Optimises the database. Called when the database connection is about to
+	 * be closed due to the thread (in the thread pool) that owns it going away.
+	 * <em>Called from the thread that owns the database connection in
+	 * question.</em>
+	 */
+	private void optimiseDB() {
 		try {
+			long start = System.currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
-			exec(conn, String.format(OPTIMIZE_DB, analysisLimit));
+			try (Connection conn = getConnection()) {
+				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
+				exec(conn, String.format(OPTIMIZE_DB, analysisLimit));
+			} catch (SQLiteException e) {
+				/*
+				 * If we're busy, just don't bother; it's optional to optimise
+				 * the DB at this point. If we miss one, eventually another
+				 * thread will pick it up.
+				 */
+				if (e.getResultCode() != SQLITE_BUSY) {
+					throw e;
+				}
+			}
+			long end = System.currentTimeMillis();
+			log.debug("optimised the database in {}ms", end - start);
 		} catch (SQLException e) {
 			log.warn("failed to optimise DB pre-close", e);
 		}
-		super.closeDatabaseConnection(conn);
 	}
 
 	/**

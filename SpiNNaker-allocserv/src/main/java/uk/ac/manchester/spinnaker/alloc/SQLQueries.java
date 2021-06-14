@@ -247,6 +247,21 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	protected static final String GET_BOARD_NUMBERS =
 			"SELECT board_num FROM boards WHERE machine_id = ? "
+					+ "AND (functioning IS NULL OR functioning != 0) "
+					+ "ORDER BY board_num ASC";
+
+	@Parameter("machine_id")
+	@ResultColumn("board_num")
+	protected static final String GET_DEAD_BOARD_NUMBERS =
+			"SELECT board_num FROM boards WHERE machine_id = ? "
+					+ "AND functioning IS 0 "
+					+ "ORDER BY board_num ASC";
+
+	@Parameter("machine_id")
+	@ResultColumn("board_num")
+	protected static final String GET_AVAILABLE_BOARD_NUMBERS =
+			"SELECT board_num FROM boards WHERE machine_id = ? "
+					+ "AND may_be_allocated "
 					+ "ORDER BY board_num ASC";
 
 	@Parameter("machine_id")
@@ -514,4 +529,15 @@ public abstract class SQLQueries {
 	@ResultColumn("job_id")
 	@Value("classpath:get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;
+
+	@Parameter("machine_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("depth")
+	@ResultColumn("board_id")
+	@Value("classpath:connected_boards_at_coords.sql")
+	protected Resource getConnectedBoards;
 }

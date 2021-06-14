@@ -327,6 +327,24 @@ class DbTest extends SQLQueries {
 	}
 
 	@Test
+	void getDeadBoardNumbers() throws SQLException {
+		try (Query q = query(c, GET_DEAD_BOARD_NUMBERS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_num"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE).isPresent());
+		}
+	}
+
+	@Test
+	void getAvailableBoardNumbers() throws SQLException {
+		try (Query q = query(c, GET_AVAILABLE_BOARD_NUMBERS)) {
+			assertEquals(1, q.getNumArguments());
+			assertEquals(set("board_num"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE).isPresent());
+		}
+	}
+
+	@Test
 	void getTags() throws SQLException {
 		try (Query q = query(c, GET_TAGS)) {
 			assertEquals(1, q.getNumArguments());
@@ -492,6 +510,16 @@ class DbTest extends SQLQueries {
 			assertEquals(3, q.getNumArguments());
 			assertEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, d, d).isPresent());
+		}
+	}
+
+	@Test
+	void getConnectedBoards() throws SQLException {
+		try (Query q = query(c, getConnectedBoards)) {
+			assertEquals(7, q.getNumArguments());
+			assertEquals(set("board_id"), q.getRowColumnNames());
+			assertFalse(
+					q.call1(NO_MACHINE, -1, -1, -1, -1, -1, -1).isPresent());
 		}
 	}
 

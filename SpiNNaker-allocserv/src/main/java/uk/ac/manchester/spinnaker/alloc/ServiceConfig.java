@@ -89,8 +89,9 @@ public class ServiceConfig extends Application {
 	@Bean(destroyMethod = "shutdown")
 	@DependsOn("databaseEngine")
 	ScheduledExecutorService scheduledThreadPoolExecutor(
-			@Value("${spring.task.scheduling.pool.size}") int numThreads) {
-		return newScheduledThreadPool(numThreads);
+			@Value("${spring.task.scheduling.pool.size}") int numThreads,
+			TerminationNotifyingThreadFactory threadFactory) {
+		return newScheduledThreadPool(numThreads, threadFactory);
 	}
 
 	/**
@@ -142,6 +143,9 @@ public class ServiceConfig extends Application {
 		s.getEndpoint().setExecutor(executor);
 		return s;
 	}
+
+	// TODO application security model
+	// TODO administration interface (loading DB description, managing boards)
 
 	@Autowired
 	private ApplicationContext ctx;
