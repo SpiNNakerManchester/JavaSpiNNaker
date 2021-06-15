@@ -29,8 +29,11 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -75,6 +78,15 @@ class DbTest extends SQLQueries {
 	private DatabaseEngine memdb;
 
 	private Connection c;
+
+	private static <T extends Comparable<T>> void assertSetEquals(
+			Set<T> expected, Set<T> actual) {
+		List<T> e = new ArrayList<>(expected);
+		Collections.sort(e);
+		List<T> a = new ArrayList<>(actual);
+		Collections.sort(a);
+		assertEquals(e, a);
+	}
 
 	/**
 	 * <em>Assert</em> that execution of the supplied executable throws an
@@ -183,9 +195,10 @@ class DbTest extends SQLQueries {
 		return unmodifiableSet(new HashSet<>(Arrays.asList(strings)));
 	}
 
-	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS = set(
-			"machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
-			"chip_x", "chip_y", "board_chip_x", "board_chip_y", "job_id");
+	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS =
+			set("machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_id", "job_root_chip_x", "job_root_chip_y");
 
 	/**
 	 * Asserts that the result columns of the query are adequate for making a
@@ -206,7 +219,8 @@ class DbTest extends SQLQueries {
 	void getAllMachines() throws SQLException {
 		try (Query q = query(c, GET_ALL_MACHINES)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(set("machine_id", "machine_name", "width", "height"),
+			assertSetEquals(
+					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			q.call();
 			// Must not throw
@@ -217,7 +231,8 @@ class DbTest extends SQLQueries {
 	void getMachineById() throws SQLException {
 		try (Query q = query(c, GET_MACHINE_BY_ID)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("machine_id", "machine_name", "width", "height"),
+			assertSetEquals(
+					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			q.call(NO_MACHINE);
 			// Must not throw
@@ -228,7 +243,8 @@ class DbTest extends SQLQueries {
 	void getNamedMachine() throws SQLException {
 		try (Query q = query(c, GET_NAMED_MACHINE)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("machine_id", "machine_name", "width", "height"),
+			assertSetEquals(
+					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			q.call("gorp");
 			// Must not throw
@@ -239,7 +255,7 @@ class DbTest extends SQLQueries {
 	void getJobIds() throws SQLException {
 		try (Query q = query(c, GET_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
-			assertEquals(set("job_id", "machine_id", "job_state",
+			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
 			q.call(0, 0);
 			// Must not throw
@@ -250,7 +266,7 @@ class DbTest extends SQLQueries {
 	void getLiveJobIds() throws SQLException {
 		try (Query q = query(c, GET_LIVE_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
-			assertEquals(set("job_id", "machine_id", "job_state",
+			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
 			q.call(0, 0);
 			// Must not throw
@@ -261,7 +277,7 @@ class DbTest extends SQLQueries {
 	void getJob() throws SQLException {
 		try (Query q = query(c, GET_JOB)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(
+			assertSetEquals(
 					set("machine_id", "width", "height", "depth", "root_id",
 							"job_state", "keepalive_timestamp",
 							"keepalive_host", "create_timestamp",
@@ -275,7 +291,7 @@ class DbTest extends SQLQueries {
 	void getJobBoards() throws SQLException {
 		try (Query q = query(c, GET_JOB_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -284,7 +300,7 @@ class DbTest extends SQLQueries {
 	void getRootOfBoard() throws SQLException {
 		try (Query q = query(c, GET_ROOT_OF_BOARD)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("root_x", "root_y"), q.getRowColumnNames());
+			assertSetEquals(set("root_x", "root_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
 		}
 	}
@@ -293,11 +309,10 @@ class DbTest extends SQLQueries {
 	void findBoardByChip() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_CHIP)) {
 			assertEquals(3, q.getNumArguments());
-			assertEquals(
-					set("board_id", "address", "bmp_id", "x", "y", "z",
-							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y", "board_chip_x",
-							"board_chip_y"),
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
@@ -308,11 +323,10 @@ class DbTest extends SQLQueries {
 	void findBoardByCFB() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_CFB)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(
-					set("board_id", "address", "bmp_id", "x", "y", "z",
-							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y", "board_chip_x",
-							"board_chip_y"),
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
@@ -323,11 +337,10 @@ class DbTest extends SQLQueries {
 	void findBoardByXYZ() throws SQLException {
 		try (Query q = query(c, FIND_BOARD_BY_XYZ)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(
-					set("board_id", "address", "bmp_id", "x", "y", "z",
-							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y", "board_chip_x",
-							"board_chip_y"),
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
@@ -338,7 +351,7 @@ class DbTest extends SQLQueries {
 	void getRootBMPAddress() throws SQLException {
 		try (Query q = query(c, GET_ROOT_BMP_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("address"), q.getRowColumnNames());
+			assertSetEquals(set("address"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -347,7 +360,7 @@ class DbTest extends SQLQueries {
 	void getBoardNumbers() throws SQLException {
 		try (Query q = query(c, GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -356,7 +369,7 @@ class DbTest extends SQLQueries {
 	void getDeadBoardNumbers() throws SQLException {
 		try (Query q = query(c, GET_DEAD_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -365,7 +378,7 @@ class DbTest extends SQLQueries {
 	void getAvailableBoardNumbers() throws SQLException {
 		try (Query q = query(c, GET_AVAILABLE_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -374,7 +387,7 @@ class DbTest extends SQLQueries {
 	void getTags() throws SQLException {
 		try (Query q = query(c, GET_TAGS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("tag"), q.getRowColumnNames());
+			assertSetEquals(set("tag"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -384,7 +397,7 @@ class DbTest extends SQLQueries {
 		// This query always produces one row
 		try (Query q = query(c, GET_BOARD_POWER)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("total_on"), q.getRowColumnNames());
+			assertSetEquals(set("total_on"), q.getRowColumnNames());
 			Row row = q.call1(NO_JOB).get();
 			assertEquals(0, row.getInt("total_on"));
 		}
@@ -394,7 +407,7 @@ class DbTest extends SQLQueries {
 	void getBoardConnectInfo() throws SQLException {
 		try (Query q = query(c, GET_BOARD_CONNECT_INFO)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_id", "address", "x", "y", "z", "root_x",
+			assertSetEquals(set("board_id", "address", "x", "y", "z", "root_x",
 					"root_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
@@ -404,7 +417,7 @@ class DbTest extends SQLQueries {
 	void getRootCoords() throws SQLException {
 		try (Query q = query(c, GET_ROOT_COORDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("x", "y", "z", "root_x", "root_y"),
+			assertSetEquals(set("x", "y", "z", "root_x", "root_y"),
 					q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
 		}
@@ -414,7 +427,7 @@ class DbTest extends SQLQueries {
 	void getTasks() throws SQLException {
 		try (Query q = query(c, GET_TASKS)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(
+			assertSetEquals(
 					set("req_id", "job_id", "num_boards", "width", "height",
 							"x", "y", "z", "machine_id", "max_dead_boards"),
 					q.getRowColumnNames());
@@ -426,7 +439,7 @@ class DbTest extends SQLQueries {
 	void findFreeBoard() throws SQLException {
 		try (Query q = query(c, FIND_FREE_BOARD)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("x", "y", "z"), q.getRowColumnNames());
+			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
@@ -435,7 +448,7 @@ class DbTest extends SQLQueries {
 	void getBoardByCoords() throws SQLException {
 		try (Query q = query(c, GET_BOARD_BY_COORDS)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -444,7 +457,7 @@ class DbTest extends SQLQueries {
 	void findExpiredJobs() throws SQLException {
 		try (Query q = query(c, FIND_EXPIRED_JOBS)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(set("job_id"), q.getRowColumnNames());
+			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
 		}
 	}
@@ -453,7 +466,7 @@ class DbTest extends SQLQueries {
 	void loadDirInfo() throws SQLException {
 		try (Query q = query(c, LOAD_DIR_INFO)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(set("z", "direction", "dx", "dy", "dz"),
+			assertSetEquals(set("z", "direction", "dx", "dy", "dz"),
 					q.getRowColumnNames());
 			q.call();
 		}
@@ -463,7 +476,7 @@ class DbTest extends SQLQueries {
 	void getChanges() throws SQLException {
 		try (Query q = query(c, GET_CHANGES)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("change_id", "job_id", "board_id", "power",
+			assertSetEquals(set("change_id", "job_id", "board_id", "power",
 					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
 					"fpga_se", "in_progress"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
@@ -474,7 +487,7 @@ class DbTest extends SQLQueries {
 	void findRectangle() throws SQLException {
 		try (Query q = query(c, findRectangle)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(set("id", "x", "y", "z", "available"),
+			assertSetEquals(set("id", "x", "y", "z", "available"),
 					q.getRowColumnNames());
 			assertFalse(q.call1(-1, -1, NO_MACHINE, 0).isPresent());
 		}
@@ -484,7 +497,7 @@ class DbTest extends SQLQueries {
 	void findLocation() throws SQLException {
 		try (Query q = query(c, findLocation)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(set("x", "y", "z"), q.getRowColumnNames());
+			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -493,7 +506,7 @@ class DbTest extends SQLQueries {
 	void countConnected() throws SQLException {
 		try (Query q = query(c, countConnected)) {
 			assertEquals(5, q.getNumArguments());
-			assertEquals(set("connected_size"), q.getRowColumnNames());
+			assertSetEquals(set("connected_size"), q.getRowColumnNames());
 			Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
 			assertEquals(0, row.getInt("connected_size"));
 		}
@@ -503,7 +516,7 @@ class DbTest extends SQLQueries {
 	void countPendingChanges() throws SQLException {
 		try (Query q = query(c, COUNT_PENDING_CHANGES)) {
 			assertEquals(0, q.getNumArguments());
-			assertEquals(set("c"), q.getRowColumnNames());
+			assertSetEquals(set("c"), q.getRowColumnNames());
 			Row row = q.call1().get();
 			assertEquals(0, row.getInt("c"));
 		}
@@ -513,7 +526,8 @@ class DbTest extends SQLQueries {
 	void getPerimeterLinks() throws SQLException {
 		try (Query q = query(c, getPerimeterLinks)) {
 			assertEquals(1, q.getNumArguments());
-			assertEquals(set("board_id", "direction"), q.getRowColumnNames());
+			assertSetEquals(set("board_id", "direction"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}
@@ -522,10 +536,11 @@ class DbTest extends SQLQueries {
 	void findBoardByJobChip() throws SQLException {
 		try (Query q = query(c, findBoardByJobChip)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(
+			assertSetEquals(
 					set("board_id", "address", "x", "y", "z", "job_id",
 							"machine_name", "cabinet", "frame", "board_num",
-							"chip_x", "chip_y", "board_chip_x", "board_chip_y"),
+							"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+							"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
@@ -537,7 +552,7 @@ class DbTest extends SQLQueries {
 		Duration d = Duration.ofSeconds(1);
 		try (Query q = query(c, getJobsWithChanges)) {
 			assertEquals(3, q.getNumArguments());
-			assertEquals(set("job_id"), q.getRowColumnNames());
+			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, d, d).isPresent());
 		}
 	}
@@ -546,7 +561,7 @@ class DbTest extends SQLQueries {
 	void getConnectedBoards() throws SQLException {
 		try (Query q = query(c, getConnectedBoards)) {
 			assertEquals(7, q.getNumArguments());
-			assertEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(
 					q.call1(NO_MACHINE, -1, -1, -1, -1, -1, -1).isPresent());
 		}

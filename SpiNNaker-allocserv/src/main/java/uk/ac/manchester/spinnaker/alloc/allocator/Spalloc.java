@@ -746,7 +746,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	private final class BoardLocationImpl implements BoardLocation {
-		private Spalloc.Job job;
+		private JobImpl job;
 
 		private final String machine;
 
@@ -779,7 +779,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				Integer jobId = (Integer) row.getObject("job_id");
 				if (jobId != null) {
 					job = new JobImpl(epoch, jobId, machineId);
-					// FIXME also pass other basic values
+					// FIXME also need the root chip coords
 				}
 			} catch (SQLException e) {
 				throw new WebApplicationException(

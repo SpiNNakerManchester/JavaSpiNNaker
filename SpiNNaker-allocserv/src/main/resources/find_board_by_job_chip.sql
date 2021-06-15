@@ -30,7 +30,9 @@ SELECT
 	bmp.cabinet, bmp.frame, bs.board_num,
 	args.x AS chip_x, args.y AS chip_y,
 	bs.root_x - root.root_x AS board_chip_x,
-	bs.root_y - root.root_y AS board_chip_y
+	bs.root_y - root.root_y AS board_chip_y,
+	root.root_x AS job_root_chip_x,
+	root.root_y AS job_root_chip_y
 FROM bs
 	JOIN bmp ON bs.bmp_id = bmp.bmp_id
 	JOIN m
