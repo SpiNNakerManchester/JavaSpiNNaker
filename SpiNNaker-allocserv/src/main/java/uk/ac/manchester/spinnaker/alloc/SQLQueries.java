@@ -149,121 +149,6 @@ public abstract class SQLQueries {
 			"INSERT INTO job_request(job_id, x, y, z) VALUES (?, ?, ?, ?)";
 
 	@Parameter("machine_id")
-	@Parameter("chip_x")
-	@Parameter("chip_y")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	@ResultColumn("board_chip_x")
-	@ResultColumn("board_chip_y")
-	@ResultColumn("job_root_chip_x")
-	@ResultColumn("job_root_chip_y")
-	@SingleRowResult
-	protected static final String FIND_BOARD_BY_CHIP =
-			"SELECT boards.board_id, boards.address, boards.bmp_id, "
-					+ "boards.x, boards.y, boards.z, "
-					+ "boards.allocated_job AS job_id, m.machine_name, "
-					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "boards.root_x + bmc.chip_x AS chip_x, "
-					+ "boards.root_y + bmc.chip_y AS chip_y, "
-					+ "boards.root_x AS board_chip_x, "
-					+ "boards.root_y AS board_chip_y, "
-					+ "root.root_x AS job_root_chip_x, "
-					+ "root.root_y AS job_root_chip_y "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "JOIN board_model_coords AS bmc "
-					+ "ON m.board_model = bmc.model "
-					+ "LEFT JOIN jobs ON jobs.job_id = boards.allocated_job "
-					+ "LEFT JOIN boards AS root ON root.board_id = jobs.root_id "
-					+ "WHERE boards.machine_id = ? "
-					+ "AND chip_x = ? AND chip_y = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	@ResultColumn("board_chip_x")
-	@ResultColumn("board_chip_y")
-	@SingleRowResult
-	protected static final String FIND_BOARD_BY_CFB =
-			"SELECT boards.board_id, boards.address, boards.bmp_id, "
-					+ "boards.x, boards.y, boards.z, "
-					+ "boards.allocated_job AS job_id, m.machine_name, "
-					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "boards.root_x AS chip_x, boards.root_y AS chip_y, "
-					+ "boards.root_x AS board_chip_x, "
-					+ "boards.root_y AS board_chip_y, "
-					+ "root.root_x AS job_root_chip_x, "
-					+ "root.root_y AS job_root_chip_y "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "LEFT JOIN jobs ON jobs.job_id = boards.allocated_job "
-					+ "LEFT JOIN boards AS root ON root.board_id = jobs.root_id "
-					+ "WHERE boards.machine_id = ? AND bmp.cabinet = ? "
-					+ "AND bmp.frame = ? AND boards.board_num = ? LIMIT 1";
-
-	@Parameter("machine_id")
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("z")
-	@ResultColumn("board_id")
-	@ResultColumn("address")
-	@ResultColumn("bmp_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@ResultColumn("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("cabinet")
-	@ResultColumn("frame")
-	@ResultColumn("board_num")
-	@ResultColumn("chip_x")
-	@ResultColumn("chip_y")
-	@ResultColumn("board_chip_x")
-	@ResultColumn("board_chip_y")
-	@SingleRowResult
-	protected static final String FIND_BOARD_BY_XYZ =
-			"SELECT boards.board_id, boards.address, boards.bmp_id, "
-					+ "boards.x, boards.y, boards.z, "
-					+ "boards.allocated_job AS job_id, m.machine_name, "
-					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "boards.root_x AS chip_x, boards.root_y AS chip_y, "
-					+ "boards.root_x AS board_chip_x, "
-					+ "boards.root_y AS board_chip_y, "
-					+ "root.root_x AS job_root_chip_x, "
-					+ "root.root_y AS job_root_chip_y "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
-					+ "LEFT JOIN jobs ON jobs.job_id = boards.allocated_job "
-					+ "LEFT JOIN boards AS root ON root.board_id = jobs.root_id "
-					+ "WHERE boards.machine_id = ? AND boards.x = ? "
-					+ "AND boards.y = ? AND boards.z = ? LIMIT 1";
-
-	@Parameter("machine_id")
 	@ResultColumn("address")
 	@SingleRowResult
 	protected static final String GET_ROOT_BMP_ADDRESS =
@@ -532,6 +417,30 @@ public abstract class SQLQueries {
 	@Value("classpath:perimeter.sql")
 	protected Resource getPerimeterLinks;
 
+	@Parameter("machine_id")
+	@Parameter("chip_x")
+	@Parameter("chip_y")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
+	@ResultColumn("job_root_chip_x")
+	@ResultColumn("job_root_chip_y")
+	@SingleRowResult
+	@Value("classpath:find_board_by_global_chip.sql")
+	protected Resource findBoardByGlobalChip;
+
 	@Parameter("job_id")
 	@Parameter("root_board_id")
 	@Parameter("chip_x")
@@ -553,6 +462,52 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	@Value("classpath:find_board_by_job_chip.sql")
 	protected Resource findBoardByJobChip;
+
+	@Parameter("machine_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
+	@SingleRowResult
+	@Value("classpath:find_board_by_logical_coords.sql")
+	protected Resource findBoardByLogicalCoords;
+
+	@Parameter("machine_id")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@Parameter("board")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
+	@SingleRowResult
+	@Value("classpath:find_board_by_physical_coords.sql")
+	protected Resource findBoardByPhysicalCoords;
 
 	@Parameter("machine_id")
 	@Parameter("on_delay")

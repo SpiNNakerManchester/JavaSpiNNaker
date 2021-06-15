@@ -296,7 +296,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public Optional<BoardLocation> getBoardByChip(int x, int y,
 				JobsEpoch je) throws SQLException {
 			try (Connection conn = db.getConnection();
-					Query findBoard = query(conn, FIND_BOARD_BY_CHIP)) {
+					Query findBoard = query(conn, findBoardByGlobalChip)) {
 				return transaction(conn, () -> findBoard.call1(id, x, y)
 						.map(row -> new BoardLocationImpl(row, je, id)));
 			}
@@ -306,7 +306,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
 				int frame, int board, JobsEpoch je) throws SQLException {
 			try (Connection conn = db.getConnection();
-					Query findBoard = query(conn, FIND_BOARD_BY_CFB)) {
+					Query findBoard = query(conn, findBoardByPhysicalCoords)) {
 				return transaction(conn,
 						() -> findBoard.call1(id, cabinet, frame, board).map(
 								row -> new BoardLocationImpl(row, je, id)));
@@ -317,7 +317,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
 				int z, JobsEpoch je) throws SQLException {
 			try (Connection conn = db.getConnection();
-					Query findBoard = query(conn, FIND_BOARD_BY_XYZ)) {
+					Query findBoard = query(conn, findBoardByLogicalCoords)) {
 				return transaction(conn, () -> findBoard.call1(id, x, y, z)
 						.map(row -> new BoardLocationImpl(row, je, id)));
 			}

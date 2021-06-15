@@ -306,48 +306,6 @@ class DbTest extends SQLQueries {
 	}
 
 	@Test
-	void findBoardByChip() throws SQLException {
-		try (Query q = query(c, FIND_BOARD_BY_CHIP)) {
-			assertEquals(3, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
-					q.getRowColumnNames());
-			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
-		}
-	}
-
-	@Test
-	void findBoardByCFB() throws SQLException {
-		try (Query q = query(c, FIND_BOARD_BY_CFB)) {
-			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
-					q.getRowColumnNames());
-			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
-		}
-	}
-
-	@Test
-	void findBoardByXYZ() throws SQLException {
-		try (Query q = query(c, FIND_BOARD_BY_XYZ)) {
-			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
-					q.getRowColumnNames());
-			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
-		}
-	}
-
-	@Test
 	void getRootBMPAddress() throws SQLException {
 		try (Query q = query(c, GET_ROOT_BMP_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
@@ -533,6 +491,20 @@ class DbTest extends SQLQueries {
 	}
 
 	@Test
+	void findBoardByGlobalChip() throws SQLException {
+		try (Query q = query(c, findBoardByGlobalChip)) {
+			assertEquals(3, q.getNumArguments());
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
+					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
+			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
+		}
+	}
+
+	@Test
 	void findBoardByJobChip() throws SQLException {
 		try (Query q = query(c, findBoardByJobChip)) {
 			assertEquals(4, q.getNumArguments());
@@ -544,6 +516,34 @@ class DbTest extends SQLQueries {
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
+		}
+	}
+
+	@Test
+	void findBoardByLogicalCoords() throws SQLException {
+		try (Query q = query(c, findBoardByLogicalCoords)) {
+			assertEquals(4, q.getNumArguments());
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
+					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
+			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+		}
+	}
+
+	@Test
+	void findBoardByPhysicalCoords() throws SQLException {
+		try (Query q = query(c, findBoardByPhysicalCoords)) {
+			assertEquals(4, q.getNumArguments());
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
+					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
+			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
 
