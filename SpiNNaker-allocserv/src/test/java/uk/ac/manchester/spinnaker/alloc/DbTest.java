@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -179,7 +180,26 @@ class DbTest extends SQLQueries {
 	}
 
 	private static Set<String> set(String... strings) {
-		return new HashSet<>(Arrays.asList(strings));
+		return unmodifiableSet(new HashSet<>(Arrays.asList(strings)));
+	}
+
+	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS = set(
+			"machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
+			"chip_x", "chip_y", "board_chip_x", "board_chip_y", "job_id");
+
+	/**
+	 * Asserts that the result columns of the query are adequate for making a
+	 * {@link BoardLocation} instance.
+	 *
+	 * @param q
+	 *            The query that feeds the creation.
+	 * @throws SQLException
+	 *             If anything goes wrong. (Not expected)
+	 */
+	private static void assertCanMakeBoardLocation(Query q)
+			throws SQLException {
+		assertTrue(q.getRowColumnNames()
+				.containsAll(BOARD_LOCATION_REQUIRED_COLUMNS));
 	}
 
 	@Test
@@ -276,8 +296,10 @@ class DbTest extends SQLQueries {
 			assertEquals(
 					set("board_id", "address", "bmp_id", "x", "y", "z",
 							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y"),
+							"board_num", "chip_x", "chip_y", "board_chip_x",
+							"board_chip_y"),
 					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
 		}
 	}
@@ -289,8 +311,10 @@ class DbTest extends SQLQueries {
 			assertEquals(
 					set("board_id", "address", "bmp_id", "x", "y", "z",
 							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y"),
+							"board_num", "chip_x", "chip_y", "board_chip_x",
+							"board_chip_y"),
 					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -302,8 +326,10 @@ class DbTest extends SQLQueries {
 			assertEquals(
 					set("board_id", "address", "bmp_id", "x", "y", "z",
 							"job_id", "machine_name", "cabinet", "frame",
-							"board_num", "chip_x", "chip_y"),
+							"board_num", "chip_x", "chip_y", "board_chip_x",
+							"board_chip_y"),
 					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 		}
 	}
@@ -496,9 +522,12 @@ class DbTest extends SQLQueries {
 	void findBoardByJobChip() throws SQLException {
 		try (Query q = query(c, findBoardByJobChip)) {
 			assertEquals(4, q.getNumArguments());
-			assertEquals(set("board_id", "address", "x", "y", "z", "job_id",
-					"machine_name", "cabinet", "frame", "board_num", "chip_x",
-					"chip_y"), q.getRowColumnNames());
+			assertEquals(
+					set("board_id", "address", "x", "y", "z", "job_id",
+							"machine_name", "cabinet", "frame", "board_num",
+							"chip_x", "chip_y", "board_chip_x", "board_chip_y"),
+					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
 			assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
 		}
 	}

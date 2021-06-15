@@ -164,14 +164,17 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("chip_x")
 	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_CHIP =
 			"SELECT boards.board_id, boards.address, boards.bmp_id, x, y, z, "
 					+ "allocated_job AS job_id, m.machine_name, "
 					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "root_x + bmc.chip_x AS chip_x,"
-					+ "root_y + bmc.chip_y AS chip_y FROM boards "
-					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "root_x + bmc.chip_x AS chip_x, "
+					+ "root_y + bmc.chip_y AS chip_y, "
+					+ "root_x AS board_chip_x, root_y AS board_chip_y "
+					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "JOIN board_model_coords AS bmc "
 					+ "ON m.board_model = bmc.model "
@@ -195,12 +198,15 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("chip_x")
 	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_CFB =
 			"SELECT boards.board_id, boards.address, boards.bmp_id, x, y, z, "
 					+ "allocated_job AS job_id, m.machine_name, "
 					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "root_x AS chip_x, root_y AS chip_y "
+					+ "root_x AS chip_x, root_y AS chip_y, "
+					+ "root_x AS board_chip_x, root_y AS board_chip_y "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "WHERE boards.machine_id = ? AND bmp.cabinet = ? "
@@ -223,12 +229,15 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("chip_x")
 	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_XYZ =
 			"SELECT boards.board_id, boards.address, boards.bmp_id, x, y, z, "
 					+ "allocated_job AS job_id, m.machine_name, "
 					+ "bmp.cabinet, bmp.frame, boards.board_num, "
-					+ "root_x AS chip_x, root_y AS chip_y "
+					+ "root_x AS chip_x, root_y AS chip_y, "
+					+ "root_x AS board_chip_x, root_y AS board_chip_y "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "JOIN machines AS m ON boards.machine_id = m.machine_id "
 					+ "WHERE boards.machine_id = ? AND boards.x = ? "
@@ -519,6 +528,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("chip_x")
 	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
 	@SingleRowResult
 	@Value("classpath:find_board_by_job_chip.sql")
 	protected Resource findBoardByJobChip;

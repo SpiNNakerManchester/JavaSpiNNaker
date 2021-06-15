@@ -218,7 +218,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private int insertJob(Connection conn, MachineImpl m, String owner,
 			Duration keepaliveInterval) throws SQLException {
-		// TODO add in additional info
+		// TODO add in additional info (what?)
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
 			for (int key : makeJob.keys(m.id, owner, keepaliveInterval)) {
@@ -752,6 +752,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private final ChipLocation chip;
 
+		private final ChipLocation boardChip;
+
 		private final BoardCoordinates logical;
 
 		private final BoardPhysicalCoordinates physical;
@@ -766,6 +768,13 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						row.getInt("frame"), row.getInt("board_num"));
 				chip = new ChipLocation(row.getInt("chip_x"),
 						row.getInt("chip_y"));
+				Integer boardX = (Integer) row.getObject("board_chip_x");
+				if (boardX != null) {
+					boardChip = new ChipLocation(boardX,
+							row.getInt("board_chip_y"));
+				} else {
+					boardChip = chip;
+				}
 
 				Integer jobId = (Integer) row.getObject("job_id");
 				if (jobId != null) {
@@ -780,8 +789,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public ChipLocation getBoardChip() {
-			// FIXME implement this
-			return null;
+			return boardChip;
 		}
 
 		@Override

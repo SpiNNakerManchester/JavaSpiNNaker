@@ -20,17 +20,21 @@ WITH
 		SELECT boards.* FROM boards, args
 		WHERE boards.allocated_job = args.job),
 	-- The root board of the job
-	root AS (SELECT bs.* FROM bs, args WHERE bs.board_id = args.root)
+	root AS (SELECT bs.* FROM bs, args WHERE bs.board_id = args.root),
+	-- The machine of the job
+	m AS (SELECT machines.* FROM machines, root
+		WHERE machines.machine_id = root.machine_id)
 SELECT
 	bs.board_id, bs.address, bs.x, bs.y, bs.z,
 	bs.allocated_job AS job_id, m.machine_name,
 	bmp.cabinet, bmp.frame, bs.board_num,
-	args.x AS chip_x, args.y AS chip_y
+	args.x AS chip_x, args.y AS chip_y,
+	bs.root_x - root.root_x AS board_chip_x,
+	bs.root_y - root.root_y AS board_chip_y
 FROM bs
 	JOIN bmp ON bs.bmp_id = bmp.bmp_id
-	JOIN machines AS m ON bs.machine_id = m.machine_id
-	JOIN board_model_coords AS bmc
-		ON m.board_model = bmc.model
+	JOIN m
+	JOIN board_model_coords AS bmc ON m.board_model = bmc.model
 	JOIN args
 	JOIN root
 WHERE args.x + root.root_x = bs.root_x + bmc.chip_x
