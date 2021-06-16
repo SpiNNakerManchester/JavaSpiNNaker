@@ -181,7 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-service-description-swagger</artifactId>
+			<artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
@@ -228,4 +228,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 	</profiles>
+	<description>A board allocation service for SpiNNaker.</description>
+	<name>SpiNNaker Allocation Server</name>
 </project>

@@ -35,8 +35,8 @@ import javax.ws.rs.ext.Provider;
 import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
-import org.apache.cxf.jaxrs.swagger.Swagger2Feature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -138,7 +138,7 @@ public class ServiceConfig extends Application {
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
 		factory.setAddress("/");
-		factory.setFeatures(asList(new Swagger2Feature()));
+		factory.setFeatures(asList(new OpenApiFeature()));
 		return factory;
 	}
 
