@@ -31,30 +31,37 @@ import uk.ac.manchester.spinnaker.alloc.allocator.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
+/**
+ * Describes an allocation of part of a machine to a job.
+ *
+ * @author Donal Fellows
+ */
 public class SubMachineResponse {
-	/** Rectangle width. */ //FIXME
-	public int width;
+	/** Rectangle width. */
+	public final int width;
 
-	/** Rectangle height. */ //FIXME
-	public int height;
+	/** Rectangle height. */
+	public final int height;
 
 	/** Depth of rectangle. 1 or 3. */
-	public int depth;
+	public final int depth;
 
-	/** On what machine. */ //FIXME
-	public String machineName;
+	/** On what machine. */
+	public final String machineName;
 
-	/** How to talk to boards. */ //FIXME
-	public List<ConnectionInfo> connections;
+	/** How to talk to boards. */
+	public final List<ConnectionInfo> connections;
 
-	/** Where the boards are. */ //FIXME
-	public List<BoardCoordinates> boards;
+	/** Where the boards are. */
+	public final List<BoardCoordinates> boards;
 
+	/** Where to get machine power information. */
 	@JsonInclude(NON_NULL)
-	public URI power;
+	public final URI power;
 
+	/** Where to get the full machine description. */
 	@JsonInclude(NON_NULL)
-	public URI machineRef;
+	public final URI machineRef;
 
 	public SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
 		width = m.getWidth();
@@ -67,5 +74,4 @@ public class SubMachineResponse {
 		machineRef = ui.getBaseUriBuilder().path("machine/{name}")
 				.build(m.getMachine().getName());
 	}
-
 }

@@ -31,6 +31,11 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
+/**
+ * Describes the result of a where-is style request.
+ *
+ * @author Donal Fellows
+ */
 @JsonInclude(NON_NULL)
 public class WhereIsResponse {
 	public Integer jobId;
@@ -63,9 +68,9 @@ public class WhereIsResponse {
 			jobRef = ui.getBaseUriBuilder().path("jobs/{id}").build(jobId);
 			jobChip = location.getChipRelativeTo(j.getRootChip());
 		}
-		// TODO Auto-generated constructor stub
 	}
 
+	/** Constructor for testing and serialization engine only. */
 	public WhereIsResponse() {
 	}
 }

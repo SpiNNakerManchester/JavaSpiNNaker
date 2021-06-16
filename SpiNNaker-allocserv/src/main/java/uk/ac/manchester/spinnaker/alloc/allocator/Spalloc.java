@@ -328,11 +328,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query rootBMPaddr = query(conn, GET_ROOT_BMP_ADDRESS)) {
 				return transaction(conn, () -> {
-					String address = null;
-					for (Row rs : rootBMPaddr.call(id)) {
-						address = rs.getString("address");
+					Optional<Row> row = rootBMPaddr.call1(id);
+					if (row.isPresent()) {
+						return row.get().getString("address");
 					}
-					return address;
+					return null;
 				});
 			}
 		}
@@ -779,7 +779,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				Integer jobId = (Integer) row.getObject("job_id");
 				if (jobId != null) {
 					job = new JobImpl(epoch, jobId, machineId);
-					// FIXME also need the root chip coords
+					job.chipRoot =
+							new ChipLocation(row.getInt("job_root_chip_x"),
+									row.getInt("job_root_chip_y"));
 				}
 			} catch (SQLException e) {
 				throw new WebApplicationException(

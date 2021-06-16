@@ -21,6 +21,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -35,6 +36,7 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
+import org.apache.cxf.jaxrs.swagger.Swagger2Feature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -115,30 +118,47 @@ public class ServiceConfig extends Application {
 	}
 
 	/**
+	 * A factory for JAX-RS servers. This is a <em>prototype</em> bean; you get
+	 * a new instance each time. You should call
+	 * {@link JAXRSServerFactoryBean#setServiceBeans(List) setServiceBeans(...)}
+	 * on it, and then {@link JAXRSServerFactoryBean#create() create()}. You
+	 * might also need to call {@link JAXRSServerFactoryBean#setAddress(String)
+	 * setAddress(...)}.
+	 *
+	 * @param bus
+	 *            The CXF bus.
+	 * @return A factory instance
+	 */
+	@Bean
+	@Scope(SCOPE_PROTOTYPE)
+	JAXRSServerFactoryBean rawFactory(Bus bus) {
+		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
+		factory.setStaticSubresourceResolution(true);
+		factory.setBus(bus);
+		factory.setProviders(new ArrayList<>(
+				ctx.getBeansWithAnnotation(Provider.class).values()));
+		factory.setAddress("/");
+		factory.setFeatures(asList(new Swagger2Feature()));
+		return factory;
+	}
+
+	/**
 	 * The JAX-RS interface. Note that this is only used when not in test mode.
 	 *
-	 * @param restPath
-	 *            Where to deploy services in resource-space
 	 * @param service
 	 *            The service implementation
 	 * @param executor
 	 *            The thread pool
-	 * @param jsonProvider
-	 *            The JSON object serializer/deserializer
-	 * @param bus
-	 *            The CXF core
+	 * @param factory
+	 *            A factory used to make servers.
 	 * @return The REST service core, configured.
 	 */
 	@Bean
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
-	Server jaxRsServer(SpallocServiceAPI service, Executor executor, Bus bus) {
-		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
-		factory.setAddress("/");
-		factory.setBus(bus);
+	Server jaxRsServer(SpallocServiceAPI service, Executor executor,
+			JAXRSServerFactoryBean factory) {
 		factory.setServiceBeans(asList(service));
-		factory.setProviders(new ArrayList<>(
-				ctx.getBeansWithAnnotation(Provider.class).values()));
 		Server s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
