@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.noContent;
@@ -41,9 +43,25 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * The REST API for the SpiNNaker machine allocation service.
  */
+@OpenAPIDefinition(tags = {
+	@Tag(name = "summary"),
+	@Tag(name = "machines", description = "Operations on SpiNNaker machines"),
+	@Tag(name = "jobs", description = "Operations on Spalloc jobs")
+},
+servers = @Server(url="spalloc"))
 public interface SpallocServiceAPI {
 	/**
 	 * Get a description of the overall service.
@@ -53,6 +71,16 @@ public interface SpallocServiceAPI {
 	 * @return A wrapped {@link ServiceDescription}
 	 */
 	@GET
+	@Operation(
+			tags = "summary",
+			summary = "Describe the overall service",
+			description = "Get a description of the overall service.",
+			responses = {
+				@ApiResponse(content = @Content(
+						mediaType = APPLICATION_JSON,
+						schema = @Schema(
+								implementation = ServiceDescription.class)))
+			})
 	@Produces(APPLICATION_JSON)
 	Response describeService(@Context UriInfo ui);
 
@@ -62,6 +90,7 @@ public interface SpallocServiceAPI {
 	 * @return HTTP response
 	 */
 	@OPTIONS
+	@Hidden
 	default Response optionsService() {
 		return noContent().allow("GET").build();
 	}
@@ -74,6 +103,18 @@ public interface SpallocServiceAPI {
 	 * @return A wrapped {@link MachinesResponse}
 	 */
 	@GET
+	@Operation(
+			tags = "machines",
+			summary = "List managed machines",
+			description = "Get a description of the machines managed. "
+					+ "Does not support paging; "
+					+ "number of machines expected to be small.",
+			responses = {
+				@ApiResponse(content = @Content(
+						mediaType = APPLICATION_JSON,
+						schema = @Schema(
+								implementation = MachinesResponse.class)))
+			})
 	@Path("machines")
 	@Produces(APPLICATION_JSON)
 	Response getMachines(@Context UriInfo ui);
@@ -88,8 +129,11 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @return The sub-resource
 	 */
+	//@Operation(tags = "machines")
 	@Path("machines/{name}")
-	MachineAPI getMachine(@PathParam(NAME) String name, @Context UriInfo ui);
+	MachineAPI getMachine(
+			@PathParam(NAME) String name,
+			@Context UriInfo ui);
 
 	/**
 	 * Describe what HTTP verbs are supported.
@@ -97,6 +141,7 @@ public interface SpallocServiceAPI {
 	 * @return HTTP response
 	 */
 	@OPTIONS
+	@Hidden
 	@Path("machines")
 	default Response optionsMachines() {
 		return noContent().allow("GET").build();
@@ -119,12 +164,29 @@ public interface SpallocServiceAPI {
 	 *            Filled out with a {@link ListJobsResponse}
 	 */
 	@GET
+	@Operation(
+			tags = "jobs",
+			summary = "List jobs",
+			description = "List jobs known to the service. Supports paging. "
+					+ "Supports long queries",
+			responses = {
+				@ApiResponse(content = @Content(
+						mediaType = APPLICATION_JSON,
+						schema = @Schema(
+								implementation = ListJobsResponse.class)))
+			})
 	@Path("jobs")
 	@Produces(APPLICATION_JSON)
-	void listJobs(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-			@QueryParam("deleted") @DefaultValue("false") boolean destroyed,
-			@QueryParam("limit") @DefaultValue("100") int limit,
-			@QueryParam("start") @DefaultValue("0") int start,
+	void listJobs(
+			@Parameter(description = "Whether to wait for a change (for up "
+					+ "to 30 seconds) before returning")
+			@QueryParam(WAIT) @DefaultValue("false") boolean wait,
+			@Parameter(in = QUERY) @QueryParam("deleted") @DefaultValue("false")
+			boolean destroyed,
+			@Parameter(in = QUERY) @QueryParam("limit") @DefaultValue("100")
+			int limit,
+			@Parameter(in = QUERY) @QueryParam("start") @DefaultValue("0")
+			int start,
 			@Context UriInfo ui, @Suspended AsyncResponse response);
 
 	/**
@@ -138,6 +200,16 @@ public interface SpallocServiceAPI {
 	 *            Filled out with a {@link CreateJobResponse}
 	 */
 	@POST
+	@Operation(
+			tags = "jobs",
+			summary = "Create job",
+			description = "Create a Spalloc job.",
+			responses = {
+				@ApiResponse(content = @Content(
+						mediaType = APPLICATION_JSON,
+						schema = @Schema(
+								implementation = CreateJobResponse.class)))
+			})
 	@Path("jobs")
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
@@ -150,6 +222,7 @@ public interface SpallocServiceAPI {
 	 * @return HTTP response
 	 */
 	@OPTIONS
+	@Hidden
 	default Response optionsJobs() {
 		return noContent().allow("GET", "POST").build();
 	}
@@ -165,6 +238,7 @@ public interface SpallocServiceAPI {
 	 *            Information about the request
 	 * @return The sub-resource
 	 */
+	@Operation(tags = "jobs")
 	@Path("jobs/{id}")
 	@Produces(APPLICATION_JSON)
 	JobAPI getJob(@PathParam(ID) int id, @Context UriInfo ui,
@@ -175,6 +249,7 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
+	@Path("machines/{name}")
 	interface MachineAPI {
 		/**
 		 * Describe the basic info about a machine.
@@ -185,6 +260,19 @@ public interface SpallocServiceAPI {
 		 *            Filled out with a {@link MachineResponse}
 		 */
 		@GET
+		@Operation(tags = "machines",
+			summary = "Describe a machine",
+			description = "Describes the basic info about a machine.",
+			parameters = @Parameter(in = PATH, name = "name",
+				description = "Machine name",
+				schema = @Schema(implementation = String.class)),
+			responses = {
+				@ApiResponse(content = @Content(
+						schema = @Schema(
+								implementation = MachineResponse.class))),
+				@ApiResponse(responseCode = "404",
+					content = @Content(mediaType = "*/*"))
+			})
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		void describeMachine(
@@ -199,6 +287,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		@Path("{path:.*}")
 		default Response optionsMachine(@PathParam("path") String ignored) {
 			// All paths beneath here are GET-only
@@ -217,6 +306,15 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link WhereIsResponse}
 		 */
 		@GET
+		@Operation(tags = "machines",
+			summary = "Find board by logical coordinates",
+			description = "Get the location description of a board given its "
+					+ "logical coordinates.",
+			parameters = @Parameter(in = PATH, name = "name",
+				description = "Machine name",
+				schema = @Schema(implementation = String.class)),
+			responses = @ApiResponse(content = @Content(
+					schema = @Schema(implementation = WhereIsResponse.class))))
 		@Path("logical-board")
 		@Produces(APPLICATION_JSON)
 		Response whereIsLogicalPosition(
@@ -236,6 +334,13 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link WhereIsResponse}
 		 */
 		@GET
+		@Operation(tags = "machines",
+			summary = "Find board by physical coordinates",
+			parameters = @Parameter(in = PATH, name = "name",
+				description = "Machine name",
+				schema = @Schema(implementation = String.class)),
+			responses = @ApiResponse(content = @Content(
+					schema = @Schema(implementation = WhereIsResponse.class))))
 		@Path("physical-board")
 		@Produces(APPLICATION_JSON)
 		Response whereIsPhysicalPosition(
@@ -254,6 +359,13 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link WhereIsResponse}
 		 */
 		@GET
+		@Operation(tags = "machines",
+			summary = "Find board holding a chip",
+			parameters = @Parameter(in = PATH, name = "name",
+				description = "Machine name",
+				schema = @Schema(implementation = String.class)),
+			responses = @ApiResponse(content = @Content(
+					schema = @Schema(implementation = WhereIsResponse.class))))
 		@Path("chip")
 		@Produces(APPLICATION_JSON)
 		Response whereIsMachineChipLocation(
@@ -266,6 +378,7 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
+	@Path("jobs/{id}")
 	interface JobAPI {
 		/**
 		 * Describe the basic info about a job.
@@ -276,6 +389,12 @@ public interface SpallocServiceAPI {
 		 *            Filled out with a {@link StateResponse}
 		 */
 		@GET
+		@Operation(tags = "jobs",
+			operationId = "describeJob",
+			summary = "Describe a job",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		void getState(@QueryParam(WAIT) @DefaultValue("false") boolean wait,
@@ -287,6 +406,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		default Response optionsRoot() {
 			return noContent().allow("GET", "DELETE").build();
 		}
@@ -299,6 +419,11 @@ public interface SpallocServiceAPI {
 		 * @return A constant response
 		 */
 		@PUT
+		@Operation(tags = "jobs",
+			summary = "Keep a job alive",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("keepalive")
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
@@ -310,6 +435,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		default Response optionsKeepalive() {
 			return noContent().allow("PUT").build();
 		}
@@ -322,6 +448,11 @@ public interface SpallocServiceAPI {
 		 * @return No content
 		 */
 		@DELETE
+		@Operation(tags = "jobs",
+			summary = "Delete a job",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		Response deleteJob(
@@ -333,6 +464,11 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link SubMachineResponse}
 		 */
 		@GET
+		@Operation(tags = "jobs",
+			summary = "Describe the job's resources",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("machine")
 		@Produces(APPLICATION_JSON)
 		Response getMachine();
@@ -343,6 +479,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		@Path("machine")
 		default Response optionsMachine() {
 			return noContent().allow("GET").build();
@@ -354,6 +491,11 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link MachinePower}
 		 */
 		@GET
+		@Operation(tags = "jobs",
+			summary = "Get the job's power status",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("machine/power")
 		@Produces(APPLICATION_JSON)
 		Response getMachinePower();
@@ -367,6 +509,11 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link MachinePower}
 		 */
 		@POST
+		@Operation(tags = "jobs",
+			summary = "Set the job's power status",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("machine/power")
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
@@ -378,6 +525,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		@Path("machine/power")
 		default Response optionsPower() {
 			return noContent().allow("GET", "POST").build();
@@ -394,6 +542,11 @@ public interface SpallocServiceAPI {
 		 * @return A wrapped {@link WhereIsResponse}
 		 */
 		@GET
+		@Operation(tags = "jobs",
+			summary = "Get location within job's allocation",
+			parameters = @Parameter(in = PATH, name = "id",
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
 		@Path("chip")
 		@Produces(APPLICATION_JSON)
 		Response getJobChipLocation(@QueryParam("x") @DefaultValue("0") int x,
@@ -405,6 +558,7 @@ public interface SpallocServiceAPI {
 		 * @return HTTP response
 		 */
 		@OPTIONS
+		@Hidden
 		@Path("chip")
 		default Response optionsWhereIs() {
 			return noContent().allow("GET").build();

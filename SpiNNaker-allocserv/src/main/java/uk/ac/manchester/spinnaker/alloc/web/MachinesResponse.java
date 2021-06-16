@@ -26,7 +26,10 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 public class MachinesResponse {
-	public List<URI> machines;
+	/**
+	 * The list of URIs to machines known to the service.
+	 */
+	public final List<URI> machines;
 
 	public MachinesResponse(Map<String, ?> machines, UriInfo ui) {
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
