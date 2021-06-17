@@ -66,7 +66,8 @@ public class WhereIsResponse {
 		if (j != null) {
 			jobId = j.getId();
 			jobRef = ui.getBaseUriBuilder().path("jobs/{id}").build(jobId);
-			jobChip = location.getChipRelativeTo(j.getRootChip());
+			jobChip = j.getRootChip().map(rc -> location.getChipRelativeTo(rc))
+					.orElse(null);
 		}
 	}
 

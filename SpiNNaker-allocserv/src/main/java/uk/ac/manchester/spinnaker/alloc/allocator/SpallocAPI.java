@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.JobsEpoch;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -110,61 +109,61 @@ public interface SpallocAPI {
 		/** @return When the job started. */
 		Instant getStartTime() throws SQLException;
 
-		/** @return When the job finished. */
-		Instant getFinishTime();
-
-		/**
-		 * @return Why the job died. Might be {@code null} if this isn't known
-		 *         (including if the job is alive).
-		 */
-		String getReason() throws SQLException;
-
 		/** @return Host address that issued last keepalive event, if any. */
 		String getKeepaliveHost() throws SQLException;
 
 		/** @return Time of the last keepalive event, if any. */
 		Instant getKeepaliveTimestamp() throws SQLException;
 
+		/** @return The creator of the job. */
+		String getOwner() throws SQLException;
+
+		/** @return When the job finished. */
+		Optional<Instant> getFinishTime();
+
+		/**
+		 * @return Why the job died. Might be {@code null} if this isn't known
+		 *         (including if the job is alive).
+		 */
+		Optional<String> getReason() throws SQLException;
+
 		/**
 		 * @return The (sub-)machine allocated to the job. {@code null} if no
 		 *         resources allocated.
 		 */
-		SubMachine getMachine() throws SQLException;
+		Optional<SubMachine> getMachine() throws SQLException;
 
 		/**
 		 * Locate a board within the allocation.
 		 *
-		 * @return The location, or {@code null} if no resources allocated.
+		 * @return The location, if resources allocated and the location maps.
 		 */
-		BoardLocation whereIs(int x, int y) throws SQLException;
+		Optional<BoardLocation> whereIs(int x, int y) throws SQLException;
 
 		/**
 		 * @return The absolute location of root chip. {@code null} if no
 		 *         resources allocated.
 		 */
-		ChipLocation getRootChip() throws SQLException;
-
-		/** @return The creator of the job. */
-		String getOwner() throws SQLException;
+		Optional<ChipLocation> getRootChip() throws SQLException;
 
 		/**
 		 * @return the allocated width of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
 		 */
-		Integer getWidth() throws SQLException;
+		Optional<Integer> getWidth() throws SQLException;
 
 		/**
 		 * @return the allocated height of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
 		 */
-		Integer getHeight() throws SQLException;
+		Optional<Integer> getHeight() throws SQLException;
 
 		/**
 		 * @return the allocated depth of this sub-machine, or {@code null} if
 		 *         not allocated (or not known). When suppplied, will be 1
 		 *         (single board) or 3 (by triad)
 		 */
-		Integer getDepth() throws SQLException;
+		Optional<Integer> getDepth() throws SQLException;
 	}
 
 	/**
@@ -212,14 +211,14 @@ public interface SpallocAPI {
 
 		// TODO: dead links
 
-		Optional<BoardLocation> getBoardByChip(int x, int y, JobsEpoch je)
+		Optional<BoardLocation> getBoardByChip(int x, int y)
 				throws SQLException;
 
 		Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet, int frame,
-				int board, JobsEpoch je) throws SQLException;
+				int board) throws SQLException;
 
-		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z,
-				JobsEpoch je) throws SQLException;
+		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z)
+				throws SQLException;
 
 		String getRootBoardBMPAddress() throws SQLException;
 

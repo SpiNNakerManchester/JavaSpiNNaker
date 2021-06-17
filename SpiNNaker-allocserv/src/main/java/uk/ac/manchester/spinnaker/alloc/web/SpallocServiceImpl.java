@@ -20,21 +20,18 @@ import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
 import static javax.ws.rs.core.Response.noContent;
 import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.GONE;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -45,10 +42,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 @Service("service")
@@ -98,15 +99,18 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		 * @return The result of the action. A {@code null} is mapped as a
 		 *         generic 404 with no special message. Custom messages should
 		 *         be supported by throwing a suitable
-		 *         {@link WebApplicationException}.
-		 * @throws WebApplicationException
+		 *         {@link RequestFailedException}. If the result is not a
+		 *         {@link Response} and not a {@link Throwable}, it will be
+		 *         returned as the entity that populates a {@code 200 OK} (and
+		 *         so must be convertible to JSON).
+		 * @throws RequestFailedException
 		 *             If anything goes wrong. This is the <em>expected</em>
 		 *             exception type; it is <em>not</em> logged.
 		 * @throws Exception
 		 *             If anything goes wrong. This is reported as an
 		 *             <em>unexpected</em> exception and logged.
 		 */
-		Response respond() throws WebApplicationException, Exception;
+		Object respond() throws RequestFailedException, Exception;
 	}
 
 	/**
@@ -130,36 +134,35 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	 * @param action
 	 *            The action that generates a {@link Response}
 	 */
-	private void fgAction(AsyncResponse response, BackgroundAction action) {
+	private static void fgAction(AsyncResponse response,
+			BackgroundAction action) {
 		try {
-			Response r = action.respond();
+			Object r = action.respond();
 			if (r == null) {
 				// If you want something else, don't return null
-				response.resume(status(NOT_FOUND));
+				response.resume(new NotFound("not found"));
 			} else {
 				response.resume(r);
 			}
-		} catch (WebApplicationException e) {
+		} catch (RequestFailedException e) {
 			response.resume(e);
 		} catch (Exception e) {
-			log.warn("unexpected exception", e);
 			response.resume(
-					new WebApplicationException("unexpected server problem"));
+					new RequestFailedException("unexpected server problem", e));
 		}
 	}
 
 	@Override
-	public Response describeService(UriInfo ui) {
-		return ok(new ServiceDescription(v, ui)).build();
+	public ServiceDescription describeService(UriInfo ui) {
+		return new ServiceDescription(v, ui);
 	}
 
 	@Override
-	public Response getMachines(UriInfo ui) {
+	public MachinesResponse getMachines(UriInfo ui) {
 		try {
-			return ok(new MachinesResponse(core.getMachines(), ui)).build();
+			return new MachinesResponse(core.getMachines(), ui);
 		} catch (SQLException e) {
-			log.error("failed to list machines", e);
-			throw new WebApplicationException("failed to list machines");
+			throw new RequestFailedException("failed to list machines", e);
 		}
 	}
 
@@ -169,80 +172,78 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		try {
 			machine = core.getMachine(name);
 		} catch (SQLException e) {
-			log.error("failed to get machine", e);
-			throw new WebApplicationException("failed to get machine: " + name);
+			throw new NotFound("failed to get machine: " + name, e);
 		}
 		if (machine == null) {
-			throw new WebApplicationException("no such machine", NOT_FOUND);
+			throw new NotFound("no such machine");
 		}
 		return new MachineAPI() {
 			@Override
 			public void describeMachine(boolean wait, AsyncResponse response) {
 				if (wait) {
 					bgAction(response, () -> {
+						log.debug("starting wait for change of machine");
 						machine.waitForChange(WAIT_TIMEOUT);
 						/*
 						 * Assume that machines don't change often enough for us
 						 * to care about whether they vanish; therefore handle
 						 * still valid after wait
 						 */
-						return ok(new MachineResponse(machine, ui)).build();
+						return new MachineResponse(machine, ui);
 					});
 				} else {
-					fgAction(response,
-							() -> ok(new MachineResponse(machine, ui)).build());
+					fgAction(response, () -> new MachineResponse(machine, ui));
 				}
 			}
 
 			@Override
-			public Response whereIsLogicalPosition(int x, int y, int z) {
+			public WhereIsResponse whereIsLogicalPosition(int x, int y, int z) {
+				if (x < 0 || y < 0 || z < 0) {
+					throw new BadArgs("coordinates must not be negative");
+				}
 				try {
 					// No epoch; value not retained
-					return ok(new WhereIsResponse(
-							machine.getBoardByLogicalCoords(x, y, z, null)
-									.orElseThrow(() -> {
-										return new WebApplicationException(
-												"failed to locate board",
-												NOT_FOUND);
-									}),
-							ui)).build();
+					return new WhereIsResponse(
+							machine.getBoardByLogicalCoords(x, y, z)
+									.orElseThrow(() -> new NotFound(
+											"failed to locate board")),
+							ui);
 				} catch (SQLException e) {
-					log.error("failed to locate board", e);
-					throw new WebApplicationException("failed to locate board");
+					throw new NotFound("failed to locate board", e);
 				}
 			}
 
 			@Override
-			public Response whereIsPhysicalPosition(int cabinet, int frame,
-					int board) {
+			public WhereIsResponse whereIsPhysicalPosition(int cabinet,
+					int frame, int board) {
+				if (cabinet < 0 || frame < 0 || board < 0) {
+					throw new BadArgs("coordinates must not be negative");
+				}
 				try {
 					// No epoch; value not retained
-					return ok(new WhereIsResponse(
-							machine.getBoardByPhysicalCoords(cabinet, frame,
-									board, null).orElseThrow(() -> {
-										return new WebApplicationException(
-												"failed to locate board",
-												NOT_FOUND);
-									}),
-							ui)).build();
+					return new WhereIsResponse(machine
+							.getBoardByPhysicalCoords(cabinet, frame, board)
+							.orElseThrow(() -> new NotFound(
+									"failed to locate board")),
+							ui);
 				} catch (SQLException e) {
-					log.error("failed to locate board", e);
-					throw new WebApplicationException("failed to locate board");
+					throw new NotFound("failed to locate board", e);
 				}
 			}
 
 			@Override
-			public Response whereIsMachineChipLocation(int x, int y) {
+			public WhereIsResponse whereIsMachineChipLocation(int x, int y) {
+				if (x < 0 || y < 0) {
+					throw new BadArgs("coordinates must not be negative");
+				}
 				try {
 					// No epoch; value not retained
-					return ok(new WhereIsResponse(machine
-							.getBoardByChip(x, y, null).orElseThrow(() -> {
-								return new WebApplicationException(
-										"failed to locate board", NOT_FOUND);
-							}), ui)).build();
+					return new WhereIsResponse(machine.getBoardByChip(x, y)
+							.orElseThrow(() -> new NotFound(
+									"failed to locate board")),
+							ui);
 				} catch (SQLException e) {
-					log.error("failed to locate board", e);
-					throw new WebApplicationException("failed to locate board");
+					throw new NotFound("failed to locate board", e);
 				}
 			}
 		};
@@ -251,23 +252,24 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req) {
 		Job j;
+		String caller = req.getRemoteHost();
 		try {
 			j = core.getJob(id);
 		} catch (SQLException e) {
-			log.error("failed to get job", e);
-			throw new WebApplicationException("failed to get job: " + id);
+			throw new NotFound("failed to get job: " + id, e);
 		}
 		if (j == null) {
-			throw new WebApplicationException("no such job", NOT_FOUND);
+			throw new NotFound("no such job");
 		}
 		return new JobAPI() {
 			@Override
 			public Response keepAlive(String reqBody) {
 				try {
+					log.debug("keeping job {} alive: {}", id, caller);
 					j.access(req.getRemoteAddr());
 				} catch (SQLException e) {
-					log.error("failed to update job record", e);
-					throw new WebApplicationException("failed");
+					throw new RequestFailedException(
+							"failed to update job record", e);
 				}
 				return ok("ok").build();
 			}
@@ -276,91 +278,101 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public void getState(boolean wait, AsyncResponse response) {
 				if (wait) {
 					bgAction(response, () -> {
+						log.debug("starting wait for change of job");
 						j.waitForChange(WAIT_TIMEOUT);
 						// Refresh the handle
 						try {
 							Job nj = core.getJob(id);
 							if (nj == null) {
-								throw new WebApplicationException("no such job",
-										GONE);
+								throw new ItsGone("no such job");
 							}
-							return ok(new StateResponse(nj, ui)).build();
+							return new StateResponse(nj, ui);
 						} catch (SQLException e) {
-							log.error("failed to get job", e);
-							throw new WebApplicationException(
-									"failed to get job: " + id);
+							throw new RequestFailedException(
+									"failed to get job: " + id, e);
 						}
 					});
 				} else {
-					fgAction(response,
-							() -> ok(new StateResponse(j, ui)).build());
+					fgAction(response, () -> new StateResponse(j, ui));
 				}
 			}
 
 			@Override
 			public Response deleteJob(String reason) {
+				if (reason == null) {
+					reason = "";
+				}
 				try {
 					core.getJob(id).destroy(reason);
 				} catch (SQLException e) {
-					log.error("failed to destroy job", e);
-					throw new WebApplicationException(
-							"failed to destroy job: " + id);
+					throw new RequestFailedException(
+							"failed to destroy job: " + id, e);
 				}
 				return noContent().build();
 			}
 
 			@Override
-			public Response getMachine() {
+			public SubMachineResponse getMachine() {
 				try {
-					j.access(req.getRemoteAddr());
-					SubMachine m = j.getMachine();
-					if (m == null) {
+					j.access(caller);
+					Optional<SubMachine> m = j.getMachine();
+					if (!m.isPresent()) {
 						// No machine allocated yet
-						return noContent().build();
+						throw new RequestFailedException(NO_CONTENT, "");
 					}
-					return ok(new SubMachineResponse(m, ui)).build();
+					return new SubMachineResponse(m.get(), ui);
 				} catch (SQLException e) {
-					log.error("failed to get machine description", e);
-					throw new WebApplicationException(
-							"failed to get machine description");
+					throw new RequestFailedException(
+							"failed to get machine description", e);
 				}
 			}
 
 			@Override
-			public Response getMachinePower() {
+			public MachinePower getMachinePower() {
 				try {
-					j.access(req.getRemoteAddr());
-					return ok(new MachinePower(j.getMachine().getPower()))
-							.build();
+					j.access(caller);
+					Optional<SubMachine> m = j.getMachine();
+					if (!m.isPresent()) {
+						throw new RequestFailedException(NO_CONTENT, "");
+					}
+					return new MachinePower(m.get().getPower());
 				} catch (SQLException e) {
-					log.error("failed to get power status", e);
-					throw new WebApplicationException(
-							"failed to get power status");
+					throw new RequestFailedException(
+							"failed to get power status", e);
 				}
 			}
 
 			@Override
 			public Response setMachinePower(MachinePower reqBody) {
 				try {
-					j.access(req.getRemoteAddr());
-					j.getMachine().setPower(reqBody.power);
+					if (reqBody == null || reqBody.power == null) {
+						throw new BadArgs("bad power description");
+					}
+					j.access(caller);
+					Optional<SubMachine> m = j.getMachine();
+					if (!m.isPresent()) {
+						throw new RequestFailedException(NO_CONTENT, "");
+					}
+					m.get().setPower(reqBody.power);
 					return accepted().build();
 				} catch (SQLException e) {
-					log.error("failed to set power status", e);
-					throw new WebApplicationException(
-							"failed to set power status");
+					throw new RequestFailedException(
+							"failed to set power status", e);
 				}
 			}
 
 			@Override
-			public Response getJobChipLocation(int x, int y) {
+			public WhereIsResponse getJobChipLocation(int x, int y) {
 				try {
-					j.access(req.getRemoteAddr());
-					return ok(new WhereIsResponse(j.whereIs(x, y), ui)).build();
+					j.access(caller);
+					Optional<BoardLocation> loc = j.whereIs(x, y);
+					if (!loc.isPresent()) {
+						throw new RequestFailedException(NO_CONTENT, "");
+					}
+					return new WhereIsResponse(loc.get(), ui);
 				} catch (SQLException e) {
-					log.error("failed to get location info", e);
-					throw new WebApplicationException(
-							"failed to get location info");
+					throw new RequestFailedException(
+							"failed to get location info", e);
 				}
 			}
 		};
@@ -372,65 +384,63 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	public void listJobs(boolean wait, boolean destroyed, int limit, int start,
 			UriInfo ui, AsyncResponse response) {
 		if (limit > LIMIT_LIMIT || limit < 1) {
-			throw new WebApplicationException(
-					"limit must not be bigger than " + LIMIT_LIMIT,
-					BAD_REQUEST);
+			throw new BadArgs("limit must not be bigger than " + LIMIT_LIMIT);
 		}
 		if (start < 0) {
-			throw new WebApplicationException("start must not be less than 0",
-					BAD_REQUEST);
+			throw new BadArgs("start must not be less than 0");
 		}
-		bgAction(response, () -> {
-			Jobs jc;
-			try {
-				jc = core.getJobs(destroyed, limit, start);
-				if (wait) {
+		if (wait) {
+			bgAction(response, () -> {
+				try {
+					Jobs jc = core.getJobs(destroyed, limit, start);
+					log.debug("starting wait for change of job list");
 					jc.waitForChange(WAIT_TIMEOUT);
-					jc = core.getJobs(destroyed, limit, start);
+					Jobs newJc = core.getJobs(destroyed, limit, start);
+					return new ListJobsResponse(newJc, ui);
+				} catch (SQLException e) {
+					throw new RequestFailedException("failed to list jobs", e);
 				}
-			} catch (SQLException e) {
-				log.error("failed to list jobs", e);
-				throw new WebApplicationException("failed to list jobs");
-			}
 
-			return ok(new ListJobsResponse(jc, ui)).build();
-		});
+			});
+		} else {
+			fgAction(response, () -> {
+				try {
+					Jobs jc = core.getJobs(destroyed, limit, start);
+					return new ListJobsResponse(jc, ui);
+				} catch (SQLException e) {
+					throw new RequestFailedException("failed to list jobs", e);
+				}
+			});
+		}
 	}
 
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			AsyncResponse response) {
 		if (req.owner == null || req.owner.trim().isEmpty()) {
-			throw new WebApplicationException("owner must be supplied",
-					BAD_REQUEST);
+			throw new BadArgs("owner must be supplied");
 		}
 		if (req.keepaliveInterval == null || req.keepaliveInterval
 				.compareTo(MIN_KEEPALIVE_DURATION) < 0) {
-			throw new WebApplicationException(
-					"keepalive interval must be at least "
-							+ MIN_KEEPALIVE_DURATION,
-					BAD_REQUEST);
+			throw new BadArgs("keepalive interval must be at least "
+					+ MIN_KEEPALIVE_DURATION);
 		}
 		if (req.keepaliveInterval.compareTo(MAX_KEEPALIVE_DURATION) > 0) {
-			throw new WebApplicationException(
-					"keepalive interval must be no more than "
-							+ MAX_KEEPALIVE_DURATION,
-					BAD_REQUEST);
+			throw new BadArgs("keepalive interval must be no more than "
+					+ MAX_KEEPALIVE_DURATION);
 		}
 		if (req.dimensions == null) {
 			req.dimensions = new ArrayList<>();
 		}
 		if (req.dimensions.size() > MAX_CREATE_DIMENSIONS) {
-			throw new WebApplicationException(
-					"must be zero to " + MAX_CREATE_DIMENSIONS + " dimensions",
-					BAD_REQUEST);
+			throw new BadArgs(
+					"must be zero to " + MAX_CREATE_DIMENSIONS + " dimensions");
 		}
 		if (req.dimensions.size() == 0) {
 			req.dimensions.add(1);
 		}
 		if (req.dimensions.stream().anyMatch(x -> x < 0)) {
-			throw new WebApplicationException("dimensions must not be negative",
-					BAD_REQUEST);
+			throw new BadArgs("dimensions must not be negative");
 		}
 		if (req.tags == null) {
 			req.tags = new ArrayList<>();
@@ -439,32 +449,28 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			}
 		}
 		if (req.machineName != null && req.tags.size() > 0) {
-			throw new WebApplicationException(
-					"must not specify machine name and tags together",
-					BAD_REQUEST);
+			throw new BadArgs(
+					"must not specify machine name and tags together");
 		}
 		if (req.maxDeadBoards == null) {
 			req.maxDeadBoards = 0;
 		}
 		if (req.maxDeadBoards < 0) {
-			throw new WebApplicationException(
-					"the maximum number of dead boards must not be negative",
-					BAD_REQUEST);
+			throw new BadArgs(
+					"the maximum number of dead boards must not be negative");
 		}
 		bgAction(response, () -> {
+			Job j;
 			try {
-				Job j = core.createJob(req.owner.trim(), req.dimensions,
+				j = core.createJob(req.owner.trim(), req.dimensions,
 						req.machineName, req.tags, req.keepaliveInterval,
 						req.maxDeadBoards);
-				URI where =
-						ui.getRequestUriBuilder().path("{id}").build(j.getId());
-				return created(where).entity(new CreateJobResponse(j, ui))
-						.build();
 			} catch (SQLException e) {
-				log.error("failed to create job", e);
-				throw new WebApplicationException(
-						"failed to create job: " + req.dimensions);
+				throw new RequestFailedException(
+						"failed to create job: " + req.dimensions, e);
 			}
+			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+			return created(uri).entity(new CreateJobResponse(j, ui)).build();
 		});
 	}
 

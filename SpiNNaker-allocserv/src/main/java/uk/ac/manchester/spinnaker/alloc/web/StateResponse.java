@@ -43,9 +43,15 @@ public class StateResponse {
 	private Instant startTime;
 
 	@JsonInclude(NON_NULL)
+	private Instant finishTime;
+
+	@JsonInclude(NON_NULL)
 	private String reason;
 
 	private String keepaliveHost;
+
+	@JsonInclude(NON_NULL)
+	private Instant keepaliveTime;
 
 	/** Where the keepalives go. */
 	@JsonInclude(NON_NULL)
@@ -73,8 +79,10 @@ public class StateResponse {
 	StateResponse(Job job, UriInfo ui) throws SQLException {
 		state = job.getState();
 		startTime = job.getStartTime();
-		reason = job.getReason();
+		reason = job.getReason().orElse(null);
+		finishTime = job.getFinishTime().orElse(null);
 		keepaliveHost = job.getKeepaliveHost();
+		keepaliveTime = job.getKeepaliveTimestamp();
 		owner = job.getOwner();
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");

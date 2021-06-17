@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.lang.System.currentTimeMillis;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,10 +36,14 @@ public class Epochs {
 	 *
 	 * @return Jobs epoch handle.
 	 */
-	public JobsEpoch getJobsEpoch() {
+	public Epoch getJobsEpoch() {
 		return new JobsEpoch();
 	}
 
+	/**
+	 * Advance the jobs epoch. Will wake any thread waiting on changes to the
+	 * epoch with {@link JobsEpoch#waitForChange(long)}.
+	 */
 	synchronized void nextJobsEpoch() {
 		try {
 			jobsEpoch++;
@@ -51,10 +57,14 @@ public class Epochs {
 	 *
 	 * @return Machines epoch handle.
 	 */
-	public MachinesEpoch getMachineEpoch() {
+	public Epoch getMachineEpoch() {
 		return new MachinesEpoch();
 	}
 
+	/**
+	 * Advance the machine epoch. Will wake any thread waiting on changes to the
+	 * epoch with {@link MachineEpoch#waitForChange(long)}.
+	 */
 	synchronized void nextMachineEpoch() {
 		try {
 			machineEpoch++;
@@ -63,14 +73,41 @@ public class Epochs {
 		}
 	}
 
-	synchronized void waitForMachinesChange(long currentMachineEpoch,
-			long timeout) throws InterruptedException {
-		while (machineEpoch <= currentMachineEpoch) {
-			wait(timeout);
-		}
+	private static long expiry(long timeout) {
+		return currentTimeMillis() + timeout;
 	}
 
-	public final class JobsEpoch {
+	private static boolean waiting(long expiry) {
+		return currentTimeMillis() < expiry;
+	}
+
+	private void waitUntil(long expiry) throws InterruptedException {
+		wait(expiry - currentTimeMillis());
+	}
+
+	/**
+	 * A waitable epoch checkpoint.
+	 *
+	 * @author Donal Fellows
+	 */
+	public interface Epoch {
+		/**
+		 * Wait, for up to {@code timeout}, for a change.
+		 *
+		 * @param timeout
+		 *            The time to wait, in milliseconds.
+		 * @throws InterruptedException
+		 *             If the wait is interrupted.
+		 */
+		void waitForChange(long timeout) throws InterruptedException;
+	}
+
+	/**
+	 * A waitable job epoch checkpoint.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class JobsEpoch implements Epoch {
 		private final long epoch;
 
 		private JobsEpoch() {
@@ -79,16 +116,23 @@ public class Epochs {
 			}
 		}
 
+		@Override
 		public void waitForChange(long timeout) throws InterruptedException {
+			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
-				while (jobsEpoch <= epoch) {
-					wait(timeout);
+				while (jobsEpoch <= epoch && waiting(expiry)) {
+					waitUntil(expiry);
 				}
 			}
 		}
 	}
 
-	public final class MachinesEpoch {
+	/**
+	 * A waitable machine epoch checkpoint.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class MachinesEpoch implements Epoch {
 		private final long epoch;
 
 		private MachinesEpoch() {
@@ -97,10 +141,12 @@ public class Epochs {
 			}
 		}
 
+		@Override
 		public void waitForChange(long timeout) throws InterruptedException {
+			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
-				while (machineEpoch <= epoch) {
-					wait(timeout);
+				while (machineEpoch <= epoch && waiting(expiry)) {
+					waitUntil(expiry);
 				}
 			}
 		}
