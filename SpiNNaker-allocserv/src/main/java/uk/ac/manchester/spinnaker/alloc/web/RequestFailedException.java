@@ -21,6 +21,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.GONE;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -72,7 +73,7 @@ public class RequestFailedException extends RuntimeException {
 		this(code, cause.getMessage(), cause);
 	}
 
-	private Response toResponse() {
+	Response toResponse() {
 		return Response.status(code).type(TEXT_PLAIN).entity(message).build();
 	}
 
@@ -119,6 +120,19 @@ public class RequestFailedException extends RuntimeException {
 
 		public BadArgs(String message) {
 			super(BAD_REQUEST, message, null);
+		}
+	}
+
+	public static class EmptyResponse extends RequestFailedException {
+		private static final long serialVersionUID = -2944836034264700912L;
+
+		public EmptyResponse() {
+			super(NO_CONTENT, "");
+		}
+
+		@Override
+		Response toResponse() {
+			return Response.status(NO_CONTENT).build();
 		}
 	}
 

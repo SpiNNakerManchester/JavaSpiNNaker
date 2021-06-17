@@ -32,13 +32,13 @@ public interface SpallocAPI {
 	Map<String, Machine> getMachines() throws SQLException;
 
 	/** Get a specific machine. */
-	Machine getMachine(String name) throws SQLException;
+	Optional<Machine> getMachine(String name) throws SQLException;
 
 	/** List the jobs. */
 	Jobs getJobs(boolean deleted, int limit, int start) throws SQLException;
 
 	/** Get a specific job. */
-	Job getJob(int id) throws SQLException;
+	Optional<Job> getJob(int id) throws SQLException;
 
 	/**
 	 * Create a job.
@@ -61,13 +61,17 @@ public interface SpallocAPI {
 	 * @param maxDeadBoards
 	 *            The maximum number of dead boards tolerated in the allocation.
 	 *            Ignored when asking for a single board.
+	 * @param originalRequest
+	 *            The serialized original request, which will be stored in the
+	 *            database for later retrieval.
 	 * @return Handle to the job.
 	 * @throws SQLException
 	 *             If anything goes wrong at the database level.
 	 */
 	Job createJob(String owner, List<Integer> dimensions, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			Integer maxDeadBoards) throws SQLException;
+			Integer maxDeadBoards, byte[] originalRequest)
+			throws SQLException;
 
 	/**
 	 * A thing that may be waited upon.
@@ -117,6 +121,9 @@ public interface SpallocAPI {
 
 		/** @return The creator of the job. */
 		String getOwner() throws SQLException;
+
+		/** @return The serialized original request to create the job. */
+		byte[] getOriginalRequest() throws SQLException;
 
 		/** @return When the job finished. */
 		Optional<Instant> getFinishTime();
@@ -209,7 +216,7 @@ public interface SpallocAPI {
 		 */
 		List<Integer> getDeadBoards() throws SQLException;
 
-		// TODO: dead links
+		// TODO: dead links (how to model?)
 
 		Optional<BoardLocation> getBoardByChip(int x, int y)
 				throws SQLException;

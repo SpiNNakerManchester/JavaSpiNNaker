@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 	keepalive_host TEXT, -- IP address
 	death_reason TEXT,
 	death_timestamp INTEGER, -- timestamp
+	original_request BLOB, -- Stores it, but doesn't otherwise care
 	num_pending INTEGER NOT NULL DEFAULT (0)
 );
 -- When the job is created, update the right timestamp

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -35,7 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
  *
  * @author Donal Fellows
  */
-public class StateResponse {
+public class JobStateResponse {
 	private JobState state;
 
 	private String owner;
@@ -69,14 +71,32 @@ public class StateResponse {
 	@JsonInclude(NON_NULL)
 	public final URI chipRef;
 
-	public StateResponse() {
+	@JsonInclude(NON_NULL)
+	public final CreateJobRequest originalRequest;
+
+	public JobStateResponse() {
 		keepaliveRef = null;
 		machineRef = null;
 		powerRef = null;
 		chipRef = null;
+		originalRequest = null;
 	}
 
-	StateResponse(Job job, UriInfo ui) throws SQLException {
+	private static CreateJobRequest origRequest(JsonMapper mapper, Job job) {
+		try {
+			byte[] data = job.getOriginalRequest();
+			if (data == null) {
+				return null;
+			}
+			return mapper.readValue(data, CreateJobRequest.class);
+		} catch (IOException | SQLException e) {
+			// Non-critical; this can be just dropped if it doesn't work
+			return null;
+		}
+	}
+
+	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper)
+			throws SQLException {
 		state = job.getState();
 		startTime = job.getStartTime();
 		reason = job.getReason().orElse(null);
@@ -84,6 +104,7 @@ public class StateResponse {
 		keepaliveHost = job.getKeepaliveHost();
 		keepaliveTime = job.getKeepaliveTimestamp();
 		owner = job.getOwner();
+		originalRequest = origRequest(mapper, job);
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 		keepaliveRef = b.build("keepalive");

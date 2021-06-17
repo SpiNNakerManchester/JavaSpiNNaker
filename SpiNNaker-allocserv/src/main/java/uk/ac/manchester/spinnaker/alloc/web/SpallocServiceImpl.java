@@ -19,15 +19,12 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
 import static javax.ws.rs.core.Response.noContent;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -48,6 +47,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.EmptyResponse;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -79,6 +79,9 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 
 	@Autowired
 	private Executor executor;
+
+	@Autowired
+	private JsonMapper mapper;
 
 	public SpallocServiceImpl(@Value("${version}") String version) {
 		v = new Version(version.replaceAll("-.*", ""));
@@ -170,13 +173,12 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	public MachineAPI getMachine(String name, UriInfo ui) {
 		Machine machine;
 		try {
-			machine = core.getMachine(name);
+			machine = core.getMachine(name)
+					.orElseThrow(() -> new NotFound("no such machine"));
 		} catch (SQLException e) {
 			throw new NotFound("failed to get machine: " + name, e);
 		}
-		if (machine == null) {
-			throw new NotFound("no such machine");
-		}
+
 		return new MachineAPI() {
 			@Override
 			public void describeMachine(boolean wait, AsyncResponse response) {
@@ -254,16 +256,14 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		Job j;
 		String caller = req.getRemoteHost();
 		try {
-			j = core.getJob(id);
+			j = core.getJob(id).orElseThrow(() -> new NotFound("no such job"));
 		} catch (SQLException e) {
 			throw new NotFound("failed to get job: " + id, e);
 		}
-		if (j == null) {
-			throw new NotFound("no such job");
-		}
+
 		return new JobAPI() {
 			@Override
-			public Response keepAlive(String reqBody) {
+			public String keepAlive(String reqBody) {
 				try {
 					log.debug("keeping job {} alive: {}", id, caller);
 					j.access(req.getRemoteAddr());
@@ -271,7 +271,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 					throw new RequestFailedException(
 							"failed to update job record", e);
 				}
-				return ok("ok").build();
+				return "ok";
 			}
 
 			@Override
@@ -282,28 +282,27 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 						j.waitForChange(WAIT_TIMEOUT);
 						// Refresh the handle
 						try {
-							Job nj = core.getJob(id);
-							if (nj == null) {
-								throw new ItsGone("no such job");
-							}
-							return new StateResponse(nj, ui);
+							Job nj = core.getJob(id).orElseThrow(
+									() -> new ItsGone("no such job"));
+							return new JobStateResponse(nj, ui, mapper);
 						} catch (SQLException e) {
 							throw new RequestFailedException(
 									"failed to get job: " + id, e);
 						}
 					});
 				} else {
-					fgAction(response, () -> new StateResponse(j, ui));
+					fgAction(response,
+							() -> new JobStateResponse(j, ui, mapper));
 				}
 			}
 
 			@Override
 			public Response deleteJob(String reason) {
 				if (reason == null) {
-					reason = "";
+					reason = "unspecified";
 				}
 				try {
-					core.getJob(id).destroy(reason);
+					j.destroy(reason);
 				} catch (SQLException e) {
 					throw new RequestFailedException(
 							"failed to destroy job: " + id, e);
@@ -315,12 +314,10 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public SubMachineResponse getMachine() {
 				try {
 					j.access(caller);
-					Optional<SubMachine> m = j.getMachine();
-					if (!m.isPresent()) {
-						// No machine allocated yet
-						throw new RequestFailedException(NO_CONTENT, "");
-					}
-					return new SubMachineResponse(m.get(), ui);
+					SubMachine m = j.getMachine().orElseThrow(
+							// No machine allocated yet
+							EmptyResponse::new);
+					return new SubMachineResponse(m, ui);
 				} catch (SQLException e) {
 					throw new RequestFailedException(
 							"failed to get machine description", e);
@@ -331,11 +328,10 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public MachinePower getMachinePower() {
 				try {
 					j.access(caller);
-					Optional<SubMachine> m = j.getMachine();
-					if (!m.isPresent()) {
-						throw new RequestFailedException(NO_CONTENT, "");
-					}
-					return new MachinePower(m.get().getPower());
+					SubMachine m = j.getMachine().orElseThrow(
+							// No machine allocated yet
+							EmptyResponse::new);
+					return new MachinePower(m.getPower());
 				} catch (SQLException e) {
 					throw new RequestFailedException(
 							"failed to get power status", e);
@@ -349,11 +345,10 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 						throw new BadArgs("bad power description");
 					}
 					j.access(caller);
-					Optional<SubMachine> m = j.getMachine();
-					if (!m.isPresent()) {
-						throw new RequestFailedException(NO_CONTENT, "");
-					}
-					m.get().setPower(reqBody.power);
+					SubMachine m = j.getMachine().orElseThrow(
+							// No machine allocated yet
+							EmptyResponse::new);
+					m.setPower(reqBody.power);
 					return accepted().build();
 				} catch (SQLException e) {
 					throw new RequestFailedException(
@@ -365,11 +360,9 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public WhereIsResponse getJobChipLocation(int x, int y) {
 				try {
 					j.access(caller);
-					Optional<BoardLocation> loc = j.whereIs(x, y);
-					if (!loc.isPresent()) {
-						throw new RequestFailedException(NO_CONTENT, "");
-					}
-					return new WhereIsResponse(loc.get(), ui);
+					BoardLocation loc =
+							j.whereIs(x, y).orElseThrow(EmptyResponse::new);
+					return new WhereIsResponse(loc, ui);
 				} catch (SQLException e) {
 					throw new RequestFailedException(
 							"failed to get location info", e);
@@ -403,14 +396,12 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 
 			});
 		} else {
-			fgAction(response, () -> {
-				try {
-					Jobs jc = core.getJobs(destroyed, limit, start);
-					return new ListJobsResponse(jc, ui);
-				} catch (SQLException e) {
-					throw new RequestFailedException("failed to list jobs", e);
-				}
-			});
+			try {
+				Jobs jc = core.getJobs(destroyed, limit, start);
+				fgAction(response, () -> new ListJobsResponse(jc, ui));
+			} catch (SQLException e) {
+				throw new RequestFailedException("failed to list jobs", e);
+			}
 		}
 	}
 
@@ -464,7 +455,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			try {
 				j = core.createJob(req.owner.trim(), req.dimensions,
 						req.machineName, req.tags, req.keepaliveInterval,
-						req.maxDeadBoards);
+						req.maxDeadBoards, mapper.writeValueAsBytes(req));
 			} catch (SQLException e) {
 				throw new RequestFailedException(
 						"failed to create job: " + req.dimensions, e);

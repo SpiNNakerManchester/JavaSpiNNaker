@@ -92,8 +92,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Machine getMachine(String name) throws SQLException {
-		return db.execute(conn -> getMachine(name, conn));
+	public Optional<Machine> getMachine(String name) throws SQLException {
+		return db.execute(conn -> Optional.ofNullable(getMachine(name, conn)));
 	}
 
 	private MachineImpl getMachine(int id, Connection conn)
@@ -138,8 +138,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Job getJob(int id) throws SQLException {
-		return db.execute(conn -> getJob(id, conn));
+	public Optional<Job> getJob(int id) throws SQLException {
+		return db.execute(conn -> Optional.ofNullable(getJob(id, conn)));
 	}
 
 	private JobImpl getJob(int id, Connection conn) throws SQLException {
@@ -153,7 +153,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	@Override
 	public Job createJob(String owner, List<Integer> dimensions,
 			String machineName, List<String> tags, Duration keepaliveInterval,
-			Integer maxDeadBoards) throws SQLException {
+			Integer maxDeadBoards, byte[] req) throws SQLException {
 		return db.execute(conn -> {
 			MachineImpl m = selectMachine(conn, machineName, tags);
 			if (m == null) {
@@ -161,7 +161,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return null;
 			}
 
-			int id = insertJob(conn, m, owner, keepaliveInterval);
+			int id = insertJob(conn, m, owner, keepaliveInterval, req);
 			if (id < 0) {
 				// Insert failed
 				return null;
@@ -216,11 +216,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	private int insertJob(Connection conn, MachineImpl m, String owner,
-			Duration keepaliveInterval) throws SQLException {
-		// TODO add in additional info (what?)
+			Duration keepaliveInterval, byte[] req) throws SQLException {
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, keepaliveInterval)) {
+			for (int key : makeJob.keys(m.id, owner, keepaliveInterval, req)) {
 				pk = key;
 			}
 		}
@@ -257,6 +256,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final int width;
 
 		private final int height;
+
+		private List<Integer> downBoardsCache;
 
 		@JsonIgnore
 		private final Epoch epoch;
@@ -352,6 +353,12 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public List<Integer> getDeadBoards() throws SQLException {
+			// Assume that the list doesn't change for the duration of this obj
+			synchronized (this) {
+				if (downBoardsCache != null) {
+					return unmodifiableList(downBoardsCache);
+				}
+			}
 			try (Connection conn = db.getConnection();
 					Query boardNumbers = query(conn, GET_DEAD_BOARD_NUMBERS)) {
 				return transaction(conn, () -> {
@@ -359,7 +366,12 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					for (Row row : boardNumbers.call(id)) {
 						boards.add((Integer) row.getObject("board_num"));
 					}
-					return boards;
+					synchronized (MachineImpl.this) {
+						if (downBoardsCache == null) {
+							downBoardsCache = boards;
+						}
+					}
+					return unmodifiableList(boards);
 				});
 			}
 		}
@@ -476,6 +488,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private String deathReason;
 
+		private byte[] request;
+
 		JobImpl(Epoch epoch, int id, int machineId) {
 			this.epoch = epoch;
 			this.id = id;
@@ -512,6 +526,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				startTime = row.getInstant("create_timestamp");
 				finishTime = row.getInstant("death_timestamp");
 				deathReason = row.getString("death_reason");
+				request = row.getBytes("original_request");
 			} catch (SQLException e) {
 				throw new SQLProblem("creating job object", e);
 			}
@@ -574,6 +589,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public Instant getKeepaliveTimestamp() {
 			return keepaliveTime;
+		}
+
+		@Override
+		public byte[] getOriginalRequest() throws SQLException {
+			return request;
 		}
 
 		@Override

@@ -38,7 +38,10 @@ public class MachineResponse {
 
 	public int height;
 
-	// TODO: dead boards, dead links
+	public List<Integer> downBoards;
+
+	// TODO: down links (how to model?)
+	// TODO: What other info should be retrieved by default?
 
 	@JsonInclude(NON_NULL)
 	public URI physicalBoard;
@@ -58,7 +61,8 @@ public class MachineResponse {
 		tags = machine.getTags();
 		width = machine.getWidth();
 		height = machine.getHeight();
-		// FIXME pull info out of machine
+		downBoards = machine.getDeadBoards();
+
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{element}");
 		physicalBoard = b.build("physical-board");
 		logicalBoard = b.build("logical-board");

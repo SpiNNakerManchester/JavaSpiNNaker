@@ -90,11 +90,12 @@ public abstract class SQLQueries {
 	@ResultColumn("create_timestamp")
 	@ResultColumn("death_reason")
 	@ResultColumn("death_timestamp")
+	@ResultColumn("original_request")
 	@SingleRowResult
 	protected static final String GET_JOB =
 			"SELECT machine_id, width, height, depth, root_id, job_state, "
 					+ "keepalive_timestamp, keepalive_host, create_timestamp, "
-					+ "death_reason, death_timestamp "
+					+ "death_reason, death_timestamp, original_request "
 					+ "FROM jobs WHERE job_id = ? LIMIT 1";
 
 	@Parameter("job_id")
@@ -116,11 +117,12 @@ public abstract class SQLQueries {
 	@Parameter("machine_id")
 	@Parameter("owner")
 	@Parameter("keepalive_interval")
+	@Parameter("original_request")
 	@GeneratesID
 	protected static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, owner, keepalive_interval, keepalive_timestamp, "
-			+ "create_timestamp, job_state) VALUES "
-			+ "(?, ?, ?, strftime('%s','now'), strftime('%s','now'), "
+			+ "machine_id, owner, keepalive_interval, original_request, "
+			+ "keepalive_timestamp, create_timestamp, job_state) "
+			+ "VALUES(?, ?, ?, ?, strftime('%s','now'), strftime('%s','now'), "
 			+ /* QUEUED */ "1)";
 
 	@Parameter("job_id")

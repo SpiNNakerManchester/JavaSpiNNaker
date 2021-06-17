@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest;
 import uk.ac.manchester.spinnaker.alloc.web.ServiceDescription;
-import uk.ac.manchester.spinnaker.alloc.web.StateResponse;
+import uk.ac.manchester.spinnaker.alloc.web.JobStateResponse;
 import uk.ac.manchester.spinnaker.alloc.web.WhereIsResponse;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -75,7 +75,7 @@ class JsonTest {
 
 		@Test
 		void testStateResponse() throws IOException, JSONException {
-			StateResponse r = new StateResponse();
+			JobStateResponse r = new JobStateResponse();
 			r.setState(JobState.READY);
 			r.setStartTime(Instant.ofEpochSecond(1633954394));
 			r.setKeepaliveHost("127.0.0.1");

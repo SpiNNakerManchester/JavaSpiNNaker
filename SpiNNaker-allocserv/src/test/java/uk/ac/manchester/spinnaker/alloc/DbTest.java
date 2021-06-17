@@ -281,7 +281,8 @@ class DbTest extends SQLQueries {
 					set("machine_id", "width", "height", "depth", "root_id",
 							"job_state", "keepalive_timestamp",
 							"keepalive_host", "create_timestamp",
-							"death_reason", "death_timestamp"),
+							"death_reason", "death_timestamp",
+							"original_request"),
 					q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
@@ -572,9 +573,9 @@ class DbTest extends SQLQueries {
 		assumeFalse(c.isReadOnly(), "connection is read-only");
 		Duration d = Duration.ofSeconds(100);
 		try (Update u = update(c, INSERT_JOB)) {
-			assertEquals(3, u.getNumArguments());
+			assertEquals(4, u.getNumArguments());
 			// No such machine
-			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", d));
+			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", d, new byte[0]));
 		}
 	}
 

@@ -24,6 +24,9 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.CHIP_Y;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.ID;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.NAME;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.WAIT;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_TOP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_MCH;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -57,9 +60,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * The REST API for the SpiNNaker machine allocation service.
  */
 @OpenAPIDefinition(tags = {
-	@Tag(name = "summary", description = "Operations at the service level"),
-	@Tag(name = "machines", description = "Operations on SpiNNaker machines"),
-	@Tag(name = "jobs", description = "Operations on Spalloc jobs")
+	@Tag(name = T_TOP, description = "Operations at the service level"),
+	@Tag(name = T_MCH, description = "Operations on SpiNNaker machines"),
+	@Tag(name = T_JOB, description = "Operations on Spalloc jobs")
 },
 servers = @Server(url="spalloc"))
 public interface SpallocServiceAPI {
@@ -73,7 +76,7 @@ public interface SpallocServiceAPI {
 	@GET
 	@Description("Get a description of the overall service.")
 	@Operation(
-			tags = "summary",
+			tags = T_TOP,
 			summary = "Describe the overall service",
 			description = "Get a description of the overall service.")
 	@Produces(APPLICATION_JSON)
@@ -89,7 +92,7 @@ public interface SpallocServiceAPI {
 	@GET
 	@Description("Get a description of the machines.")
 	@Operation(
-			tags = "machines",
+			tags = T_MCH,
 			summary = "List managed machines",
 			description = "Get a description of the machines managed. "
 					+ "Does not support paging; "
@@ -108,7 +111,6 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @return The sub-resource
 	 */
-	//@Operation(tags = "machines")
 	@Path("machines/{name}")
 	@Description("Operations on a specific machine.")
 	MachineAPI getMachine(
@@ -135,16 +137,12 @@ public interface SpallocServiceAPI {
 	@GET
 	@Description("List the jobs.")
 	@Operation(
-			tags = "jobs",
+			tags = T_JOB,
 			summary = "List jobs",
 			description = "List jobs known to the service. Supports paging. "
 					+ "Supports long queries",
-			responses = {
-				@ApiResponse(content = @Content(
-						mediaType = APPLICATION_JSON,
-						schema = @Schema(
-								implementation = ListJobsResponse.class)))
-			})
+			responses = @ApiResponse(content = @Content(schema = @Schema(
+				implementation = ListJobsResponse.class))))
 	@Path("jobs")
 	@Produces(APPLICATION_JSON)
 	void listJobs(
@@ -174,15 +172,11 @@ public interface SpallocServiceAPI {
 	@POST
 	@Description("Create a new job.")
 	@Operation(
-			tags = "jobs",
+			tags = T_JOB,
 			summary = "Create job",
 			description = "Create a Spalloc job.",
-			responses = {
-				@ApiResponse(content = @Content(
-						mediaType = APPLICATION_JSON,
-						schema = @Schema(
-								implementation = CreateJobResponse.class)))
-			})
+			responses = @ApiResponse(content = @Content(schema = @Schema(
+				implementation = CreateJobResponse.class))))
 	@Path("jobs")
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
@@ -203,7 +197,7 @@ public interface SpallocServiceAPI {
 	 * @return The sub-resource
 	 */
 	@Description("Operations on a specific job.")
-	@Operation(tags = "jobs")
+	@Operation(tags = T_JOB)
 	@Path("jobs/{id}")
 	@Produces(APPLICATION_JSON)
 	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
@@ -226,7 +220,7 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
-		@Operation(tags = "machines",
+		@Operation(tags = T_MCH,
 			summary = "Describe a machine",
 			description = "Describes the basic info about a machine.",
 			parameters = @Parameter(in = PATH, name = NAME,
@@ -261,7 +255,7 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description(
 				"Map from logical coordinates to a description of a board.")
-		@Operation(tags = "machines",
+		@Operation(tags = T_MCH,
 			summary = "Find board by logical coordinates",
 			description = "Get the location description of a board given its "
 					+ "logical coordinates.",
@@ -292,7 +286,7 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description(
 				"Map from physical coordinates to a description of a board.")
-		@Operation(tags = "machines",
+		@Operation(tags = T_MCH,
 			summary = "Find board by physical coordinates",
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
@@ -320,7 +314,7 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description(
 				"Map from global chip coordinates to a description of a board.")
-		@Operation(tags = "machines",
+		@Operation(tags = T_MCH,
 			summary = "Find board holding a chip",
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
@@ -347,16 +341,18 @@ public interface SpallocServiceAPI {
 		 * @param wait
 		 *            Whether to wait for a change.
 		 * @param response
-		 *            Filled out with a {@link StateResponse}
+		 *            Filled out with a {@link JobStateResponse}
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			operationId = "describeJob",
 			summary = "Describe a job",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+				schema = @Schema(implementation = Integer.class)),
+			responses = @ApiResponse(content = @Content(schema = @Schema(
+				implementation = JobStateResponse.class))))
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		void getState(
@@ -374,7 +370,7 @@ public interface SpallocServiceAPI {
 		 */
 		@PUT
 		@Description("Keep the job alive. Must be called regularly.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Keep a job alive",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -382,8 +378,7 @@ public interface SpallocServiceAPI {
 		@Path("keepalive")
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
-		Response keepAlive(
-				@Description("Arbitrary string; ignored") String req);
+		String keepAlive(@Description("Arbitrary string; ignored") String req);
 
 		/**
 		 * Delete the job, or at least mark it as destroyed.
@@ -394,7 +389,7 @@ public interface SpallocServiceAPI {
 		 */
 		@DELETE
 		@Description("Delete a job.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Delete a job",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -412,7 +407,7 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Describe a job's machine allocation.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Describe the job's resources",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -428,7 +423,7 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Get the power status of a job.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Get the job's power status",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -447,7 +442,7 @@ public interface SpallocServiceAPI {
 		 */
 		@POST
 		@Description("Set the power status of a job.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Set the job's power status",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -472,7 +467,7 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description(
 				"Describe a board in an allocation by a chip on that board.")
-		@Operation(tags = "jobs",
+		@Operation(tags = T_JOB,
 			summary = "Get location info within job's allocation",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
@@ -490,6 +485,12 @@ public interface SpallocServiceAPI {
 abstract class WebServiceConstants {
 	private WebServiceConstants() {
 	}
+
+	static final String T_TOP = "Spalloc Service Summary";
+
+	static final String T_JOB = "SpiNNaker Jobs";
+
+	static final String T_MCH = "SpiNNaker Machines";
 
 	static final String WAIT = "wait";
 
