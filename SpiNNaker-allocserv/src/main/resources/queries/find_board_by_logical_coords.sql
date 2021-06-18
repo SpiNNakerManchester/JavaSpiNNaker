@@ -45,6 +45,6 @@ FROM boards
 	LEFT JOIN jobs ON jobs.job_id = boards.allocated_job
 	LEFT JOIN boards AS root ON root.board_id = jobs.root_id
 WHERE
-	boards.machine_id = ?
-	AND boards.x = ? AND boards.y = ? AND boards.z = ?
+	boards.machine_id = :machine_id
+	AND boards.x = :x AND boards.y = :y AND boards.z = :z
 LIMIT 1;

@@ -14,7 +14,8 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 WITH
-	args(machine_id, cabinet, frame, board) AS (VALUES (?, ?, ?, ?))
+	args(machine_id, cabinet, frame, board) AS (
+		VALUES (:machine_id, :cabinet, :frame, :board))
 SELECT
 	x, y, z
 FROM args

@@ -15,7 +15,8 @@
 
 WITH
 	-- Name the arguments for sanity
-	args(width, height, machine_id, max_dead_boards) AS (VALUES (?, ?, ?, ?)),
+	args(width, height, machine_id, max_dead_boards) AS (
+		VALUES (:width, :height, :machine_id, :max_dead_boards)),
 	-- Profile the machines and boards to the one we care about
 	m AS (SELECT machines.* FROM machines
 		JOIN args ON machines.machine_id = args.machine_id LIMIT 1),

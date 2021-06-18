@@ -14,7 +14,8 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 WITH RECURSIVE
-	args(machine_id, x, y, width, height) AS (VALUES (?, ?, ?, ?, ?)),
+	args(machine_id, x, y, width, height) AS (
+		VALUES (:machine_id, :x, :y, :width, :height)),
 	m AS (SELECT machines.* FROM machines
 		JOIN args ON machines.machine_id = args.machine_id),
 	-- Boards on the machine in the rectangle of interest

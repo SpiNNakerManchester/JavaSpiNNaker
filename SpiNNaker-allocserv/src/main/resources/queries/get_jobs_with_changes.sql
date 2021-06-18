@@ -16,7 +16,7 @@
 WITH
 	-- Arguments and current timestamp
 	args(machine, on_delay, off_delay, now) AS (
-		VALUES (?, ?, ?, strftime('%s', 'now'))),
+		VALUES (:machine_id, :on_delay, :off_delay, strftime('%s', 'now'))),
 	-- The set of boards that are "busy" settling after changing state
 	busy_boards AS (
 		SELECT boards.board_id FROM boards, args

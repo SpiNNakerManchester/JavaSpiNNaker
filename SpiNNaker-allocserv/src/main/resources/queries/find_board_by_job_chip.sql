@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 WITH
-	args(job, root, x, y) AS (VALUES (?, ?, ?, ?)),
+	args(job, root, x, y) AS (VALUES (:job_id, :board_id, :x, :y)),
 	-- Boards that are allocated to the job
 	bs AS (
 		SELECT boards.* FROM boards, args

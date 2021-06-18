@@ -15,7 +15,7 @@
 
 WITH
 	-- Boards that are allocated to the job
-	bs AS (SELECT boards.* FROM boards WHERE boards.allocated_job = ?)
+	bs AS (SELECT boards.* FROM boards WHERE boards.allocated_job = :job_id)
 SELECT links.board_1 AS board_id, links.dir_1 AS direction
 	FROM links JOIN bs ON links.board_1 IN (SELECT board_id FROM bs)
 	WHERE links.live AND NOT links.board_2 IN (SELECT board_id FROM bs)

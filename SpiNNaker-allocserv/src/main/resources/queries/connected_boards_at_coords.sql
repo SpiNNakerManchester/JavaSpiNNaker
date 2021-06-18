@@ -15,7 +15,7 @@
 
 WITH RECURSIVE
 	args(machine_id, x, y, z, width, height, "depth") AS (
-		VALUES (?, ?, ?, ?, ?, ?, ?)),
+		VALUES (:machine_id, :x, :y, :z, :width, :height, :depth)),
 	m AS (SELECT machines.* FROM machines
 		JOIN args ON machines.machine_id = args.machine_id),
 	-- The logical rectangle of interest
