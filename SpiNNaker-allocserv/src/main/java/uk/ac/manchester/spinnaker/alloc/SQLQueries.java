@@ -387,7 +387,7 @@ public abstract class SQLQueries {
 	@ResultColumn("y")
 	@ResultColumn("z")
 	@ResultColumn("available")
-	@Value("classpath:find_rectangle.sql")
+	@Value("classpath:queries/find_rectangle.sql")
 	protected Resource findRectangle;
 
 	@Parameter("machine_id")
@@ -398,7 +398,7 @@ public abstract class SQLQueries {
 	@ResultColumn("y")
 	@ResultColumn("z")
 	@SingleRowResult
-	@Value("classpath:find_location.sql")
+	@Value("classpath:queries/find_location.sql")
 	protected Resource findLocation;
 
 	@Parameter("job_id")
@@ -411,7 +411,7 @@ public abstract class SQLQueries {
 	@Parameter("fpga_nw")
 	@Parameter("fpga_se")
 	@GeneratesID
-	@Value("classpath:issue_change_for_job.sql")
+	@Value("classpath:queries/issue_change_for_job.sql")
 	protected Resource issueChangeForJob;
 
 	@Parameter("machine_id")
@@ -421,13 +421,13 @@ public abstract class SQLQueries {
 	@Parameter("height")
 	@ResultColumn("connected_size")
 	@SingleRowResult
-	@Value("classpath:allocation_connected.sql")
+	@Value("classpath:queries/allocation_connected.sql")
 	protected Resource countConnected;
 
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	@ResultColumn("direction")
-	@Value("classpath:perimeter.sql")
+	@Value("classpath:queries/perimeter.sql")
 	protected Resource getPerimeterLinks;
 
 	@Parameter("machine_id")
@@ -451,7 +451,7 @@ public abstract class SQLQueries {
 	@ResultColumn("job_root_chip_x")
 	@ResultColumn("job_root_chip_y")
 	@SingleRowResult
-	@Value("classpath:find_board_by_global_chip.sql")
+	@Value("classpath:queries/find_board_by_global_chip.sql")
 	protected Resource findBoardByGlobalChip;
 
 	@Parameter("job_id")
@@ -473,7 +473,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_chip_x")
 	@ResultColumn("board_chip_y")
 	@SingleRowResult
-	@Value("classpath:find_board_by_job_chip.sql")
+	@Value("classpath:queries/find_board_by_job_chip.sql")
 	protected Resource findBoardByJobChip;
 
 	@Parameter("machine_id")
@@ -496,7 +496,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_chip_x")
 	@ResultColumn("board_chip_y")
 	@SingleRowResult
-	@Value("classpath:find_board_by_logical_coords.sql")
+	@Value("classpath:queries/find_board_by_logical_coords.sql")
 	protected Resource findBoardByLogicalCoords;
 
 	@Parameter("machine_id")
@@ -519,14 +519,14 @@ public abstract class SQLQueries {
 	@ResultColumn("board_chip_x")
 	@ResultColumn("board_chip_y")
 	@SingleRowResult
-	@Value("classpath:find_board_by_physical_coords.sql")
+	@Value("classpath:queries/find_board_by_physical_coords.sql")
 	protected Resource findBoardByPhysicalCoords;
 
 	@Parameter("machine_id")
 	@Parameter("on_delay")
 	@Parameter("off_delay")
 	@ResultColumn("job_id")
-	@Value("classpath:get_jobs_with_changes.sql")
+	@Value("classpath:queries/get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;
 
 	@Parameter("machine_id")
@@ -537,6 +537,6 @@ public abstract class SQLQueries {
 	@Parameter("height")
 	@Parameter("depth")
 	@ResultColumn("board_id")
-	@Value("classpath:connected_boards_at_coords.sql")
+	@Value("classpath:queries/connected_boards_at_coords.sql")
 	protected Resource getConnectedBoards;
 }
