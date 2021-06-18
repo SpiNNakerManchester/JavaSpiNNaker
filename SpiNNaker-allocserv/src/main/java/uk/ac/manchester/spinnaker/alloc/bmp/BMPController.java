@@ -19,15 +19,15 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.BANK_OFFSET_MULTIPLIER;
-import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
@@ -63,6 +63,7 @@ import uk.ac.manchester.spinnaker.alloc.ServiceControl;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -232,7 +233,7 @@ public class BMPController extends SQLQueries {
 		return ok;
 	}
 
-	private void setLinkState(Transceiver txrx, int board, LinkInfo link,
+	private void setLinkState(Transceiver txrx, int board, Direction link,
 			PowerState power) throws ProcessException, IOException {
 		// skip FPGA link configuration if old BMP version
 		VersionInfo vi = txrx.readBMPVersion(0, 0, board);
@@ -276,11 +277,39 @@ public class BMPController extends SQLQueries {
 
 	/**
 	 * Describes a request to modify the power status of a collection of boards.
-	 * The boards must be on a single machine.
+	 * The boards must be on a single machine and should all be assigned to a
+	 * single job.
 	 *
 	 * @author Donal Fellows
 	 */
 	public static class Request {
+		private final RequestChange change;
+
+		private final OnDone onDone;
+
+		/**
+		 * Create a request.
+		 *
+		 * @param requestedChange
+		 *            What change do we want to apply?
+		 * @param onDone
+		 *            An optional callback for when the changes are fully
+		 *            processed (whether successfully or not). May be
+		 *            {@code null} if there is no callback.
+		 */
+		public Request(RequestChange requestedChange, OnDone onDone) {
+			this.change = requireNonNull(requestedChange);
+			this.onDone = onDone;
+		}
+	}
+
+	/**
+	 * Describes the detail of a request to modify the power status of a
+	 * collection of boards. The boards must be on a single machine.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class RequestChange {
 		private final Machine machine;
 
 		private final List<Integer> powerOnBoards;
@@ -289,107 +318,32 @@ public class BMPController extends SQLQueries {
 
 		private final List<LinkRequest> linkRequests;
 
-		private final OnDone onDone;
-
 		/**
-		 * Create a request.
-		 *
 		 * @param machine
-		 *            What machine are the boards on?
+		 *            What machine are the boards on? <em>Must not</em> be
+		 *            {@code null}.
 		 * @param powerOnBoards
-		 *            What boards (by physical ID) are to be powered on?
+		 *            What boards (by physical ID) are to be powered on? May be
+		 *            {@code null}.
 		 * @param powerOffBoards
-		 *            What boards (by physical ID) are to be powered off?
+		 *            What boards (by physical ID) are to be powered off? May be
+		 *            {@code null}.
 		 * @param linkRequests
 		 *            Any link power control requests. By default, links are on
 		 *            if their board is on and they are connected; it is
 		 *            <em>useful and relevant</em> to modify the power state of
-		 *            links on the periphery of an allocation.
-		 * @param onDone
-		 *            An optional callback for when the changes are fully
-		 *            processed (whether successfully or not). May be
-		 *            {@code null} if there is no callback.
+		 *            links on the periphery of an allocation. May be
+		 *            {@code null}.
 		 */
-		public Request(Machine machine, List<Integer> powerOnBoards,
-				List<Integer> powerOffBoards, List<LinkRequest> linkRequests,
-				OnDone onDone) {
-			this.machine = machine;
-			this.powerOnBoards = new ArrayList<>(powerOnBoards);
-			this.powerOffBoards = new ArrayList<>(powerOffBoards);
-			this.linkRequests = new ArrayList<>(linkRequests);
-			this.onDone = onDone;
-		}
-
-		/**
-		 * Create a request.
-		 *
-		 * @param machine
-		 *            What machine are the boards on?
-		 * @param powerOnBoards
-		 *            What boards (by physical ID) are to be powered on?
-		 * @param powerOffBoards
-		 *            What boards (by physical ID) are to be powered off?
-		 * @param linkRequests
-		 *            Any link power control requests. By default, links are on
-		 *            if their board is on and they are connected; it is
-		 *            <em>useful and relevant</em> to modify the power state of
-		 *            links on the periphery of an allocation.
-		 */
-		public Request(Machine machine, List<Integer> powerOnBoards,
+		RequestChange(Machine machine, List<Integer> powerOnBoards,
 				List<Integer> powerOffBoards, List<LinkRequest> linkRequests) {
-			this.machine = machine;
-			this.powerOnBoards = new ArrayList<>(powerOnBoards);
-			this.powerOffBoards = new ArrayList<>(powerOffBoards);
-			this.linkRequests = new ArrayList<>(linkRequests);
-			this.onDone = null;
-		}
-
-		/**
-		 * Create a request.
-		 *
-		 * @param machine
-		 *            What machine are the boards on?
-		 * @param powerOnBoards
-		 *            What boards (by physical ID) are to be powered on?
-		 * @param linkRequests
-		 *            Any link power control requests. By default, links are on
-		 *            if their board is on and they are connected; it is
-		 *            <em>useful and relevant</em> to modify the power state of
-		 *            links on the periphery of an allocation.
-		 * @param onDone
-		 *            An optional callback for when the changes are fully
-		 *            processed (whether successfully or not). May be
-		 *            {@code null} if there is no callback.
-		 */
-		public Request(Machine machine, List<Integer> powerOnBoards,
-				List<LinkRequest> linkRequests, OnDone onDone) {
-			this.machine = machine;
-			this.powerOnBoards = new ArrayList<>(powerOnBoards);
-			this.powerOffBoards = new ArrayList<>();
-			this.linkRequests = new ArrayList<>(linkRequests);
-			this.onDone = onDone;
-		}
-
-		/**
-		 * Create a request.
-		 *
-		 * @param machine
-		 *            What machine are the boards on?
-		 * @param powerOnBoards
-		 *            What boards (by physical ID) are to be powered on?
-		 * @param linkRequests
-		 *            Any link power control requests. By default, links are on
-		 *            if their board is on and they are connected; it is
-		 *            <em>useful and relevant</em> to modify the power state of
-		 *            links on the periphery of an allocation.
-		 */
-		public Request(Machine machine, List<Integer> powerOnBoards,
-				List<LinkRequest> linkRequests) {
-			this.machine = machine;
-			this.powerOnBoards = new ArrayList<>(powerOnBoards);
-			this.powerOffBoards = new ArrayList<>();
-			this.linkRequests = new ArrayList<>(linkRequests);
-			this.onDone = null;
+			this.machine = requireNonNull(machine);
+			this.powerOnBoards = new ArrayList<>(
+					powerOnBoards == null ? emptyList() : powerOnBoards);
+			this.powerOffBoards = new ArrayList<>(
+					powerOffBoards == null ? emptyList() : powerOffBoards);
+			this.linkRequests = new ArrayList<>(
+					linkRequests == null ? emptyList() : linkRequests);
 		}
 	}
 
@@ -402,7 +356,7 @@ public class BMPController extends SQLQueries {
 	public static class LinkRequest {
 		private final int board;
 
-		private final LinkInfo link;
+		private final Direction link;
 
 		private final PowerState power;
 
@@ -416,7 +370,7 @@ public class BMPController extends SQLQueries {
 		 * @param power
 		 *            What state is the link to be put into?
 		 */
-		public LinkRequest(int board, LinkInfo link, PowerState power) {
+		public LinkRequest(int board, Direction link, PowerState power) {
 			this.board = board;
 			this.link = link;
 			this.power = power;
@@ -464,32 +418,35 @@ public class BMPController extends SQLQueries {
 	private void processRequest(Request request) throws InterruptedException {
 		Transceiver txrx;
 		try {
-			txrx = txrx(request.machine);
+			txrx = txrx(request.change.machine);
 		} catch (IOException | SpinnmanException | SQLException e) {
 			log.error("could not get transceiver", e);
 			return;
 		}
-		MDC.put("changes", asList(request.powerOnBoards.size(),
-				request.powerOffBoards.size(), request.linkRequests.size()));
+		MDC.put("changes",
+				asList(request.change.powerOnBoards.size(),
+						request.change.powerOffBoards.size(),
+						request.change.linkRequests.size()));
 		try {
 			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
 				try {
 					// Send any power on commands
-					if (!request.powerOnBoards.isEmpty()) {
-						powerOnAndCheck(request.machine, txrx,
-								request.powerOnBoards);
+					if (!request.change.powerOnBoards.isEmpty()) {
+						powerOnAndCheck(request.change.machine, txrx,
+								request.change.powerOnBoards);
 					}
 
 					// Process link requests next
-					for (LinkRequest linkReq : request.linkRequests) {
+					for (LinkRequest linkReq : request.change.linkRequests) {
 						// Set the link state, as required
 						setLinkState(txrx, linkReq.board, linkReq.link,
 								linkReq.power);
 					}
 
 					// Finally send any power off commands
-					if (!request.powerOffBoards.isEmpty()) {
-						txrx.power(POWER_OFF, 0, 0, request.powerOffBoards);
+					if (!request.change.powerOffBoards.isEmpty()) {
+						txrx.power(POWER_OFF, 0, 0,
+								request.change.powerOffBoards);
 					}
 
 					// Exit the retry loop if the requests all worked
@@ -498,7 +455,8 @@ public class BMPController extends SQLQueries {
 					}
 					break;
 				} catch (InterruptedException e) {
-					String reason = "Requests failed on BMP " + request.machine;
+					String reason =
+							"Requests failed on BMP " + request.change.machine;
 					log.error(reason, e);
 					if (request.onDone != null) {
 						request.onDone.call(reason, e);
@@ -507,7 +465,8 @@ public class BMPController extends SQLQueries {
 				} catch (Exception e) {
 					if (nTries == N_REQUEST_TRIES) {
 						String reason =
-								"Requests failed on BMP " + request.machine;
+								"Requests failed on BMP "
+										+ request.change.machine;
 						log.error(reason, e);
 						if (request.onDone != null) {
 							request.onDone.call(reason, e);
@@ -517,7 +476,7 @@ public class BMPController extends SQLQueries {
 					}
 					log.error(
 							"Retrying requests on BMP {} after {} seconds: {}",
-							request.machine, SECONDS_BETWEEN_TRIES,
+							request.change.machine, SECONDS_BETWEEN_TRIES,
 							e.getMessage());
 					sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
 				}
@@ -537,36 +496,8 @@ public class BMPController extends SQLQueries {
 				for (Machine machine : machines) {
 					for (Row jobIds : getJobIds.call(machine.getId(), onDelay,
 							offDelay)) {
-						int jobId = jobIds.getInt("job_id");
-						List<Integer> changeIds = new ArrayList<>();
-						List<Integer> boardsOn = new ArrayList<>();
-						List<Integer> boardsOff = new ArrayList<>();
-						List<LinkRequest> linksOff = new ArrayList<>();
-						for (Row row : getChanges.call(jobId)) {
-							changeIds.add(row.getInt("change_id"));
-							int board = row.getInt("board_id");
-							boolean switchOn = row.getBoolean("power");
-							if (switchOn) {
-								boardsOn.add(board);
-							} else {
-								boardsOff.add(board);
-							}
-							for (LinkInfo link : LinkInfo.values()) {
-								if (switchOn
-										&& !row.getBoolean(link.columnName)) {
-									linksOff.add(
-											new LinkRequest(board, link, OFF));
-								}
-							}
-						}
-						requests.add(new Request(machine, boardsOn, boardsOff,
-								linksOff, (fail, exn) -> {
-									doneRequest(jobId, boardsOn, boardsOff,
-											changeIds, fail, exn);
-								}));
-						for (int change : changeIds) {
-							setInProgress.call(true, change);
-						}
+						takeRequestsForJob(requests, getChanges, setInProgress,
+								machine, jobIds.getInt("job_id"));
 					}
 				}
 			});
@@ -574,12 +505,48 @@ public class BMPController extends SQLQueries {
 		return requests;
 	}
 
-	void doneRequest(int jobId, List<Integer> boardsOn, List<Integer> boardsOff,
-			List<Integer> changeIds,
+	private void takeRequestsForJob(List<Request> requests, Query getChanges,
+			Update setInProgress, Machine machine, int jobId)
+			throws SQLException {
+		// TODO describe what job state moving from and to
+		List<Integer> changeIds = new ArrayList<>();
+		List<Integer> boardsOn = new ArrayList<>();
+		List<Integer> boardsOff = new ArrayList<>();
+		List<LinkRequest> linksOff = new ArrayList<>();
+		for (Row row : getChanges.call(jobId)) {
+			changeIds.add(row.getInt("change_id"));
+			int board = row.getInt("board_id");
+			boolean switchOn = row.getBoolean("power");
+			if (switchOn) {
+				boardsOn.add(board);
+			} else {
+				boardsOff.add(board);
+			}
+			for (Direction link : Direction.values()) {
+				if (switchOn && !row.getBoolean(link.columnName)) {
+					linksOff.add(new LinkRequest(board, link, OFF));
+				}
+			}
+		}
+		RequestChange change =
+				new RequestChange(machine, boardsOn, boardsOff, linksOff);
+		requests.add(new Request(change, (fail, exn) -> doneRequest(jobId,
+				change, changeIds, fail, exn)));
+		for (int changeId : changeIds) {
+			setInProgress.call(true, changeId);
+		}
+	}
+
+	void doneRequest(int jobId, RequestChange change, List<Integer> changeIds,
 			String fail, Exception exn) {
+		// TODO How should we change the job state? Info must come from DB
+		JobState oldState = JobState.QUEUED; // where we came from
+		JobState newState = JobState.READY; // where we should go to
+
 		if (fail != null) {
 			log.error("failed to set power on BMPs: {}", fail, exn);
 		}
+
 		try (Connection conn = db.getConnection();
 				Update setBoardState = update(conn, SET_BOARD_POWER);
 				Update deleteChange = update(conn, FINISHED_PENDING);
@@ -587,21 +554,21 @@ public class BMPController extends SQLQueries {
 				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
 			transaction(conn, () -> {
 				if (fail != null) {
-					for (int change : changeIds) {
-						setInProgress.call(false, change);
+					for (int changeId : changeIds) {
+						setInProgress.call(false, changeId);
 					}
-					// TODO How should we change the job state?
+					setJobState.call(oldState, 0, jobId);
 				} else {
-					for (int board : boardsOn) {
+					for (int board : change.powerOnBoards) {
 						setBoardState.call(true, board);
 					}
-					for (int board : boardsOff) {
+					for (int board : change.powerOffBoards) {
 						setBoardState.call(false, board);
 					}
-					for (int change : changeIds) {
-						deleteChange.call(change);
+					for (int changeId : changeIds) {
+						deleteChange.call(changeId);
 					}
-					setJobState.call(JobState.READY, 0, jobId);
+					setJobState.call(newState, 0, jobId);
 				}
 			});
 		} catch (SQLException e) {
@@ -616,9 +583,9 @@ public class BMPController extends SQLQueries {
 		 * in the current thread; the connection inside Machine inside Request
 		 * is _not_ safe to hand off between threads.
 		 */
-		txrx(request.machine);
+		txrx(request.change.machine);
 		synchronized (workers) {
-			workers.computeIfAbsent(request.machine, m -> {
+			workers.computeIfAbsent(request.change.machine, m -> {
 				Thread t = new Thread(() -> backgroundThread(m),
 						"BMP worker for " + m);
 				t.start();
@@ -695,58 +662,6 @@ public class BMPController extends SQLQueries {
 			}
 			log.error("unhandled exception for '{}'", currentThread().getName(),
 					e);
-		}
-	}
-
-	/**
-	 * Boards are actually (logically) distorted hexagons like this:
-	 * <pre>
-	 * <small>               {@link #NORTH}
-	 *               +----+
-	 *         {@link #WEST} /     | {@link #NORTH_EAST}
-	 *             /      |
-	 *            +       +
-	 * {@link #SOUTH_WEST} |      / {@link #EAST}
-	 *            |     /
-	 *            +----+
-	 *             {@link #SOUTH}
-	 * </small>
-	 * </pre>
-	 *
-	 * @author Donal Fellows
-	 */
-	public enum LinkInfo {
-		/** Link to board to East. */
-		EAST(0, 0, "fpga_e"),
-		/** Link to board to North East. */
-		NORTH_EAST(2, 1, "fpga_ne"),
-		/** Link to board to North. */
-		NORTH(2, 0, "fpga_n"),
-		/** Link to board to West. */
-		WEST(1, 1, "fpga_w"),
-		/** Link to board to South West. */
-		SOUTH_WEST(1, 0, "fpga_sw"),
-		/** Link to board to South. */
-		SOUTH(0, 1, "fpga_s");
-
-		private final int fpga;
-
-		private final int addr;
-
-		private final String columnName;
-
-		LinkInfo(int fpga, int bankSelect, String columnName) {
-			this.fpga = fpga;
-			this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
-			this.columnName = columnName;
-		}
-
-		/**
-		 * @return The name of the column in the {@code pending_changes} table
-		 *         that holds information pertaining to this link.
-		 */
-		public String getPendingChangesColumnName() {
-			return columnName;
 		}
 	}
 }

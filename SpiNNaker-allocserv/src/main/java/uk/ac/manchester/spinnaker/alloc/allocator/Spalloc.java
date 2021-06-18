@@ -259,6 +259,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private List<Integer> downBoardsCache;
 
+		private List<DownLink> downLinksCache;
+
 		@JsonIgnore
 		private final Epoch epoch;
 
@@ -372,6 +374,33 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						}
 					}
 					return unmodifiableList(boards);
+				});
+			}
+		}
+
+		@Override
+		public List<DownLink> getDownLinks() throws SQLException {
+			synchronized (this) {
+				if (downLinksCache != null) {
+					return unmodifiableList(downLinksCache);
+				}
+			}
+			try (Connection conn = db.getConnection();
+					Query boardNumbers = query(conn, GET_DEAD_LINK_NUMBERS)) {
+				return transaction(conn, () -> {
+					List<DownLink> links = new ArrayList<>();
+					for (Row row : boardNumbers.call(id)) {
+						links.add(new DownLink(row.getInt("board_1"),
+								row.getEnum("dir_1", Direction.class),
+								row.getInt("board_2"),
+								row.getEnum("dir_2", Direction.class)));
+					}
+					synchronized (MachineImpl.this) {
+						if (downLinksCache == null) {
+							downLinksCache = links;
+						}
+					}
+					return unmodifiableList(links);
 				});
 			}
 		}

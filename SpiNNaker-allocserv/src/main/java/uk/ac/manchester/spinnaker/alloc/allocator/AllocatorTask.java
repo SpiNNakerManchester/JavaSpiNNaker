@@ -505,48 +505,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	/**
-	 * Represents link directions of a board.
-	 *
-	 * <pre>
-	 *        __
-	 *       /  |
-	 *    __/   |__
-	 *   /  | a /  |
-	 *  /   |__/   |
-	 *  | f /  | b /
-	 *  |__/   |__/
-	 *  /  | x /  |
-	 * /   |__/   |
-	 * | e /  | c /
-	 * |__/   |__/
-	 *    | d /
-	 *    |__/
-	 * </pre>
-	 *
-	 * Note that this is tilted over with respect to reality; to
-	 * <em>actually</em> go "true vertically north", you have to go first
-	 * {@link #N} and then {@link #NW}, taking two boards to actually go
-	 * straight north (by an offset of 12 chips).
-	 *
-	 * @see DirInfo
-	 * @author Donal Fellows
-	 */
-	public enum Direction {
-		/** Northward, from {@code x} to {@code a}. */
-		N,
-		/** Eastward, from {@code x} to {@code b}. */
-		E,
-		/** Southeast, from {@code x} to {@code c}. */
-		SE,
-		/** Southward, from {@code x} to {@code d}. */
-		S,
-		/** Westward, from {@code x} to {@code e}. */
-		W,
-		/** Northwest, from {@code x} to {@code f}. */
-		NW
-	}
-
-	/**
 	 * A mapping that says how to go from one board's coordinates (only the Z
 	 * coordinate matters for this) to another when you move in a particular
 	 * direction.

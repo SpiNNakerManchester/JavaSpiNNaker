@@ -40,7 +40,8 @@ public class MachineResponse {
 
 	public List<Integer> downBoards;
 
-	// TODO: down links (how to model?)
+	public List<SpallocAPI.DownLink> downLinks;
+
 	// TODO: What other info should be retrieved by default?
 
 	@JsonInclude(NON_NULL)
@@ -62,6 +63,7 @@ public class MachineResponse {
 		width = machine.getWidth();
 		height = machine.getHeight();
 		downBoards = machine.getDeadBoards();
+		downLinks = machine.getDownLinks();
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{element}");
 		physicalBoard = b.build("physical-board");

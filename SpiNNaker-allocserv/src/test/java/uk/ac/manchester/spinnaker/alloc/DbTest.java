@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.String.format;
 import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -50,10 +51,12 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
+import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 
 /**
  * Test that the database engine interface works and that the queries are
- * synchronised with the schema.
+ * synchronised with the schema. Deliberately does not do meaningful testing of
+ * the data in the database.
  *
  * @author Donal Fellows
  */
@@ -334,6 +337,16 @@ class DbTest extends SQLQueries {
 	}
 
 	@Test
+	void getDeadLinkNumbers() throws SQLException {
+		try (Query q = query(c, GET_DEAD_LINK_NUMBERS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_1", "dir_1", "board_2", "dir_2"),
+					q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE).isPresent());
+		}
+	}
+
+	@Test
 	void getAvailableBoardNumbers() throws SQLException {
 		try (Query q = query(c, GET_AVAILABLE_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
@@ -435,9 +448,16 @@ class DbTest extends SQLQueries {
 	void getChanges() throws SQLException {
 		try (Query q = query(c, GET_CHANGES)) {
 			assertEquals(1, q.getNumArguments());
+			Set<String> colNames = q.getRowColumnNames();
 			assertSetEquals(set("change_id", "job_id", "board_id", "power",
 					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
-					"fpga_se", "in_progress"), q.getRowColumnNames());
+					"fpga_se", "in_progress"), colNames);
+			// Ensure that this link is maintained
+			for (Direction d : Direction.values()) {
+				assertTrue(colNames.contains(d.columnName),
+						() -> format("%s must contain %s", colNames,
+								d.columnName));
+			}
 			assertFalse(q.call1(NO_JOB).isPresent());
 		}
 	}

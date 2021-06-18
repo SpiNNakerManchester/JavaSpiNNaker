@@ -174,6 +174,17 @@ public abstract class SQLQueries {
 					+ "ORDER BY board_num ASC";
 
 	@Parameter("machine_id")
+	@ResultColumn("board_1")
+	@ResultColumn("dir_1")
+	@ResultColumn("board_2")
+	@ResultColumn("dir_2")
+	protected static final String GET_DEAD_LINK_NUMBERS =
+			"SELECT board_1, dir_1, board_2, dir_2 FROM links "
+					+ "JOIN boards ON board_1 = boards.board_id "
+					+ "WHERE machine_id = ? AND NOT live "
+					+ "ORDER BY board_1 ASC, board_2 ASC";
+
+	@Parameter("machine_id")
 	@ResultColumn("board_num")
 	protected static final String GET_AVAILABLE_BOARD_NUMBERS =
 			"SELECT board_num FROM boards WHERE machine_id = ? "

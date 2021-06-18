@@ -16,12 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -211,12 +215,22 @@ public interface SpallocAPI {
 		/**
 		 * The IDs of boards marked as dead or otherwise taken out of service.
 		 *
+		 * @return A list of boards by physical board number. Not modifiable.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
 		List<Integer> getDeadBoards() throws SQLException;
 
-		// TODO: dead links (how to model?)
+		/**
+		 * The links within the machine that are marked as dead or otherwise
+		 * taken out of service. Note that this does not include links that lead
+		 * out of the machine.
+		 *
+		 * @return A list of links. Not modifiable.
+		 * @throws SQLException
+		 *             If something goes wrong
+		 */
+		List<DownLink> getDownLinks() throws SQLException;
 
 		Optional<BoardLocation> getBoardByChip(int x, int y)
 				throws SQLException;
@@ -244,6 +258,49 @@ public interface SpallocAPI {
 		 *             If something goes wrong
 		 */
 		List<Integer> getAvailableBoards() throws SQLException;
+	}
+
+	/**
+	 * Describes a link that is disabled.
+	 *
+	 * @author Donal Fellows
+	 */
+	@JsonFormat(shape = ARRAY)
+	static class DownLink {
+		/**
+		 * Describes one end of a link that is disabled.
+		 *
+		 * @author Donal Fellows
+		 */
+		public static class End {
+			private End() {}
+
+			/**
+			 * On what board is this end of the link.
+			 */
+			public int board;
+
+			/**
+			 * In which direction does this end of the link go?
+			 */
+			public Direction direction;
+		}
+
+		public DownLink(int board1, Direction dir1, int board2,
+				Direction dir2) {
+			end1 = new End();
+			end1.board = board1;
+			end1.direction = dir1;
+			end2 = new End();
+			end2.board = board2;
+			end2.direction = dir2;
+		}
+
+		/** One end of the down link. */
+		public End end1;
+
+		/** The other end of the down link. */
+		public End end2;
 	}
 
 	/**
