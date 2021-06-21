@@ -42,6 +42,11 @@ import java.util.concurrent.Executor;
  */
 final class OTConnection extends OTWrapper implements Connection {
 	private final Connection conn;
+
+	/**
+	 * Whether the {@link #close()} method is enabled. If disabled, it is a
+	 * no-op.
+	 */
 	final boolean closeable;
 
 	OTConnection(OneThread ot, Connection conn, boolean closeable) {
