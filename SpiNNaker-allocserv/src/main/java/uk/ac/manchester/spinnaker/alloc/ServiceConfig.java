@@ -165,6 +165,8 @@ public class ServiceConfig extends Application {
 	}
 
 	// TODO application security model
+	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
+
 	// TODO administration interface (loading DB description, managing boards)
 
 	@Autowired

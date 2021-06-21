@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 
 import java.net.URI;
 import java.sql.SQLException;
@@ -65,7 +66,7 @@ public class WhereIsResponse {
 		Job j = location.getJob();
 		if (j != null) {
 			jobId = j.getId();
-			jobRef = ui.getBaseUriBuilder().path("jobs/{id}").build(jobId);
+			jobRef = ui.getBaseUriBuilder().path(JOB + "/{id}").build(jobId);
 			jobChip = j.getRootChip().map(rc -> location.getChipRelativeTo(rc))
 					.orElse(null);
 		}

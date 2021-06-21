@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
 import java.net.URI;
 
@@ -47,8 +49,8 @@ public class ServiceDescription {
 	ServiceDescription(Version version, UriInfo ui) {
 		this.version = version;
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
-		jobsRef = ub.build("jobs");
-		machinesRef = ub.build("machines");
+		jobsRef = ub.build(JOB);
+		machinesRef = ub.build(MACH);
 	}
 
 	/** @return The service version */

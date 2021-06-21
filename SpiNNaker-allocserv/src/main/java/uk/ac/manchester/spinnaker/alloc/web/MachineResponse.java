@@ -17,6 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_ADDRESS;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
 
 import java.net.URI;
 import java.sql.SQLException;
@@ -42,16 +46,17 @@ public class MachineResponse {
 
 	public List<SpallocAPI.DownLink> downLinks;
 
-	// TODO: What other info should be retrieved by default?
+	@JsonInclude(NON_NULL)
+	public URI lookupByPhysicalBoard;
 
 	@JsonInclude(NON_NULL)
-	public URI physicalBoard;
+	public URI lookupByLogicalBoard;
 
 	@JsonInclude(NON_NULL)
-	public URI logicalBoard;
+	public URI lookupByChip;
 
 	@JsonInclude(NON_NULL)
-	public URI chip;
+	public URI lookupByAddress;
 
 	public MachineResponse() {
 	}
@@ -65,9 +70,10 @@ public class MachineResponse {
 		downBoards = machine.getDeadBoards();
 		downLinks = machine.getDownLinks();
 
-		UriBuilder b = ui.getAbsolutePathBuilder().path("{element}");
-		physicalBoard = b.build("physical-board");
-		logicalBoard = b.build("logical-board");
-		chip = b.build("chip");
+		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
+		lookupByPhysicalBoard = b.build(MACH_BOARD_BY_PHYSICAL);
+		lookupByLogicalBoard = b.build(MACH_BOARD_BY_LOGICAL);
+		lookupByChip = b.build(MACH_BOARD_BY_CHIP);
+		lookupByAddress = b.build(MACH_BOARD_BY_ADDRESS);
 	}
 }

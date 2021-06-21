@@ -16,26 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static java.util.stream.Collectors.toList;
+/**
+ * Names of parts of this web service.
+ *
+ * @author Donal Fellows
+ */
+public interface WebServiceComponentNames {
+	String MACH = "machines";
+	String MACH_BOARD_BY_LOGICAL = "logical-board";
+	String MACH_BOARD_BY_PHYSICAL = "physical-board";
+	String MACH_BOARD_BY_CHIP = "chip";
+	String MACH_BOARD_BY_ADDRESS = "board-ip";
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-
-public class MachinesResponse {
-	// TODO Retrieve basic info *WITHOUT* the board list
-	// See https://spalloc-server.readthedocs.io/en/stable/protocol/
-	/**
-	 * The list of URIs to machines known to the service.
-	 */
-	public final List<URI> machines;
-
-	public MachinesResponse(Map<String, ?> machines, UriInfo ui) {
-		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
-		this.machines = machines.keySet().stream().map(s -> ub.build(s))
-				.collect(toList());
-	}
+	String JOB = "jobs";
+	String JOB_KEEPALIVE = "keepalive";
+	String JOB_MACHINE = "machine";
+	String JOB_MACHINE_POWER = "power";
+	String JOB_BOARD_BY_CHIP = "chip";
 }

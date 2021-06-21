@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE_POWER;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
 import java.net.URI;
 import java.sql.SQLException;
@@ -70,8 +72,8 @@ public class SubMachineResponse {
 		machineName = m.getMachine().getName();
 		connections = unmodifiableList(m.getConnections());
 		boards = unmodifiableList(m.getBoards());
-		power = ui.getAbsolutePathBuilder().path("power").build();
-		machineRef = ui.getBaseUriBuilder().path("machine/{name}")
+		power = ui.getAbsolutePathBuilder().path(JOB_MACHINE_POWER).build();
+		machineRef = ui.getBaseUriBuilder().path(MACH + "/{name}")
 				.build(m.getMachine().getName());
 	}
 }

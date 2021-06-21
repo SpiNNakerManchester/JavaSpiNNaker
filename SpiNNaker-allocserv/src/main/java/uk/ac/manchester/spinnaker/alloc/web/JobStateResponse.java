@@ -17,6 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE_POWER;
 
 import java.io.IOException;
 import java.net.URI;
@@ -107,10 +111,12 @@ public class JobStateResponse {
 		originalRequest = origRequest(mapper, job);
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
-		keepaliveRef = b.build("keepalive");
-		machineRef = b.build("machine");
-		powerRef = b.build("machine/power");
-		chipRef = b.build("chip");
+		keepaliveRef = b.build(JOB_KEEPALIVE);
+		machineRef = b.build(JOB_MACHINE);
+		chipRef = b.build(JOB_BOARD_BY_CHIP);
+		// This one has a sub-path
+		powerRef =
+				b.path("{subresource}").build(JOB_MACHINE, JOB_MACHINE_POWER);
 	}
 
 	/** @return The formal state of the job */

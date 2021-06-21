@@ -19,14 +19,24 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE_POWER;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_ADDRESS;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.CHIP_Y;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.ID;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.NAME;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.WAIT;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_TOP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_MCH;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_TOP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.WAIT;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -97,7 +107,7 @@ public interface SpallocServiceAPI {
 			description = "Get a description of the machines managed. "
 					+ "Does not support paging; "
 					+ "number of machines expected to be small.")
-	@Path("machines")
+	@Path(MACH)
 	@Produces(APPLICATION_JSON)
 	MachinesResponse getMachines(@Context UriInfo ui);
 	// No paging; not expecting very many!
@@ -111,7 +121,7 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @return The sub-resource
 	 */
-	@Path("machines/{name}")
+	@Path(MACH + "/{name}")
 	@Description("Operations on a specific machine.")
 	MachineAPI getMachine(
 			@Description("The name of the machine.")
@@ -143,7 +153,7 @@ public interface SpallocServiceAPI {
 					+ "Supports long queries",
 			responses = @ApiResponse(content = @Content(schema = @Schema(
 				implementation = ListJobsResponse.class))))
-	@Path("jobs")
+	@Path(JOB)
 	@Produces(APPLICATION_JSON)
 	void listJobs(
 			@Description("Whether to wait for a change (for up "
@@ -177,7 +187,7 @@ public interface SpallocServiceAPI {
 			description = "Create a Spalloc job.",
 			responses = @ApiResponse(content = @Content(schema = @Schema(
 				implementation = CreateJobResponse.class))))
-	@Path("jobs")
+	@Path(JOB)
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
 	void createJob(
@@ -198,7 +208,7 @@ public interface SpallocServiceAPI {
 	 */
 	@Description("Operations on a specific job.")
 	@Operation(tags = T_JOB)
-	@Path("jobs/{id}")
+	@Path(JOB + "/{id}")
 	@Produces(APPLICATION_JSON)
 	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
 			@Context UriInfo ui, @Context HttpServletRequest request);
@@ -208,7 +218,7 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
-	@Path("machines/{name}")
+	@Path(MACH + "/{name}")
 	interface MachineAPI {
 		/**
 		 * Describe the basic info about a machine.
@@ -262,7 +272,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
 				schema = @Schema(implementation = String.class)))
-		@Path("logical-board")
+		@Path(MACH_BOARD_BY_LOGICAL)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsLogicalPosition(
 				@Description("Triad X coordinate")
@@ -291,7 +301,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
 				schema = @Schema(implementation = String.class)))
-		@Path("physical-board")
+		@Path(MACH_BOARD_BY_PHYSICAL)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsPhysicalPosition(
 				@Description("Cabinet number")
@@ -319,7 +329,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
 				schema = @Schema(implementation = String.class)))
-		@Path("chip")
+		@Path(MACH_BOARD_BY_CHIP)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsMachineChipLocation(
 				@Description("Global chip X coordinate")
@@ -344,7 +354,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = NAME,
 				description = "Machine name",
 				schema = @Schema(implementation = String.class)))
-		@Path("board-ip")
+		@Path(MACH_BOARD_BY_ADDRESS)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsIPAddress(
 				@Description("Ethernet chip IP address")
@@ -356,7 +366,7 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
-	@Path("jobs/{id}")
+	@Path(JOB + "/{id}")
 	interface JobAPI {
 		/**
 		 * Describe the basic info about a job.
@@ -398,7 +408,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
-		@Path("keepalive")
+		@Path(JOB_KEEPALIVE)
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
 		String keepAlive(@Description("Arbitrary string; ignored") String req);
@@ -435,7 +445,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
-		@Path("machine")
+		@Path(JOB_MACHINE)
 		@Produces(APPLICATION_JSON)
 		SubMachineResponse getMachine();
 
@@ -451,7 +461,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
-		@Path("machine/power")
+		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Produces(APPLICATION_JSON)
 		MachinePower getMachinePower();
 
@@ -470,7 +480,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
-		@Path("machine/power")
+		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
 		Response setMachinePower(
@@ -495,7 +505,7 @@ public interface SpallocServiceAPI {
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
-		@Path("chip")
+		@Path(JOB_BOARD_BY_CHIP)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse getJobChipLocation(
 				@Description("X coordinate of chip within job's allocation.")
