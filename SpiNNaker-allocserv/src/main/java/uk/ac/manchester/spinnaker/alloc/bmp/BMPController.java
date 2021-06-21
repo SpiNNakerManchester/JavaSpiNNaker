@@ -508,15 +508,17 @@ public class BMPController extends SQLQueries {
 	private void takeRequestsForJob(List<Request> requests, Query getChanges,
 			Update setInProgress, Machine machine, int jobId)
 			throws SQLException {
-		// TODO describe what job state moving from and to
 		List<Integer> changeIds = new ArrayList<>();
 		List<Integer> boardsOn = new ArrayList<>();
 		List<Integer> boardsOff = new ArrayList<>();
 		List<LinkRequest> linksOff = new ArrayList<>();
+		JobState[] states = new JobState[2];
 		for (Row row : getChanges.call(jobId)) {
 			changeIds.add(row.getInt("change_id"));
 			int board = row.getInt("board_id");
 			boolean switchOn = row.getBoolean("power");
+			states[0] = row.getEnum("from_state", JobState.class);
+			states[1] = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
 				boardsOn.add(board);
 			} else {
@@ -531,18 +533,15 @@ public class BMPController extends SQLQueries {
 		RequestChange change =
 				new RequestChange(machine, boardsOn, boardsOff, linksOff);
 		requests.add(new Request(change, (fail, exn) -> doneRequest(jobId,
-				change, changeIds, fail, exn)));
+				states[0], states[1], change, changeIds, fail, exn)));
 		for (int changeId : changeIds) {
 			setInProgress.call(true, changeId);
 		}
 	}
 
-	void doneRequest(int jobId, RequestChange change, List<Integer> changeIds,
-			String fail, Exception exn) {
-		// TODO How should we change the job state? Info must come from DB
-		JobState oldState = JobState.QUEUED; // where we came from
-		JobState newState = JobState.READY; // where we should go to
-
+	void doneRequest(int jobId, JobState fromState, JobState toState,
+			RequestChange change, List<Integer> changeIds, String fail,
+			Exception exn) {
 		if (fail != null) {
 			log.error("failed to set power on BMPs: {}", fail, exn);
 		}
@@ -557,7 +556,7 @@ public class BMPController extends SQLQueries {
 					for (int changeId : changeIds) {
 						setInProgress.call(false, changeId);
 					}
-					setJobState.call(oldState, 0, jobId);
+					setJobState.call(fromState, 0, jobId);
 				} else {
 					for (int board : change.powerOnBoards) {
 						setBoardState.call(true, board);
@@ -565,10 +564,10 @@ public class BMPController extends SQLQueries {
 					for (int board : change.powerOffBoards) {
 						setBoardState.call(false, board);
 					}
-					for (int changeId : changeIds) {
-						deleteChange.call(changeId);
-					}
-					setJobState.call(newState, 0, jobId);
+					setJobState.call(toState, 0, jobId);
+				}
+				for (int changeId : changeIds) {
+					deleteChange.call(changeId);
 				}
 			});
 		} catch (SQLException e) {

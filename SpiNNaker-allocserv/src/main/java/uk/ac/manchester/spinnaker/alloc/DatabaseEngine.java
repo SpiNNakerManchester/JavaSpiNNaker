@@ -370,6 +370,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	/**
 	 * Used to ensure that only one database connection is actually writing
 	 * serialisation stuff at a time. We can wait for each other.
+	 * <p>
+	 * This is necessary because there is otherwise extremely high contention on
+	 * the database during application shutdown.
 	 */
 	private Lock optimiseSerialisationLock = new ReentrantLock();
 

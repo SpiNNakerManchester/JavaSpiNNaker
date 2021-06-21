@@ -177,7 +177,9 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     fpga_w INTEGER NOT NULL CHECK (fpga_w IN (0, 1)), -- Whether to switch the westward FPGA on
     fpga_nw INTEGER NOT NULL CHECK (fpga_nw IN (0, 1)), -- Whether to switch the northwest FPGA on
     fpga_se INTEGER NOT NULL CHECK (fpga_se IN (0, 1)), -- Whether to switch the southeast FPGA on
-    in_progress INTEGER NOT NULL DEFAULT (0) CHECK (in_progress IN (0, 1))
+    in_progress INTEGER NOT NULL DEFAULT (0) CHECK (in_progress IN (0, 1)),
+    from_state INTEGER NOT NULL DEFAULT (0) REFERENCES job_states(id) ON DELETE RESTRICT,
+    to_state INTEGER NOT NULL DEFAULT (0) REFERENCES job_states(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS board_model_coords(

@@ -374,6 +374,8 @@ public abstract class SQLQueries {
 	@ResultColumn("fpga_se")
 	@ResultColumn("fpga_sw")
 	@ResultColumn("in_progress")
+	@ResultColumn("from_state")
+	@ResultColumn("to_state")
 	protected static final String GET_CHANGES = "SELECT * FROM pending_changes "
 			+ "WHERE job_id = :job_id AND NOT in_progress";
 
@@ -410,6 +412,8 @@ public abstract class SQLQueries {
 
 	@Parameter("job_id")
 	@Parameter("board_id")
+	@Parameter("from_state")
+	@Parameter("to_state")
 	@Parameter("power")
 	@Parameter("fpga_n")
 	@Parameter("fpga_s")
