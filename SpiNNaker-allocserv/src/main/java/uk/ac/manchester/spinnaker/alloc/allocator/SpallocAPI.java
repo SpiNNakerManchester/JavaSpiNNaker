@@ -31,10 +31,16 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
+/**
+ * The API of the core service that interacts with the database.
+ *
+ * @author Donal Fellows
+ */
 public interface SpallocAPI {
 	/**
 	 * List the machines.
 	 *
+	 * @return A mapping from names to machines (which are live objects).
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
@@ -43,6 +49,9 @@ public interface SpallocAPI {
 	/**
 	 * Get a specific machine.
 	 *
+	 * @param name
+	 *            The name of the machine to get.
+	 * @return A machine, on which more operations can be done.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
@@ -51,6 +60,13 @@ public interface SpallocAPI {
 	/**
 	 * List the jobs.
 	 *
+	 * @param deleted
+	 *            Whether to include deleted jobs in the list.
+	 * @param limit
+	 *            Maximum number of jobs in the returned list. Used for paging.
+	 * @param start
+	 *            How many jobs to skip past. Used for paging.
+	 * @return A list of jobs.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
@@ -59,6 +75,9 @@ public interface SpallocAPI {
 	/**
 	 * Get a specific job.
 	 *
+	 * @param id
+	 *            The identifier of the job.
+	 * @return A job object on which more operations can be done.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
@@ -123,12 +142,29 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	interface Job extends Waitable {
-		void access(String keepaliveAddress) throws SQLException;
-
-		void destroy(String reason) throws SQLException;
-
 		/** @return Job ID */
 		int getId();
+
+		/**
+		 * Update the keepalive.
+		 *
+		 * @param keepaliveAddress
+		 *            Where was the access from.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		void access(String keepaliveAddress) throws SQLException;
+
+		/**
+		 * Mark the job as destroyed. To do this to an already destroyed job is
+		 * a no-op.
+		 *
+		 * @param reason
+		 *            Why the job is being destroyed.
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		void destroy(String reason) throws SQLException;
 
 		/**
 		 * @return The state of the job.
@@ -198,6 +234,10 @@ public interface SpallocAPI {
 		/**
 		 * Locate a board within the allocation.
 		 *
+		 * @param x
+		 *            The X coordinate of a chip on the board of interest.
+		 * @param y
+		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
 		 * @throws SQLException
 		 *             If something goes wrong
@@ -230,7 +270,7 @@ public interface SpallocAPI {
 
 		/**
 		 * @return the allocated depth of this sub-machine, or {@code null} if
-		 *         not allocated (or not known). When suppplied, will be 1
+		 *         not allocated (or not known). When supplied, will be 1
 		 *         (single board) or 3 (by triad)
 		 * @throws SQLException
 		 *             If something goes wrong
@@ -321,31 +361,28 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	interface Machine extends Waitable {
-		/** The ID of the machine. Unique. */
+		/** @return The ID of the machine. Unique. */
 		int getId();
 
-		/** The name of the machine. Unique. */
+		/** @return The name of the machine. Unique. */
 		String getName();
 
 		/**
-		 * The tags associated with the machine.
-		 *
+		 * @return The tags associated with the machine.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
 		List<String> getTags() throws SQLException;
 
 		/**
-		 * The width of the machine.
-		 *
+		 * @return The width of the machine.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
 		int getWidth() throws SQLException;
 
 		/**
-		 * The height of the machine.
-		 *
+		 * @return The height of the machine.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
@@ -443,15 +480,13 @@ public interface SpallocAPI {
 
 		/**
 		 * @return The boards supported by the machine.
-		 *
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
 		List<Integer> getBoardNumbers() throws SQLException;
 
 		/**
-		 * The IDs of boards currently available to be allocated.
-		 *
+		 * @return The IDs of boards currently available to be allocated.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
@@ -464,42 +499,52 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	@JsonFormat(shape = ARRAY)
-	static class DownLink {
+	class DownLink {
 		/**
 		 * Describes one end of a link that is disabled.
 		 *
 		 * @author Donal Fellows
 		 */
 		public static class End {
-			private End() {
+			private End(BoardCoords board, Direction direction) {
+				this.board = board;
+				this.direction = direction;
 			}
 
 			/**
 			 * On what board is this end of the link.
 			 */
-			public BoardCoords board;
+			public final BoardCoords board;
 
 			/**
 			 * In which direction does this end of the link go?
 			 */
-			public Direction direction;
+			public final Direction direction;
 		}
 
+		/**
+		 * Create a down link description.
+		 *
+		 * @param board1
+		 *            Which board is one end of the link.
+		 * @param dir1
+		 *            In which direction off of {@code board1} is the link.
+		 * @param board2
+		 *            Which board is one end of the link.
+		 * @param dir2
+		 *            In which direction off of {@code board2} is the link.
+		 */
 		public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
 				Direction dir2) {
-			end1 = new End();
-			end1.board = board1;
-			end1.direction = dir1;
-			end2 = new End();
-			end2.board = board2;
-			end2.direction = dir2;
+			end1 = new End(board1, dir1);
+			end2 = new End(board2, dir2);
 		}
 
 		/** One end of the down link. */
-		public End end1;
+		public final End end1;
 
 		/** The other end of the down link. */
-		public End end2;
+		public final End end2;
 	}
 
 	/**
@@ -521,20 +566,32 @@ public interface SpallocAPI {
 		 */
 		String getMachine();
 
-		/** Where is the board logically within its machine? */
+		/**
+		 * Where is the board logically within its machine?
+		 *
+		 * @return a triad location descriptor
+		 */
 		BoardCoordinates getLogical();
 
-		/** Where is the board physically in its machine? */
+		/**
+		 * Where is the board physically in its machine?
+		 *
+		 * @return a cabinet/frame/board triple
+		 */
 		BoardPhysicalCoordinates getPhysical();
 
 		/**
 		 * Where is the chip of interest? Usually the root chip of the board.
+		 *
+		 * @return a chip location
 		 */
 		ChipLocation getChip();
 
 		/**
 		 * What job is the board allocated to? May be {@code null} for an
 		 * unallocated board.
+		 *
+		 * @return a limited version of a job.
 		 */
 		Job getJob();
 	}
@@ -615,11 +672,11 @@ public interface SpallocAPI {
 		 * Set whether this sub-machine is switched on. Note that actually
 		 * changing the power of a sub-machine can take some time.
 		 *
-		 * @param ps
+		 * @param powerState
 		 *            What to set the power state to.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		void setPower(PowerState ps) throws SQLException;
+		void setPower(PowerState powerState) throws SQLException;
 	}
 }
