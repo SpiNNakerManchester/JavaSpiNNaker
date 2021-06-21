@@ -326,6 +326,29 @@ public interface SpallocServiceAPI {
 				@QueryParam(CHIP_X) @DefaultValue("0") int x,
 				@Description("Global chip Y coordinate")
 				@QueryParam(CHIP_Y) @DefaultValue("0") int y);
+
+		/**
+		 * Get the location description of a board given its ethernet chip's IP
+		 * address.
+		 *
+		 * @param address
+		 *            IP address
+		 * @return A board location description
+		 */
+		@GET
+		@Description("Map from IP address to a description of a board.")
+		@Operation(tags = T_MCH,
+			summary = "Find board by IP address",
+			description = "Get the location description of a board given its "
+					+ "ethernet chip's IP address.",
+			parameters = @Parameter(in = PATH, name = NAME,
+				description = "Machine name",
+				schema = @Schema(implementation = String.class)))
+		@Path("board-ip")
+		@Produces(APPLICATION_JSON)
+		WhereIsResponse whereIsIPAddress(
+				@Description("Ethernet chip IP address")
+				@QueryParam("address") @DefaultValue("0.0.0.0") String address);
 	}
 
 	/**

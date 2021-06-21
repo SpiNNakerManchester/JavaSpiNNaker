@@ -570,6 +570,20 @@ class DbTest extends SQLQueries {
 	}
 
 	@Test
+	void findBoardByIPAddress() throws SQLException {
+		try (Query q = query(c, findBoardByIPAddress)) {
+			assertEquals(2, q.getNumArguments());
+			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
+					"job_id", "machine_name", "cabinet", "frame", "board_num",
+					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
+					"job_root_chip_x", "job_root_chip_y"),
+					q.getRowColumnNames());
+			assertCanMakeBoardLocation(q);
+			assertFalse(q.call1(NO_MACHINE, "127.0.0.1").isPresent());
+		}
+	}
+
+	@Test
 	void getJobsWithChanges() throws SQLException {
 		Duration d = Duration.ofSeconds(1);
 		try (Query q = query(c, getJobsWithChanges)) {

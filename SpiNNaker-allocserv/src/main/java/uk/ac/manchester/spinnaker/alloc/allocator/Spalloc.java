@@ -326,6 +326,16 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
+		public Optional<BoardLocation> getBoardByIPAddress(String address)
+				throws SQLException {
+			try (Connection conn = db.getConnection();
+					Query findBoard = query(conn, findBoardByIPAddress)) {
+				return transaction(conn, () -> findBoard.call1(id, address)
+						.map(row -> new BoardLocationImpl(row, id)));
+			}
+		}
+
+		@Override
 		public String getRootBoardBMPAddress() throws SQLException {
 			try (Connection conn = db.getConnection();
 					Query rootBMPaddr = query(conn, GET_ROOT_BMP_ADDRESS)) {

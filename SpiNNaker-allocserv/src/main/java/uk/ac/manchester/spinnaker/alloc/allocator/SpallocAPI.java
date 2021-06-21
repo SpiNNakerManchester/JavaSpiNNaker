@@ -241,6 +241,9 @@ public interface SpallocAPI {
 		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z)
 				throws SQLException;
 
+		Optional<BoardLocation> getBoardByIPAddress(String address)
+				throws SQLException;
+
 		String getRootBoardBMPAddress() throws SQLException;
 
 		/**

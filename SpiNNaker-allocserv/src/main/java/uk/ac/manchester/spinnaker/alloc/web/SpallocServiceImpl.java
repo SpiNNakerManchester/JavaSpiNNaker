@@ -248,6 +248,20 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 					throw new NotFound("failed to locate board", e);
 				}
 			}
+
+			@Override
+			public WhereIsResponse whereIsIPAddress(String address) {
+				try {
+					// No epoch; value not retained
+					return new WhereIsResponse(
+							machine.getBoardByIPAddress(address)
+									.orElseThrow(() -> new NotFound(
+											"failed to locate board")),
+							ui);
+				} catch (SQLException e) {
+					throw new NotFound("failed to locate board", e);
+				}
+			}
 		};
 	}
 

@@ -534,6 +534,27 @@ public abstract class SQLQueries {
 	protected Resource findBoardByPhysicalCoords;
 
 	@Parameter("machine_id")
+	@Parameter("address")
+	@ResultColumn("board_id")
+	@ResultColumn("address")
+	@ResultColumn("bmp_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("chip_x")
+	@ResultColumn("chip_y")
+	@ResultColumn("board_chip_x")
+	@ResultColumn("board_chip_y")
+	@SingleRowResult
+	@Value("classpath:queries/find_board_by_ip_address.sql")
+	protected Resource findBoardByIPAddress;
+
+	@Parameter("machine_id")
 	@Parameter("on_delay")
 	@Parameter("off_delay")
 	@ResultColumn("job_id")
