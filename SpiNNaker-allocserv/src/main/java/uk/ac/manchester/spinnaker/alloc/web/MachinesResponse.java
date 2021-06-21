@@ -16,26 +16,85 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Collections.unmodifiableList;
 
 import java.net.URI;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-public class MachinesResponse {
-	// TODO Retrieve basic info *WITHOUT* the board list
-	// See https://spalloc-server.readthedocs.io/en/stable/protocol/
-	/**
-	 * The list of URIs to machines known to the service.
-	 */
-	public final List<URI> machines;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.DownLink;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 
-	public MachinesResponse(Map<String, ?> machines, UriInfo ui) {
+/**
+ * The description of machines known to the service. A list of
+ * {@link BriefMachineDescription}s.
+ *
+ * @author Donal Fellows
+ */
+public class MachinesResponse {
+	/**
+	 * A brief, summary description of a machine.
+	 *
+	 * @author Donal Fellows
+	 */
+	public class BriefMachineDescription {
+		/** The name of the machine. */
+		public final String name;
+
+		/** The tags of the machine. */
+		public final List<String> tags;
+
+		/** The URI to the machine. */
+		public final URI uri;
+
+		/** The width of the machine, in triads. */
+		public final int width;
+
+		/** The height of the machine, in triads. */
+		public final int height;
+
+		/** The dead boards on the machine. */
+		public final List<BoardCoords> deadBoards;
+
+		/** The dead links on the machine. */
+		public final List<DownLink> deadLinks;
+
+		private BriefMachineDescription(String name, URI uri, int width,
+				int height, List<String> tags, List<BoardCoords> deadBoards,
+				List<DownLink> deadLinks) {
+			this.name = name;
+			this.uri = uri;
+			this.width = width;
+			this.height = height;
+			this.tags = unmodifiableList(tags);
+			this.deadBoards = unmodifiableList(deadBoards);
+			this.deadLinks = unmodifiableList(deadLinks);
+		}
+	}
+
+	/** The list of machines known to the service. */
+	public final List<BriefMachineDescription> machines;
+
+	MachinesResponse(Map<String, Machine> machines, UriInfo ui)
+			throws SQLException {
+		List<BriefMachineDescription> mlist = new ArrayList<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
-		this.machines = machines.keySet().stream().map(s -> ub.build(s))
-				.collect(toList());
+		for (Entry<String, Machine> ment : machines.entrySet()) {
+			String name = ment.getKey();
+			URI uri = ub.build(name);
+			Machine m = ment.getValue();
+
+			mlist.add(new BriefMachineDescription(name, uri, m.getWidth(),
+					m.getHeight(), m.getTags(), m.getDeadBoards(),
+					m.getDownLinks()));
+		}
+		this.machines = unmodifiableList(mlist);
 	}
 }

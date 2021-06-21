@@ -257,7 +257,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private final int height;
 
-		private List<Integer> downBoardsCache;
+		private List<BoardCoords> downBoardsCache;
 
 		private List<DownLink> downLinksCache;
 
@@ -364,7 +364,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public List<Integer> getDeadBoards() throws SQLException {
+		public List<BoardCoords> getDeadBoards() throws SQLException {
 			// Assume that the list doesn't change for the duration of this obj
 			synchronized (this) {
 				if (downBoardsCache != null) {
@@ -372,11 +372,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 			}
 			try (Connection conn = db.getConnection();
-					Query boardNumbers = query(conn, GET_DEAD_BOARD_NUMBERS)) {
+					Query boardNumbers = query(conn, GET_DEAD_BOARDS)) {
 				return transaction(conn, () -> {
-					List<Integer> boards = new ArrayList<>();
+					List<BoardCoords> boards = new ArrayList<>();
 					for (Row row : boardNumbers.call(id)) {
-						boards.add((Integer) row.getObject("board_num"));
+						boards.add(new BoardCoords(row.getInt("x"),
+								row.getInt("y"), row.getInt("z"),
+								row.getInt("cabinet"), row.getInt("frame"),
+								row.getInt("boardNum"),
+								row.getString("address")));
 					}
 					synchronized (MachineImpl.this) {
 						if (downBoardsCache == null) {
@@ -390,19 +394,33 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public List<DownLink> getDownLinks() throws SQLException {
+			// Assume that the list doesn't change for the duration of this obj
 			synchronized (this) {
 				if (downLinksCache != null) {
 					return unmodifiableList(downLinksCache);
 				}
 			}
 			try (Connection conn = db.getConnection();
-					Query boardNumbers = query(conn, GET_DEAD_LINK_NUMBERS)) {
+					Query boardNumbers = query(conn, GET_DEAD_LINKS)) {
 				return transaction(conn, () -> {
 					List<DownLink> links = new ArrayList<>();
 					for (Row row : boardNumbers.call(id)) {
-						links.add(new DownLink(row.getInt("board_1"),
+						links.add(new DownLink(
+								new BoardCoords(row.getInt("board_1_x"),
+										row.getInt("board_1_y"),
+										row.getInt("board_1_z"),
+										row.getInt("board_1_c"),
+										row.getInt("board_1_f"),
+										row.getInt("board_1_b"),
+										row.getString("board_1_addr")),
 								row.getEnum("dir_1", Direction.class),
-								row.getInt("board_2"),
+								new BoardCoords(row.getInt("board_2_x"),
+										row.getInt("board_2_y"),
+										row.getInt("board_2_z"),
+										row.getInt("board_2_c"),
+										row.getInt("board_2_f"),
+										row.getInt("board_2_b"),
+										row.getString("board_2_addr")),
 								row.getEnum("dir_2", Direction.class)));
 					}
 					synchronized (MachineImpl.this) {

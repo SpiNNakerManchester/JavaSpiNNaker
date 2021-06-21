@@ -329,18 +329,23 @@ class DbTest extends SQLQueries {
 
 	@Test
 	void getDeadBoardNumbers() throws SQLException {
-		try (Query q = query(c, GET_DEAD_BOARD_NUMBERS)) {
+		try (Query q = query(c, GET_DEAD_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(set("x", "y", "z", "cabinet", "frame", "board_num",
+					"address"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}
 	}
 
 	@Test
 	void getDeadLinkNumbers() throws SQLException {
-		try (Query q = query(c, GET_DEAD_LINK_NUMBERS)) {
+		try (Query q = query(c, GET_DEAD_LINKS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_1", "dir_1", "board_2", "dir_2"),
+			assertSetEquals(
+					set("board_1_x", "board_1_y", "board_1_z", "board_1_c",
+							"board_1_f", "board_1_b", "board_1_addr", "dir_1",
+							"board_2_x", "board_2_y", "board_2_z", "board_2_c",
+							"board_2_f", "board_2_b", "board_2_addr", "dir_2"),
 					q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
 		}

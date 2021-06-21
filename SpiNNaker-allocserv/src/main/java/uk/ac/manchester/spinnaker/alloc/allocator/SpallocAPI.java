@@ -191,6 +191,61 @@ public interface SpallocAPI {
 	}
 
 	/**
+	 * Basic coordinates of a board.
+	 *
+	 * @author Donal Fellows
+	 */
+	class BoardCoords {
+		/** Logical triad X coordinate. */
+		public final int x;
+
+		/** Logical triad Y coordinate. */
+		public final int y;
+
+		/** Logical triad Z coordinate. */
+		public final int z;
+
+		/** Physical cabinet number. */
+		public final int cabinet;
+
+		/** Physical frame number. */
+		public final int frame;
+
+		/** Physical board number. */
+		public final int board;
+
+		/** IP address of ethernet chip. */
+		public final String address;
+
+		/**
+		 * @param x
+		 *            Logical triad X coordinate
+		 * @param y
+		 *            Logical triad Y coordinate
+		 * @param z
+		 *            Logical triad Z coordinate
+		 * @param cabinet
+		 *            Physical cabinet number
+		 * @param frame
+		 *            Physical frame number
+		 * @param board
+		 *            Physical board number
+		 * @param address
+		 *            IP address of ethernet chip
+		 */
+		public BoardCoords(int x, int y, int z, int cabinet, int frame,
+				int board, String address) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.cabinet = cabinet;
+			this.frame = frame;
+			this.board = board;
+			this.address = address;
+		}
+	}
+
+	/**
 	 * Describes a particular machine known to the allocator. Must implement
 	 * equality by ID or name (both are unique).
 	 *
@@ -215,11 +270,11 @@ public interface SpallocAPI {
 		/**
 		 * The IDs of boards marked as dead or otherwise taken out of service.
 		 *
-		 * @return A list of boards by physical board number. Not modifiable.
+		 * @return A list of boards. Not modifiable.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		List<Integer> getDeadBoards() throws SQLException;
+		List<BoardCoords> getDeadBoards() throws SQLException;
 
 		/**
 		 * The links within the machine that are marked as dead or otherwise
@@ -281,7 +336,7 @@ public interface SpallocAPI {
 			/**
 			 * On what board is this end of the link.
 			 */
-			public int board;
+			public BoardCoords board;
 
 			/**
 			 * In which direction does this end of the link go?
@@ -289,7 +344,7 @@ public interface SpallocAPI {
 			public Direction direction;
 		}
 
-		public DownLink(int board1, Direction dir1, int board2,
+		public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
 				Direction dir2) {
 			end1 = new End();
 			end1.board = board1;

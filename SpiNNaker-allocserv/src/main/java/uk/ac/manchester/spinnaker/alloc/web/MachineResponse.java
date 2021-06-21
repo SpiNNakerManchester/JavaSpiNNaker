@@ -32,6 +32,7 @@ import javax.ws.rs.core.UriInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
 
 public class MachineResponse {
 	public String name;
@@ -42,7 +43,7 @@ public class MachineResponse {
 
 	public int height;
 
-	public List<Integer> downBoards;
+	public List<BoardCoords> downBoards;
 
 	public List<SpallocAPI.DownLink> downLinks;
 

@@ -171,20 +171,51 @@ public abstract class SQLQueries {
 					+ "ORDER BY board_num ASC";
 
 	@Parameter("machine_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
 	@ResultColumn("board_num")
-	protected static final String GET_DEAD_BOARD_NUMBERS =
-			"SELECT board_num FROM boards WHERE machine_id = :machine_id "
-					+ "AND functioning IS 0 " + "ORDER BY board_num ASC";
+	@ResultColumn("address")
+	protected static final String GET_DEAD_BOARDS =
+			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND functioning IS 0 ORDER BY z ASC, x ASC, y ASC";
 
 	@Parameter("machine_id")
-	@ResultColumn("board_1")
+	@ResultColumn("board_1_x")
+	@ResultColumn("board_1_y")
+	@ResultColumn("board_1_z")
+	@ResultColumn("board_1_c")
+	@ResultColumn("board_1_f")
+	@ResultColumn("board_1_b")
+	@ResultColumn("board_1_addr")
 	@ResultColumn("dir_1")
-	@ResultColumn("board_2")
+	@ResultColumn("board_2_x")
+	@ResultColumn("board_2_y")
+	@ResultColumn("board_2_z")
+	@ResultColumn("board_2_c")
+	@ResultColumn("board_2_f")
+	@ResultColumn("board_2_b")
+	@ResultColumn("board_2_addr")
 	@ResultColumn("dir_2")
-	protected static final String GET_DEAD_LINK_NUMBERS =
-			"SELECT board_1, dir_1, board_2, dir_2 FROM links "
-					+ "JOIN boards ON board_1 = boards.board_id "
-					+ "WHERE machine_id = :machine_id AND NOT live "
+	protected static final String GET_DEAD_LINKS =
+			"SELECT b1.x AS board_1_x, b1.y AS board_1_y, b1.z AS board_1_z, "
+					+ "bmp1.cabinet AS board_1_c, bmp1.frame AS board_1_f, "
+					+ "b1.board_num AS board_1_b, b1.address AS board_1_addr, "
+					+ "dir_1, "
+					+ "b2.x AS board_2_x, b2.y AS board_2_y, "
+					+ "b2.z AS board_2_z, bmp2.cabinet AS board_2_c, "
+					+ "bmp2.frame AS board_2_f, b2.board_num AS board_2_b, "
+					+ "b2.address AS board_2_addr, dir_2 " +
+					"FROM links "
+					+ "JOIN boards AS b1 ON board_1 = b1.board_id "
+					+ "JOIN boards AS b2 ON board_2 = b2.board_id "
+					+ "JOIN bmp AS bmp1 ON bmp1.bmp_id = b1.bmp_id "
+					+ "JOIN bmp AS bmp2 ON bmp2.bmp_id = b2.bmp_id "
+					+ "WHERE b1.machine_id = :machine_id AND NOT live "
 					+ "ORDER BY board_1 ASC, board_2 ASC";
 
 	@Parameter("machine_id")
