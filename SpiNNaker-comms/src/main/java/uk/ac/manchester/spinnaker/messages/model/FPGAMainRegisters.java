@@ -104,7 +104,7 @@ public enum FPGAMainRegisters {
 	 */
 	TXDS(0x20, true, 16),
 	/**
-	 * Transmit pre-emphasis (default: {@code 0x012})
+	 * Transmit pre-emphasis. (default: {@code 0x012})
 	 *
 	 * <pre>
 	 * { 11-9: RING_TXPREEMPHASIS,
