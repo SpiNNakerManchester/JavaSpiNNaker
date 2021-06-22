@@ -53,6 +53,11 @@ public class RequestFailedException extends RuntimeException {
 		this.message = message;
 	}
 
+	public RequestFailedException(WebApplicationException exn) {
+		// code will not be used
+		this(NO_CONTENT, exn.getMessage(), exn);
+	}
+
 	public RequestFailedException(String message) {
 		this(INTERNAL_SERVER_ERROR, message, null);
 	}
@@ -74,6 +79,9 @@ public class RequestFailedException extends RuntimeException {
 	}
 
 	Response toResponse() {
+		if (getCause() instanceof WebApplicationException) {
+			return ((WebApplicationException) getCause()).getResponse();
+		}
 		return Response.status(code).type(TEXT_PLAIN).entity(message).build();
 	}
 

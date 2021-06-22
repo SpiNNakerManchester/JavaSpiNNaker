@@ -33,11 +33,11 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
  */
 public class CreateJobResponse {
 	/** The ID of the job. Probably should be ignored. */
-	public int jobId;
+	public final int jobId;
 
 	/** The link to the job. Clients should not make this themselves. */
 	@JsonInclude(NON_NULL)
-	public URI jobRef;
+	public final URI jobRef;
 
 	CreateJobResponse(Spalloc.Job j, UriInfo ui) {
 		jobId = j.getId();

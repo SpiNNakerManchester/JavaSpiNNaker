@@ -63,7 +63,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	/**
 	 * Maximum number of dimensions that can be used in
 	 * {@link #createJob(CreateJobRequest, UriInfo, AsyncResponse)
-	 * createJob(...)}
+	 * createJob(...)}.
 	 */
 	private static final int MAX_CREATE_DIMENSIONS = 3;
 
@@ -131,7 +131,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	}
 
 	/**
-	 * Run the action immediately and wrap it into the response
+	 * Run the action immediately and wrap it into the response.
 	 *
 	 * @param response
 	 *            The asynchronous response.

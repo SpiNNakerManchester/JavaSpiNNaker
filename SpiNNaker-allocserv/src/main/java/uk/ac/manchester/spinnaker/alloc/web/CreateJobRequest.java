@@ -24,6 +24,7 @@ import java.util.List;
  *
  * @author Donal Fellows
  */
+@SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
 	/**
 	 * Who owns the job. <em>Required.</em>

@@ -231,8 +231,8 @@ public abstract class SQLQueries {
 					+ "b2.x AS board_2_x, b2.y AS board_2_y, "
 					+ "b2.z AS board_2_z, bmp2.cabinet AS board_2_c, "
 					+ "bmp2.frame AS board_2_f, b2.board_num AS board_2_b, "
-					+ "b2.address AS board_2_addr, dir_2 " +
-					"FROM links "
+					+ "b2.address AS board_2_addr, dir_2 "
+					+ "FROM links "
 					+ "JOIN boards AS b1 ON board_1 = b1.board_id "
 					+ "JOIN boards AS b2 ON board_2 = b2.board_id "
 					+ "JOIN bmp AS bmp1 ON bmp1.bmp_id = b1.bmp_id "

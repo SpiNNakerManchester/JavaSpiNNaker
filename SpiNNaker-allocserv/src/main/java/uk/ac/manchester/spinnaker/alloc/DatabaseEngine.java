@@ -96,11 +96,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
 
-
 	// From https://sqlite.org/lang_analyze.html
 	// These are special operations
 	private static final String OPTIMIZE_DB =
 			"PRAGMA analysis_limit=%d; PRAGMA optimize;";
+
+	private static final int DEFAULT_ANALYSIS_LIMIT = 400;
+
+	/** Used to validate the database contents. */
+	private static final int EXPECTED_NUM_MOVEMENTS = 6;
 
 	private final Path dbPath;
 
@@ -115,8 +119,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
 	 */
-	@Value("${sqlite.analysis_limit:400}")
-	private int analysisLimit = 400;
+	@Value("${sqlite.analysis_limit:" + DEFAULT_ANALYSIS_LIMIT + "}")
+	private int analysisLimit = DEFAULT_ANALYSIS_LIMIT;
 
 	/** Busy timeout for SQLite. */
 	@Value("${sqlite.timeout:PT1S}")
@@ -272,8 +276,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Get the contents of the named column.
 		 *
+		 * @param <T>
+		 *            The enumeration type.
 		 * @param columnLabel
 		 *            The name of the column.
+		 * @param type
+		 *            The enumeration type class.
 		 * @return An enum value, or {@code null} on {@code NULL}.
 		 * @throws SQLException
 		 *             If a problem occurs
@@ -295,7 +303,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
 			Row row = countMovements.call1().get();
-			if (row.getInt("c") < 6) {
+			if (row.getInt("c") != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete", dbConnectionUrl);
 			} else {
 				log.debug("database {} ready", dbConnectionUrl);
@@ -694,7 +702,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             If something other than database access goes wrong with the
 	 *             contained code.
 	 */
-	public final void executeVoid(Connected operation) throws SQLException {
+	public void executeVoid(Connected operation) throws SQLException {
 		try (Connection conn = getConnection()) {
 			transaction(conn, () -> operation.act(conn));
 		}
@@ -717,7 +725,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             If something other than database access goes wrong with the
 	 *             contained code.
 	 */
-	public final <T> T execute(ConnectedWithResult<T> operation)
+	public <T> T execute(ConnectedWithResult<T> operation)
 			throws SQLException {
 		try (Connection conn = getConnection()) {
 			return transaction(conn, () -> operation.act(conn));
@@ -910,9 +918,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static abstract class StatementWrapper implements AutoCloseable {
+	public abstract static class StatementWrapper implements AutoCloseable {
+		/** The statement being managed. */
 		final PreparedStatement s;
 
+		/** The result set from the statement that we will manage. */
 		ResultSet rs;
 
 		StatementWrapper(Connection conn, String sql) throws SQLException {
