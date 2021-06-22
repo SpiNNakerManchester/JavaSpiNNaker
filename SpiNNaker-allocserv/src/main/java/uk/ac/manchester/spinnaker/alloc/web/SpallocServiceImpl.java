@@ -303,17 +303,20 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			}
 
 			@Override
-			public Response setMachinePower(MachinePower reqBody)
-					throws SQLException {
+			public void setMachinePower(MachinePower reqBody,
+					AsyncResponse response) throws SQLException {
+				// Async because it involves getting a write lock
 				if (reqBody == null || reqBody.power == null) {
 					throw new BadArgs("bad power description");
 				}
-				j.access(caller);
-				SubMachine m = j.getMachine().orElseThrow(
-						// No machine allocated yet
-						EmptyResponse::new);
-				m.setPower(reqBody.power);
-				return accepted().build();
+				bgAction(response, () -> {
+					j.access(caller);
+					SubMachine m = j.getMachine().orElseThrow(
+							// No machine allocated yet
+							EmptyResponse::new);
+					m.setPower(reqBody.power);
+					return accepted().build();
+				});
 			}
 
 			@Override
@@ -338,16 +341,15 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		if (start < 0) {
 			throw new BadArgs("start must not be less than 0");
 		}
+		Jobs jc = core.getJobs(destroyed, limit, start);
 		if (wait) {
 			bgAction(response, () -> {
-				Jobs jc = core.getJobs(destroyed, limit, start);
 				log.debug("starting wait for change of job list");
 				jc.waitForChange(WAIT_TIMEOUT);
 				Jobs newJc = core.getJobs(destroyed, limit, start);
 				return new ListJobsResponse(newJc, ui);
 			});
 		} else {
-			Jobs jc = core.getJobs(destroyed, limit, start);
 			fgAction(response, () -> new ListJobsResponse(jc, ui));
 		}
 	}
@@ -355,6 +357,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			AsyncResponse response) {
+		// Async because it involves getting a write lock
 		if (req == null) {
 			throw new BadArgs("request must be supplied");
 		}

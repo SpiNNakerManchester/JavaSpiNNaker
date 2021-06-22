@@ -60,15 +60,6 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 /**
  * Builds the Spring beans in the application that are not auto-detected. There
  * are no public methods in this class that can be called by non-framework code.
- * <h3>Critical service properties:</h3>
- * <dl>
- * <dt>num.threads
- * <dd>The number of threads to use in the master thread pool. Defaults to
- * {@code 16} ({@link #POOL_SIZE})
- * <dt>cxf.rest.path
- * <dd>The location of the CXF service resource in HTTP space in the servlet.
- * Defaults to {@code /} ({@link #REST_PATH})
- * </dl>
  */
 // @EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)
 // @EnableWebSecurity
@@ -87,6 +78,8 @@ public class ServiceConfig extends Application {
 	 * @param numThreads
 	 *            The size of the pool. From
 	 *            {@code spring.task.scheduling.pool.size} property.
+	 * @param threadFactory
+	 *            How threads that service the pool are made.
 	 * @return The set up thread pool bean.
 	 */
 	@Bean(destroyMethod = "shutdown")
@@ -110,6 +103,13 @@ public class ServiceConfig extends Application {
 				.propertyNamingStrategy(KEBAB_CASE).build();
 	}
 
+	/**
+	 * How we map between JSON and Java classes
+	 *
+	 * @param mapper
+	 *            The core mapper.
+	 * @return A provider.
+	 */
 	@Bean("JSONProvider")
 	JacksonJsonProvider jsonProvider(ObjectMapper mapper) {
 		JacksonJsonProvider provider = new JacksonJsonProvider();
@@ -190,6 +190,12 @@ public class ServiceConfig extends Application {
 		logBeans();
 	}
 
+	/**
+	 * Spring Boot entry point.
+	 *
+	 * @param args
+	 *            Command line arguments.
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ServiceConfig.class, args);
 	}

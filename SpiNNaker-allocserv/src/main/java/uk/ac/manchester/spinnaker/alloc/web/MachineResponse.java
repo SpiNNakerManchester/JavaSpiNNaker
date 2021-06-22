@@ -41,43 +41,49 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
  */
 public final class MachineResponse {
 	/** The name of the machine. */
-	public String name;
+	public final String name;
 
 	/** The tags of the machine. */
-	public List<String> tags;
+	public final List<String> tags;
 
 	/** The width of the machine, in triads. */
-	public int width;
+	public final int width;
 
 	/** The height of the machine, in triads. */
-	public int height;
+	public final int height;
 
 	/** The boards of the machine marked as down. */
-	public List<BoardCoords> downBoards;
+	public final List<BoardCoords> downBoards;
 
 	/** The links of the machine marked as down. */
-	public List<SpallocAPI.DownLink> downLinks;
+	public final List<SpallocAPI.DownLink> downLinks;
 
 	/** Where to look up a board by physical coordinates. */
 	@JsonInclude(NON_NULL)
-	public URI lookupByPhysicalBoard;
+	public final URI lookupByPhysicalBoard;
 
 	/** Where to look up a board by logical coordinates. */
 	@JsonInclude(NON_NULL)
-	public URI lookupByLogicalBoard;
+	public final URI lookupByLogicalBoard;
 
 	/** Where to look up a board by global chip address. */
 	@JsonInclude(NON_NULL)
-	public URI lookupByChip;
+	public final URI lookupByChip;
 
 	/** Where to look up a board by its ethernet IP address. */
 	@JsonInclude(NON_NULL)
-	public URI lookupByAddress;
+	public final URI lookupByAddress;
 
-	public MachineResponse() {
-		// TODO remove this
-	}
-
+	/**
+	 * Create a machine response.
+	 *
+	 * @param machine
+	 *            The machine being described.
+	 * @param ui
+	 *            How to manufacture URIs. May be {@code null}.
+	 * @throws SQLException
+	 *             If anything goes wrong with machine property access.
+	 */
 	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui)
 			throws SQLException {
 		name = machine.getName();
@@ -87,10 +93,17 @@ public final class MachineResponse {
 		downBoards = machine.getDeadBoards();
 		downLinks = machine.getDownLinks();
 
-		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
-		lookupByPhysicalBoard = b.build(MACH_BOARD_BY_PHYSICAL);
-		lookupByLogicalBoard = b.build(MACH_BOARD_BY_LOGICAL);
-		lookupByChip = b.build(MACH_BOARD_BY_CHIP);
-		lookupByAddress = b.build(MACH_BOARD_BY_ADDRESS);
+		if (ui != null) {
+			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
+			lookupByPhysicalBoard = b.build(MACH_BOARD_BY_PHYSICAL);
+			lookupByLogicalBoard = b.build(MACH_BOARD_BY_LOGICAL);
+			lookupByChip = b.build(MACH_BOARD_BY_CHIP);
+			lookupByAddress = b.build(MACH_BOARD_BY_ADDRESS);
+		} else {
+			lookupByPhysicalBoard = null;
+			lookupByLogicalBoard = null;
+			lookupByChip = null;
+			lookupByAddress = null;
+		}
 	}
 }

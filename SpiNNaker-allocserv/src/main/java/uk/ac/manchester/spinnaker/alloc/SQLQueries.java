@@ -29,6 +29,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  *
  * @author Donal Fellows
  */
+@SuppressWarnings("checkstyle:visibilitymodifier")
 public abstract class SQLQueries {
 	/** Get basic information about all machines. */
 	@ResultColumn("machine_id")

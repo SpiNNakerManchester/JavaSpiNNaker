@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.sqrt;
-import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -253,7 +252,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
 			DimensionEstimate estimate = new DimensionEstimate(numBoards);
-			return allocateDimensions(conn, jobId, machineId, estimate, maxDeadBoards);
+			return allocateDimensions(conn, jobId, machineId, estimate,
+					maxDeadBoards);
 		}
 
 		Integer width = (Integer) task.getObject("width");
@@ -501,121 +501,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 					numPending, jobId);
 
 			return numPending > 0;
-		}
-	}
-
-	/**
-	 * A mapping that says how to go from one board's coordinates (only the Z
-	 * coordinate matters for this) to another when you move in a particular
-	 * direction.
-	 *
-	 * <pre>
-	 *  ___     ___     ___     ___
-	 * / . \___/ . \___/ . \___/ . \___
-	 * \___/ . \___/ . \___/ . \___/ . \
-	 * /0,1\___/1,1\___/2,1\___/3,1\___/
-	 * \___/ . \___/ . \___/ . \___/ . \___
-	 *     \_2_/ . \___/ . \___/ . \___/ . \
-	 *     /0,0\_1_/1,0\___/2,0\___/3,0\___/
-	 *     \_0_/   \___/   \___/   \___/
-	 * </pre>
-	 *
-	 * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0
-	 * chips horizontally offset from 0,0,0; the hexagons are actually a
-	 * distorted shape. This is closer:
-	 * <pre>
-	 *    __     __     __     __
-	 *   /  |   /  |   /  |   /  |
-	 *  /   |__/   |__/   |__/   |__
-	 *  | 2 /  | 2 /  | 2 /  | 2 /  |
-	 *  |__/   |__/   |__/   |__/   |
-	 *  /  | 1 /  | 1 /  | 1 /  | 1 /
-	 * /0,1|__/1,1|__/2,1|__/3,1|__/
-	 * | 0 /  | 0 /  | 0 /  | 0 /  |
-	 * |__/   |__/   |__/   |__/   |__
-	 *    | 2 /  | 2 /  | 2 /  | 2 /  |
-	 *    |__/   |__/   |__/   |__/   |
-	 *    /  | 1 /  | 1 /  | 1 /  | 1 /
-	 *   /0,0|__/1,0|__/2,0|__/3,0|__/
-	 *   | 0 /  | 0 /  | 0 /  | 0 /
-	 *   |__/   |__/   |__/   |__/
-	 * </pre>
-	 *
-	 * @author Donal Fellows
-	 */
-	public final static class DirInfo {
-		/**
-		 * When your Z coordinate is this.
-		 */
-		public final int z;
-
-		/** When you are moving in this direction. */
-		public final Direction dir;
-
-		/** Change your X coordinate by this. */
-		public final int dx;
-
-		/** Change your Y coordinate by this. */
-		public final int dy;
-
-		/** Change your Z coordinate by this. */
-		public final int dz;
-
-		private static final Map<Integer, Map<Direction, DirInfo>> map =
-				new HashMap<>();
-
-		private DirInfo(int z, Direction d, int dx, int dy, int dz) {
-			this.z = z;
-			this.dir = requireNonNull(d);
-			this.dx = dx;
-			this.dy = dy;
-			this.dz = dz;
-
-			map.computeIfAbsent(z, key -> new HashMap<>()).put(d, this);
-		}
-
-		/**
-		 * Obtain the correct motion information given a starting point and a
-		 * direction.
-		 *
-		 * @param z
-		 *            The starting Z coordinate. (Motions are independent of X
-		 *            and Y.) Must be in range {@code 0..2}.
-		 * @param direction
-		 *            The direction to move in.
-		 * @return How to move.
-		 */
-		public static DirInfo get(int z, Direction direction) {
-			return map.get(z).get(direction);
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (!(o instanceof DirInfo)) {
-				return false;
-			}
-			DirInfo di = (DirInfo) o;
-			return z == di.z && dir == di.dir;
-		}
-
-		@Override
-		public int hashCode() {
-			return z ^ dir.hashCode();
-		}
-
-		private static void load(Connection conn) throws SQLException {
-			if (map.isEmpty()) {
-				try (Query di = query(conn, LOAD_DIR_INFO)) {
-					for (Row row : di.call()) {
-						new DirInfo(row.getInt("z"),
-								row.getEnum("direction", Direction.class),
-								row.getInt("dx"), row.getInt("dy"),
-								row.getInt("dz"));
-					}
-				}
-				log.info("created {} DirInfo instances",
-						map.values().stream().mapToInt(Map::size).sum());
-			}
 		}
 	}
 }

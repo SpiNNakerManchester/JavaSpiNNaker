@@ -77,9 +77,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	@Tag(name = T_TOP, description = "Operations at the service level"),
 	@Tag(name = T_MCH, description = "Operations on SpiNNaker machines"),
 	@Tag(name = T_JOB, description = "Operations on Spalloc jobs")
-},
-servers = @Server(url=SERV))
+}, servers = @Server(url = SERV))
 public interface SpallocServiceAPI {
+	/*
+	 * When adding to this interface, an operation should be implemented in an
+	 * asynchronous manner when it EITHER calls into the waitable epoch system,
+	 * OR if it is doing a database write AT ALL because acquiring a write lock
+	 * can take a while with SQLite if things are busy.
+	 *
+	 * That is not an exhaustive list of reasons; anything that causes a request
+	 * to wait for more than a millisecond is also a candidate.
+	 */
+
 	/**
 	 * Get a description of the overall service.
 	 *
@@ -515,7 +524,8 @@ public interface SpallocServiceAPI {
 		 *
 		 * @param req
 		 *            What to change to.
-		 * @return A wrapped {@link MachinePower}
+		 * @param response
+		 *            Filled out with a {@link MachinePower}.
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
@@ -525,13 +535,16 @@ public interface SpallocServiceAPI {
 			summary = "Set the job's power status",
 			parameters = @Parameter(in = PATH, name = ID,
 				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+				schema = @Schema(implementation = Integer.class)),
+			responses = @ApiResponse(content = @Content(schema = @Schema(
+					implementation = MachinePower.class))))
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
-		Response setMachinePower(
+		void setMachinePower(
 				@Description("What to set the power status to.")
-				MachinePower req) throws SQLException;
+				MachinePower req, @Suspended AsyncResponse response)
+						throws SQLException;
 
 		/**
 		 * Get the location description of a board given the job-local
@@ -565,7 +578,7 @@ public interface SpallocServiceAPI {
 }
 
 /**
- * Names of things used on documentation.
+ * Names of things used on Swagger documentation.
  *
  * @author Donal Fellows
  */
