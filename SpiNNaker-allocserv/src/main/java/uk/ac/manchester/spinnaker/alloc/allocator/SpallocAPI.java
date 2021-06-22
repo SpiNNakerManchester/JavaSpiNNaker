@@ -505,7 +505,7 @@ public interface SpallocAPI {
 		 *
 		 * @author Donal Fellows
 		 */
-		public final static class End {
+		public static final class End {
 			private End(BoardCoords board, Direction direction) {
 				this.board = board;
 				this.direction = direction;

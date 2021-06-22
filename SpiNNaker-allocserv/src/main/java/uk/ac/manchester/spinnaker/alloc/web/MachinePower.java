@@ -16,18 +16,32 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.requireNonNull;
+
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
 
+/**
+ * Describes the current state of power of the machine (or at least the portion
+ * of it allocated to a job), or a state that the user wants us to switch into.
+ *
+ * @author Donal Fellows
+ */
 public class MachinePower {
-
-	public PowerState power;
+	private PowerState power;
 
 	public MachinePower() {
-		// TODO remove this
+		power = PowerState.OFF;
 	}
 
 	public MachinePower(PowerState power) {
-		this.power = power;
+		this.power = requireNonNull(power);
 	}
 
+	public PowerState getPower() {
+		return power;
+	}
+
+	public void setPower(PowerState power) {
+		this.power = requireNonNull(power);
+	}
 }

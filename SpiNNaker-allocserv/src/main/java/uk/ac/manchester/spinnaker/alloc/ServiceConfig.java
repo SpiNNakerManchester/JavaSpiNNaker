@@ -93,6 +93,7 @@ public class ServiceConfig extends Application {
 	/**
 	 * Set up mapping of java.util.Instant to/from JSON. Critical!
 	 *
+	 * @return a configured JSON mapper
 	 * @see <a href="https://stackoverflow.com/q/38168507/301832">Stack
 	 *      Overflow</a>
 	 */
@@ -104,7 +105,7 @@ public class ServiceConfig extends Application {
 	}
 
 	/**
-	 * How we map between JSON and Java classes
+	 * How we map between JSON and Java classes.
 	 *
 	 * @param mapper
 	 *            The core mapper.

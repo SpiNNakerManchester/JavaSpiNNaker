@@ -96,7 +96,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
-	private static interface BackgroundAction {
+	private interface BackgroundAction {
 		/**
 		 * Does the action that produces the result.
 		 *
@@ -306,7 +306,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			public void setMachinePower(MachinePower reqBody,
 					AsyncResponse response) throws SQLException {
 				// Async because it involves getting a write lock
-				if (reqBody == null || reqBody.power == null) {
+				if (reqBody == null) {
 					throw new BadArgs("bad power description");
 				}
 				bgAction(response, () -> {
@@ -314,7 +314,7 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 					SubMachine m = j.getMachine().orElseThrow(
 							// No machine allocated yet
 							EmptyResponse::new);
-					m.setPower(reqBody.power);
+					m.setPower(reqBody.getPower());
 					return accepted().build();
 				});
 			}

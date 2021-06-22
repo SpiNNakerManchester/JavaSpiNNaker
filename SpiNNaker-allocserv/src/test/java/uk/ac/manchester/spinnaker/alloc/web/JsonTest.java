@@ -302,7 +302,7 @@ class JsonTest {
 		void testPowerRequest() throws IOException {
 			String obj = "{\"power\": \"ON\"}";
 			MachinePower mp = deserialize(obj, MachinePower.class);
-			assertEquals(ON, mp.power);
+			assertEquals(ON, mp.getPower());
 		}
 	}
 }

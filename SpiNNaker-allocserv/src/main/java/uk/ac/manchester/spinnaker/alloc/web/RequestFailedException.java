@@ -44,6 +44,7 @@ public class RequestFailedException extends RuntimeException {
 	private static final long serialVersionUID = -7522760691720854101L;
 
 	private final Status code;
+
 	private final String message;
 
 	public RequestFailedException(Status code, String message,
