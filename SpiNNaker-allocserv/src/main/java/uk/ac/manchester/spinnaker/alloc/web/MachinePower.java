@@ -23,7 +23,7 @@ public class MachinePower {
 	public PowerState power;
 
 	public MachinePower() {
-
+		// TODO remove this
 	}
 
 	public MachinePower(PowerState power) {

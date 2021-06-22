@@ -34,32 +34,48 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
 
-public class MachineResponse {
+/**
+ * The description of an individual machine.
+ *
+ * @author Donal Fellows
+ */
+public final class MachineResponse {
+	/** The name of the machine. */
 	public String name;
 
+	/** The tags of the machine. */
 	public List<String> tags;
 
+	/** The width of the machine, in triads. */
 	public int width;
 
+	/** The height of the machine, in triads. */
 	public int height;
 
+	/** The boards of the machine marked as down. */
 	public List<BoardCoords> downBoards;
 
+	/** The links of the machine marked as down. */
 	public List<SpallocAPI.DownLink> downLinks;
 
+	/** Where to look up a board by physical coordinates. */
 	@JsonInclude(NON_NULL)
 	public URI lookupByPhysicalBoard;
 
+	/** Where to look up a board by logical coordinates. */
 	@JsonInclude(NON_NULL)
 	public URI lookupByLogicalBoard;
 
+	/** Where to look up a board by global chip address. */
 	@JsonInclude(NON_NULL)
 	public URI lookupByChip;
 
+	/** Where to look up a board by its ethernet IP address. */
 	@JsonInclude(NON_NULL)
 	public URI lookupByAddress;
 
 	public MachineResponse() {
+		// TODO remove this
 	}
 
 	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui)

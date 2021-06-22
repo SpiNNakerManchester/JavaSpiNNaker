@@ -46,6 +46,8 @@ public class CreateJobRequest {
 	 * <li>A specific board, by X, Y, Z (<em>logical</em> coordinates).
 	 * </ol>
 	 */
+	// TODO: want to support create by XYZ, by CFB, and by board IP address
+	// There's really no need to stick to the limitations of the Python code
 	public List<Integer> dimensions;
 
 	/**

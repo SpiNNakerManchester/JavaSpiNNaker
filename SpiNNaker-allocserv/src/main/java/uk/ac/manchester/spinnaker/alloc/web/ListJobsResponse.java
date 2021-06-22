@@ -16,11 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -28,12 +28,18 @@ import javax.ws.rs.core.UriInfo;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 
-public class ListJobsResponse {
-	public List<URI> jobs = new ArrayList<>();
+/**
+ * The list of jobs.
+ *
+ * @author Donal Fellows
+ */
+public final class ListJobsResponse {
+	/** The list of jobs, by URI. Clients should not construct these by hand. */
+	public final List<URI> jobs;
 
-	public ListJobsResponse(Jobs jc, UriInfo ui) throws SQLException {
+	ListJobsResponse(Jobs jc, UriInfo ui) throws SQLException {
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
-		jobs = jc.ids().stream().map(id -> b.build(id))
-				.collect(toList());
+		jobs = unmodifiableList(
+				jc.ids().stream().map(id -> b.build(id)).collect(toList()));
 	}
 }

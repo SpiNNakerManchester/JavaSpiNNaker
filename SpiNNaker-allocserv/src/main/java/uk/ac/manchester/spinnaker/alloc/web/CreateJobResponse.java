@@ -26,13 +26,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 
+/**
+ * Describes a newly-created job.
+ *
+ * @author Donal Fellows
+ */
 public class CreateJobResponse {
+	/** The ID of the job. Probably should be ignored. */
 	public int jobId;
 
+	/** The link to the job. Clients should not make this themselves. */
 	@JsonInclude(NON_NULL)
 	public URI jobRef;
 
-	public CreateJobResponse(Spalloc.Job j, UriInfo ui) {
+	CreateJobResponse(Spalloc.Job j, UriInfo ui) {
 		jobId = j.getId();
 		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
 	}

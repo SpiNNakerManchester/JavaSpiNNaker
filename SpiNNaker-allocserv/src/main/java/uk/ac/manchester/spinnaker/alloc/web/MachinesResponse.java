@@ -38,13 +38,13 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
  *
  * @author Donal Fellows
  */
-public class MachinesResponse {
+public final class MachinesResponse {
 	/**
 	 * A brief, summary description of a machine.
 	 *
 	 * @author Donal Fellows
 	 */
-	public class BriefMachineDescription {
+	public final class BriefMachineDescription {
 		/** The name of the machine. */
 		public final String name;
 

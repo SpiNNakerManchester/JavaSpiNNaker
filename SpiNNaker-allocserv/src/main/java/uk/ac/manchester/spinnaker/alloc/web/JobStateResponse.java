@@ -75,6 +75,10 @@ public class JobStateResponse {
 	@JsonInclude(NON_NULL)
 	public final URI chipRef;
 
+	/**
+	 * The original request that created the job. Or at least the non-ignored
+	 * parts of it.
+	 */
 	@JsonInclude(NON_NULL)
 	public final CreateJobRequest originalRequest;
 

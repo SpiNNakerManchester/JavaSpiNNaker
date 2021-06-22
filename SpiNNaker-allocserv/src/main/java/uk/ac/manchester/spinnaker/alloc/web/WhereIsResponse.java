@@ -18,10 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
 import java.net.URI;
 import java.sql.SQLException;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,26 +41,42 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
  */
 @JsonInclude(NON_NULL)
 public class WhereIsResponse {
-	public Integer jobId;
+	/** The ID of the job using the board, or {@code null}/absent if none. */
+	public final Integer jobId;
 
-	public URI jobRef;
+	/** The URI to the job using the board, or {@code null}/absent if none. */
+	public final URI jobRef;
 
-	public ChipLocation jobChip;
+	/**
+	 * The location of the chip in the job using the board, or
+	 * {@code null}/absent if none.
+	 */
+	public final ChipLocation jobChip;
 
-	public ChipLocation chip;
+	/**
+	 * The location of the chip.
+	 */
+	public final ChipLocation chip;
 
-	public BoardCoordinates logicalBoardCoordinates;
+	/** The logical (triad) coordinates of the board. */
+	public final BoardCoordinates logicalBoardCoordinates;
 
-	public String machine;
+	/** The name of the machine. */
+	public final String machine;
 
-	public URI machineRef;
+	/** The URI to the machine. */
+	public final URI machineRef;
 
-	public ChipLocation boardChip;
+	/** The chip location of the board's root. */
+	public final ChipLocation boardChip;
 
-	public BoardPhysicalCoordinates physicalBoardCoordinates;
+	/** The physical (BMP+board) coordinates of the board. */
+	public final BoardPhysicalCoordinates physicalBoardCoordinates;
 
 	WhereIsResponse(BoardLocation location, UriInfo ui) throws SQLException {
+		UriBuilder minter = ui.getBaseUriBuilder().path("{major}/{minor}");
 		machine = location.getMachine();
+		machineRef = minter.build(MACH, machine);
 		chip = location.getChip();
 		boardChip = location.getBoardChip();
 		logicalBoardCoordinates = location.getLogical();
@@ -66,13 +84,13 @@ public class WhereIsResponse {
 		Job j = location.getJob();
 		if (j != null) {
 			jobId = j.getId();
-			jobRef = ui.getBaseUriBuilder().path(JOB + "/{id}").build(jobId);
+			jobRef = minter.build(JOB, jobId);
 			jobChip = j.getRootChip().map(rc -> location.getChipRelativeTo(rc))
 					.orElse(null);
+		} else {
+			jobId = null;
+			jobRef = null;
+			jobChip = null;
 		}
-	}
-
-	/** Constructor for testing and serialization engine only. */
-	public WhereIsResponse() {
 	}
 }
