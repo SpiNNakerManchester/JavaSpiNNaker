@@ -406,7 +406,8 @@ class DbTest extends SQLQueries {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(
 					set("req_id", "job_id", "num_boards", "width", "height",
-							"x", "y", "z", "machine_id", "max_dead_boards"),
+							"x", "y", "z", "machine_id", "max_dead_boards",
+							"max_height", "max_width"),
 					q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
 		}

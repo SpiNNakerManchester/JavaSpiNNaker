@@ -322,15 +322,21 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("machine_id")
 	@ResultColumn("max_dead_boards")
+	@ResultColumn("max_width")
+	@ResultColumn("max_height")
 	protected static final String GET_TASKS =
-			"SELECT job_request.req_id, job_request.job_id,"
-					+ "  job_request.num_boards,"
-					+ "  job_request.width, job_request.height,"
-					+ "  job_request.x, job_request.y, job_request.z,"
-					+ "  jobs.machine_id AS machine_id,"
-					+ "  job_request.max_dead_boards "
+			"SELECT job_request.req_id, job_request.job_id, "
+					+ "  job_request.num_boards, "
+					+ "  job_request.width, job_request.height, "
+					+ "  job_request.x, job_request.y, job_request.z, "
+					+ "  jobs.machine_id AS machine_id, "
+					+ "  job_request.max_dead_boards, "
+					+ "  machines.width AS max_width, "
+					+ "  machines.height AS max_height "
 					+ "FROM job_request JOIN jobs"
-					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
+					+ "  ON job_request.job_id = jobs.job_id "
+					+ "JOIN machines ON jobs.machine_id = machines.machine_id "
+					+ "ORDER BY req_id";
 
 	/** Delete an allocation task. */
 	@Parameter("request_id")
