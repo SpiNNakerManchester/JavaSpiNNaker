@@ -304,7 +304,7 @@ public interface SpallocAPI {
 	 *
 	 * @author Donal Fellows
 	 */
-	class BoardCoords {
+	final class BoardCoords {
 		/** Logical triad X coordinate. */
 		public final int x;
 
@@ -499,13 +499,13 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	@JsonFormat(shape = ARRAY)
-	class DownLink {
+	final class DownLink {
 		/**
 		 * Describes one end of a link that is disabled.
 		 *
 		 * @author Donal Fellows
 		 */
-		public static class End {
+		public final static class End {
 			private End(BoardCoords board, Direction direction) {
 				this.board = board;
 				this.direction = direction;

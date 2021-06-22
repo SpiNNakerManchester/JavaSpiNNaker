@@ -30,6 +30,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * @author Donal Fellows
  */
 public abstract class SQLQueries {
+	/** Get basic information about all machines. */
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
@@ -37,6 +38,7 @@ public abstract class SQLQueries {
 	protected static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height FROM machines";
 
+	/** Get basic information about a specific machine. Looks up by ID. */
 	@Parameter("machine_id")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
@@ -47,6 +49,7 @@ public abstract class SQLQueries {
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_id = :machine_id LIMIT 1";
 
+	/** Get basic information about a specific machine. Looks up by name. */
 	@Parameter("machine_name")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
@@ -57,6 +60,7 @@ public abstract class SQLQueries {
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_name = :machine_name LIMIT 1";
 
+	/** Get basic information about jobs. Supports paging. */
 	@Parameter("limit")
 	@Parameter("offset")
 	@ResultColumn("job_id")
@@ -68,6 +72,7 @@ public abstract class SQLQueries {
 					+ "FROM jobs ORDER BY job_id DESC "
 					+ "LIMIT :limit OFFSET :offset";
 
+	/** Get basic information about live jobs. Supports paging. */
 	@Parameter("limit")
 	@Parameter("offset")
 	@ResultColumn("job_id")
@@ -79,6 +84,7 @@ public abstract class SQLQueries {
 					+ "FROM jobs WHERE job_state != 4 " // DESTROYED
 					+ "ORDER BY job_id DESC LIMIT :limit OFFSET :offset";
 
+	/** Get basic information about a specific job. */
 	@Parameter("job_id")
 	@ResultColumn("machine_id")
 	@ResultColumn("width")
@@ -99,15 +105,17 @@ public abstract class SQLQueries {
 					+ "death_reason, death_timestamp, original_request "
 					+ "FROM jobs WHERE job_id = :job_id LIMIT 1";
 
+	/** Get what boards are allocated to a job (that is queued or ready). */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	protected static final String GET_JOB_BOARDS =
 			"SELECT board_id FROM boards JOIN jobs "
 					+ "ON boards.allocated_job = jobs.job_id "
 					+ "WHERE boards.allocated_job = :job_id "
+					// job is QUEUED or READY
 					+ "AND (jobs.job_state IN (1, 3))";
-	// QUEUED or READY
 
+	/** Get the coordinates of the root chip of a board. */
 	@Parameter("board_id")
 	@ResultColumn("root_x")
 	@ResultColumn("root_y")
@@ -116,6 +124,7 @@ public abstract class SQLQueries {
 			"SELECT root_x, root_y FROM boards WHERE board_id = :board_id "
 					+ "LIMIT 1";
 
+	/** Create a job. */
 	@Parameter("machine_id")
 	@Parameter("owner")
 	@Parameter("keepalive_interval")
@@ -128,6 +137,7 @@ public abstract class SQLQueries {
 			+ ":original_request, strftime('%s','now'), strftime('%s','now'), "
 			+ /* QUEUED */ "1)";
 
+	/** Create a request to allocate a number of boards. */
 	@Parameter("job_id")
 	@Parameter("num_boards")
 	@Parameter("max_dead_boards")
@@ -136,6 +146,7 @@ public abstract class SQLQueries {
 			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
 					+ "VALUES (:job_id, :num_boards, :max_dead_boards)";
 
+	/** Create a request to allocate a rectangle of boards. */
 	@Parameter("job_id")
 	@Parameter("width")
 	@Parameter("height")
@@ -145,6 +156,7 @@ public abstract class SQLQueries {
 			"INSERT INTO job_request(job_id, width, height, max_dead_boards) "
 					+ "VALUES (:job_id, :width, :height, :max_dead_boards)";
 
+	/** Create a request to allocate a specific board. */
 	@Parameter("job_id")
 	@Parameter("x")
 	@Parameter("y")
@@ -154,6 +166,7 @@ public abstract class SQLQueries {
 			"INSERT INTO job_request(job_id, x, y, z) "
 					+ "VALUES (:job_id, :x, :y, :z)";
 
+	/** Get the address of the BMP of the root board of the machine. */
 	@Parameter("machine_id")
 	@ResultColumn("address")
 	@SingleRowResult
@@ -163,6 +176,9 @@ public abstract class SQLQueries {
 					+ "boards.machine_id = :machine_id "
 					+ "AND boards.x = 0 AND boards.y = 0 LIMIT 1";
 
+	/**
+	 * Get the boards of a machine that can be used. Excludes disabled boards.
+	 */
 	@Parameter("machine_id")
 	@ResultColumn("board_num")
 	protected static final String GET_BOARD_NUMBERS =
@@ -170,6 +186,9 @@ public abstract class SQLQueries {
 					+ "AND (functioning IS NULL OR functioning != 0) "
 					+ "ORDER BY board_num ASC";
 
+	/**
+	 * Get the boards (and related info) of a machine that have been disabled.
+	 */
 	@Parameter("machine_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
@@ -184,6 +203,8 @@ public abstract class SQLQueries {
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND functioning IS 0 ORDER BY z ASC, x ASC, y ASC";
 
+	/** Get the links of a machine that have been disabled. */
+	// TODO Move this to its own file; it's a bit too complicated
 	@Parameter("machine_id")
 	@ResultColumn("board_1_x")
 	@ResultColumn("board_1_y")
@@ -218,17 +239,26 @@ public abstract class SQLQueries {
 					+ "WHERE b1.machine_id = :machine_id AND NOT live "
 					+ "ORDER BY board_1 ASC, board_2 ASC";
 
+	/** Get the boards that are available for allocation. */
 	@Parameter("machine_id")
 	@ResultColumn("board_num")
 	protected static final String GET_AVAILABLE_BOARD_NUMBERS =
-			"SELECT board_num FROM boards WHERE machine_id = :machine_id "
-					+ "AND may_be_allocated " + "ORDER BY board_num ASC";
+			"SELECT board_num FROM boards "
+					+ "WHERE machine_id = :machine_id AND may_be_allocated "
+					+ "ORDER BY board_num ASC";
 
+	/**
+	 * Get a machine's tags. Theoretically when selecting a machine by tags we
+	 * should put the query in the DB, but it is awkward to move a list into SQL
+	 * as part of a query and we don't really ever have that many machines or
+	 * tags. So we just pull the collection of tags and do the match in Java.
+	 */
 	@Parameter("machine_id")
 	@ResultColumn("tag")
 	protected static final String GET_TAGS =
 			"SELECT tag FROM tags WHERE machine_id = :machine_id";
 
+	/** Update the keepalive timestamp. */
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE =
@@ -236,12 +266,17 @@ public abstract class SQLQueries {
 					+ "keepalive_host = :keepalive_host WHERE job_id = :job_id "
 					+ "AND job_state != 4"; // DESTROYED
 
+	/** Mark a job as dead. */
 	@Parameter("death_reason")
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB =
 			"UPDATE jobs SET job_state = 4, death_reason = :death_reason "
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
+	/**
+	 * Get the number of boards that are allocated to a job that are switched
+	 * on.
+	 */
 	@Parameter("job_id")
 	@ResultColumn("total_on")
 	@SingleRowResult
@@ -249,6 +284,7 @@ public abstract class SQLQueries {
 			"SELECT sum(board_power) AS total_on FROM boards "
 					+ "WHERE allocated_job = :job_id";
 
+	/** Get connection info for board allocated to a job. */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	@ResultColumn("address")
@@ -262,6 +298,7 @@ public abstract class SQLQueries {
 					+ "FROM boards WHERE allocated_job = :job_id "
 					+ "ORDER BY x ASC, y ASC";
 
+	/** Get the coordinates of a board. */
 	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
@@ -273,7 +310,7 @@ public abstract class SQLQueries {
 			"SELECT x, y, z, root_x, root_y FROM boards "
 					+ "WHERE board_id = :board_id LIMIT 1";
 
-	/** How we get the list of allocation tasks. */
+	/** Get the list of allocation tasks. */
 	@ResultColumn("req_id")
 	@ResultColumn("job_id")
 	@ResultColumn("num_boards")
@@ -294,12 +331,12 @@ public abstract class SQLQueries {
 					+ "FROM job_request JOIN jobs"
 					+ "  ON job_request.job_id = jobs.job_id ORDER BY req_id";
 
-	/** How we delete an allocation task. */
+	/** Delete an allocation task. */
 	@Parameter("request_id")
 	protected static final String DELETE_TASK =
 			"DELETE FROM job_request WHERE req_id = :request_id";
 
-	/** How do we find a single free board. */
+	/** Find a single free board. */
 	@Parameter("machine_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
@@ -311,7 +348,7 @@ public abstract class SQLQueries {
 					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
 
 	/**
-	 * How we tell a job that it is allocated. Doesn't set the state.
+	 * Tell a job that it is allocated. Doesn't set the state.
 	 *
 	 * @see #SET_STATE_PENDING
 	 */
@@ -337,19 +374,24 @@ public abstract class SQLQueries {
 					+ "AND x = :x AND y = :y AND z = :z "
 					+ "AND may_be_allocated LIMIT 1";
 
-	/** How we tell a board that it is allocated. */
+	/** Tell a board that it is allocated. */
 	@Parameter("job_id")
 	@Parameter("board_id")
 	protected static final String ALLOCATE_BOARDS_BOARD =
 			"UPDATE boards SET allocated_job = :job_id "
 					+ "WHERE board_id = :board_id";
 
+	/**
+	 * Set the power state of a board. Related timestamps are updated by
+	 * trigger.
+	 */
 	@Parameter("board_power")
 	@Parameter("board_id")
 	protected static final String SET_BOARD_POWER =
 			"UPDATE boards SET board_power = :board_power "
 					+ "WHERE board_id = :board_id";
 
+	/** Find jobs that have expired their keepalive interval. */
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
 			"SELECT job_id FROM jobs " //
@@ -357,7 +399,7 @@ public abstract class SQLQueries {
 					+ "AND keepalive_timestamp + keepalive_interval < "
 					+ "strftime('%s','now')";
 
-	/** How we set the state and number of pending changes for a job. */
+	/** Set the state and number of pending changes for a job. */
 	@Parameter("job_state")
 	@Parameter("num_pending")
 	@Parameter("job_id")
@@ -365,21 +407,25 @@ public abstract class SQLQueries {
 			"UPDATE jobs SET job_state = :job_state, "
 					+ "num_pending = :num_pending WHERE job_id = :job_id";
 
+	/** Delete a request to allocate resources for a job. */
 	@Parameter("job_id")
 	protected static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = :job_id";
 
+	/** Delete a request to change the power of boards allocated to a job. */
 	@Parameter("job_id")
 	protected static final String KILL_JOB_PENDING =
 			"DELETE FROM pending_changes WHERE job_id = :job_id";
 
+	/**
+	 * Delete a request to change the power of a board. Used once the change has
+	 * been completed.
+	 */
 	@Parameter("change_id")
 	protected static final String FINISHED_PENDING =
 			"DELETE FROM pending_changes WHERE change_id = :change_id";
 
-	/**
-	 * Get descriptions of how to move from a board to its neighbours.
-	 */
+	/** Get descriptions of how to move from a board to its neighbours. */
 	@ResultColumn("z")
 	@ResultColumn("direction")
 	@ResultColumn("dx")
@@ -388,11 +434,19 @@ public abstract class SQLQueries {
 	protected static final String LOAD_DIR_INFO =
 			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
+	/**
+	 * Get how many requests to change the power state of a board are currently
+	 * waiting to be processed.
+	 */
 	@ResultColumn("c")
 	@SingleRowResult
 	protected static final String COUNT_PENDING_CHANGES =
 			"SELECT count(*) AS c FROM pending_changes";
 
+	/**
+	 * Get the requests (not already being processed) to change the power of a
+	 * board allocated to a job.
+	 */
 	@Parameter("job_id")
 	@ResultColumn("change_id")
 	@ResultColumn("job_id")
@@ -410,6 +464,10 @@ public abstract class SQLQueries {
 	protected static final String GET_CHANGES = "SELECT * FROM pending_changes "
 			+ "WHERE job_id = :job_id AND NOT in_progress";
 
+	/**
+	 * Set the progress status of a request to change the power state of a
+	 * board.
+	 */
 	@Parameter("in_progress")
 	@Parameter("change_id")
 	protected static final String SET_IN_PROGRESS =
@@ -418,6 +476,11 @@ public abstract class SQLQueries {
 
 	// SQL loaded from files because it is too complicated otherwise!
 
+	/**
+	 * Find a rectangle of triads of boards that may be allocated. The
+	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable
+	 * resources to be made within the rectangle.
+	 */
 	@Parameter("width")
 	@Parameter("height")
 	@Parameter("machine_id")
@@ -430,6 +493,7 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_rectangle.sql")
 	protected Resource findRectangle;
 
+	/** Find an allocatable board at a specific physical location. */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
 	@Parameter("frame")
@@ -441,6 +505,7 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_location.sql")
 	protected Resource findLocation;
 
+	/** Create a request to change the power status of a board. */
 	@Parameter("job_id")
 	@Parameter("board_id")
 	@Parameter("from_state")
@@ -456,6 +521,15 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/issue_change_for_job.sql")
 	protected Resource issueChangeForJob;
 
+	/**
+	 * Count the number of <em>connected</em> boards (i.e., have at least one
+	 * path over enabled links to the root board of the allocation) within a
+	 * rectangle.
+	 * <p>
+	 * Ideally this would be part of {@link #findRectangle}, but both that query
+	 * and this one are entirely complicated enough already! Also, we don't
+	 * expect to have this query reject many candidate allocations.
+	 */
 	@Parameter("machine_id")
 	@Parameter("x")
 	@Parameter("y")
@@ -466,12 +540,22 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/allocation_connected.sql")
 	protected Resource countConnected;
 
+	/**
+	 * Get the links on the perimeter of the allocation to a job. The perimeter
+	 * is defined as being the links between a board that is part of the
+	 * allocation and a board that is not; it's <em>not</em> a geometric
+	 * definition, but rather a relational algebraic one.
+	 */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
 	@ResultColumn("direction")
 	@Value("classpath:queries/perimeter.sql")
 	protected Resource getPerimeterLinks;
 
+	/**
+	 * Locate a board (using a full set of coordinates) based on global chip
+	 * coordinates.
+	 */
 	@Parameter("machine_id")
 	@Parameter("chip_x")
 	@Parameter("chip_y")
@@ -496,6 +580,10 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_board_by_global_chip.sql")
 	protected Resource findBoardByGlobalChip;
 
+	/**
+	 * Locate a board (using a full set of coordinates) based on
+	 * allocation-local chip coordinates.
+	 */
 	@Parameter("job_id")
 	@Parameter("root_board_id")
 	@Parameter("chip_x")
@@ -518,6 +606,10 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_board_by_job_chip.sql")
 	protected Resource findBoardByJobChip;
 
+	/**
+	 * Locate a board (using a full set of coordinates) based on logical triad
+	 * coordinates.
+	 */
 	@Parameter("machine_id")
 	@Parameter("x")
 	@Parameter("y")
@@ -541,6 +633,10 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_board_by_logical_coords.sql")
 	protected Resource findBoardByLogicalCoords;
 
+	/**
+	 * Locate a board (using a full set of coordinates) based on physical
+	 * cabinet-frame-board coordinates.
+	 */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
 	@Parameter("frame")
@@ -564,6 +660,10 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_board_by_physical_coords.sql")
 	protected Resource findBoardByPhysicalCoords;
 
+	/**
+	 * Locate a board (using a full set of coordinates) based on the IP address
+	 * of its ethernet chip.
+	 */
 	@Parameter("machine_id")
 	@Parameter("address")
 	@ResultColumn("board_id")
@@ -585,6 +685,10 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_board_by_ip_address.sql")
 	protected Resource findBoardByIPAddress;
 
+	/**
+	 * Get jobs on a machine that have changes that can be processed. (A policy
+	 * of how long after switching a board on or off is applied.)
+	 */
 	@Parameter("machine_id")
 	@Parameter("on_delay")
 	@Parameter("off_delay")
@@ -592,6 +696,11 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;
 
+	/**
+	 * Get the set of boards at some coordinates within a triad rectangle that
+	 * are connected (i.e., have at least one path over enableable links) to the
+	 * root board.
+	 */
 	@Parameter("machine_id")
 	@Parameter("x")
 	@Parameter("y")
