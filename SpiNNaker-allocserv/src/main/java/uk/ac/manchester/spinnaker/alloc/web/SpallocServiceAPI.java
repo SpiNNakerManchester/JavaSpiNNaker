@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
@@ -29,14 +32,15 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.CHIP_X;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.CHIP_Y;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.ID;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.NAME;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_JOB;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_MCH;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.T_TOP;
-import static uk.ac.manchester.spinnaker.alloc.web.WebServiceConstants.WAIT;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.NAME;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
+
+import java.sql.SQLException;
+
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -74,7 +78,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	@Tag(name = T_MCH, description = "Operations on SpiNNaker machines"),
 	@Tag(name = T_JOB, description = "Operations on Spalloc jobs")
 },
-servers = @Server(url="spalloc"))
+servers = @Server(url=SERV))
 public interface SpallocServiceAPI {
 	/**
 	 * Get a description of the overall service.
@@ -82,6 +86,8 @@ public interface SpallocServiceAPI {
 	 * @param ui
 	 *            How to build URIs
 	 * @return A wrapped {@link ServiceDescription}
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("Get a description of the overall service.")
@@ -90,7 +96,7 @@ public interface SpallocServiceAPI {
 			summary = "Describe the overall service",
 			description = "Get a description of the overall service.")
 	@Produces(APPLICATION_JSON)
-	ServiceDescription describeService(@Context UriInfo ui);
+	ServiceDescription describeService(@Context UriInfo ui) throws SQLException;
 
 	/**
 	 * Get a description of the machines.
@@ -98,6 +104,8 @@ public interface SpallocServiceAPI {
 	 * @param ui
 	 *            How to build URIs
 	 * @return A list of machines
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("Get a description of the machines.")
@@ -109,7 +117,7 @@ public interface SpallocServiceAPI {
 					+ "number of machines expected to be small.")
 	@Path(MACH)
 	@Produces(APPLICATION_JSON)
-	MachinesResponse getMachines(@Context UriInfo ui);
+	MachinesResponse getMachines(@Context UriInfo ui) throws SQLException;
 	// No paging; not expecting very many!
 
 	/**
@@ -120,13 +128,15 @@ public interface SpallocServiceAPI {
 	 * @param ui
 	 *            How to build URIs
 	 * @return The sub-resource
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@Path(MACH + "/{name}")
 	@Description("Operations on a specific machine.")
 	MachineAPI getMachine(
 			@Description("The name of the machine.")
 			@PathParam(NAME) String name,
-			@Context UriInfo ui);
+			@Context UriInfo ui) throws SQLException;
 
 	/**
 	 * List jobs.
@@ -143,6 +153,8 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @param response
 	 *            Filled out with a {@link ListJobsResponse}
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("List the jobs.")
@@ -167,7 +179,8 @@ public interface SpallocServiceAPI {
 			@QueryParam("limit") @DefaultValue("100") int limit,
 			@Description("Paging support: offset to start at.")
 			@QueryParam("start") @DefaultValue("0") int start,
-			@Context UriInfo ui, @Suspended AsyncResponse response);
+			@Context UriInfo ui, @Suspended AsyncResponse response)
+					throws SQLException;
 
 	/**
 	 * Create a job.
@@ -178,6 +191,8 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @param response
 	 *            Filled out with a {@link CreateJobResponse}
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@POST
 	@Description("Create a new job.")
@@ -193,7 +208,8 @@ public interface SpallocServiceAPI {
 	void createJob(
 			@Description("What sort of job should be created?")
 			CreateJobRequest req,
-			@Context UriInfo ui, @Suspended AsyncResponse response);
+			@Context UriInfo ui, @Suspended AsyncResponse response)
+					throws SQLException;
 
 	/**
 	 * Get a sub-resource for managing a job.
@@ -205,13 +221,16 @@ public interface SpallocServiceAPI {
 	 * @param request
 	 *            Information about the request
 	 * @return The sub-resource
+	 * @throws SQLException
+	 *             If anything goes wrong.
 	 */
 	@Description("Operations on a specific job.")
 	@Operation(tags = T_JOB)
 	@Path(JOB + "/{id}")
 	@Produces(APPLICATION_JSON)
 	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
-			@Context UriInfo ui, @Context HttpServletRequest request);
+			@Context UriInfo ui, @Context HttpServletRequest request)
+					throws SQLException;
 
 	/**
 	 * Interface to a particular machine.
@@ -227,6 +246,8 @@ public interface SpallocServiceAPI {
 		 *            Whether to wait for a change.
 		 * @param response
 		 *            Filled out with a {@link MachineResponse}
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
@@ -249,7 +270,7 @@ public interface SpallocServiceAPI {
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Suspended AsyncResponse response);
+				@Suspended AsyncResponse response) throws SQLException;
 
 		/**
 		 * Get the location description of a board given its logical coords.
@@ -261,6 +282,8 @@ public interface SpallocServiceAPI {
 		 * @param z
 		 *            Logical Z coordinate (deprecated).
 		 * @return A board location description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description(
@@ -280,7 +303,7 @@ public interface SpallocServiceAPI {
 				@Description("Triad Y coordinate")
 				@QueryParam("y") @DefaultValue("0") int y,
 				@Description("Triad Z (internal member select) coordinate")
-				@QueryParam("z") @DefaultValue("0") int z);
+				@QueryParam("z") @DefaultValue("0") int z) throws SQLException;
 
 		/**
 		 * Get the location description of a board given its physical coords.
@@ -292,6 +315,8 @@ public interface SpallocServiceAPI {
 		 * @param board
 		 *            Board number
 		 * @return A board location description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description(
@@ -309,7 +334,8 @@ public interface SpallocServiceAPI {
 				@Description("Frame number")
 				@QueryParam("frame") @DefaultValue("0") int frame,
 				@Description("Board number")
-				@QueryParam("board") @DefaultValue("0") int board);
+				@QueryParam("board") @DefaultValue("0") int board)
+						throws SQLException;
 
 		/**
 		 * Get the location description of a board given the global coordinates
@@ -320,6 +346,8 @@ public interface SpallocServiceAPI {
 		 * @param y
 		 *            Global chip Y coordinate
 		 * @return A board location description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description(
@@ -335,7 +363,8 @@ public interface SpallocServiceAPI {
 				@Description("Global chip X coordinate")
 				@QueryParam(CHIP_X) @DefaultValue("0") int x,
 				@Description("Global chip Y coordinate")
-				@QueryParam(CHIP_Y) @DefaultValue("0") int y);
+				@QueryParam(CHIP_Y) @DefaultValue("0") int y)
+						throws SQLException;
 
 		/**
 		 * Get the location description of a board given its ethernet chip's IP
@@ -344,6 +373,8 @@ public interface SpallocServiceAPI {
 		 * @param address
 		 *            IP address
 		 * @return A board location description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Map from IP address to a description of a board.")
@@ -358,7 +389,8 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsIPAddress(
 				@Description("Ethernet chip IP address")
-				@QueryParam("address") @DefaultValue("0.0.0.0") String address);
+				@QueryParam("address") @DefaultValue("0.0.0.0") String address)
+						throws SQLException;
 	}
 
 	/**
@@ -375,6 +407,8 @@ public interface SpallocServiceAPI {
 		 *            Whether to wait for a change.
 		 * @param response
 		 *            Filled out with a {@link JobStateResponse}
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
@@ -392,7 +426,7 @@ public interface SpallocServiceAPI {
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Suspended AsyncResponse response);
+				@Suspended AsyncResponse response) throws SQLException;
 
 		/**
 		 * Keep the job alive.
@@ -400,6 +434,8 @@ public interface SpallocServiceAPI {
 		 * @param req
 		 *            Arbitrary ignored text
 		 * @return A constant response
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@PUT
 		@Description("Keep the job alive. Must be called regularly.")
@@ -411,7 +447,8 @@ public interface SpallocServiceAPI {
 		@Path(JOB_KEEPALIVE)
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
-		String keepAlive(@Description("Arbitrary string; ignored") String req);
+		String keepAlive(@Description("Arbitrary string; ignored") String req)
+				throws SQLException;
 
 		/**
 		 * Delete the job, or at least mark it as destroyed.
@@ -419,6 +456,8 @@ public interface SpallocServiceAPI {
 		 * @param reason
 		 *            Why the job is destroyed
 		 * @return No content
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@DELETE
 		@Description("Delete a job.")
@@ -431,12 +470,15 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		Response deleteJob(
 				@Description("Some indication of why the delete is being done.")
-				@QueryParam("reason") @DefaultValue("") String reason);
+				@QueryParam("reason") @DefaultValue("") String reason)
+						throws SQLException;
 
 		/**
 		 * Get a description of the (sub-)machine of the job.
 		 *
 		 * @return An allocated sub-machine description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Describe a job's machine allocation.")
@@ -447,12 +489,14 @@ public interface SpallocServiceAPI {
 				schema = @Schema(implementation = Integer.class)))
 		@Path(JOB_MACHINE)
 		@Produces(APPLICATION_JSON)
-		SubMachineResponse getMachine();
+		SubMachineResponse getMachine() throws SQLException;
 
 		/**
 		 * Get the current power state of the job's sub-machine.
 		 *
 		 * @return A power descriptor
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Get the power status of a job.")
@@ -463,7 +507,7 @@ public interface SpallocServiceAPI {
 				schema = @Schema(implementation = Integer.class)))
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Produces(APPLICATION_JSON)
-		MachinePower getMachinePower();
+		MachinePower getMachinePower() throws SQLException;
 
 		/**
 		 * Set the power state of the job's sub-machine. Note that the actual
@@ -472,6 +516,8 @@ public interface SpallocServiceAPI {
 		 * @param req
 		 *            What to change to.
 		 * @return A wrapped {@link MachinePower}
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@POST
 		@Description("Set the power status of a job.")
@@ -485,7 +531,7 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		Response setMachinePower(
 				@Description("What to set the power status to.")
-				MachinePower req);
+				MachinePower req) throws SQLException;
 
 		/**
 		 * Get the location description of a board given the job-local
@@ -496,6 +542,8 @@ public interface SpallocServiceAPI {
 		 * @param y
 		 *            Chip Y coordinate
 		 * @return A board location description
+		 * @throws SQLException
+		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description(
@@ -511,27 +559,26 @@ public interface SpallocServiceAPI {
 				@Description("X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") int x,
 				@Description("Y coordinate of chip within job's allocation.")
-				@QueryParam(CHIP_Y) @DefaultValue("0") int y);
+				@QueryParam(CHIP_Y) @DefaultValue("0") int y)
+						throws SQLException;
 	}
 }
 
-abstract class WebServiceConstants {
-	private WebServiceConstants() {
+/**
+ * Names of things used on documentation.
+ *
+ * @author Donal Fellows
+ */
+abstract class DocConstants {
+	private DocConstants() {
 	}
 
+	/** Summary section tag. */
 	static final String T_TOP = "Spalloc Service Summary";
 
+	/** Jobs section tag. */
 	static final String T_JOB = "SpiNNaker Jobs";
 
+	/** Machines section tag. */
 	static final String T_MCH = "SpiNNaker Machines";
-
-	static final String WAIT = "wait";
-
-	static final String ID = "id";
-
-	static final String NAME = "name";
-
-	static final String CHIP_X = "x";
-
-	static final String CHIP_Y = "y";
 }

@@ -20,6 +20,8 @@ import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
 import static java.util.Objects.requireNonNull;
+import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
@@ -48,6 +50,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1265,5 +1270,28 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static Update update(Connection conn, Resource sqlResource)
 			throws SQLException {
 		return new Update(conn, readSQL(sqlResource));
+	}
+
+	/**
+	 * Handler for {@link SQLException}.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Component
+	@Provider
+	public static class SQLExceptionMapper
+			implements ExceptionMapper<SQLException> {
+		@Value("${sqlite.throwExceptionDetail:true}") // TODO turn off in prod
+		private boolean throwDetail;
+
+		@Override
+		public Response toResponse(SQLException exception) {
+			log.warn("uncaught SQL exception", exception);
+			if (throwDetail) {
+				return status(INTERNAL_SERVER_ERROR)
+						.entity("failed: " + exception.getMessage()).build();
+			}
+			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
+		}
 	}
 }

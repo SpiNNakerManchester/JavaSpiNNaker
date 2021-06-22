@@ -22,15 +22,51 @@ package uk.ac.manchester.spinnaker.alloc.web;
  * @author Donal Fellows
  */
 public interface WebServiceComponentNames {
+	/** The overall service name in URL space. */
+	String SERV = "spalloc";
+
+	/** The machine resource name component. */
 	String MACH = "machines";
+
+	/** The machine logical board resource name component. */
 	String MACH_BOARD_BY_LOGICAL = "logical-board";
+
+	/** The machine physical board resource name component. */
 	String MACH_BOARD_BY_PHYSICAL = "physical-board";
+
+	/** The machine chip resource name component. */
 	String MACH_BOARD_BY_CHIP = "chip";
+
+	/** The machine board IP address resource name component. */
 	String MACH_BOARD_BY_ADDRESS = "board-ip";
 
+	/** The job resource name component. */
 	String JOB = "jobs";
+
+	/** The job keep-alive resource name component. */
 	String JOB_KEEPALIVE = "keepalive";
+
+	/** The job machine resource name component. */
 	String JOB_MACHINE = "machine";
+
+	/** The job power resource name component. */
 	String JOB_MACHINE_POWER = "power";
+
+	/** The job board-by-chip resource name component. */
 	String JOB_BOARD_BY_CHIP = "chip";
+
+	/** The wait-for-change query parameter name. */
+	String WAIT = "wait";
+
+	/** The ID path parameter name. */
+	String ID = "id";
+
+	/** The name path parameter name. */
+	String NAME = "name";
+
+	/** The X coordinate query parameter name. */
+	String CHIP_X = "x";
+
+	/** The Y coordinate query parameter name. */
+	String CHIP_Y = "y";
 }
