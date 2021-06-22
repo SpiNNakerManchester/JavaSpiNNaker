@@ -57,7 +57,8 @@ public class RouterDiagnostics {
 	 */
 	public final int[] registerValues;
 
-	private static final int NUM_REGISTERS = 16;
+	/** The number of registers in the router. */
+	public static final int NUM_REGISTERS = 16;
 
 	private static final int NUM_USER_CONTROL_REGISTERS = 4;
 

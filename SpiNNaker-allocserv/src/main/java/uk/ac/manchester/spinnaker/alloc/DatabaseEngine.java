@@ -320,7 +320,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Create an engine interface for a particular database.
+	 * Create an engine interface for a particular database. This constructor
+	 * assumes that it is being called by Spring.
 	 *
 	 * @param dbFile
 	 *            The file containing the database.
@@ -328,7 +329,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Autowired
 	public DatabaseEngine(
 			@Value("${databasePath:spalloc.sqlite3}") File dbFile) {
-		// We don't support :memory:
 		dbPath = requireNonNull(dbFile, "a database file must be given")
 				.getAbsoluteFile().toPath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
@@ -337,10 +337,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/**
 	 * Create an engine interface for an in-memory database. This is intended
-	 * for testing purposes.
+	 * mainly for testing purposes. Note that various coupled automatic services
+	 * are disabled, in particular connections are not closed automatically.
 	 *
 	 * @param prototype
-	 *            Used to initialise fields normally set by injection.
+	 *            Used to initialise fields normally set by injection. Must not
+	 *            be {@code null}.
 	 */
 	public DatabaseEngine(DatabaseEngine prototype) {
 		dbPath = null;
@@ -427,11 +429,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * be passed to other threads. They should get their own connections
 	 * instead.
 	 * <p>
-	 * Note that if an in-memory database is used (see
-	 * {@link #DatabaseEngine(Memory)}, that DB can <em>only</em> be accessed
-	 * from the connection returned from this method; the next call to this
-	 * method (whether from the current thread or another one) will get an
-	 * independent database.
+	 * Note that if an in-memory database is used (see the
+	 * {@linkplain #DatabaseEngine(DatabaseEngine) alternate constructor}, that
+	 * DB can <em>only</em> be accessed from the connection returned from this
+	 * method; the next call to this method (whether from the current thread or
+	 * another one) will get an independent database.
 	 *
 	 * @return A configured initialised connection to the database.
 	 * @throws SQLException
