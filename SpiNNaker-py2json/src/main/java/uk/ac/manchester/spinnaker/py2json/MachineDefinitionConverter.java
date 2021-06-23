@@ -43,11 +43,15 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class MachineDefinitionConverter implements AutoCloseable {
-	public static class XYZ {
+	/** Triad coordinates. */
+	public static final class XYZ {
+		/** X coordinate. */
 		public final int x;
 
+		/** Y coordinate. */
 		public final int y;
 
+		/** Z coordinate. */
 		public final int z;
 
 		public XYZ(int x, int y, int z) {
@@ -83,9 +87,12 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		}
 	}
 
-	public static class CF {
+	/** Frame/BMP coordinates. */
+	public static final class CF {
+		/** Cabinet number. */
 		public final int c;
 
+		/** Frame number. */
 		public final int f;
 
 		public CF(int c, int f) {
@@ -119,11 +126,15 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		}
 	}
 
-	public static class CFB {
+	/** Physical board coordinates. */
+	public static final class CFB {
+		/** Cabinet number. */
 		public final int c;
 
+		/** Frame number. */
 		public final int f;
 
+		/** Board number. */
 		public final int b;
 
 		public CFB(int c, int f, int b) {
@@ -163,26 +174,40 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		east, northEast, north, west, southWest, south
 	}
 
-	public static class Machine {
+	public static final class Machine {
+		/** The name of the machine. */
 		public final String name;
 
+		/** The tags of the machine. */
 		public final Set<String> tags;
 
+		/** The width of the machine, in triads. */
 		public final int width;
 
+		/** The height of the machine, in triads. */
 		public final int height;
 
+		/** The dead boards of the machine. */
 		public final Set<XYZ> deadBoards;
 
+		/**
+		 * The extra dead links of the machine. Doesn't include links to dead
+		 * boards.
+		 */
 		public final Map<XYZ, EnumSet<Link>> deadLinks;
 
+		/** The logical-to-physical board location map. */
 		public final Map<XYZ, CFB> boardLocations;
 
+		/** The IP addresses of the BMPs. */
 		@JsonProperty("bmp-ips")
 		public final Map<CF, String> bmpIPs;
 
+		/** The IP addresses of the boards. */
 		@JsonProperty("spinnaker-ips")
 		public final Map<XYZ, String> spinnakerIPs;
+
+		private static final int IDX = 3;
 
 		private Machine(PyObject machine) {
 			name = getattr(machine, "name").asString();
@@ -192,7 +217,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 			deadBoards = toSet(getattr(machine, "dead_boards"), XYZ::new);
 			deadLinks = toCollectingMap(getattr(machine, "dead_links"),
 					XYZ::new, ignored -> EnumSet.noneOf(Link.class),
-					key -> Link.values()[item(key, 3).asInt()]);
+					key -> Link.values()[item(key, IDX).asInt()]);
 			boardLocations = toMap(getattr(machine, "board_locations"),
 					XYZ::new, CFB::new);
 			bmpIPs = toMap(getattr(machine, "bmp_ips"), CF::new,
@@ -216,17 +241,26 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		}
 	}
 
-	public static class Configuration {
+	public static final class Configuration {
+		/** The machines to manage. */
 		public final List<Machine> machines;
 
+		/** The port for the service to listen on. */
 		public final int port;
 
+		/**
+		 * The host address for the service to listen on. Empty = all
+		 * interfaces.
+		 */
 		public final String ip;
 
+		/** How often (in seconds) to check for timeouts. */
 		public final double timeoutCheckInterval;
 
+		/** How many retired jobs to retain. */
 		public final int maxRetiredJobs;
 
+		/** Time to wait before freeing. */
 		public final int secondsBeforeFree;
 
 		private Configuration(PyObject configuration) {
@@ -271,6 +305,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	public Configuration loadClassicConfigurationDefinition(
 			File definitionFile) {
 		try (PythonInterpreter py = new PythonInterpreter(null, sys)) {
+			// Hack for Java 11 and later
+			py.exec("import os;os.chdir(\"" + System.getProperty("user.dir")
+					+ "\")");
 			py.execfile(definitionFile.getAbsolutePath());
 			return new Configuration(py.get("configuration"));
 		}
