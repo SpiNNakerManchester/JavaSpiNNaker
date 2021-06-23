@@ -45,7 +45,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 public class MachineDefinitionConverter implements AutoCloseable {
 	public static class XYZ {
 		public final int x;
+
 		public final int y;
+
 		public final int z;
 
 		public XYZ(int x, int y, int z) {
@@ -83,6 +85,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 
 	public static class CF {
 		public final int c;
+
 		public final int f;
 
 		public CF(int c, int f) {
@@ -118,7 +121,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 
 	public static class CFB {
 		public final int c;
+
 		public final int f;
+
 		public final int b;
 
 		public CFB(int c, int f, int b) {
@@ -159,24 +164,25 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	}
 
 	public static class Machine {
-		@JsonProperty
-		final String name;
-		@JsonProperty
-		final Set<String> tags;
-		@JsonProperty
-		final int width;
-		@JsonProperty
-		final int height;
-		@JsonProperty
-		final Set<XYZ> deadBoards;
-		@JsonProperty
-		final Map<XYZ, EnumSet<Link>> deadLinks;
-		@JsonProperty
-		final Map<XYZ, CFB> boardLocations;
+		public final String name;
+
+		public final Set<String> tags;
+
+		public final int width;
+
+		public final int height;
+
+		public final Set<XYZ> deadBoards;
+
+		public final Map<XYZ, EnumSet<Link>> deadLinks;
+
+		public final Map<XYZ, CFB> boardLocations;
+
 		@JsonProperty("bmp-ips")
-		final Map<CF, String> bmpIPs;
+		public final Map<CF, String> bmpIPs;
+
 		@JsonProperty("spinnaker-ips")
-		final Map<XYZ, String> spinnakerIPs;
+		public final Map<XYZ, String> spinnakerIPs;
 
 		private Machine(PyObject machine) {
 			name = getattr(machine, "name").asString();
@@ -211,18 +217,17 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	}
 
 	public static class Configuration {
-		@JsonProperty
-		final List<Machine> machines;
-		@JsonProperty
-		final int port;
-		@JsonProperty
-		final String ip;
-		@JsonProperty
-		final double timeoutCheckInterval;
-		@JsonProperty
-		final int maxRetiredJobs;
-		@JsonProperty
-		final int secondsBeforeFree;
+		public final List<Machine> machines;
+
+		public final int port;
+
+		public final String ip;
+
+		public final double timeoutCheckInterval;
+
+		public final int maxRetiredJobs;
+
+		public final int secondsBeforeFree;
 
 		private Configuration(PyObject configuration) {
 			machines = toList(getattr(configuration, "machines"), Machine::new);
