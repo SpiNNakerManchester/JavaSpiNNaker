@@ -79,7 +79,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<artifactId>apache-rat-plugin</artifactId>
 					<configuration>
 						<excludes>
-							<exclude>*.csv</exclude>
+							<exclude>**/*.csv</exclude>
+							<exclude>**/*.json</exclude>
 							<exclude>src/main/python/enum.py</exclude>
 						</excludes>
 					</configuration>
