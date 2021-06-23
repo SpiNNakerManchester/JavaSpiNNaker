@@ -74,6 +74,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</arguments>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.rat</groupId>
+					<artifactId>apache-rat-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>*.csv</exclude>
+							<exclude>src/main/python/enum.py</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
