@@ -64,7 +64,7 @@ class TestConvert {
 		Configuration c;
 		try (MachineDefinitionConverter mdl =
 				new MachineDefinitionConverter()) {
-			c = mdl.loadClassicConfigurationDefinition(f);
+			c = mdl.loadClassicConfigurationDefinition(f, false);
 		}
 		assertNotNull(c.machines.get(0));
 	}
@@ -75,7 +75,7 @@ class TestConvert {
 		Configuration c;
 		try (MachineDefinitionConverter mdl =
 				new MachineDefinitionConverter()) {
-			c = mdl.loadClassicConfigurationDefinition(f);
+			c = mdl.loadClassicConfigurationDefinition(f, true);
 		}
 		assertNotNull(c.machines.get(0));
 	}
@@ -87,7 +87,7 @@ class TestConvert {
 		String json;
 		try (MachineDefinitionConverter mdl =
 				new MachineDefinitionConverter()) {
-			Configuration c = mdl.loadClassicConfigurationDefinition(f);
+			Configuration c = mdl.loadClassicConfigurationDefinition(f, true);
 			json = getJsonWriter().writeValueAsString(c);
 		}
 		assertNotNull(json);

@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.toMap;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.toSet;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+/**
+ * Converts Python configurations for classic Spalloc Server into JSON
+ * descriptions.
+ *
+ * @author Donal Fellows
+ */
 public class MachineDefinitionConverter implements AutoCloseable {
 	/** Triad coordinates. */
 	public static final class XYZ {
@@ -170,10 +175,34 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Enumeration of links from a SpiNNaker chip.
+	 * <p>
+	 * Note that the numbers chosen have two useful properties:
+	 * <p>
+	 * <ul>
+	 * <li>The integer values assigned are chosen to match the numbers used to
+	 * identify the links in the low-level software API and hardware registers.
+	 * <li>The links are ordered consecutively in anticlockwise order meaning
+	 * the opposite link is {@code (link+3)%6}.
+	 * </ul>
+	 */
 	public enum Link {
-		east, northEast, north, west, southWest, south
+		/** East. */
+		east,
+		/** North-East. */
+		northEast,
+		/** North. */
+		north,
+		/** West. */
+		west,
+		/** South-West. */
+		southWest,
+		/** South. */
+		south
 	}
 
+	/** A machine description. JSON-serializable. */
 	public static final class Machine {
 		/** The name of the machine. */
 		public final String name;
@@ -241,6 +270,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		}
 	}
 
+	/** A configuration description. JSON-serializable. */
 	public static final class Configuration {
 		/** The machines to manage. */
 		public final List<Machine> machines;
@@ -289,6 +319,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 
 	private PySystemState sys;
 
+	/**
+	 * Create a converter.
+	 */
 	public MachineDefinitionConverter() {
 		PySystemState.initialize(null, null);
 		sys = new PySystemState();
@@ -302,17 +335,49 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		sys.close();
 	}
 
-	public Configuration loadClassicConfigurationDefinition(
-			File definitionFile) {
+	/**
+	 * Get the configuration from a Python file.
+	 * <p>
+	 * <strong>WARNING!</strong> This changes the current working directory of
+	 * the process (if {@code doCd} is true).
+	 *
+	 * @param definitionFile
+	 *            The file to load from.
+	 * @param doCd
+	 *            Whether to force the change of the working directory for the
+	 *            duration. Some scripts (especially test cases) need this.
+	 * @return The converted configuration.
+	 */
+	public Configuration loadClassicConfigurationDefinition(File definitionFile,
+			boolean doCd) {
+		String what = definitionFile.getAbsolutePath();
+		String cwd = System.getProperty("user.dir");
 		try (PythonInterpreter py = new PythonInterpreter(null, sys)) {
-			// Hack for Java 11 and later
-			py.exec("import os;os.chdir(\"" + System.getProperty("user.dir")
-					+ "\")");
-			py.execfile(definitionFile.getAbsolutePath());
-			return new Configuration(py.get("configuration"));
+			if (doCd) {
+				/*
+				 * Hack for Java 11 and later, where just changing user.dir is
+				 * no longer enough. We force the change inside Jython as that's
+				 * the environment that cares. Outside... we shouldn't need to
+				 * care.
+				 */
+				py.exec(String.format(
+						"import os; __saved=os.getcwd(); os.chdir(r'''%s''')",
+						cwd));
+			}
+			try {
+				py.execfile(what);
+				return new Configuration(py.get("configuration"));
+			} finally {
+				if (doCd) {
+					py.exec("os.chdir(__saved)");
+				}
+			}
 		}
 	}
 
+	/**
+	 * @return A service for writing objects as JSON.
+	 */
 	public static ObjectWriter getJsonWriter() {
 		return JsonMapper.builder().findAndAddModules()
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
@@ -320,7 +385,15 @@ public class MachineDefinitionConverter implements AutoCloseable {
 				.without(FAIL_ON_EMPTY_BEANS);
 	}
 
-	public static void main(String... args) throws IOException {
+	/**
+	 * Main entry point.
+	 *
+	 * @param args
+	 *            Takes two arguments: {@code <source.py>} and
+	 *            {@code <target.json>}.
+	 * @throws Exception If things go wrong
+	 */
+	public static void main(String... args) throws Exception {
 		if (args.length != 2) {
 			System.err.println("takes two args: <source.py> <target.json>");
 			System.exit(1);
@@ -329,8 +402,8 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		File destination = new File(args[1]);
 		try (MachineDefinitionConverter loader =
 				new MachineDefinitionConverter()) {
-			Configuration config =
-					loader.loadClassicConfigurationDefinition(configFile);
+			Configuration config = loader
+					.loadClassicConfigurationDefinition(configFile, false);
 			getJsonWriter().writeValue(destination, config);
 		}
 	}
