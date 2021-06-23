@@ -444,6 +444,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
+		<module>SpiNNaker-py2json</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
