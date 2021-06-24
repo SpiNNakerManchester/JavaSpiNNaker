@@ -21,21 +21,19 @@ import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.exec;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,12 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
@@ -65,18 +61,6 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysi
 @SpringBootTest
 @TestInstance(PER_CLASS)
 class MDefLoaderTest {
-	// Not equal to any machine_id
-	private static final int NO_MACHINE = -1;
-
-	// Not equal to any job_id
-	private static final int NO_JOB = -1;
-
-	// Not equal to any board_id
-	private static final int NO_BOARD = -1;
-
-	// Not equal to any change_id
-	private static final int NO_CHANGE = -1;
-
 	@Autowired
 	private MachineDefinitionLoader loader;
 
@@ -122,9 +106,9 @@ class MDefLoaderTest {
 	}
 
 	@Test
-	void loadSingleBoardExample() throws IOException {
+	void readSingleBoardExample() throws IOException {
 		List<Machine> machines =
-				loader.loadMachineDefinitions(singleBoard.getFile());
+				loader.readMachineDefinitions(singleBoard.getFile());
 
 		assertNotNull(machines);
 		assertEquals(1, machines.size());
@@ -138,5 +122,31 @@ class MDefLoaderTest {
 		assertSetEquals(
 				set(new BoardPhysicalCoords(0, 0, 0)),
 				new HashSet<>(m.getBoardLocations().values()));
+	}
+
+	@Test
+	void loadSingleBoardExample() throws IOException, SQLException {
+		List<Machine> machines =
+				loader.readMachineDefinitions(singleBoard.getFile());
+		Assumptions.assumeTrue(machines != null && machines.size() == 1);
+		@SuppressWarnings("null")
+		Machine machine = machines.get(0);
+		Assumptions.assumeTrue(machine != null);
+
+		DatabaseEngine.transaction(c, () -> {
+			try (MachineDefinitionLoader.Q q =
+					new MachineDefinitionLoader.Q(c)) {
+				loader.loadMachineDefinition(q, machine);
+			}
+		});
+
+		try (Query q = query(c, "SELECT machine_name FROM machines")) {
+			int rows = 0;
+			for (Row row : q.call()) {
+				assertEquals("my-board", row.getString("machine_name"));
+				rows++;
+			}
+			assertEquals(1, rows);
+		}
 	}
 }
