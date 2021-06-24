@@ -148,5 +148,22 @@ class MDefLoaderTest {
 			}
 			assertEquals(1, rows);
 		}
+
+		// Should be just one BMP
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM bmp")) {
+			assertEquals(1, q.call1().get().getInt("c"));
+		}
+
+		// Should be just one board
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM boards")) {
+			assertEquals(1, q.call1().get().getInt("c"));
+		}
+
+		// Single-board setups have no inter-board links
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM links")) {
+			assertEquals(0, q.call1().get().getInt("c"));
+		}
 	}
+
+	// TODO do a multi-board test
 }

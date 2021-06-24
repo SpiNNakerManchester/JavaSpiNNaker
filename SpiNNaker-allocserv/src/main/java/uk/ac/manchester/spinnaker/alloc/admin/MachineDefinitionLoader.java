@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
+import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
@@ -31,12 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +51,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
+import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
@@ -56,7 +62,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * @author Donal Fellows
  */
 @Component
-public class MachineDefinitionLoader {
+public class MachineDefinitionLoader extends SQLQueries {
 	private static final int DECIMAL = 10;
 
 	/**
@@ -125,6 +131,22 @@ public class MachineDefinitionLoader {
 				throw new IllegalArgumentException("bad Z coordinate");
 			}
 			return new ChipLocation(rootX, rootY);
+		}
+
+		private static int limit(int value, int limit) {
+			if (value < 0) {
+				return value + limit;
+			} else if (value >= limit) {
+				return value - limit;
+			} else {
+				return value;
+			}
+		}
+
+		TriadCoords move(Direction direction, Machine machine) {
+			DirInfo di = DirInfo.get(z, direction);
+			return new TriadCoords(limit(x + di.dx, machine.getWidth()),
+					limit(y + di.dy, machine.getHeight()), z + di.dz);
 		}
 
 		@Override
@@ -314,22 +336,44 @@ public class MachineDefinitionLoader {
 	 * <li>The links are ordered consecutively in anticlockwise order meaning
 	 * the opposite link is {@code (link+3)%6}.
 	 * </ul>
+	 * Note that the new Spalloc uses a different notation for link directions!
 	 *
+	 * @see Direction
 	 * @author Donal Fellows
 	 */
 	public enum Link {
 		/** East. */
-		east,
+		east(Direction.SE),
 		/** North-East. */
-		northEast,
+		northEast(Direction.E),
 		/** North. */
-		north,
+		north(Direction.N),
 		/** West. */
-		west,
+		west(Direction.NW),
 		/** South-West. */
-		southWest,
+		southWest(Direction.W),
 		/** South. */
-		south
+		south(Direction.S);
+
+		private static final Map<Direction, Link> MAP;
+
+		static {
+			// This *MUST* be made in the static block
+			MAP = new HashMap<>(values().length);
+			for (Link l : values()) {
+				MAP.put(l.d, l);
+			}
+		}
+
+		private final Direction d;
+
+		Link(Direction d) {
+			this.d = d;
+		}
+
+		static Link of(Direction direction) {
+			return MAP.get(direction);
+		}
 	}
 
 	/**
@@ -375,6 +419,13 @@ public class MachineDefinitionLoader {
 		/** @return The height of the machine, in triads. */
 		public int getHeight() {
 			return height;
+		}
+
+		private static final int FULL_TRIADS = 3;
+
+		/** @return The depth of the machine, the number of boards per triad. */
+		public int getDepth() {
+			return boardLocations.size() == 1 ? 1 : FULL_TRIADS;
 		}
 
 		/** @return The dead boards of the machine. */
@@ -619,28 +670,50 @@ public class MachineDefinitionLoader {
 		return mapper.readValue(file, Configuration.class).getMachines();
 	}
 
+	// TODO move SQL to SQLQueries
+	protected static final String INSERT_BMP =
+			"INSERT INTO bmp(machine_id, address, cabinet, frame) "
+					+ "VALUES(:machine_id, :address, :cabinet, :frame)";
+
+	protected static final String INSERT_BOARD = "INSERT INTO boards("
+			+ "address, bmp_id, board_num, machine_id, x, y, z, "
+			+ "root_x, root_y, functioning) VALUES("
+			+ ":address, :bmp_id, :board, :machine_id, :x, :y, :z, "
+			+ ":root_x, :root_y, :enabled)";
+
+	protected static final String INSERT_MACHINE =
+			"INSERT INTO machines(machine_name, "
+					+ "width, height, depth, board_model) "
+					+ "VALUES(:name, :width, :height, :depth, 5)";
+
+	protected static final String INSERT_TAG =
+			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
+
+	protected static final String INSERT_LINK =
+			"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
+					+ "VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)";
+
+	/**
+	 * The queries used when inserting a machine. Factored out so they can be
+	 * reused.
+	 */
 	static class Q implements AutoCloseable {
-		final Update makeMachine;
-		final Update makeTag;
-		final Update makeBMP;
-		final Update makeBoard;
+		private final Update makeMachine;
+
+		private final Update makeTag;
+
+		private final Update makeBMP;
+
+		private final Update makeBoard;
+
+		private final Update makeLink;
 
 		Q(Connection conn) throws SQLException {
-			this.makeMachine = update(conn,
-					"INSERT INTO machines(machine_name, "
-							+ "width, height, depth, board_model) "
-							+ "VALUES(:name, :width, :height, :depth, 5)");
-			this.makeTag = update(conn, "INSERT INTO tags(machine_id, tag) "
-					+ "VALUES(:machine_id, :tag)");
-			this.makeBMP = update(conn,
-					"INSERT INTO bmp(machine_id, address, cabinet, frame) "
-							+ "VALUES(:machine_id, :address, :cabinet, "
-							+ ":frame)");
-			this.makeBoard = update(conn, "INSERT INTO boards("
-					+ "address, bmp_id, board_num, machine_id, x, y, z, "
-					+ "root_x, root_y, functioning) VALUES("
-					+ ":address, :bmp_id, :board, :machine_id, :x, :y, :z, "
-					+ ":root_x, :root_y, :enabled)");
+			this.makeMachine = update(conn, INSERT_MACHINE);
+			this.makeTag = update(conn, INSERT_TAG);
+			this.makeBMP = update(conn, INSERT_BMP);
+			this.makeBoard = update(conn, INSERT_BOARD);
+			this.makeLink = update(conn, INSERT_LINK);
 		}
 
 		@Override
@@ -649,6 +722,7 @@ public class MachineDefinitionLoader {
 			makeTag.close();
 			makeBMP.close();
 			makeBoard.close();
+			makeLink.close();
 		}
 	}
 
@@ -663,7 +737,12 @@ public class MachineDefinitionLoader {
 		}
 	}
 
-	static class InsertFailedException extends SQLException {
+	/**
+	 * Possible exception when an insert fails.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class InsertFailedException extends SQLException {
 		private static final long serialVersionUID = -4930512416142843777L;
 
 		InsertFailedException(String table) {
@@ -672,34 +751,95 @@ public class MachineDefinitionLoader {
 	}
 
 	void loadMachineDefinition(Q queries, Machine machine) throws SQLException {
-		int depth = (machine.boardLocations.size() == 1) ? 1 : 3;
+		int machineId = makeMachine(queries, machine);
+		Map<BMPCoords, Integer> bmpIds = makeBMPs(queries, machine, machineId);
+		Map<TriadCoords, Integer> boardIds =
+				makeBoards(queries, machine, machineId, bmpIds);
+		makeLinks(queries, machine, boardIds);
+	}
+
+	private int makeMachine(Q queries, Machine machine)
+			throws InsertFailedException, SQLException {
 		int machineId = queries.makeMachine.key(machine.getName(),
-				machine.getWidth(), machine.getHeight(), depth)
+				machine.getWidth(), machine.getHeight(), machine.getDepth())
 				.orElseThrow(() -> new InsertFailedException("machines"));
+		// The above will blow up if the machine with that name exists
 		for (String tag : machine.getTags()) {
 			queries.makeTag.key(machineId, tag);
 		}
+		return machineId;
+	}
+
+	private Map<BMPCoords, Integer> makeBMPs(Q queries, Machine machine,
+			int machineId) throws SQLException {
 		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
-		for (Entry<BMPCoords, String> entry : machine.bmpIPs.entrySet()) {
+		for (BMPCoords bmp : machine.bmpIPs.keySet()) {
 			queries.makeBMP
-					.key(machineId, entry.getValue(), entry.getKey().c,
-							entry.getKey().f)
-					.ifPresent(id -> bmpIds.put(entry.getKey(), id));
+			.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
+			.ifPresent(id -> bmpIds.put(bmp, id));
 		}
+		return bmpIds;
+	}
+
+	private Map<TriadCoords, Integer> makeBoards(Q queries, Machine machine,
+			int machineId, Map<BMPCoords, Integer> bmpIds) throws SQLException {
 		Map<TriadCoords, Integer> boardIds = new HashMap<>();
-		for (Entry<TriadCoords,
-				BoardPhysicalCoords> entry : machine.boardLocations
-						.entrySet()) {
-			TriadCoords triad = entry.getKey();
-			BoardPhysicalCoords phys = entry.getValue();
+		for (TriadCoords triad : machine.boardLocations.keySet()) {
+			BoardPhysicalCoords phys = machine.boardLocations.get(triad);
 			int bmpID = bmpIds.get(phys.bmp());
 			String addr = machine.spinnakerIPs.get(triad);
 			ChipLocation root = triad.chipLocation();
 			queries.makeBoard
 					.key(addr, bmpID, phys.b, machineId, triad.x, triad.y,
-							triad.z, root.getX(), root.getY(), true)
+							triad.z, root.getX(), root.getY(),
+							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
 		}
-		// TODO Generate links
+		return boardIds;
+	}
+
+	private void makeLinks(Q queries, Machine machine,
+			Map<TriadCoords, Integer> boardIds) throws SQLException {
+		for (Entry<TriadCoords, Integer> b : boardIds.entrySet()) {
+			TriadCoords here = b.getKey();
+			for (Direction d : Direction.values()) {
+				TriadCoords there = here.move(d, machine);
+				if (!boardIds.containsKey(there)) {
+					continue;
+				}
+				Direction d2 = d.opposite();
+				makeLink(queries, machine, boardIds, here, d, there, d2);
+				// TODO do we need to keep the link IDs here?
+			}
+		}
+	}
+
+	private Optional<Integer> makeLink(Q queries, Machine machine,
+			Map<TriadCoords, Integer> boardIds, TriadCoords here, Direction d1,
+			TriadCoords there, Direction d2) throws SQLException {
+		Integer b1 = boardIds.get(here);
+		Integer b2 = boardIds.get(there);
+		if (b1 == null || b2 == null) {
+			// No such board? Oh well
+			return Optional.empty();
+		}
+
+		// A link is dead if it is dead in either direction
+		boolean dead =
+				machine.deadLinks.getOrDefault(here, EnumSet.noneOf(Link.class))
+						.contains(Link.of(d1))
+						|| machine.deadLinks
+								.getOrDefault(there, EnumSet.noneOf(Link.class))
+								.contains(Link.of(d2));
+		try {
+			return queries.makeLink.key(b1, d1, b2, d2, !dead);
+		} catch (SQLiteException e) {
+			// If the CHECK constraint says no, just ignore; we'll do the link
+			// from the other direction
+			if (e.getResultCode() == SQLITE_CONSTRAINT_CHECK) {
+				return Optional.empty();
+			}
+			throw e;
+		}
 	}
 }

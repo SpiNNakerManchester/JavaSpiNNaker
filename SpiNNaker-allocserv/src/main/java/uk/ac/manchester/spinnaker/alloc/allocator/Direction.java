@@ -84,4 +84,14 @@ public enum Direction {
 		this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
 		this.columnName = columnName;
 	}
+
+	/**
+	 * Gets the direction of the link in the opposite direction. Only really
+	 * valid for SpiNN-5 boards.
+	 *
+	 * @return The opposite direction.
+	 */
+	public Direction opposite() {
+		return values()[(ordinal() + values().length) % values().length];
+	}
 }
