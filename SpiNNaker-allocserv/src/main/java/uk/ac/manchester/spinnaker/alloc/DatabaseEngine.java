@@ -1229,14 +1229,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @throws SQLException
 		 *             If anything goes wrong.
 		 */
-		public Optional<Integer> key(Object...arguments) throws SQLException{
+		public Optional<Integer> key(Object... arguments) throws SQLException {
 			try {
 				setParams(s, arguments);
 				closeResults();
 				s.executeUpdate();
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
-					return Optional.ofNullable((Integer)rs.getObject(1));
+					return Optional.ofNullable((Integer) rs.getObject(1));
 				} else {
 					return Optional.empty();
 				}
