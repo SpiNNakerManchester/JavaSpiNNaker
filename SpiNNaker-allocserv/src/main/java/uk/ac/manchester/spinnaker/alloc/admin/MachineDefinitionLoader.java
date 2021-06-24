@@ -725,10 +725,10 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public void loadMachineDefinitions(File file) throws SQLException,
 			JsonParseException, JsonMappingException, IOException {
 		List<Machine> machines = readMachineDefinitions(file);
-		try (Connection conn = db.getConnection(); Updates queries = new Updates(conn)) {
+		try (Connection conn = db.getConnection();
+				Updates sql = new Updates(conn)) {
 			for (Machine machine : machines) {
-				transaction(conn,
-						() -> loadMachineDefinition(queries, machine));
+				transaction(conn, () -> loadMachineDefinition(sql, machine));
 			}
 		}
 	}
