@@ -670,29 +670,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 		return mapper.readValue(file, Configuration.class).getMachines();
 	}
 
-	// TODO move SQL to SQLQueries
-	protected static final String INSERT_BMP =
-			"INSERT INTO bmp(machine_id, address, cabinet, frame) "
-					+ "VALUES(:machine_id, :address, :cabinet, :frame)";
-
-	protected static final String INSERT_BOARD = "INSERT INTO boards("
-			+ "address, bmp_id, board_num, machine_id, x, y, z, "
-			+ "root_x, root_y, functioning) VALUES("
-			+ ":address, :bmp_id, :board, :machine_id, :x, :y, :z, "
-			+ ":root_x, :root_y, :enabled)";
-
-	protected static final String INSERT_MACHINE =
-			"INSERT INTO machines(machine_name, "
-					+ "width, height, depth, board_model) "
-					+ "VALUES(:name, :width, :height, :depth, 5)";
-
-	protected static final String INSERT_TAG =
-			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
-
-	protected static final String INSERT_LINK =
-			"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
-					+ "VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)";
-
 	/**
 	 * The queries used when inserting a machine. Factored out so they can be
 	 * reused.
@@ -709,7 +686,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		private final Update makeLink;
 
 		Q(Connection conn) throws SQLException {
-			this.makeMachine = update(conn, INSERT_MACHINE);
+			this.makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
 			this.makeTag = update(conn, INSERT_TAG);
 			this.makeBMP = update(conn, INSERT_BMP);
 			this.makeBoard = update(conn, INSERT_BOARD);
@@ -775,8 +752,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
 		for (BMPCoords bmp : machine.bmpIPs.keySet()) {
 			queries.makeBMP
-			.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
-			.ifPresent(id -> bmpIds.put(bmp, id));
+					.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
+					.ifPresent(id -> bmpIds.put(bmp, id));
 		}
 		return bmpIds;
 	}
@@ -790,7 +767,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			String addr = machine.spinnakerIPs.get(triad);
 			ChipLocation root = triad.chipLocation();
 			queries.makeBoard
-					.key(addr, bmpID, phys.b, machineId, triad.x, triad.y,
+					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));

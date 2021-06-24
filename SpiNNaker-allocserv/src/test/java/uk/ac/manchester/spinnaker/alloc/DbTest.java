@@ -72,6 +72,9 @@ class DbTest extends SQLQueries {
 	// Not equal to any board_id
 	private static final int NO_BOARD = -1;
 
+	// Not equal to any bmp_id
+	private static final int NO_BMP = -1;
+
 	// Not equal to any change_id
 	private static final int NO_CHANGE = -1;
 
@@ -760,6 +763,58 @@ class DbTest extends SQLQueries {
 		try (Update u = update(c, FINISHED_PENDING)) {
 			assertEquals(1, u.getNumArguments());
 			assertEquals(0, u.call(NO_CHANGE));
+		}
+	}
+
+	@Test
+	void insertMachine() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, INSERT_MACHINE_SPINN_5)) {
+			assertEquals(4, u.getNumArguments());
+			// Bad depth
+			assertThrowsCheck(() -> u.keys("gorp", -1, -1, -1));
+		}
+	}
+
+	@Test
+	void insertTags() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, INSERT_TAG)) {
+			assertEquals(2, u.getNumArguments());
+			// No machine
+			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp"));
+		}
+	}
+
+	@Test
+	void insertBMP() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, INSERT_BMP)) {
+			assertEquals(4, u.getNumArguments());
+			// No machine
+			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", 0, 0));
+		}
+	}
+
+	@Test
+	void insertBoard() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, INSERT_BOARD)) {
+			assertEquals(10, u.getNumArguments());
+			// No machine
+			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", NO_BMP, 0, 0, 0, 0,
+					0, 0, true));
+		}
+	}
+
+	@Test
+	void insertLink() throws SQLException {
+		assumeFalse(c.isReadOnly(), "connection is read-only");
+		try (Update u = update(c, INSERT_LINK)) {
+			assertEquals(5, u.getNumArguments());
+			// No board
+			assertThrowsFK(() -> u.keys(NO_BOARD, Direction.N, NO_BOARD,
+					Direction.S, false));
 		}
 	}
 }

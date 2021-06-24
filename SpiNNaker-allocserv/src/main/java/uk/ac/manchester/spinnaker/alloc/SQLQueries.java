@@ -481,6 +481,63 @@ public abstract class SQLQueries {
 			"UPDATE pending_changes SET in_progress = :in_progress "
 					+ "WHERE change_id = :change_id";
 
+	/** Insert a BMP. */
+	@Parameter("machine_id")
+	@Parameter("address")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@GeneratesID
+	protected static final String INSERT_BMP =
+			"INSERT INTO bmp(machine_id, address, cabinet, frame) "
+					+ "VALUES(:machine_id, :address, :cabinet, :frame)";
+
+	/** Insert a board. */
+	@Parameter("machine_id")
+	@Parameter("address")
+	@Parameter("bmp_id")
+	@Parameter("board_num")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@Parameter("root_x")
+	@Parameter("root_y")
+	@Parameter("enabled")
+	@GeneratesID
+	protected static final String INSERT_BOARD = "INSERT INTO boards("
+			+ "machine_id, address, bmp_id, board_num, x, y, z, "
+			+ "root_x, root_y, functioning) VALUES("
+			+ ":machine_id, :address, :bmp_id, :board_num, :x, :y, :z, "
+			+ ":root_x, :root_y, :enabled)";
+
+	/** Insert a link. */
+	@Parameter("board_1")
+	@Parameter("dir_1")
+	@Parameter("board_2")
+	@Parameter("dir_2")
+	@Parameter("live")
+	@GeneratesID
+	protected static final String INSERT_LINK =
+			"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
+					+ "VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)";
+
+	/** Insert a machine. */
+	@Parameter("name")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("depth")
+	@GeneratesID
+	protected static final String INSERT_MACHINE_SPINN_5 =
+			"INSERT INTO machines(machine_name, "
+					+ "width, height, depth, board_model) "
+					+ "VALUES(:name, :width, :height, :depth, 5)";
+
+	/** Insert a tag. */
+	@Parameter("machine_id")
+	@Parameter("tag")
+	@GeneratesID
+	protected static final String INSERT_TAG =
+			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
