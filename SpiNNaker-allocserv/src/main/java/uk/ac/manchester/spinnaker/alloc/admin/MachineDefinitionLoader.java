@@ -658,7 +658,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *            The file of JSON.
 	 * @return The machines from that file.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with file access.
 	 * @throws JsonParseException
 	 *             if underlying input contains invalid JSON content
 	 * @throws JsonMappingException
@@ -671,10 +671,14 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	/**
-	 * The queries used when inserting a machine. Factored out so they can be
-	 * reused.
+	 * The various updates used when inserting a machine. This is
+	 * connection-bound.
+	 * <p>
+	 * Factored out so they can be reused without needing masses of arguments.
+	 * <p>
+	 * Only non-{@code private} for testing purposes.
 	 */
-	static class Q implements AutoCloseable {
+	static class Updates implements AutoCloseable {
 		private final Update makeMachine;
 
 		private final Update makeTag;
@@ -685,7 +689,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		private final Update makeLink;
 
-		Q(Connection conn) throws SQLException {
+		Updates(Connection conn) throws SQLException {
 			this.makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
 			this.makeTag = update(conn, INSERT_TAG);
 			this.makeBMP = update(conn, INSERT_BMP);
@@ -703,10 +707,25 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 	}
 
+	/**
+	 * Add the machine definitions in the given file to the database.
+	 *
+	 * @param file
+	 *            The JSON configuration file.
+	 * @throws SQLException
+	 *             If database access fails
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
+	 * @throws JsonMappingException
+	 *             if the input JSON structure does not match the structure of
+	 *             JSONified spalloc configuration
+	 * @throws IOException
+	 *             If the file can't be read
+	 */
 	public void loadMachineDefinitions(File file) throws SQLException,
 			JsonParseException, JsonMappingException, IOException {
 		List<Machine> machines = readMachineDefinitions(file);
-		try (Connection conn = db.getConnection(); Q queries = new Q(conn)) {
+		try (Connection conn = db.getConnection(); Updates queries = new Updates(conn)) {
 			for (Machine machine : machines) {
 				transaction(conn,
 						() -> loadMachineDefinition(queries, machine));
@@ -727,38 +746,49 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 	}
 
-	void loadMachineDefinition(Q queries, Machine machine) throws SQLException {
-		int machineId = makeMachine(queries, machine);
-		Map<BMPCoords, Integer> bmpIds = makeBMPs(queries, machine, machineId);
+	/**
+	 * Add a machine definition using the SQL update profile.
+	 *
+	 * @param sql
+	 *            The SQL update profile (encapsulates both connection and
+	 *            INSERTs).
+	 * @param machine
+	 *            The description of the machine to add.
+	 * @throws SQLException
+	 *             If database access fails
+	 */
+	void loadMachineDefinition(Updates sql, Machine machine)
+			throws SQLException {
+		int machineId = makeMachine(sql, machine);
+		Map<BMPCoords, Integer> bmpIds = makeBMPs(sql, machine, machineId);
 		Map<TriadCoords, Integer> boardIds =
-				makeBoards(queries, machine, machineId, bmpIds);
-		makeLinks(queries, machine, boardIds);
+				makeBoards(sql, machine, machineId, bmpIds);
+		makeLinks(sql, machine, boardIds);
 	}
 
-	private int makeMachine(Q queries, Machine machine)
+	private int makeMachine(Updates sql, Machine machine)
 			throws InsertFailedException, SQLException {
-		int machineId = queries.makeMachine.key(machine.getName(),
+		int machineId = sql.makeMachine.key(machine.getName(),
 				machine.getWidth(), machine.getHeight(), machine.getDepth())
 				.orElseThrow(() -> new InsertFailedException("machines"));
 		// The above will blow up if the machine with that name exists
 		for (String tag : machine.getTags()) {
-			queries.makeTag.key(machineId, tag);
+			sql.makeTag.key(machineId, tag);
 		}
 		return machineId;
 	}
 
-	private Map<BMPCoords, Integer> makeBMPs(Q queries, Machine machine,
+	private Map<BMPCoords, Integer> makeBMPs(Updates sql, Machine machine,
 			int machineId) throws SQLException {
 		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
 		for (BMPCoords bmp : machine.bmpIPs.keySet()) {
-			queries.makeBMP
-					.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
+			sql.makeBMP.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
 					.ifPresent(id -> bmpIds.put(bmp, id));
 		}
 		return bmpIds;
 	}
 
-	private Map<TriadCoords, Integer> makeBoards(Q queries, Machine machine,
+	private Map<TriadCoords, Integer> makeBoards(Updates sql, Machine machine,
 			int machineId, Map<BMPCoords, Integer> bmpIds) throws SQLException {
 		Map<TriadCoords, Integer> boardIds = new HashMap<>();
 		for (TriadCoords triad : machine.boardLocations.keySet()) {
@@ -766,7 +796,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			int bmpID = bmpIds.get(phys.bmp());
 			String addr = machine.spinnakerIPs.get(triad);
 			ChipLocation root = triad.chipLocation();
-			queries.makeBoard
+			sql.makeBoard
 					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
@@ -775,7 +805,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		return boardIds;
 	}
 
-	private void makeLinks(Q queries, Machine machine,
+	private void makeLinks(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds) throws SQLException {
 		for (Entry<TriadCoords, Integer> b : boardIds.entrySet()) {
 			TriadCoords here = b.getKey();
@@ -785,13 +815,13 @@ public class MachineDefinitionLoader extends SQLQueries {
 					continue;
 				}
 				Direction d2 = d.opposite();
-				makeLink(queries, machine, boardIds, here, d, there, d2);
+				makeLink(sql, machine, boardIds, here, d, there, d2);
 				// TODO do we need to keep the link IDs here?
 			}
 		}
 	}
 
-	private Optional<Integer> makeLink(Q queries, Machine machine,
+	private Optional<Integer> makeLink(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds, TriadCoords here, Direction d1,
 			TriadCoords there, Direction d2) throws SQLException {
 		Integer b1 = boardIds.get(here);
@@ -809,7 +839,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 								.getOrDefault(there, EnumSet.noneOf(Link.class))
 								.contains(Link.of(d2));
 		try {
-			return queries.makeLink.key(b1, d1, b2, d2, !dead);
+			return sql.makeLink.key(b1, d1, b2, d2, !dead);
 		} catch (SQLiteException e) {
 			// If the CHECK constraint says no, just ignore; we'll do the link
 			// from the other direction

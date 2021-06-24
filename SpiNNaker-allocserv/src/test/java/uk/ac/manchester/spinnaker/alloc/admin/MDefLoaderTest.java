@@ -70,6 +70,9 @@ class MDefLoaderTest {
 	@Value("classpath:single-board-example.json")
 	private Resource singleBoard;
 
+	@Value("classpath:three-board-example.json")
+	private Resource threeBoard;
+
 	private DatabaseEngine memdb;
 
 	private Connection c;
@@ -134,8 +137,8 @@ class MDefLoaderTest {
 		Assumptions.assumeTrue(machine != null);
 
 		DatabaseEngine.transaction(c, () -> {
-			try (MachineDefinitionLoader.Q q =
-					new MachineDefinitionLoader.Q(c)) {
+			try (MachineDefinitionLoader.Updates q =
+					new MachineDefinitionLoader.Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
@@ -165,5 +168,44 @@ class MDefLoaderTest {
 		}
 	}
 
-	// TODO do a multi-board test
+	@Test
+	void loadThreeBoardExample() throws IOException, SQLException {
+		List<Machine> machines =
+				loader.readMachineDefinitions(threeBoard.getFile());
+		Assumptions.assumeTrue(machines != null && machines.size() == 1);
+		@SuppressWarnings("null")
+		Machine machine = machines.get(0);
+		Assumptions.assumeTrue(machine != null);
+
+		DatabaseEngine.transaction(c, () -> {
+			try (MachineDefinitionLoader.Updates q =
+					new MachineDefinitionLoader.Updates(c)) {
+				loader.loadMachineDefinition(q, machine);
+			}
+		});
+
+		try (Query q = query(c, "SELECT machine_name FROM machines")) {
+			int rows = 0;
+			for (Row row : q.call()) {
+				assertEquals("SpiNNaker3board", row.getString("machine_name"));
+				rows++;
+			}
+			assertEquals(1, rows);
+		}
+
+		// Should be just one BMP
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM bmp")) {
+			assertEquals(1, q.call1().get().getInt("c"));
+		}
+
+		// Should be just one board
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM boards")) {
+			assertEquals(3, q.call1().get().getInt("c"));
+		}
+
+		// Single-board setups have no inter-board links
+		try (Query q = query(c, "SELECT COUNT(*) AS c FROM links")) {
+			assertEquals(3, q.call1().get().getInt("c"));
+		}
+	}
 }
