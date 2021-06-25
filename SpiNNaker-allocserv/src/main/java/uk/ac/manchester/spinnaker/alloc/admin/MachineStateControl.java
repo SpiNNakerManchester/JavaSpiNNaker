@@ -44,14 +44,18 @@ public class MachineStateControl extends SQLQueries {
 	/**
 	 * Access to the enablement-state of a board.
 	 */
-	public class BoardState {
+	public final class BoardState {
 		private final int boardId;
 
 		private BoardState(int id) {
 			this.boardId = id;
 		}
 
-		/** @return The state of the board. */
+		/**
+		 * @return The state of the board.
+		 * @throws SQLException
+		 *             if something goes wrong
+		 */
 		public boolean getState() throws SQLException {
 			return db.execute(c -> {
 				try (Query q = query(c, "SELECT functioning FROM boards "

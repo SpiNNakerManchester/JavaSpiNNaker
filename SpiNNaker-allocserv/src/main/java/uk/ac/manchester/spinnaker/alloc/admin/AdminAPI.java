@@ -61,23 +61,29 @@ public interface AdminAPI {
 	}
 
 	/**
-	 * Where the other resources are.
+	 * Where the other resources are. Designed for conversion to JSON.
 	 */
-	class Description {
+	final class Description {
 		/** Machine definition importing. */
 		public final URI importMachines;
 
 		/** Board control. */
 		public final URI setBoardEnabled;
 
-		public Description(UriInfo ui) {
+		private Description(UriInfo ui) {
 			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 			importMachines = b.build(Paths.IMPORT);
 			setBoardEnabled = b.build(Paths.BOARD);
 		}
 	}
 
-	/** Describe the admin interface. */
+	/**
+	 * Describe the admin interface.
+	 *
+	 * @param ui
+	 *            How to mint URIs.
+	 * @return Machine-readable description.
+	 */
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path(Paths.ROOT)
@@ -85,7 +91,11 @@ public interface AdminAPI {
 		return new Description(ui);
 	}
 
-	/** "Describes" the import resource. */
+	/**
+	 * "Describes" the import resource.
+	 *
+	 * @return Human-readable description.
+	 */
 	@Hidden
 	@GET
 	@Produces(TEXT_PLAIN)
@@ -116,7 +126,11 @@ public interface AdminAPI {
 	void importMachinesByContent(
 			MachineDefinitionLoader.Configuration definitions);
 
-	/** Describe the enable state of a board. */
+	/**
+	 * Describe the enable state of a board.
+	 *
+	 * @return Human-readable description
+	 */
 	@GET
 	@Produces(TEXT_PLAIN)
 	@Path(Paths.BOARD)
