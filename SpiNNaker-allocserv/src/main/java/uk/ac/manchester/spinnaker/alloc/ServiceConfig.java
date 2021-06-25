@@ -55,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 /**
@@ -138,7 +139,6 @@ public class ServiceConfig extends Application {
 		factory.setBus(bus);
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setAddress("/");
 		factory.setFeatures(asList(new OpenApiFeature()));
 		return factory;
 	}
@@ -160,6 +160,31 @@ public class ServiceConfig extends Application {
 	Server jaxRsServer(SpallocServiceAPI service, Executor executor,
 			JAXRSServerFactoryBean factory) {
 		factory.setServiceBeans(asList(service));
+		factory.setAddress("/");
+		Server s = factory.create();
+		s.getEndpoint().setExecutor(executor);
+		return s;
+	}
+
+	/**
+	 * The JAX-RS admin interface. Note that this is only used when not in test
+	 * mode.
+	 *
+	 * @param service
+	 *            The service implementation
+	 * @param executor
+	 *            The thread pool
+	 * @param factory
+	 *            A factory used to make servers.
+	 * @return The REST service core, configured.
+	 */
+	@Bean
+	@ConditionalOnWebApplication
+	@DependsOn("JSONProvider")
+	Server adminServer(AdminAPI service, Executor executor,
+			JAXRSServerFactoryBean factory) {
+		factory.setServiceBeans(asList(service));
+		factory.setAddress(AdminAPI.Paths.BASE_PATH);
 		Server s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
@@ -167,8 +192,6 @@ public class ServiceConfig extends Application {
 
 	// TODO application security model
 	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
-
-	// TODO administration interface (loading DB description, managing boards)
 
 	@Autowired
 	private ApplicationContext ctx;

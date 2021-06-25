@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.ServiceControl;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
@@ -80,7 +80,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private Epochs epochs;
 
 	@Autowired
-	private ServiceControl serviceControl;
+	private ServiceMasterControl serviceControl;
 
 	@PostConstruct
 	private void setUp() throws SQLException {

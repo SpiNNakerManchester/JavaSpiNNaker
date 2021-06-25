@@ -21,15 +21,15 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Control over general aspects of the service's manageability.
+ * Control over general aspects of the service's manageability. Not exposed as
+ * part of service because this includes the bits that shut the service off when
+ * disabled.
  *
  * @author Donal Fellows
  */
 @Component("control")
-@ManagedResource("Spalloc:type=ServiceControl,name=control")
-public class ServiceControl {
-	// TODO add more general management API
-
+@ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
+public class ServiceMasterControl {
 	private boolean paused = false;
 
 	/**

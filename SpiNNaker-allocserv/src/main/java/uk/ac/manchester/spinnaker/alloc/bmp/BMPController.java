@@ -59,7 +59,7 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.ServiceControl;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
@@ -140,7 +140,7 @@ public class BMPController extends SQLQueries {
 	private SpallocAPI spallocCore;
 
 	@Autowired
-	private ServiceControl serviceControl;
+	private ServiceMasterControl serviceControl;
 
 	private Collection<Machine> machines;
 
