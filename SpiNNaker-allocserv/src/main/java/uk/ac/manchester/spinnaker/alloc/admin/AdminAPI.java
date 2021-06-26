@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.net.URI;
 import java.sql.SQLException;
@@ -33,6 +35,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import io.swagger.v3.oas.annotations.Hidden;
 
 /**
@@ -42,6 +46,7 @@ import io.swagger.v3.oas.annotations.Hidden;
  */
 // TODO You must have admin permission to use this
 @Hidden
+@PreAuthorize(IS_ADMIN)
 public interface AdminAPI {
 	/**
 	 * Common paths in the interface.
@@ -136,6 +141,11 @@ public interface AdminAPI {
 	@Path(Paths.BOARD)
 	default String getBoardState() {
 		// TODO expand to cover addressing gamut in this description
+		try {
+			throw new Exception("boo");
+		} catch (Exception e) {
+			getLogger(getClass()).info("check", e);
+		}
 		return "You need to supply machine= and coordinates (as "
 				+ "x=&y=&z=, c=&f=&b= or address=)";
 	}

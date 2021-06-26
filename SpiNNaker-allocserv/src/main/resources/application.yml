@@ -16,11 +16,6 @@
 logging:
   level:
     root: INFO
-    org.springframework.boot.autoconfigure.logging: INFO
-    org.springframework.beans.factory.support: INFO
-    #org.apache.cxf: DEBUG
-    org.apache.cxf.phase: INFO
-    org.apache.cxf.jaxrs.utils: INFO
 
 spring:
   main:

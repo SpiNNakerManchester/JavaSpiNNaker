@@ -19,6 +19,10 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_USER;
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
+import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
@@ -38,10 +42,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT
 
 import java.sql.SQLException;
 
-import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
-import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
-import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -60,6 +60,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -214,6 +215,7 @@ public interface SpallocServiceAPI {
 	@Path(JOB)
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
+	@PreAuthorize(IS_USER)
 	void createJob(
 			@Description("What sort of job should be created?")
 			CreateJobRequest req,
@@ -237,6 +239,7 @@ public interface SpallocServiceAPI {
 	@Operation(tags = T_JOB)
 	@Path(JOB + "/{id}")
 	@Produces(APPLICATION_JSON)
+	@PreAuthorize(IS_USER)
 	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
 			@Context UriInfo ui, @Context HttpServletRequest request)
 					throws SQLException;

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
  * @author Donal Fellows
  */
 @Service("admin")
-@Path("/")
+@Path(BASE_PATH)
 @Hidden
 @ManagedResource("Spalloc:type=Admin,name=admin")
 public class AdminImpl extends SQLQueries implements AdminAPI {

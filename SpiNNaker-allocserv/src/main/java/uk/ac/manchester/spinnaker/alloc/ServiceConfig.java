@@ -24,6 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -32,7 +33,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
@@ -61,10 +62,10 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 /**
  * Builds the Spring beans in the application that are not auto-detected. There
  * are no public methods in this class that can be called by non-framework code.
+ *
+ * @see SecurityConfig
  */
-// @EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)
-// @EnableWebSecurity
-@Import(JaxRsConfig.class)
+@Import({JaxRsConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")
 @EnableScheduling
 @SpringBootApplication
@@ -121,11 +122,12 @@ public class ServiceConfig extends Application {
 
 	/**
 	 * A factory for JAX-RS servers. This is a <em>prototype</em> bean; you get
-	 * a new instance each time. You should call
-	 * {@link JAXRSServerFactoryBean#setServiceBeans(List) setServiceBeans(...)}
-	 * on it, and then {@link JAXRSServerFactoryBean#create() create()}. You
-	 * might also need to call {@link JAXRSServerFactoryBean#setAddress(String)
-	 * setAddress(...)}.
+	 * a new instance each time.
+	 * <p>
+	 * You should call {@link JAXRSServerFactoryBean#setServiceBeans(List)
+	 * setServiceBeans(...)} on it, and then
+	 * {@link JAXRSServerFactoryBean#create() create()}. You might also need to
+	 * call {@link JAXRSServerFactoryBean#setAddress(String) setAddress(...)}.
 	 *
 	 * @param bus
 	 *            The CXF bus.
@@ -133,9 +135,10 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean
 	@Scope(SCOPE_PROTOTYPE)
-	JAXRSServerFactoryBean rawFactory(Bus bus) {
+	JAXRSServerFactoryBean rawFactory(SpringBus bus) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
+		factory.setAddress("/");
 		factory.setBus(bus);
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
@@ -148,6 +151,8 @@ public class ServiceConfig extends Application {
 	 *
 	 * @param service
 	 *            The service implementation
+	 * @param adminService
+	 *            The admin service
 	 * @param executor
 	 *            The thread pool
 	 * @param factory
@@ -157,41 +162,13 @@ public class ServiceConfig extends Application {
 	@Bean
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
-	Server jaxRsServer(SpallocServiceAPI service, Executor executor,
-			JAXRSServerFactoryBean factory) {
-		factory.setServiceBeans(asList(service));
-		factory.setAddress("/");
+	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
+			Executor executor, JAXRSServerFactoryBean factory) {
+		factory.setServiceBeans(asList(service, adminService));
 		Server s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
 	}
-
-	/**
-	 * The JAX-RS admin interface. Note that this is only used when not in test
-	 * mode.
-	 *
-	 * @param service
-	 *            The service implementation
-	 * @param executor
-	 *            The thread pool
-	 * @param factory
-	 *            A factory used to make servers.
-	 * @return The REST service core, configured.
-	 */
-	@Bean
-	@ConditionalOnWebApplication
-	@DependsOn("JSONProvider")
-	Server adminServer(AdminAPI service, Executor executor,
-			JAXRSServerFactoryBean factory) {
-		factory.setServiceBeans(asList(service));
-		factory.setAddress(AdminAPI.Paths.BASE_PATH);
-		Server s = factory.create();
-		s.getEndpoint().setExecutor(executor);
-		return s;
-	}
-
-	// TODO application security model
-	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
 
 	@Autowired
 	private ApplicationContext ctx;
