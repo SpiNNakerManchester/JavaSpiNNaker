@@ -26,12 +26,16 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
@@ -244,11 +248,36 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 		};
 	}
 
+	/**
+	 * Like {@link Optional#orElseThrow(Supplier)} but with singleton lists.
+	 *
+	 * @param <T>
+	 *            Type of list element.
+	 * @param <E>
+	 *            Type of exception to throw.
+	 * @param list
+	 *            The possibly-empty list.
+	 * @param exceptionSupplier
+	 *            How to get the exception to throw.
+	 * @return The value from the list, if it is there.
+	 * @throws E
+	 *             If the list is null or empty.
+	 */
+	private static <T, E extends Exception> T orElseThrow(List<T> list,
+			Supplier<E> exceptionSupplier) throws E {
+		if (list == null || list.isEmpty()) {
+			throw exceptionSupplier.get();
+		}
+		return list.get(0);
+	}
+
 	@Override
-	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req)
-			throws SQLException {
+	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
+			SecurityContext security) throws SQLException {
 		String caller = req.getRemoteHost();
-		Job j = core.getJob(id).orElseThrow(() -> new NotFound("no such job"));
+		Optional<Byte> o = Optional.empty();
+		o.orElseThrow(null);
+		Job j = orElseThrow(core.getJob(id), () -> new NotFound("no such job"));
 
 		return new JobAPI() {
 			@Override
@@ -265,8 +294,8 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 						log.debug("starting wait for change of job");
 						j.waitForChange(WAIT_TIMEOUT);
 						// Refresh the handle
-						Job nj = core.getJob(id)
-								.orElseThrow(() -> new ItsGone("no such job"));
+						Job nj = orElseThrow(core.getJob(id),
+								() -> new ItsGone("no such job"));
 						return new JobStateResponse(nj, ui, mapper);
 					});
 				} else {
@@ -356,13 +385,18 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
-			AsyncResponse response) {
+			SecurityContext security, AsyncResponse response) {
 		// Async because it involves getting a write lock
 		if (req == null) {
 			throw new BadArgs("request must be supplied");
 		}
+		if (!security.isUserInRole("ADMIN") || req.owner == null
+				|| req.owner.trim().isEmpty()) {
+			req.owner = security.getUserPrincipal().getName();
+		}
 		if (req.owner == null || req.owner.trim().isEmpty()) {
-			throw new BadArgs("owner must be supplied");
+			throw new BadArgs(
+					"request must be connected to an identified owner");
 		}
 		if (req.keepaliveInterval == null || req.keepaliveInterval
 				.compareTo(MIN_KEEPALIVE_DURATION) < 0) {

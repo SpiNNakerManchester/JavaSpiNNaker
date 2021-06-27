@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -48,15 +49,12 @@ public class JobStateResponse {
 
 	private Instant startTime;
 
-	@JsonInclude(NON_NULL)
 	private Instant finishTime;
 
-	@JsonInclude(NON_NULL)
 	private String reason;
 
 	private String keepaliveHost;
 
-	@JsonInclude(NON_NULL)
 	private Instant keepaliveTime;
 
 	/** Where the keepalives go. */
@@ -92,11 +90,11 @@ public class JobStateResponse {
 
 	private static CreateJobRequest origRequest(JsonMapper mapper, Job job) {
 		try {
-			byte[] data = job.getOriginalRequest();
-			if (data == null) {
+			Optional<byte[]> data = job.getOriginalRequest();
+			if (!data.isPresent()) {
 				return null;
 			}
-			return mapper.readValue(data, CreateJobRequest.class);
+			return mapper.readValue(data.get(), CreateJobRequest.class);
 		} catch (IOException | SQLException e) {
 			// Non-critical; this can be just dropped if it doesn't work
 			return null;
@@ -109,9 +107,9 @@ public class JobStateResponse {
 		startTime = job.getStartTime();
 		reason = job.getReason().orElse(null);
 		finishTime = job.getFinishTime().orElse(null);
-		keepaliveHost = job.getKeepaliveHost();
+		keepaliveHost = job.getKeepaliveHost().orElse(null);
 		keepaliveTime = job.getKeepaliveTimestamp();
-		owner = job.getOwner();
+		owner = job.getOwner().orElse(null);
 		originalRequest = origRequest(mapper, job);
 
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
@@ -132,7 +130,7 @@ public class JobStateResponse {
 		this.state = state;
 	}
 
-	/** @return When the job started */
+	/** @return When the job started. */
 	public Instant getStartTime() {
 		return startTime;
 	}
@@ -141,7 +139,8 @@ public class JobStateResponse {
 		this.startTime = startTime;
 	}
 
-	/** @return The reason the job was destroyed */
+	/** @return The reason the job was destroyed. */
+	@JsonInclude(NON_NULL)
 	public String getReason() {
 		return reason;
 	}
@@ -150,8 +149,12 @@ public class JobStateResponse {
 		this.reason = reason;
 	}
 
-	/** @return What host is keeping the job alive? */
+	/** @return What host (if any) is keeping the job alive? */
+	@JsonInclude(NON_NULL)
 	public String getKeepaliveHost() {
+		if (state.equals(JobState.DESTROYED)) {
+			return null;
+		}
 		return keepaliveHost;
 	}
 
@@ -159,12 +162,28 @@ public class JobStateResponse {
 		this.keepaliveHost = keepaliveHost;
 	}
 
-	/** @return Who claimed to create the job? */
+	/** @return Who created the job? */
+	@JsonInclude(NON_NULL)
 	public String getOwner() {
 		return owner;
 	}
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	/** @return When the job finished. */
+	@JsonInclude(NON_NULL)
+	public Instant getFinishTime() {
+		return finishTime;
+	}
+
+	/** @return When the job last had a keep-alive message. */
+	@JsonInclude(NON_NULL)
+	public Instant getKeepAliveTime() {
+		if (state.equals(JobState.DESTROYED)) {
+			return null;
+		}
+		return keepaliveTime;
 	}
 }

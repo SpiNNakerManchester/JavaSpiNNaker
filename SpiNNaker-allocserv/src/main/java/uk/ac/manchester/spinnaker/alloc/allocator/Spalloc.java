@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -28,6 +29,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,8 +140,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> getJob(int id) throws SQLException {
-		return db.execute(conn -> Optional.ofNullable(getJob(id, conn)));
+	public List<Job> getJob(int id) throws SQLException {
+		// Workaround for ugly Spring lack of support for filtering Optional
+		return db.execute(conn -> Optional.ofNullable((Job) getJob(id, conn)))
+				.map(Arrays::asList).orElse(emptyList());
 	}
 
 	private JobImpl getJob(int id, Connection conn) throws SQLException {
@@ -287,6 +291,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void waitForChange(long timeout) {
+			if (epoch == null) {
+				return;
+			}
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
@@ -486,6 +493,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void waitForChange(long timeout) {
+			if (epoch == null) {
+				return;
+			}
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
@@ -508,6 +518,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			int machineId = row.getInt("machine_id");
 			JobState jobState = row.getEnum("job_state", JobState.class);
 			Instant keepalive = row.getInstant("keepalive_timestamp");
+			/*
+			 * Makes "partial" jobs; some fields are shrouded, modifications are
+			 * disabled
+			 */
 			jobs.add(new JobImpl(epoch, jobId, machineId, jobState, keepalive));
 		}
 	}
@@ -547,10 +561,13 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private byte[] request;
 
+		private boolean partial;
+
 		JobImpl(Epoch epoch, int id, int machineId) {
 			this.epoch = epoch;
 			this.id = id;
 			this.machineId = machineId;
+			partial = true;
 		}
 
 		JobImpl(Epoch epoch, int jobId, int machineId, JobState jobState,
@@ -584,6 +601,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				finishTime = row.getInstant("death_timestamp");
 				deathReason = row.getString("death_reason");
 				request = row.getBytes("original_request");
+				partial = false;
 			} catch (SQLException e) {
 				throw new SQLProblem("creating job object", e);
 			}
@@ -591,6 +609,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void access(String keepaliveAddress) throws SQLException {
+			if (partial) {
+				throw new PartialJobException();
+			}
 			try (Connection conn = db.getConnection();
 					Update keepAlive = update(conn, UPDATE_KEEPALIVE)) {
 				transaction(conn, () -> {
@@ -601,11 +622,17 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void destroy(String reason) throws SQLException {
+			if (partial) {
+				throw new PartialJobException();
+			}
 			powerController.destroyJob(id, reason);
 		}
 
 		@Override
 		public void waitForChange(long timeout) {
+			if (epoch == null) {
+				return;
+			}
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
@@ -639,8 +666,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public String getKeepaliveHost() {
-			return keepaliveHost;
+		public Optional<String> getKeepaliveHost() {
+			if (partial) {
+				return Optional.empty();
+			}
+			return Optional.ofNullable(keepaliveHost);
 		}
 
 		@Override
@@ -649,8 +679,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public byte[] getOriginalRequest() throws SQLException {
-			return request;
+		public Optional<byte[]> getOriginalRequest() throws SQLException {
+			if (partial) {
+				return Optional.empty();
+			}
+			return Optional.ofNullable(request);
 		}
 
 		@Override
@@ -682,8 +715,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public String getOwner() {
-			return owner;
+		public Optional<String> getOwner() {
+			if (partial) {
+				return Optional.empty();
+			}
+			return Optional.ofNullable(owner);
 		}
 
 		@Override
@@ -814,6 +850,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 			@Override
 			public void setPower(PowerState ps) throws SQLException {
+				if (partial) {
+					throw new PartialJobException();
+				}
 				powerController.setPower(id, ps, READY);
 			}
 		}
@@ -898,6 +937,14 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public Job getJob() {
 			return job;
+		}
+	}
+
+	static class PartialJobException extends IllegalStateException {
+		private static final long serialVersionUID = 2997856394666135483L;
+
+		PartialJobException() {
+			super("partial job only");
 		}
 	}
 }

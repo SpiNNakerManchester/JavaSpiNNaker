@@ -64,7 +64,7 @@ public class StubJob implements SpallocAPI.Job {
 	}
 
 	@Override
-	public String getKeepaliveHost() throws SQLException {
+	public Optional<String> getKeepaliveHost() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -74,12 +74,12 @@ public class StubJob implements SpallocAPI.Job {
 	}
 
 	@Override
-	public String getOwner() throws SQLException {
+	public Optional<String> getOwner() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public byte[] getOriginalRequest() throws SQLException {
+	public Optional<byte[]> getOriginalRequest() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 

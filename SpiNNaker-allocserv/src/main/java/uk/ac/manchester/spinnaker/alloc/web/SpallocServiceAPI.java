@@ -57,6 +57,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
@@ -199,6 +200,8 @@ public interface SpallocServiceAPI {
 	 *            Description of what to create
 	 * @param ui
 	 *            How to build URIs
+	 * @param security
+	 *            Information about the user
 	 * @param response
 	 *            Filled out with a {@link CreateJobResponse}
 	 * @throws SQLException
@@ -219,8 +222,8 @@ public interface SpallocServiceAPI {
 	void createJob(
 			@Description("What sort of job should be created?")
 			CreateJobRequest req,
-			@Context UriInfo ui, @Suspended AsyncResponse response)
-					throws SQLException;
+			@Context UriInfo ui, @Context SecurityContext security,
+			@Suspended AsyncResponse response) throws SQLException;
 
 	/**
 	 * Get a sub-resource for managing a job.
@@ -231,6 +234,8 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @param request
 	 *            Information about the request
+	 * @param security
+	 *            Information about the user
 	 * @return The sub-resource
 	 * @throws SQLException
 	 *             If anything goes wrong.
@@ -241,8 +246,8 @@ public interface SpallocServiceAPI {
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_USER)
 	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
-			@Context UriInfo ui, @Context HttpServletRequest request)
-					throws SQLException;
+			@Context UriInfo ui, @Context HttpServletRequest request,
+			@Context SecurityContext security) throws SQLException;
 
 	/**
 	 * Interface to a particular machine.

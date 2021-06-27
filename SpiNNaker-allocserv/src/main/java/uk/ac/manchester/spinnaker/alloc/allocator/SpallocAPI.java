@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -24,6 +25,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.security.access.prepost.PostFilter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -73,22 +76,25 @@ public interface SpallocAPI {
 	Jobs getJobs(boolean deleted, int limit, int start) throws SQLException;
 
 	/**
-	 * Get a specific job.
+	 * Get a specific job. Only owners or admins can see full job details or
+	 * manipulate the job.
 	 *
 	 * @param id
 	 *            The identifier of the job.
-	 * @return A job object on which more operations can be done.
+	 * @return A job object on which more operations can be done, or empty if
+	 *         the job isn't there or isn't available to you.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
-	Optional<Job> getJob(int id) throws SQLException;
+	@PostFilter(IS_ADMIN
+			+ " or filterObject.owner.orElse(null) == authentication.name")
+	List<Job> getJob(int id) throws SQLException;
 
 	/**
 	 * Create a job.
 	 *
 	 * @param owner
-	 *            Who is making this job. Note that this is a self-asserted
-	 *            identity.
+	 *            Who is making this job.
 	 * @param dimensions
 	 *            List of dimensions. At least one element. No more than three.
 	 *            No negative elements.
@@ -185,7 +191,7 @@ public interface SpallocAPI {
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		String getKeepaliveHost() throws SQLException;
+		Optional<String> getKeepaliveHost() throws SQLException;
 
 		/**
 		 * @return Time of the last keepalive event, if any.
@@ -199,14 +205,14 @@ public interface SpallocAPI {
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		String getOwner() throws SQLException;
+		Optional<String> getOwner() throws SQLException;
 
 		/**
 		 * @return The serialized original request to create the job.
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		byte[] getOriginalRequest() throws SQLException;
+		Optional<byte[]> getOriginalRequest() throws SQLException;
 
 		/**
 		 * @return When the job finished.
@@ -292,7 +298,8 @@ public interface SpallocAPI {
 		List<Integer> ids() throws SQLException;
 
 		/**
-		 * @return The jobs. Simplified view only.
+		 * @return The jobs. Simplified view only. (No keepalive host or owner
+		 *         information.)
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */

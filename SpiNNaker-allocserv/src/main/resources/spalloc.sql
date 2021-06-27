@@ -34,13 +34,17 @@ SELECT z, directions.name AS dir, dx, dy, dz
 FROM movement_directions JOIN directions
 	ON movement_directions.direction = directions.id;
 
+CREATE TABLE IF NOT EXISTS board_models (
+	model INTEGER PRIMARY KEY
+);
+
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_name TEXT UNIQUE NOT NULL,
 	width INTEGER NOT NULL CHECK (width > 0),
 	height INTEGER NOT NULL CHECK (height > 0),
 	"depth" INTEGER NOT NULL CHECK ("depth" IN (1, 3)),
-	board_model INTEGER NOT NULL
+	board_model INTEGER NOT NULL REFERENCES board_models(model) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
@@ -184,9 +188,10 @@ CREATE TABLE IF NOT EXISTS pending_changes (
     to_state INTEGER NOT NULL DEFAULT (0) REFERENCES job_states(id) ON DELETE RESTRICT
 );
 
+-- Coordinates of chips in a board
 CREATE TABLE IF NOT EXISTS board_model_coords(
 	-- We never need the identitites of the rows
-	model INTEGER NOT NULL CHECK (model IN (2, 3, 4, 5)),
+	model INTEGER NOT NULL REFERENCES board_models(model) ON DELETE CASCADE,
 	chip_x INTEGER NOT NULL CHECK (chip_x >= 0),
 	chip_y INTEGER NOT NULL CHECK (chip_y >= 0)
 );

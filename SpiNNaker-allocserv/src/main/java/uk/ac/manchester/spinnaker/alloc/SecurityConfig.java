@@ -103,7 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
-		// FIXME
+		// FIXME Need something not terrible here instead
 		auth.inMemoryAuthentication().withUser("user1")
 				.password(passwordEncoder.encode("user1Pass"))
 				.authorities(GRANT_USER);
@@ -122,6 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/info/**").hasRole("ADMIN") //
 				.anyRequest().authenticated().and().httpBasic()
 				.authenticationEntryPoint(authenticationEntryPoint);
+		// FIXME add support for other styles of login, etc
 	}
 
 	/**

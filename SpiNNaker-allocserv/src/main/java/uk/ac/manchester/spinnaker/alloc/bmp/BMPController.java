@@ -22,6 +22,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -58,11 +61,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
@@ -149,15 +152,29 @@ public class BMPController extends SQLQueries {
 		machines = spallocCore.getMachines().values();
 	}
 
+	private ExecutorService executor = newCachedThreadPool(WorkerThread::new);
+
+	class WorkerThread extends Thread {
+		WorkerThread(Runnable r) {
+			super(r, "bmp-worker");
+		}
+	}
+
 	@PreDestroy
-	private void shutDownWorkers() {
+	private void shutDownWorkers() throws InterruptedException {
 		stop = true;
 		synchronized (this) {
 			notifyAll();
 		}
-		for (Thread worker : workers.values()) {
-			worker.interrupt();
+		executor.shutdown();
+		synchronized (workers) {
+			for (Thread worker : workers.values()) {
+				if (worker instanceof WorkerThread) {
+					worker.interrupt();
+				}
+			}
 		}
+		executor.awaitTermination(SECONDS_BETWEEN_TRIES, SECONDS);
 	}
 
 	@Scheduled(fixedDelay = INTER_TAKE_DELAY, initialDelay = INTER_TAKE_DELAY)
@@ -203,11 +220,26 @@ public class BMPController extends SQLQueries {
 		return requests.size();
 	}
 
+	/**
+	 * Get the transceiver for talking to a given machine's BMPs.
+	 *
+	 * @param machine
+	 *            The machine we're talking about.
+	 * @return The transceiver. Only operations relating to BMPs are guaranteed
+	 *         to be supported.
+	 * @throws IOException If low-level things go wrong.
+	 * @throws SpinnmanException If the transceiver can't be built.
+	 * @throws SQLException If the database can't be talked to.
+	 */
 	private Transceiver txrx(Machine machine)
 			throws IOException, SpinnmanException, SQLException {
 		synchronized (txrxMap) {
 			Transceiver t = txrxMap.get(machine);
 			if (t == null) {
+				/*
+				 * The original spalloc server also does everything through the
+				 * root BMP.
+				 */
 				InetAddress address =
 						getByName(machine.getRootBoardBMPAddress());
 				List<Integer> boards = machine.getBoardNumbers();
@@ -582,13 +614,13 @@ public class BMPController extends SQLQueries {
 		 * in the current thread; the connection inside Machine inside Request
 		 * is _not_ safe to hand off between threads.
 		 */
-		txrx(request.change.machine);
+		Machine m = request.change.machine;
+		txrx(m);
 		synchronized (workers) {
-			workers.computeIfAbsent(request.change.machine, m -> {
-				Thread t = new Thread(() -> backgroundThread(m),
-						"BMP worker for " + m);
-				t.start();
-				return t;
+			workers.computeIfAbsent(m, m1 -> {
+				executor.execute(() -> backgroundThread(m));
+				// Temporary value; will be replaced
+				return currentThread();
 			});
 		}
 		requests.addLast(request);
@@ -607,6 +639,9 @@ public class BMPController extends SQLQueries {
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(Machine machine) {
+		synchronized (workers) {
+			workers.put(machine, currentThread());
+		}
 		MDC.put("machine", machine.getName());
 		try {
 			if (onThreadStart != null) {

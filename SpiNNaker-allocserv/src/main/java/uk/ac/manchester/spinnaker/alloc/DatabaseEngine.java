@@ -103,8 +103,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final int DEFAULT_ANALYSIS_LIMIT = 400;
 
-	/** Used to validate the database contents. */
-	private static final int EXPECTED_NUM_MOVEMENTS = 6;
+	/**
+	 * Used to validate the database contents. Number of items in
+	 * {@code movement_directions} table.
+	 */
+	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
 	private final Path dbPath;
 
@@ -304,7 +307,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
 			Row row = countMovements.call1().get();
 			if (row.getInt("c") != EXPECTED_NUM_MOVEMENTS) {
-				log.warn("database {} seems incomplete", dbConnectionUrl);
+				log.warn("database {} seems incomplete ({} != {})",
+						dbConnectionUrl, row.getInt("c"),
+						EXPECTED_NUM_MOVEMENTS);
 			} else {
 				log.debug("database {} ready", dbConnectionUrl);
 			}

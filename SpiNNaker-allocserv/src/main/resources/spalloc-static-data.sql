@@ -13,6 +13,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+-- Supported models of SpiNNaker board
+INSERT OR IGNORE INTO board_models(model)
+VALUES
+	(2), (3), (4), (5);
+
 -- The information about chip configuration of boards
 INSERT OR IGNORE INTO board_model_coords(model, chip_x, chip_y)
 VALUES
@@ -67,6 +72,25 @@ VALUES
 	(2, 3, 0, 0, -2),
 	(2, 4, -1, 0, -1),
 	(2, 5, 0, +1, -2);
+
+-- Lock down the board_models table
+CREATE TRIGGER IF NOT EXISTS "board_model_support_is_static no_update"
+BEFORE UPDATE ON board_models
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS "board_model_support_is_static no_insert"
+BEFORE INSERT ON board_models
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS "board_model_support_is_static no_delete"
+BEFORE DELETE ON board_models
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
 
 -- Lock down the board_model_coords table
 CREATE TRIGGER IF NOT EXISTS "board_layout_is_static no_update"
