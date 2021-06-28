@@ -154,10 +154,13 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 * @throws SQLException
 	 *             On a serious problem
+	 * @throws RequestFailedException
+	 *             If bad query combinations are supplied
 	 */
 	@GET
 	@Produces(TEXT_PLAIN)
 	@Path(Paths.BOARD)
+	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean getBoardState(@QueryParam("machine") String machineName,
 			@QueryParam("x") @DefaultValue("-1") int x,
 			@QueryParam("y") @DefaultValue("-1") int y,
@@ -259,11 +262,14 @@ public interface AdminAPI {
 	 * @return Whether the board is enabled
 	 * @throws SQLException
 	 *             On a serious problem
+	 * @throws RequestFailedException
+	 *             If bad query combinations are supplied
 	 */
 	@PUT
 	@Consumes(TEXT_PLAIN)
 	@Produces(TEXT_PLAIN)
 	@Path(Paths.BOARD)
+	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean setBoardState(@QueryParam("machine") String machineName,
 			@QueryParam("x") @DefaultValue("-1") int x,
 			@QueryParam("y") @DefaultValue("-1") int y,

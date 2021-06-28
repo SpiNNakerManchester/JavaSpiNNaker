@@ -97,6 +97,8 @@ public interface SpallocServiceAPI {
 	 *
 	 * @param ui
 	 *            How to build URIs
+	 * @param security
+	 *            What are the user's identity and granted permissions?
 	 * @return A wrapped {@link ServiceDescription}
 	 * @throws SQLException
 	 *             If anything goes wrong.

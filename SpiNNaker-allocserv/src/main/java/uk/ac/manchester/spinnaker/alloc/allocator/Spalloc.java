@@ -158,6 +158,14 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	public Job createJob(String owner, List<Integer> dimensions,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] req) throws SQLException {
+		/*
+		 * TODO convert dimensions into something better
+		 *
+		 * We should allow allocation by anything that supports the
+		 * identification of a unique board (as well as by rectangle sizes and
+		 * board counts). Maybe also allow allocation that requires a specific
+		 * board to be present?
+		 */
 		return db.execute(conn -> {
 			MachineImpl m = selectMachine(conn, machineName, tags);
 			if (m == null) {

@@ -66,6 +66,11 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
+	static {
+		// Workaround for checkstyle being stupid
+		PreAuthorize.class.getClass();
+	}
+
 	// TODO application security model
 	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
 
@@ -161,25 +166,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
+	/**
+	 * Make access denied (from a {@code @}{@link PreAuthorize} check) not fill
+	 * the log with huge stack traces.
+	 */
 	@Component
 	@Provider
 	static class SpringAccessDeniedExceptionExceptionMapper
 			implements ExceptionMapper<AccessDeniedException> {
 		@Context
-		UriInfo ui;
+		private UriInfo ui;
 
 		@Context
-		HttpServletRequest req;
+		private HttpServletRequest req;
 
 		@Override
 		public Response toResponse(AccessDeniedException exception) {
+			// Actually produce useful logging; the default is ghastly!
 			UsernamePasswordAuthenticationToken who =
 					(UsernamePasswordAuthenticationToken) req
 							.getUserPrincipal();
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
 					((User) who.getPrincipal()).getUsername(),
 					who.getAuthorities());
-			return status(FORBIDDEN).build();
+			// But the user gets a bland response
+			return status(FORBIDDEN).entity("computer says no").build();
 		}
 	}
 
