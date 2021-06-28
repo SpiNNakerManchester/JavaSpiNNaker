@@ -162,14 +162,21 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 	}
 
 	@Override
-	public ServiceDescription describeService(UriInfo ui) {
-		return new ServiceDescription(v, ui);
+	public ServiceDescription describeService(UriInfo ui, SecurityContext sec) {
+		return new ServiceDescription(v, ui, sec);
 	}
 
 	@Override
 	public MachinesResponse getMachines(UriInfo ui) throws SQLException {
 		return new MachinesResponse(core.getMachines(), ui);
 	}
+
+	/*
+	 * TODO consider making machine impls and job impls using factories.
+	 *
+	 * This would be so that we can use injection in them and security
+	 * annotations. See https://stackoverflow.com/a/43594962/301832
+	 */
 
 	@Override
 	public MachineAPI getMachine(String name, UriInfo ui) throws SQLException {

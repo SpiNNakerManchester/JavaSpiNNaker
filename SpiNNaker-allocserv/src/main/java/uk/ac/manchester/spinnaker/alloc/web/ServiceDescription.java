@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 
 import java.net.URI;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -46,11 +47,13 @@ public class ServiceDescription {
 	public ServiceDescription() {
 	}
 
-	ServiceDescription(Version version, UriInfo ui) {
+	ServiceDescription(Version version, UriInfo ui, SecurityContext sec) {
 		this.version = version;
-		UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
-		jobsRef = ub.build(JOB);
-		machinesRef = ub.build(MACH);
+		if (sec.isUserInRole("READER")) {
+			UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
+			jobsRef = ub.build(JOB);
+			machinesRef = ub.build(MACH);
+		}
 	}
 
 	/** @return The service version */

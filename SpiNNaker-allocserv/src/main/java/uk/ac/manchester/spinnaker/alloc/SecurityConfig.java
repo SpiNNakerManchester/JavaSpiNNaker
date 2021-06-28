@@ -72,6 +72,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/** How to assert that a user must be an admin. */
 	public static final String IS_ADMIN = "hasRole('ADMIN')";
 
+	/** How to assert that a user must be able to read summaries. */
+	public static final String IS_READER = "hasRole('READER')";
+
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
 	 * in depth.
@@ -79,13 +82,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public static final String IS_USER = "hasRole('USER')";
 
 	/**
-	 * The authority used to grant a user permission to work with jobs.
+	 * The authority used to grant a user permission to create jobs, manipulate
+	 * them, and read their details. Note that many features are locked to the
+	 * owner of the job or admins. Users should also have {@link #GRANT_READER}.
 	 */
 	protected static final String GRANT_USER = "ROLE_USER";
 
 	/**
+	 * The authority used to grant a user permission to get general machine
+	 * information and summaries of jobs. Without this, only the service root
+	 * (and the parts required for logging in) will be visible.
+	 */
+	protected static final String GRANT_READER = "ROLE_READER";
+
+	/**
 	 * The authority used to grant a user permission to use administrative
-	 * actions.
+	 * actions. Admins should also have {@link #GRANT_USER} and
+	 * {@link #GRANT_READER}.
 	 */
 	protected static final String GRANT_ADMIN = "ROLE_ADMIN";
 
@@ -106,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// FIXME Need something not terrible here instead
 		auth.inMemoryAuthentication().withUser("user1")
 				.password(passwordEncoder.encode("user1Pass"))
-				.authorities(GRANT_USER);
+				.authorities(GRANT_USER, GRANT_READER);
 	}
 
 	@Override

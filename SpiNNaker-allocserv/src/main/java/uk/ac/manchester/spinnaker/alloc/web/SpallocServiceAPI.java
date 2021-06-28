@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_USER;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
@@ -107,7 +108,8 @@ public interface SpallocServiceAPI {
 			summary = "Describe the overall service",
 			description = "Get a description of the overall service.")
 	@Produces(APPLICATION_JSON)
-	ServiceDescription describeService(@Context UriInfo ui) throws SQLException;
+	ServiceDescription describeService(@Context UriInfo ui,
+			@Context SecurityContext security) throws SQLException;
 
 	/**
 	 * Get a description of the machines.
@@ -128,6 +130,7 @@ public interface SpallocServiceAPI {
 					+ "number of machines expected to be small.")
 	@Path(MACH)
 	@Produces(APPLICATION_JSON)
+	@PreAuthorize(IS_READER)
 	MachinesResponse getMachines(@Context UriInfo ui) throws SQLException;
 	// No paging; not expecting very many!
 
@@ -144,6 +147,7 @@ public interface SpallocServiceAPI {
 	 */
 	@Path(MACH + "/{name}")
 	@Description("Operations on a specific machine.")
+	@PreAuthorize(IS_READER)
 	MachineAPI getMachine(
 			@Description("The name of the machine.")
 			@PathParam(NAME) String name,
@@ -178,6 +182,7 @@ public interface SpallocServiceAPI {
 				implementation = ListJobsResponse.class))))
 	@Path(JOB)
 	@Produces(APPLICATION_JSON)
+	@PreAuthorize(IS_READER)
 	void listJobs(
 			@Description("Whether to wait for a change (for up "
 					+ "to 30 seconds) before returning.")
