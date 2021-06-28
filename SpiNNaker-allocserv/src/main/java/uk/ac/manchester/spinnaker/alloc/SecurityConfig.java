@@ -152,11 +152,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public void commence(HttpServletRequest request,
 				HttpServletResponse response, AuthenticationException authEx)
 				throws IOException {
+			log.info("issuing request for log in to {}",
+					request.getRemoteAddr());
 			response.addHeader("WWW-Authenticate",
-					"Basic realm=" + getRealmName() + "");
+					"Basic realm=" + getRealmName());
 			response.setStatus(SC_UNAUTHORIZED);
 			PrintWriter writer = response.getWriter();
-			writer.println("HTTP Status 401 - " + authEx.getMessage());
+			writer.println("log in required");
 		}
 
 		@Override
