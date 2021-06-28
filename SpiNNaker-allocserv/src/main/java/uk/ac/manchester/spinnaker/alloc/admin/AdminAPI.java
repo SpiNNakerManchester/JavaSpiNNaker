@@ -18,13 +18,14 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static org.slf4j.LoggerFactory.getLogger;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.net.URI;
 import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,13 +39,13 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
 /**
  * Administration interface.
  *
  * @author Donal Fellows
  */
-// TODO You must have admin permission to use this
 @Hidden
 @PreAuthorize(IS_ADMIN)
 public interface AdminAPI {
@@ -134,20 +135,54 @@ public interface AdminAPI {
 	/**
 	 * Describe the enable state of a board.
 	 *
-	 * @return Human-readable description
+	 * @param machineName
+	 *            The name of the machine; required
+	 * @param x
+	 *            The X coordinate, used to identify a board by triad coords
+	 * @param y
+	 *            The Y coordinate, used to identify a board by triad coords
+	 * @param z
+	 *            The Z coordinate, used to identify a board by triad coords
+	 * @param c
+	 *            The cabinet number, used to identify a board physically
+	 * @param f
+	 *            The frame number, used to identify a board physically
+	 * @param b
+	 *            The board number, used to identify a board physically
+	 * @param address
+	 *            The IP address of the board (dotted quad)
+	 * @return Whether the board is enabled
+	 * @throws SQLException
+	 *             On a serious problem
 	 */
 	@GET
 	@Produces(TEXT_PLAIN)
 	@Path(Paths.BOARD)
-	default String getBoardState() {
-		// TODO expand to cover addressing gamut in this description
-		try {
-			throw new Exception("boo");
-		} catch (Exception e) {
-			getLogger(getClass()).info("check", e);
+	default boolean getBoardState(@QueryParam("machine") String machineName,
+			@QueryParam("x") @DefaultValue("-1") int x,
+			@QueryParam("y") @DefaultValue("-1") int y,
+			@QueryParam("z") @DefaultValue("-1") int z,
+			@QueryParam("cabinet") @DefaultValue("-1") int c,
+			@QueryParam("frame") @DefaultValue("-1") int f,
+			@QueryParam("board") @DefaultValue("-1") int b,
+			@QueryParam("address") @DefaultValue("") String address)
+			throws SQLException {
+		if (machineName == null || machineName.isEmpty()) {
+			throw new RequestFailedException(BAD_REQUEST,
+					"You need to supply a machine name with machine=");
 		}
-		return "You need to supply machine= and coordinates (as "
-				+ "x=&y=&z=, c=&f=&b= or address=)";
+		if (x >= 0 && y >= 0 && z >= 0) {
+			return getBoardStateXYZ(machineName, x, y, z);
+		}
+		if (c >= 0 && f >= 0 && b >= 0) {
+			return getBoardStateCFB(machineName, c, f, b);
+		}
+		if (address != null && !address.isEmpty()) {
+			return getBoardStateAddress(machineName, address);
+		}
+		throw new RequestFailedException(BAD_REQUEST,
+				"You need to supply coordinates (as "
+						+ "x=&y=&z=, c=&f=&b= or address=)");
 	}
 
 	/**
@@ -165,12 +200,8 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@GET
-	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
-	boolean getBoardStateXYZ(@QueryParam("machine") String name,
-			@QueryParam("x") int x, @QueryParam("y") int y,
-			@QueryParam("z") int z) throws SQLException;
+	boolean getBoardStateXYZ(String name, int x, int y, int z)
+			throws SQLException;
 
 	/**
 	 * Find board by physical coordinates and return its state.
@@ -187,12 +218,8 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@GET
-	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
-	boolean getBoardStateCFB(@QueryParam("machine") String name,
-			@QueryParam("cabinet") int c, @QueryParam("frame") int f,
-			@QueryParam("board") int b) throws SQLException;
+	boolean getBoardStateCFB(String name, int c, int f, int b)
+			throws SQLException;
 
 	/**
 	 * Find board by IP address and return its state.
@@ -205,11 +232,64 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@GET
+	boolean getBoardStateAddress(String name, String address)
+			throws SQLException;
+
+	/**
+	 * Enable or disable a board.
+	 *
+	 * @param machineName
+	 *            The name of the machine
+	 * @param x
+	 *            The X coordinate, used to identify a board by triad coords
+	 * @param y
+	 *            The Y coordinate, used to identify a board by triad coords
+	 * @param z
+	 *            The Z coordinate, used to identify a board by triad coords
+	 * @param c
+	 *            The cabinet number, used to identify a board physically
+	 * @param f
+	 *            The frame number, used to identify a board physically
+	 * @param b
+	 *            The board number, used to identify a board physically
+	 * @param address
+	 *            The IP address of the board (dotted quad)
+	 * @param enabled
+	 *            Whether the board should be set to the enabled state
+	 * @return Whether the board is enabled
+	 * @throws SQLException
+	 *             On a serious problem
+	 */
+	@PUT
+	@Consumes(TEXT_PLAIN)
 	@Produces(TEXT_PLAIN)
 	@Path(Paths.BOARD)
-	boolean getBoardStateAddress(@QueryParam("machine") String name,
-			@QueryParam("address") String address) throws SQLException;
+	default boolean setBoardState(@QueryParam("machine") String machineName,
+			@QueryParam("x") @DefaultValue("-1") int x,
+			@QueryParam("y") @DefaultValue("-1") int y,
+			@QueryParam("z") @DefaultValue("-1") int z,
+			@QueryParam("cabinet") @DefaultValue("-1") int c,
+			@QueryParam("frame") @DefaultValue("-1") int f,
+			@QueryParam("board") @DefaultValue("-1") int b,
+			@QueryParam("address") @DefaultValue("") String address,
+			boolean enabled) throws SQLException {
+		if (machineName == null || machineName.isEmpty()) {
+			throw new RequestFailedException(BAD_REQUEST,
+					"You need to supply a machine name with machine=");
+		}
+		if (x >= 0 && y >= 0 && z >= 0) {
+			return setBoardStateXYZ(machineName, x, y, z, enabled);
+		}
+		if (c >= 0 && f >= 0 && b >= 0) {
+			return setBoardStateCFB(machineName, c, f, b, enabled);
+		}
+		if (address != null && !address.isEmpty()) {
+			return setBoardStateAddress(machineName, address, enabled);
+		}
+		throw new RequestFailedException(BAD_REQUEST,
+				"You need to supply coordinates (as "
+						+ "x=&y=&z=, c=&f=&b= or address=)");
+	}
 
 	/**
 	 * Enable or disable a board. Find by logical triad coordinates.
@@ -228,13 +308,8 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@PUT
-	@Consumes(TEXT_PLAIN)
-	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
-	boolean setBoardStateXYZ(@QueryParam("machine") String name,
-			@QueryParam("x") int x, @QueryParam("y") int y,
-			@QueryParam("z") int z, boolean enabled) throws SQLException;
+	boolean setBoardStateXYZ(String name, int x, int y, int z, boolean enabled)
+			throws SQLException;
 
 	/**
 	 * Enable or disable a board. Find by physical coordinates.
@@ -253,13 +328,8 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@PUT
-	@Consumes(TEXT_PLAIN)
-	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
-	boolean setBoardStateCFB(@QueryParam("machine") String name,
-			@QueryParam("cabinet") int c, @QueryParam("frame") int f,
-			@QueryParam("board") int b, boolean enabled) throws SQLException;
+	boolean setBoardStateCFB(String name, int c, int f, int b, boolean enabled)
+			throws SQLException;
 
 	/**
 	 * Enable or disable a board. Find by IP address.
@@ -274,11 +344,6 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	@PUT
-	@Consumes(TEXT_PLAIN)
-	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
-	boolean setBoardStateAddress(@QueryParam("machine") String name,
-			@QueryParam("address") String address, boolean enabled)
+	boolean setBoardStateAddress(String name, String address, boolean enabled)
 			throws SQLException;
 }
