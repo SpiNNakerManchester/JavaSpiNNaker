@@ -35,39 +35,13 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
  * A mapping that says how to go from one board's coordinates (only the Z
  * coordinate matters for this) to another when you move in a particular
  * direction.
- *
- * <pre>
- *  ___     ___     ___     ___
- * / . \___/ . \___/ . \___/ . \___
- * \___/ . \___/ . \___/ . \___/ . \
- * /0,1\___/1,1\___/2,1\___/3,1\___/
- * \___/ . \___/ . \___/ . \___/ . \___
- *     \_2_/ . \___/ . \___/ . \___/ . \
- *     /0,0\_1_/1,0\___/2,0\___/3,0\___/
- *     \_0_/   \___/   \___/   \___/
- * </pre>
- *
+ * <p>
+ * Consider this board layout (a classic 24 board machine):
+ * <p>
+ * <img src="doc-files/DirInfo1.png" width="450">
+ * <p>
  * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0 chips
- * horizontally offset from 0,0,0; the hexagons are actually a distorted shape.
- * This is closer:
- *
- * <pre>
- *    __     __     __     __
- *   /  |   /  |   /  |   /  |
- *  /   |__/   |__/   |__/   |__
- *  | 2 /  | 2 /  | 2 /  | 2 /  |
- *  |__/   |__/   |__/   |__/   |
- *  /  | 1 /  | 1 /  | 1 /  | 1 /
- * /0,1|__/1,1|__/2,1|__/3,1|__/
- * | 0 /  | 0 /  | 0 /  | 0 /  |
- * |__/   |__/   |__/   |__/   |__
- *    | 2 /  | 2 /  | 2 /  | 2 /  |
- *    |__/   |__/   |__/   |__/   |
- *    /  | 1 /  | 1 /  | 1 /  | 1 /
- *   /0,0|__/1,0|__/2,0|__/3,0|__/
- *   | 0 /  | 0 /  | 0 /  | 0 /
- *   |__/   |__/   |__/   |__/
- * </pre>
+ * horizontally offset from 0,0,0.
  *
  * @author Donal Fellows
  */
