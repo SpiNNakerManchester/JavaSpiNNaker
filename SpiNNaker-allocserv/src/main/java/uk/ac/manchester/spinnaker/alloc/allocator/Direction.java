@@ -22,27 +22,13 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 /**
  * Represents link directions of a board.
  *
- * <pre>
- *        __
- *       /  |
- *    __/   |__
- *   /  | a /  |
- *  /   |__/   |
- *  | f /  | b /
- *  |__/   |__/
- *  /  | x /  |
- * /   |__/   |
- * | e /  | c /
- * |__/   |__/
- *    | d /
- *    |__/
- * </pre>
+ * <img src="doc-files/Directions.png" width="300">
  *
- * Note that this is tilted over with respect to reality; to <em>actually</em>
- * go "true vertically north", you have to go first {@link #N} and then
- * {@link #NW}, taking two boards to actually go straight north (by an offset of
- * 12 chips); {@code a} is vertically north of {@code c}, and {@code f} is
- * vertically north of {@code d}.
+ * Note how this is tilted over with respect to classical compass directions; to
+ * <em>actually</em> go "true vertically north", you have to go first {@link #N}
+ * and then {@link #NW}, taking two boards to actually go straight north (by an
+ * offset of 12 chips); {@code a} is vertically north of {@code c}, and
+ * {@code f} is vertically north of {@code d}.
  *
  * @see DirInfo
  * @author Donal Fellows
