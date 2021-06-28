@@ -33,7 +33,6 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
  * @see DirInfo
  * @author Donal Fellows
  */
-// TODO Use an image instead of ASCII art; that'll let us get the angle right
 public enum Direction {
 	// Order must match that in database
 	/** Northward, from {@code x} to {@code a}. */
