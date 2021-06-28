@@ -416,7 +416,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 			}
 			try (Connection conn = db.getConnection();
-					Query boardNumbers = query(conn, GET_DEAD_LINKS)) {
+					Query boardNumbers = query(conn, getDeadLinks)) {
 				return transaction(conn, () -> {
 					List<DownLink> links = new ArrayList<>();
 					for (Row row : boardNumbers.call(id)) {

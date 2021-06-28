@@ -991,6 +991,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				throw rewriteException(e);
 			}
 		}
+
+		private static final int TRIM_LENGTH = 80;
+
+		@Override
+		public String toString() {
+			// Exclude comments and compress whitespace
+			String sql = s.toString().replaceAll("--[^\n]*\n", " ")
+					.replaceAll("\\s+", " ").trim();
+			// Trim long queries to no more than TRIM_LENGTH...
+			String sql2 =
+					sql.replaceAll("^(.{0," + TRIM_LENGTH + "})\\b.*$", "$1");
+			if (sql2 != sql) {
+				// and add an ellipsis if we do the trimming
+				sql = sql2 + "...";
+			}
+			return getClass().getSimpleName() + " : " + sql;
+		}
 	}
 
 	/**

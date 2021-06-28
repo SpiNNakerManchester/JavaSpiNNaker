@@ -208,42 +208,6 @@ public abstract class SQLQueries {
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND functioning IS 0 ORDER BY z ASC, x ASC, y ASC";
 
-	/** Get the links of a machine that have been disabled. */
-	// TODO Move this to its own file; it's a bit too complicated
-	@Parameter("machine_id")
-	@ResultColumn("board_1_x")
-	@ResultColumn("board_1_y")
-	@ResultColumn("board_1_z")
-	@ResultColumn("board_1_c")
-	@ResultColumn("board_1_f")
-	@ResultColumn("board_1_b")
-	@ResultColumn("board_1_addr")
-	@ResultColumn("dir_1")
-	@ResultColumn("board_2_x")
-	@ResultColumn("board_2_y")
-	@ResultColumn("board_2_z")
-	@ResultColumn("board_2_c")
-	@ResultColumn("board_2_f")
-	@ResultColumn("board_2_b")
-	@ResultColumn("board_2_addr")
-	@ResultColumn("dir_2")
-	protected static final String GET_DEAD_LINKS =
-			"SELECT b1.x AS board_1_x, b1.y AS board_1_y, b1.z AS board_1_z, "
-					+ "bmp1.cabinet AS board_1_c, bmp1.frame AS board_1_f, "
-					+ "b1.board_num AS board_1_b, b1.address AS board_1_addr, "
-					+ "dir_1, "
-					+ "b2.x AS board_2_x, b2.y AS board_2_y, "
-					+ "b2.z AS board_2_z, bmp2.cabinet AS board_2_c, "
-					+ "bmp2.frame AS board_2_f, b2.board_num AS board_2_b, "
-					+ "b2.address AS board_2_addr, dir_2 "
-					+ "FROM links "
-					+ "JOIN boards AS b1 ON board_1 = b1.board_id "
-					+ "JOIN boards AS b2 ON board_2 = b2.board_id "
-					+ "JOIN bmp AS bmp1 ON bmp1.bmp_id = b1.bmp_id "
-					+ "JOIN bmp AS bmp2 ON bmp2.bmp_id = b2.bmp_id "
-					+ "WHERE b1.machine_id = :machine_id AND NOT live "
-					+ "ORDER BY board_1 ASC, board_2 ASC";
-
 	/** Get the boards that are available for allocation. */
 	@Parameter("machine_id")
 	@ResultColumn("board_num")
@@ -314,33 +278,6 @@ public abstract class SQLQueries {
 	protected static final String GET_ROOT_COORDS =
 			"SELECT x, y, z, root_x, root_y FROM boards "
 					+ "WHERE board_id = :board_id LIMIT 1";
-
-	/** Get the list of allocation tasks. */
-	@ResultColumn("req_id")
-	@ResultColumn("job_id")
-	@ResultColumn("num_boards")
-	@ResultColumn("width")
-	@ResultColumn("height")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@ResultColumn("machine_id")
-	@ResultColumn("max_dead_boards")
-	@ResultColumn("max_width")
-	@ResultColumn("max_height")
-	protected static final String GET_TASKS =
-			"SELECT job_request.req_id, job_request.job_id, "
-					+ "  job_request.num_boards, "
-					+ "  job_request.width, job_request.height, "
-					+ "  job_request.x, job_request.y, job_request.z, "
-					+ "  jobs.machine_id AS machine_id, "
-					+ "  job_request.max_dead_boards, "
-					+ "  machines.width AS max_width, "
-					+ "  machines.height AS max_height "
-					+ "FROM job_request JOIN jobs"
-					+ "  ON job_request.job_id = jobs.job_id "
-					+ "JOIN machines ON jobs.machine_id = machines.machine_id "
-					+ "ORDER BY req_id";
 
 	/** Delete an allocation task. */
 	@Parameter("request_id")
@@ -541,6 +478,69 @@ public abstract class SQLQueries {
 	@GeneratesID
 	protected static final String INSERT_TAG =
 			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
+
+	/** Get a board's ID given it's triad coordinates. */
+	@Parameter("machine_name")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("z")
+	@ResultColumn("board_id")
+	@SingleRowResult
+	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
+			"SELECT board_id FROM boards JOIN machines "
+					+ "ON boards.machine_id = machines.machine_id "
+					+ "WHERE machine_name = :machine_name "
+					+ "AND x = :x AND y = :y AND z = :z LIMIT 1";
+
+	/** Get a board's ID given it's physical coordinates. */
+	@Parameter("machine_name")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@Parameter("board")
+	@ResultColumn("board_id")
+	@SingleRowResult
+	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
+			"SELECT board_id FROM boards JOIN machines "
+					+ "ON boards.machine_id = machines.machine_id "
+					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "WHERE machine_name = :machine_name "
+					+ "AND bmp.cabinet = :cabinet AND bmp.frame = :frame "
+					+ "AND boards.board_num = :board LIMIT 1";
+
+	/** Get a board's ID given it's IP address. */
+	@Parameter("machine_name")
+	@Parameter("address")
+	@ResultColumn("board_id")
+	@SingleRowResult
+	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
+			"SELECT board_id FROM boards JOIN machines "
+					+ "ON boards.machine_id = machines.machine_id "
+					+ "WHERE machine_name = :machine_name "
+					+ "AND boards.address = :address LIMIT 1";
+
+	/**
+	 * Get the value of a board's {@code functioning} column.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@ResultColumn("functioning")
+	@SingleRowResult
+	protected static final String GET_FUNCTIONING_FIELD =
+			"SELECT functioning FROM boards "
+					+ "WHERE board_id = :board_id LIMIT 1";
+
+	/**
+	 * Set the value of a board's {@code functioning} column. Enables or
+	 * disables allocation of the board.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("enabled")
+	@Parameter("board_id")
+	protected static final String SET_FUNCTIONING_FIELD =
+			"UPDATE boards SET functioning = :enabled "
+					+ "WHERE board_id = :board_id";
 
 	// SQL loaded from files because it is too complicated otherwise!
 
@@ -779,4 +779,41 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@Value("classpath:queries/connected_boards_at_coords.sql")
 	protected Resource getConnectedBoards;
+
+	/** Get the links of a machine that have been disabled. */
+	@Parameter("machine_id")
+	@ResultColumn("board_1_x")
+	@ResultColumn("board_1_y")
+	@ResultColumn("board_1_z")
+	@ResultColumn("board_1_c")
+	@ResultColumn("board_1_f")
+	@ResultColumn("board_1_b")
+	@ResultColumn("board_1_addr")
+	@ResultColumn("dir_1")
+	@ResultColumn("board_2_x")
+	@ResultColumn("board_2_y")
+	@ResultColumn("board_2_z")
+	@ResultColumn("board_2_c")
+	@ResultColumn("board_2_f")
+	@ResultColumn("board_2_b")
+	@ResultColumn("board_2_addr")
+	@ResultColumn("dir_2")
+	@Value("classpath:queries/get_dead_links.sql")
+	protected Resource getDeadLinks;
+
+	/** Get the list of allocation tasks. */
+	@ResultColumn("req_id")
+	@ResultColumn("job_id")
+	@ResultColumn("num_boards")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("machine_id")
+	@ResultColumn("max_dead_boards")
+	@ResultColumn("max_width")
+	@ResultColumn("max_height")
+	@Value("classpath:queries/get_allocation_tasks.sql")
+	protected Resource getAllocationTasks;
 }

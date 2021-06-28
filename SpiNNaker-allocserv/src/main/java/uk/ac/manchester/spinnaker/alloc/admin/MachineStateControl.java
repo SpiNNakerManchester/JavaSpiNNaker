@@ -58,8 +58,7 @@ public class MachineStateControl extends SQLQueries {
 		 */
 		public boolean getState() throws SQLException {
 			return db.execute(c -> {
-				try (Query q = query(c, "SELECT functioning FROM boards "
-						+ "WHERE board_id = :board_id LIMIT 1")) {
+				try (Query q = query(c, GET_FUNCTIONING_FIELD)) {
 					Optional<Row> result = q.call1(boardId);
 					if (result.isPresent()) {
 						return result.get().getBoolean("functioning");
@@ -71,9 +70,7 @@ public class MachineStateControl extends SQLQueries {
 
 		public void setState(boolean newValue) throws SQLException {
 			db.executeVoid(c -> {
-				try (Update u =
-						update(c, "UPDATE boards SET functioning = :enabled "
-								+ "WHERE board_id = :board_id")) {
+				try (Update u = update(c, SET_FUNCTIONING_FIELD)) {
 					u.call(newValue, boardId);
 				}
 			});
@@ -98,11 +95,7 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z)
 			throws SQLException {
 		return db.execute(conn -> {
-			try (Query q = query(conn,
-					"SELECT board_id FROM boards JOIN machines "
-							+ "ON boards.machine_id = machines.machine_id "
-							+ "WHERE machine_name = :machine_name "
-							+ "AND x = :x AND y = :y AND z = :z LIMIT 1")) {
+			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
 				for (Row row : q.call(machine, x, y, z)) {
 					return Optional.of(new BoardState(row.getInt("board_id")));
 				}
@@ -129,14 +122,7 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) throws SQLException {
 		return db.execute(conn -> {
-			try (Query q = query(conn,
-					"SELECT board_id FROM boards JOIN machines "
-							+ "ON boards.machine_id = machines.machine_id "
-							+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
-							+ "WHERE machine_name = :machine_name "
-							+ "AND bmp.cabinet = :cabinet "
-							+ "AND bmp.frame = :frame "
-							+ "AND boards.board_num = :board LIMIT 1")) {
+			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
 				for (Row row : q.call(machine, c, f, b)) {
 					return Optional.of(new BoardState(row.getInt("board_id")));
 				}
@@ -159,11 +145,7 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findIP(String machine, String address)
 			throws SQLException {
 		return db.execute(conn -> {
-			try (Query q = query(conn,
-					"SELECT board_id FROM boards JOIN machines "
-							+ "ON boards.machine_id = machines.machine_id "
-							+ "WHERE machine_name = :machine_name "
-							+ "AND boards.address = :address LIMIT 1")) {
+			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				for (Row row : q.call(machine, address)) {
 					return Optional.of(new BoardState(row.getInt("board_id")));
 				}

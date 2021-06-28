@@ -157,7 +157,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean allocate(Connection conn) throws SQLException {
-		try (Query getTasks = query(conn, GET_TASKS);
+		try (Query getTasks = query(conn, getAllocationTasks);
 				Update delete = update(conn, DELETE_TASK)) {
 			boolean changed = false;
 			for (Row row : getTasks.call()) {
