@@ -141,7 +141,8 @@ CREATE TABLE IF NOT EXISTS jobs (
 	death_reason TEXT,
 	death_timestamp INTEGER, -- timestamp
 	original_request BLOB, -- Stores it, but doesn't otherwise care
-	num_pending INTEGER NOT NULL DEFAULT (0)
+	num_pending INTEGER NOT NULL DEFAULT (0),
+	allocation_size INTEGER
 );
 -- When the job is created, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping

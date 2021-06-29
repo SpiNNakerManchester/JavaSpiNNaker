@@ -304,11 +304,12 @@ public abstract class SQLQueries {
 	@Parameter("height")
 	@Parameter("depth")
 	@Parameter("board_id")
+	@Parameter("num_boards")
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = :width, height = :height, depth = :depth, "
-			+ "num_pending = 0, root_id = :board_id "
-			+ "WHERE job_id = :job_id";
+			+ "num_pending = 0, root_id = :board_id, "
+			+ "allocation_size = :num_boards WHERE job_id = :job_id";
 
 	/** Get a board's ID by its coordinates. */
 	@Parameter("machine_id")

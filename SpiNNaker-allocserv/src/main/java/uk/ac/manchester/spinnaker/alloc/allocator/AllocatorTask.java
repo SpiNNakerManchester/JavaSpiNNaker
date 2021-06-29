@@ -219,6 +219,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 				Update killPending = update(conn, KILL_JOB_PENDING)) {
 			setPower(conn, id, PowerState.OFF, DESTROYED);
+			// TODO can we combine these?
 			boolean success = mark.call(reason, id) > 0;
 			if (success) {
 				killAlloc.call(id);
@@ -464,7 +465,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query getConnectedBoardIDs = query(conn, getConnectedBoards);
 				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
 				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
-			// Messy without RETURNING, but SQLite 3.35 not yet supported
+			// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
 			List<Integer> boardsToAllocate = new ArrayList<>();
 			for (Row row : getConnectedBoardIDs.call(machineId, root.x, root.y,
 					root.z, rect.width, rect.height, rect.depth)) {
@@ -476,8 +477,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				return false;
 			}
 
+
 			allocJob.call(rect.width, rect.height, rect.depth,
-					boardsToAllocate.get(0), jobId);
+					boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
 			return setPower(conn, jobId, PowerState.ON, READY);
 		}
 	}
@@ -519,6 +521,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				 * not allocated to the job. Off-board links are shut off by
 				 * default.
 				 */
+				// TODO Use RETURNING to combine getPerim and issueChange
 				Map<Integer, EnumSet<Direction>> perimeterLinks =
 						new HashMap<>();
 				for (Row row : getPerim.call(jobId)) {
