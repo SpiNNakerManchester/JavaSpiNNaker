@@ -16,9 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 
 /**
  * Manages user quotas.
@@ -26,8 +35,9 @@ import org.springframework.stereotype.Component;
  * @author Donal Fellows
  */
 @Component
-public class QuotaManager {
-	// TODO implement a real policy; the current one is... not enough
+public class QuotaManager extends SQLQueries {
+	@Autowired
+	private DatabaseEngine db;
 
 	/**
 	 * Can the user create another job at this point? If not, they're currently
@@ -44,7 +54,28 @@ public class QuotaManager {
 	 */
 	public boolean hasQuotaRemaining(int machineId, String user)
 			throws SQLException {
-		return true;
+		try (Connection c = db.getConnection();
+				Query getQuota = query(c, GET_USER_QUOTA);
+				Query getCurrentUsage = query(c, GET_CURRENT_USAGE)) {
+			Integer quota = null;
+			int userId = 0;
+			for (Row row : getQuota.call(machineId, user)) {
+				quota = (Integer) row.getObject("quota");
+				userId = row.getInt("user_id");
+			}
+			if (quota == null) {
+				return true;
+			}
+			// Quota is defined; check if current usage exceeds it
+			if (quota > 0) {
+				for (Row row : getCurrentUsage.call(machineId, userId)) {
+					quota -= row.getInt("current_usage");
+					break;
+				}
+			}
+			// If board-seconds are left, we're good to go
+			return (quota > 0);
+		}
 	}
 
 	/**
@@ -62,6 +93,16 @@ public class QuotaManager {
 	 */
 	public boolean hasQuotaRemaining(int machineId, int jobId)
 			throws SQLException {
-		return true;
+		try (Connection c = db.getConnection();
+				Query getUsageAndQuota = query(c, GET_JOB_USAGE_AND_QUOTA)) {
+			for (Row row : getUsageAndQuota.call(machineId, jobId)) {
+				int usage = row.getInt("usage");
+				int quota = row.getInt("quota");
+				if (usage > quota) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 }

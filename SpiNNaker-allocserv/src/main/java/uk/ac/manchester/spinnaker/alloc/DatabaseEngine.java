@@ -267,7 +267,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param columnLabel
 		 *            The name of the column.
-		 * @return An automatically-decoded object, or {@code false} on
+		 * @return An automatically-decoded object, or {@code null} on
 		 *         {@code NULL}. (Only returns basic types.)
 		 * @throws SQLException
 		 *             If a problem occurs

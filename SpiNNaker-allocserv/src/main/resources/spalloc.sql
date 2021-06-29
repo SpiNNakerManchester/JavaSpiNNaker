@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS job_states(
 CREATE TABLE IF NOT EXISTS jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
-	owner TEXT NOT NULL,
+	owner INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE RESTRICT,
 	create_timestamp INTEGER NOT NULL,
 	width INTEGER CHECK (width > 0), -- set after allocation
 	height INTEGER CHECK (height > 0), -- set after allocation
@@ -148,15 +148,16 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 CREATE VIEW IF NOT EXISTS jobs_usage(
-	job_id, owner, "size", "start", "finish", "duration", "usage") AS
+	machine_id, job_id, owner, "size", "start", "finish", "duration", "usage", "complete") AS
 SELECT
-	job_id, owner, allocation_size, allocation_timestamp, death_timestamp,
+	machine_id, job_id, owner, allocation_size, allocation_timestamp, death_timestamp,
 	COALESCE(
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
 		0),
 	COALESCE(allocation_size, 0) * COALESCE(
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
-		0)
+		0),
+	job_state = 4 -- DESTROYED
 FROM jobs
 WHERE NOT accounted_for;
 
@@ -166,7 +167,7 @@ AFTER INSERT ON jobs
 BEGIN
 	UPDATE jobs
 		SET create_timestamp = strftime('%s','now')
-		WHERE job_id = NEW.job_id;
+	WHERE job_id = NEW.job_id;
 END;
 -- When the job is allocated, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobAllocationTimestamping
@@ -174,7 +175,8 @@ AFTER UPDATE OF allocation_size ON jobs
 BEGIN
 	UPDATE jobs
 		SET allocation_timestamp = strftime('%s','now')
-		WHERE job_id = OLD.job_id AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
+	WHERE job_id = OLD.job_id
+		AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
 END;
 -- When the job is destroyed, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
@@ -182,7 +184,8 @@ AFTER UPDATE OF job_state ON jobs
 BEGIN
 	UPDATE jobs
 		SET death_timestamp = strftime('%s','now')
-		WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 AND NEW.job_state IS 4;
+	WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 -- DESTROYED
+		AND NEW.job_state IS 4; -- DESTROYED
 END;
 
 CREATE TABLE IF NOT EXISTS job_request (
@@ -223,6 +226,28 @@ CREATE TABLE IF NOT EXISTS board_model_coords(
 -- Board chip descriptors are unique
 CREATE UNIQUE INDEX IF NOT EXISTS chipUniqueness ON board_model_coords(
     model, chip_x, chip_y
+);
+
+CREATE TABLE IF NOT EXISTS user_info (
+	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_name TEXT UNIQUE NOT NULL,
+	encrypted_password TEXT, -- If NULL, login via OpenID
+	-- Roles
+	is_admin INTEGER NOT NULL DEFAULT (0) CHECK (is_admin IN (0, 1)),
+	is_user INTEGER NOT NULL DEFAULT (1) CHECK (is_user IN (0, 1)),
+	is_reader INTEGER NOT NULL DEFAULT (1) CHECK (is_reader IN (0, 1)),
+	blocked INTEGER NOT NULL DEFAULT (0) CHECK (blocked IN (0, 1))
+);
+
+CREATE TABLE IF NOT EXISTS quotas (
+	quota_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
+	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
+	quota INTEGER -- If NULL, no quota applies
+);
+-- No user can have more than one quota for a particular machine
+CREATE UNIQUE INDEX IF NOT EXISTS quotaSanity ON quotas(
+    user_id, machine_id
 );
 
 -- Automatically suggested indices

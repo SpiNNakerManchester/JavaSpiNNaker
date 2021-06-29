@@ -103,12 +103,15 @@ public abstract class SQLQueries {
 	@ResultColumn("death_reason")
 	@ResultColumn("death_timestamp")
 	@ResultColumn("original_request")
+	@ResultColumn("owner")
 	@SingleRowResult
 	protected static final String GET_JOB =
 			"SELECT machine_id, width, height, depth, root_id, job_state, "
 					+ "keepalive_timestamp, keepalive_host, create_timestamp, "
-					+ "death_reason, death_timestamp, original_request "
-					+ "FROM jobs WHERE job_id = :job_id LIMIT 1";
+					+ "death_reason, death_timestamp, original_request, "
+					+ "user_info.user_name AS owner FROM jobs "
+					+ "JOIN user_info ON jobs.owner = user_info.user_id "
+					+ "WHERE job_id = :job_id LIMIT 1";
 
 	/** Get what boards are allocated to a job (that is queued or ready). */
 	@Parameter("job_id")
@@ -542,6 +545,53 @@ public abstract class SQLQueries {
 	protected static final String SET_FUNCTIONING_FIELD =
 			"UPDATE boards SET functioning = :enabled "
 					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Get the quota for a user.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("machine_id")
+	@Parameter("user_name")
+	@ResultColumn("quota")
+	@ResultColumn("user_id")
+	@SingleRowResult
+	protected static final String GET_USER_QUOTA =
+			"SELECT quota, user_info.user_id AS user_id FROM quotas "
+					+ "JOIN user_info ON quotas.user_id = user_info.user_id "
+					+ "WHERE quotas.machine_id = :machine_id "
+					+ "AND user_info.user_name = :user_name LIMIT 1";
+
+	/**
+	 * Get the current non-consolidated usage for a user.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("machine_id")
+	@Parameter("user_id")
+	@ResultColumn("current_usage")
+	@SingleRowResult
+	protected static final String GET_CURRENT_USAGE =
+			"SELECT SUM(usage) AS current_usage FROM jobs_usage "
+					+ "WHERE machine_id = :machine_id AND owner = :user_id";
+
+	/**
+	 * Get usage of a job and the quota against which that applies.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("machine_id")
+	@Parameter("job_id")
+	@ResultColumn("usage")
+	@ResultColumn("quota")
+	@SingleRowResult
+	protected static final String GET_JOB_USAGE_AND_QUOTA =
+			"SELECT [usage], quota FROM jobs_usage JOIN quotas "
+					+ "ON quotas.machine_id = jobs_usage.machine_id "
+					+ "AND quotas.user_id = jobs_usage.owner "
+					+ "WHERE jobs_usage.machine_id = :machine_id "
+					+ "AND :job_id = :job_id AND [usage] IS NOT NULL "
+					+ "AND quota IS NOT NULL LIMIT 1";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

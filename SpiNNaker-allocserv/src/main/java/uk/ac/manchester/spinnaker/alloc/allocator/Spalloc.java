@@ -170,6 +170,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		 * board to be present?
 		 */
 		return db.execute(conn -> {
+			int user = getUser(conn, owner).orElseThrow(
+					() -> new SQLException("no such user: " + owner));
 			MachineImpl m = selectMachine(conn, machineName, tags);
 			if (m == null) {
 				// Cannot find machine!
@@ -180,7 +182,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				// No quota left
 				return null;
 			}
-			int id = insertJob(conn, m, owner, keepaliveInterval, req);
+			int id = insertJob(conn, m, user, keepaliveInterval, req);
 			if (id < 0) {
 				// Insert failed
 				return null;
@@ -190,6 +192,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			insertRequest(conn, m, id, dimensions, maxDeadBoards);
 			return getJob(id, conn);
 		});
+	}
+
+	private Optional<Integer> getUser(Connection conn, String userName)
+			throws SQLException {
+		try (Query getUser = query(conn,
+				"SELECT user_id FROM user_info WHERE user_name = :userName "
+						+ "LIMIT 1")) {
+			for (Row row : getUser.call(userName)) {
+				return Optional.of(row.getInt("user_id"));
+			}
+			return Optional.empty();
+		}
 	}
 
 	private static final int TRIAD_SIZE = 3;
@@ -234,7 +248,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 	}
 
-	private int insertJob(Connection conn, MachineImpl m, String owner,
+	private int insertJob(Connection conn, MachineImpl m, int owner,
 			Duration keepaliveInterval, byte[] req) throws SQLException {
 		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
@@ -601,6 +615,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				height = (Integer) row.getObject("height");
 				depth = (Integer) row.getObject("depth");
 				root = (Integer) row.getObject("root_id");
+				owner = row.getString("owner");
 				if (root != null) {
 					try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
 						for (Row subrow : boardRoot.call(root)) {

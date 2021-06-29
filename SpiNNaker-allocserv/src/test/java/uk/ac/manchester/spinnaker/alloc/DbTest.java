@@ -79,6 +79,9 @@ class DbTest {
 	// Not equal to any change_id
 	private static final int NO_CHANGE = -1;
 
+	// Not equal to any user_id
+	private static final int NO_USER = -1;
+
 	/** The columns the {@link BoardLocation} constructor expects to find. */
 	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS =
 			set("machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
@@ -315,7 +318,7 @@ class DbTest {
 				assertSetEquals(set("machine_id", "width", "height", "depth",
 						"root_id", "job_state", "keepalive_timestamp",
 						"keepalive_host", "create_timestamp", "death_reason",
-						"death_timestamp", "original_request"),
+						"death_timestamp", "original_request", "owner"),
 						q.getRowColumnNames());
 				assertFalse(q.call1(NO_JOB).isPresent());
 			}
@@ -674,6 +677,34 @@ class DbTest {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			}
 		}
+
+		@Test
+		void getUserQuota() throws SQLException {
+			try (Query q = query(c, GET_USER_QUOTA)) {
+				assertEquals(2, q.getNumArguments());
+				assertSetEquals(set("quota", "user_id"), q.getRowColumnNames());
+				assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
+			}
+		}
+
+		@Test
+		void getCurrentUsage() throws SQLException {
+			try (Query q = query(c, GET_CURRENT_USAGE)) {
+				assertEquals(2, q.getNumArguments());
+				assertSetEquals(set("current_usage"), q.getRowColumnNames());
+				assertNull(q.call1(NO_MACHINE, "gorp").get()
+						.getObject("current_usage"));
+			}
+		}
+
+		@Test
+		void getJobUsageAndQuota() throws SQLException {
+			try (Query q = query(c, GET_JOB_USAGE_AND_QUOTA)) {
+				assertEquals(2, q.getNumArguments());
+				assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
+				assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
+			}
+		}
 	}
 
 	/**
@@ -690,7 +721,7 @@ class DbTest {
 				assertEquals(4, u.getNumArguments());
 				// No such machine
 				assertThrowsFK(
-						() -> u.keys(NO_MACHINE, "gorp", d, new byte[0]));
+						() -> u.keys(NO_MACHINE, NO_USER, d, new byte[0]));
 			}
 		}
 
