@@ -477,7 +477,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				return false;
 			}
 
-
 			allocJob.call(rect.width, rect.height, rect.depth,
 					boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
 			return setPower(conn, jobId, PowerState.ON, READY);

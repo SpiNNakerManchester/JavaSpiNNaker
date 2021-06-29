@@ -758,8 +758,8 @@ class DbTest {
 		void allocateBoardsJob() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, ALLOCATE_BOARDS_JOB)) {
-				assertEquals(5, u.getNumArguments());
-				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, NO_JOB));
+				assertEquals(6, u.getNumArguments());
+				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, NO_JOB));
 			}
 		}
 

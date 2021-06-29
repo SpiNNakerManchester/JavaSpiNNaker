@@ -22,7 +22,6 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -52,17 +51,20 @@ public class TransceiverFactory {
 	/**
 	 * Get the transceiver for talking to a given machine's BMPs.
 	 *
-	 * @param machine
+	 * @param machineDescription
 	 *            The machine we're talking about.
 	 * @return The transceiver. Only operations relating to BMPs are guaranteed
 	 *         to be supported.
-	 * @throws IOException If low-level things go wrong.
-	 * @throws SpinnmanException If the transceiver can't be built.
-	 * @throws SQLException If the database can't be talked to.
+	 * @throws IOException
+	 *             If low-level things go wrong.
+	 * @throws SpinnmanException
+	 *             If the transceiver can't be built.
+	 * @throws SQLException
+	 *             If the database can't be talked to.
 	 */
 	public Transceiver getTransciever(Machine machineDescription)
-			throws IOException, UnknownHostException, SQLException,
-			SpinnmanException {
+			throws IOException, SQLException, SpinnmanException {
+		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
 			Transceiver t = txrxMap.get(machineDescription.getName());
 			if (t == null) {
