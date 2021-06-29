@@ -73,6 +73,13 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	private static final Rectangle ONE_BOARD = new Rectangle(1, 1, 1);
 
+	/**
+	 * Maximum number of jobs that we actually run the quota check for. Used
+	 * because we are reusing a query, and we'll probably never have that many
+	 * jobs even on the big machine.
+	 */
+	private static final Integer NUMBER_OF_JOBS_TO_QUOTA_CHECK = 10000;
+
 	@Autowired
 	private DatabaseEngine db;
 
@@ -81,6 +88,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Autowired
 	private ServiceMasterControl serviceControl;
+
+	@Autowired
+	private QuotaManager quotaManager;
 
 	@PostConstruct
 	private void setUp() throws SQLException {
@@ -192,8 +202,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean expireJobs(Connection conn) throws SQLException {
+		boolean changed = false;
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
-			boolean changed = false;
 			List<Integer> toKill = new ArrayList<>();
 			for (Row row : find.call()) {
 				toKill.add(row.getInt("job_id"));
@@ -201,8 +211,21 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			for (int id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
-			return changed;
 		}
+		try (Query find = query(conn, GET_LIVE_JOB_IDS)) {
+			List<Integer> toKill = new ArrayList<>();
+			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
+				int machineId = row.getInt("machine_id");
+				int jobId = row.getInt("job_id");
+				if (!quotaManager.hasQuotaRemaining(machineId, jobId)) {
+					toKill.add(jobId);
+				}
+			}
+			for (int id : toKill) {
+				changed |= destroyJob(conn, id, "quota exceeded");
+			}
+		}
+		return changed;
 	}
 
 	@Override

@@ -16,9 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
 import static javax.ws.rs.core.Response.noContent;
+import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 
@@ -449,6 +452,11 @@ public class SpallocServiceImpl implements SpallocServiceAPI {
 			Job j = core.createJob(req.owner.trim(), req.dimensions,
 					req.machineName, req.tags, req.keepaliveInterval,
 					req.maxDeadBoards, mapper.writeValueAsBytes(req));
+			if (j == null) {
+				// Most likely reason for failure
+				return status(BAD_REQUEST).type(TEXT_PLAIN)
+						.entity("out of quota").build();
+			}
 			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
 			return created(uri).entity(new CreateJobResponse(j, ui)).build();
 		});

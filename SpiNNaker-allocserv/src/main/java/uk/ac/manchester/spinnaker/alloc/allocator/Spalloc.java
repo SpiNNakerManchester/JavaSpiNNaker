@@ -75,6 +75,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	@Autowired
 	private Epochs epochs;
 
+	@Autowired
+	private QuotaManager quotaManager;
+
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
 		return db.execute(this::getMachines);
@@ -173,6 +176,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return null;
 			}
 
+			if (!quotaManager.hasQuotaRemaining(m.id, owner)) {
+				// No quota left
+				return null;
+			}
 			int id = insertJob(conn, m, owner, keepaliveInterval, req);
 			if (id < 0) {
 				// Insert failed
