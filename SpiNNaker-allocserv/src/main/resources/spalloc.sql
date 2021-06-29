@@ -142,8 +142,24 @@ CREATE TABLE IF NOT EXISTS jobs (
 	death_timestamp INTEGER, -- timestamp
 	original_request BLOB, -- Stores it, but doesn't otherwise care
 	num_pending INTEGER NOT NULL DEFAULT (0),
-	allocation_size INTEGER
+	allocation_timestamp INTEGER, -- timestamp
+	allocation_size INTEGER,
+	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1))
 );
+
+CREATE VIEW IF NOT EXISTS jobs_usage(
+	job_id, owner, "size", "start", "finish", "duration", "usage") AS
+SELECT
+	job_id, owner, allocation_size, allocation_timestamp, death_timestamp,
+	COALESCE(
+		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
+		0),
+	COALESCE(allocation_size, 0) * COALESCE(
+		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
+		0)
+FROM jobs
+WHERE NOT accounted_for;
+
 -- When the job is created, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
 AFTER INSERT ON jobs
@@ -151,6 +167,14 @@ BEGIN
 	UPDATE jobs
 		SET create_timestamp = strftime('%s','now')
 		WHERE job_id = NEW.job_id;
+END;
+-- When the job is allocated, update the right timestamp
+CREATE TRIGGER IF NOT EXISTS jobAllocationTimestamping
+AFTER UPDATE OF allocation_size ON jobs
+BEGIN
+	UPDATE jobs
+		SET allocation_timestamp = strftime('%s','now')
+		WHERE job_id = OLD.job_id AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
 END;
 -- When the job is destroyed, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
