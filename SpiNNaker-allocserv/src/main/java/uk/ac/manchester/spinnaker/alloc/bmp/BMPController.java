@@ -29,13 +29,10 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.allocator.PowerState.OFF;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
-import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -71,9 +68,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
-import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -118,8 +113,6 @@ public class BMPController extends SQLQueries {
 
 	private static final long INTER_TAKE_DELAY = 10000;
 
-	private Map<Machine, Transceiver> txrxMap = new HashMap<>();
-
 	private boolean requestsPending;
 
 	private volatile boolean stop;
@@ -144,6 +137,9 @@ public class BMPController extends SQLQueries {
 
 	@Autowired
 	private ServiceMasterControl serviceControl;
+
+	@Autowired
+	private TransceiverFactory txrxFactory;
 
 	private Collection<Machine> machines;
 
@@ -218,39 +214,6 @@ public class BMPController extends SQLQueries {
 			+ "actually being processed.")
 	public synchronized int getActiveRequestLoading() {
 		return requests.size();
-	}
-
-	/**
-	 * Get the transceiver for talking to a given machine's BMPs.
-	 *
-	 * @param machine
-	 *            The machine we're talking about.
-	 * @return The transceiver. Only operations relating to BMPs are guaranteed
-	 *         to be supported.
-	 * @throws IOException If low-level things go wrong.
-	 * @throws SpinnmanException If the transceiver can't be built.
-	 * @throws SQLException If the database can't be talked to.
-	 */
-	private Transceiver txrx(Machine machine)
-			throws IOException, SpinnmanException, SQLException {
-		synchronized (txrxMap) {
-			Transceiver t = txrxMap.get(machine);
-			if (t == null) {
-				/*
-				 * The original spalloc server also does everything through the
-				 * root BMP.
-				 */
-				InetAddress address =
-						getByName(machine.getRootBoardBMPAddress());
-				List<Integer> boards = machine.getBoardNumbers();
-				BMPConnectionData c = new BMPConnectionData(0, 0, address,
-						boards, SCP_SCAMP_PORT);
-				t = new Transceiver(null, asList(new BMPConnection(c)), null,
-						null, null, null, null);
-				txrxMap.put(machine, t);
-			}
-			return t;
-		}
 	}
 
 	private boolean isGoodFPGA(Machine machine, Transceiver txrx, int board,
@@ -450,7 +413,7 @@ public class BMPController extends SQLQueries {
 	private void processRequest(Request request) throws InterruptedException {
 		Transceiver txrx;
 		try {
-			txrx = txrx(request.change.machine);
+			txrx = txrxFactory.getTransciever(request.change.machine);
 		} catch (IOException | SpinnmanException | SQLException e) {
 			log.error("could not get transceiver", e);
 			return;
@@ -615,7 +578,7 @@ public class BMPController extends SQLQueries {
 		 * is _not_ safe to hand off between threads.
 		 */
 		Machine m = request.change.machine;
-		txrx(m);
+		txrxFactory.getTransciever(m);
 		synchronized (workers) {
 			workers.computeIfAbsent(m, m1 -> {
 				executor.execute(() -> backgroundThread(m));
