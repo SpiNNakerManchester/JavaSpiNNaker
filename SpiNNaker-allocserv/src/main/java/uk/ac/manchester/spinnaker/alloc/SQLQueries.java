@@ -669,6 +669,102 @@ public abstract class SQLQueries {
 	protected static final String MARK_CONSOLIDATED =
 			"UPDATE jobs SET accounted_for = 1 WHERE job_id = :job_id";
 
+	/**
+	 * Test if a user account is locked or disabled.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("username")
+	@ResultColumn("user_id")
+	@ResultColumn("locked")
+	@ResultColumn("disabled")
+	@SingleRowResult
+	protected static final String IS_USER_LOCKED =
+			"SELECT user_id, locked, disabled FROM user_info "
+					+ "WHERE user_name = :username";
+
+	/**
+	 * Get the permissions for a user.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	@ResultColumn("trust_level")
+	@ResultColumn("password")
+	@SingleRowResult
+	protected static final String GET_USER_AUTHORITIES =
+			"SELECT trust_level, encrypted_password AS password FROM user_info "
+					+ "WHERE user_id = :user_id "
+					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+
+	/**
+	 * Note the login success.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	protected static final String MARK_LOGIN_SUCCESS = "UPDATE user_info SET "
+			+ "last_successful_login_timestamp = strftime('%s','now'), "
+			+ "failure_count = 0 WHERE user_id = :user_id";
+
+	/**
+	 * Note the login failure.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("failure_limit")
+	@Parameter("user_id")
+	@ResultColumn("locked")
+	@SingleRowResult
+	protected static final String MARK_LOGIN_FAILURE =
+			"UPDATE user_info SET failure_count = failure_count + 1, "
+					+ "last_fail_timestamp = strftime('%s','now'), "
+					+ "locked = (failure_count + 1 >= :failure_limit) "
+					+ "WHERE user_id = :user_id RETURNING locked";
+
+	/**
+	 * Unlock accounts.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("lock_interval")
+	@ResultColumn("user_name")
+	protected static final String UNLOCK_LOCKED_USERS =
+			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
+					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
+					+ "< strftime('%s','now') AND locked RETURNING user_name";
+
+	/**
+	 * Define a user with standard permissions.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("username")
+	@Parameter("password")
+	@Parameter("trust_level")
+	@GeneratesID
+	protected static final String ADD_USER_WITH_DEFAULTS =
+			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
+					+ "trust_level) VALUES(:username, :password, :trust_level)";
+
+	/**
+	 * Set a quota for a user on each defined machine.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
+	 *      LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	@Parameter("quota")
+	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
+			"INSERT INTO quotas(user_id, machine_id, quota) "
+					+ "SELECT :user_id, machine_id, :quota FROM machines";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**

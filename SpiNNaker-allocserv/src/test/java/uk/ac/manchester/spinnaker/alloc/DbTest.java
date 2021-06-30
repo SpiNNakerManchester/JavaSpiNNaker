@@ -716,6 +716,27 @@ class DbTest {
 				assertFalse(q.call1().isPresent());
 			}
 		}
+
+		@Test
+		void isUserLocked() throws SQLException {
+			try (Query q = query(c, IS_USER_LOCKED)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("disabled", "locked", "user_id"),
+						q.getRowColumnNames());
+				// Empty DB has no consolidation targets
+				assertFalse(q.call1("").isPresent());
+			}
+		}
+
+		@Test
+		void getUserAuthorities() throws SQLException {
+			try (Query q = query(c, GET_USER_AUTHORITIES)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("trust_level", "password"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_USER).isPresent());
+			}
+		}
 	}
 
 	/**
@@ -955,6 +976,37 @@ class DbTest {
 			try (Update u = update(c, MARK_CONSOLIDATED)) {
 				assertEquals(1, u.getNumArguments());
 				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
+		void markLoginSuccess() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, MARK_LOGIN_SUCCESS)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_USER));
+			}
+		}
+
+		@Test
+		void markLoginFailure() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			// Tricky! Has a RETURNING clause
+			try (Query u = query(c, MARK_LOGIN_FAILURE)) {
+				assertEquals(2, u.getNumArguments());
+				assertSetEquals(set("locked"), u.getRowColumnNames());
+				assertFalse(u.call1(0, NO_USER).isPresent());
+			}
+		}
+
+		@Test
+		void unlockLockedUsers() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			// Tricky! Has a RETURNING clause
+			try (Query u = query(c, UNLOCK_LOCKED_USERS)) {
+				assertEquals(1, u.getNumArguments());
+				assertSetEquals(set("user_name"), u.getRowColumnNames());
+				assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
 			}
 		}
 	}

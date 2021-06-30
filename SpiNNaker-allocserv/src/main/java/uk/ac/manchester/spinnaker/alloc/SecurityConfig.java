@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -116,15 +118,73 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private LocalAuthenticationProvider localAuthProvider;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
-		// FIXME Need something not terrible here instead
-		auth.inMemoryAuthentication().withUser("user1")
-				.password(passwordEncoder.encode("user1Pass"))
-				.authorities(GRANT_USER, GRANT_READER);
+		// FIXME Need to add OpenID support
+		auth.authenticationProvider(localAuthProvider);
+	}
+
+	/**
+	 * Just how trusted is a user?
+	 */
+	public enum TrustLevel {
+		/** Grants no real permissions at all. */
+		BASIC,
+		/**
+		 * Grants read-only permissions in addition to {@link #BASIC}.
+		 *
+		 * @see SecurityConfig#GRANT_READER
+		 */
+		READER,
+		/**
+		 * Grants job creation and management permissions in addition to
+		 * {@link #READER}.
+		 *
+		 * @see SecurityConfig#GRANT_USER
+		 */
+		USER,
+		/**
+		 * Grants service administration permissions in addition to
+		 * {@link #USER}.
+		 *
+		 * @see SecurityConfig#GRANT_ADMIN
+		 */
+		ADMIN
+	}
+
+	/**
+	 * Locally-defined authentication providers include the capability to create
+	 * users.
+	 *
+	 * @author Donal Fellows
+	 */
+	public interface LocalAuthenticationProvider
+			extends AuthenticationProvider {
+		/**
+		 * Create a user. Only admins can create users.
+		 *
+		 * @param username
+		 *            The user name to use.
+		 * @param password
+		 *            The <em>unencoded</em> password to use.
+		 * @param trustLevel
+		 *            How much is the user trusted.
+		 * @param quota
+		 *            The user's quota, in board-seconds.
+		 * @return True if the user was created, false if the user already
+		 *         existed.
+		 * @throws SQLException
+		 *             If anything goes wrong (including trying to create an
+		 *             existing user).
+		 */
+		@PreAuthorize(IS_ADMIN)
+		boolean createUser(String username, String password,
+				TrustLevel trustLevel, long quota) throws SQLException;
+
+		// TODO what other operations should there be?
 	}
 
 	@Override

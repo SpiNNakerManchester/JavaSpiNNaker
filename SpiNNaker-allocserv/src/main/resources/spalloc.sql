@@ -235,11 +235,15 @@ CREATE TABLE IF NOT EXISTS user_info (
 	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_name TEXT UNIQUE NOT NULL,
 	encrypted_password TEXT, -- If NULL, login via OpenID
-	-- Roles
-	is_admin INTEGER NOT NULL DEFAULT (0) CHECK (is_admin IN (0, 1)),
-	is_user INTEGER NOT NULL DEFAULT (1) CHECK (is_user IN (0, 1)),
-	is_reader INTEGER NOT NULL DEFAULT (1) CHECK (is_reader IN (0, 1)),
-	blocked INTEGER NOT NULL DEFAULT (0) CHECK (blocked IN (0, 1))
+	last_successful_login_timestamp INTEGER, -- If NULL, never logged in
+	-- Roles; see SecurityConfig.TrustLevel
+	trust_level INTEGER NOT NULL CHECK (trust_level IN (0, 1, 2, 3)),
+	-- Automatic disablement support
+	failure_count INTEGER NOT NULL DEFAULT (0),
+	locked INTEGER NOT NULL DEFAULT (0) CHECK (locked IN (0, 1)),
+	last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
+	-- Administrative disablement support
+	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1))
 );
 
 CREATE TABLE IF NOT EXISTS quotas (
