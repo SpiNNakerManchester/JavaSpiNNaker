@@ -172,7 +172,7 @@ public class Executor implements Closeable {
 	/**
 	 * Set the base address of the data and update the region addresses.
 	 *
-	 * @param startAddress
+	 * @param startAddress The base address to set.
 	 */
 	public void setBaseAddress(int startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;

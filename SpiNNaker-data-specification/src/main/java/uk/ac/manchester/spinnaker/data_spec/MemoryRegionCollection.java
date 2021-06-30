@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The
- * {@link #set(MemoryRegionReal) set(...)} operation works.
+ * {@link #set(MemoryRegion) set(...)} operation works.
  *
  * @author Donal Fellows
  */
