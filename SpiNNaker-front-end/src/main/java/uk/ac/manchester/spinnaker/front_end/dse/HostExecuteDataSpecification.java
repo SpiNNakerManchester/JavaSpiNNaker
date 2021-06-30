@@ -18,13 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -35,6 +30,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.Progress;
@@ -62,8 +58,6 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 	private static final Logger log =
 			getLogger(HostExecuteDataSpecification.class);
-
-	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	/**
 	 * Global thread pool for DSE execution.
@@ -127,9 +121,10 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		DSEStorage storage = connection.getStorageInterface();
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream()
-					.map(board -> () -> loadBoard(board, storage, bar)))
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
+				ExecutionContext context = new ExecutionContext(txrx)) {
+			executor.submitTasks(ethernets.stream().map(
+					board -> () -> loadBoard(board, storage, bar, context)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -164,9 +159,12 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		DSEStorage storage = connection.getStorageInterface();
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream()
-					.map(board -> () -> loadBoard(board, storage, bar, false)))
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
+				ExecutionContext context = new ExecutionContext(txrx)) {
+			executor.submitTasks(
+					ethernets.stream()
+							.map(board -> () -> loadBoard(board, storage, bar,
+									false, context)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -201,9 +199,12 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		DSEStorage storage = connection.getStorageInterface();
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream()
-					.map(board -> () -> loadBoard(board, storage, bar, true)))
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
+				ExecutionContext context = new ExecutionContext(txrx)) {
+			executor.submitTasks(
+					ethernets.stream()
+							.map(board -> () -> loadBoard(board, storage, bar,
+									true, context)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -213,11 +214,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
-			throws IOException, ProcessException, DataSpecificationException,
-			StorageException {
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
+			ExecutionContext context) throws IOException, ProcessException,
+			DataSpecificationException, StorageException {
 		try (BoardLocal c = new BoardLocal(board.location)) {
-			BoardWorker worker = new BoardWorker(board, storage, bar);
+			BoardWorker worker = new BoardWorker(board, storage, bar, context);
 			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
 				worker.loadCore(ctl);
 			}
@@ -225,10 +226,10 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			boolean system) throws IOException, ProcessException,
-			DataSpecificationException, StorageException {
+			boolean system, ExecutionContext context) throws IOException,
+			ProcessException, DataSpecificationException, StorageException {
 		try (BoardLocal c = new BoardLocal(board.location)) {
-			BoardWorker worker = new BoardWorker(board, storage, bar);
+			BoardWorker worker = new BoardWorker(board, storage, bar, context);
 			for (CoreToLoad ctl : storage.listCoresToLoad(board, system)) {
 				worker.loadCore(ctl);
 			}
@@ -253,7 +254,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 		private final Progress bar;
 
-		BoardWorker(Ethernet board, DSEStorage storage, Progress bar) {
+		private final ExecutionContext context;
+
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,
+				ExecutionContext context) {
+			this.context = context;
 			this.board = board;
 			this.storage = storage;
 			this.bar = bar;
@@ -281,23 +286,24 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				ds = ctl.getDataSpec();
 			} catch (StorageException e) {
 				throw new DataSpecificationException(
-						"failed to read data specification on core "
-								+ ctl.core + " of board " + board.location
-								+ " (" + board.ethernetAddress + ")",
+						"failed to read data specification on core " + ctl.core
+								+ " of board " + board.location + " ("
+								+ board.ethernetAddress + ")",
 						e);
 			}
+			int start = malloc(ctl, ctl.sizeToWrite);
 			try (Executor executor =
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
-				executor.execute();
+				context.execute(executor, ctl.core, start);
 				int size = executor.getConstructedDataSize();
-				int start = malloc(ctl, size);
 				log.info("loading data onto {} ({} bytes at 0x{})",
 						ctl.core.asChipLocation(), toUnsignedLong(size),
 						toHexString(toUnsignedLong(start)));
-				int written = writeHeader(ctl.core, executor, start);
+				int written = ExecutionContext.TOTAL_HEADER_SIZE;
 
-				for (MemoryRegion r : executor.regions()) {
-					if (!isToBeIgnored(r)) {
+				for (MemoryRegion reg : executor.regions()) {
+					MemoryRegionReal r = getRealRegionOrNull(reg);
+					if (r != null) {
 						written += writeRegion(ctl.core, r, r.getRegionBase());
 					}
 				}
@@ -322,36 +328,6 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		/**
-		 * Writes the header section.
-		 *
-		 * @param core
-		 *            Which core to write to.
-		 * @param executor
-		 *            The executor which generates the header.
-		 * @param startAddress
-		 *            Where to write the header.
-		 * @return How many bytes were actually written.
-		 * @throws IOException
-		 *             If anything goes wrong with I/O.
-		 * @throws ProcessException
-		 *             If SCAMP rejects the request.
-		 */
-		private int writeHeader(HasCoreLocation core, Executor executor,
-				int startAddress) throws IOException, ProcessException {
-			ByteBuffer b =
-					allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
-							.order(LITTLE_ENDIAN);
-
-			executor.addHeader(b);
-			executor.addPointerTable(b, startAddress);
-
-			b.flip();
-			int written = b.remaining();
-			txrx.writeMemory(core.getScampCore(), startAddress, b);
-			return written;
-		}
-
-		/**
 		 * Writes the contents of a region. Caller is responsible for ensuring
 		 * this method has work to do.
 		 *
@@ -367,7 +343,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
 		 */
-		private int writeRegion(HasCoreLocation core, MemoryRegion region,
+		private int writeRegion(HasCoreLocation core, MemoryRegionReal region,
 				int baseAddress) throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
@@ -378,7 +354,14 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private static boolean isToBeIgnored(MemoryRegion r) {
-		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
+	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
+		if (!(reg instanceof MemoryRegionReal)) {
+			return null;
+		}
+		MemoryRegionReal r = (MemoryRegionReal) reg;
+		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
+			return null;
+		}
+		return r;
 	}
 }

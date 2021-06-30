@@ -21,18 +21,13 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -60,6 +55,7 @@ import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
@@ -100,8 +96,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	private static final String LOADING_MSG =
 			"loading data specifications onto SpiNNaker";
-
-	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
 
 	private static final String IN_REPORT_NAME =
 			"speeds_gained_in_speed_up_process.tsv";
@@ -224,9 +218,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		DSEStorage storage = connection.getStorageInterface();
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream()
-					.map(board -> () -> loadBoard(board, storage, bar)))
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
+				ExecutionContext context = new ExecutionContext(txrx)) {
+			executor.submitTasks(ethernets.stream().map(
+					board -> () -> loadBoard(board, storage, bar, context)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -236,16 +231,17 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
-			throws IOException, ProcessException, DataSpecificationException,
-			StorageException {
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
+			ExecutionContext execContext) throws IOException, ProcessException,
+			DataSpecificationException, StorageException {
 		List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-		try (BoardWorker worker = new BoardWorker(board, storage, bar)) {
+		try (BoardWorker worker =
+				new BoardWorker(board, storage, bar, execContext)) {
 			HashMap<CoreToLoad, Integer> addresses =
 					new HashMap<CoreToLoad, Integer>();
 			for (CoreToLoad ctl : cores) {
@@ -287,8 +283,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private static boolean isToBeIgnored(MemoryRegion r) {
-		return r == null || r.isUnfilled() || r.getMaxWritePointer() <= 0;
+	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
+		if (!(reg instanceof MemoryRegionReal)) {
+			return null;
+		}
+		MemoryRegionReal r = (MemoryRegionReal) reg;
+		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
+			return null;
+		}
+		return r;
 	}
 
 	/**
@@ -421,12 +424,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private BoardLocal logContext;
 
-		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
+		private ExecutionContext execContext;
+
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,
+				ExecutionContext execContext)
 				throws IOException, ProcessException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
+			this.execContext = execContext;
 			connection = new ThrottledConnection(txrx, board,
 					gathererForChip.get(board.location).getIptag());
 		}
@@ -468,7 +475,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 			try (Executor executor =
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
-				int writes = loadCoreFromExecutor(ctl, gather, start, executor);
+				int writes = loadCoreFromExecutor(ctl, gather, start, executor,
+						execContext);
 				log.info("loaded {} memory regions (including metadata "
 						+ "pseudoregion) for {}", writes, ctl.core);
 			} catch (DataSpecificationException e) {
@@ -490,9 +498,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
-				int start, Executor executor) throws DataSpecificationException,
-				IOException, ProcessException, StorageException {
-			executor.execute();
+				int start, Executor executor, ExecutionContext execContext)
+				throws DataSpecificationException, IOException,
+				ProcessException, StorageException {
+			execContext.execute(executor, ctl.core, start);
 			int size = executor.getConstructedDataSize();
 			if (log.isInfoEnabled()) {
 				log.info(
@@ -500,13 +509,15 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
-			int written = writeHeader(ctl.core, executor, start, gather);
+			int written = ExecutionContext.TOTAL_HEADER_SIZE;
 			int writeCount = 1;
 
-			for (MemoryRegion r : executor.regions()) {
-				if (isToBeIgnored(r)) {
+			for (MemoryRegion reg : executor.regions()) {
+				MemoryRegionReal r = getRealRegionOrNull(reg);
+				if (r == null) {
 					continue;
 				}
+
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
@@ -575,43 +586,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		/**
-		 * Writes the header section.
-		 *
-		 * @param core
-		 *            Which core to write to. Does not need to refer to a
-		 *            monitor core.
-		 * @param executor
-		 *            The executor which generates the header.
-		 * @param startAddress
-		 *            Where to write the header.
-		 * @return How many bytes were actually written.
-		 * @throws IOException
-		 *             If anything goes wrong with I/O.
-		 * @throws ProcessException
-		 *             If SCAMP rejects the request.
-		 */
-		private int writeHeader(CoreLocation core, Executor executor,
-				int startAddress, Gather gather)
-				throws IOException, ProcessException {
-			ByteBuffer b =
-					allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
-							.order(LITTLE_ENDIAN);
-
-			executor.addHeader(b);
-			executor.addPointerTable(b, startAddress);
-
-			b.flip();
-			int written = b.remaining();
-			try (MissingRecorder recorder = new MissingRecorder()) {
-				long start = nanoTime();
-				fastWrite(core, startAddress, b, gather);
-				long end = nanoTime();
-				recorder.report(core, end - start, b.limit(), startAddress);
-			}
-			return written;
-		}
-
-		/**
 		 * Writes the contents of a region. Caller is responsible for ensuring
 		 * this method has work to do.
 		 *
@@ -630,7 +604,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
 		 */
-		private int writeRegion(CoreLocation core, MemoryRegion region,
+		private int writeRegion(CoreLocation core, MemoryRegionReal region,
 				int baseAddress, Gather gather)
 				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
@@ -773,8 +747,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-							log.error("ran out of attempts on transaction {}"
-									+ " due to timeouts.", transactionId);
+							log.error(
+									"ran out of attempts on transaction {}"
+											+ " due to timeouts.",
+									transactionId);
 							throw e;
 						}
 						/*
@@ -787,8 +763,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 									+ "id {}", transactionId);
 							continue outerLoop;
 						}
-						log.info("timeout {} on transaction {} sending to {}"
-								+ " via {}", timeoutCount, transactionId, core,
+						log.info(
+								"timeout {} on transaction {} sending to {}"
+										+ " via {}",
+								timeoutCount, transactionId, core,
 								gather.asCoreLocation());
 						retransmitMissingPackets(protocol, data, missing,
 								transactionId, baseAddress, numPackets);
