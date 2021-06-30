@@ -636,6 +636,39 @@ public abstract class SQLQueries {
 					+ "AND :job_id = :job_id AND [usage] IS NOT NULL "
 					+ "AND quota IS NOT NULL LIMIT 1";
 
+	/**
+	 * Get resource usage info about completed jobs that have yet to be
+	 * consolidated into the main quota table.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 */
+	@ResultColumn("job_id")
+	@ResultColumn("quota_id")
+	@ResultColumn("usage")
+	protected static final String GET_CONSOLIDATION_TARGETS =
+			"SELECT job_id, quota_id, [usage] FROM jobs_usage "
+					+ "WHERE complete AND quota_id IS NOT NULL";
+
+	/**
+	 * Reduce a user's quota on a machine by a specified amount.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 */
+	@Parameter("usage")
+	@Parameter("quota_id")
+	protected static final String DECREMENT_QUOTA =
+			"UPDATE quotas SET quota = quota - :usage "
+					+ "WHERE quota_id = :quota_id AND quota IS NOT NULL";
+
+	/**
+	 * Mark a job as having had its resource usage consolidated.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 */
+	@Parameter("job_id")
+	protected static final String MARK_CONSOLIDATED =
+			"UPDATE jobs SET accounted_for = 1 WHERE job_id = :job_id";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**

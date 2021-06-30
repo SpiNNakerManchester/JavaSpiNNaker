@@ -705,6 +705,17 @@ class DbTest {
 				assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
 			}
 		}
+
+		@Test
+		void getConsolidationTargets() throws SQLException {
+			try (Query q = query(c, GET_CONSOLIDATION_TARGETS)) {
+				assertEquals(0, q.getNumArguments());
+				assertSetEquals(set("job_id", "quota_id", "usage"),
+						q.getRowColumnNames());
+				// Empty DB has no consolidation targets
+				assertFalse(q.call1().isPresent());
+			}
+		}
 	}
 
 	/**
@@ -926,6 +937,24 @@ class DbTest {
 			try (Update u = update(c, SET_FUNCTIONING_FIELD)) {
 				assertEquals(2, u.getNumArguments());
 				assertEquals(0, u.call(false, NO_BOARD));
+			}
+		}
+
+		@Test
+		void decrementQuota() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, DECREMENT_QUOTA)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call(0, NO_USER)); // really quota_id
+			}
+		}
+
+		@Test
+		void markConsolidated() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, MARK_CONSOLIDATED)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_JOB));
 			}
 		}
 	}

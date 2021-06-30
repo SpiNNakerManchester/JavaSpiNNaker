@@ -148,9 +148,11 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 CREATE VIEW IF NOT EXISTS jobs_usage(
-	machine_id, job_id, owner, "size", "start", "finish", "duration", "usage", "complete") AS
+	machine_id, job_id, owner, quota_id, "size", "start", "finish", "duration",
+	"usage", "complete") AS
 SELECT
-	machine_id, job_id, owner, allocation_size, allocation_timestamp, death_timestamp,
+	jobs.machine_id, job_id, owner, quota_id, allocation_size,
+	allocation_timestamp, death_timestamp,
 	COALESCE(
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
 		0),
@@ -158,7 +160,8 @@ SELECT
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
 		0),
 	job_state = 4 -- DESTROYED
-FROM jobs
+FROM jobs LEFT JOIN quotas
+	ON jobs.owner = quotas.user_id AND jobs.machine_id = quotas.machine_id
 WHERE NOT accounted_for;
 
 -- When the job is created, update the right timestamp

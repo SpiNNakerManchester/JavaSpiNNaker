@@ -17,16 +17,20 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 
 /**
@@ -103,6 +107,29 @@ public class QuotaManager extends SQLQueries {
 				}
 			}
 			return true;
+		}
+	}
+
+	/**
+	 * Consolidates usage from finished jobs onto quotas. Runs hourly.
+	 *
+	 * @throws SQLException
+	 *             If database access fails.
+	 */
+	@Scheduled(cron = "0 0 * * * *")
+	public void consolidateQuotas() throws SQLException {
+		try (Connection c = db.getConnection();
+				Query getConsoldationTargets =
+						query(c, GET_CONSOLIDATION_TARGETS);
+				Update decrementQuota = update(c, DECREMENT_QUOTA);
+				Update markConsolidated = update(c, MARK_CONSOLIDATED)) {
+			transaction(c, () -> {
+				for (Row row : getConsoldationTargets.call()) {
+					decrementQuota.call(row.getObject("usage"),
+							row.getInt("quota_id"));
+					markConsolidated.call(row.getInt("job_id"));
+				}
+			});
 		}
 	}
 }
