@@ -521,7 +521,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private boolean setPower(Connection conn, int jobId, PowerState power,
 			JobState targetState) throws SQLException {
 		try (Query getJobBoards = query(conn, GET_JOB_BOARDS);
-				Query getPerim = query(conn, getPerimeterLinks);
+				Query getPerimeter = query(conn, getPerimeterLinks);
 				Update issueChange = update(conn, issueChangeForJob);
 				Update setStatePending = update(conn, SET_STATE_PENDING)) {
 			List<Integer> boards = new ArrayList<>();
@@ -546,7 +546,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				// TODO Use RETURNING to combine getPerim and issueChange
 				Map<Integer, EnumSet<Direction>> perimeterLinks =
 						new HashMap<>();
-				for (Row row : getPerim.call(jobId)) {
+				for (Row row : getPerimeter.call(jobId)) {
 					perimeterLinks
 							.computeIfAbsent(row.getInt("board_id"),
 									k -> EnumSet.noneOf(Direction.class))

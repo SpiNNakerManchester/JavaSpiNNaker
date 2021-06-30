@@ -27,8 +27,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 /**
  * The literal SQL queries used in this package.
  * <p>
- * The schema they query against (defined in {@code spalloc.sql}) is:
- * <br>
+ * The schema they query against (defined in {@code spalloc.sql}) is: <br>
  * <img src="doc-files/schema.png" width="95%">
  *
  * @author Donal Fellows
@@ -302,6 +301,8 @@ public abstract class SQLQueries {
 	 * Tell a job that it is allocated. Doesn't set the state.
 	 *
 	 * @see #SET_STATE_PENDING
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
 	 */
 	@Parameter("width")
 	@Parameter("height")
@@ -326,7 +327,12 @@ public abstract class SQLQueries {
 					+ "AND x = :x AND y = :y AND z = :z "
 					+ "AND may_be_allocated LIMIT 1";
 
-	/** Tell a board that it is allocated. */
+	/**
+	 * Tell a board that it is allocated.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
+	 */
 	@Parameter("job_id")
 	@Parameter("board_id")
 	protected static final String ALLOCATE_BOARDS_BOARD =
@@ -343,7 +349,12 @@ public abstract class SQLQueries {
 			"UPDATE boards SET board_power = :board_power "
 					+ "WHERE board_id = :board_id";
 
-	/** Find jobs that have expired their keepalive interval. */
+	/**
+	 * Find jobs that have expired their keepalive interval.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
+	 */
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
 			"SELECT job_id FROM jobs " //
@@ -351,7 +362,12 @@ public abstract class SQLQueries {
 					+ "AND keepalive_timestamp + keepalive_interval < "
 					+ "strftime('%s','now')";
 
-	/** Set the state and number of pending changes for a job. */
+	/**
+	 * Set the state and number of pending changes for a job.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
+	 */
 	@Parameter("job_state")
 	@Parameter("num_pending")
 	@Parameter("job_id")
@@ -426,7 +442,12 @@ public abstract class SQLQueries {
 			"UPDATE pending_changes SET in_progress = :in_progress "
 					+ "WHERE change_id = :change_id";
 
-	/** Insert a BMP. */
+	/**
+	 * Insert a BMP.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
+	 *      MachineDefinitionLoader
+	 */
 	@Parameter("machine_id")
 	@Parameter("address")
 	@Parameter("cabinet")
@@ -436,7 +457,12 @@ public abstract class SQLQueries {
 			"INSERT INTO bmp(machine_id, address, cabinet, frame) "
 					+ "VALUES(:machine_id, :address, :cabinet, :frame)";
 
-	/** Insert a board. */
+	/**
+	 * Insert a board.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
+	 *      MachineDefinitionLoader
+	 */
 	@Parameter("machine_id")
 	@Parameter("address")
 	@Parameter("bmp_id")
@@ -454,7 +480,12 @@ public abstract class SQLQueries {
 			+ ":machine_id, :address, :bmp_id, :board_num, :x, :y, :z, "
 			+ ":root_x, :root_y, :enabled)";
 
-	/** Insert a link. */
+	/**
+	 * Insert a link.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
+	 *      MachineDefinitionLoader
+	 */
 	@Parameter("board_1")
 	@Parameter("dir_1")
 	@Parameter("board_2")
@@ -465,7 +496,12 @@ public abstract class SQLQueries {
 			"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2, live) "
 					+ "VALUES (:board_1, :dir_1, :board_2, :dir_2, :live)";
 
-	/** Insert a machine. */
+	/**
+	 * Insert a machine.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
+	 *      MachineDefinitionLoader
+	 */
 	@Parameter("name")
 	@Parameter("width")
 	@Parameter("height")
@@ -476,7 +512,12 @@ public abstract class SQLQueries {
 					+ "width, height, depth, board_model) "
 					+ "VALUES(:name, :width, :height, :depth, 5)";
 
-	/** Insert a tag. */
+	/**
+	 * Insert a tag.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
+	 *      MachineDefinitionLoader
+	 */
 	@Parameter("machine_id")
 	@Parameter("tag")
 	@GeneratesID
@@ -525,7 +566,8 @@ public abstract class SQLQueries {
 	/**
 	 * Get the value of a board's {@code functioning} column.
 	 *
-	 * @see MachineStateControl
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl
+	 *      MachineStateControl
 	 */
 	@Parameter("board_id")
 	@ResultColumn("functioning")
@@ -538,7 +580,8 @@ public abstract class SQLQueries {
 	 * Set the value of a board's {@code functioning} column. Enables or
 	 * disables allocation of the board.
 	 *
-	 * @see MachineStateControl
+	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl
+	 *      MachineStateControl
 	 */
 	@Parameter("enabled")
 	@Parameter("board_id")
@@ -549,7 +592,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the quota for a user.
 	 *
-	 * @see QuotaManager
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("user_name")
@@ -565,7 +608,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the current non-consolidated usage for a user.
 	 *
-	 * @see QuotaManager
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("user_id")
@@ -578,7 +621,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get usage of a job and the quota against which that applies.
 	 *
-	 * @see QuotaManager
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("job_id")
@@ -599,6 +642,9 @@ public abstract class SQLQueries {
 	 * Find a rectangle of triads of boards that may be allocated. The
 	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable
 	 * resources to be made within the rectangle.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
 	 */
 	@Parameter("width")
 	@Parameter("height")
@@ -612,7 +658,12 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/find_rectangle.sql")
 	protected Resource findRectangle;
 
-	/** Find an allocatable board at a specific physical location. */
+	/**
+	 * Find an allocatable board at a specific physical location.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
+	 */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
 	@Parameter("frame")
@@ -648,6 +699,9 @@ public abstract class SQLQueries {
 	 * Ideally this would be part of {@link #findRectangle}, but both that query
 	 * and this one are entirely complicated enough already! Also, we don't
 	 * expect to have this query reject many candidate allocations.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
@@ -664,6 +718,9 @@ public abstract class SQLQueries {
 	 * is defined as being the links between a board that is part of the
 	 * allocation and a board that is not; it's <em>not</em> a geometric
 	 * definition, but rather a relational algebraic one.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
 	 */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
@@ -674,6 +731,8 @@ public abstract class SQLQueries {
 	/**
 	 * Locate a board (using a full set of coordinates) based on global chip
 	 * coordinates.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("chip_x")
@@ -702,6 +761,8 @@ public abstract class SQLQueries {
 	/**
 	 * Locate a board (using a full set of coordinates) based on
 	 * allocation-local chip coordinates.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
 	 */
 	@Parameter("job_id")
 	@Parameter("root_board_id")
@@ -728,6 +789,8 @@ public abstract class SQLQueries {
 	/**
 	 * Locate a board (using a full set of coordinates) based on logical triad
 	 * coordinates.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
@@ -755,6 +818,8 @@ public abstract class SQLQueries {
 	/**
 	 * Locate a board (using a full set of coordinates) based on physical
 	 * cabinet-frame-board coordinates.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
@@ -782,6 +847,8 @@ public abstract class SQLQueries {
 	/**
 	 * Locate a board (using a full set of coordinates) based on the IP address
 	 * of its ethernet chip.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("address")
@@ -819,6 +886,9 @@ public abstract class SQLQueries {
 	 * Get the set of boards at some coordinates within a triad rectangle that
 	 * are connected (i.e., have at least one path over enableable links) to the
 	 * root board.
+	 *
+	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
+	 *      AllocatorTask
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
