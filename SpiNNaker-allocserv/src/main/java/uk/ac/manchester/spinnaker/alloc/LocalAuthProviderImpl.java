@@ -20,6 +20,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.sql.Connection;
@@ -49,6 +52,7 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -152,7 +156,10 @@ public class LocalAuthProviderImpl extends SQLQueries
 		List<GrantedAuthority> authorities = new ArrayList<>();
 
 		try {
-			authenticateAgainstDB(name, password, authorities);
+			try (AuthQueries queries = new AuthQueries()) {
+				queries.transact(() -> authenticateAgainstDB(name, password,
+						authorities, queries));
+			}
 			return new UsernamePasswordAuthenticationToken(name, password,
 					authorities);
 		} catch (SQLException e) {
@@ -161,20 +168,37 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 	}
 
-	private static class AuthQueries implements AutoCloseable {
-		final Query getUserBlocked;
+	/**
+	 * Database connection and queries used for authentication and authorization
+	 * purposes.
+	 */
+	private final class AuthQueries implements AutoCloseable {
+		private final Connection conn;
 
-		final Query userAuthorities;
+		private final Query getUserBlocked;
 
-		final Update loginSuccess;
+		private final Query userAuthorities;
 
-		final Query loginFailure;
+		private final Update loginSuccess;
 
-		AuthQueries(Connection conn) throws SQLException {
+		private final Query loginFailure;
+
+		/**
+		 * Make an instance.
+		 *
+		 * @throws SQLException
+		 *             If DB access fails (e.g., due to schema mismatches).
+		 */
+		AuthQueries() throws SQLException {
+			conn = db.getConnection();
 			getUserBlocked = query(conn, IS_USER_LOCKED);
 			userAuthorities = query(conn, GET_USER_AUTHORITIES);
 			loginSuccess = update(conn, MARK_LOGIN_SUCCESS);
 			loginFailure = query(conn, MARK_LOGIN_FAILURE);
+		}
+
+		void transact(Transacted code) throws SQLException {
+			transaction(conn, code);
 		}
 
 		@Override
@@ -183,25 +207,113 @@ public class LocalAuthProviderImpl extends SQLQueries
 			loginSuccess.close();
 			userAuthorities.close();
 			getUserBlocked.close();
+			conn.close();
+		}
+
+		/**
+		 * Get a description of basic auth-related user data.
+		 *
+		 * @param username
+		 *            Who are we fetching for?
+		 * @return The DB row describing them. Includes {@code user_id},
+		 *         {@code disabled} and {@code locked}.
+		 * @throws AuthenticationException
+		 *             If there is no such user.
+		 * @throws SQLException
+		 *             If DB access fails.
+		 */
+		Row getUser(String username)
+				throws AuthenticationException, SQLException {
+			return getUserBlocked.call1(username)
+					.orElseThrow(() -> new UsernameNotFoundException(
+							"no such user: " + username));
+		}
+
+		/**
+		 * Get the extended auth-related user data.
+		 *
+		 * @param userId
+		 *            Who are we fetching for?
+		 * @return The DB row describing them. Includes {@code password} and
+		 *         {@code trust_level}.
+		 * @throws AuthenticationException
+		 *             If there is no such user.
+		 * @throws SQLException
+		 *             If DB access fails.
+		 */
+		Row getUserAuthorities(int userId)
+				throws AuthenticationException, SQLException {
+			/*
+			 * I believe the BadCredentialsException can never be thrown; caller
+			 * checks the password, we just got the userId from the DB, and
+			 * we're in a transaction so the world won't change under our feet.
+			 */
+			return userAuthorities.call1(userId).orElseThrow(
+					() -> new BadCredentialsException("bad password"));
+		}
+
+		/**
+		 * Tells the database that the user login worked. This is necessary
+		 * because the DB can't perform the password check itself.
+		 *
+		 * @param userId
+		 *            Who logged in?
+		 * @throws SQLException
+		 *             If DB access fails.
+		 */
+		void noteLoginSuccessForUser(int userId) throws SQLException {
+			loginSuccess.call(userId);
+		}
+
+		/**
+		 * Tells the database that the user login failed. This is necessary
+		 * because the DB can't perform the password check itself.
+		 *
+		 * @param userId
+		 *            Who logged in?
+		 * @param username
+		 *            Who logged in? For the logging message when the account
+		 *            gets a temporary lock applied.
+		 * @throws SQLException
+		 *             If DB access fails.
+		 */
+		void noteLoginFailureForUser(int userId, String username)
+				throws SQLException {
+			for (Row row : loginFailure.call(maxLoginFailures, userId)) {
+				if (row.getBoolean("locked")) {
+					log.warn("automatically locking user {} for {}", username,
+							lockInterval);
+				}
+			}
 		}
 	}
 
-	private void authenticateAgainstDB(String name, String password,
-			List<GrantedAuthority> authorities)
-			throws SQLException, AuthenticationException {
-		try (Connection conn = db.getConnection();
-				LocalAuthProviderImpl.AuthQueries queries =
-						new AuthQueries(conn)) {
-			transaction(conn, () -> authenticateAgainstDB(name, password,
-					authorities, queries));
-		}
-	}
-
-	private void authenticateAgainstDB(String name, String password,
+	/**
+	 * Check if a user can log in, and determine what permissions they have.
+	 *
+	 * @param username
+	 *            The username.
+	 * @param password
+	 *            The <em>unencrypted</em> password.
+	 * @param authorities
+	 *            Filled out with permissions.
+	 * @param queries
+	 *            How to access the database.
+	 * @throws SQLException
+	 *             If DB access fails.
+	 * @throws UsernameNotFoundException
+	 *             If no account exists.
+	 * @throws DisabledException
+	 *             If the account is administratively disabled.
+	 * @throws LockedException
+	 *             If the account is temporarily locked.
+	 * @throws BadCredentialsException
+	 *             If the password is invalid.
+	 */
+	private void authenticateAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities,
 			LocalAuthProviderImpl.AuthQueries queries) throws SQLException {
-		Row userInfo = queries.getUserBlocked.call1(name).orElseThrow(
-				() -> new UsernameNotFoundException("no such user: " + name));
+		Row userInfo = queries.getUser(username);
 		int userId = userInfo.getInt("user_id");
 		if (userInfo.getBoolean("disabled")) {
 			throw new DisabledException("account is disabled");
@@ -211,9 +323,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 				// Note that this extends the lock!
 				throw new LockedException("account is locked");
 			}
-			Row authInfo = queries.userAuthorities.call1(userId).orElseThrow(
-					// TODO is this the right exception?
-					() -> new BadCredentialsException("bad password"));
+			Row authInfo = queries.getUserAuthorities(userId);
 			if (!passwordEncoder.matches(password,
 					authInfo.getString("password"))) {
 				throw new BadCredentialsException("bad password");
@@ -222,26 +332,20 @@ public class LocalAuthProviderImpl extends SQLQueries
 					authInfo.getEnum("trust_level", TrustLevel.class);
 			switch (trust) {
 			case ADMIN:
-				authorities.add(() -> SecurityConfig.GRANT_ADMIN);
+				authorities.add(() -> GRANT_ADMIN);
 				// fallthrough
 			case USER:
-				authorities.add(() -> SecurityConfig.GRANT_USER);
+				authorities.add(() -> GRANT_USER);
 				// fallthrough
 			case READER:
-				authorities.add(() -> SecurityConfig.GRANT_READER);
+				authorities.add(() -> GRANT_READER);
 				// fallthrough
-			case BASIC:
+			default:
 				// Do nothing; no grants of authority made
 			}
-			queries.loginSuccess.call(userId);
+			queries.noteLoginSuccessForUser(userId);
 		} catch (AuthenticationException e) {
-			for (Row row : queries.loginFailure.call(maxLoginFailures,
-					userId)) {
-				if (row.getBoolean("locked")) {
-					log.warn("automatically locking user {} for {}", name,
-							lockInterval);
-				}
-			}
+			queries.noteLoginFailureForUser(userId, username);
 			throw e;
 		}
 	}
