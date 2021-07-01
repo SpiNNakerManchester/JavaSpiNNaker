@@ -37,6 +37,8 @@ public enum Commands {
 	RESERVE(0x02),
 	/** Releases previously reserved memory. */
 	FREE(0x03),
+	/** References another region on the same chip. */
+	REFERENCE(0x04),
 	/** Declares a new random number generator. */
 	DECLARE_RNG(0x05),
 	/** Declares a new random distribution. */

@@ -42,6 +42,8 @@ public class TestDataSpecExecutor {
 			s.reserveMemoryRegion(0, 100);
 			s.reserveMemoryRegion(1, 200, true);
 			s.reserveMemoryRegion(2, 4);
+			s.reserveMemoryRegion(3, 12, false, 5);
+			s.referenceMemoryRegion(4, 2);
 			s.switchWriteFocus(0);
 			s.writeArray(0, 1, 2);
 			s.setWritePointer(20);
@@ -60,20 +62,22 @@ public class TestDataSpecExecutor {
 
 		// Test the size
 		int header_and_table_size = (MAX_MEM_REGIONS + 2) * 4;
-		assertEquals(header_and_table_size + 100 + 200 + 4,
+		assertEquals(header_and_table_size + 100 + 200 + 4 + 12,
 				executor.getConstructedDataSize());
 
 		// Test the unused regions
-		range(3, MAX_MEM_REGIONS)
+		range(5, MAX_MEM_REGIONS)
 				.forEach(r -> assertNull(executor.getRegion(r)));
 
 		// Test region 0
-		MemoryRegion region_0 = executor.getRegion(0);
+		MemoryRegion reg_0 = executor.getRegion(0);
+		assertTrue(reg_0 instanceof MemoryRegionReal);
+		MemoryRegionReal region_0 = (MemoryRegionReal) reg_0;
 		assertEquals(100, region_0.getAllocatedSize());
 		assertEquals(24, region_0.getMaxWritePointer());
 		assertFalse(region_0.isUnfilled());
 		int[] expectedR0 = new int[] {
-				0, 1, 2, 0, 0, 4
+			0, 1, 2, 0, 0, 4
 		};
 		ByteBuffer r0data = region_0.getRegionData().asReadOnlyBuffer()
 				.order(LITTLE_ENDIAN);
@@ -83,24 +87,51 @@ public class TestDataSpecExecutor {
 		assertArrayEquals(expectedR0, dst);
 
 		// Test region 1
-		MemoryRegion region_1 = executor.getRegion(1);
+		MemoryRegion reg_1 = executor.getRegion(1);
+		assertTrue(reg_1 instanceof MemoryRegionReal);
+		MemoryRegionReal region_1 = (MemoryRegionReal) reg_1;
 		assertEquals(200, region_1.getAllocatedSize());
 		assertTrue(region_1.isUnfilled());
 
 		// Test region 2
-		MemoryRegion region_2 = executor.getRegion(2);
+		MemoryRegion reg_2 = executor.getRegion(2);
+		assertTrue(reg_2 instanceof MemoryRegionReal);
+		MemoryRegionReal region_2 = (MemoryRegionReal) reg_2;
 		assertEquals(4, region_2.getAllocatedSize());
 		assertEquals(10, region_2.getRegionData().getInt(0));
 
+		// Test region 3
+		MemoryRegion reg_3 = executor.getRegion(3);
+		assertTrue(reg_3 instanceof MemoryRegionReal);
+		MemoryRegionReal region_3 = (MemoryRegionReal) reg_3;
+		assertEquals(12, region_3.getAllocatedSize());
+
+		// Test region 4 (reference)
+		MemoryRegion reg_4 = executor.getRegion(4);
+		assertTrue(reg_4 instanceof MemoryRegionReference);
+		MemoryRegionReference region_4 = (MemoryRegionReference) reg_4;
+		assertEquals(region_4.getReference(), 2);
+
+		// Test referencing
+		assertArrayEquals(executor.getReferenceableRegions().toArray(),
+				new Integer[] {
+					3
+				});
+		assertArrayEquals(executor.getRegionsToFill().toArray(), new Integer[] {
+			4
+		});
+
 		// Test the pointer table
 		ByteBuffer buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
-		executor.addPointerTable(buffer, 0);
+		executor.setBaseAddress(0);
+		executor.addPointerTable(buffer);
 		IntBuffer table = ((ByteBuffer) buffer.flip()).asIntBuffer();
 		assertEquals(MAX_MEM_REGIONS, table.limit());
 		assertEquals(header_and_table_size, table.get(0));
 		assertEquals(header_and_table_size + 100, table.get(1));
 		assertEquals(header_and_table_size + 300, table.get(2));
-		range(3, MAX_MEM_REGIONS).forEach(r -> assertEquals(0, table.get(r)));
+		assertEquals(header_and_table_size + 304, table.get(3));
+		range(4, MAX_MEM_REGIONS).forEach(r -> assertEquals(0, table.get(r)));
 
 		// Test the header
 		buffer.clear();
@@ -144,7 +175,7 @@ public class TestDataSpecExecutor {
 			s.setRegisterValue(2, 24);
 			s.setWritePointerFromRegister(2);
 			s.writeArray(new Number[] {
-					0x61, 0x62, 0x63, 0x64
+				0x61, 0x62, 0x63, 0x64
 			}, Generator.DataType.INT8);
 			s.setRegisterValue(5, 4);
 			s.writeRepeatedValue(0x70, 5, Generator.DataType.INT8);
@@ -156,7 +187,9 @@ public class TestDataSpecExecutor {
 		try (Executor executor = new Executor(spec, 400)) {
 			executor.execute();
 
-			MemoryRegion r = executor.getRegion(0);
+			MemoryRegion reg = executor.getRegion(0);
+			assertTrue(reg instanceof MemoryRegionReal);
+			MemoryRegionReal r = (MemoryRegionReal) reg;
 			assertEquals(44, r.getAllocatedSize());
 			assertEquals(40, r.getMaxWritePointer());
 			assertFalse(r.isUnfilled());
