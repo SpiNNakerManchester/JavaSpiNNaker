@@ -123,9 +123,11 @@ public class BMPController extends SQLQueries {
 
 	private Map<Machine, Thread> workers = new HashMap<>();
 
+	// TODO move to machine configuration in DB
 	@Value("${spalloc.on_delay:PT20S}")
 	private Duration onDelay;
 
+	// TODO move to machine configuration in DB
 	@Value("${spalloc.off_delay:PT30S}")
 	private Duration offDelay;
 
