@@ -69,11 +69,6 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
-	static {
-		// Workaround for checkstyle being stupid
-		PreAuthorize.class.getClass();
-	}
-
 	// TODO application security model
 	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
 

@@ -81,11 +81,6 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
-	static {
-		// Workaround for checkstyle being stupid
-		List.class.getClass();
-	}
-
 	/**
 	 * The thread pool. The rest of the application expects there to be a single
 	 * such pool.
