@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.stream.Collectors.toSet;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
@@ -46,7 +47,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -249,8 +250,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					(UsernamePasswordAuthenticationToken) req
 							.getUserPrincipal();
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
-					((User) who.getPrincipal()).getUsername(),
-					who.getAuthorities());
+					who.getName(),
+					who.getAuthorities().stream()
+							.map(GrantedAuthority::getAuthority)
+							.collect(toSet()));
 			// But the user gets a bland response
 			return status(FORBIDDEN).entity("computer says no").build();
 		}
