@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static java.util.Objects.requireNonNull;
+import javax.validation.constraints.NotNull;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.PowerState;
 
@@ -34,14 +34,15 @@ public class MachinePower {
 	}
 
 	public MachinePower(PowerState power) {
-		this.power = requireNonNull(power);
+		this.power = power;
 	}
 
+	@NotNull(message = "power must be specified")
 	public PowerState getPower() {
 		return power;
 	}
 
 	public void setPower(PowerState power) {
-		this.power = requireNonNull(power);
+		this.power = power;
 	}
 }

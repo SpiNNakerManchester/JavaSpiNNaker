@@ -20,6 +20,9 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -29,8 +32,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
+import javax.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.cxf.bus.spring.SpringBus;
@@ -38,6 +44,7 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
+import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +58,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -148,7 +156,20 @@ public class ServiceConfig extends Application {
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
 		factory.setFeatures(asList(new OpenApiFeature()));
+		factory.setInInterceptors(asList(
+				new JAXRSBeanValidationInInterceptor()));
 		return factory;
+	}
+
+	@Provider
+	@Component
+	static class ValidationExceptionMapper
+			implements ExceptionMapper<ValidationException> {
+		@Override
+		public Response toResponse(ValidationException exception) {
+			String message = exception.getMessage().replaceAll(".*:\\s*", "");
+			return status(BAD_REQUEST).type(TEXT_PLAIN).entity(message).build();
+		}
 	}
 
 	/**

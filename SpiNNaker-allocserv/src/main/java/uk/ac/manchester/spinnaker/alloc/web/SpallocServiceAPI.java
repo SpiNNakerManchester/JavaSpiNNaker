@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_USER;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
+import static uk.ac.manchester.spinnaker.alloc.web.ValidationConstants.VALIDATE_IP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
@@ -44,6 +45,11 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -152,8 +158,9 @@ public interface SpallocServiceAPI {
 	@PreAuthorize(IS_READER)
 	MachineAPI getMachine(
 			@Description("The name of the machine.")
-			@PathParam(NAME) String name,
-			@Context UriInfo ui) throws SQLException;
+			@PathParam(NAME)
+			@NotBlank(message = "machine name must not be blank")
+			String name, @Context UriInfo ui) throws SQLException;
 
 	/**
 	 * List jobs.
@@ -194,9 +201,13 @@ public interface SpallocServiceAPI {
 			@Description("Whether to also return destroyed jobs.")
 			@QueryParam("deleted") @DefaultValue("false") boolean destroyed,
 			@Description("Paging support: max records to return.")
-			@QueryParam("limit") @DefaultValue("100") int limit,
+			@QueryParam("limit") @DefaultValue("100")
+			@Positive(message = "limit must be at least 1")
+			int limit,
 			@Description("Paging support: offset to start at.")
-			@QueryParam("start") @DefaultValue("0") int start,
+			@QueryParam("start") @DefaultValue("0")
+			@PositiveOrZero(message = "start must be at least 0")
+			int start,
 			@Context UriInfo ui, @Suspended AsyncResponse response)
 					throws SQLException;
 
@@ -252,7 +263,9 @@ public interface SpallocServiceAPI {
 	@Path(JOB + "/{id}")
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_USER)
-	JobAPI getJob(@Description("ID of the job.") @PathParam(ID) int id,
+	JobAPI getJob(
+			@Description("ID of the job.") @PathParam(ID)
+			@Positive(message = "job ID must be positive") int id,
 			@Context UriInfo ui, @Context HttpServletRequest request,
 			@Context SecurityContext security) throws SQLException;
 
@@ -322,12 +335,15 @@ public interface SpallocServiceAPI {
 		@Path(MACH_BOARD_BY_LOGICAL)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsLogicalPosition(
-				@Description("Triad X coordinate")
-				@QueryParam("x") @DefaultValue("0") int x,
-				@Description("Triad Y coordinate")
-				@QueryParam("y") @DefaultValue("0") int y,
+				@Description("Triad X coordinate") @QueryParam("x")
+				@PositiveOrZero(message = "x must be at least 0") int x,
+				@Description("Triad Y coordinate") @QueryParam("y")
+				@PositiveOrZero(message = "y must be at least 0") int y,
 				@Description("Triad Z (internal member select) coordinate")
-				@QueryParam("z") @DefaultValue("0") int z) throws SQLException;
+				@QueryParam("z") @DefaultValue("0")
+				@PositiveOrZero(message = "z must be 0, 1 or 2")
+				@Max(value = 2, message = "z must be 0, 1 or 2")
+				int z) throws SQLException;
 
 		/**
 		 * Get the location description of a board given its physical coords.
@@ -354,11 +370,14 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsPhysicalPosition(
 				@Description("Cabinet number")
-				@QueryParam("cabinet") @DefaultValue("0") int cabinet,
+				@QueryParam("cabinet") @DefaultValue("0")
+				@PositiveOrZero(message = "cabinet must be at least 0")
+				int cabinet,
 				@Description("Frame number")
-				@QueryParam("frame") @DefaultValue("0") int frame,
-				@Description("Board number")
-				@QueryParam("board") @DefaultValue("0") int board)
+				@QueryParam("frame") @DefaultValue("0")
+				@PositiveOrZero(message = "frame must be at least 0") int frame,
+				@Description("Board number") @QueryParam("board")
+				@PositiveOrZero(message = "board must be at least 0") int board)
 						throws SQLException;
 
 		/**
@@ -384,10 +403,10 @@ public interface SpallocServiceAPI {
 		@Path(MACH_BOARD_BY_CHIP)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsMachineChipLocation(
-				@Description("Global chip X coordinate")
-				@QueryParam(CHIP_X) @DefaultValue("0") int x,
-				@Description("Global chip Y coordinate")
-				@QueryParam(CHIP_Y) @DefaultValue("0") int y)
+				@Description("Global chip X coordinate") @QueryParam(CHIP_X)
+				@PositiveOrZero(message = "x must be at least 0") int x,
+				@Description("Global chip Y coordinate") @QueryParam(CHIP_Y)
+				@PositiveOrZero(message = "y must be at least 0") int y)
 						throws SQLException;
 
 		/**
@@ -412,8 +431,10 @@ public interface SpallocServiceAPI {
 		@Path(MACH_BOARD_BY_ADDRESS)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsIPAddress(
-				@Description("Ethernet chip IP address")
-				@QueryParam("address") @DefaultValue("0.0.0.0") String address)
+				@Description("Ethernet chip IP address") @QueryParam("address")
+				@Pattern(regexp=VALIDATE_IP,
+					message="address must be a dotted-quad IP address")
+				String address)
 						throws SQLException;
 	}
 
@@ -609,4 +630,17 @@ abstract class DocConstants {
 
 	/** Machines section tag. */
 	static final String T_MCH = "SpiNNaker Machines";
+}
+
+
+/**
+ * Strings used in validation.
+ *
+ * @author Donal Fellows
+ */
+abstract class ValidationConstants {
+	private ValidationConstants() {}
+
+	/** Basic validation of IP addresses. */
+	static final String VALIDATE_IP = "^\\d+[.]\\d+[.]\\d+[.]\\d+$";
 }

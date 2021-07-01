@@ -24,6 +24,9 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import java.net.URI;
 import java.sql.SQLException;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -118,7 +121,8 @@ public interface AdminAPI {
 	 */
 	@POST
 	@Path(Paths.IMPORT)
-	void importMachinesFromFile(@QueryParam("filename") String filename);
+	void importMachinesFromFile(
+			@QueryParam("filename") @NotBlank String filename);
 
 	/**
 	 * Import a machine definition by posting it.
@@ -130,7 +134,7 @@ public interface AdminAPI {
 	@Consumes(APPLICATION_JSON)
 	@Path(Paths.IMPORT)
 	void importMachinesByContent(
-			MachineDefinitionLoader.Configuration definitions);
+			@NotNull MachineDefinitionLoader.Configuration definitions);
 
 	/**
 	 * Describe the enable state of a board.
@@ -203,8 +207,9 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean getBoardStateXYZ(String name, int x, int y, int z)
-			throws SQLException;
+	boolean getBoardStateXYZ(@NotBlank String name,
+			@NotNull @PositiveOrZero int x, @NotNull @PositiveOrZero int y,
+			@NotNull @PositiveOrZero int z) throws SQLException;
 
 	/**
 	 * Find board by physical coordinates and return its state.
@@ -221,8 +226,9 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean getBoardStateCFB(String name, int c, int f, int b)
-			throws SQLException;
+	boolean getBoardStateCFB(@NotBlank String name,
+			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
+			@NotNull @PositiveOrZero int b) throws SQLException;
 
 	/**
 	 * Find board by IP address and return its state.
@@ -235,8 +241,8 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean getBoardStateAddress(String name, String address)
-			throws SQLException;
+	boolean getBoardStateAddress(@NotBlank String name,
+			@NotBlank String address) throws SQLException;
 
 	/**
 	 * Enable or disable a board.
@@ -314,7 +320,9 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean setBoardStateXYZ(String name, int x, int y, int z, boolean enabled)
+	boolean setBoardStateXYZ(@NotBlank String name,
+			@NotNull @PositiveOrZero int x, @NotNull @PositiveOrZero int y,
+			@NotNull @PositiveOrZero int z, boolean enabled)
 			throws SQLException;
 
 	/**
@@ -334,7 +342,9 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean setBoardStateCFB(String name, int c, int f, int b, boolean enabled)
+	boolean setBoardStateCFB(@NotBlank String name,
+			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
+			@NotNull @PositiveOrZero int b, boolean enabled)
 			throws SQLException;
 
 	/**
@@ -350,6 +360,6 @@ public interface AdminAPI {
 	 * @throws SQLException
 	 *             On a serious problem
 	 */
-	boolean setBoardStateAddress(String name, String address, boolean enabled)
-			throws SQLException;
+	boolean setBoardStateAddress(@NotBlank String name,
+			@NotBlank String address, boolean enabled) throws SQLException;
 }

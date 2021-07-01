@@ -19,6 +19,15 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import java.time.Duration;
 import java.util.List;
 
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A request to create a job.
  *
@@ -27,7 +36,7 @@ import java.util.List;
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
 	/**
-	 * Who owns the job. <em>Required.</em>
+	 * Who owns the job.
 	 */
 	public String owner;
 
@@ -35,6 +44,7 @@ public class CreateJobRequest {
 	 * How long after a keepalive message will the job be auto-deleted?
 	 * <em>Required.</em> Must be between 30 and 300 seconds.
 	 */
+	@NotNull(message = "keepalive-interval is required")
 	public Duration keepaliveInterval;
 
 	/**
@@ -49,7 +59,10 @@ public class CreateJobRequest {
 	 */
 	// TODO: want to support create by XYZ, by CFB, and by board IP address
 	// There's really no need to stick to the limitations of the Python code
-	public List<Integer> dimensions;
+	@Size(max = 3, message = "only up to 3 dimensions are supported")
+	public List<
+			@PositiveOrZero(message = "dimension must not be negative") Integer>
+	dimensions;
 
 	/**
 	 * Which machine to allocate on. This and {@link #tags} are mutually
@@ -62,12 +75,38 @@ public class CreateJobRequest {
 	 * {@link #machineName} are mutually exclusive, but at least one must be
 	 * given.
 	 */
-	public List<String> tags;
+	public List<@NotBlank(message = "tags must not be blank") String> tags;
 
 	/**
 	 * The maximum number of dead boards allowed in a rectangular allocation.
 	 * Note that the allocation engine might increase this if it decides to
 	 * overallocate. Defaults to {@code 0}.
 	 */
+	@PositiveOrZero(message = "max-dead-boards may not be negative")
 	public Integer maxDeadBoards;
+
+	// Extended validation
+
+	@JsonIgnore
+	@AssertTrue(message = "either machine-name or tags must be supplied")
+	private boolean isMachineNameAndTagsMutuallyExclusive() {
+		return (machineName != null) != (tags != null);
+	}
+
+	@JsonIgnore
+	@AssertFalse(message = "machine-name, if given, must be non-blank")
+	private boolean isMachineNameInsane() {
+		return machineName != null && machineName.trim().isEmpty();
+	}
+
+	private static final Duration MIN_KEEPALIVE = Duration.parse("PT30S");
+
+	private static final Duration MAX_KEEPALIVE = Duration.parse("PT300S");
+
+	@JsonIgnore
+	@AssertTrue(message = "keepalive-interval must be 30 to 300 seconds")
+	private boolean isKeepaliveIntervalInRange() {
+		return keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
+				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
+	}
 }
