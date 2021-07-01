@@ -432,8 +432,8 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsIPAddress(
 				@Description("Ethernet chip IP address") @QueryParam("address")
-				@Pattern(regexp=VALIDATE_IP,
-					message="address must be a dotted-quad IP address")
+				@Pattern(regexp = VALIDATE_IP,
+					message = "address must be a dotted-quad IP address")
 				String address)
 						throws SQLException;
 	}
@@ -632,14 +632,14 @@ abstract class DocConstants {
 	static final String T_MCH = "SpiNNaker Machines";
 }
 
-
 /**
  * Strings used in validation.
  *
  * @author Donal Fellows
  */
 abstract class ValidationConstants {
-	private ValidationConstants() {}
+	private ValidationConstants() {
+	}
 
 	/** Basic validation of IP addresses. */
 	static final String VALIDATE_IP = "^\\d+[.]\\d+[.]\\d+[.]\\d+$";

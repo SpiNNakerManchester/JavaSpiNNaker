@@ -25,6 +25,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,6 +37,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
+	/**
+	 * Maximum number of dimensions that can be used in
+	 * {@link #createJob(CreateJobRequest, UriInfo, AsyncResponse)
+	 * createJob(...)}.
+	 */
+	private static final int MAX_CREATE_DIMENSIONS = 3;
+
+	/** Error message. */
+	private static final String BAD_DIM = "dimension must not be negative";
+
 	/**
 	 * Who owns the job.
 	 */
@@ -59,10 +71,9 @@ public class CreateJobRequest {
 	 */
 	// TODO: want to support create by XYZ, by CFB, and by board IP address
 	// There's really no need to stick to the limitations of the Python code
-	@Size(max = 3, message = "only up to 3 dimensions are supported")
-	public List<
-			@PositiveOrZero(message = "dimension must not be negative") Integer>
-	dimensions;
+	@Size(max = MAX_CREATE_DIMENSIONS,
+			message = "only up to 3 dimensions are supported")
+	public List<@PositiveOrZero(message = BAD_DIM) Integer> dimensions;
 
 	/**
 	 * Which machine to allocate on. This and {@link #tags} are mutually
