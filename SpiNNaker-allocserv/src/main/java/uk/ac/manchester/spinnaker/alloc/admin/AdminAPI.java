@@ -593,7 +593,7 @@ public interface AdminAPI {
 	User describeUser(@PathParam("id") int id) throws SQLException;
 
 	/**
-	 * Update a particular user's details
+	 * Update a particular user's details.
 	 *
 	 * @param id
 	 *            The ID of the user
