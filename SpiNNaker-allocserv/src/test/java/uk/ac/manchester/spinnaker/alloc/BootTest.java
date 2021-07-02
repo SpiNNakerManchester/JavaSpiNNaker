@@ -51,7 +51,7 @@ class BootTest {
 	@Configuration
 	@ComponentScan
 	static class Config {
-	};
+	}
 
 	@Autowired
 	private SpallocServiceAPI service;

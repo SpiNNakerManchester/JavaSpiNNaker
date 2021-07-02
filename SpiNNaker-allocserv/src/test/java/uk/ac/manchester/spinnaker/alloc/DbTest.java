@@ -20,7 +20,8 @@ import static java.lang.String.format;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
@@ -1078,7 +1079,7 @@ class DbTest {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, SET_USER_TRUST)) {
 				assertEquals(2, u.getNumArguments());
-				assertEquals(0, u.call( TrustLevel.BASIC, NO_USER));
+				assertEquals(0, u.call(TrustLevel.BASIC, NO_USER));
 			}
 		}
 

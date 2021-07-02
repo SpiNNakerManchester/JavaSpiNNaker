@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 

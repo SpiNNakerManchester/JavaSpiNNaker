@@ -55,11 +55,9 @@ class JsonTest {
 
 	JsonTest() {
 		// Set up the mapper in the same way that ServiceConfig does
-		mapper = JsonMapper.builder()
-			    .findAndAddModules()
-			    .disable(WRITE_DATES_AS_TIMESTAMPS)
-			    .propertyNamingStrategy(KEBAB_CASE)
-			    .build();
+		mapper = JsonMapper.builder().findAndAddModules()
+				.disable(WRITE_DATES_AS_TIMESTAMPS)
+				.propertyNamingStrategy(KEBAB_CASE).build();
 	}
 
 	private String serialize(Object obj) throws IOException {
