@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -49,6 +50,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -366,65 +368,182 @@ public interface AdminAPI {
 			@IPAddress String address, boolean enabled) throws SQLException;
 
 	/**
-	 * The description of a user. POD class.
+	 * The description of a user. POJO class. Some things are stated to be not
+	 * settable despite having setters; they're settable <em>in instances of
+	 * this class</em> but the service itself will not respect being asked to
+	 * change them.
 	 */
-	class User {
+	final class User {
+		private Integer userId;
+
+		private String userName;
+
+		private String password;
+
+		private Boolean hasPassword;
+
+		private Boolean isEnabled;
+
+		private Boolean isLocked;
+
+		private TrustLevel trustLevel;
+
+		private Map<String, Long> quota;
+
+		private Instant lastSuccessfulLogin;
+
+		private Instant lastFailedLogin;
+
 		/**
-		 * The user identifier. Read-only; cannot be set.
+		 * @return The user identifier. Read-only; cannot be set by the service.
 		 */
 		@JsonInclude(NON_NULL)
-		public Integer userId;
+		@Null
+		public Integer getUserId() {
+			return userId;
+		}
+
+		public void setUserId(Integer userId) {
+			this.userId = userId;
+		}
 
 		/**
-		 * The user's username.
+		 * @return The user's username.
 		 */
-		public @NotBlank String userName;
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
 
 		/**
-		 * The user's password. <em>Never</em> returned, but may be written.
-		 */
-		@JsonInclude(NON_NULL)
-		public String password; // Set only
-
-		/**
-		 * Whether the user has a password set. If they don't, they'll have to
-		 * log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
-		 */
-		public Boolean hasPassword;
-
-		/**
-		 * Whether this account is enabled. Disabled accounts <em>cannot</em>
-		 * use the service.
-		 */
-		public Boolean isEnabled;
-
-		/**
-		 * Whether this account is temporarily locked. Locked accounts should
-		 * unlock automatically after 24 hours.
-		 */
-		public Boolean isLocked;
-
-		/** The permissions of the account. */
-		public TrustLevel trustLevel;
-
-		/**
-		 * The quota map of the account, saying how many board-seconds can be
-		 * used on each machine.
-		 */
-		public Map<String, Long> quota;
-
-		/**
-		 * The time that the last successful login was. Read-only; cannot be
-		 * set.
+		 * @return The user's unencrypted password. <em>Never</em> returned by
+		 *         the service, but may be written.
 		 */
 		@JsonInclude(NON_NULL)
-		public Instant lastSuccessfulLogin;
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
 
 		/**
-		 * The time that the last failed login was. Read-only; cannot be set.
+		 * @return Whether the user has a password set. If they don't, they'll
+		 *         have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
+		 *         Connect).
+		 */
+		public Boolean getHasPassword() {
+			return hasPassword;
+		}
+
+		public void setHasPassword(Boolean hasPassword) {
+			this.hasPassword = hasPassword;
+		}
+
+		/**
+		 * @return Whether this account is enabled. Disabled accounts
+		 *         <em>cannot</em> use the service until explicitly enabled.
+		 */
+		public Boolean isEnabled() {
+			return isEnabled;
+		}
+
+		public void setEnabled(Boolean isEnabled) {
+			this.isEnabled = isEnabled;
+		}
+
+		/**
+		 * @return Whether this account is temporarily locked. Locked accounts
+		 *         should unlock automatically after 24 hours. Can be explicitly
+		 *         set to {@code false} to force an unlock.
+		 */
+		public Boolean isLocked() {
+			return isLocked;
+		}
+
+		public void setLocked(Boolean isLocked) {
+			this.isLocked = isLocked;
+		}
+
+		/**
+		 * @return The permissions of the account.
+		 */
+		public TrustLevel getTrustLevel() {
+			return trustLevel;
+		}
+
+		public void setTrustLevel(TrustLevel trustLevel) {
+			this.trustLevel = trustLevel;
+		}
+
+		/**
+		 * @return The quota map of the account, saying how many board-seconds
+		 *         can be used on each machine.
+		 */
+		public Map<String, Long> getQuota() {
+			return quota;
+		}
+
+		public void setQuota(Map<String, Long> quota) {
+			this.quota = quota;
+		}
+
+		/**
+		 * @return The time that the last successful login was. Read-only;
+		 *         cannot be set via the admin API.
 		 */
 		@JsonInclude(NON_NULL)
-		public Instant lastFailedLogin;
+		@Null
+		public Instant getLastSuccessfulLogin() {
+			return lastSuccessfulLogin;
+		}
+
+		public void setLastSuccessfulLogin(Instant timestamp) {
+			this.lastSuccessfulLogin = timestamp;
+		}
+
+		/**
+		 * @return The time that the last failed login was. Read-only; cannot be
+		 *         set via the admin API.
+		 */
+		@JsonInclude(NON_NULL)
+		@Null
+		public Instant getLastFailedLogin() {
+			return lastFailedLogin;
+		}
+
+		public void setLastFailedLogin(Instant timestamp) {
+			this.lastFailedLogin = timestamp;
+		}
+
+		/**
+		 * @return Whether this represents a request to use external
+		 *         authentication (instead of just not setting the password).
+		 */
+		@JsonIgnore
+		public boolean isExternallyAuthenticated() {
+			return password == null && hasPassword != null && hasPassword;
+		}
+
+		/**
+		 * Forces correct shrouding of information.
+		 *
+		 * @return the object (for convenience)
+		 */
+		User sanitise() {
+			// Make SURE that the password doesn't go back
+			if (password != null) {
+				hasPassword = true;
+				password = null;
+			}
+			// Never need to send the userId back
+			userId = null;
+			return this;
+		}
 	}
 
 	/**
@@ -456,7 +575,8 @@ public interface AdminAPI {
 	@Path(USER)
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	Response createUser(User user, @Context UriInfo ui) throws SQLException;
+	Response createUser(@Valid User user, @Context UriInfo ui)
+			throws SQLException;
 
 	/**
 	 * Read a particular user's details.
@@ -489,7 +609,7 @@ public interface AdminAPI {
 	@Path(USER + "/{id}")
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	User updateUser(@PathParam("id") int id, User user,
+	User updateUser(@PathParam("id") int id, @Valid User user,
 			@Context SecurityContext security) throws SQLException;
 
 	/**

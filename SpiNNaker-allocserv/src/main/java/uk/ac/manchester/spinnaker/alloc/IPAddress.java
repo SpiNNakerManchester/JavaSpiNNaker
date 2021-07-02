@@ -42,31 +42,42 @@ import javax.validation.Payload;
 @Target({
 	METHOD, FIELD, PARAMETER, TYPE_USE
 })
-@Constraint(validatedBy = IPAddress.Validator.class)
+@Constraint(validatedBy = IPAddressValidator.class)
 public @interface IPAddress {
-	/** Message on constraint violated. */
-	String message() default "definitely bad IP address";
+	/**
+	 * Message on constraint violated.
+	 *
+	 * @return Message
+	 */
+	String message() default "${validatedValue} is a bad IPv4 address";
 
-	/** Group of constraints. Required by validation spec. */
+	/**
+	 * Group of constraints. Required by validation spec.
+	 *
+	 * @return Constraint groups, if any
+	 */
 	Class<?>[] groups() default {};
 
-	/** Payload info. Required by validation spec. */
+	/**
+	 * Payload info. Required by validation spec.
+	 *
+	 * @return Payloads, if any.
+	 */
 	Class<? extends Payload>[] payload() default {};
+}
 
-	static class Validator implements ConstraintValidator<IPAddress, String> {
-		private Pattern pattern;
+class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
+	private Pattern pattern;
 
-		@Override
-		public void initialize(IPAddress constraintAnnotation) {
-			if (pattern == null) {
-				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
-			}
+	@Override
+	public void initialize(IPAddress annotation) {
+		if (pattern == null) {
+			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
+	}
 
-		@Override
-		public boolean isValid(String value,
-				ConstraintValidatorContext context) {
-			return value != null && pattern.matcher(value).matches();
-		}
+	@Override
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+		return value != null && pattern.matcher(value).matches();
 	}
 }

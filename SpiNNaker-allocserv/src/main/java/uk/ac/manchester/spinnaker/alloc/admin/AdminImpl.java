@@ -180,61 +180,49 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
 		for (User user : userController.listUsers()) {
-			result.put(user.userName, ub.build(user.userId));
+			result.put(user.getUserName(), ub.build(user.getUserId()));
 		}
 		return unmodifiableMap(result);
-	}
-
-	private static User sanitise(User user) {
-		// Make SURE that the password doesn't go back
-		if (user.password != null) {
-			user.hasPassword = true;
-			user.password = null;
-		}
-		// Never need to send the userId back
-		user.userId = null;
-		return user;
 	}
 
 	@Override
 	public Response createUser(User providedUser, UriInfo ui)
 			throws SQLException {
-		providedUser.userId = null;
-		if (providedUser.trustLevel == null) {
-			providedUser.trustLevel = TrustLevel.USER;
+		providedUser.setUserId(null);
+		if (providedUser.getTrustLevel() == null) {
+			providedUser.setTrustLevel(TrustLevel.USER);
 		}
-		if (providedUser.quota == null) {
-			providedUser.quota = emptyMap();
+		if (providedUser.getQuota() == null) {
+			providedUser.setQuota(emptyMap());
 		}
-		if (providedUser.isEnabled == null) {
-			providedUser.isEnabled = true;
+		if (providedUser.isEnabled() == null) {
+			providedUser.setEnabled(true);
 		}
-		if (providedUser.isLocked == null) {
-			providedUser.isLocked = false;
+		if (providedUser.isLocked() == null) {
+			providedUser.setLocked(false);
 		}
 		User realUser = userController.createUser(providedUser)
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
-		int id = realUser.userId;
+		int id = realUser.getUserId();
 		return Response.created(ub.build(id)).type(APPLICATION_JSON)
-				.entity(sanitise(realUser)).build();
+				.entity(realUser.sanitise()).build();
 	}
 
 	@Override
 	public User describeUser(int id) throws SQLException {
-		User user = userController.getUser(id).orElseThrow(AdminImpl::noUser);
-		return sanitise(user);
+		return userController.getUser(id).orElseThrow(AdminImpl::noUser)
+				.sanitise();
 	}
 
 	@Override
 	public User updateUser(int id, User providedUser, SecurityContext security)
 			throws SQLException {
 		String adminUser = security.getUserPrincipal().getName();
-		providedUser.userId = null;
-		User realUser = userController.updateUser(id, providedUser, adminUser)
-				.orElseThrow(AdminImpl::noUser);
-		return sanitise(realUser);
+		providedUser.setUserId(null);
+		return userController.updateUser(id, providedUser, adminUser)
+				.orElseThrow(AdminImpl::noUser).sanitise();
 	}
 
 	@Override

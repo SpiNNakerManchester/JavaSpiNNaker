@@ -68,8 +68,8 @@ public class UserControl extends SQLQueries {
 			transaction(c, () -> {
 				for (Row row : q.call()) {
 					User userSketch = new User();
-					userSketch.userId = row.getInt("user_id");
-					userSketch.userName = row.getString("user_name");
+					userSketch.setUserId(row.getInt("user_id"));
+					userSketch.setUserName(row.getString("user_name"));
 					result.add(userSketch);
 				}
 			});
@@ -92,16 +92,17 @@ public class UserControl extends SQLQueries {
 				Update makeUser = update(c, CREATE_USER);
 				Update makeQuotas = update(c, CREATE_QUOTA);
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			String pass = user.password == null ? null
-					: passwordEncoder.encode(user.password);
+			String pass = user.getPassword() == null ? null
+					: passwordEncoder.encode(user.getPassword());
 			return transaction(c, () -> {
-				Optional<Integer> key = makeUser.key(user.userName, pass,
-						user.trustLevel, !user.isEnabled);
+				Optional<Integer> key = makeUser.key(user.getUserName(), pass,
+						user.getTrustLevel(), !user.isEnabled());
 				if (!key.isPresent()) {
 					return Optional.empty();
 				}
 				int userId = key.get();
-				for (Entry<String, Long> quotaInfo : user.quota.entrySet()) {
+				for (Entry<String, Long> quotaInfo : user.getQuota()
+						.entrySet()) {
 					makeQuotas.call(userId, quotaInfo.getValue(),
 							quotaInfo.getKey());
 				}
@@ -138,27 +139,28 @@ public class UserControl extends SQLQueries {
 	private User getUser(Connection c, Row row) throws SQLException {
 		User user = new User();
 		try {
-			user.userId = row.getInt("user_id");
-			user.userName = row.getString("user_name");
-			user.hasPassword = row.getBoolean("has_password");
-			user.trustLevel = row.getEnum("trust_level", TrustLevel.class);
-			user.isEnabled = !row.getBoolean("disabled");
-			user.isLocked = row.getBoolean("locked");
-			user.lastSuccessfulLogin =
-					row.getInstant("last_successful_login_timestamp");
-			user.lastFailedLogin = row.getInstant("last_fail_timestamp");
-			user.quota = new HashMap<>();
+			user.setUserId(row.getInt("user_id"));
+			user.setUserName(row.getString("user_name"));
+			user.setHasPassword(row.getBoolean("has_password"));
+			user.setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
+			user.setEnabled(!row.getBoolean("disabled"));
+			user.setLocked(row.getBoolean("locked"));
+			user.setLastSuccessfulLogin(
+					row.getInstant("last_successful_login_timestamp"));
+			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+			HashMap<String, Long> quotas = new HashMap<>();
 			try (Query getQuotas = query(c, GET_QUOTA_DETAILS)) {
-				for (Row qrow : getQuotas.call(user.userId)) {
+				for (Row qrow : getQuotas.call(user.getUserId())) {
 					Number quotaInfo = (Number) qrow.getObject("quota");
 					Long quota =
 							quotaInfo == null ? null : quotaInfo.longValue();
-					user.quota.put(qrow.getString("machine_name"), quota);
+					quotas.put(qrow.getString("machine_name"), quota);
 				}
 			}
+			user.setQuota(quotas);
 		} finally {
 			// I mean it!
-			user.password = null;
+			user.setPassword(null);
 		}
 		return user;
 	}
@@ -170,6 +172,9 @@ public class UserControl extends SQLQueries {
 	 *            The ID of the user
 	 * @param user
 	 *            The description of what to update.
+	 * @param adminUser
+	 *            The <em>name</em> of the current user doing this call. Used to
+	 *            prohibit any admin from doing major damage to themselves.
 	 * @return The updated user
 	 * @throws SQLException
 	 *             If DB access goes wrong
@@ -188,29 +193,32 @@ public class UserControl extends SQLQueries {
 			return transaction(c, () -> {
 				int adminId =
 						userCheck.call1(adminUser).get().getInt("user_id");
-				if (user.userName != null) {
-					setUserName.call(user.userName, id);
+				if (user.getUserName() != null) {
+					setUserName.call(user.getUserName(), id);
 				}
-				if (user.password != null) {
-					setUserPass.call(passwordEncoder.encode(user.password), id);
-				} else if (user.hasPassword != null && user.hasPassword) {
+				if (user.getPassword() != null) {
+					setUserPass.call(passwordEncoder.encode(user.getPassword()),
+							id);
+				} else if (user.isExternallyAuthenticated()) {
 					// Forces external authentication
 					setUserPass.call(null, id);
 				}
-				if (user.isEnabled != null && adminId != id) {
+				if (user.isEnabled() != null && adminId != id) {
 					// Admins can't change their own disable state
-					setUserDisabled.call(!user.isEnabled, id);
+					setUserDisabled.call(!user.isEnabled(), id);
 				}
-				if (user.isLocked != null && !user.isLocked && adminId != id) {
+				if (user.isLocked() != null && !user.isLocked()
+						&& adminId != id) {
 					// Admins can't change their own locked state
-					setUserLocked.call(user.isLocked, id);
+					setUserLocked.call(user.isLocked(), id);
 				}
-				if (user.trustLevel != null && adminId != id) {
+				if (user.getTrustLevel() != null && adminId != id) {
 					// Admins can't change their own trust level
-					setUserTrust.call(user.trustLevel, id);
+					setUserTrust.call(user.getTrustLevel(), id);
 				}
-				if (user.quota != null) {
-					for (Entry<String, Long> quota : user.quota.entrySet()) {
+				if (user.getQuota() != null) {
+					for (Entry<String, Long> quota : user.getQuota()
+							.entrySet()) {
 						setUserQuota.call(quota.getValue(), id, quota.getKey());
 					}
 				}
