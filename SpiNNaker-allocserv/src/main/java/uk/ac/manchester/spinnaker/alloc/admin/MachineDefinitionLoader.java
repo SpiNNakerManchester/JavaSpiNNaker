@@ -37,11 +37,23 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,6 +63,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.IPAddress;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
@@ -72,12 +85,16 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 */
 	public static final class TriadCoords implements Comparable<TriadCoords> {
 		/** X coordinate. */
+		@PositiveOrZero(message = "x coordinate must not be negative")
 		public final int x;
 
 		/** Y coordinate. */
+		@PositiveOrZero(message = "y coordinate must not be negative")
 		public final int y;
 
 		/** Z coordinate. */
+		@Min(value = 0, message = "z coordinate must not be negative")
+		@Max(value = 2, message = "z coordinate must not be more than 2")
 		public final int z;
 
 		@JsonCreator
@@ -133,6 +150,16 @@ public class MachineDefinitionLoader extends SQLQueries {
 			return new ChipLocation(rootX, rootY);
 		}
 
+		/**
+		 * Applies a wraparound rule in a particular direction, turning
+		 * coordinate space into something of a modular field.
+		 *
+		 * @param value
+		 *            The value to wrap.
+		 * @param limit
+		 *            The upper limit. (Lower limits are always zero.)
+		 * @return The potentially wrapped value.
+		 */
 		private static int limit(int value, int limit) {
 			if (value < 0) {
 				return value + limit;
@@ -189,9 +216,11 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 */
 	public static final class BMPCoords implements Comparable<BMPCoords> {
 		/** Cabinet number. */
+		@PositiveOrZero(message = "cabinet number must not be negative")
 		public final int c;
 
 		/** Frame number. */
+		@PositiveOrZero(message = "frame number must not be negative")
 		public final int f;
 
 		public BMPCoords(int c, int f) {
@@ -253,12 +282,15 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public static final class BoardPhysicalCoords
 			implements Comparable<BoardPhysicalCoords> {
 		/** Cabinet number. */
+		@PositiveOrZero(message = "cabinet number must not be negative")
 		public final int c;
 
 		/** Frame number. */
+		@PositiveOrZero(message = "frame number must not be negative")
 		public final int f;
 
 		/** Board number. */
+		@PositiveOrZero(message = "board number must not be negative")
 		public final int b;
 
 		@JsonCreator
@@ -395,28 +427,32 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		private Map<TriadCoords, EnumSet<Link>> deadLinks;
 
-		private Map<TriadCoords, BoardPhysicalCoords> boardLocations;
+		private Map<TriadCoords,
+				BoardPhysicalCoords> boardLocations;
 
 		private Map<BMPCoords, String> bmpIPs;
 
 		private Map<TriadCoords, String> spinnakerIPs;
 
 		/** @return The name of the machine. */
+		@NotBlank(message = "machines must have real names")
 		public String getName() {
 			return name;
 		}
 
 		/** @return The tags of the machine. */
-		public Set<String> getTags() {
+		public Set<@NotBlank String> getTags() {
 			return unmodifiableSet(tags);
 		}
 
 		/** @return The width of the machine, in triads. */
+		@Positive(message = "machine width must be greater than zero")
 		public int getWidth() {
 			return width;
 		}
 
 		/** @return The height of the machine, in triads. */
+		@Positive(message = "machine height must be greater than zero")
 		public int getHeight() {
 			return height;
 		}
@@ -429,7 +465,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 
 		/** @return The dead boards of the machine. */
-		public Set<TriadCoords> getDeadBoards() {
+		public Set<@Valid TriadCoords> getDeadBoards() {
 			return unmodifiableSet(deadBoards);
 		}
 
@@ -437,22 +473,23 @@ public class MachineDefinitionLoader extends SQLQueries {
 		 * @return The extra dead links of the machine. Doesn't include links to
 		 *         dead boards.
 		 */
-		public Map<TriadCoords, EnumSet<Link>> getDeadLinks() {
+		public Map<@Valid TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
 			return unmodifiableMap(deadLinks);
 		}
 
 		/** @return The logical-to-physical board location map. */
-		public Map<TriadCoords, BoardPhysicalCoords> getBoardLocations() {
+		public Map<@Valid TriadCoords, @Valid BoardPhysicalCoords>
+				getBoardLocations() {
 			return unmodifiableMap(boardLocations);
 		}
 
 		/** @return The IP addresses of the BMPs. */
-		public Map<BMPCoords, String> getBmpIPs() {
+		public Map<@Valid BMPCoords, @IPAddress String> getBmpIPs() {
 			return unmodifiableMap(bmpIPs);
 		}
 
 		/** @return The IP addresses of the boards. */
-		public Map<TriadCoords, String> getSpinnakerIPs() {
+		public Map<@Valid TriadCoords, @IPAddress String> getSpinnakerIPs() {
 			return unmodifiableMap(spinnakerIPs);
 		}
 
@@ -468,6 +505,45 @@ public class MachineDefinitionLoader extends SQLQueries {
 					.append(",").append("bmpIPs=").append(bmpIPs).append(",")
 					.append("spinnakerIPs=").append(spinnakerIPs).append(")")
 					.toString();
+		}
+
+		@JsonIgnore
+		@AssertTrue(message = "all boards must have sane logical coordinates")
+		private boolean isCoordinateSane() {
+			return boardLocations.keySet().stream().allMatch(loc -> (loc.x >= 0)
+					&& (loc.x < width) && (loc.y >= 0) && (loc.y < height));
+		}
+
+		@JsonIgnore
+		@AssertTrue(message = "all boards must have addresses")
+		private boolean isNetworkSane() {
+			return spinnakerIPs.size() == boardLocations.size();
+		}
+
+		@JsonIgnore
+		@AssertTrue(message = "all boards must have BMPs")
+		private boolean isBMPSane() {
+			return boardLocations.values().stream()
+					.allMatch(loc -> bmpIPs.containsKey(loc.bmp()));
+		}
+
+		/**
+		 * Does a board have a dead link in a given direction?
+		 *
+		 * @param board
+		 *            The location of the board
+		 * @param direction
+		 *            The direction asking about
+		 * @return True iff the board at the given location has a dead link in
+		 *         the given direction. Note that if the board doesn't exist at
+		 *         all, this returns false.
+		 */
+		boolean hasDeadLinkAt(TriadCoords board, Direction direction) {
+			if (deadLinks.isEmpty()) {
+				return false;
+			}
+			return deadLinks.getOrDefault(board, EnumSet.noneOf(Link.class))
+					.contains(Link.of(direction));
 		}
 
 		@JsonPOJOBuilder
@@ -575,7 +651,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		private int secondsBeforeFree;
 
 		/** @return The machines to manage. */
-		public List<Machine> getMachines() {
+		public @NotNull List<@Valid Machine> getMachines() {
 			return unmodifiableList(machines);
 		}
 
@@ -583,7 +659,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			this.machines = machines;
 		}
 
-		/** @return The port for the service to listen on. */
+		/** @return The port for the service to listen on. (Ignored) */
 		public int getPort() {
 			return port;
 		}
@@ -594,7 +670,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		/**
 		 * @return The host address for the service to listen on. Empty = all
-		 *         interfaces.
+		 *         interfaces. (Ignored)
 		 */
 		public String getIp() {
 			return ip;
@@ -604,7 +680,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			this.ip = ip;
 		}
 
-		/** @return How often (in seconds) to check for timeouts. */
+		/** @return How often (in seconds) to check for timeouts. (Ignored) */
 		public double getTimeoutCheckInterval() {
 			return timeoutCheckInterval;
 		}
@@ -613,7 +689,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			this.timeoutCheckInterval = timeoutCheckInterval;
 		}
 
-		/** @return How many retired jobs to retain. */
+		/** @return How many retired jobs to retain. (Ignored) */
 		public int getMaxRetiredJobs() {
 			return maxRetiredJobs;
 		}
@@ -622,7 +698,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			this.maxRetiredJobs = maxRetiredJobs;
 		}
 
-		/** @return Time to wait before freeing. */
+		/** @return Time to wait before freeing. (Ignored) */
 		public int getSecondsBeforeFree() {
 			return secondsBeforeFree;
 		}
@@ -650,6 +726,9 @@ public class MachineDefinitionLoader extends SQLQueries {
 	@Autowired
 	private JsonMapper mapper;
 
+	@Autowired
+	private ValidatorFactory validatorFactory;
+
 	/**
 	 * Read a JSON-converted traditional spalloc configuration and get the
 	 * machine definitions from inside.
@@ -667,7 +746,14 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 */
 	public List<Machine> readMachineDefinitions(File file)
 			throws IOException, JsonParseException, JsonMappingException {
-		return mapper.readValue(file, Configuration.class).getMachines();
+		Configuration cfg =  mapper.readValue(file, Configuration.class);
+		for (ConstraintViolation<?> violation : validatorFactory.getValidator()
+				.validate(cfg)) {
+			// We ought to also say the other problems...
+			throw new IOException("failed to validate configuration: "
+					+ violation.getMessage());
+		}
+		return cfg.getMachines();
 	}
 
 	/**
@@ -832,8 +918,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 				if (!boardIds.containsKey(there)) {
 					continue;
 				}
-				Direction d2 = d.opposite();
-				makeLink(sql, machine, boardIds, here, d, there, d2);
+				makeLink(sql, machine, boardIds, here, d, there, d.opposite());
 				// TODO do we need to keep the link IDs here?
 			}
 		}
@@ -850,17 +935,14 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 
 		// A link is dead if it is dead in either direction
-		boolean dead =
-				machine.deadLinks.getOrDefault(here, EnumSet.noneOf(Link.class))
-						.contains(Link.of(d1))
-						|| machine.deadLinks
-								.getOrDefault(there, EnumSet.noneOf(Link.class))
-								.contains(Link.of(d2));
+		boolean dead = machine.hasDeadLinkAt(here, d1)
+				|| machine.hasDeadLinkAt(there, d2);
 		try {
 			return sql.makeLink.key(b1, d1, b2, d2, !dead);
 		} catch (SQLiteException e) {
 			// If the CHECK constraint says no, just ignore; we'll do the link
-			// from the other direction
+			// from the other direction. This does mean we're doing too much
+			// work, but better to do too much and be reliable
 			if (e.getResultCode() == SQLITE_CONSTRAINT_CHECK) {
 				return Optional.empty();
 			}

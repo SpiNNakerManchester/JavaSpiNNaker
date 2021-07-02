@@ -30,11 +30,12 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 
 /**
  * A mapping that says how to go from one board's coordinates (only the Z
  * coordinate matters for this) to another when you move in a particular
- * direction.
+ * direction. Comes from the {@code movement_directions} table in the database.
  * <p>
  * Consider this board layout (a classic 24 board machine):
  * <p>
@@ -44,6 +45,8 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
  * horizontally offset from 0,0,0.
  *
  * @author Donal Fellows
+ * @see Direction
+ * @see MachineDefinitionLoader
  */
 public final class DirInfo extends SQLQueries {
 	private static final Logger log = getLogger(DirInfo.class);

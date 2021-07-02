@@ -159,9 +159,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 				@Override
 				public WhereIsResponse whereIsLogicalPosition(int x, int y,
 						int z) throws SQLException {
-					if (x < 0 || y < 0 || z < 0) {
-						throw new BadArgs("coordinates must not be negative");
-					}
 					return makeResponse(
 							machine.getBoardByLogicalCoords(x, y, z));
 				}
@@ -169,9 +166,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 				@Override
 				public WhereIsResponse whereIsPhysicalPosition(int cabinet,
 						int frame, int board) throws SQLException {
-					if (cabinet < 0 || frame < 0 || board < 0) {
-						throw new BadArgs("coordinates must not be negative");
-					}
 					return makeResponse(machine
 							.getBoardByPhysicalCoords(cabinet, frame, board));
 				}
@@ -179,16 +173,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 				@Override
 				public WhereIsResponse whereIsMachineChipLocation(int x, int y)
 						throws SQLException {
-					if (x < 0 || y < 0) {
-						throw new BadArgs("coordinates must not be negative");
-					}
 					return makeResponse(machine.getBoardByChip(x, y));
 				}
 
 				@Override
 				public WhereIsResponse whereIsIPAddress(String address)
 						throws SQLException {
-					// TODO Can we sanity-check the address?
 					return makeResponse(machine.getBoardByIPAddress(address));
 				}
 			};
