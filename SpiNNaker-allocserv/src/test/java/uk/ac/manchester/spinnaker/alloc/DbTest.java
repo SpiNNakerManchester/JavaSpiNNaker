@@ -51,6 +51,7 @@ import org.sqlite.SQLiteException;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 
@@ -737,6 +738,50 @@ class DbTest {
 				assertFalse(q.call1(NO_USER).isPresent());
 			}
 		}
+
+		@Test
+		void listAllUsers() throws SQLException {
+			try (Query q = query(c, LIST_ALL_USERS)) {
+				assertEquals(0, q.getNumArguments());
+				assertSetEquals(set("user_id", "user_name"),
+						q.getRowColumnNames());
+				// Testing DB has no users by default
+				assertFalse(q.call1().isPresent());
+			}
+		}
+
+		@Test
+		void getUserId() throws SQLException {
+			try (Query q = query(c, GET_USER_ID)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("user_id"), q.getRowColumnNames());
+				// Testing DB has no users by default
+				assertFalse(q.call1("gorp").isPresent());
+			}
+		}
+
+		@Test
+		void getUserDetails() throws SQLException {
+			try (Query q = query(c, GET_USER_DETAILS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(
+						set("disabled", "has_password", "last_fail_timestamp",
+								"last_successful_login_timestamp", "locked",
+								"trust_level", "user_id", "user_name"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_USER).isPresent());
+			}
+		}
+
+		@Test
+		void getQuotaDetails() throws SQLException {
+			try (Query q = query(c, GET_QUOTA_DETAILS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("machine_name", "quota"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_USER).isPresent());
+			}
+		}
 	}
 
 	/**
@@ -1007,6 +1052,88 @@ class DbTest {
 				assertEquals(1, u.getNumArguments());
 				assertSetEquals(set("user_name"), u.getRowColumnNames());
 				assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
+			}
+		}
+
+		@Test
+		void deleteUser() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, DELETE_USER)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_USER));
+			}
+		}
+
+		@Test
+		void setUserQuota() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_QUOTA)) {
+				assertEquals(3, u.getNumArguments());
+				assertEquals(0, u.call(0L, NO_USER, "gorp"));
+			}
+		}
+
+		@Test
+		void setUserTrust() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_TRUST)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call( TrustLevel.BASIC, NO_USER));
+			}
+		}
+
+		@Test
+		void setUserLocked() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_LOCKED)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call(false, NO_USER));
+			}
+		}
+
+		@Test
+		void setUserDisabled() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_DISABLED)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call(false, NO_USER));
+			}
+		}
+
+		@Test
+		void setUserPass() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_PASS)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call("*", NO_USER));
+			}
+		}
+
+		@Test
+		void setUserName() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_USER_NAME)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call("gorp", NO_USER));
+			}
+		}
+
+		@Test
+		void createUser() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, CREATE_USER)) {
+				assertEquals(4, u.getNumArguments());
+				// DB was userless; this makes one
+				assertEquals(1, u.call("gorp", "*", TrustLevel.BASIC, true));
+			}
+		}
+
+		@Test
+		void createQuota() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, CREATE_QUOTA)) {
+				assertEquals(3, u.getNumArguments());
+				assertEquals(0, u.call(NO_USER, 0, "gorp"));
 			}
 		}
 	}

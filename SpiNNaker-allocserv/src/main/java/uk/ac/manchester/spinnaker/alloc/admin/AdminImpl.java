@@ -16,18 +16,29 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +48,10 @@ import org.springframework.stereotype.Service;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
 /**
  * Implements the service administration interface.
@@ -56,7 +69,10 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	private MachineDefinitionLoader loader;
 
 	@Autowired
-	private MachineStateControl controller;
+	private MachineStateControl machineController;
+
+	@Autowired
+	private UserControl userController;
 
 	@Override
 	@ManagedOperation
@@ -89,12 +105,20 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 		}
 	}
 
+	private static WebApplicationException noBoard() {
+		return new WebApplicationException("no such board", NOT_FOUND);
+	}
+
+	private static WebApplicationException noUser() {
+		return new WebApplicationException("no such user", NOT_FOUND);
+	}
+
 	@Override
 	public boolean getBoardStateXYZ(String name, int x, int y, int z)
 			throws SQLException {
 		log.warn("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
-		BoardState board = controller.findTriad(name, x, y, z).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findTriad(name, x, y, z)
+				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
 
@@ -104,8 +128,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 			boolean enabled) throws SQLException {
 		log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
 				enabled);
-		BoardState board = controller.findTriad(name, x, y, z).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findTriad(name, x, y, z)
+				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
 	}
@@ -114,8 +138,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	public boolean getBoardStateCFB(String name, int c, int f, int b)
 			throws SQLException {
 		log.warn("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
-		BoardState board = controller.findPhysical(name, c, f, b).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findPhysical(name, c, f, b)
+				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
 
@@ -125,8 +149,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 			boolean enabled) throws SQLException {
 		log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
 				enabled);
-		BoardState board = controller.findPhysical(name, c, f, b).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findPhysical(name, c, f, b)
+				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
 	}
@@ -135,8 +159,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	public boolean getBoardStateAddress(String name, String address)
 			throws SQLException {
 		log.warn("CALLED boardState({}:IP=({}))", name, address);
-		BoardState board = controller.findIP(name, address).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findIP(name, address)
+				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
 
@@ -145,9 +169,79 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	public boolean setBoardStateAddress(String name, String address,
 			boolean enabled) throws SQLException {
 		log.warn("CALLED boardState({}:IP=({})) := {}", name, address, enabled);
-		BoardState board = controller.findIP(name, address).orElseThrow(
-				() -> new WebApplicationException("no such board", NOT_FOUND));
+		BoardState board = machineController.findIP(name, address)
+				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
+	}
+
+	@Override
+	public Map<String, URI> listUsers(UriInfo ui) throws SQLException {
+		Map<String, URI> result = new TreeMap<>();
+		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
+		for (User user : userController.listUsers()) {
+			result.put(user.userName, ub.build(user.userId));
+		}
+		return unmodifiableMap(result);
+	}
+
+	private static User sanitise(User user) {
+		// Make SURE that the password doesn't go back
+		if (user.password != null) {
+			user.hasPassword = true;
+			user.password = null;
+		}
+		// Never need to send the userId back
+		user.userId = null;
+		return user;
+	}
+
+	@Override
+	public Response createUser(User providedUser, UriInfo ui)
+			throws SQLException {
+		providedUser.userId = null;
+		if (providedUser.trustLevel == null) {
+			providedUser.trustLevel = TrustLevel.USER;
+		}
+		if (providedUser.quota == null) {
+			providedUser.quota = emptyMap();
+		}
+		if (providedUser.isEnabled == null) {
+			providedUser.isEnabled = true;
+		}
+		if (providedUser.isLocked == null) {
+			providedUser.isLocked = false;
+		}
+		User realUser = userController.createUser(providedUser)
+				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
+						"user already exists"));
+		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
+		int id = realUser.userId;
+		return Response.created(ub.build(id)).type(APPLICATION_JSON)
+				.entity(sanitise(realUser)).build();
+	}
+
+	@Override
+	public User describeUser(int id) throws SQLException {
+		User user = userController.getUser(id).orElseThrow(AdminImpl::noUser);
+		return sanitise(user);
+	}
+
+	@Override
+	public User updateUser(int id, User providedUser, SecurityContext security)
+			throws SQLException {
+		String adminUser = security.getUserPrincipal().getName();
+		providedUser.userId = null;
+		User realUser = userController.updateUser(id, providedUser, adminUser)
+				.orElseThrow(AdminImpl::noUser);
+		return sanitise(realUser);
+	}
+
+	@Override
+	public Response deleteUser(int id, SecurityContext security)
+			throws SQLException {
+		String adminUser = security.getUserPrincipal().getName();
+		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
+		return Response.noContent().build();
 	}
 }

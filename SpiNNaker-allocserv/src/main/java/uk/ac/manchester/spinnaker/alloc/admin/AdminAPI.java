@@ -16,33 +16,44 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.USER;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.IPAddress;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
 /**
@@ -68,6 +79,9 @@ public interface AdminAPI {
 
 		/** Board control. */
 		String BOARD = "board";
+
+		/** User account control. */
+		String USER = "users";
 	}
 
 	/**
@@ -350,4 +364,147 @@ public interface AdminAPI {
 	 */
 	boolean setBoardStateAddress(@NotBlank String name,
 			@IPAddress String address, boolean enabled) throws SQLException;
+
+	/**
+	 * The description of a user. POD class.
+	 */
+	class User {
+		/**
+		 * The user identifier. Read-only; cannot be set.
+		 */
+		@JsonInclude(NON_NULL)
+		public Integer userId;
+
+		/**
+		 * The user's username.
+		 */
+		public @NotBlank String userName;
+
+		/**
+		 * The user's password. <em>Never</em> returned, but may be written.
+		 */
+		@JsonInclude(NON_NULL)
+		public String password; // Set only
+
+		/**
+		 * Whether the user has a password set. If they don't, they'll have to
+		 * log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
+		 */
+		public Boolean hasPassword;
+
+		/**
+		 * Whether this account is enabled. Disabled accounts <em>cannot</em>
+		 * use the service.
+		 */
+		public Boolean isEnabled;
+
+		/**
+		 * Whether this account is temporarily locked. Locked accounts should
+		 * unlock automatically after 24 hours.
+		 */
+		public Boolean isLocked;
+
+		/** The permissions of the account. */
+		public TrustLevel trustLevel;
+
+		/**
+		 * The quota map of the account, saying how many board-seconds can be
+		 * used on each machine.
+		 */
+		public Map<String, Long> quota;
+
+		/**
+		 * The time that the last successful login was. Read-only; cannot be
+		 * set.
+		 */
+		@JsonInclude(NON_NULL)
+		public Instant lastSuccessfulLogin;
+
+		/**
+		 * The time that the last failed login was. Read-only; cannot be set.
+		 */
+		@JsonInclude(NON_NULL)
+		public Instant lastFailedLogin;
+	}
+
+	/**
+	 * List the usernames and the URIs used to describe and manipulate them.
+	 *
+	 * @param ui
+	 *            For building URIs.
+	 * @return A sorted map from username to details-handling URI
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@GET
+	@Path(USER)
+	@Produces(APPLICATION_JSON)
+	Map<String, URI> listUsers(@Context UriInfo ui) throws SQLException;
+
+	/**
+	 * Create a new user.
+	 *
+	 * @param user
+	 *            Description of user to create. Username must be unique.
+	 * @param ui
+	 *            For building URIs.
+	 * @return REST response (CREATED on success)
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@POST
+	@Path(USER)
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	Response createUser(User user, @Context UriInfo ui) throws SQLException;
+
+	/**
+	 * Read a particular user's details.
+	 *
+	 * @param id
+	 *            The ID of the user
+	 * @return Description of the user.
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@GET
+	@Path(USER + "/{id}")
+	@Produces(APPLICATION_JSON)
+	User describeUser(@PathParam("id") int id) throws SQLException;
+
+	/**
+	 * Update a particular user's details
+	 *
+	 * @param id
+	 *            The ID of the user
+	 * @param user
+	 *            What to set the details to. {@code null} fields are ignored.
+	 * @param security
+	 *            Used to check who the current user actually is.
+	 * @return The updated user details.
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@PUT
+	@Path(USER + "/{id}")
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	User updateUser(@PathParam("id") int id, User user,
+			@Context SecurityContext security) throws SQLException;
+
+	/**
+	 * Delete a user.
+	 *
+	 * @param id
+	 *            The ID of the user
+	 * @param security
+	 *            Used to check who the current user actually is.
+	 * @return REST response
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@DELETE
+	@Path(USER + "/{id}")
+	Response deleteUser(@PathParam("id") int id,
+			@Context SecurityContext security) throws SQLException;
 }

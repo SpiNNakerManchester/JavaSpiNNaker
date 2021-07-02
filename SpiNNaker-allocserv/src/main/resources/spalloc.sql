@@ -250,7 +250,7 @@ CREATE TABLE IF NOT EXISTS quotas (
 	quota_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
-	quota INTEGER -- If NULL, no quota applies
+	quota INTEGER -- If NULL, no quota applies; care required, could be large
 );
 -- No user can have more than one quota for a particular machine
 CREATE UNIQUE INDEX IF NOT EXISTS quotaSanity ON quotas(

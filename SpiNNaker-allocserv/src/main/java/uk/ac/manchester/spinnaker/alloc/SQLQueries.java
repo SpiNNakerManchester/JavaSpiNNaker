@@ -19,6 +19,12 @@ package uk.ac.manchester.spinnaker.alloc;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
+import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
+import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
+import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
+import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
+import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -301,8 +307,7 @@ public abstract class SQLQueries {
 	 * Tell a job that it is allocated. Doesn't set the state.
 	 *
 	 * @see #SET_STATE_PENDING
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("width")
 	@Parameter("height")
@@ -330,8 +335,7 @@ public abstract class SQLQueries {
 	/**
 	 * Tell a board that it is allocated.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("job_id")
 	@Parameter("board_id")
@@ -352,8 +356,7 @@ public abstract class SQLQueries {
 	/**
 	 * Find jobs that have expired their keepalive interval.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@ResultColumn("job_id")
 	protected static final String FIND_EXPIRED_JOBS = //
@@ -365,8 +368,7 @@ public abstract class SQLQueries {
 	/**
 	 * Set the state and number of pending changes for a job.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("job_state")
 	@Parameter("num_pending")
@@ -445,8 +447,7 @@ public abstract class SQLQueries {
 	/**
 	 * Insert a BMP.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
-	 *      MachineDefinitionLoader
+	 * @see MachineDefinitionLoader
 	 */
 	@Parameter("machine_id")
 	@Parameter("address")
@@ -460,8 +461,7 @@ public abstract class SQLQueries {
 	/**
 	 * Insert a board.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
-	 *      MachineDefinitionLoader
+	 * @see MachineDefinitionLoader
 	 */
 	@Parameter("machine_id")
 	@Parameter("address")
@@ -483,8 +483,7 @@ public abstract class SQLQueries {
 	/**
 	 * Insert a link.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
-	 *      MachineDefinitionLoader
+	 * @see MachineDefinitionLoader
 	 */
 	@Parameter("board_1")
 	@Parameter("dir_1")
@@ -499,8 +498,7 @@ public abstract class SQLQueries {
 	/**
 	 * Insert a machine.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
-	 *      MachineDefinitionLoader
+	 * @see MachineDefinitionLoader
 	 */
 	@Parameter("name")
 	@Parameter("width")
@@ -515,8 +513,7 @@ public abstract class SQLQueries {
 	/**
 	 * Insert a tag.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader
-	 *      MachineDefinitionLoader
+	 * @see MachineDefinitionLoader
 	 */
 	@Parameter("machine_id")
 	@Parameter("tag")
@@ -566,8 +563,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the value of a board's {@code functioning} column.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl
-	 *      MachineStateControl
+	 * @see MachineStateControl
 	 */
 	@Parameter("board_id")
 	@ResultColumn("functioning")
@@ -580,8 +576,7 @@ public abstract class SQLQueries {
 	 * Set the value of a board's {@code functioning} column. Enables or
 	 * disables allocation of the board.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl
-	 *      MachineStateControl
+	 * @see MachineStateControl
 	 */
 	@Parameter("enabled")
 	@Parameter("board_id")
@@ -592,7 +587,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the quota for a user.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("user_name")
@@ -608,7 +603,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the current non-consolidated usage for a user.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("user_id")
@@ -621,7 +616,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get usage of a job and the quota against which that applies.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@Parameter("machine_id")
 	@Parameter("job_id")
@@ -640,7 +635,7 @@ public abstract class SQLQueries {
 	 * Get resource usage info about completed jobs that have yet to be
 	 * consolidated into the main quota table.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@ResultColumn("job_id")
 	@ResultColumn("quota_id")
@@ -652,7 +647,7 @@ public abstract class SQLQueries {
 	/**
 	 * Reduce a user's quota on a machine by a specified amount.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@Parameter("usage")
 	@Parameter("quota_id")
@@ -663,17 +658,54 @@ public abstract class SQLQueries {
 	/**
 	 * Mark a job as having had its resource usage consolidated.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager QuotaManager
+	 * @see QuotaManager
 	 */
 	@Parameter("job_id")
 	protected static final String MARK_CONSOLIDATED =
 			"UPDATE jobs SET accounted_for = 1 WHERE job_id = :job_id";
 
 	/**
+	 * Get details about a user. This is pretty much everything except their
+	 * password.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("has_password")
+	@ResultColumn("trust_level")
+	@ResultColumn("locked")
+	@ResultColumn("disabled")
+	@ResultColumn("last_successful_login_timestamp")
+	@ResultColumn("last_fail_timestamp")
+	@SingleRowResult
+	protected static final String GET_USER_DETAILS =
+			"SELECT user_id, user_name, "
+					+ "encrypted_password IS NOT NULL AS has_password, "
+					+ "trust_level, locked, disabled, "
+					+ "last_successful_login_timestamp, "
+					+ "last_fail_timestamp FROM user_info "
+					+ "WHERE user_id = :user_id LIMIT 1";
+
+	/**
+	 * Get a user's quotas.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("quota")
+	protected static final String GET_QUOTA_DETAILS =
+			"SELECT machines.machine_name, quotas.quota "
+					+ "FROM quotas JOIN machines "
+					+ "ON quotas.machine_id = machines.machine_id "
+					+ "WHERE quotas.user_id = :user_id";
+
+	/**
 	 * Test if a user account is locked or disabled.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("username")
 	@ResultColumn("user_id")
@@ -687,8 +719,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the permissions for a user.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("user_id")
 	@ResultColumn("trust_level")
@@ -702,8 +733,7 @@ public abstract class SQLQueries {
 	/**
 	 * Note the login success.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("user_id")
 	protected static final String MARK_LOGIN_SUCCESS = "UPDATE user_info SET "
@@ -713,8 +743,7 @@ public abstract class SQLQueries {
 	/**
 	 * Note the login failure.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("failure_limit")
 	@Parameter("user_id")
@@ -729,8 +758,7 @@ public abstract class SQLQueries {
 	/**
 	 * Unlock accounts.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("lock_interval")
 	@ResultColumn("user_name")
@@ -742,8 +770,7 @@ public abstract class SQLQueries {
 	/**
 	 * Define a user with standard permissions.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("username")
 	@Parameter("password")
@@ -756,14 +783,143 @@ public abstract class SQLQueries {
 	/**
 	 * Set a quota for a user on each defined machine.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl
-	 *      LocalAuthProviderImpl
+	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("user_id")
 	@Parameter("quota")
 	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
 			"INSERT INTO quotas(user_id, machine_id, quota) "
 					+ "SELECT :user_id, machine_id, :quota FROM machines";
+
+	/**
+	 * Delete a user.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	protected static final String DELETE_USER =
+			"DELETE FROM user_info WHERE user_id = :user_id";
+
+	/**
+	 * Get the ID of a user. Used for safety checks.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_name")
+	@ResultColumn("user_id")
+	@SingleRowResult
+	protected static final String GET_USER_ID = "SELECT user_id FROM user_info "
+			+ "WHERE user_name = :user_name LIMIT 1";
+
+	/**
+	 * Set a quota on a machine.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("quota")
+	@Parameter("user_id")
+	@Parameter("machine_name")
+	protected static final String SET_USER_QUOTA =
+			"UPDATE quotas SET quota = :quota WHERE user_id = :user_id "
+					+ "AND machine_id = (SELECT machine_id FROM machines "
+					+ "WHERE machine_name = :machine_name)";
+
+	/**
+	 * Set the amount a user is trusted.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("trust")
+	@Parameter("user_id")
+	protected static final String SET_USER_TRUST =
+			"UPDATE user_info SET trust_level = :trust "
+					+ "WHERE user_id = :user_id";
+
+	/**
+	 * Set whether a user is locked. Can be used to unlock a user early.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("locked")
+	@Parameter("user_id")
+	protected static final String SET_USER_LOCKED =
+			"UPDATE user_info SET locked = :locked WHERE user_id = :user_id";
+
+	/**
+	 * Set whether a user is administratively disabled.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("disabled")
+	@Parameter("user_id")
+	protected static final String SET_USER_DISABLED =
+			"UPDATE user_info SET disabled = :disabled "
+					+ "WHERE user_id = :user_id";
+
+	/**
+	 * Set a user's password. Passwords are either encrypted (with bcrypt) or
+	 * {@code null} to indicate that they should be using some other system
+	 * (OIDC?) to authenticate them.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("password")
+	@Parameter("user_id")
+	protected static final String SET_USER_PASS =
+			"UPDATE user_info SET encrypted_password = :password "
+					+ "WHERE user_id = :user_id";
+
+	/**
+	 * Set a user's name.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_name")
+	@Parameter("user_id")
+	protected static final String SET_USER_NAME =
+			"UPDATE user_info SET user_name = :user_name "
+					+ "WHERE user_id = :user_id";
+
+	/**
+	 * Get a list of all users.
+	 *
+	 * @see UserControl
+	 */
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	protected static final String LIST_ALL_USERS =
+			"SELECT user_id, user_name FROM user_info";
+
+	/**
+	 * Create a user. Passwords are either encrypted (with bcrypt) or
+	 * {@code null} to indicate that they should be using some other system
+	 * (OIDC?) to authenticate them.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_name")
+	@Parameter("password")
+	@Parameter("trust_level")
+	@Parameter("disabled")
+	@GeneratesID
+	protected static final String CREATE_USER =
+			"INSERT INTO user_info(user_name, encrypted_password, "
+					+ "trust_level, disabled) VALUES(:user_name, "
+					+ ":password, :trust_level, :disabled)";
+
+	/**
+	 * Create a quota (in board-seconds) for a user on a machine.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@Parameter("quota")
+	@Parameter("machine_name")
+	@GeneratesID
+	protected static final String CREATE_QUOTA =
+			"INSERT INTO quotas(user_id, quota, machine_id) "
+					+ "SELECT :user_id, :quota, machine_id FROM machines "
+					+ "WHERE machine_name = :machine_name";
 
 	// SQL loaded from files because it is too complicated otherwise!
 
@@ -772,8 +928,7 @@ public abstract class SQLQueries {
 	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable
 	 * resources to be made within the rectangle.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("width")
 	@Parameter("height")
@@ -790,8 +945,7 @@ public abstract class SQLQueries {
 	/**
 	 * Find an allocatable board at a specific physical location.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
@@ -829,8 +983,7 @@ public abstract class SQLQueries {
 	 * and this one are entirely complicated enough already! Also, we don't
 	 * expect to have this query reject many candidate allocations.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
@@ -848,8 +1001,7 @@ public abstract class SQLQueries {
 	 * allocation and a board that is not; it's <em>not</em> a geometric
 	 * definition, but rather a relational algebraic one.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
@@ -861,7 +1013,7 @@ public abstract class SQLQueries {
 	 * Locate a board (using a full set of coordinates) based on global chip
 	 * coordinates.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
+	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("chip_x")
@@ -891,7 +1043,7 @@ public abstract class SQLQueries {
 	 * Locate a board (using a full set of coordinates) based on
 	 * allocation-local chip coordinates.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
+	 * @see Spalloc
 	 */
 	@Parameter("job_id")
 	@Parameter("root_board_id")
@@ -919,7 +1071,7 @@ public abstract class SQLQueries {
 	 * Locate a board (using a full set of coordinates) based on logical triad
 	 * coordinates.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
+	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
@@ -948,7 +1100,7 @@ public abstract class SQLQueries {
 	 * Locate a board (using a full set of coordinates) based on physical
 	 * cabinet-frame-board coordinates.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
+	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("cabinet")
@@ -977,7 +1129,7 @@ public abstract class SQLQueries {
 	 * Locate a board (using a full set of coordinates) based on the IP address
 	 * of its ethernet chip.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.Spalloc Spalloc
+	 * @see Spalloc
 	 */
 	@Parameter("machine_id")
 	@Parameter("address")
@@ -1016,8 +1168,7 @@ public abstract class SQLQueries {
 	 * are connected (i.e., have at least one path over enableable links) to the
 	 * root board.
 	 *
-	 * @see uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask
-	 *      AllocatorTask
+	 * @see AllocatorTask
 	 */
 	@Parameter("machine_id")
 	@Parameter("x")
