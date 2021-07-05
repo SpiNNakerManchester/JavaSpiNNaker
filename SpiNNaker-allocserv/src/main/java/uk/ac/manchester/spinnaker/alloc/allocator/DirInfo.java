@@ -37,7 +37,8 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
  * coordinate matters for this) to another when you move in a particular
  * direction. Comes from the {@code movement_directions} table in the database.
  * <p>
- * Consider this board layout (a classic 24 board machine):
+ * Consider this board layout (a classic 24 board machine, with wrap-arounds not
+ * shown):
  * <p>
  * <img src="doc-files/DirInfo1.png" width="450">
  * <p>
@@ -95,8 +96,6 @@ public final class DirInfo extends SQLQueries {
 	public static DirInfo get(int z, Direction direction) {
 		return MAP.get(z).get(direction);
 	}
-
-	// TODO provide a method that manipulates a triad coordinate tuple
 
 	@Override
 	public boolean equals(Object o) {

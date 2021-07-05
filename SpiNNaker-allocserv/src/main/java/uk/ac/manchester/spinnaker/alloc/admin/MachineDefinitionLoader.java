@@ -170,6 +170,17 @@ public class MachineDefinitionLoader extends SQLQueries {
 			}
 		}
 
+		/**
+		 * Get the triad coordinate that you arrive at when you move from the
+		 * current location in the indicated direction on the given machine.
+		 * This ignores dead links and dead boards.
+		 *
+		 * @param direction
+		 *            Which way to move
+		 * @param machine
+		 *            Used to determine where wraparounds are
+		 * @return The new location
+		 */
 		TriadCoords move(Direction direction, Machine machine) {
 			DirInfo di = DirInfo.get(z, direction);
 			return new TriadCoords(limit(x + di.dx, machine.getWidth()),
