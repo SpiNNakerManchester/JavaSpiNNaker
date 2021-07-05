@@ -1,0 +1,40 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<html>
+    <head>
+        <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1">
+        <title>User Details</title>
+    </head>
+    <body>
+        <form:form method="POST" modelAttribute="user">
+            <form:label path="userName">User Name: </form:label>
+            <form:input path="userName" type="text"/>
+            <form:select path="trustLevel">
+            <form:option value="">pick a level</form:option>
+            <form:options value="${trustLevels }"/>
+            </form:select>
+            <br>
+            <form:label path="password">Password: </form:label>
+            <form:input path="password" type="password" />
+            <form:label path="hasPassword">Has Password: </form:label>
+            <form:checkbox path="hasPassword"/>
+            <br>
+            <form:label path="isEnabled">Is enabled? </form:label>
+            <form:checkbox path="isEnabled"/>
+            <form:label path="isLocked">Is temporarily locked? </form:label>
+            <form:checkbox path="isLocked"/>
+            <br>
+            Last successful login: ${ user.lastSuccessfulLogin }
+            <br>
+            Last failed login: ${ user.lastFailedLogin }
+            <p>
+            Quotas:
+            <c:forEach items="${user.quota}" var="item">
+            <br> ${item.key } : ${item.value } board-seconds
+            </c:forEach>
+            <p>
+            <input type="submit" value="Submit" />
+        </form:form>
+    </body>
+</html>

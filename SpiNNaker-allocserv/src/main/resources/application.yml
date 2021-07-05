@@ -16,6 +16,8 @@
 logging:
   level:
     root: INFO
+    # org.apache.catalina: DEBUG
+    # org.springframework.web: DEBUG
 
 spring:
   main:
@@ -37,7 +39,7 @@ server:
   port: 8080
 
 cxf:
-  path: /
+  path: /srv
   servlet.init: 
     service-list-path: info
   jaxrs:

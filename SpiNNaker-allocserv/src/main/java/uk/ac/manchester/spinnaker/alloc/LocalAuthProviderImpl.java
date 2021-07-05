@@ -111,7 +111,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@PostConstruct
 	private void initUserIfNecessary() throws SQLException {
 		if (addDummyUser) {
-			createUser(DUMMY_USER, DUMMY_PASSWORD, TrustLevel.USER,
+			createUser(DUMMY_USER, DUMMY_PASSWORD, TrustLevel.ADMIN,
 					defaultQuota);
 		}
 	}
