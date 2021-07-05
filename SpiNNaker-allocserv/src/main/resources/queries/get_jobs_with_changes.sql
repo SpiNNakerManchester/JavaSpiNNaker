@@ -15,13 +15,17 @@
 
 WITH
 	-- Arguments and current timestamp
-	args(machine, on_delay, off_delay, now) AS (
-		VALUES (:machine_id, :on_delay, :off_delay, strftime('%s', 'now'))),
+	args(machine, now) AS (
+		VALUES (:machine_id, strftime('%s', 'now'))),
+	-- The machine on which we are allocating
+	m AS (
+		SELECT machines.* FROM machines, args
+		WHERE machines.machine_id = args.machine),
 	-- The set of boards that are "busy" settling after changing state
 	busy_boards AS (
-		SELECT boards.board_id FROM boards, args
-		WHERE boards.power_on_timestamp + args.on_delay > args.now
-			OR boards.power_off_timestamp + args.off_delay > args.now)
+		SELECT boards.board_id FROM boards, args, m
+		WHERE boards.power_on_timestamp + m.on_delay > args.now
+			OR boards.power_off_timestamp + m.off_delay > args.now)
 SELECT
 	-- The IDs of jobs
 	jobs.job_id

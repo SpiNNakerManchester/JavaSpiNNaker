@@ -35,7 +35,6 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import javax.annotation.PreDestroy;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -76,16 +74,6 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
- * <p>
- * Key configuration properties:
- * <dl>
- * <dt>spalloc.on_delay
- * <dd>The delay from when a board is switched on to when it becomes eligible to
- * be switched off again.
- * <dt>spalloc.off_delay
- * <dd>The delay from when a board is switched off to when it becomes eligible
- * to be switched on again.
- * </dl>
  *
  * @author Donal Fellows
  */
@@ -122,14 +110,6 @@ public class BMPController extends SQLQueries {
 	private Runnable onThreadStart;
 
 	private Map<Machine, Thread> workers = new HashMap<>();
-
-	// TODO move to machine configuration in DB
-	@Value("${spalloc.on_delay:PT20S}")
-	private Duration onDelay;
-
-	// TODO move to machine configuration in DB
-	@Value("${spalloc.off_delay:PT30S}")
-	private Duration offDelay;
 
 	@Autowired
 	private DatabaseEngine db;
@@ -491,8 +471,7 @@ public class BMPController extends SQLQueries {
 				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
 			transaction(conn, () -> {
 				for (Machine machine : machines) {
-					for (Row jobIds : getJobIds.call(machine.getId(), onDelay,
-							offDelay)) {
+					for (Row jobIds : getJobIds.call(machine.getId())) {
 						takeRequestsForJob(requests, getChanges, setInProgress,
 								machine, jobIds.getInt("job_id"));
 					}

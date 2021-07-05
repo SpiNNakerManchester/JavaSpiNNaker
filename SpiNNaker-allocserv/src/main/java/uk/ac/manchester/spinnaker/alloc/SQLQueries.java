@@ -803,6 +803,7 @@ public abstract class SQLQueries {
 	/**
 	 * Get the ID of a user. Used for safety checks.
 	 *
+	 * @see Spalloc
 	 * @see UserControl
 	 */
 	@Parameter("user_name")
@@ -1157,8 +1158,6 @@ public abstract class SQLQueries {
 	 * of how long after switching a board on or off is applied.)
 	 */
 	@Parameter("machine_id")
-	@Parameter("on_delay")
-	@Parameter("off_delay")
 	@ResultColumn("job_id")
 	@Value("classpath:queries/get_jobs_with_changes.sql")
 	protected Resource getJobsWithChanges;

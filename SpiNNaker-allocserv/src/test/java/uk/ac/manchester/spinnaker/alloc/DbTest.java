@@ -626,11 +626,10 @@ class DbTest {
 
 		@Test
 		void getJobsWithChanges() throws SQLException {
-			Duration d = Duration.ofSeconds(1);
 			try (Query q = query(c, getJobsWithChanges)) {
-				assertEquals(3, q.getNumArguments());
+				assertEquals(1, q.getNumArguments());
 				assertSetEquals(set("job_id"), q.getRowColumnNames());
-				assertFalse(q.call1(NO_MACHINE, d, d).isPresent());
+				assertFalse(q.call1(NO_MACHINE).isPresent());
 			}
 		}
 

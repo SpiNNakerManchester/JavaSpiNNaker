@@ -44,7 +44,11 @@ CREATE TABLE IF NOT EXISTS machines (
 	width INTEGER NOT NULL CHECK (width > 0),
 	height INTEGER NOT NULL CHECK (height > 0),
 	"depth" INTEGER NOT NULL CHECK ("depth" IN (1, 3)),
-	board_model INTEGER NOT NULL REFERENCES board_models(model) ON DELETE CASCADE
+	board_model INTEGER NOT NULL REFERENCES board_models(model) ON DELETE CASCADE,
+	-- Minimum times (in seconds) to wait after switching a board on or off
+	-- before it can have its power state changed again.
+	on_delay INTEGER NOT NULL DEFAULT (20), -- after on delay
+	off_delay INTEGER NOT NULL DEFAULT (30) -- after off delay
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
