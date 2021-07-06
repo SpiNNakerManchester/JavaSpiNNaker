@@ -53,6 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
 
@@ -89,6 +90,10 @@ class DbTest {
 			set("machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
 					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
 					"job_id", "job_root_chip_x", "job_root_chip_y");
+
+	/** Columns expected when building {@link BoardState} from a {@link Row}. */
+	private static final Set<String> MSC_BOARD_COORDS = set("board_id", "x",
+			"y", "z", "cabinet", "frame", "board_num", "address");
 
 	@Autowired
 	private DatabaseEngine mainDBEngine;
@@ -647,7 +652,7 @@ class DbTest {
 		void findBoardByNameAndXYZ() throws SQLException {
 			try (Query q = query(c, FIND_BOARD_BY_NAME_AND_XYZ)) {
 				assertEquals(4, q.getNumArguments());
-				assertSetEquals(set("board_id"), q.getRowColumnNames());
+				assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
 			}
 		}
@@ -656,7 +661,7 @@ class DbTest {
 		void findBoardByNameAndCFB() throws SQLException {
 			try (Query q = query(c, FIND_BOARD_BY_NAME_AND_CFB)) {
 				assertEquals(4, q.getNumArguments());
-				assertSetEquals(set("board_id"), q.getRowColumnNames());
+				assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
 			}
 		}
@@ -665,7 +670,7 @@ class DbTest {
 		void findBoardByNameAndIPAddress() throws SQLException {
 			try (Query q = query(c, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				assertEquals(2, q.getNumArguments());
-				assertSetEquals(set("board_id"), q.getRowColumnNames());
+				assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 				assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
 			}
 		}

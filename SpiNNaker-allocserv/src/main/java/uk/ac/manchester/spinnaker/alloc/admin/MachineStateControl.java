@@ -47,8 +47,36 @@ public class MachineStateControl extends SQLQueries {
 	public final class BoardState {
 		private final int boardId;
 
-		private BoardState(int id) {
-			this.boardId = id;
+		/** The X triad coordinate. */
+		public final int x;
+
+		/** The Y triad coordinate. */
+		public final int y;
+
+		/** The Z triad coordinate. */
+		public final int z;
+
+		/** The cabinet number. */
+		public final int cabinet;
+
+		/** The frame number. */
+		public final int frame;
+
+		/** The board number. */
+		public final int board;
+
+		/** The IP address managed by the board's root chip. */
+		public final String address;
+
+		private BoardState(Row row) throws SQLException {
+			this.boardId = row.getInt("board_id");
+			this.x = row.getInt("x");
+			this.y = row.getInt("y");
+			this.z = row.getInt("z");
+			this.cabinet = row.getInt("cabinet");
+			this.frame = row.getInt("frame");
+			this.board = row.getInt("board_num");
+			this.address = row.getString("address");
 		}
 
 		/**
@@ -97,7 +125,7 @@ public class MachineStateControl extends SQLQueries {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
 				for (Row row : q.call(machine, x, y, z)) {
-					return Optional.of(new BoardState(row.getInt("board_id")));
+					return Optional.of(new BoardState(row));
 				}
 			}
 			return Optional.empty();
@@ -124,7 +152,7 @@ public class MachineStateControl extends SQLQueries {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
 				for (Row row : q.call(machine, c, f, b)) {
-					return Optional.of(new BoardState(row.getInt("board_id")));
+					return Optional.of(new BoardState(row));
 				}
 			}
 			return Optional.empty();
@@ -147,7 +175,7 @@ public class MachineStateControl extends SQLQueries {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				for (Row row : q.call(machine, address)) {
-					return Optional.of(new BoardState(row.getInt("board_id")));
+					return Optional.of(new BoardState(row));
 				}
 			}
 			return Optional.empty();
