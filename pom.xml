@@ -351,6 +351,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>README.md</exclude>
 							<exclude>SECURITY.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
+							<exclude>**/.dbeaver/**</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 					</configuration>

@@ -210,38 +210,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<id>jetty</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.jetty</groupId>
-						<artifactId>jetty-maven-plugin</artifactId>
-						<version>11.0.2</version>
-						<configuration>
-							<httpConnector>
-								<port>${jetty.port}</port>
-							</httpConnector>
-							<webAppConfig>
-								<contextPath>${jetty.root}</contextPath>
-							</webAppConfig>
-							<systemProperties>
-								<systemProperty>
-									<name>java.awt.headless</name>
-									<value>true</value>
-								</systemProperty>
-								<systemProperty>
-									<name>org.apache.cxf.io.CachedOutputStream.MaxSize</name>
-									<value>-1</value>
-								</systemProperty>
-							</systemProperties>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 	<description>A board allocation service for SpiNNaker.</description>
 	<name>SpiNNaker Allocation Server</name>
 </project>
