@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Collections.emptyMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -544,6 +545,25 @@ public interface AdminAPI {
 			userId = null;
 			return this;
 		}
+
+		/**
+		 * Set up some defaults used when a user is being created.
+		 */
+		void initCreationDefaults() {
+			setUserId(null);
+			if (getTrustLevel() == null) {
+				setTrustLevel(TrustLevel.USER);
+			}
+			if (getQuota() == null) {
+				setQuota(emptyMap());
+			}
+			if (isEnabled() == null) {
+				setEnabled(true);
+			}
+			if (isLocked() == null) {
+				setLocked(false);
+			}
+		}
 	}
 
 	/**
@@ -559,6 +579,15 @@ public interface AdminAPI {
 	@Path(USER)
 	@Produces(APPLICATION_JSON)
 	Map<String, URI> listUsers(@Context UriInfo ui) throws SQLException;
+
+	/**
+	 * List the usernames and their user IDs.
+	 *
+	 * @return A sorted map from username to ID
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	Map<String, Integer> listUsers() throws SQLException;
 
 	/**
 	 * Create a new user.

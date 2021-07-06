@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -48,7 +47,6 @@ import org.springframework.stereotype.Service;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
@@ -186,21 +184,18 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
+	public Map<String, Integer> listUsers() throws SQLException {
+		Map<String, Integer> result = new TreeMap<>();
+		for (User user : userController.listUsers()) {
+			result.put(user.getUserName(), user.getUserId());
+		}
+		return unmodifiableMap(result);
+	}
+
+	@Override
 	public Response createUser(User providedUser, UriInfo ui)
 			throws SQLException {
-		providedUser.setUserId(null);
-		if (providedUser.getTrustLevel() == null) {
-			providedUser.setTrustLevel(TrustLevel.USER);
-		}
-		if (providedUser.getQuota() == null) {
-			providedUser.setQuota(emptyMap());
-		}
-		if (providedUser.isEnabled() == null) {
-			providedUser.setEnabled(true);
-		}
-		if (providedUser.isLocked() == null) {
-			providedUser.setLocked(false);
-		}
+		providedUser.initCreationDefaults();
 		User realUser = userController.createUser(providedUser)
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
