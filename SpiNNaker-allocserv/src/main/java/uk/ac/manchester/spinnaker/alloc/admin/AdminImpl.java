@@ -185,16 +185,6 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public Map<String, Integer> listUsers() throws SQLException {
-		log.info("CALLED listUsers()");
-		Map<String, Integer> result = new TreeMap<>();
-		for (User user : userController.listUsers()) {
-			result.put(user.getUserName(), user.getUserId());
-		}
-		return unmodifiableMap(result);
-	}
-
-	@Override
 	public Response createUser(User providedUser, UriInfo ui)
 			throws SQLException {
 		log.warn("CALLED createUser({})", providedUser.getUserName());

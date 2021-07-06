@@ -581,15 +581,6 @@ public interface AdminAPI {
 	Map<String, URI> listUsers(@Context UriInfo ui) throws SQLException;
 
 	/**
-	 * List the usernames and their user IDs.
-	 *
-	 * @return A sorted map from username to ID
-	 * @throws SQLException
-	 *             If DB access fails.
-	 */
-	Map<String, Integer> listUsers() throws SQLException;
-
-	/**
 	 * Create a new user.
 	 *
 	 * @param user
