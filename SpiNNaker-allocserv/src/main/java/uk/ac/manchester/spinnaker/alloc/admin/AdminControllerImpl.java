@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -50,12 +51,15 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 
 @Controller("mvc.adminController")
-@RequestMapping("/admin")
+@RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl implements AdminController {
+	private static final String MAIN_VIEW = "main";
+
 	private static final String USER_LIST_VIEW = "users";
 
 	private static final String USER_DETAILS_VIEW = "user";
@@ -63,6 +67,8 @@ public class AdminControllerImpl implements AdminController {
 	private static final String ERROR_VIEW = "error";
 
 	private static final String BOARD_VIEW = "board";
+
+	private static final String MACHINE_VIEW = "machine";
 
 	private static final String USER_OBJ = "user";
 
@@ -89,6 +95,14 @@ public class AdminControllerImpl implements AdminController {
 		return fromMethodCall(selfCall).buildAndExpand().toUri();
 	}
 
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @return The enhanced model-and-view.
+	 */
 	private static ModelAndView addStandardContext(ModelAndView mav) {
 		mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
 		mav.addObject("trustLevels", TrustLevel.values());
@@ -98,20 +112,17 @@ public class AdminControllerImpl implements AdminController {
 		return mav;
 	}
 
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param viewName
+	 *            The name of the view; the model will be a basic model with
+	 *            just the standard attributes.
+	 * @return The model-and-view.
+	 */
 	private static ModelAndView addStandardContext(String viewName) {
-		return addStandardContext(new ModelAndView("viewName"));
-	}
-
-	private static ModelAndView errors(BindingResult result) {
-		if (result.hasGlobalErrors()) {
-			return addStandardContext(new ModelAndView(ERROR_VIEW, "error",
-					result.getGlobalError().toString()));
-		}
-		if (result.hasFieldErrors()) {
-			return addStandardContext(new ModelAndView(ERROR_VIEW, "error",
-					result.getFieldError().toString()));
-		}
-		return addStandardContext(new ModelAndView(ERROR_VIEW));
+		return addStandardContext(new ModelAndView(viewName));
 	}
 
 	private static ModelAndView errors(String message) {
@@ -119,9 +130,19 @@ public class AdminControllerImpl implements AdminController {
 				new ModelAndView(ERROR_VIEW, "error", message));
 	}
 
+	private static ModelAndView errors(BindingResult result) {
+		if (result.hasGlobalErrors()) {
+			return errors(result.getGlobalError().toString());
+		}
+		if (result.hasFieldErrors()) {
+			return errors(result.getFieldError().toString());
+		}
+		return errors("unknown error");
+	}
+
 	@Override
 	public ModelAndView mainUI() {
-		return addStandardContext("main");
+		return addStandardContext(MAIN_VIEW);
 	}
 
 	@Override
@@ -161,7 +182,7 @@ public class AdminControllerImpl implements AdminController {
 			return errors("creation failed");
 		}
 		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
-		mav.addObject("user", realUser.get().sanitise());
+		mav.addObject(USER_OBJ, realUser.get().sanitise());
 		return addStandardContext(mav);
 	}
 
@@ -298,20 +319,24 @@ public class AdminControllerImpl implements AdminController {
 	@Override
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineUploadForm() {
-		return addStandardContext("machine");
+		return addStandardContext(MACHINE_VIEW);
 	}
 
 	@Override
 	@PostMapping(MACHINE_PATH)
 	public ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
 			ModelMap modelMap) {
+		List<Machine> machines;
 		try (InputStream input = file.getInputStream()) {
-			machineDefiner.loadMachineDefinitions(input);
+			machines = machineDefiner.readMachineDefinitions(input);
+			for (Machine m:machines) {
+				machineDefiner.loadMachineDefinition(m);
+			}
 		} catch (IOException | SQLException e) {
 			return errors("problem with processing file: " + e.getMessage());
 		}
-		ModelAndView mav = new ModelAndView("machine");
-		// Not sure what attributes to put here
+		ModelAndView mav = new ModelAndView(MACHINE_VIEW);
+		mav.addObject("definedMachines", machines);
 		return addStandardContext(mav);
 	}
 }

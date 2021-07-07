@@ -903,6 +903,21 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	/**
+	 * Add the machine definition to the database.
+	 *
+	 * @param machine
+	 *            The machine definition.
+	 * @throws SQLException
+	 *             If database access fails
+	 */
+	public void loadMachineDefinition(Machine machine) throws SQLException {
+		try (Connection conn = db.getConnection();
+				Updates sql = new Updates(conn)) {
+			transaction(conn, () -> loadMachineDefinition(sql, machine));
+		}
+	}
+
+	/**
 	 * Possible exception when an insert fails.
 	 *
 	 * @author Donal Fellows

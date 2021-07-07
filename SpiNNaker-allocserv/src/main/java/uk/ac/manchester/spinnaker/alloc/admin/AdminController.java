@@ -43,9 +43,12 @@ import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
  *
  * @author Donal Fellows
  */
-@RequestMapping("/admin")
+@RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
 public interface AdminController {
+	/** The base path of this interface within the MVC domain. */
+	String BASE_PATH = "/admin";
+
 	/** Path to all-users operations. */
 	String USERS_PATH = "/users";
 
@@ -174,7 +177,8 @@ public interface AdminController {
 	ModelAndView machineUploadForm();
 
 	/**
-	 * Handle the upload of a machine.
+	 * Handle the upload of a machine. Note that no user has any quota set on a
+	 * newly defined machine; it's totally free to use by default.
 	 *
 	 * @param file
 	 *            The file being uploaded

@@ -369,10 +369,10 @@ public interface AdminAPI {
 			@IPAddress String address, boolean enabled) throws SQLException;
 
 	/**
-	 * The description of a user. POJO class. Some things are stated to be not
-	 * settable despite having setters; they're settable <em>in instances of
-	 * this class</em> but the service itself will not respect being asked to
-	 * change them.
+	 * The description and model of a user. POJO class. Some things are stated
+	 * to be not settable despite having setters; they're settable <em>in
+	 * instances of this class</em> but the service itself will not respect
+	 * being asked to change them.
 	 */
 	final class User {
 		private Integer userId;
