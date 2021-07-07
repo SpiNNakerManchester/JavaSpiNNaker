@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
-import java.sql.SQLException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -33,42 +32,166 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 
-@RequestMapping("/")
+/**
+ * The API for the controller for the admin user interface.
+ *
+ * @author Donal Fellows
+ */
+@RequestMapping("/admin")
 @PreAuthorize(IS_ADMIN)
 public interface AdminController {
+	/** Path to all-users operations. */
+	String USERS_PATH = "/users";
 
-	@GetMapping("/users")
-	ModelAndView listUsers() throws SQLException;
+	/** Path to single-user operations. */
+	String USER_PATH = USERS_PATH + "/{id}";
 
-	@PostMapping("/users")
+	/** Path to single-user-deletion operation. */
+	String USER_DELETE_PATH = USER_PATH + "/delete";
+
+	/** Path to boards operations. */
+	String BOARDS_PATH = "/boards";
+
+	/** Path to machine-instantiation operations. */
+	String MACHINE_PATH = "/machine";
+
+	/**
+	 * Get supported ops.
+	 *
+	 * @return the view
+	 */
+	@GetMapping("/")
+	ModelAndView mainUI();
+
+	/**
+	 * List all users.
+	 *
+	 * @return the model and view
+	 */
+	@GetMapping(USERS_PATH)
+	ModelAndView listUsers();
+
+	/**
+	 * Create a user.
+	 *
+	 * @param user
+	 *            The description of the user to create
+	 * @param result
+	 *            Validation results
+	 * @param model
+	 *            Overall model
+	 * @return the model and view
+	 */
+	@PostMapping(USERS_PATH)
 	ModelAndView createUser(@Valid @ModelAttribute("user") User user,
-			BindingResult result, ModelMap model) throws SQLException;
+			BindingResult result, ModelMap model);
 
-	@GetMapping("/users/{id}")
-	ModelAndView showUserForm(@PathVariable int id) throws SQLException;
+	/**
+	 * Show user details.
+	 *
+	 * @param id
+	 *            The user ID
+	 * @return the model and view
+	 */
+	@GetMapping(USER_PATH)
+	ModelAndView showUserForm(@PathVariable int id);
 
-	@PostMapping("/users/{id}")
+	/**
+	 * Modify user details.
+	 *
+	 * @param id
+	 *            The user ID
+	 * @param user
+	 *            The description of the user to update
+	 * @param result
+	 *            Validation results
+	 * @param model
+	 *            Overall model
+	 * @param principal
+	 *            Who is the admin? Used for safety checks.
+	 * @return the model and view
+	 */
+	@PostMapping(USER_PATH)
 	ModelAndView submitUserForm(@PathVariable int id,
 			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal) throws SQLException;
+			ModelMap model, Principal principal);
 
-	@PostMapping("/users/{id}/delete")
+	/**
+	 * Delete a user.
+	 *
+	 * @param id
+	 *            The user ID
+	 * @param user
+	 *            The description of the user to delete
+	 * @param result
+	 *            Validation results
+	 * @param model
+	 *            Overall model
+	 * @param principal
+	 *            Who is the admin? Used for safety checks.
+	 * @return the model and view
+	 */
+	@PostMapping(USER_DELETE_PATH)
 	ModelAndView deleteUser(@PathVariable int id,
 			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal) throws SQLException;
+			ModelMap model, Principal principal);
 
-	@GetMapping("/boards")
-	ModelAndView boards(ModelMap model);
+	/**
+	 * UI for boards.
+	 *
+	 * @return the model and view
+	 */
+	@GetMapping(BOARDS_PATH)
+	ModelAndView boards();
 
-	@PostMapping("/boards")
-	ModelAndView board(@Valid @ModelAttribute("board") BoardInfo board,
-			BindingResult result, ModelMap model) throws SQLException;
+	/**
+	 * Manipulate a board.
+	 *
+	 * @param board
+	 *            The board coordinates, and possibly the state change
+	 * @param result
+	 *            Validation results
+	 * @param model
+	 *            Overall model
+	 * @return the model and view
+	 */
+	@PostMapping(BOARDS_PATH)
+	ModelAndView board(@Valid @ModelAttribute("board") BoardModel board,
+			BindingResult result, ModelMap model);
 
-	class BoardInfo {
+	/**
+	 * Provide the form for uploading a machine definition.
+	 *
+	 * @return the model and view
+	 */
+	@GetMapping(MACHINE_PATH)
+	ModelAndView machineUploadForm();
+
+	/**
+	 * Handle the upload of a machine.
+	 *
+	 * @param file
+	 *            The file being uploaded
+	 * @param modelMap
+	 *            the model of the form
+	 * @return the model and view
+	 */
+	@PostMapping(MACHINE_PATH)
+	ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
+			ModelMap modelMap);
+
+	/**
+	 * Model of a board, for configuration purposes.
+	 *
+	 * @author Donal Fellows
+	 */
+	class BoardModel {
 		@NotNull
 		private String machineName;
 

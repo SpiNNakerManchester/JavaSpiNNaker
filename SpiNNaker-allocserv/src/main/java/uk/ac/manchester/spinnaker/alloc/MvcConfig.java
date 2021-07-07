@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -35,5 +36,15 @@ public class MvcConfig implements WebMvcConfigurer {
 		bean.setPrefix("/WEB-INF/views/");
 		bean.setSuffix(".jsp");
 		return bean;
+	}
+
+	private static final int MAX_UPLOAD_SIZE = 1000000;
+
+	@Bean(name = "multipartResolver")
+	CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver multipartResolver =
+				new CommonsMultipartResolver();
+		multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
+		return multipartResolver;
 	}
 }

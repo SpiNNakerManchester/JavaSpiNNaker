@@ -22,6 +22,8 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -41,154 +43,233 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 
 @Controller("mvc.adminController")
-@RequestMapping("/")
+@RequestMapping("/admin")
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl implements AdminController {
+	private static final String USER_LIST_VIEW = "users";
+
+	private static final String USER_DETAILS_VIEW = "user";
+
+	private static final String ERROR_VIEW = "error";
+
+	private static final String BOARD_VIEW = "board";
+
+	private static final String USER_OBJ = "user";
+
+	private static final String BOARD_OBJ = "board";
+
 	@Autowired
 	private UserControl userController;
 
 	@Autowired
 	private MachineStateControl machineController;
 
-	private ModelAndView addStandardContext(ModelAndView mav) {
+	@Autowired
+	private MachineDefinitionLoader machineDefiner;
+
+	/**
+	 * Special delegate for building URIs only.
+	 *
+	 * @see MvcUriComponentsBuilder#fromMethodCall(Object)
+	 */
+	private static final AdminController SELF = on(AdminController.class);
+
+	private static URI uri(Object selfCall) {
+		// No template variables in the overall controller, so can factor out
+		return fromMethodCall(selfCall).buildAndExpand().toUri();
+	}
+
+	private static ModelAndView addStandardContext(ModelAndView mav) {
 		mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
 		mav.addObject("trustLevels", TrustLevel.values());
+		mav.addObject("usersUri", uri(SELF.listUsers()));
+		mav.addObject("boardsUri", uri(SELF.boards()));
+		mav.addObject("machineUri", uri(SELF.machineUploadForm()));
 		return mav;
 	}
 
+	private static ModelAndView addStandardContext(String viewName) {
+		return addStandardContext(new ModelAndView("viewName"));
+	}
+
+	private static ModelAndView errors(BindingResult result) {
+		if (result.hasGlobalErrors()) {
+			return addStandardContext(new ModelAndView(ERROR_VIEW, "error",
+					result.getGlobalError().toString()));
+		}
+		if (result.hasFieldErrors()) {
+			return addStandardContext(new ModelAndView(ERROR_VIEW, "error",
+					result.getFieldError().toString()));
+		}
+		return addStandardContext(new ModelAndView(ERROR_VIEW));
+	}
+
+	private static ModelAndView errors(String message) {
+		return addStandardContext(
+				new ModelAndView(ERROR_VIEW, "error", message));
+	}
+
 	@Override
-	@GetMapping("/users")
-	public ModelAndView listUsers() throws SQLException {
+	public ModelAndView mainUI() {
+		return addStandardContext("main");
+	}
+
+	@Override
+	@GetMapping(USERS_PATH)
+	public ModelAndView listUsers() {
 		Map<String, URI> result = new TreeMap<>();
-		AdminController controller = on(AdminController.class);
-		for (User user : userController.listUsers()) {
-			result.put(user.getUserName(),
-					fromMethodCall(controller.showUserForm(user.getUserId()))
-							.buildAndExpand().toUri());
+		try {
+			for (User user : userController.listUsers()) {
+				result.put(user.getUserName(),
+						uri(SELF.showUserForm(user.getUserId())));
+			}
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
 		}
 
-		ModelAndView mav = new ModelAndView("users");
+		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
 		mav.addObject("userlist", unmodifiableMap(result));
-		mav.addObject("user", new User());
+		mav.addObject(USER_OBJ, new User());
 		return addStandardContext(mav);
 	}
 
 	@Override
-	@PostMapping("/users")
-	public ModelAndView createUser(@Valid @ModelAttribute("user") User user,
-			BindingResult result, ModelMap model) throws SQLException {
-		ModelAndView mav;
+	@PostMapping(USERS_PATH)
+	public ModelAndView createUser(@Valid @ModelAttribute(USER_OBJ) User user,
+			BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
-			mav = new ModelAndView("error");
-		} else {
-			user.initCreationDefaults();
-			Optional<User> realUser = userController.createUser(user);
-			if (realUser.isPresent()) {
-				mav = new ModelAndView("users");
-			} else {
-				mav = new ModelAndView("error");
+			return errors(result);
+		}
+		user.initCreationDefaults();
+		Optional<User> realUser;
+		try {
+			realUser = userController.createUser(user);
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
+		}
+		if (!realUser.isPresent()) {
+			return errors("creation failed");
+		}
+		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
+		mav.addObject("user", realUser.get().sanitise());
+		return addStandardContext(mav);
+	}
+
+	@Override
+	@GetMapping(USER_PATH)
+	public ModelAndView showUserForm(@PathVariable int id) {
+		try {
+			Optional<User> user = userController.getUser(id);
+			if (!user.isPresent()) {
+				return errors("no such user");
 			}
+			ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
+			User realUser = user.get().sanitise();
+			mav.addObject(USER_OBJ, realUser);
+			mav.addObject("deleteUri",
+					uri(SELF.deleteUser(id, realUser, null, null, null)));
+			return addStandardContext(mav);
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
 		}
-		return addStandardContext(mav);
 	}
 
 	@Override
-	@GetMapping("/users/{id}")
-	public ModelAndView showUserForm(@PathVariable int id) throws SQLException {
-		// return "formtest";
-		ModelAndView mav;
-		Optional<User> user = userController.getUser(id);
-		if (user.isPresent()) {
-			mav = new ModelAndView("user");
-			mav.addObject("user", user.get().sanitise());
-		} else {
-			mav = new ModelAndView("error");
-		}
-		return addStandardContext(mav);
-	}
-
-	@Override
-	@PostMapping("/users/{id}")
+	@PostMapping(USER_PATH)
 	public ModelAndView submitUserForm(@PathVariable int id,
-			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal) throws SQLException {
-		ModelAndView mav;
+			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
+			ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
-			mav = new ModelAndView("error");
-		} else {
-			String adminUser = principal.getName();
-			user.setUserId(null);
-			Optional<User> updatedUser =
-					userController.updateUser(id, user, adminUser);
-			if (!updatedUser.isPresent()) {
-				mav = new ModelAndView("error");
-			} else {
-				mav = new ModelAndView("user", model);
-				mav.addObject("user", updatedUser.get().sanitise());
-			}
+			return errors(result);
 		}
+		String adminUser = principal.getName();
+		user.setUserId(null);
+		Optional<User> updatedUser;
+		try {
+			updatedUser = userController.updateUser(id, user, adminUser);
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
+		}
+		if (!updatedUser.isPresent()) {
+			return errors("no such user");
+		}
+		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW, model);
+		mav.addObject(USER_OBJ, updatedUser.get().sanitise());
 		return addStandardContext(mav);
 	}
 
 	@Override
-	@PostMapping("/users/{id}/delete")
+	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable int id,
-			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal) throws SQLException {
-		ModelAndView mav;
+			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
+			ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
-			mav = new ModelAndView("error");
-		} else {
-			String adminUser = principal.getName();
-			if (userController.deleteUser(id, adminUser).isPresent()) {
-				mav = new ModelAndView("redirect:/users");
-				mav.addObject("notice", "deleted " + user.getUserName());
-				mav.addObject("user", new User());
-			} else {
-				mav = new ModelAndView("error");
-			}
+			return errors(result);
 		}
-		return addStandardContext(mav);
+		String adminUser = principal.getName();
+		try {
+			if (!userController.deleteUser(id, adminUser).isPresent()) {
+				return errors("could not delete that user");
+			}
+			URI target = uri(SELF.listUsers());
+			ModelAndView mav = new ModelAndView("redirect:" + target.getPath());
+			// Not sure that these are the correct place
+			mav.addObject("notice", "deleted " + user.getUserName());
+			mav.addObject(USER_OBJ, new User());
+			return addStandardContext(mav);
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
+		}
 	}
 
 	@Override
-	@GetMapping("/boards")
-	public ModelAndView boards(ModelMap model) {
-		ModelAndView mav = new ModelAndView("board", model);
-		mav.addObject("board", new BoardInfo());
+	@GetMapping(BOARDS_PATH)
+	public ModelAndView boards() {
+		ModelAndView mav = new ModelAndView(BOARD_VIEW);
+		mav.addObject(BOARD_OBJ, new BoardModel());
 		return mav;
 	}
 
 	@Override
-	@PostMapping("/boards")
-	public ModelAndView board(@Valid @ModelAttribute("board") BoardInfo board,
-			BindingResult result, ModelMap model) throws SQLException {
-		ModelAndView mav = new ModelAndView("board", model);
+	@PostMapping(BOARDS_PATH)
+	public ModelAndView board(
+			@Valid @ModelAttribute(BOARD_OBJ) BoardModel board,
+			BindingResult result, ModelMap model) {
+		ModelAndView mav = new ModelAndView(BOARD_VIEW, model);
 		if (result.hasErrors()) {
-			return new ModelAndView("error");
+			return errors(result);
 		}
 		BoardState bs = null;
-		if (board.isTriadCoordPresent()) {
-			bs = machineController.findTriad(board.getMachineName(),
-					board.getX(), board.getY(), board.getZ()).orElse(null);
-		} else if (board.isPhysicalCoordPresent()) {
-			bs = machineController.findPhysical(board.getMachineName(),
-					board.getCabinet(), board.getFrame(), board.getBoard())
-					.orElse(null);
-		} else if (board.isAddressPresent()) {
-			bs = machineController
-					.findIP(board.getMachineName(), board.getIpAddress())
-					.orElse(null);
+		try {
+			if (board.isTriadCoordPresent()) {
+				bs = machineController.findTriad(board.getMachineName(),
+						board.getX(), board.getY(), board.getZ()).orElse(null);
+			} else if (board.isPhysicalCoordPresent()) {
+				bs = machineController.findPhysical(board.getMachineName(),
+						board.getCabinet(), board.getFrame(), board.getBoard())
+						.orElse(null);
+			} else if (board.isAddressPresent()) {
+				bs = machineController
+						.findIP(board.getMachineName(), board.getIpAddress())
+						.orElse(null);
+			} else {
+				return errors("bad address");
+			}
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
 		}
 		if (bs == null) {
-			return new ModelAndView("error");
+			return errors("no such board");
 		}
 
 		// Inflate the coordinates
@@ -201,12 +282,36 @@ public class AdminControllerImpl implements AdminController {
 		board.setIpAddress(bs.address);
 
 		// Get or set
-		if (board.isEnabled() == null) {
-			board.setEnabled(bs.getState());
-		} else {
-			bs.setState(board.isEnabled());
+		try {
+			if (board.isEnabled() == null) {
+				board.setEnabled(bs.getState());
+			} else {
+				bs.setState(board.isEnabled());
+			}
+		} catch (SQLException e) {
+			return errors("database access failed: " + e.getMessage());
 		}
-		model.put("board", bs);
+		model.put(BOARD_OBJ, bs);
 		return mav;
+	}
+
+	@Override
+	@GetMapping(MACHINE_PATH)
+	public ModelAndView machineUploadForm() {
+		return addStandardContext("machine");
+	}
+
+	@Override
+	@PostMapping(MACHINE_PATH)
+	public ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
+			ModelMap modelMap) {
+		try (InputStream input = file.getInputStream()) {
+			machineDefiner.loadMachineDefinitions(input);
+		} catch (IOException | SQLException e) {
+			return errors("problem with processing file: " + e.getMessage());
+		}
+		ModelAndView mav = new ModelAndView("machine");
+		// Not sure what attributes to put here
+		return addStandardContext(mav);
 	}
 }
