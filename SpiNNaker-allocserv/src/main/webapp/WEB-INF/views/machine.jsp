@@ -1,3 +1,5 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <!--
 Copyright (c) 2021 The University of Manchester
@@ -18,18 +20,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <head>
     <meta http-equiv="Content-Type"
       content="text/html; charset=UTF-8">
-      <title>An error occurred</title>
+    <title>Machine Management</title>
 </head>
 <body>
-
-<h1>${ error }</h1>
-
-<h3>Please enter the correct details</h3>
-<table>
-    <tr>
-        <td><a href="${ baseuri }">Retry</a></td>
-    </tr>
-</table>
-
+<h1>Machine Import</h1>
+<c:if test="${ not empty definedMachines }">
+	<c:forEach items="${definedMachines}" var="item">
+		Machine called "${ item.name }" (${ item.width }&times;${ item.height }) defined.<br>
+	</c:forEach>
+</c:if>
+<form:form method="POST" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td><form:label path="file">Select a configuration file to upload</form:label></td>
+            <td><input type="file" name="file" /></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Submit" /></td>
+        </tr>
+    </table>
+</form>
 </body>
 </html>

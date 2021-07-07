@@ -16,20 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <head>
-    <meta http-equiv="Content-Type"
-      content="text/html; charset=UTF-8">
-      <title>An error occurred</title>
 </head>
+
 <body>
-
-<h1>${ error }</h1>
-
-<h3>Please enter the correct details</h3>
-<table>
-    <tr>
-        <td><a href="${ baseuri }">Retry</a></td>
-    </tr>
-</table>
-
+    <h1>Spalloc Service Administration</h1>
+    <p>
+    <a href="${ machineUri }">Machines</a>
+    <p>
+    <a href="${ boardsUri }">Boards</a>
+    <p>
+    <a href="${ usersUri }">Users</a>
+    <hr>
+    Log out (TODO)
 </body>
 </html>
