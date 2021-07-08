@@ -32,3 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </c:forEach>
 </table>
 </c:if>
+
+<jsp:include page="footer.jsp" />
+</body>
+</html>

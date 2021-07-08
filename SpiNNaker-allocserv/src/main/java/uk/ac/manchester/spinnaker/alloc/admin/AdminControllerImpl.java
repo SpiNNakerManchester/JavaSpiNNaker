@@ -17,16 +17,20 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Collections.unmodifiableMap;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +38,7 @@ import java.util.TreeMap;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -49,15 +54,25 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 
+/**
+ * Implements the logic supporting the JSP views and maps them into URL space.
+ *
+ * @author Donal Fellows
+ */
 @Controller("mvc.adminController")
 @RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl implements AdminController {
+	private static final Logger log = getLogger(AdminControllerImpl.class);
+
 	private static final String MAIN_VIEW = "main";
 
 	private static final String USER_LIST_VIEW = "users";
@@ -82,6 +97,23 @@ public class AdminControllerImpl implements AdminController {
 
 	@Autowired
 	private MachineDefinitionLoader machineDefiner;
+
+	@Autowired
+	private DatabaseEngine db;
+
+	private List<String> getMachineNames() {
+		List<String> names = new ArrayList<>();
+		try (Connection conn = db.getConnection();
+				Query q = query(conn, "SELECT machine_name FROM machines "
+						+ "ORDER BY machine_name ASC")) {
+			for (Row row : q.call()) {
+				names.add(row.getString("machine_name"));
+			}
+		} catch (SQLException e) {
+			log.warn("problem when listing machines", e);
+		}
+		return names;
+	}
 
 	/**
 	 * Special delegate for building URIs only.
@@ -181,6 +213,7 @@ public class AdminControllerImpl implements AdminController {
 		if (!realUser.isPresent()) {
 			return errors("creation failed");
 		}
+		log.info("created user ID={}", realUser.get().getUserId());
 		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
 		mav.addObject(USER_OBJ, realUser.get().sanitise());
 		return addStandardContext(mav);
@@ -188,7 +221,7 @@ public class AdminControllerImpl implements AdminController {
 
 	@Override
 	@GetMapping(USER_PATH)
-	public ModelAndView showUserForm(@PathVariable int id) {
+	public ModelAndView showUserForm(@PathVariable("id") int id) {
 		try {
 			Optional<User> user = userController.getUser(id);
 			if (!user.isPresent()) {
@@ -207,7 +240,7 @@ public class AdminControllerImpl implements AdminController {
 
 	@Override
 	@PostMapping(USER_PATH)
-	public ModelAndView submitUserForm(@PathVariable int id,
+	public ModelAndView submitUserForm(@PathVariable("id") int id,
 			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
 			ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
@@ -217,6 +250,7 @@ public class AdminControllerImpl implements AdminController {
 		user.setUserId(null);
 		Optional<User> updatedUser;
 		try {
+			log.info("updating user ID={}", id);
 			updatedUser = userController.updateUser(id, user, adminUser);
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
@@ -231,7 +265,7 @@ public class AdminControllerImpl implements AdminController {
 
 	@Override
 	@PostMapping(USER_DELETE_PATH)
-	public ModelAndView deleteUser(@PathVariable int id,
+	public ModelAndView deleteUser(@PathVariable("id") int id,
 			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
 			ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
@@ -239,6 +273,7 @@ public class AdminControllerImpl implements AdminController {
 		}
 		String adminUser = principal.getName();
 		try {
+			log.info("deleting user ID={}", id);
 			if (!userController.deleteUser(id, adminUser).isPresent()) {
 				return errors("could not delete that user");
 			}
@@ -258,7 +293,7 @@ public class AdminControllerImpl implements AdminController {
 	public ModelAndView boards() {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW);
 		mav.addObject(BOARD_OBJ, new BoardModel());
-		return mav;
+		return addStandardContext(mav);
 	}
 
 	@Override
@@ -307,19 +342,25 @@ public class AdminControllerImpl implements AdminController {
 			if (board.isEnabled() == null) {
 				board.setEnabled(bs.getState());
 			} else {
+				log.info(
+						"setting board-allocatable state for board "
+								+ "({},{},{}) to {}",
+						bs.x, bs.y, bs.z, board.isEnabled());
 				bs.setState(board.isEnabled());
 			}
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		model.put(BOARD_OBJ, bs);
-		return mav;
+		return addStandardContext(mav);
 	}
 
 	@Override
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineUploadForm() {
-		return addStandardContext(MACHINE_VIEW);
+		return addStandardContext(
+				new ModelAndView(MACHINE_VIEW, "machineNames",
+						getMachineNames()));
 	}
 
 	@Override
@@ -329,13 +370,15 @@ public class AdminControllerImpl implements AdminController {
 		List<Machine> machines;
 		try (InputStream input = file.getInputStream()) {
 			machines = machineDefiner.readMachineDefinitions(input);
-			for (Machine m:machines) {
+			for (Machine m : machines) {
 				machineDefiner.loadMachineDefinition(m);
+				log.info("defined machine {}", m.getName());
 			}
 		} catch (IOException | SQLException e) {
 			return errors("problem with processing file: " + e.getMessage());
 		}
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW);
+		mav.addObject("machineNames", getMachineNames());
 		mav.addObject("definedMachines", machines);
 		return addStandardContext(mav);
 	}

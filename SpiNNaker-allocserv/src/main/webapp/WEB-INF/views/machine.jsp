@@ -29,10 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		Machine called "${ item.name }" (${ item.width }&times;${ item.height }) defined.<br>
 	</c:forEach>
 </c:if>
-<form:form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
     <table>
         <tr>
-            <td><form:label path="file">Select a configuration file to upload</form:label></td>
+            <td><label path="file">Select a configuration file to upload</label></td>
             <td><input type="file" name="file" /></td>
         </tr>
         <tr>
@@ -40,5 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </tr>
     </table>
 </form>
+<jsp:include page="footer.jsp" />
 </body>
 </html>

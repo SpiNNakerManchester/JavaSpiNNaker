@@ -26,8 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Spalloc Board Management</h1>
 
 <form:form method="POST" modelAttribute="board">
-    <form:label path="machineName">Machine Name: </form:label>
-    <form:input path="machineName" type="text"/>
+    <form:label path="machineName">Machine: </form:label>
+    <form:select path="machineName">
+    <form:options value="${machineNames }"/>
+    </form:select>
     <br>
     Triad coordinates:
     <form:label path="x">X: </form:label>
@@ -46,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <form:input path="board" type="number"/>
     <br>
     Network coordinates:
-    <form:label path="address">IP Address: </form:label>
-    <form:input path="address" type="text"/>
+    <form:label path="ipAddress">IP Address: </form:label>
+    <form:input path="ipAddress" type="text"/>
     <br>
     <c:if test="${ enabled != null }">
 		<form:label path="enabled"></form:label>
@@ -61,5 +63,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </form:form>
 <button onclick="window.location.href='${ baseuri }'">Clear form</button>
 
+<jsp:include page="footer.jsp" />
 </body>
 </html>

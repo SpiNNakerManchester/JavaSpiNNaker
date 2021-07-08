@@ -103,7 +103,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@GetMapping(USER_PATH)
-	ModelAndView showUserForm(@PathVariable int id);
+	ModelAndView showUserForm(@PathVariable("id") int id);
 
 	/**
 	 * Modify user details.
@@ -121,7 +121,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(USER_PATH)
-	ModelAndView submitUserForm(@PathVariable int id,
+	ModelAndView submitUserForm(@PathVariable("id") int id,
 			@Valid @ModelAttribute("user") User user, BindingResult result,
 			ModelMap model, Principal principal);
 
@@ -141,7 +141,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(USER_DELETE_PATH)
-	ModelAndView deleteUser(@PathVariable int id,
+	ModelAndView deleteUser(@PathVariable("id") int id,
 			@Valid @ModelAttribute("user") User user, BindingResult result,
 			ModelMap model, Principal principal);
 

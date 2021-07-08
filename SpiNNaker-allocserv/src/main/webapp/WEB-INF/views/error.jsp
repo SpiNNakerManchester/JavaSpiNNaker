@@ -31,5 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </tr>
 </table>
 
+<jsp:include page="footer.jsp" />
 </body>
 </html>
