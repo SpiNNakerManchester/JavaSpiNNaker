@@ -57,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
@@ -70,7 +71,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 @Controller("mvc.adminController")
 @RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
-public class AdminControllerImpl implements AdminController {
+public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
 	private static final String MAIN_VIEW = "main";
@@ -104,8 +105,7 @@ public class AdminControllerImpl implements AdminController {
 	private List<String> getMachineNames() {
 		List<String> names = new ArrayList<>();
 		try (Connection conn = db.getConnection();
-				Query q = query(conn, "SELECT machine_name FROM machines "
-						+ "ORDER BY machine_name ASC")) {
+				Query q = query(conn, LIST_MACHINE_NAMES)) {
 			for (Row row : q.call()) {
 				names.add(row.getString("machine_name"));
 			}

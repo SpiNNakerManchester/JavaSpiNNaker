@@ -267,8 +267,16 @@ class DbTest {
 				assertSetEquals(
 						set("machine_id", "machine_name", "width", "height"),
 						q.getRowColumnNames());
-				q.call();
-				// Must not throw
+				assertFalse(q.call1().isPresent());
+			}
+		}
+
+		@Test
+		void listMachineNames() throws SQLException {
+			try (Query q = query(c, LIST_MACHINE_NAMES)) {
+				assertEquals(0, q.getNumArguments());
+				assertSetEquals(set("machine_name"), q.getRowColumnNames());
+				assertFalse(q.call1().isPresent());
 			}
 		}
 
@@ -279,8 +287,7 @@ class DbTest {
 				assertSetEquals(
 						set("machine_id", "machine_name", "width", "height"),
 						q.getRowColumnNames());
-				q.call(NO_MACHINE);
-				// Must not throw
+				assertFalse(q.call1(NO_MACHINE).isPresent());
 			}
 		}
 
@@ -291,8 +298,7 @@ class DbTest {
 				assertSetEquals(
 						set("machine_id", "machine_name", "width", "height"),
 						q.getRowColumnNames());
-				q.call("gorp");
-				// Must not throw
+				assertFalse(q.call1("gorp").isPresent());
 			}
 		}
 
@@ -302,8 +308,7 @@ class DbTest {
 				assertEquals(2, q.getNumArguments());
 				assertSetEquals(set("job_id", "machine_id", "job_state",
 						"keepalive_timestamp"), q.getRowColumnNames());
-				q.call(0, 0);
-				// Must not throw
+				assertFalse(q.call1(0, 0).isPresent());
 			}
 		}
 

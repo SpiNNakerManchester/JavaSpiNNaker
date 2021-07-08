@@ -48,6 +48,11 @@ public abstract class SQLQueries {
 	protected static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height FROM machines";
 
+	/** Get the machine names in alphabetical order. */
+	@ResultColumn("machine_name")
+	protected static final String LIST_MACHINE_NAMES =
+			"SELECT machine_name FROM machines ORDER BY machine_name ASC";
+
 	/** Get basic information about a specific machine. Looks up by ID. */
 	@Parameter("machine_id")
 	@ResultColumn("machine_id")
