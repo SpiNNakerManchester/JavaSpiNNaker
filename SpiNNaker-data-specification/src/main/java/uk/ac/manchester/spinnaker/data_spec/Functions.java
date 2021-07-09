@@ -69,7 +69,7 @@ class Functions implements FunctionAPI {
 
 	private static final int SIZE_MASK = 0b00000011;
 
-	private static final int REG_MASK = 0b00001111;
+	private static final int REG_MASK = 0b00011111;
 
 	private static final int OPCODE_MASK = 0b11111111;
 
