@@ -22,6 +22,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
@@ -34,6 +35,8 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.LONG_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_REGISTERS;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.BitField;
 
@@ -66,7 +69,7 @@ class Functions implements FunctionAPI {
 
 	private static final int SIZE_MASK = 0b00000011;
 
-	private static final int REG_MASK = 0b00001111;
+	private static final int REG_MASK = 0b00011111;
 
 	private static final int OPCODE_MASK = 0b11111111;
 
@@ -104,6 +107,9 @@ class Functions implements FunctionAPI {
 	/** How to extract the unfilled flag from the bit-encoded form. */
 	private static final BitField UNFILLED = new BitField(0b10000000);
 
+	/** How to extract the referenceable flag from the bit-encoded form. */
+	private static final BitField REFERENCEABLE = new BitField(0b01000000);
+
 	/** How to extract the relative flag from the bit-encoded form. */
 	private static final BitField RELATIVE = new BitField(0b00000001);
 
@@ -129,6 +135,12 @@ class Functions implements FunctionAPI {
 
 	/** The collection of memory regions that can be written to. */
 	private final MemoryRegionCollection memRegions;
+
+	/** A list of regions that can be referenced. */
+	private final List<Integer> referenceableRegions = new ArrayList<>();
+
+	/** A list of regions with references to be filled. */
+	private final List<Integer> regionsToFill = new ArrayList<>();
 
 	private int packedCommand;
 
@@ -197,17 +209,25 @@ class Functions implements FunctionAPI {
 	@Operation(RESERVE)
 	public void reserve() throws DataSpecificationException {
 		int region = REGION.getValue(packedCommand);
-		if (cmdSize != LEN2) {
+		boolean unfilled = UNFILLED.isSet(packedCommand);
+		boolean referenceable = REFERENCEABLE.isSet(packedCommand);
+		if (!referenceable && cmdSize != LEN2) {
 			throw new DataSpecificationException(format(
 					"Command %s requires one word as argument (total 2 words),"
 							+ " but the current encoding (%08X) is specified"
 							+ " to be %d words long",
 					RESERVE, packedCommand, cmdSize));
 		}
+		if (referenceable && cmdSize != LEN3) {
+			throw new DataSpecificationException(format(
+					"Command %s requires two words as arguments (total 3"
+							+ " words), but the current encoding (%08X) is"
+							+ " specified to be %d words long",
+					RESERVE, packedCommand, cmdSize));
+		}
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
 		}
-		boolean unfilled = UNFILLED.isSet(packedCommand);
 		// Get the rounded-up size
 		int size = (spec.getInt() + SIZE_LOW_BITS) & ~SIZE_LOW_BITS;
 		if (size < 0 || size >= memorySpace) {
@@ -216,8 +236,33 @@ class Functions implements FunctionAPI {
 							+ " but needs to be in 0 to " + (memorySpace - 1)
 							+ " (inclusive)");
 		}
-		memRegions.set(new MemoryRegion(region, 0, unfilled, size));
+		if (!referenceable) {
+			memRegions.set(new MemoryRegionReal(region, 0, unfilled, size));
+		} else {
+			int reference = spec.getInt();
+			memRegions.set(
+					new MemoryRegionReal(region, 0, unfilled, size, reference));
+			referenceableRegions.add(region);
+		}
 		spaceAllocated += size;
+	}
+
+	@Operation(REFERENCE)
+	public void reference() throws DataSpecificationException {
+		int region = REGION.getValue(packedCommand);
+		if (cmdSize != LEN2) {
+			throw new DataSpecificationException(format(
+					"Command %s requires one word as argument (total 2 words),"
+							+ " but the current encoding (%08X) is specified"
+							+ " to be %d words long",
+					REFERENCE, packedCommand, cmdSize));
+		}
+		if (!memRegions.isEmpty(region)) {
+			throw new RegionInUseException(region);
+		}
+		int reference = spec.getInt();
+		memRegions.set(new MemoryRegionReference(region, reference));
+		regionsToFill.add(region);
 	}
 
 	/**
@@ -322,11 +367,13 @@ class Functions implements FunctionAPI {
 			address = spec.getInt();
 		}
 
-		MemoryRegion r = getRegion();
-		if (r == null) {
+		MemoryRegion reg = getRegion();
+		if (reg == null || !(reg instanceof MemoryRegionReal)) {
 			throw new NoRegionSelectedException(
 					"no current region has been selected");
-		} else if (r.isUnfilled()) {
+		}
+		MemoryRegionReal r = (MemoryRegionReal) reg;
+		if (r.isUnfilled()) {
 			throw new RegionUnfilledException(currentRegion, SET_WR_PTR);
 		}
 
@@ -391,10 +438,13 @@ class Functions implements FunctionAPI {
 		if (currentRegion == null) {
 			throw new NoRegionSelectedException(command);
 		}
-		MemoryRegion r = getRegion();
-		if (r == null) {
+		MemoryRegion reg = getRegion();
+		if (reg == null || !(reg instanceof MemoryRegionReal)) {
 			throw new RegionNotAllocatedException(currentRegion, command);
-		} else if (r.isUnfilled()) {
+		}
+
+		MemoryRegionReal r = (MemoryRegionReal) reg;
+		if (r.isUnfilled()) {
 			throw new RegionUnfilledException(currentRegion, command);
 		}
 
@@ -406,5 +456,23 @@ class Functions implements FunctionAPI {
 
 		// We can safely write
 		r.writeIntoRegionData(array);
+	}
+
+	/**
+	 * Get the regions that were marked referenceable during execution.
+	 *
+	 * @return The list of region IDs.
+	 */
+	public List<Integer> getReferenceableRegions() {
+		return referenceableRegions;
+	}
+
+	/**
+	 * Get the regions that are references to other regions.
+	 *
+	 * @return The list of region IDs.
+	 */
+	public List<Integer> getRegionsToFill() {
+		return regionsToFill;
 	}
 }

@@ -48,7 +48,7 @@ public final class Constants {
 	public static final int MAX_REGISTERS = 16;
 
 	/** The number of memory regions in the DSE model. */
-	public static final int MAX_MEM_REGIONS = 16;
+	public static final int MAX_MEM_REGIONS = 32;
 
 	/** The number of structures in the DSE model. */
 	public static final int MAX_STRUCT_SLOTS = 16;

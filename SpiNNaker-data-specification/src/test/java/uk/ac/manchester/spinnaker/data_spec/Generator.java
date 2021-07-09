@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
@@ -67,7 +68,7 @@ public class Generator {
 		Generator spec = new Generator();
 		specGen.generate(spec);
 		return new ByteArrayInputStream(spec.buffer.array(), 0,
-            spec.buffer.position());
+				spec.buffer.position());
 	}
 
 	@FunctionalInterface
@@ -101,11 +102,12 @@ public class Generator {
 		/** empty field. */
 		EMPTY(7),
 		/** shrink field. */
-		SHRINK(6),
+		REFERENCE(6),
 		/** src2 field. */
 		SOURCE_2(4),
 		/** immediate value field. */
 		IMMEDIATE(0);
+
 		final int offset;
 
 		Field(int offset) {
@@ -115,6 +117,7 @@ public class Generator {
 
 	public enum DataType {
 		INT8(1, LEN2), INT16(2, LEN2), INT32(4, LEN2), INT64(8, LEN3);
+
 		final int size, writeLength;
 
 		DataType(int size, int writeLength) {
@@ -218,10 +221,24 @@ public class Generator {
 	}
 
 	public void reserveMemoryRegion(int region, int size, boolean empty) {
-		boolean shrink = false;
-		command(RESERVE, LEN2, NO_REGS, Field.EMPTY, empty, Field.SHRINK,
-				shrink, Field.IMMEDIATE, region);
+		boolean reference = false;
+		command(RESERVE, LEN2, NO_REGS, Field.EMPTY, empty, Field.REFERENCE,
+				reference, Field.IMMEDIATE, region);
 		buffer.putInt(size);
+	}
+
+	public void reserveMemoryRegion(int region, int size, boolean empty,
+			int reference) {
+		boolean hasReference = true;
+		command(RESERVE, LEN3, NO_REGS, Field.EMPTY, empty, Field.REFERENCE,
+				hasReference, Field.IMMEDIATE, region);
+		buffer.putInt(size);
+		buffer.putInt(reference);
+	}
+
+	public void referenceMemoryRegion(int region, int reference) {
+		command(REFERENCE, LEN2, NO_REGS, Field.IMMEDIATE, region);
+		buffer.putInt(reference);
 	}
 
 	public void switchWriteFocus(int region) {
@@ -271,8 +288,7 @@ public class Generator {
 		type.putPadded(buffer, value);
 	}
 
-	public void writeRepeatedValue(Number value, int register,
-			DataType type) {
+	public void writeRepeatedValue(Number value, int register, DataType type) {
 		command(WRITE, type.writeLength, SRC2_ONLY, Field.DESTINATION, type,
 				Field.SOURCE_2, register);
 		type.putPadded(buffer, value);

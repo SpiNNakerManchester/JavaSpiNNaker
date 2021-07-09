@@ -106,7 +106,9 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *         always unfilled.
 	 */
 	public boolean isUnfilled(int regionID) {
-		return isEmpty(regionID) || regions[regionID].isUnfilled();
+		return isEmpty(regionID)
+				|| !(regions[regionID] instanceof MemoryRegionReal)
+				|| ((MemoryRegionReal) regions[regionID]).isUnfilled();
 	}
 
 	/**
@@ -117,8 +119,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return The size of the region. Empty regions have zero size.
 	 */
 	public int getSize(int regionID) {
-		return regions[regionID] == null ? 0
-				: regions[regionID].getAllocatedSize();
+		return !(regions[regionID] instanceof MemoryRegionReal) ? 0
+				: ((MemoryRegionReal) regions[regionID]).getAllocatedSize();
 	}
 
 	/**
@@ -277,8 +279,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 			a = ((MemoryRegionCollection) o).regions;
 		} else if (o instanceof Collection) {
 			a = ((Collection<?>) o).toArray();
-		} else if (o instanceof MemoryRegion[]) {
-			a = (MemoryRegion[]) o;
+		} else if (o instanceof MemoryRegionReal[]) {
+			a = (MemoryRegionReal[]) o;
 		} else {
 			return false;
 		}

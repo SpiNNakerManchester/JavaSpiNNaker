@@ -24,14 +24,16 @@ class TestMemoryRegion {
 
 	@Test
 	void test() {
-		MemoryRegion r = new MemoryRegion(77, 123, false, 5);
+		MemoryRegionReal r = new MemoryRegionReal(77, 123, false, 5);
 		assertEquals(77, r.getIndex());
 		assertEquals(123, r.getMemoryPointer());
 		assertEquals(5, r.getAllocatedSize());
 		assertFalse(r.isUnfilled());
 		assertEquals(5, r.getRemainingSpace());
 		assertEquals(0, r.getWritePointer());
-		r.writeIntoRegionData(new byte[] {1, 2, 3, 4});
+		r.writeIntoRegionData(new byte[] {
+			1, 2, 3, 4
+		});
 		assertEquals(77, r.getIndex());
 		assertEquals(123, r.getMemoryPointer());
 		assertEquals(5, r.getAllocatedSize());
