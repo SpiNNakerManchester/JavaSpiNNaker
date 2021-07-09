@@ -431,12 +431,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions</url>
 	</ciManagement>
 	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/SpiNNakerManchester/JavaSpiNNaker</url>
+		</repository>
 		<site>
 			<id>github-pages</id>
 			<name>GitHub Pages</name>
 			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
+
 	<mailingLists>
 		<mailingList>
 			<name>SpiNNaker Users Group</name>
@@ -579,14 +585,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</plugin>
 		</plugins>
 	</reporting>
-
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/SpiNNakerManchester/JavaSpiNNaker</url>
-		</repository>
-	</distributionManagement>
 
 	<profiles>
 		<profile>
