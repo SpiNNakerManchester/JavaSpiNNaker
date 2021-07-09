@@ -16,13 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>User List</title>
-</head>
+<jsp:include page="head.jsp">
+	<jsp:param value="User List" name="title"/>
+</jsp:include>
 <body>
 
-<h1>Index page</h1>
+<h1>Spalloc Users</h1>
 <c:if test="${not empty userlist}">
 <table>
     <c:forEach items="${userlist}" var="item">

@@ -1,4 +1,3 @@
-<html>
 <%--
 Copyright (c) 2021 The University of Manchester
 
@@ -15,20 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<jsp:include page="head.jsp">
-	<jsp:param value="Spalloc Service Administration" name="title"/>
-</jsp:include>
-<body>
-
-<h1>Spalloc Service Administration</h1>
-<p>
-<a href="${ machineUri }">Machines</a>
-<p>
-<a href="${ boardsUri }">Boards</a>
-<p>
-<a href="${ usersUri }">Users</a>
-<hr>
-<a href="/system/perform_logout">Log out</a>
-
-</body>
-</html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>${param.title}</title>
+	<link rel="stylesheet" href="/system/resources/spalloc.css">
+</head>

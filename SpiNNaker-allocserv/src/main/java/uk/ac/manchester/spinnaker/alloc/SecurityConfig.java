@@ -70,6 +70,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -228,9 +229,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
 				.antMatchers("/info*", "/info/**").hasRole("ADMIN")
-				// Login process is available to all
+				// Login process and static resources are available to all
 				.antMatchers("/system/login*", "/system/perform_*",
-						"/system/error")
+						"/system/error", "/system/resources/*")
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
@@ -386,6 +387,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
 			registry.addViewController("/login.html");
+		}
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/resources/**").addResourceLocations(
+					"classpath:/META-INF/public-web-resources/");
 		}
 	}
 }

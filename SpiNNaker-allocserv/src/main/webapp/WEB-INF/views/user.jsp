@@ -17,10 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>User Details</title>
-</head>
+<jsp:include page="head.jsp">
+	<jsp:param value="User Details" name="title"/>
+</jsp:include>
 <body>
 
 <h1>User Details</h1>

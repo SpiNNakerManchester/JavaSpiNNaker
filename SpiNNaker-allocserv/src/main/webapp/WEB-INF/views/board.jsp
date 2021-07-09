@@ -17,12 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type"
-      content="text/html; charset=UTF-8">
-    <title>Board Management</title>
-</head>
-<body>
+<jsp:include page="head.jsp">
+	<jsp:param value="Board Management" name="title"/>
+</jsp:include>
 <h1>Spalloc Board Management</h1>
 
 <form:form method="POST" modelAttribute="board">

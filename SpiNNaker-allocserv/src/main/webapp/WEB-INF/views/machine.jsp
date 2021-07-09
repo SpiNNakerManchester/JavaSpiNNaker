@@ -17,12 +17,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type"
-      content="text/html; charset=UTF-8">
-    <title>Machine Management</title>
-</head>
+<jsp:include page="head.jsp">
+	<jsp:param value="Machine Management" name="title"/>
+</jsp:include>
 <body>
+
 <h1>Machine Import</h1>
 <c:if test="${ not empty definedMachines }">
 	<c:forEach items="${definedMachines}" var="item">
@@ -40,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </tr>
     </table>
 </form>
+
 <jsp:include page="footer.jsp" />
 </body>
 </html>

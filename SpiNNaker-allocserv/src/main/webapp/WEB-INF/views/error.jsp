@@ -15,11 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type"
-      content="text/html; charset=UTF-8">
-      <title>An error occurred</title>
-</head>
+<jsp:include page="head.jsp">
+	<jsp:param value="An error occurred" name="title"/>
+</jsp:include>
 <body>
 
 <h1>${ error }</h1>
