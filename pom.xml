@@ -442,7 +442,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<url>http://spinnakermanchester.github.io/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
-
 	<mailingLists>
 		<mailingList>
 			<name>SpiNNaker Users Group</name>
