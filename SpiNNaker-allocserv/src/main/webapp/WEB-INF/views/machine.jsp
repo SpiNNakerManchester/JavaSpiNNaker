@@ -1,7 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
-<!--
+<%--
 Copyright (c) 2021 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+--%>
 <head>
     <meta http-equiv="Content-Type"
       content="text/html; charset=UTF-8">

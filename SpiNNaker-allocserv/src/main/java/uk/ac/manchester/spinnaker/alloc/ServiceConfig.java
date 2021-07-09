@@ -74,7 +74,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
  * @see SecurityConfig
  * @author Donal Fellows
  */
-@Import({JaxRsConfig.class, SecurityConfig.class, MvcConfig.class})
+@Import({JaxRsConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")
 @EnableScheduling
 @SpringBootApplication

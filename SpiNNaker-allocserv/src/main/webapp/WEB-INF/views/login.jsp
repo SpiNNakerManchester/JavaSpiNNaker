@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -16,23 +17,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>User List</title>
-</head>
+<head><title>Log in</title></head>
 <body>
 
-<h1>Index page</h1>
-<c:if test="${not empty userlist}">
-<table>
-    <c:forEach items="${userlist}" var="item">
-    <tr>
-    <td>${item.key }
-    <td><a href="${item.value }">Details</a>
-    </c:forEach>
-</table>
+<h1>Login</h1>
+<c:if test="${ error != null }">
+   <p>Please try again...</p>
 </c:if>
+<form name='f' action="/system/perform_login" method='POST'>
+   <sec:csrfInput />
+    <table>
+       <tr>
+          <td>User:</td>
+          <td><input type='text' name='username' value=''></td>
+       </tr>
+       <tr>
+          <td>Password:</td>
+          <td><input type='password' name='password' /></td>
+       </tr>
+       <tr>
+          <td colspan=2>
+             <input name="submit" type="submit" value="submit" /></td>
+       </tr>
+    </table>
+</form>
 
-<jsp:include page="footer.jsp" />
 </body>
 </html>

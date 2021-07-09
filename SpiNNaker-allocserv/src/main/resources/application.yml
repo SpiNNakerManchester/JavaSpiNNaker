@@ -17,7 +17,7 @@ logging:
   level:
     root: INFO
     # org.apache.catalina: DEBUG
-    # org.springframework.web: DEBUG
+    # org.springframework.security.web: TRACE
 
 spring:
   main:

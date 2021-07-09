@@ -1,4 +1,4 @@
-<!--
+<%--
 Copyright (c) 2021 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+--%>
 <footer>
 <hr>
 <a href="${ machineUri }">Machines</a>
@@ -21,4 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <a href="${ boardsUri }">Boards</a>
 &mdash;
 <a href="${ usersUri }">Users</a>
+<p>
+<a href="/system/perform_logout">Log out</a>
 </footer>

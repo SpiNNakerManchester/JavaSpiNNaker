@@ -16,16 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Calendar;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
@@ -36,7 +40,11 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -46,15 +54,28 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
- * The security configuration of the service.
+ * The security and administration configuration of the service.
  * <p>
  * <strong>Note:</strong> role expressions ({@link #IS_USER} and
  * {@link #IS_ADMIN}) must be applied (with {@code @}{@link PreAuthorize}) to
@@ -64,12 +85,14 @@ import org.springframework.stereotype.Component;
  *
  * @author Donal Fellows
  */
+@EnableWebMvc
 @EnableWebSecurity
+@Import(SecurityConfig.MvcConfig.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
-	// TODO application security model
+	// TODO application security model (in progress)
 	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
 
 	/** How to assert that a user must be an admin. */
@@ -105,16 +128,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected static final String GRANT_ADMIN = "ROLE_ADMIN";
 
-	/**
-	 * The HTTP basic authentication realm.
-	 */
+	/** The HTTP basic authentication realm. */
 	private static final String REALM = "SpallocService";
+
+	/** Maximum size of configuration file. */
+	private static final int MAX_UPLOAD_SIZE = 1000000;
 
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
 	@Autowired
 	private LocalAuthenticationProvider localAuthProvider;
+
+	@Autowired
+	private AuthenticationFailureHandler authenticationFailureHandler;
+
+	@Value("${spalloc.basicAuth:true}")
+	private boolean supportBasicAuth;
+
+	@Value("${spalloc.localFormAuth:true}")
+	private boolean supportLocalFormAuth;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
@@ -187,16 +220,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
 		 * The /info part reveals admin details; you need ROLE_ADMIN to view it.
+		 * Everything to do with logging in MUST NOT require being logged in.
 		 * For anything else, as long as you are authenticated we're happy. SOME
 		 * calls have additional requirements; those are annotated
 		 * with @PreAuthorize and a suitable auth expression.
 		 */
-		http.authorizeRequests()//
-				.antMatchers("/info*").hasRole("ADMIN") //
-				.antMatchers("/info/**").hasRole("ADMIN") //
-				.anyRequest().authenticated().and().httpBasic()
-				.authenticationEntryPoint(authenticationEntryPoint);
-		// FIXME add support for other styles of login, etc
+		http.authorizeRequests()
+				// General metadata pages require ADMIN access
+				.antMatchers("/info*", "/info/**").hasRole("ADMIN")
+				// Login process is available to all
+				.antMatchers("/system/login*", "/system/perform_*",
+						"/system/error")
+				.permitAll()
+				// Everything else requires post-login
+				.anyRequest().authenticated();
+		if (supportBasicAuth) {
+			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
+		}
+		if (supportLocalFormAuth) {
+			http.formLogin().loginPage("/system/login.html")
+					.loginProcessingUrl("/system/perform_login")
+					.defaultSuccessUrl("/system/admin/", true)
+					.failureUrl("/system/login.html?error=true")
+					.failureHandler(authenticationFailureHandler);
+		}
+		/*
+		 * Logging out is common code, but pretty pointless for Basic Auth as
+		 * browsers will just log straight back in again. Still, it is
+		 * meaningful.
+		 */
+		http.logout().logoutUrl("/system/perform_logout")
+				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
+				.logoutSuccessUrl("/system/login.html");
+		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 
 	/**
@@ -257,5 +313,79 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Component
+	static class MyAuthenticationFailureHandler
+			implements AuthenticationFailureHandler {
+		@Override
+		public void onAuthenticationFailure(HttpServletRequest request,
+				HttpServletResponse response, AuthenticationException e)
+				throws IOException, ServletException {
+			log.info("auth failure", e);
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+			String jsonPayload =
+					"{\"message\" : \"%s\", \"timestamp\" : \"%s\" }";
+			response.getOutputStream().println(format(jsonPayload,
+					e.getMessage(), Calendar.getInstance().getTime()));
+		}
+	}
+
+	@Bean
+	LogoutHandler logoutHandler() {
+		SecurityContextLogoutHandler sclh = new SecurityContextLogoutHandler();
+		sclh.setClearAuthentication(true);
+		sclh.setInvalidateHttpSession(true);
+		return sclh;
+	}
+
+	@Controller
+	@RequestMapping("/")
+	static class RootController {
+		@Autowired private LogoutHandler logoutHandler;
+
+		@GetMapping("/")
+		String index() {
+			return "index";
+		}
+
+		@GetMapping("/perform_logout")
+		String performLogout(HttpServletRequest request,
+				HttpServletResponse response) {
+			Authentication auth = getContext().getAuthentication();
+			if (auth != null) {
+				log.info("logging out {}", auth.getPrincipal());
+				logoutHandler.logout(request, response, auth);
+			}
+			return "redirect:/system/login.html";
+		}
+	}
+
+	@Bean
+	ViewResolver jspViewResolver() {
+		InternalResourceViewResolver bean = new InternalResourceViewResolver();
+		bean.setPrefix("/WEB-INF/views/");
+		bean.setSuffix(".jsp");
+		return bean;
+	}
+
+	@Bean(name = "multipartResolver")
+	CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver multipartResolver =
+				new CommonsMultipartResolver();
+		multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
+		return multipartResolver;
+	}
+
+	/**
+	 * Sets up the login page mapping.
+	 */
+	@Configuration
+	static class MvcConfig implements WebMvcConfigurer {
+		@Override
+		public void addViewControllers(ViewControllerRegistry registry) {
+			registry.addViewController("/login.html");
+		}
 	}
 }
