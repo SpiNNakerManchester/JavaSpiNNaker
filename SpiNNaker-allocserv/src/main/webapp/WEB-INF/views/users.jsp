@@ -32,6 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </table>
 </c:if>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="adminfooter.jsp" />
 </body>
 </html>

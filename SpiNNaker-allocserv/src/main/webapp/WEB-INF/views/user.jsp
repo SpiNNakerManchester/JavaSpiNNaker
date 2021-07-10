@@ -56,6 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <!-- TODO Add delete link/button -->
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="adminfooter.jsp" />
 </body>
 </html>

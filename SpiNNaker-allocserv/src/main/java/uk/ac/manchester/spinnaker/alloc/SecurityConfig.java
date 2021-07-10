@@ -22,10 +22,10 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -54,7 +54,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -64,9 +63,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -74,6 +70,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.User;
 
 /**
  * The security and administration configuration of the service.
@@ -214,6 +212,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		boolean createUser(String username, String password,
 				TrustLevel trustLevel, long quota) throws SQLException;
 
+		/**
+		 * Get a model for updating the local password of the current user.
+		 *
+		 * @param principal
+		 *            The current user
+		 * @return User model object. Password fields are unfilled.
+		 * @throws AuthenticationException
+		 *             If the user cannot change their password here for some
+		 *             reason.
+		 */
+		User getUserForPrincipal(Principal principal)
+				throws AuthenticationException;
+
+		/**
+		 * Update the local password of the current user based on a filled out
+		 * model previously provided.
+		 *
+		 * @param principal
+		 *            The current user
+		 * @param user
+		 *            Valid user model object with password fields filled.
+		 * @return Replacement user model object. Password fields are unfilled.
+		 * @throws AuthenticationException
+		 *             If the user cannot change their password here for some
+		 *             reason.
+		 */
+		User updateUserOfPrincipal(Principal principal, User user)
+				throws AuthenticationException;
+
 		// TODO what other operations should there be?
 	}
 
@@ -339,28 +366,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		sclh.setClearAuthentication(true);
 		sclh.setInvalidateHttpSession(true);
 		return sclh;
-	}
-
-	@Controller
-	@RequestMapping("/")
-	static class RootController {
-		@Autowired private LogoutHandler logoutHandler;
-
-		@GetMapping("/")
-		String index() {
-			return "index";
-		}
-
-		@GetMapping("/perform_logout")
-		String performLogout(HttpServletRequest request,
-				HttpServletResponse response) {
-			Authentication auth = getContext().getAuthentication();
-			if (auth != null) {
-				log.info("logging out {}", auth.getPrincipal());
-				logoutHandler.logout(request, response, auth);
-			}
-			return "redirect:/system/login.html";
-		}
 	}
 
 	@Bean

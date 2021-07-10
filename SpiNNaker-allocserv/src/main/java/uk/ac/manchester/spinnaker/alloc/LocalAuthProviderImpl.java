@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
+import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -32,12 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotBlank;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -140,6 +145,154 @@ public class LocalAuthProviderImpl extends SQLQueries
 				}
 				return false;
 			});
+		}
+	}
+
+	/**
+	 * Describes basic information about a user that they'd use to change their
+	 * password.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class User {
+		private final int userId;
+
+		private final String username;
+
+		private String oldPassword;
+
+		private String newPassword;
+
+		private String newPassword2;
+
+		User(int userId, String username) {
+			this.userId = userId;
+			this.username = username;
+			this.oldPassword = "";
+			this.newPassword = "";
+			this.newPassword2 = "";
+		}
+
+		/**
+		 * @return the user id
+		 */
+		public final int getUserId() {
+			return userId;
+		}
+
+		/**
+		 * @return the username
+		 */
+		@NotBlank(message = "username must be set")
+		public final String getUsername() {
+			return username;
+		}
+
+		/**
+		 * @return the old password
+		 */
+		@NotBlank(message = "old password must be supplied")
+		public String getOldPassword() {
+			return oldPassword;
+		}
+
+		public void setOldPassword(String password) {
+			this.oldPassword = password;
+		}
+
+		/**
+		 * @return the first copy of the new password
+		 */
+		@NotBlank(message = "new password must be supplied")
+		public String getNewPassword() {
+			return newPassword;
+		}
+
+		public void setNewPassword(String newPassword) {
+			this.newPassword = newPassword;
+		}
+
+		/**
+		 * @return the second copy of the new password
+		 */
+		@NotBlank(message = "second copy of new password must be supplied")
+		public String getNewPassword2() {
+			return newPassword2;
+		}
+
+		public void setNewPassword2(String newPassword2) {
+			this.newPassword2 = newPassword2;
+		}
+
+		@AssertFalse(message = "old and new passwords must be different")
+		boolean isNewPasswordSameAsOld() {
+			return newPassword.equals(oldPassword);
+		}
+
+		@AssertTrue(
+				message = "second copy of new password must be same as first")
+		boolean isNewPasswordMatched() {
+			return newPassword.equals(newPassword2);
+		}
+	}
+
+	@Override
+	public User getUserForPrincipal(Principal principal)
+			throws AuthenticationException {
+		try (Connection c = db.getConnection();
+				Query q = query(c, "SELECT user_id, user_name FROM user_info "
+						+ "WHERE user_name = :username "
+						+ "AND encrypted_password IS NOT NULL LIMIT 1")) {
+			Row row = q.call1(principal.getName()).orElseThrow(
+					// OpenID-authenticated user; go away
+					() -> new AuthenticationServiceException(
+							"user is managed externally; "
+									+ "cannot manage password here"));
+			return new User(row.getInt("user_id"), row.getString("user_name"));
+		} catch (SQLException e) {
+			throw new InternalAuthenticationServiceException(
+					"database access problem", e);
+		}
+	}
+
+	@Override
+	public User updateUserOfPrincipal(Principal principal, User user) {
+		try (Connection c = db.getConnection();
+				Query q = query(c,
+						"SELECT user_id, user_name, encrypted_password "
+								+ "FROM user_info "
+								+ "WHERE user_id = :user_id "
+								+ "AND user_name = :user_name "
+								+ "AND encrypted_password IS NOT NULL LIMIT 1");
+				Update u = update(c,
+						"UPDATE user_info SET "
+								+ "encrypted_password = :encrypted_password "
+								+ "WHERE user_id = :user_id")) {
+			return DatabaseEngine.transaction(c, () -> {
+				Row row = q.call1(user.userId, principal.getName()).orElseThrow(
+						// OpenID-authenticated user; go away
+						() -> new AuthenticationServiceException(
+								"user is managed externally; "
+										+ "cannot manage password here"));
+				User baseUser = new User(row.getInt("user_id"),
+						row.getString("user_name"));
+				if (!passwordEncoder.matches(user.oldPassword,
+						row.getString("password"))) {
+					throw new BadCredentialsException("bad password");
+				}
+				if (!user.newPassword.equals(user.newPassword2)) {
+					throw new BadCredentialsException("bad password");
+				}
+				if (u.call(passwordEncoder.encode(user.newPassword),
+						row.getInt("user_id")) != 1) {
+					throw new InternalAuthenticationServiceException(
+							"failed to update database");
+				}
+				return baseUser;
+			});
+		} catch (SQLException e) {
+			throw new InternalAuthenticationServiceException(
+					"database access problem", e);
 		}
 	}
 

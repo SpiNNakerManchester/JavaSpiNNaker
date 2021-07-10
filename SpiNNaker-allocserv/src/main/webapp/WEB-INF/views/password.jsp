@@ -1,5 +1,4 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -17,29 +16,32 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+
+<%--
+This is a USER form; all users may access this to alter their own password.
+--%>
+
 <jsp:include page="head.jsp">
-	<jsp:param value="Machine Management" name="title"/>
+	<jsp:param value="Change Password" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Machine Import</h1>
-<c:if test="${ not empty definedMachines }">
-	<c:forEach items="${definedMachines}" var="item">
-		Machine called "${ item.name }" (${ item.width }&times;${ item.height }) defined.<br>
-	</c:forEach>
-</c:if>
-<form method="POST" enctype="multipart/form-data">
-    <table>
-        <tr>
-            <td><label path="file">Select a configuration file to upload</label></td>
-            <td><input type="file" name="file" /></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Submit" /></td>
-        </tr>
-    </table>
-</form>
+<h1>Change Password</h1>
 
-<jsp:include page="adminfooter.jsp" />
+<form:form method="POST" modelAttribute="user">
+    User Name: ${user.name }
+    <br>
+    <form:label path="oldPassword">Old Password: </form:label>
+    <form:input path="oldPassword" type="password" />
+    <p>
+    <form:label path="newPassword">New Password: </form:label>
+    <form:input path="newPassword" type="password" />
+    <br>
+    <form:label path="newPassword2">New Password (again): </form:label>
+    <form:input path="newPassword2" type="password" />
+    <p>
+    <input type="submit" value="Change Password" />
+</form:form>
+
 </body>
 </html>

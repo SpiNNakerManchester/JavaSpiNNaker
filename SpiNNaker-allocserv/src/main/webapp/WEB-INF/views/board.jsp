@@ -60,6 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </form:form>
 <button onclick="window.location.href='${ baseuri }'">Clear form</button>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="adminfooter.jsp" />
 </body>
 </html>
