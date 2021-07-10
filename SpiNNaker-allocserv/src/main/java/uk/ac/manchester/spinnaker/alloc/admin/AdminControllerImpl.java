@@ -23,6 +23,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,8 +80,6 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private static final String USER_LIST_VIEW = "users";
 
 	private static final String USER_DETAILS_VIEW = "user";
-
-	private static final String ERROR_VIEW = "error";
 
 	private static final String BOARD_VIEW = "board";
 
@@ -159,7 +158,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 	private static ModelAndView errors(String message) {
 		return addStandardContext(
-				new ModelAndView(ERROR_VIEW, "error", message));
+				new ModelAndView(MVC_ERROR, "error", message));
 	}
 
 	private static ModelAndView errors(BindingResult result) {

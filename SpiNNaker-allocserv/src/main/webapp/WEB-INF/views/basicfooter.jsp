@@ -1,4 +1,4 @@
-/*
+<%--
 Copyright (c) 2021 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
@@ -13,14 +13,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-body {
-	font-family: Times, "Times New Roman", serif;
-}
-h1 {
-	font-family: Helvetica, Arial, sans-serif;
-}
-footer {
-	font-size: small;
-}
+--%>
+<footer>
+<hr>
+<a href="/system/change_password">Change password</a>
+&mdash;
+<a href="/system/perform_logout">Log out</a>
+</footer>

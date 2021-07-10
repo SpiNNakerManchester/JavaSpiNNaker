@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <a href="${ boardsUri }">Boards</a>
 &mdash;
 <a href="${ usersUri }">Users</a>
-<p>
+<br>
+<a href="/system/change_password">Change Password</a>
+&mdash;
 <a href="/system/perform_logout">Log out</a>
 </footer>

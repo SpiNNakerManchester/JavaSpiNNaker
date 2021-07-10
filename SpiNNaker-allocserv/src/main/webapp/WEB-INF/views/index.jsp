@@ -1,4 +1,4 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -16,32 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
-<%--
-This is a USER form; all users may access this to alter their own password.
---%>
-
 <jsp:include page="head.jsp">
-	<jsp:param value="Change Password" name="title"/>
+	<jsp:param value="Spalloc Service" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Change Password</h1>
-
-<form:form method="POST" modelAttribute="user">
-    User Name: ${user.username }
-    <br>
-    <form:label path="oldPassword">Old Password: </form:label>
-    <form:input path="oldPassword" type="password" />
-    <p>
-    <form:label path="newPassword">New Password: </form:label>
-    <form:input path="newPassword" type="password" />
-    <br>
-    <form:label path="newPassword2">New Password (again): </form:label>
-    <form:input path="newPassword2" type="password" />
-    <p>
-    <input type="submit" value="Change Password" />
-</form:form>
+<h1>Spalloc Service</h1>
+<sec:authorize url="admin/">
+    <a href="admin/">Service Administration</a>
+</sec:authorize>
 
 <jsp:include page="basicfooter.jsp" />
 </body>

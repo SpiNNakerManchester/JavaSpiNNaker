@@ -27,8 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <a href="${ boardsUri }">Boards</a>
 <p>
 <a href="${ usersUri }">Users</a>
-<hr>
-<a href="/system/perform_logout">Log out</a>
 
+<jsp:include page="basicfooter.jsp" />
 </body>
 </html>

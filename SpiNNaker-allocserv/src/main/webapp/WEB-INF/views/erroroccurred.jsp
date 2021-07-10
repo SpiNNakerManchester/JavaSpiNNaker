@@ -29,6 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </tr>
 </table>
 
-<jsp:include page="adminfooter.jsp" />
+<jsp:include page="basicfooter.jsp" />
 </body>
 </html>

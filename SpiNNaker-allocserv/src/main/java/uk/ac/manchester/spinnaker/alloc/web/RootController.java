@@ -18,8 +18,10 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
 import java.security.Principal;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +40,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.User;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
+import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
+import uk.ac.manchester.spinnaker.alloc.admin.UserControl.UserPassChangeModel;
 
 /**
  * The main web interface controller.
@@ -55,7 +57,7 @@ public class RootController {
 	private LogoutHandler logoutHandler;
 
 	@Autowired
-	private LocalAuthenticationProvider authProvider;
+	private UserControl userControl;
 
 	@GetMapping("/")
 	String index() {
@@ -66,26 +68,27 @@ public class RootController {
 	ModelAndView getPasswordChangeForm(Principal principal) {
 		ModelAndView mav = new ModelAndView("password");
 		try {
-			mav.addObject("user", authProvider.getUserForPrincipal(principal));
-		} catch (AuthenticationException e) {
-			return new ModelAndView("error");
+			mav.addObject("user", userControl.getUserForPrincipal(principal));
+		} catch (AuthenticationException | SQLException e) {
+			return new ModelAndView(MVC_ERROR);
 		}
 		return mav;
 	}
 
 	@PostMapping("/change_password")
 	ModelAndView postPasswordChangeForm(
-			@Valid @ModelAttribute("user") User user, BindingResult result,
-			Principal principal) {
+			@Valid @ModelAttribute("user") UserPassChangeModel user,
+			BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
-			return new ModelAndView("error");
+			return new ModelAndView(MVC_ERROR);
 		}
+		log.info("changing password for {}", principal.getName());
 		ModelAndView mav = new ModelAndView("password");
 		try {
 			mav.addObject("user",
-					authProvider.updateUserOfPrincipal(principal, user));
-		} catch (AuthenticationException e) {
-			return new ModelAndView("error");
+					userControl.updateUserOfPrincipal(principal, user));
+		} catch (AuthenticationException | SQLException e) {
+			return new ModelAndView(MVC_ERROR);
 		}
 		return mav;
 	}

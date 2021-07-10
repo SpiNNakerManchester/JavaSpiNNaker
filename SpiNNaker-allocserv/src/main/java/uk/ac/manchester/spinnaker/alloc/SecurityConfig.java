@@ -25,7 +25,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -70,8 +69,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
-import uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.User;
 
 /**
  * The security and administration configuration of the service.
@@ -132,6 +129,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/** Maximum size of configuration file. */
 	private static final int MAX_UPLOAD_SIZE = 1000000;
+
+	/** The name of the Spring MVC error view. */
+	public static final String MVC_ERROR = "erroroccurred";
 
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
@@ -212,35 +212,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		boolean createUser(String username, String password,
 				TrustLevel trustLevel, long quota) throws SQLException;
 
-		/**
-		 * Get a model for updating the local password of the current user.
-		 *
-		 * @param principal
-		 *            The current user
-		 * @return User model object. Password fields are unfilled.
-		 * @throws AuthenticationException
-		 *             If the user cannot change their password here for some
-		 *             reason.
-		 */
-		User getUserForPrincipal(Principal principal)
-				throws AuthenticationException;
-
-		/**
-		 * Update the local password of the current user based on a filled out
-		 * model previously provided.
-		 *
-		 * @param principal
-		 *            The current user
-		 * @param user
-		 *            Valid user model object with password fields filled.
-		 * @return Replacement user model object. Password fields are unfilled.
-		 * @throws AuthenticationException
-		 *             If the user cannot change their password here for some
-		 *             reason.
-		 */
-		User updateUserOfPrincipal(Principal principal, User user)
-				throws AuthenticationException;
-
 		// TODO what other operations should there be?
 	}
 
@@ -268,7 +239,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		if (supportLocalFormAuth) {
 			http.formLogin().loginPage("/system/login.html")
 					.loginProcessingUrl("/system/perform_login")
-					.defaultSuccessUrl("/system/admin/", true)
+					.defaultSuccessUrl("/system/", true)
 					.failureUrl("/system/login.html?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
