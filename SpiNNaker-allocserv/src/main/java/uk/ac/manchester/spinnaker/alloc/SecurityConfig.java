@@ -22,6 +22,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,7 +44,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -279,6 +279,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
+	private static final String BLAND_AUTH_MSG = "computer says no";
+
 	/**
 	 * Make access denied (from a {@code @}{@link PreAuthorize} check) not fill
 	 * the log with huge stack traces.
@@ -305,7 +307,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 							.map(GrantedAuthority::getAuthority)
 							.collect(toSet()));
 			// But the user gets a bland response
-			return status(FORBIDDEN).entity("computer says no").build();
+			return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
 		}
 	}
 
@@ -317,17 +319,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Component
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
+		// TODO ensure off in prod
+		@Value("@{spalloc.debugAuthFailures:false}")
+		private boolean debugAuthFailures;
+
 		@Override
 		public void onAuthenticationFailure(HttpServletRequest request,
 				HttpServletResponse response, AuthenticationException e)
 				throws IOException, ServletException {
 			log.info("auth failure", e);
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setStatus(UNAUTHORIZED.value());
 
 			String jsonPayload =
 					"{\"message\" : \"%s\", \"timestamp\" : \"%s\" }";
+			String message = BLAND_AUTH_MSG;
+			if (debugAuthFailures) {
+				message += ": " + e.getLocalizedMessage();
+			}
 			response.getOutputStream().println(format(jsonPayload,
-					e.getMessage(), Calendar.getInstance().getTime()));
+					message, Calendar.getInstance().getTime()));
 		}
 	}
 
