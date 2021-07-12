@@ -50,8 +50,8 @@ import uk.ac.manchester.spinnaker.alloc.admin.UserControl.UserPassChangeModel;
  */
 @Controller
 @RequestMapping("/")
-public class RootController {
-	private static final Logger log = getLogger(RootController.class);
+public class RootControllerImpl {
+	private static final Logger log = getLogger(RootControllerImpl.class);
 
 	@Autowired
 	private LogoutHandler logoutHandler;
