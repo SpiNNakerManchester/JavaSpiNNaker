@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Collections.emptyMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -29,6 +30,7 @@ import java.time.Instant;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -368,10 +370,10 @@ public interface AdminAPI {
 			@IPAddress String address, boolean enabled) throws SQLException;
 
 	/**
-	 * The description of a user. POJO class. Some things are stated to be not
-	 * settable despite having setters; they're settable <em>in instances of
-	 * this class</em> but the service itself will not respect being asked to
-	 * change them.
+	 * The description and model of a user. POJO class. Some things are stated
+	 * to be not settable despite having setters; they're settable <em>in
+	 * instances of this class</em> but the service itself will not respect
+	 * being asked to change them.
 	 */
 	final class User {
 		private Integer userId;
@@ -410,6 +412,7 @@ public interface AdminAPI {
 		/**
 		 * @return The user's username.
 		 */
+		@NotBlank
 		public String getUserName() {
 			return userName;
 		}
@@ -472,6 +475,7 @@ public interface AdminAPI {
 		/**
 		 * @return The permissions of the account.
 		 */
+		@NotNull(message = "a trust level must be given")
 		public TrustLevel getTrustLevel() {
 			return trustLevel;
 		}
@@ -529,6 +533,15 @@ public interface AdminAPI {
 			return password == null && hasPassword != null && hasPassword;
 		}
 
+		boolean isPasswordSet() {
+			return password != null && !password.trim().isEmpty();
+		}
+
+		@AssertTrue(message = "either set a password or mark for using OpenID")
+		boolean isAuthenticationSane() {
+			return isPasswordSet() || isExternallyAuthenticated();
+		}
+
 		/**
 		 * Forces correct shrouding of information.
 		 *
@@ -543,6 +556,25 @@ public interface AdminAPI {
 			// Never need to send the userId back
 			userId = null;
 			return this;
+		}
+
+		/**
+		 * Set up some defaults used when a user is being created.
+		 */
+		void initCreationDefaults() {
+			setUserId(null);
+			if (getTrustLevel() == null) {
+				setTrustLevel(TrustLevel.USER);
+			}
+			if (getQuota() == null) {
+				setQuota(emptyMap());
+			}
+			if (isEnabled() == null) {
+				setEnabled(true);
+			}
+			if (isLocked() == null) {
+				setLocked(false);
+			}
 		}
 	}
 

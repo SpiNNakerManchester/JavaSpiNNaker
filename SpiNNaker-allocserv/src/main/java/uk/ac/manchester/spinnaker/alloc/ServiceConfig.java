@@ -72,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
  * are no public methods in this class that can be called by non-framework code.
  *
  * @see SecurityConfig
+ * @author Donal Fellows
  */
 @Import({JaxRsConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")

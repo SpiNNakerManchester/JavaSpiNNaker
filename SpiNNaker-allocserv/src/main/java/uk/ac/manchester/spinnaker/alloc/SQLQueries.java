@@ -48,6 +48,11 @@ public abstract class SQLQueries {
 	protected static final String GET_ALL_MACHINES =
 			"SELECT machine_id, machine_name, width, height FROM machines";
 
+	/** Get the machine names in alphabetical order. */
+	@ResultColumn("machine_name")
+	protected static final String LIST_MACHINE_NAMES =
+			"SELECT machine_name FROM machines ORDER BY machine_name ASC";
+
 	/** Get basic information about a specific machine. Looks up by ID. */
 	@Parameter("machine_id")
 	@ResultColumn("machine_id")
@@ -527,10 +532,20 @@ public abstract class SQLQueries {
 	@Parameter("y")
 	@Parameter("z")
 	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
-			"SELECT board_id FROM boards JOIN machines "
+			"SELECT board_id, boards.x, boards.y, boards.z, "
+					+ "bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN machines "
 					+ "ON boards.machine_id = machines.machine_id "
+					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND x = :x AND y = :y AND z = :z LIMIT 1";
 
@@ -540,9 +555,18 @@ public abstract class SQLQueries {
 	@Parameter("frame")
 	@Parameter("board")
 	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
-			"SELECT board_id FROM boards JOIN machines "
+			"SELECT board_id, boards.x, boards.y, boards.z, "
+					+ "bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN machines "
 					+ "ON boards.machine_id = machines.machine_id "
 					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE machine_name = :machine_name "
@@ -553,10 +577,20 @@ public abstract class SQLQueries {
 	@Parameter("machine_name")
 	@Parameter("address")
 	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
-			"SELECT board_id FROM boards JOIN machines "
+			"SELECT board_id, boards.x, boards.y, boards.z, "
+					+ "bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN machines "
 					+ "ON boards.machine_id = machines.machine_id "
+					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND boards.address = :address LIMIT 1";
 

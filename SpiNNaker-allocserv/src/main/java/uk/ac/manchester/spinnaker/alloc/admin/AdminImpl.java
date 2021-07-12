@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -48,7 +47,6 @@ import org.springframework.stereotype.Service;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
@@ -116,7 +114,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public boolean getBoardStateXYZ(String name, int x, int y, int z)
 			throws SQLException {
-		log.warn("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
+		log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
 		BoardState board = machineController.findTriad(name, x, y, z)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
@@ -137,7 +135,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public boolean getBoardStateCFB(String name, int c, int f, int b)
 			throws SQLException {
-		log.warn("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
+		log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
 		BoardState board = machineController.findPhysical(name, c, f, b)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
@@ -158,7 +156,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public boolean getBoardStateAddress(String name, String address)
 			throws SQLException {
-		log.warn("CALLED boardState({}:IP=({}))", name, address);
+		log.info("CALLED boardState({}:IP=({}))", name, address);
 		BoardState board = machineController.findIP(name, address)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
@@ -177,6 +175,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 
 	@Override
 	public Map<String, URI> listUsers(UriInfo ui) throws SQLException {
+		log.info("CALLED listUsers()");
 		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
 		for (User user : userController.listUsers()) {
@@ -188,19 +187,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public Response createUser(User providedUser, UriInfo ui)
 			throws SQLException {
-		providedUser.setUserId(null);
-		if (providedUser.getTrustLevel() == null) {
-			providedUser.setTrustLevel(TrustLevel.USER);
-		}
-		if (providedUser.getQuota() == null) {
-			providedUser.setQuota(emptyMap());
-		}
-		if (providedUser.isEnabled() == null) {
-			providedUser.setEnabled(true);
-		}
-		if (providedUser.isLocked() == null) {
-			providedUser.setLocked(false);
-		}
+		log.warn("CALLED createUser({})", providedUser.getUserName());
+		providedUser.initCreationDefaults();
 		User realUser = userController.createUser(providedUser)
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
@@ -212,6 +200,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 
 	@Override
 	public User describeUser(int id) throws SQLException {
+		log.info("CALLED describeUser({})", id);
 		return userController.getUser(id).orElseThrow(AdminImpl::noUser)
 				.sanitise();
 	}
@@ -219,6 +208,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public User updateUser(int id, User providedUser, SecurityContext security)
 			throws SQLException {
+		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		String adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
 		return userController.updateUser(id, providedUser, adminUser)
@@ -228,6 +218,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	public Response deleteUser(int id, SecurityContext security)
 			throws SQLException {
+		log.warn("CALLED deleteUser({})", id);
 		String adminUser = security.getUserPrincipal().getName();
 		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
 		return Response.noContent().build();

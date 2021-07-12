@@ -198,40 +198,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<artifactId>jsonassert</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<id>jetty</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.jetty</groupId>
-						<artifactId>jetty-maven-plugin</artifactId>
-						<version>11.0.2</version>
-						<configuration>
-							<httpConnector>
-								<port>${jetty.port}</port>
-							</httpConnector>
-							<webAppConfig>
-								<contextPath>${jetty.root}</contextPath>
-							</webAppConfig>
-							<systemProperties>
-								<systemProperty>
-									<name>java.awt.headless</name>
-									<value>true</value>
-								</systemProperty>
-								<systemProperty>
-									<name>org.apache.cxf.io.CachedOutputStream.MaxSize</name>
-									<value>-1</value>
-								</systemProperty>
-							</systemProperties>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 	<description>A board allocation service for SpiNNaker.</description>
 	<name>SpiNNaker Allocation Server</name>
 </project>

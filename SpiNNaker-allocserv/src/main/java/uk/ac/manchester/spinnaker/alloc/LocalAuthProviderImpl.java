@@ -111,7 +111,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@PostConstruct
 	private void initUserIfNecessary() throws SQLException {
 		if (addDummyUser) {
-			createUser(DUMMY_USER, DUMMY_PASSWORD, TrustLevel.USER,
+			createUser(DUMMY_USER, DUMMY_PASSWORD, TrustLevel.ADMIN,
 					defaultQuota);
 		}
 	}
@@ -146,6 +146,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
+		log.info("authenticating {}", authentication.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
 		String name = authentication.getName().trim();
 		if (name.isEmpty()) {
@@ -344,8 +345,10 @@ public class LocalAuthProviderImpl extends SQLQueries
 				// Do nothing; no grants of authority made
 			}
 			queries.noteLoginSuccessForUser(userId);
+			log.info("login success for {} at level {}", username, trust);
 		} catch (AuthenticationException e) {
 			queries.noteLoginFailureForUser(userId, username);
+			log.info("login failure for {}", username, e);
 			throw e;
 		}
 	}

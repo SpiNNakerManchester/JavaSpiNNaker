@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.EnumSet;
@@ -768,6 +769,33 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	/**
+	 * Read a JSON-converted traditional spalloc configuration and get the
+	 * machine definitions from inside.
+	 *
+	 * @param stream
+	 *            The stream of JSON.
+	 * @return The machines from that stream.
+	 * @throws IOException
+	 *             If anything goes wrong with file access.
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
+	 * @throws JsonMappingException
+	 *             if the input JSON structure does not match the structure of
+	 *             JSONified spalloc configuration
+	 */
+	public List<Machine> readMachineDefinitions(InputStream stream)
+			throws IOException, JsonParseException, JsonMappingException {
+		Configuration cfg =  mapper.readValue(stream, Configuration.class);
+		for (ConstraintViolation<?> violation : validatorFactory.getValidator()
+				.validate(cfg)) {
+			// We ought to also say the other problems...
+			throw new IOException("failed to validate configuration: "
+					+ violation.getMessage());
+		}
+		return cfg.getMachines();
+	}
+
+	/**
 	 * The various updates used when inserting a machine. This is
 	 * connection-bound.
 	 * <p>
@@ -831,6 +859,32 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	/**
+	 * Add the machine definitions in the given stream to the database.
+	 *
+	 * @param stream
+	 *            The JSON configuration file.
+	 * @throws SQLException
+	 *             If database access fails
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
+	 * @throws JsonMappingException
+	 *             if the input JSON structure does not match the structure of
+	 *             JSONified spalloc configuration
+	 * @throws IOException
+	 *             If the file can't be read
+	 */
+	public void loadMachineDefinitions(InputStream stream) throws SQLException,
+			JsonParseException, JsonMappingException, IOException {
+		List<Machine> machines = readMachineDefinitions(stream);
+		try (Connection conn = db.getConnection();
+				Updates sql = new Updates(conn)) {
+			for (Machine machine : machines) {
+				transaction(conn, () -> loadMachineDefinition(sql, machine));
+			}
+		}
+	}
+
+	/**
 	 * Add the machine definitions in the given configuration to the database.
 	 *
 	 * @param configuration
@@ -845,6 +899,21 @@ public class MachineDefinitionLoader extends SQLQueries {
 			for (Machine machine : configuration.getMachines()) {
 				transaction(conn, () -> loadMachineDefinition(sql, machine));
 			}
+		}
+	}
+
+	/**
+	 * Add the machine definition to the database.
+	 *
+	 * @param machine
+	 *            The machine definition.
+	 * @throws SQLException
+	 *             If database access fails
+	 */
+	public void loadMachineDefinition(Machine machine) throws SQLException {
+		try (Connection conn = db.getConnection();
+				Updates sql = new Updates(conn)) {
+			transaction(conn, () -> loadMachineDefinition(sql, machine));
 		}
 	}
 
