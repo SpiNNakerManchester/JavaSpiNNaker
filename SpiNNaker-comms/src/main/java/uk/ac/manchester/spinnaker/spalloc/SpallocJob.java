@@ -37,6 +37,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.Chip;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -844,5 +847,39 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 */
 	public SpallocClient getClient() {
 		return client;
+	}
+
+	@Override
+	public void reportProblem(Chip problemChip, Integer timeout)
+			throws IOException, SpallocServerException {
+		ChipLocation ethChip = problemChip.nearestEthernet;
+		for (Connection c : getConnections()) {
+			if (c.getChip().asChipLocation().equals(ethChip)) {
+				int relX = problemChip.getX() - ethChip.getX();
+				int relY = problemChip.getY() - ethChip.getY();
+				client.reportProblem(c.getHostname(),
+						new ChipLocation(relX, relY), timeout);
+				return;
+			}
+		}
+		throw new IllegalStateException(
+				"cannot associate chip " + problemChip + " with owning board");
+	}
+
+	@Override
+	public void reportProblem(Chip problemChip, int processor, Integer timeout)
+			throws IOException, SpallocServerException {
+		ChipLocation ethChip = problemChip.nearestEthernet;
+		for (Connection c : getConnections()) {
+			if (c.getChip().asChipLocation().equals(ethChip)) {
+				int relX = problemChip.getX() - ethChip.getX();
+				int relY = problemChip.getY() - ethChip.getY();
+				client.reportProblem(c.getHostname(),
+						new CoreLocation(relX, relY, processor), timeout);
+				return;
+			}
+		}
+		throw new IllegalStateException(
+				"cannot associate chip " + problemChip + " with owning board");
 	}
 }

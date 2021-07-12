@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 import java.io.IOException;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
@@ -217,8 +218,8 @@ public interface SpallocJobAPI {
 	 * Block until the job is allocated and ready.
 	 *
 	 * @param timeout
-	 *            The number of milliseconds to wait before timing out. If None,
-	 *            wait forever.
+	 *            The number of milliseconds to wait before timing out. If
+	 *            {@code null}, wait forever.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -245,5 +246,71 @@ public interface SpallocJobAPI {
 	 *             If the spalloc server rejects the operation request.
 	 */
 	BoardPhysicalCoordinates whereIs(HasChipLocation chip)
+			throws IOException, SpallocServerException;
+
+	/**
+	 * Report a (previously undiagnosed) problem with a chip.
+	 *
+	 * @param problemChip
+	 *            The chip that has the problem.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	default void reportProblem(Chip problemChip)
+			throws IOException, SpallocServerException {
+		reportProblem(problemChip, null);
+	}
+
+	/**
+	 * Report a (previously undiagnosed) problem with a chip.
+	 *
+	 * @param problemChip
+	 *            The chip that has the problem.
+	 * @param timeout
+	 *            The number of milliseconds to wait before timing out. If
+	 *            {@code null}, wait forever.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	void reportProblem(Chip problemChip, Integer timeout)
+			throws IOException, SpallocServerException;
+
+	/**
+	 * Report a (previously undiagnosed) problem with a core.
+	 *
+	 * @param problemChip
+	 *            The chip that has the problem.
+	 * @param processor
+	 *            The processor on the chip with the problem.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	default void reportProblem(Chip problemChip, int processor)
+			throws IOException, SpallocServerException {
+		reportProblem(problemChip, processor, null);
+	}
+
+	/**
+	 * Report a (previously undiagnosed) problem with a core.
+	 *
+	 * @param problemChip
+	 *            The chip that has the problem.
+	 * @param processor
+	 *            The processor on the chip with the problem.
+	 * @param timeout
+	 *            The number of milliseconds to wait before timing out. If
+	 *            {@code null}, wait forever.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 */
+	void reportProblem(Chip problemChip, int processor, Integer timeout)
 			throws IOException, SpallocServerException;
 }
