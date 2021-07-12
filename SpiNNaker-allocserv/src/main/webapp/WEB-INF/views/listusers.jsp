@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>Spalloc Users</h1>
+<a href="${createUserUri }">Create a new user</a>
+
 <c:if test="${not empty userlist}">
 <table>
     <c:forEach items="${userlist}" var="item">

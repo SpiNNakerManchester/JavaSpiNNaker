@@ -22,8 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>Spalloc Service</h1>
-<sec:authorize url="admin/">
+<sec:authorize access="hasRole('ADMIN')">
+<p>
     <a href="admin/">Service Administration</a>
+</p>
 </sec:authorize>
 
 <jsp:include page="basicfooter.jsp" />

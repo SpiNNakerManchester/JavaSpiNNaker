@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -411,6 +412,7 @@ public interface AdminAPI {
 		/**
 		 * @return The user's username.
 		 */
+		@NotBlank
 		public String getUserName() {
 			return userName;
 		}
@@ -473,6 +475,7 @@ public interface AdminAPI {
 		/**
 		 * @return The permissions of the account.
 		 */
+		@NotNull(message = "a trust level must be given")
 		public TrustLevel getTrustLevel() {
 			return trustLevel;
 		}
@@ -528,6 +531,15 @@ public interface AdminAPI {
 		@JsonIgnore
 		public boolean isExternallyAuthenticated() {
 			return password == null && hasPassword != null && hasPassword;
+		}
+
+		boolean isPasswordSet() {
+			return password != null && !password.trim().isEmpty();
+		}
+
+		@AssertTrue(message = "either set a password or mark for using OpenID")
+		boolean isAuthenticationSane() {
+			return isPasswordSet() || isExternallyAuthenticated();
 		}
 
 		/**

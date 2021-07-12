@@ -52,6 +52,9 @@ public interface AdminController {
 	/** Path to all-users operations. */
 	String USERS_PATH = "/users";
 
+	/** Path to user creation operations. */
+	String CREATE_USER_PATH = "/create-user";
+
 	/** Path to single-user operations. */
 	String USER_PATH = USERS_PATH + "/{id}";
 
@@ -81,6 +84,14 @@ public interface AdminController {
 	ModelAndView listUsers();
 
 	/**
+	 * Get the form for creating a user.
+	 *
+	 * @return the model and view
+	 */
+	@GetMapping(CREATE_USER_PATH)
+	ModelAndView getUserCreationForm();
+
+	/**
 	 * Create a user.
 	 *
 	 * @param user
@@ -91,7 +102,7 @@ public interface AdminController {
 	 *            Overall model
 	 * @return the model and view
 	 */
-	@PostMapping(USERS_PATH)
+	@PostMapping(CREATE_USER_PATH)
 	ModelAndView createUser(@Valid @ModelAttribute("user") User user,
 			BindingResult result, ModelMap model);
 

@@ -138,6 +138,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
 		mav.addObject("trustLevels", TrustLevel.values());
 		mav.addObject("usersUri", uri(SELF.listUsers()));
+		mav.addObject("createUserUri", uri(SELF.getUserCreationForm()));
 		mav.addObject("boardsUri", uri(SELF.boards()));
 		mav.addObject("machineUri", uri(SELF.machineUploadForm()));
 		return mav;
@@ -191,12 +192,19 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
 		mav.addObject("userlist", unmodifiableMap(result));
+		return addStandardContext(mav);
+	}
+
+	@Override
+	@GetMapping(CREATE_USER_PATH)
+	public ModelAndView getUserCreationForm() {
+		ModelAndView mav = new ModelAndView("createuser");
 		mav.addObject(USER_OBJ, new User());
 		return addStandardContext(mav);
 	}
 
 	@Override
-	@PostMapping(USERS_PATH)
+	@PostMapping(CREATE_USER_PATH)
 	public ModelAndView createUser(@Valid @ModelAttribute(USER_OBJ) User user,
 			BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
@@ -210,7 +218,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			return errors("database access failed: " + e.getMessage());
 		}
 		if (!realUser.isPresent()) {
-			return errors("creation failed");
+			return errors("user creation failed (duplicate username?)");
 		}
 		log.info("created user ID={}", realUser.get().getUserId());
 		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);

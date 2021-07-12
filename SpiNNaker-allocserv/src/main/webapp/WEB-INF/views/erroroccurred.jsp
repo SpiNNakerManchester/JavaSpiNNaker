@@ -20,7 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>${ error }</h1>
+<h1>Error</h1>
+<pre>
+${ error }
+</pre>
 
 <h3>Please enter the correct details</h3>
 <table>

@@ -18,11 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="User Details" name="title"/>
+	<jsp:param value="Create User" name="title"/>
 </jsp:include>
 <body>
 
-<h1>User Details</h1>
+<h1>Create User</h1>
 
 <form:form method="POST" modelAttribute="user">
     <form:label path="userName">User Name: </form:label>
@@ -39,19 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <br>
     <form:label path="isEnabled">Is enabled? </form:label>
     <form:checkbox path="isEnabled"/>
-    <form:label path="isLocked">Is temporarily locked? </form:label>
-    <form:checkbox path="isLocked"/>
-    <br>
-    Last successful login: ${ user.lastSuccessfulLogin }
-    <br>
-    Last failed login: ${ user.lastFailedLogin }
     <p>
-    Quotas:
-    <c:forEach items="${user.quota}" var="item">
-    <br> ${item.key } : ${item.value } board-seconds
-    </c:forEach>
-    <p>
-    <input type="submit" value="Update" />
+    <input type="submit" value="Create" />
 </form:form>
 
 <!-- TODO Add delete link/button -->
