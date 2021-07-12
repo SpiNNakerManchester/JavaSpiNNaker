@@ -50,8 +50,12 @@ import uk.ac.manchester.spinnaker.alloc.admin.UserControl.UserPassChangeModel;
  */
 @Controller
 @RequestMapping("/")
-public class RootControllerImpl {
+public class RootControllerImpl implements RootController {
 	private static final Logger log = getLogger(RootControllerImpl.class);
+
+	private static final String MAIN_VIEW = "index";
+
+	private static final String PASSWORD_CHANGE_VIEW = "password";
 
 	@Autowired
 	private LogoutHandler logoutHandler;
@@ -59,33 +63,37 @@ public class RootControllerImpl {
 	@Autowired
 	private UserControl userControl;
 
+	@Override
 	@GetMapping("/")
-	String index() {
-		return "index";
+	public String index() {
+		return MAIN_VIEW;
 	}
 
+	@Override
 	@GetMapping("/change_password")
-	ModelAndView getPasswordChangeForm(Principal principal) {
-		ModelAndView mav = new ModelAndView("password");
+	public ModelAndView getPasswordChangeForm(Principal principal) {
+		ModelAndView mav = new ModelAndView(PASSWORD_CHANGE_VIEW);
 		try {
-			mav.addObject("user", userControl.getUserForPrincipal(principal));
+			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
+					userControl.getUserForPrincipal(principal));
 		} catch (AuthenticationException | SQLException e) {
 			return new ModelAndView(MVC_ERROR);
 		}
 		return mav;
 	}
 
+	@Override
 	@PostMapping("/change_password")
-	ModelAndView postPasswordChangeForm(
+	public ModelAndView postPasswordChangeForm(
 			@Valid @ModelAttribute("user") UserPassChangeModel user,
 			BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return new ModelAndView(MVC_ERROR);
 		}
 		log.info("changing password for {}", principal.getName());
-		ModelAndView mav = new ModelAndView("password");
+		ModelAndView mav = new ModelAndView(PASSWORD_CHANGE_VIEW);
 		try {
-			mav.addObject("user",
+			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
 					userControl.updateUserOfPrincipal(principal, user));
 		} catch (AuthenticationException | SQLException e) {
 			return new ModelAndView(MVC_ERROR);
@@ -93,8 +101,9 @@ public class RootControllerImpl {
 		return mav;
 	}
 
+	@Override
 	@GetMapping("/perform_logout")
-	String performLogout(HttpServletRequest request,
+	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		Authentication auth = getContext().getAuthentication();
 		if (auth != null) {
