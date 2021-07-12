@@ -157,6 +157,19 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		return addStandardContext(new ModelAndView(viewName));
 	}
 
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param uri
+	 *            The URI to redirect to. Only the path is currently used.
+	 * @return The model-and-view.
+	 */
+	private static ModelAndView addStandardContext(URI uri) {
+		return addStandardContext(
+				new ModelAndView("redirect:" + uri.getPath()));
+	}
+
 	private static ModelAndView errors(String message) {
 		return addStandardContext(
 				new ModelAndView(MVC_ERROR, "error", message));
@@ -220,10 +233,10 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		if (!realUser.isPresent()) {
 			return errors("user creation failed (duplicate username?)");
 		}
-		log.info("created user ID={}", realUser.get().getUserId());
-		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
-		mav.addObject(USER_OBJ, realUser.get().sanitise());
-		return addStandardContext(mav);
+		int id = realUser.get().getUserId();
+		log.info("created user ID={} username={}", id,
+				realUser.get().getUserName());
+		return addStandardContext(uri(SELF.showUserForm(id)));
 	}
 
 	@Override
@@ -237,8 +250,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
 			User realUser = user.get().sanitise();
 			mav.addObject(USER_OBJ, realUser);
-			mav.addObject("deleteUri",
-					uri(SELF.deleteUser(id, realUser, null, null, null)));
+			mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
 			return addStandardContext(mav);
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
@@ -273,21 +285,20 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Override
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
-			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
-			ModelMap model, Principal principal) {
-		if (result.hasErrors()) {
-			return errors(result);
-		}
+			Principal principal) {
 		String adminUser = principal.getName();
 		try {
-			log.info("deleting user ID={}", id);
-			if (!userController.deleteUser(id, adminUser).isPresent()) {
+			Optional<String> deletedUsername =
+					userController.deleteUser(id, adminUser);
+			if (!deletedUsername.isPresent()) {
 				return errors("could not delete that user");
 			}
-			URI target = uri(SELF.listUsers());
-			ModelAndView mav = new ModelAndView("redirect:" + target.getPath());
+			log.info("deleted user ID={} username={}", id,
+					deletedUsername.get());
+			ModelAndView mav = new ModelAndView(
+					"redirect:" + uri(SELF.listUsers()).getPath());
 			// Not sure that these are the correct place
-			mav.addObject("notice", "deleted " + user.getUserName());
+			mav.addObject("notice", "deleted " + deletedUsername.get());
 			mav.addObject(USER_OBJ, new User());
 			return addStandardContext(mav);
 		} catch (SQLException e) {
@@ -365,9 +376,8 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Override
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineUploadForm() {
-		return addStandardContext(
-				new ModelAndView(MACHINE_VIEW, "machineNames",
-						getMachineNames()));
+		return addStandardContext(new ModelAndView(MACHINE_VIEW, "machineNames",
+				getMachineNames()));
 	}
 
 	@Override

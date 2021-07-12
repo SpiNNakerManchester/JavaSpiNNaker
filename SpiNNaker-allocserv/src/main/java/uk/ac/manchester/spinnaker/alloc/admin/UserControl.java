@@ -249,24 +249,26 @@ public class UserControl extends SQLQueries {
 	 * @param adminUser
 	 *            The <em>name</em> of the current user doing this call. Used to
 	 *            prohibit anyone from deleting themselves.
-	 * @return An object if things succeeded, or {@link Optional#empty()} on
-	 *         failure.
+	 * @return The name of the deleted user if things succeeded, or
+	 *         {@link Optional#empty()} on failure.
 	 * @throws SQLException
 	 *             If DB access goes wrong
 	 */
-	public Optional<Object> deleteUser(int id, String adminUser)
+	public Optional<String> deleteUser(int id, String adminUser)
 			throws SQLException {
 		try (Connection c = db.getConnection();
 				Query userCheck = query(c, GET_USER_ID);
+				Query getUserName = query(c, GET_USER_DETAILS);
 				Update deleteUser = update(c, DELETE_USER)) {
 			return transaction(c, () -> {
 				if (userCheck.call1(adminUser).get().getInt("user_id") == id) {
 					// May not delete yourself!
 					return Optional.empty();
 				}
+				String userName =
+						getUserName.call1(id).get().getString("user_name");
 				if (deleteUser.call(id) == 1) {
-					// Value is unimportant
-					return Optional.of(Object.class);
+					return Optional.of(userName);
 				}
 				return Optional.empty();
 			});

@@ -18,6 +18,8 @@ logging:
     root: INFO
     # org.apache.catalina: DEBUG
     # org.springframework.security.web: TRACE
+    org.springframework.security.web.csrf.CsrfFilter: DEBUG
+    # Because when that filter says no it is MYSTERIOUS otherwise!
 
 spring:
   main:

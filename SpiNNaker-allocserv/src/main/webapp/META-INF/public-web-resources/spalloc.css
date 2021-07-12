@@ -24,3 +24,7 @@ h1 {
 footer {
 	font-size: small;
 }
+
+.warningbutton {
+	background-color: #f44336;
+}

@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -53,8 +54,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <p>
     <input type="submit" value="Update" />
 </form:form>
-
-<!-- TODO Add delete link/button -->
+<p>
+<form method="POST" action="${deleteUri }">
+   <sec:csrfInput />
+   <input type="submit" class="warningbutton" value="Delete this user" />
+</form>
+<p>
 
 <jsp:include page="adminfooter.jsp" />
 </body>

@@ -140,21 +140,13 @@ public interface AdminController {
 	 * Delete a user.
 	 *
 	 * @param id
-	 *            The user ID
-	 * @param user
-	 *            The description of the user to delete
-	 * @param result
-	 *            Validation results
-	 * @param model
-	 *            Overall model
+	 *            The user ID to delete
 	 * @param principal
 	 *            Who is the admin? Used for safety checks.
 	 * @return the model and view
 	 */
 	@PostMapping(USER_DELETE_PATH)
-	ModelAndView deleteUser(@PathVariable("id") int id,
-			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal);
+	ModelAndView deleteUser(@PathVariable("id") int id, Principal principal);
 
 	/**
 	 * UI for boards.

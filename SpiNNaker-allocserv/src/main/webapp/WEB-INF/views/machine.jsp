@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -29,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</c:forEach>
 </c:if>
 <form method="POST" enctype="multipart/form-data">
+   <sec:csrfInput />
     <table>
         <tr>
             <td><label path="file">Select a configuration file to upload</label></td>
