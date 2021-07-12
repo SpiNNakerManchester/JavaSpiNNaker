@@ -320,7 +320,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
 		// TODO ensure off in prod
-		@Value("@{spalloc.debugAuthFailures:false}")
+		@Value("${spalloc.debugAuthFailures:false}")
 		private boolean debugAuthFailures;
 
 		@Override
