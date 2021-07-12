@@ -77,9 +77,9 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 	private static final String MAIN_VIEW = "main";
 
-	private static final String USER_LIST_VIEW = "users";
+	private static final String USER_LIST_VIEW = "listusers";
 
-	private static final String USER_DETAILS_VIEW = "user";
+	private static final String USER_DETAILS_VIEW = "userdetails";
 
 	private static final String BOARD_VIEW = "board";
 
