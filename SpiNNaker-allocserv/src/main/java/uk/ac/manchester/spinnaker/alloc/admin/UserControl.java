@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -28,11 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +42,9 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 
 /**
  * User administration controller.
@@ -58,6 +53,12 @@ import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
  */
 @Component
 public class UserControl extends SQLQueries {
+	// TODO move to SQLQueries
+	private static final String GET_LOCAL_PASS_DETAILS =
+			"SELECT user_id, user_name, encrypted_password FROM user_info "
+					+ "WHERE user_name = :user_name "
+					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+
 	@Autowired
 	private DatabaseEngine db;
 
@@ -67,18 +68,18 @@ public class UserControl extends SQLQueries {
 	/**
 	 * List the users in the database.
 	 *
-	 * @return List of users. Only {@link User#userId} and {@link User#userName}
-	 *         fields are inflated.
+	 * @return List of users. Only {@link UserRecord#userId} and
+	 *         {@link UserRecord#userName} fields are inflated.
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	public List<User> listUsers() throws SQLException {
-		List<User> result = new ArrayList<>();
+	public List<UserRecord> listUsers() throws SQLException {
+		List<UserRecord> result = new ArrayList<>();
 		try (Connection c = db.getConnection();
 				Query q = query(c, LIST_ALL_USERS)) {
 			transaction(c, () -> {
 				for (Row row : q.call()) {
-					User userSketch = new User();
+					UserRecord userSketch = new UserRecord();
 					userSketch.setUserId(row.getInt("user_id"));
 					userSketch.setUserName(row.getString("user_name"));
 					result.add(userSketch);
@@ -98,7 +99,8 @@ public class UserControl extends SQLQueries {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	public Optional<User> createUser(User user) throws SQLException {
+	public Optional<UserRecord> createUser(UserRecord user)
+			throws SQLException {
 		try (Connection c = db.getConnection();
 				Update makeUser = update(c, CREATE_USER);
 				Update makeQuotas = update(c, CREATE_QUOTA);
@@ -135,7 +137,7 @@ public class UserControl extends SQLQueries {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	public Optional<User> getUser(int id) throws SQLException {
+	public Optional<UserRecord> getUser(int id) throws SQLException {
 		try (Connection c = db.getConnection();
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
 			return transaction(c, () -> {
@@ -147,8 +149,8 @@ public class UserControl extends SQLQueries {
 		}
 	}
 
-	private User getUser(Connection c, Row row) throws SQLException {
-		User user = new User();
+	private UserRecord getUser(Connection c, Row row) throws SQLException {
+		UserRecord user = new UserRecord();
 		try {
 			user.setUserId(row.getInt("user_id"));
 			user.setUserName(row.getString("user_name"));
@@ -190,8 +192,8 @@ public class UserControl extends SQLQueries {
 	 * @throws SQLException
 	 *             If DB access goes wrong
 	 */
-	public Optional<User> updateUser(int id, User user, String adminUser)
-			throws SQLException {
+	public Optional<UserRecord> updateUser(int id, UserRecord user,
+			String adminUser) throws SQLException {
 		try (Connection c = db.getConnection();
 				Query userCheck = query(c, GET_USER_ID);
 				Update setUserName = update(c, SET_USER_NAME);
@@ -276,107 +278,6 @@ public class UserControl extends SQLQueries {
 	}
 
 	/**
-	 * Describes basic information about a user that they'd use to change their
-	 * password.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static class UserPassChangeModel {
-		private int userId;
-
-		private String username;
-
-		private String oldPassword;
-
-		private String newPassword;
-
-		private String newPassword2;
-
-		public UserPassChangeModel() {
-			this.userId = -1;
-			this.username = "";
-			this.oldPassword = "";
-			this.newPassword = "";
-			this.newPassword2 = "";
-		}
-
-		UserPassChangeModel(int userId, String username) {
-			this();
-			this.userId = userId;
-			this.username = requireNonNull(username);
-		}
-
-		/**
-		 * @return the user id
-		 */
-		public final int getUserId() {
-			return userId;
-		}
-
-		public void setUserId(int userId) {
-			this.userId = userId;
-		}
-
-		/**
-		 * @return the username
-		 */
-		public final String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		/**
-		 * @return the old password
-		 */
-		@NotBlank(message = "old password must be supplied")
-		public String getOldPassword() {
-			return oldPassword;
-		}
-
-		public void setOldPassword(String password) {
-			this.oldPassword = password;
-		}
-
-		/**
-		 * @return the first copy of the new password
-		 */
-		@NotBlank(message = "new password must be supplied")
-		public String getNewPassword() {
-			return newPassword;
-		}
-
-		public void setNewPassword(String newPassword) {
-			this.newPassword = newPassword;
-		}
-
-		/**
-		 * @return the second copy of the new password
-		 */
-		@NotBlank(message = "second copy of new password must be supplied")
-		public String getNewPassword2() {
-			return newPassword2;
-		}
-
-		public void setNewPassword2(String newPassword2) {
-			this.newPassword2 = newPassword2;
-		}
-
-		@AssertFalse(message = "old and new passwords must be different")
-		boolean isNewPasswordSameAsOld() {
-			return newPassword.equals(oldPassword);
-		}
-
-		@AssertTrue(
-				message = "second copy of new password must be same as first")
-		boolean isNewPasswordMatched() {
-			return newPassword.equals(newPassword2);
-		}
-	}
-
-	/**
 	 * Get a model for updating the local password of the current user.
 	 *
 	 * @param principal
@@ -388,19 +289,19 @@ public class UserControl extends SQLQueries {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	public UserPassChangeModel getUserForPrincipal(Principal principal)
+	public PasswordChangeRecord getUserForPrincipal(Principal principal)
 			throws AuthenticationException, SQLException {
 		try (Connection c = db.getConnection();
-				Query q = query(c, "SELECT user_id, user_name FROM user_info "
-						+ "WHERE user_name = :username "
-						+ "AND encrypted_password IS NOT NULL LIMIT 1")) {
-			Row row = q.call1(principal.getName()).orElseThrow(
-					// OpenID-authenticated user; go away
-					() -> new AuthenticationServiceException(
-							"user is managed externally; "
-									+ "cannot manage password here"));
-			return new UserPassChangeModel(row.getInt("user_id"),
-					row.getString("user_name"));
+				Query q = query(c, GET_LOCAL_PASS_DETAILS)) {
+			return transaction(c, () -> {
+				Row row = q.call1(principal.getName()).orElseThrow(
+						// OpenID-authenticated user; go away
+						() -> new AuthenticationServiceException(
+								"user is managed externally; "
+										+ "cannot manage password here"));
+				return new PasswordChangeRecord(row.getInt("user_id"),
+						row.getString("user_name"));
+			});
 		}
 	}
 
@@ -419,15 +320,11 @@ public class UserControl extends SQLQueries {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	public UserPassChangeModel updateUserOfPrincipal(Principal principal,
-			UserPassChangeModel user)
+	public PasswordChangeRecord updateUserOfPrincipal(Principal principal,
+			PasswordChangeRecord user)
 			throws AuthenticationException, SQLException {
 		try (Connection c = db.getConnection();
-				Query getPassword = query(c,
-						"SELECT user_id, user_name, encrypted_password "
-								+ "FROM user_info "
-								+ "WHERE user_name = :user_name "
-								+ "AND encrypted_password IS NOT NULL LIMIT 1");
+				Query getPassword = query(c, GET_LOCAL_PASS_DETAILS);
 				Update setPassword = update(c, SET_USER_PASS)) {
 			return transaction(c, () -> {
 				Row row = getPassword.call1(principal.getName()).orElseThrow(
@@ -435,18 +332,19 @@ public class UserControl extends SQLQueries {
 						() -> new AuthenticationServiceException(
 								"user is managed externally; "
 										+ "cannot change password here"));
-				UserPassChangeModel baseUser = new UserPassChangeModel(
+				PasswordChangeRecord baseUser = new PasswordChangeRecord(
 						row.getInt("user_id"), row.getString("user_name"));
-				if (!passwordEncoder.matches(user.oldPassword,
+				if (!passwordEncoder.matches(user.getOldPassword(),
 						row.getString("encrypted_password"))) {
 					throw new BadCredentialsException("bad password");
 				}
 				// Validate change; this should never fail but...
-				if (!user.newPassword.equals(user.newPassword2)) {
+				if (!user.isNewPasswordMatched()) {
 					throw new BadCredentialsException("bad password");
 				}
-				if (setPassword.call(passwordEncoder.encode(user.newPassword),
-						baseUser.userId) != 1) {
+				if (setPassword.call(
+						passwordEncoder.encode(user.getNewPassword()),
+						baseUser.getUserId()) != 1) {
 					throw new InternalAuthenticationServiceException(
 							"failed to update database");
 				}

@@ -32,7 +32,8 @@ import javax.ws.rs.core.UriInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 
 /**
  * The description of an individual machine.
@@ -56,7 +57,7 @@ public final class MachineResponse {
 	public final List<BoardCoords> downBoards;
 
 	/** The links of the machine marked as down. */
-	public final List<SpallocAPI.DownLink> downLinks;
+	public final List<DownLink> downLinks;
 
 	/** Where to look up a board by physical coordinates. */
 	@JsonInclude(NON_NULL)

@@ -16,12 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
+
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.ac.manchester.spinnaker.alloc.admin.UserControl.UserPassChangeModel;
+import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 
 /**
  * The main web interface controller.
@@ -49,6 +52,24 @@ public interface RootController {
 	 */
 	@GetMapping("/")
 	String index();
+
+	/**
+	 * Get the view for the general machine list.
+	 *
+	 * @return View and model
+	 */
+	@GetMapping("/list_machines")
+	@PreAuthorize(IS_READER)
+	ModelAndView getMachineList();
+
+	/**
+	 * Get the view for the general job list.
+	 *
+	 * @return View and model
+	 */
+	@GetMapping("/list_jobs")
+	@PreAuthorize(IS_READER)
+	ModelAndView getJobList();
 
 	/**
 	 * Get the view and model for the password change form.
@@ -74,7 +95,7 @@ public interface RootController {
 	@PostMapping("/change_password")
 	ModelAndView postPasswordChangeForm(
 			@ModelAttribute(USER_PASSWORD_CHANGE_ATTR)
-			@Valid UserPassChangeModel user, BindingResult result,
+			@Valid PasswordChangeRecord user, BindingResult result,
 			Principal principal);
 
 	/**

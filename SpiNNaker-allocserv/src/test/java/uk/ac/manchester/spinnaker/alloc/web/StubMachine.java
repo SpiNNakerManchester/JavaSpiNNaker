@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Optional;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 
 /**
  * A machine that just throws {@link UnsupportedOperationException} for every

@@ -44,7 +44,7 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  *
  * @author Donal Fellows
  */
-@Component
+@Component("transceiverFactory")
 public class TransceiverFactory {
 	private Map<String, Transceiver> txrxMap = new HashMap<>();
 

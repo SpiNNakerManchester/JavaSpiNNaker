@@ -22,9 +22,9 @@ import static java.lang.Math.sqrt;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.DESTROYED;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.POWER;
-import static uk.ac.manchester.spinnaker.alloc.allocator.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -46,6 +46,9 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 
 @Component

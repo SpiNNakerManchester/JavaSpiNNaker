@@ -18,10 +18,13 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +32,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -41,7 +45,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
-import uk.ac.manchester.spinnaker.alloc.admin.UserControl.UserPassChangeModel;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
+import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
+import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 
 /**
  * The main web interface controller.
@@ -56,6 +62,10 @@ public class RootControllerImpl implements RootController {
 	private static final String MAIN_VIEW = "index";
 
 	private static final String PASSWORD_CHANGE_VIEW = "password";
+
+	private static final String MACHINE_LIST_VIEW = "machinelist";
+
+	private static final String JOB_LIST_VIEW = "joblist";
 
 	@Autowired
 	private LogoutHandler logoutHandler;
@@ -85,7 +95,7 @@ public class RootControllerImpl implements RootController {
 	@Override
 	@PostMapping("/change_password")
 	public ModelAndView postPasswordChangeForm(
-			@Valid @ModelAttribute("user") UserPassChangeModel user,
+			@Valid @ModelAttribute("user") PasswordChangeRecord user,
 			BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return new ModelAndView(MVC_ERROR);
@@ -111,5 +121,21 @@ public class RootControllerImpl implements RootController {
 			logoutHandler.logout(request, response, auth);
 		}
 		return "redirect:/system/login.html";
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	public ModelAndView getMachineList() {
+		List<MachineListEntryRecord> table = new ArrayList<>();
+		// TODO populate the table of machines
+		return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	public ModelAndView getJobList() {
+		List<JobListEntryRecord> table = new ArrayList<>();
+		// TODO build info for table
+		return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
 	}
 }

@@ -20,10 +20,10 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Optional;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**

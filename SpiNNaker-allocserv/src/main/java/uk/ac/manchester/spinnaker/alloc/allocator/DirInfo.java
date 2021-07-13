@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
+import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**
  * A mapping that says how to go from one board's coordinates (only the Z
@@ -112,6 +113,7 @@ public final class DirInfo extends SQLQueries {
 	}
 
 	static void load(Connection conn) throws SQLException {
+		// TODO this class belongs elsewhere
 		if (MAP.isEmpty()) {
 			try (Query di = query(conn, LOAD_DIR_INFO)) {
 				for (Row row : di.call()) {

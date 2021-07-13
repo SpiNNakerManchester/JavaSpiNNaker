@@ -54,8 +54,8 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
-import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 /**
  * Test that the database engine interface works and that the queries are

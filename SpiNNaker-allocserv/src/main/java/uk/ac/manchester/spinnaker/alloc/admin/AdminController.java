@@ -21,8 +21,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import java.security.Principal;
 
 import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
@@ -36,7 +34,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
+import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
  * The API for the controller for the admin user interface.
@@ -103,7 +102,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(CREATE_USER_PATH)
-	ModelAndView createUser(@Valid @ModelAttribute("user") User user,
+	ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
 			BindingResult result, ModelMap model);
 
 	/**
@@ -133,8 +132,8 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_PATH)
 	ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute("user") User user, BindingResult result,
-			ModelMap model, Principal principal);
+			@Valid @ModelAttribute("user") UserRecord user,
+			BindingResult result, ModelMap model, Principal principal);
 
 	/**
 	 * Delete a user.
@@ -168,7 +167,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(BOARDS_PATH)
-	ModelAndView board(@Valid @ModelAttribute("board") BoardModel board,
+	ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
 			BindingResult result, ModelMap model);
 
 	/**
@@ -192,148 +191,4 @@ public interface AdminController {
 	@PostMapping(MACHINE_PATH)
 	ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
 			ModelMap modelMap);
-
-	/**
-	 * Model of a board, for configuration purposes.
-	 *
-	 * @author Donal Fellows
-	 */
-	class BoardModel {
-		@NotNull
-		private String machineName;
-
-		private Integer x;
-
-		private Integer y;
-
-		private Integer z;
-
-		private Integer cabinet;
-
-		private Integer frame;
-
-		private Integer board;
-
-		private String ipAddress;
-
-		private Boolean enabled;
-
-		/**
-		 * @return the machine name
-		 */
-		public String getMachineName() {
-			return machineName;
-		}
-
-		public void setMachineName(String machineName) {
-			this.machineName = machineName;
-		}
-
-		/**
-		 * @return the board X coordinate
-		 */
-		public Integer getX() {
-			return x;
-		}
-
-		public void setX(Integer x) {
-			this.x = x;
-		}
-
-		/**
-		 * @return the board Y coordinate
-		 */
-		public Integer getY() {
-			return y;
-		}
-
-		public void setY(Integer y) {
-			this.y = y;
-		}
-
-		/**
-		 * @return the board Z coordinate
-		 */
-		public Integer getZ() {
-			return z;
-		}
-
-		public void setZ(Integer z) {
-			this.z = z;
-		}
-
-		public boolean isTriadCoordPresent() {
-			return x != null && y != null && z != null;
-		}
-
-		/**
-		 * @return the cabinet number
-		 */
-		public Integer getCabinet() {
-			return cabinet;
-		}
-
-		public void setCabinet(Integer cabinet) {
-			this.cabinet = cabinet;
-		}
-
-		/**
-		 * @return the frame number
-		 */
-		public Integer getFrame() {
-			return frame;
-		}
-
-		public void setFrame(Integer frame) {
-			this.frame = frame;
-		}
-
-		/**
-		 * @return the board number
-		 */
-		public Integer getBoard() {
-			return board;
-		}
-
-		public void setBoard(Integer board) {
-			this.board = board;
-		}
-
-		public boolean isPhysicalCoordPresent() {
-			return cabinet != null && frame != null && board != null;
-		}
-
-		/**
-		 * @return the board's IP address
-		 */
-		public String getIpAddress() {
-			return ipAddress;
-		}
-
-		public void setIpAddress(String ipAddress) {
-			this.ipAddress = ipAddress;
-		}
-
-		public boolean isAddressPresent() {
-			return ipAddress != null;
-		}
-
-		@AssertTrue
-		boolean isValidBoardLocator() {
-			return (machineName != null) && (this.isTriadCoordPresent()
-					|| this.isPhysicalCoordPresent()
-					|| this.isAddressPresent());
-		}
-
-		/**
-		 * @return whether the board is enabled
-		 */
-		public Boolean isEnabled() {
-			return enabled;
-		}
-
-		public void setEnabled(Boolean enabled) {
-			this.enabled = enabled;
-		}
-	}
 }

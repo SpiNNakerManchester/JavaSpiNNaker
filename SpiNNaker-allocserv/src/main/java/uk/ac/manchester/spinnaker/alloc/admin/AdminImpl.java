@@ -49,6 +49,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
 /**
@@ -178,18 +179,18 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 		log.info("CALLED listUsers()");
 		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
-		for (User user : userController.listUsers()) {
+		for (UserRecord user : userController.listUsers()) {
 			result.put(user.getUserName(), ub.build(user.getUserId()));
 		}
 		return unmodifiableMap(result);
 	}
 
 	@Override
-	public Response createUser(User providedUser, UriInfo ui)
+	public Response createUser(UserRecord providedUser, UriInfo ui)
 			throws SQLException {
 		log.warn("CALLED createUser({})", providedUser.getUserName());
 		providedUser.initCreationDefaults();
-		User realUser = userController.createUser(providedUser)
+		UserRecord realUser = userController.createUser(providedUser)
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
@@ -199,15 +200,15 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public User describeUser(int id) throws SQLException {
+	public UserRecord describeUser(int id) throws SQLException {
 		log.info("CALLED describeUser({})", id);
 		return userController.getUser(id).orElseThrow(AdminImpl::noUser)
 				.sanitise();
 	}
 
 	@Override
-	public User updateUser(int id, User providedUser, SecurityContext security)
-			throws SQLException {
+	public UserRecord updateUser(int id, UserRecord providedUser,
+			SecurityContext security) throws SQLException {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		String adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);

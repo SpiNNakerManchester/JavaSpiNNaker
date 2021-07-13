@@ -64,10 +64,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.IPAddress;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
-import uk.ac.manchester.spinnaker.alloc.allocator.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**

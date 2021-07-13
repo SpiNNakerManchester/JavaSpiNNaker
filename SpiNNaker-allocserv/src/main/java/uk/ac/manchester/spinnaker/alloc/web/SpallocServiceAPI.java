@@ -78,7 +78,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import uk.ac.manchester.spinnaker.alloc.IPAddress;
+import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 
 /**
  * The REST API for the SpiNNaker machine allocation service.

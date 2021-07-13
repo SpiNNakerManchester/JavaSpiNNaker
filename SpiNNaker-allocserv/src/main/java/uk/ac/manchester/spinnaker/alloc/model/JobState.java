@@ -14,35 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
+package uk.ac.manchester.spinnaker.alloc.model;
 
-import javax.validation.constraints.NotNull;
-
-import uk.ac.manchester.spinnaker.alloc.model.PowerState;
-
-/**
- * Describes the current state of power of the machine (or at least the portion
- * of it allocated to a job), or a state that the user wants us to switch into.
- *
- * @author Donal Fellows
- */
-public class MachinePower {
-	private PowerState power;
-
-	public MachinePower() {
-		power = PowerState.OFF;
-	}
-
-	public MachinePower(PowerState power) {
-		this.power = power;
-	}
-
-	@NotNull(message = "power must be specified")
-	public PowerState getPower() {
-		return power;
-	}
-
-	public void setPower(PowerState power) {
-		this.power = power;
-	}
+/** All the possible states that a job may be in. */
+public enum JobState {
+	/** The job ID requested was not recognised, or is in the initial state. */
+	UNKNOWN,
+	/** The job is waiting in a queue for a suitable machine. */
+	QUEUED,
+	/**
+	 * The boards allocated to the job are currently being powered on or powered
+	 * off.
+	 */
+	POWER,
+	/**
+	 * The job has been allocated boards and the boards are not currently
+	 * powering on or powering off.
+	 */
+	READY,
+	/** The job has been destroyed. */
+	DESTROYED
 }

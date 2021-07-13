@@ -14,17 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.allocator;
-
 /**
- * The state of the boards or links of a machine, or what they should be
- * switched to.
- *
- * @author Donal Fellows
+ * Model classes.
  */
-public enum PowerState {
-	/** Switched off. */
-	OFF,
-	/** Switched on. */
-	ON
-}
+package uk.ac.manchester.spinnaker.alloc.model;

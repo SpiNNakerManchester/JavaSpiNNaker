@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.ac.manchester.spinnaker.alloc.allocator.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,9 +42,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;

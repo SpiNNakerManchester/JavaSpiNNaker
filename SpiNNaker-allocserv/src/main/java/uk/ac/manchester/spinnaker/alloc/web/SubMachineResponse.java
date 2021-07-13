@@ -29,8 +29,8 @@ import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
 /**

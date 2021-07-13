@@ -60,9 +60,10 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
-import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.User;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
@@ -195,7 +196,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	public ModelAndView listUsers() {
 		Map<String, URI> result = new TreeMap<>();
 		try {
-			for (User user : userController.listUsers()) {
+			for (UserRecord user : userController.listUsers()) {
 				result.put(user.getUserName(),
 						uri(SELF.showUserForm(user.getUserId())));
 			}
@@ -212,19 +213,20 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@GetMapping(CREATE_USER_PATH)
 	public ModelAndView getUserCreationForm() {
 		ModelAndView mav = new ModelAndView("createuser");
-		mav.addObject(USER_OBJ, new User());
+		mav.addObject(USER_OBJ, new UserRecord());
 		return addStandardContext(mav);
 	}
 
 	@Override
 	@PostMapping(CREATE_USER_PATH)
-	public ModelAndView createUser(@Valid @ModelAttribute(USER_OBJ) User user,
+	public ModelAndView createUser(
+			@Valid @ModelAttribute(USER_OBJ) UserRecord user,
 			BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
 			return errors(result);
 		}
 		user.initCreationDefaults();
-		Optional<User> realUser;
+		Optional<UserRecord> realUser;
 		try {
 			realUser = userController.createUser(user);
 		} catch (SQLException e) {
@@ -243,12 +245,12 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@GetMapping(USER_PATH)
 	public ModelAndView showUserForm(@PathVariable("id") int id) {
 		try {
-			Optional<User> user = userController.getUser(id);
+			Optional<UserRecord> user = userController.getUser(id);
 			if (!user.isPresent()) {
 				return errors("no such user");
 			}
 			ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-			User realUser = user.get().sanitise();
+			UserRecord realUser = user.get().sanitise();
 			mav.addObject(USER_OBJ, realUser);
 			mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
 			return addStandardContext(mav);
@@ -260,14 +262,14 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Override
 	@PostMapping(USER_PATH)
 	public ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute(USER_OBJ) User user, BindingResult result,
-			ModelMap model, Principal principal) {
+			@Valid @ModelAttribute(USER_OBJ) UserRecord user,
+			BindingResult result, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			return errors(result);
 		}
 		String adminUser = principal.getName();
 		user.setUserId(null);
-		Optional<User> updatedUser;
+		Optional<UserRecord> updatedUser;
 		try {
 			log.info("updating user ID={}", id);
 			updatedUser = userController.updateUser(id, user, adminUser);
@@ -299,7 +301,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 					"redirect:" + uri(SELF.listUsers()).getPath());
 			// Not sure that these are the correct place
 			mav.addObject("notice", "deleted " + deletedUsername.get());
-			mav.addObject(USER_OBJ, new User());
+			mav.addObject(USER_OBJ, new UserRecord());
 			return addStandardContext(mav);
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
@@ -310,14 +312,14 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@GetMapping(BOARDS_PATH)
 	public ModelAndView boards() {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW);
-		mav.addObject(BOARD_OBJ, new BoardModel());
+		mav.addObject(BOARD_OBJ, new BoardRecord());
 		return addStandardContext(mav);
 	}
 
 	@Override
 	@PostMapping(BOARDS_PATH)
 	public ModelAndView board(
-			@Valid @ModelAttribute(BOARD_OBJ) BoardModel board,
+			@Valid @ModelAttribute(BOARD_OBJ) BoardRecord board,
 			BindingResult result, ModelMap model) {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW, model);
 		if (result.hasErrors()) {

@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.sql.SQLException;
@@ -28,8 +27,11 @@ import java.util.Optional;
 
 import org.springframework.security.access.prepost.PostFilter;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -307,61 +309,6 @@ public interface SpallocAPI {
 	}
 
 	/**
-	 * Basic coordinates of a board.
-	 *
-	 * @author Donal Fellows
-	 */
-	final class BoardCoords {
-		/** Logical triad X coordinate. */
-		public final int x;
-
-		/** Logical triad Y coordinate. */
-		public final int y;
-
-		/** Logical triad Z coordinate. */
-		public final int z;
-
-		/** Physical cabinet number. */
-		public final int cabinet;
-
-		/** Physical frame number. */
-		public final int frame;
-
-		/** Physical board number. */
-		public final int board;
-
-		/** IP address of ethernet chip. */
-		public final String address;
-
-		/**
-		 * @param x
-		 *            Logical triad X coordinate
-		 * @param y
-		 *            Logical triad Y coordinate
-		 * @param z
-		 *            Logical triad Z coordinate
-		 * @param cabinet
-		 *            Physical cabinet number
-		 * @param frame
-		 *            Physical frame number
-		 * @param board
-		 *            Physical board number
-		 * @param address
-		 *            IP address of ethernet chip
-		 */
-		public BoardCoords(int x, int y, int z, int cabinet, int frame,
-				int board, String address) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.cabinet = cabinet;
-			this.frame = frame;
-			this.board = board;
-			this.address = address;
-		}
-	}
-
-	/**
 	 * Describes a particular machine known to the allocator. Must implement
 	 * equality by ID or name (both are unique).
 	 *
@@ -498,60 +445,6 @@ public interface SpallocAPI {
 		 *             If something goes wrong
 		 */
 		List<Integer> getAvailableBoards() throws SQLException;
-	}
-
-	/**
-	 * Describes a link that is disabled.
-	 *
-	 * @author Donal Fellows
-	 */
-	@JsonFormat(shape = ARRAY)
-	final class DownLink {
-		/**
-		 * Describes one end of a link that is disabled.
-		 *
-		 * @author Donal Fellows
-		 */
-		public static final class End {
-			private End(BoardCoords board, Direction direction) {
-				this.board = board;
-				this.direction = direction;
-			}
-
-			/**
-			 * On what board is this end of the link.
-			 */
-			public final BoardCoords board;
-
-			/**
-			 * In which direction does this end of the link go?
-			 */
-			public final Direction direction;
-		}
-
-		/**
-		 * Create a down link description.
-		 *
-		 * @param board1
-		 *            Which board is one end of the link.
-		 * @param dir1
-		 *            In which direction off of {@code board1} is the link.
-		 * @param board2
-		 *            Which board is one end of the link.
-		 * @param dir2
-		 *            In which direction off of {@code board2} is the link.
-		 */
-		public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
-				Direction dir2) {
-			end1 = new End(board1, dir1);
-			end2 = new End(board2, dir2);
-		}
-
-		/** One end of the down link. */
-		public final End end1;
-
-		/** The other end of the down link. */
-		public final End end2;
 	}
 
 	/**

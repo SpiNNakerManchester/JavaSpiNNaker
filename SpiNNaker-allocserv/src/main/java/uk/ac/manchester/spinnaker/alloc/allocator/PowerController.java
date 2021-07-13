@@ -18,6 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import java.sql.SQLException;
 
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+
 /**
  * A service that knows how to initiate the setting of the power state of a job.
  *

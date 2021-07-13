@@ -28,9 +28,9 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardCoords;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.DownLink;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 
 /**
  * The description of machines known to the service. A list of

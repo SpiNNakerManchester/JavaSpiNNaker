@@ -34,8 +34,8 @@ import javax.ws.rs.core.UriInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.JobState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 /**
  * The state of a job.
