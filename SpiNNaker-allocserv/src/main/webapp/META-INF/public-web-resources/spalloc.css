@@ -28,3 +28,11 @@ footer {
 .warningbutton {
 	background-color: #f44336;
 }
+
+/* Used to mark columns of tables as semantically containing numbers or text. */
+.numberColumn {
+	text-align: right
+}
+.textColumn {
+	text-align: left
+}

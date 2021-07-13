@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -50,6 +51,15 @@ public interface SpallocAPI {
 	 *             If something goes wrong
 	 */
 	Map<String, Machine> getMachines() throws SQLException;
+
+	/**
+	 * List the machines.
+	 *
+	 * @return A description of all the machines.
+	 * @throws SQLException
+	 *             If something goes wrong
+	 */
+	List<MachineListEntryRecord> listMachines() throws SQLException;
 
 	/**
 	 * Get a specific machine.

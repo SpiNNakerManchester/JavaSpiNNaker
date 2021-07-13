@@ -56,6 +56,8 @@ import java.util.Optional;
  * </table>
  */
 public class MachineListEntryRecord {
+	private int id;
+
 	private String name;
 
 	private URI detailsUrl;
@@ -69,6 +71,17 @@ public class MachineListEntryRecord {
 	private List<String> tags = new ArrayList<>();
 
 	public MachineListEntryRecord() {
+	}
+
+	/**
+	 * @return the machine ID
+	 */
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**

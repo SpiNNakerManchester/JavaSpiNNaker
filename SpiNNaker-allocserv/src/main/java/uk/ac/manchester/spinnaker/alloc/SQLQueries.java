@@ -46,7 +46,8 @@ public abstract class SQLQueries {
 	@ResultColumn("width")
 	@ResultColumn("height")
 	protected static final String GET_ALL_MACHINES =
-			"SELECT machine_id, machine_name, width, height FROM machines";
+			"SELECT machine_id, machine_name, width, height FROM machines "
+					+ "ORDER BY machine_name ASC";
 
 	/** Get the machine names in alphabetical order. */
 	@ResultColumn("machine_name")
@@ -74,6 +75,31 @@ public abstract class SQLQueries {
 	protected static final String GET_NAMED_MACHINE =
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_name = :machine_name LIMIT 1";
+
+	/** Count how many boards are in a machine. */
+	@Parameter("machine_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_BOARDS =
+			"SELECT COUNT(*) AS c FROM boards "
+					+ "WHERE boards.machine_id = :machine_id";
+
+	/** Count how many boards in a machine are in use. */
+	@Parameter("machine_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_BOARDS_IN_USE =
+			"SELECT COUNT(*) AS c FROM boards "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND boards.allocated_job IS NOT NULL";
+
+	/** Count how many jobs are on a machine. */
+	@Parameter("machine_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_JOBS_ON_MACHINE =
+			"SELECT COUNT(*) AS c FROM jobs "
+					+ "WHERE jobs.machine_id = :machine_id";
 
 	/** Get basic information about jobs. Supports paging. */
 	@Parameter("limit")

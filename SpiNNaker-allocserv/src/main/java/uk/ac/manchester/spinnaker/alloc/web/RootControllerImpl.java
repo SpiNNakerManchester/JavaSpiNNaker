@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
@@ -63,9 +64,12 @@ public class RootControllerImpl implements RootController {
 
 	private static final String PASSWORD_CHANGE_VIEW = "password";
 
-	private static final String MACHINE_LIST_VIEW = "machinelist";
+	private static final String MACHINE_LIST_VIEW = "listmachines";
 
-	private static final String JOB_LIST_VIEW = "joblist";
+	private static final String JOB_LIST_VIEW = "listjobs";
+
+	@Autowired
+	private SpallocAPI spallocCore;
 
 	@Autowired
 	private LogoutHandler logoutHandler;
@@ -126,9 +130,15 @@ public class RootControllerImpl implements RootController {
 	@Override
 	@PreAuthorize(IS_READER)
 	public ModelAndView getMachineList() {
-		List<MachineListEntryRecord> table = new ArrayList<>();
-		// TODO populate the table of machines
-		return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
+		List<MachineListEntryRecord> table;
+		try {
+			table = spallocCore.listMachines();
+			// TODO populate the links in the table of machines
+			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
+		} catch (SQLException e) {
+			log.error("database problem", e);
+			return new ModelAndView(MVC_ERROR);
+		}
 	}
 
 	@Override

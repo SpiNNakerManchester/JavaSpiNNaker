@@ -54,6 +54,7 @@ import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -100,6 +101,36 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			});
 		}
 		return map;
+	}
+
+	@Override
+	public List<MachineListEntryRecord> listMachines() throws SQLException {
+		return db.execute(this::listMachines);
+	}
+
+	private List<MachineListEntryRecord> listMachines(Connection conn)
+			throws SQLException {
+		List<MachineListEntryRecord> result = new ArrayList<>();
+		try (Query listMachines =
+				query(conn, GET_ALL_MACHINES);
+				Query countBoards = query(conn, COUNT_BOARDS);
+				Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
+				Query countJobsOnMachine = query(conn, COUNT_JOBS_ON_MACHINE);
+				Query getTags = query(conn, GET_TAGS)) {
+			// TODO can we merge these queries?
+			for (Row row : listMachines.call()) {
+				int id = row.getInt("machine_id");
+				MachineListEntryRecord rec = new MachineListEntryRecord();
+				rec.setName(row.getString("machine_name"));
+				rec.setNumBoards(countBoards.call1(id).get().getInt("c"));
+				rec.setNumInUse(countBoardsInUse.call1(id).get().getInt("c"));
+				rec.setNumJobs(countJobsOnMachine.call1(id).get().getInt("c"));
+				rec.setTags(rowsAsList(getTags.call(id),
+						tagRow -> tagRow.getString("tag")));
+				result.add(rec);
+			}
+		}
+		return result;
 	}
 
 	private static <T> List<T> rowsAsList(Iterable<Row> rows,
