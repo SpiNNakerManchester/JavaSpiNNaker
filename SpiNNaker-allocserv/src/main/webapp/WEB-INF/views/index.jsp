@@ -30,11 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <sec:authorize access="hasRole('READER')">
 <h2>Machines</h2>
 <p>
-	<a href="machines/">List</a>
+	<a href="list_machines/">List</a>
 </p>
 <h2>Jobs</h2>
 <p>
-	<a href="jobs/">List</a>
+	<a href="list_jobs/">List</a>
 </p>
 </sec:authorize>
 

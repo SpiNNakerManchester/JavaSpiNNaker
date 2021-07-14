@@ -16,6 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <footer>
 <hr>
+<a href="/system/">Main page</a>
+&mdash;
 <a href="/system/change_password">Change password</a>
 &mdash;
 <a href="/system/perform_logout">Log out</a>
