@@ -76,6 +76,8 @@ public class JobListEntryRecord {
 
 	private int numBoards;
 
+	private int machineId;
+
 	private String machineName;
 
 	private URI machineUrl;
@@ -84,9 +86,9 @@ public class JobListEntryRecord {
 
 	private Duration keepaliveInterval;
 
-	private Optional<String> owner;
+	private String owner;
 
-	private Optional<String> host;
+	private String host;
 
 	public JobListEntryRecord() {
 	}
@@ -138,12 +140,23 @@ public class JobListEntryRecord {
 	/**
 	 * @return the number of boards allocated to the job
 	 */
-	public int getNumBoards() {
-		return numBoards;
+	public Optional<Integer> getNumBoards() {
+		return Optional.ofNullable(numBoards);
 	}
 
-	public void setNumBoards(int numBoards) {
+	public void setNumBoards(Integer numBoards) {
 		this.numBoards = numBoards;
+	}
+
+	/**
+	 * @return the ID of the machine that the job is using
+	 */
+	public int getMachineId() {
+		return machineId;
+	}
+
+	public void setMachineId(int machineId) {
+		this.machineId = machineId;
 	}
 
 	/**
@@ -194,10 +207,10 @@ public class JobListEntryRecord {
 	 * @return the owner, if not shrouded
 	 */
 	public Optional<String> getOwner() {
-		return owner;
+		return Optional.ofNullable(owner);
 	}
 
-	public void setOwner(Optional<String> owner) {
+	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
@@ -205,10 +218,10 @@ public class JobListEntryRecord {
 	 * @return the host keeping things alive, if not shrouded
 	 */
 	public Optional<String> getHost() {
-		return host;
+		return Optional.ofNullable(host);
 	}
 
-	public void setHost(Optional<String> host) {
+	public void setHost(String host) {
 		this.host = host;
 	}
 }

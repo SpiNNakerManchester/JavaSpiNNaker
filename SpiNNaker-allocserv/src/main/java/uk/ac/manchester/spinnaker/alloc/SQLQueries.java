@@ -23,6 +23,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
+import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
@@ -159,6 +160,30 @@ public abstract class SQLQueries {
 					// job is QUEUED or READY
 					+ "AND (jobs.job_state IN (1, 3))";
 
+	/** Gets information about live jobs. */
+	@ResultColumn("job_id")
+	@ResultColumn("machine_id")
+	@ResultColumn("create_timestamp")
+	@ResultColumn("keepalive_interval")
+	@ResultColumn("job_state")
+	@ResultColumn("allocation_size")
+	@ResultColumn("keepalive_host")
+	@ResultColumn("user_name")
+	protected static final String LIST_LIVE_JOBS =
+			"SELECT job_id, machine_id, create_timestamp, keepalive_interval, "
+					+ "job_state, allocation_size, keepalive_host, user_name "
+					+ "FROM jobs "
+					+ "JOIN user_info ON jobs.owner = user_info.user_id "
+					+ "WHERE job_state != 4"; // DESTROYED
+
+	/** Counts the number of powered-on boards of a job. */
+	@Parameter("job_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_POWERED_BOARDS =
+			"SELECT COUNT(*) AS c FROM boards "
+					+ "WHERE allocated_job = :job_id AND board_power";
+
 	/** Get the coordinates of the root chip of a board. */
 	@Parameter("board_id")
 	@ResultColumn("root_x")
@@ -279,6 +304,7 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String DESTROY_JOB =
 			"UPDATE jobs SET job_state = 4, death_reason = :death_reason "
+					// 4 = DESTROYED
 					+ "WHERE job_id = :job_id AND job_state != 4";
 
 	/**
@@ -426,7 +452,11 @@ public abstract class SQLQueries {
 	protected static final String FINISHED_PENDING =
 			"DELETE FROM pending_changes WHERE change_id = :change_id";
 
-	/** Get descriptions of how to move from a board to its neighbours. */
+	/**
+	 * Get descriptions of how to move from a board to its neighbours.
+	 *
+	 * @see DirInfo
+	 */
 	@ResultColumn("z")
 	@ResultColumn("direction")
 	@ResultColumn("dx")
@@ -749,6 +779,16 @@ public abstract class SQLQueries {
 					+ "WHERE user_id = :user_id LIMIT 1";
 
 	/**
+	 * Get a user's basic details and encrypted password.
+	 *
+	 * @see UserControl
+	 */
+	protected static final String GET_LOCAL_PASS_DETAILS =
+			"SELECT user_id, user_name, encrypted_password FROM user_info "
+					+ "WHERE user_name = :user_name "
+					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+
+	/**
 	 * Get a user's quotas.
 	 *
 	 * @see UserControl
@@ -826,19 +866,6 @@ public abstract class SQLQueries {
 			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
 					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
 					+ "< strftime('%s','now') AND locked RETURNING user_name";
-
-	/**
-	 * Define a user with standard permissions.
-	 *
-	 * @see LocalAuthProviderImpl
-	 */
-	@Parameter("username")
-	@Parameter("password")
-	@Parameter("trust_level")
-	@GeneratesID
-	protected static final String ADD_USER_WITH_DEFAULTS =
-			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
-					+ "trust_level) VALUES(:username, :password, :trust_level)";
 
 	/**
 	 * Set a quota for a user on each defined machine.
@@ -964,7 +991,7 @@ public abstract class SQLQueries {
 	@Parameter("disabled")
 	@GeneratesID
 	protected static final String CREATE_USER =
-			"INSERT INTO user_info(user_name, encrypted_password, "
+			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
 					+ "trust_level, disabled) VALUES(:user_name, "
 					+ ":password, :trust_level, :disabled)";
 

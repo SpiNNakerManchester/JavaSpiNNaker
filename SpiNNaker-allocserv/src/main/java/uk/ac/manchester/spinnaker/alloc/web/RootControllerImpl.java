@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
 import java.security.Principal;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -130,9 +129,8 @@ public class RootControllerImpl implements RootController {
 	@Override
 	@PreAuthorize(IS_READER)
 	public ModelAndView getMachineList() {
-		List<MachineListEntryRecord> table;
 		try {
-			table = spallocCore.listMachines();
+			List<MachineListEntryRecord> table = spallocCore.listMachines();
 			// TODO populate the links in the table of machines
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (SQLException e) {
@@ -143,9 +141,17 @@ public class RootControllerImpl implements RootController {
 
 	@Override
 	@PreAuthorize(IS_READER)
-	public ModelAndView getJobList() {
-		List<JobListEntryRecord> table = new ArrayList<>();
-		// TODO build info for table
-		return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
+	public ModelAndView getJobList(Principal principal) {
+		try {
+			boolean isAdmin = getContext().getAuthentication().getAuthorities()
+					.stream().anyMatch(g -> g.getAuthority().endsWith("ADMIN"));
+			List<JobListEntryRecord> table =
+					spallocCore.listJobs(principal.getName(), isAdmin);
+			// TODO populate the links in the table of machines
+			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
+		} catch (SQLException e) {
+			log.error("database problem", e);
+			return new ModelAndView(MVC_ERROR);
+		}
 	}
 }

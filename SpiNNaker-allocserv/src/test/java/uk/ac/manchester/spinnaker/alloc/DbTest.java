@@ -792,6 +792,66 @@ class DbTest {
 				assertFalse(q.call1(NO_USER).isPresent());
 			}
 		}
+
+		@Test
+		void countBoards() throws SQLException {
+			try (Query q = query(c, COUNT_BOARDS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("c"), q.getRowColumnNames());
+				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
+			}
+		}
+
+		@Test
+		void countBoardsInUse() throws SQLException {
+			try (Query q = query(c, COUNT_BOARDS_IN_USE)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("c"), q.getRowColumnNames());
+				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
+			}
+		}
+
+		@Test
+		void countJobsOnMachine() throws SQLException {
+			try (Query q = query(c, COUNT_JOBS_ON_MACHINE)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("c"), q.getRowColumnNames());
+				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
+			}
+		}
+
+		@Test
+		void countPoweredBoards() throws SQLException {
+			try (Query q = query(c, COUNT_POWERED_BOARDS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("c"), q.getRowColumnNames());
+				assertEquals(0, q.call1(NO_JOB).get().getInt("c"));
+			}
+		}
+
+		@Test
+		void listLiveJobs() throws SQLException {
+			try (Query q = query(c, LIST_LIVE_JOBS)) {
+				assertEquals(0, q.getNumArguments());
+				assertSetEquals(set("allocation_size", "create_timestamp",
+						"job_id", "job_state", "keepalive_host",
+						"keepalive_interval", "machine_id", "user_name"),
+						q.getRowColumnNames());
+				// No jobs right now
+				assertFalse(q.call1().isPresent());
+			}
+		}
+
+		@Test
+		void getLocalPassDetails() throws SQLException {
+			try (Query q = query(c, GET_LOCAL_PASS_DETAILS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(
+						set("encrypted_password", "user_id", "user_name"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_USER).isPresent());
+			}
+		}
 	}
 
 	/**
@@ -1144,6 +1204,15 @@ class DbTest {
 			try (Update u = update(c, CREATE_QUOTA)) {
 				assertEquals(3, u.getNumArguments());
 				assertEquals(0, u.call(NO_USER, 0, "gorp"));
+			}
+		}
+
+		@Test
+		void addQuotaForAllMachines() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, ADD_QUOTA_FOR_ALL_MACHINES)) {
+				assertEquals(2, u.getNumArguments());
+				assertEquals(0, u.call(NO_USER, 0));
 			}
 		}
 	}

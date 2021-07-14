@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -86,6 +87,20 @@ public interface SpallocAPI {
 	 *             If something goes wrong
 	 */
 	Jobs getJobs(boolean deleted, int limit, int start) throws SQLException;
+
+	/**
+	 * List the active jobs.
+	 *
+	 * @param currentUser
+	 *            Who are we listing for.
+	 * @param isAdmin
+	 *            Does the user have administration authorisation?
+	 * @return A description of all the active jobs.
+	 * @throws SQLException
+	 *             If something goes wrong
+	 */
+	List<JobListEntryRecord> listJobs(String currentUser, boolean isAdmin)
+			throws SQLException;
 
 	/**
 	 * Get a specific job. Only owners or admins can see full job details or

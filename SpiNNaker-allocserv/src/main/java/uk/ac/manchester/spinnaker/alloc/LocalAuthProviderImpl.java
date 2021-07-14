@@ -126,11 +126,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 			throw new UsernameNotFoundException("empty user name?");
 		}
 		try (Connection conn = db.getConnection();
-				Update addUser = update(conn, ADD_USER_WITH_DEFAULTS);
+				Update createUser = update(conn, CREATE_USER);
 				Update addQuota = update(conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
 			return transaction(conn, () -> {
-				for (int userId : addUser.keys(username,
-						passwordEncoder.encode(password), trustLevel)) {
+				for (int userId : createUser.keys(username,
+						passwordEncoder.encode(password), trustLevel, false)) {
 					addQuota.call(userId, quota);
 					log.info(
 							"added user {} with trust level {} "

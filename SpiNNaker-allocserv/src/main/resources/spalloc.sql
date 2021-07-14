@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS board_models (
 
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	machine_name TEXT UNIQUE NOT NULL,
+	machine_name TEXT UNIQUE NOT NULL CHECK (
+		machine_name NOT LIKE '%{%' AND machine_name NOT LIKE '%}%'),
 	width INTEGER NOT NULL CHECK (width > 0),
 	height INTEGER NOT NULL CHECK (height > 0),
 	"depth" INTEGER NOT NULL CHECK ("depth" IN (1, 3)),

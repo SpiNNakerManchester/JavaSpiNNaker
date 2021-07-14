@@ -53,6 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -110,27 +111,31 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private List<MachineListEntryRecord> listMachines(Connection conn)
 			throws SQLException {
-		List<MachineListEntryRecord> result = new ArrayList<>();
-		try (Query listMachines =
-				query(conn, GET_ALL_MACHINES);
+		try (Query listMachines = query(conn, GET_ALL_MACHINES);
 				Query countBoards = query(conn, COUNT_BOARDS);
 				Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
 				Query countJobsOnMachine = query(conn, COUNT_JOBS_ON_MACHINE);
 				Query getTags = query(conn, GET_TAGS)) {
 			// TODO can we merge these queries?
-			for (Row row : listMachines.call()) {
-				int id = row.getInt("machine_id");
-				MachineListEntryRecord rec = new MachineListEntryRecord();
-				rec.setName(row.getString("machine_name"));
-				rec.setNumBoards(countBoards.call1(id).get().getInt("c"));
-				rec.setNumInUse(countBoardsInUse.call1(id).get().getInt("c"));
-				rec.setNumJobs(countJobsOnMachine.call1(id).get().getInt("c"));
-				rec.setTags(rowsAsList(getTags.call(id),
-						tagRow -> tagRow.getString("tag")));
-				result.add(rec);
-			}
+			return rowsAsList(listMachines.call(),
+					row -> makeMachineListEntryRecord(countBoards,
+							countBoardsInUse, countJobsOnMachine, getTags,
+							row));
 		}
-		return result;
+	}
+
+	private MachineListEntryRecord makeMachineListEntryRecord(Query countBoards,
+			Query countBoardsInUse, Query countJobsOnMachine, Query getTags,
+			Row row) throws SQLException {
+		int id = row.getInt("machine_id");
+		MachineListEntryRecord rec = new MachineListEntryRecord();
+		rec.setName(row.getString("machine_name"));
+		rec.setNumBoards(countBoards.call1(id).get().getInt("c"));
+		rec.setNumInUse(countBoardsInUse.call1(id).get().getInt("c"));
+		rec.setNumJobs(countJobsOnMachine.call1(id).get().getInt("c"));
+		rec.setTags(rowsAsList(getTags.call(id),
+				tagRow -> tagRow.getString("tag")));
+		return rec;
 	}
 
 	private static <T> List<T> rowsAsList(Iterable<Row> rows,
@@ -151,8 +156,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		return db.execute(conn -> getMachine(name, conn).map(m -> m));
 	}
 
-	private Optional<MachineImpl>
-			getMachine(int id, Connection conn)
+	private Optional<MachineImpl> getMachine(int id, Connection conn)
 			throws SQLException {
 		Epoch me = epochs.getMachineEpoch();
 		try (Query idMachine = query(conn, GET_MACHINE_BY_ID)) {
@@ -187,6 +191,43 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 			return jc;
 		});
+	}
+
+	@Override
+	public List<JobListEntryRecord> listJobs(String currentUser,
+			boolean isAdmin) throws SQLException {
+		return db.execute(conn -> {
+			try (Query listLiveJobs = query(conn, LIST_LIVE_JOBS);
+					Query countPoweredBoards =
+							query(conn, COUNT_POWERED_BOARDS)) {
+				return rowsAsList(listLiveJobs.call(),
+						row -> makeJobListEntryRecord(currentUser, isAdmin,
+								countPoweredBoards, row));
+			}
+		});
+	}
+
+	private JobListEntryRecord makeJobListEntryRecord(String currentUser,
+			boolean isAdmin, Query countPoweredBoards, Row row)
+			throws SQLException {
+		JobListEntryRecord rec = new JobListEntryRecord();
+		int id = row.getInt("job_id");
+		rec.setId(id);
+		rec.setState(row.getEnum("job_state", JobState.class).name());
+		Integer numBoards = (Integer) row.getObject("allocation_size");
+		rec.setNumBoards(numBoards);
+		rec.setPowered((numBoards != null)
+				&& numBoards == countPoweredBoards.call1(id).get().getInt("c"));
+		rec.setMachineId(row.getInt("machine_id"));
+		rec.setMachineName(row.getString("machine_name"));
+		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
+		rec.setKeepaliveInterval(row.getDuration("keepalive_interval"));
+		String owner = row.getString("owner_name");
+		if (isAdmin || owner.equals(currentUser)) {
+			rec.setOwner(owner);
+			rec.setHost(row.getString("keepalive_host"));
+		}
+		return rec;
 	}
 
 	@Override

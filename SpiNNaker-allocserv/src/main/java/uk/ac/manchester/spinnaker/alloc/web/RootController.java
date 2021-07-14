@@ -65,11 +65,13 @@ public interface RootController {
 	/**
 	 * Get the view for the general job list.
 	 *
+	 * @param principal
+	 *            Who is asking for the list (which affects what they can see).
 	 * @return View and model
 	 */
 	@GetMapping("/list_jobs")
 	@PreAuthorize(IS_READER)
-	ModelAndView getJobList();
+	ModelAndView getJobList(Principal principal);
 
 	/**
 	 * Get the view and model for the password change form.

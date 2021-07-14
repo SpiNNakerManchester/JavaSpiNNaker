@@ -53,12 +53,6 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
  */
 @Component
 public class UserControl extends SQLQueries {
-	// TODO move to SQLQueries
-	private static final String GET_LOCAL_PASS_DETAILS =
-			"SELECT user_id, user_name, encrypted_password FROM user_info "
-					+ "WHERE user_name = :user_name "
-					+ "AND encrypted_password IS NOT NULL LIMIT 1";
-
 	@Autowired
 	private DatabaseEngine db;
 
@@ -102,13 +96,13 @@ public class UserControl extends SQLQueries {
 	public Optional<UserRecord> createUser(UserRecord user)
 			throws SQLException {
 		try (Connection c = db.getConnection();
-				Update makeUser = update(c, CREATE_USER);
+				Update createUser = update(c, CREATE_USER);
 				Update makeQuotas = update(c, CREATE_QUOTA);
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
 			String pass = user.getPassword() == null ? null
 					: passwordEncoder.encode(user.getPassword());
 			return transaction(c, () -> {
-				Optional<Integer> key = makeUser.key(user.getUserName(), pass,
+				Optional<Integer> key = createUser.key(user.getUserName(), pass,
 						user.getTrustLevel(), !user.isEnabled());
 				if (!key.isPresent()) {
 					return Optional.empty();
