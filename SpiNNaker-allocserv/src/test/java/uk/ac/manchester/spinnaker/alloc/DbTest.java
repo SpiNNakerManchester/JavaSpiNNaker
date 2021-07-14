@@ -843,13 +843,21 @@ class DbTest {
 		}
 
 		@Test
-		void getLocalPassDetails() throws SQLException {
-			try (Query q = query(c, GET_LOCAL_PASS_DETAILS)) {
+		void getLocalUserDetails() throws SQLException {
+			try (Query q = query(c, GET_LOCAL_USER_DETAILS)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(
-						set("encrypted_password", "user_id", "user_name"),
+				assertSetEquals(set("user_id", "user_name"),
 						q.getRowColumnNames());
 				assertFalse(q.call1(NO_USER).isPresent());
+			}
+		}
+
+		@Test
+		void isUserPassMatched() throws SQLException {
+			try (Query q = query(c, IS_USER_PASS_MATCHED)) {
+				assertEquals(2, q.getNumArguments());
+				assertSetEquals(set("matches"), q.getRowColumnNames());
+				assertFalse(q.call1("*", NO_USER).isPresent());
 			}
 		}
 	}

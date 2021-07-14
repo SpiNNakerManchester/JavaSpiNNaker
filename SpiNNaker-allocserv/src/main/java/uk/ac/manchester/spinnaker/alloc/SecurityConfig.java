@@ -55,7 +55,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -69,6 +68,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.sqlite.Function;
+
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.ArgumentCount;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Deterministic;
 
 /**
  * The security and administration configuration of the service.
@@ -212,6 +215,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		boolean createUser(String username, String password,
 				TrustLevel trustLevel, long quota) throws SQLException;
 
+		/**
+		 * Unlock any locked users whose lock period has expired.
+		 *
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		void unlockLockedUsers() throws SQLException;
+
 		// TODO what other operations should there be?
 	}
 
@@ -311,9 +322,66 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	/**
+	 * SQL function ({@code encode_password}) that takes one argument,
+	 * presumably an unencoded password, and returns the encoded form of that
+	 * password.
+	 * <p>
+	 * Note that this is one of the very few beans that ever need to hold a
+	 * {@link PasswordEncoder}; everyone else should use the SQL functions.
+	 *
+	 * @author Donal Fellows
+	 */
+	@ArgumentCount(1)
+	@Component("encode_password")
+	static class EncodePasswordFunction extends Function {
+		@Autowired
+		private PasswordEncoder passwordEncoder;
+
+		// Note that bcrypt is *not* deterministic during encoding
+
+		@Override
+		protected void xFunc() throws SQLException {
+			log.debug("encode_password() called");
+			String pass = value_text(0);
+			// Important: encodes NULL as NULL
+			if (pass != null) {
+				pass = passwordEncoder.encode(pass);
+			}
+			result(pass);
+		}
+	}
+
+	/**
+	 * SQL function ({@code match_password}) that takes two arguments,
+	 * presumably an unencoded password and the encoded form stored in the DB,
+	 * and returns a boolean (0 for false, 1 for true) saying whether the
+	 * unencoded password matches the encoded one.
+	 * <p>
+	 * Does not actually decode the encoded password.
+	 * <p>
+	 * Note that this is one of the very few beans that ever need to hold a
+	 * {@link PasswordEncoder}; everyone else should use the SQL functions.
+	 *
+	 * @author Donal Fellows
+	 */
+	@ArgumentCount(2)
+	@Deterministic
+	@Component("match_password")
+	static class MatchPasswordFunction extends Function {
+		@Autowired
+		private PasswordEncoder passwordEncoder;
+
+		@Override
+		protected void xFunc() throws SQLException {
+			log.debug("match_password() called");
+			// If either argument is NULL, the result is false
+			String raw = value_text(0);
+			String encoded = value_text(1);
+			boolean m = (raw != null) && (encoded != null)
+					&& passwordEncoder.matches(raw, encoded);
+			result(m ? 1 : 0);
+		}
 	}
 
 	@Component

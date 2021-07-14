@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.lang.Thread.currentThread;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
 import static java.util.Objects.requireNonNull;
@@ -24,6 +25,8 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
@@ -31,6 +34,10 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseable
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -356,7 +363,151 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		busyTimeout = prototype.busyTimeout;
 		sqlDDLFile = prototype.sqlDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
+		functions = prototype.functions;
 		setupConfig();
+	}
+
+	/**
+	 * If placed on a bean of type {@link Function}, specifies how many
+	 * arguments that function takes.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Documented
+	@Retention(RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface ArgumentCount {
+		/**
+		 * The number of arguments taken by the function. If not specified, any
+		 * number are taken.
+		 *
+		 * @return The allowed number of arguments.
+		 */
+		int value() default -1;
+	}
+
+	/**
+	 * If placed on a bean of type {@link Function}, specifies that the function
+	 * will always give the same answer with the same inputs.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Documented
+	@Retention(RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface Deterministic {
+	}
+
+	/**
+	 * If placed on a bean of type {@link Function}, specifies that the function
+	 * may be used in schema structures.
+	 *
+	 * @see DatabaseEngine#SQLITE_DIRECTONLY
+	 * @see DatabaseEngine#SQLITE_INNOCUOUS
+	 * @author Donal Fellows
+	 * @deprecated Consult the SQLite documentation on innocuous functions very
+	 *             carefully before enabling this. Only disable the deprecation
+	 *             warning if you're sure the security concerns it talks about
+	 *             have been accounted for.
+	 */
+	@Deprecated
+	@Documented
+	@Retention(RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface Innocuous {
+	}
+
+	private static final String FUN_NAME_PREFIX = "function.";
+
+	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The SQLITE_DIRECTONLY flag means that the function may only
+	 * be invoked from top-level SQL, and cannot be used in VIEWs or TRIGGERs
+	 * nor in schema structures such as CHECK constraints, DEFAULT clauses,
+	 * expression indexes, partial indexes, or generated columns. The
+	 * SQLITE_DIRECTONLY flags is a security feature which is recommended for
+	 * all application-defined SQL functions, and especially for functions that
+	 * have side-effects or that could potentially leak sensitive
+	 * information.</blockquote>
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_DIRECTONLY = 0x000080000;
+
+	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The SQLITE_INNOCUOUS flag means that the function is unlikely
+	 * to cause problems even if misused. An innocuous function should have no
+	 * side effects and should not depend on any values other than its input
+	 * parameters. The abs() function is an example of an innocuous function.
+	 * The load_extension() SQL function is not innocuous because of its side
+	 * effects.
+	 * <p>
+	 * SQLITE_INNOCUOUS is similar to SQLITE_DETERMINISTIC, but is not exactly
+	 * the same. The random() function is an example of a function that is
+	 * innocuous but not deterministic.
+	 * <p>
+	 * Some heightened security settings (SQLITE_DBCONFIG_TRUSTED_SCHEMA and
+	 * PRAGMA trusted_schema=OFF) disable the use of SQL functions inside views
+	 * and triggers and in schema structures such as CHECK constraints, DEFAULT
+	 * clauses, expression indexes, partial indexes, and generated columns
+	 * unless the function is tagged with SQLITE_INNOCUOUS. Most built-in
+	 * functions are innocuous. Developers are advised to avoid using the
+	 * SQLITE_INNOCUOUS flag for application-defined functions unless the
+	 * function has been carefully audited and found to be free of potentially
+	 * security-adverse side-effects and information-leaks. </blockquote>
+	 * <p>
+	 * Note that this engine marks non-innocuous functions as
+	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
+	 * correct.
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_INNOCUOUS = 0x000200000;
+
+	/**
+	 * Install a function into SQLite.
+	 *
+	 * @param conn
+	 *            The database connection to install the function in.
+	 * @param name
+	 *            The name of the function. Usually the bean name.
+	 * @param func
+	 *            The implementation of the function.
+	 * @throws SQLException
+	 *             If installation fails.
+	 */
+	private static void installFunction(SQLiteConnection conn, String name,
+			Function func) throws SQLException {
+		if (requireNonNull(name, "function name must not be null")
+				.startsWith(FUN_NAME_PREFIX)) {
+			name = name.substring(FUN_NAME_PREFIX.length());
+		}
+		if (name.isEmpty()) {
+			throw new SQLException("crazy function name");
+		}
+		int nArgs = -1;
+		ArgumentCount c = findAnnotation(func.getClass(), ArgumentCount.class);
+		if (c != null) {
+			nArgs = c.value();
+		}
+		boolean deterministic =
+				(findAnnotation(func.getClass(), Deterministic.class) != null);
+		boolean innocuous =
+				(findAnnotation(func.getClass(), Innocuous.class) != null);
+		Function.create(conn, name, func, nArgs,
+				(deterministic ? FLAG_DETERMINISTIC : 0)
+						| (innocuous ? SQLITE_INNOCUOUS : SQLITE_DIRECTONLY));
+		if (nArgs >= 0) {
+			log.debug("installed function {} ({} argument(s)) in connection {}",
+					name, nArgs, conn);
+		} else {
+			log.debug("installed function {} in connection {}", name, conn);
+		}
 	}
 
 	/**
@@ -372,9 +523,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		log.info("initalising DB ({}) schema from {}", conn.libversion(),
 				sqlDDLFile);
 		exec(conn, sqlDDLFile);
-		for (String s : functions.keySet()) {
-			Function.create(conn, s, functions.get(s));
-		}
 		transaction(conn, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
 			exec(conn, sqlInitDataFile);
@@ -384,7 +532,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Override
 	SQLiteConnection openDatabaseConnection() throws SQLException {
 		log.debug("opening database connection {}", dbConnectionUrl);
-		return (SQLiteConnection) config.createConnection(dbConnectionUrl);
+		SQLiteConnection conn =
+				(SQLiteConnection) config.createConnection(dbConnectionUrl);
+		// Has to be done for every connection; can't be cached
+		for (String s : functions.keySet()) {
+			installFunction(conn, s, functions.get(s));
+		}
+		return conn;
 	}
 
 	/**

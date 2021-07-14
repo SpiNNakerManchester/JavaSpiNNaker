@@ -47,7 +47,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
@@ -81,9 +80,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	@Autowired
 	private DatabaseEngine db;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
 	@Value("${spalloc.addDummyUser:true}")
 	private boolean addDummyUser;
@@ -129,8 +125,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 				Update createUser = update(conn, CREATE_USER);
 				Update addQuota = update(conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
 			return transaction(conn, () -> {
-				for (int userId : createUser.keys(username,
-						passwordEncoder.encode(password), trustLevel, false)) {
+				for (int userId : createUser.keys(username, password,
+						trustLevel, false)) {
 					addQuota.call(userId, quota);
 					log.info(
 							"added user {} with trust level {} "
@@ -180,6 +176,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 		private final Query userAuthorities;
 
+		private final Query isUserPassMatched;
+
 		private final Update loginSuccess;
 
 		private final Query loginFailure;
@@ -194,6 +192,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			conn = db.getConnection();
 			getUserBlocked = query(conn, IS_USER_LOCKED);
 			userAuthorities = query(conn, GET_USER_AUTHORITIES);
+			isUserPassMatched = query(conn, IS_USER_PASS_MATCHED);
 			loginSuccess = update(conn, MARK_LOGIN_SUCCESS);
 			loginFailure = query(conn, MARK_LOGIN_FAILURE);
 		}
@@ -206,6 +205,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 		public void close() throws SQLException {
 			loginFailure.close();
 			loginSuccess.close();
+			isUserPassMatched.close();
 			userAuthorities.close();
 			getUserBlocked.close();
 			conn.close();
@@ -251,6 +251,14 @@ public class LocalAuthProviderImpl extends SQLQueries
 			 */
 			return userAuthorities.call1(userId).orElseThrow(
 					() -> new BadCredentialsException("bad password"));
+		}
+
+		boolean isUserPassMatched(int userId, String password)
+				throws SQLException {
+			return isUserPassMatched.call1(password, userId)
+					.orElseThrow(
+							() -> new BadCredentialsException("bad password"))
+					.getBoolean("matches");
 		}
 
 		/**
@@ -325,8 +333,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 				throw new LockedException("account is locked");
 			}
 			Row authInfo = queries.getUserAuthorities(userId);
-			if (!passwordEncoder.matches(password,
-					authInfo.getString("password"))) {
+			if (!queries.isUserPassMatched(userId, password)) {
 				throw new BadCredentialsException("bad password");
 			}
 			TrustLevel trust =
@@ -358,8 +365,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 		return authentication.equals(UsernamePasswordAuthenticationToken.class);
 	}
 
+	@Override
 	@Scheduled(fixedDelay = INTER_UNLOCK_DELAY)
-	void unlockLockedUsers() throws SQLException {
+	public void unlockLockedUsers() throws SQLException {
 		log.debug("running user unlock task");
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {

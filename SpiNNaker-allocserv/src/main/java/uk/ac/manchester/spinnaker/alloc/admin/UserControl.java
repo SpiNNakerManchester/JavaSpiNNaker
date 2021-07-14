@@ -34,17 +34,16 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 
 /**
  * User administration controller.
@@ -55,9 +54,6 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 public class UserControl extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
 	/**
 	 * List the users in the database.
@@ -99,11 +95,10 @@ public class UserControl extends SQLQueries {
 				Update createUser = update(c, CREATE_USER);
 				Update makeQuotas = update(c, CREATE_QUOTA);
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			String pass = user.getPassword() == null ? null
-					: passwordEncoder.encode(user.getPassword());
 			return transaction(c, () -> {
-				Optional<Integer> key = createUser.key(user.getUserName(), pass,
-						user.getTrustLevel(), !user.isEnabled());
+				Optional<Integer> key =
+						createUser.key(user.getUserName(), user.getPassword(),
+								user.getTrustLevel(), !user.isEnabled());
 				if (!key.isPresent()) {
 					return Optional.empty();
 				}
@@ -204,11 +199,13 @@ public class UserControl extends SQLQueries {
 					setUserName.call(user.getUserName(), id);
 				}
 				if (user.getPassword() != null) {
-					setUserPass.call(passwordEncoder.encode(user.getPassword()),
-							id);
+					setUserPass.call(user.getPassword(), id);
 				} else if (user.isExternallyAuthenticated()) {
 					// Forces external authentication
 					setUserPass.call(null, id);
+				} else {
+					// Weren't told to set the password
+					assert true;
 				}
 				if (user.isEnabled() != null && adminId != id) {
 					// Admins can't change their own disable state
@@ -286,7 +283,7 @@ public class UserControl extends SQLQueries {
 	public PasswordChangeRecord getUserForPrincipal(Principal principal)
 			throws AuthenticationException, SQLException {
 		try (Connection c = db.getConnection();
-				Query q = query(c, GET_LOCAL_PASS_DETAILS)) {
+				Query q = query(c, GET_LOCAL_USER_DETAILS)) {
 			return transaction(c, () -> {
 				Row row = q.call1(principal.getName()).orElseThrow(
 						// OpenID-authenticated user; go away
@@ -318,26 +315,27 @@ public class UserControl extends SQLQueries {
 			PasswordChangeRecord user)
 			throws AuthenticationException, SQLException {
 		try (Connection c = db.getConnection();
-				Query getPassword = query(c, GET_LOCAL_PASS_DETAILS);
+				Query getPasswordedUser = query(c, GET_LOCAL_USER_DETAILS);
+				Query isPasswordMatching = query(c, IS_USER_PASS_MATCHED);
 				Update setPassword = update(c, SET_USER_PASS)) {
 			return transaction(c, () -> {
-				Row row = getPassword.call1(principal.getName()).orElseThrow(
-						// OpenID-authenticated user; go away
-						() -> new AuthenticationServiceException(
-								"user is managed externally; "
-										+ "cannot change password here"));
+				Row row = getPasswordedUser.call1(principal.getName())
+						.orElseThrow(
+								// OpenID-authenticated user; go away
+								() -> new AuthenticationServiceException(
+										"user is managed externally; cannot "
+												+ "change password here"));
 				PasswordChangeRecord baseUser = new PasswordChangeRecord(
 						row.getInt("user_id"), row.getString("user_name"));
-				if (!passwordEncoder.matches(user.getOldPassword(),
-						row.getString("encrypted_password"))) {
+				if (!isPasswordMatching.call1(user.getOldPassword(),
+						baseUser.getUserId()).get().getBoolean("matches")) {
 					throw new BadCredentialsException("bad password");
 				}
 				// Validate change; this should never fail but...
 				if (!user.isNewPasswordMatched()) {
 					throw new BadCredentialsException("bad password");
 				}
-				if (setPassword.call(
-						passwordEncoder.encode(user.getNewPassword()),
+				if (setPassword.call(user.getNewPassword(),
 						baseUser.getUserId()) != 1) {
 					throw new InternalAuthenticationServiceException(
 							"failed to update database");
