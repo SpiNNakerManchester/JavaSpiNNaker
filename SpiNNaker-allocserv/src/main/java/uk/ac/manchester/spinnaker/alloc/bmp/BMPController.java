@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.jboss.logging.MDC;
@@ -70,7 +69,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
@@ -121,14 +120,7 @@ public class BMPController extends SQLQueries {
 	private ServiceMasterControl serviceControl;
 
 	@Autowired
-	private TransceiverFactory txrxFactory;
-
-	private Collection<Machine> machines;
-
-	@PostConstruct
-	private void discoverMachines() throws SQLException {
-		machines = spallocCore.getMachines().values();
-	}
+	private TransceiverFactoryAPI<?> txrxFactory;
 
 	private ExecutorService executor = newCachedThreadPool(WorkerThread::new);
 
@@ -174,8 +166,8 @@ public class BMPController extends SQLQueries {
 	 * @throws SQLException
 	 *             If anything goes wrong with the DB access.
 	 */
-	@ManagedAttribute(description = "An estimate of the number of requests "
-			+ "pending.")
+	@ManagedAttribute(
+			description = "An estimate of the number of requests " + "pending.")
 	public int getPendingRequestLoading() throws SQLException {
 		try (Connection conn = db.getConnection();
 				Query countChanges = query(conn, COUNT_PENDING_CHANGES)) {
@@ -198,8 +190,8 @@ public class BMPController extends SQLQueries {
 		return requests.size();
 	}
 
-	private boolean isGoodFPGA(Machine machine, Transceiver txrx, int board,
-			int fpga) throws ProcessException, IOException {
+	private boolean isGoodFPGA(Machine machine, TransceiverInterface txrx,
+			int board, int fpga) throws ProcessException, IOException {
 		int fpgaId = txrx.readFPGARegister(fpga, FPGA_FLAG_REGISTER_ADDRESS, 0,
 				0, board);
 		boolean ok = (fpgaId & FPGA_FLAG_ID_MASK) == fpga;
@@ -210,8 +202,9 @@ public class BMPController extends SQLQueries {
 		return ok;
 	}
 
-	private void setLinkState(Transceiver txrx, int board, Direction link,
-			PowerState power) throws ProcessException, IOException {
+	private void setLinkState(TransceiverInterface txrx, int board,
+			Direction link, PowerState power)
+			throws ProcessException, IOException {
 		// skip FPGA link configuration if old BMP version
 		VersionInfo vi = txrx.readBMPVersion(0, 0, board);
 		if (vi.versionNumber.majorVersion < BMP_VERSION_MIN) {
@@ -221,7 +214,7 @@ public class BMPController extends SQLQueries {
 				power == PowerState.ON ? 0 : 1, new BMPCoords(0, 0), board);
 	}
 
-	private void powerOnAndCheck(Machine machine, Transceiver txrx,
+	private void powerOnAndCheck(Machine machine, TransceiverInterface txrx,
 			List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		List<Integer> boardsToPower = boards;
@@ -393,7 +386,7 @@ public class BMPController extends SQLQueries {
 	}
 
 	private void processRequest(Request request) throws InterruptedException {
-		Transceiver txrx;
+		TransceiverInterface txrx;
 		try {
 			txrx = txrxFactory.getTransciever(request.change.machine);
 		} catch (IOException | SpinnmanException | SQLException e) {
@@ -441,9 +434,8 @@ public class BMPController extends SQLQueries {
 					throw e;
 				} catch (Exception e) {
 					if (nTries == N_REQUEST_TRIES) {
-						String reason =
-								"Requests failed on BMP "
-										+ request.change.machine;
+						String reason = "Requests failed on BMP "
+								+ request.change.machine;
 						log.error(reason, e);
 						if (request.onDone != null) {
 							request.onDone.call(reason, e);
@@ -470,7 +462,7 @@ public class BMPController extends SQLQueries {
 				Query getChanges = query(conn, GET_CHANGES);
 				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
 			transaction(conn, () -> {
-				for (Machine machine : machines) {
+				for (Machine machine : spallocCore.getMachines().values()) {
 					for (Row jobIds : getJobIds.call(machine.getId())) {
 						takeRequestsForJob(requests, getChanges, setInProgress,
 								machine, jobIds.getInt("job_id"));
@@ -577,17 +569,38 @@ public class BMPController extends SQLQueries {
 	}
 
 	/**
+	 * Establishes (while active) that the current thread is a worker thread for
+	 * handling a machine's communications.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class BindWorker implements AutoCloseable {
+		private final Machine machine;
+
+		private BindWorker(Machine machine) {
+			synchronized (workers) {
+				this.machine = machine;
+				workers.put(machine, currentThread());
+			}
+		}
+
+		@Override
+		public void close() throws Exception {
+			synchronized (workers) {
+				workers.remove(machine);
+			}
+		}
+	}
+
+	/**
 	 * The background thread for interacting with the BMP.
 	 *
 	 * @param machine
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(Machine machine) {
-		synchronized (workers) {
-			workers.put(machine, currentThread());
-		}
 		MDC.put("machine", machine.getName());
-		try {
+		try (AutoCloseable binding = new BindWorker(machine)) {
 			if (onThreadStart != null) {
 				onThreadStart.run();
 			}

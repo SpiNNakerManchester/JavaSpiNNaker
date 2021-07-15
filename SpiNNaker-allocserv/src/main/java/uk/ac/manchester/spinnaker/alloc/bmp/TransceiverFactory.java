@@ -21,7 +21,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -45,44 +44,47 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  * @author Donal Fellows
  */
 @Component("transceiverFactory")
-public class TransceiverFactory {
+public class TransceiverFactory implements TransceiverFactoryAPI<Transceiver> {
 	private Map<String, Transceiver> txrxMap = new HashMap<>();
 
-	/**
-	 * Get the transceiver for talking to a given machine's BMPs.
-	 *
-	 * @param machineDescription
-	 *            The machine we're talking about.
-	 * @return The transceiver. Only operations relating to BMPs are guaranteed
-	 *         to be supported.
-	 * @throws IOException
-	 *             If low-level things go wrong.
-	 * @throws SpinnmanException
-	 *             If the transceiver can't be built.
-	 * @throws SQLException
-	 *             If the database can't be talked to.
-	 */
+	@Override
 	public Transceiver getTransciever(Machine machineDescription)
 			throws IOException, SQLException, SpinnmanException {
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
 			Transceiver t = txrxMap.get(machineDescription.getName());
 			if (t == null) {
-				/*
-				 * The original spalloc server also does everything through the
-				 * root BMP.
-				 */
-				InetAddress address =
-						getByName(machineDescription.getRootBoardBMPAddress());
-				List<Integer> boards = machineDescription.getBoardNumbers();
-				BMPConnectionData c = new BMPConnectionData(0, 0, address,
-						boards, SCP_SCAMP_PORT);
-				t = new Transceiver(null, asList(new BMPConnection(c)), null,
-						null, null, null, null);
+				t = makeTransceiver(
+						machineDescription.getRootBoardBMPAddress(),
+						machineDescription.getBoardNumbers());
 				txrxMap.put(machineDescription.getName(), t);
 			}
 			return t;
 		}
+	}
+
+	/**
+	 * Build a transceiver connection.
+	 * <p>
+	 * The original spalloc server <em>also</em> does everything through the
+	 * root BMP; the BMPs communicate with each other if necessary. I believe
+	 * that communication is via an I<sup>2</sup>C bus, but I might be wrong.
+	 *
+	 * @param address
+	 *            The address of the BMP
+	 * @param boards
+	 *            The boards to manage at that address
+	 * @throws IOException
+	 *             If network access fails
+	 * @throws SpinnmanException
+	 *             If transceiver building fails
+	 */
+	private Transceiver makeTransceiver(String address, List<Integer> boards)
+			throws IOException, SpinnmanException {
+		BMPConnectionData c = new BMPConnectionData(0, 0, getByName(address),
+				boards, SCP_SCAMP_PORT);
+		return new Transceiver(null, asList(new BMPConnection(c)), null, null,
+				null, null, null);
 	}
 
 	@PreDestroy
