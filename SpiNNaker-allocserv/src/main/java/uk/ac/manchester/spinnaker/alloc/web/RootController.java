@@ -29,6 +29,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,6 +64,20 @@ public interface RootController {
 	ModelAndView getMachineList();
 
 	/**
+	 * Get the view for some machine details.
+	 *
+	 * @param machine
+	 *            Which machine is being asked for
+	 * @param principal
+	 *            Who is asking for the info (which affects what they can see).
+	 * @return View and model
+	 */
+	@GetMapping("/machine_info/{machine}")
+	@PreAuthorize(IS_READER)
+	ModelAndView getMachineInfo(@PathVariable("machine") String machine,
+			Principal principal);
+
+	/**
 	 * Get the view for the general job list.
 	 *
 	 * @param principal
@@ -72,6 +87,19 @@ public interface RootController {
 	@GetMapping("/list_jobs")
 	@PreAuthorize(IS_READER)
 	ModelAndView getJobList(Principal principal);
+
+	/**
+	 * Get the view for some job details.
+	 *
+	 * @param id
+	 *            Which job is being asked for
+	 * @param principal
+	 *            Who is asking for the info (which affects what they can see).
+	 * @return View and model
+	 */
+	@GetMapping("/job_info/{id}")
+	@PreAuthorize(IS_READER)
+	ModelAndView getJobInfo(@PathVariable("id") int id, Principal principal);
 
 	/**
 	 * Get the view and model for the password change form.

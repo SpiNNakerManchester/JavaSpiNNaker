@@ -55,6 +55,8 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -172,6 +174,52 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return namedMachine.call1(name)
 					.map(row -> new MachineImpl(conn, row, me));
 		}
+	}
+
+	@Override
+	public Optional<MachineDescription> getMachineInfo(String machine,
+			String currentUser, boolean isAdmin) throws SQLException {
+		return db.execute(conn -> {
+			try (Query namedMachine = query(conn, GET_NAMED_MACHINE);
+					Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
+					Query getTags = query(conn, GET_TAGS);
+					Query getJobs = query(conn, GET_MACHINE_JOBS);
+					Query getCoords = query(conn, GET_JOB_BOARD_COORDS)) {
+				MachineDescription md = null;
+				for (Row row : namedMachine.call(machine)) {
+					md = new MachineDescription();
+					md.setId(row.getInt("machine_id"));
+					md.setName(row.getString("machine_name"));
+					md.setWidth(row.getInt("width"));
+					md.setHeight(row.getInt("height"));
+				}
+				if (md == null) {
+					return Optional.empty();
+				}
+				md.setNumInUse(
+						countBoardsInUse.call1(md.getId()).get().getInt("c"));
+				md.setTags(rowsAsList(getTags.call(md.getId()),
+						tagRow -> tagRow.getString("tag")));
+				md.setJobs(rowsAsList(getJobs.call(md.getId()), row -> {
+					JobInfo ji = new JobInfo();
+					int jobId = row.getInt("job_id");
+					String owner =
+							(currentUser.equals(row.getString("owner_name"))
+									|| isAdmin) ? row.getString("owner_name")
+											: null;
+					ji.setId(jobId);
+					ji.setOwner(owner);
+					ji.setBoards(rowsAsList(getCoords.call(jobId),
+							r -> new BoardCoords(r.getInt("x"), r.getInt("y"),
+									r.getInt("z"), r.getInt("cabinet"),
+									r.getInt("frame"), r.getInt("board_num"),
+									owner == null ? null
+											: r.getString("address"))));
+					return ji;
+				}));
+				return Optional.of(md);
+			}
+		});
 	}
 
 	@Override

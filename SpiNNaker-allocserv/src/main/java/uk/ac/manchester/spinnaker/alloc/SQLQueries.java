@@ -272,6 +272,36 @@ public abstract class SQLQueries {
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND functioning IS 0 ORDER BY z ASC, x ASC, y ASC";
 
+	/**
+	 * Get the coords of boards assigned to a job.
+	 */
+	@Parameter("job_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	// FIXME test
+	protected static final String GET_JOB_BOARD_COORDS =
+			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "WHERE boards.allocated_job = :job_id "
+					+ "ORDER BY z ASC, x ASC, y ASC";
+
+	/** Get basic info about active jobs on a machine. */
+	@Parameter("machine_id")
+	@ResultColumn("job_id")
+	@ResultColumn("owner_name")
+	// FIXME test
+	protected static final String GET_MACHINE_JOBS =
+			"SELECT job_id, user_info.user_name AS owner_name FROM jobs "
+					+ "JOIN user_info ON jobs.owner = user_info.user_id "
+					+ "WHERE machine_id = :machine_id: AND job_state != 4 "
+					// job is not DESTROYED
+					+ "ORDER BY job_id ASC";
+
 	/** Get the boards that are available for allocation. */
 	@Parameter("machine_id")
 	@ResultColumn("board_num")

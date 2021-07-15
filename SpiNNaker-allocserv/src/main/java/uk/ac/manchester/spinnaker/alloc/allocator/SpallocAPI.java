@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -72,6 +73,22 @@ public interface SpallocAPI {
 	 *             If something goes wrong
 	 */
 	Optional<Machine> getMachine(String name) throws SQLException;
+
+	/**
+	 * Get info about a specific machine.
+	 *
+	 * @param machine
+	 *            The name of the machine to get.
+	 * @param currentUser
+	 *            Who are we getting machine for.
+	 * @param isAdmin
+	 *            Does the user have administration authorisation?
+	 * @return A machine description model.
+	 * @throws SQLException
+	 *             If something goes wrong
+	 */
+	Optional<MachineDescription> getMachineInfo(String machine,
+			String currentUser, boolean isAdmin) throws SQLException;
 
 	/**
 	 * List the jobs.

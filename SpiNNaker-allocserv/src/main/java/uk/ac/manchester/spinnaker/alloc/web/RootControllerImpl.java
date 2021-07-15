@@ -18,9 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
+import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,6 +45,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -65,7 +69,16 @@ public class RootControllerImpl implements RootController {
 
 	private static final String MACHINE_LIST_VIEW = "listmachines";
 
+	private static final String MACHINE_VIEW = "machinedetails";
+
 	private static final String JOB_LIST_VIEW = "listjobs";
+
+	/**
+	 * Special delegate for building URIs only.
+	 *
+	 * @see MvcUriComponentsBuilder#fromMethodCall(Object)
+	 */
+	private static final RootController SELF = on(RootController.class);
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -75,6 +88,11 @@ public class RootControllerImpl implements RootController {
 
 	@Autowired
 	private UserControl userControl;
+
+	private static URI uri(Object selfCall) {
+		// No template variables in the overall controller, so can factor out
+		return fromMethodCall(selfCall).buildAndExpand().toUri();
+	}
 
 	@Override
 	@GetMapping("/")
@@ -131,10 +149,30 @@ public class RootControllerImpl implements RootController {
 	public ModelAndView getMachineList() {
 		try {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
-			// TODO populate the links in the table of machines
+			for (MachineListEntryRecord entry : table) {
+				entry.setDetailsUrl(
+						uri(SELF.getMachineInfo(entry.getName(), null)));
+			}
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (SQLException e) {
 			log.error("database problem", e);
+			return new ModelAndView(MVC_ERROR);
+		}
+	}
+
+	private static boolean isAdmin() {
+		return getContext().getAuthentication().getAuthorities()
+				.stream().anyMatch(g -> g.getAuthority().endsWith("ADMIN"));
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	public ModelAndView getMachineInfo(String machine, Principal principal) {
+		try {
+			return new ModelAndView(MACHINE_VIEW, "machine", spallocCore
+					.getMachineInfo(machine, principal.getName(), isAdmin()));
+		} catch (SQLException e) {
+			// TODO Auto-generated method stub
 			return new ModelAndView(MVC_ERROR);
 		}
 	}
@@ -143,15 +181,24 @@ public class RootControllerImpl implements RootController {
 	@PreAuthorize(IS_READER)
 	public ModelAndView getJobList(Principal principal) {
 		try {
-			boolean isAdmin = getContext().getAuthentication().getAuthorities()
-					.stream().anyMatch(g -> g.getAuthority().endsWith("ADMIN"));
 			List<JobListEntryRecord> table =
-					spallocCore.listJobs(principal.getName(), isAdmin);
-			// TODO populate the links in the table of machines
+					spallocCore.listJobs(principal.getName(), isAdmin());
+			for (JobListEntryRecord entry : table) {
+				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId(), null)));
+				entry.setMachineUrl(
+						uri(SELF.getMachineInfo(entry.getMachineName(), null)));
+			}
 			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
 		} catch (SQLException e) {
 			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	public ModelAndView getJobInfo(int id, Principal principal) {
+		// TODO Auto-generated method stub
+		return new ModelAndView(MVC_ERROR);
 	}
 }
