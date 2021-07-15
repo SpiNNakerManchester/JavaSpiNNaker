@@ -29,6 +29,8 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.BASE_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
@@ -80,8 +82,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 @ManagedResource("Spalloc:type=BMPController,name=bmpController")
 public class BMPController extends SQLQueries {
 	private static final Logger log = getLogger(BMPController.class);
-
-	private static final int FPGA_FLAG_REGISTER_ADDRESS = 0x40004;
 
 	private static final int FPGA_FLAG_ID_MASK = 0x3;
 
@@ -203,12 +203,13 @@ public class BMPController extends SQLQueries {
 
 	private boolean isGoodFPGA(Machine machine, TransceiverInterface txrx,
 			int board, int fpga) throws ProcessException, IOException {
-		int fpgaId = txrx.readFPGARegister(fpga, FPGA_FLAG_REGISTER_ADDRESS, 0,
-				0, board);
-		boolean ok = (fpgaId & FPGA_FLAG_ID_MASK) == fpga;
+		// FPGA ID is bottom two bits of FLAG register in main register bank
+		int fpgaId = txrx.readFPGARegister(fpga, BASE_ADDRESS + FLAG.offset, 0,
+				0, board) & FPGA_FLAG_ID_MASK;
+		boolean ok = fpgaId == fpga;
 		if (!ok) {
 			log.warn("FPGA {} on board {} of {} has incorrect FPGA ID flag {}",
-					fpga, board, machine.getName(), fpgaId & FPGA_FLAG_ID_MASK);
+					fpga, board, machine.getName(), fpgaId);
 		}
 		return ok;
 	}
@@ -680,10 +681,7 @@ public class BMPController extends SQLQueries {
 				 * break out of queue-processing loop.
 				 */
 				if (shouldTerminate(ws)) {
-					/*
-					 * If we've been told to stop, actually stop the thread
-					 * now
-					 */
+					// If we've been told to stop, actually stop the thread now
 					return;
 				}
 			}
