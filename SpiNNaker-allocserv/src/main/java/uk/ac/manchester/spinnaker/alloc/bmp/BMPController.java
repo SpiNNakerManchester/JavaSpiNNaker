@@ -100,15 +100,13 @@ public class BMPController extends SQLQueries {
 
 	private static final long INTER_TAKE_DELAY = 10000;
 
-	private boolean requestsPending;
-
 	private volatile boolean stop;
-
-	private ConcurrentLinkedDeque<Request> requests;
 
 	private Runnable onThreadStart;
 
 	private Map<Machine, Thread> workers = new HashMap<>();
+
+	private Map<Machine, WorkerState> state = new HashMap<>();
 
 	@Autowired
 	private DatabaseEngine db;
@@ -124,16 +122,29 @@ public class BMPController extends SQLQueries {
 
 	private ExecutorService executor = newCachedThreadPool(WorkerThread::new);
 
-	class WorkerThread extends Thread {
+	private class WorkerThread extends Thread {
 		WorkerThread(Runnable r) {
 			super(r, "bmp-worker");
 		}
 	}
 
+	private static class WorkerState {
+		final Machine machine;
+
+		final ConcurrentLinkedDeque<Request> requests;
+
+		boolean requestsPending;
+
+		WorkerState(Machine machine) {
+			this.machine = machine;
+			requests = new ConcurrentLinkedDeque<>();
+		}
+	}
+
 	@PreDestroy
 	private void shutDownWorkers() throws InterruptedException {
-		stop = true;
 		synchronized (this) {
+			stop = true;
 			notifyAll();
 		}
 		executor.shutdown();
@@ -187,7 +198,7 @@ public class BMPController extends SQLQueries {
 	@ManagedAttribute(description = "An estimate of the number of requests "
 			+ "actually being processed.")
 	public synchronized int getActiveRequestLoading() {
-		return requests.size();
+		return state.values().stream().mapToInt(s -> s.requests.size()).sum();
 	}
 
 	private boolean isGoodFPGA(Machine machine, TransceiverInterface txrx,
@@ -400,29 +411,7 @@ public class BMPController extends SQLQueries {
 		try {
 			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
 				try {
-					// Send any power on commands
-					if (!request.change.powerOnBoards.isEmpty()) {
-						powerOnAndCheck(request.change.machine, txrx,
-								request.change.powerOnBoards);
-					}
-
-					// Process link requests next
-					for (LinkRequest linkReq : request.change.linkRequests) {
-						// Set the link state, as required
-						setLinkState(txrx, linkReq.board, linkReq.link,
-								linkReq.power);
-					}
-
-					// Finally send any power off commands
-					if (!request.change.powerOffBoards.isEmpty()) {
-						txrx.power(POWER_OFF, 0, 0,
-								request.change.powerOffBoards);
-					}
-
-					// Exit the retry loop if the requests all worked
-					if (request.onDone != null) {
-						request.onDone.call(null, null);
-					}
+					changeBoardPowerState(txrx, request);
 					break;
 				} catch (InterruptedException e) {
 					String reason =
@@ -452,6 +441,46 @@ public class BMPController extends SQLQueries {
 			}
 		} finally {
 			MDC.remove("changes");
+		}
+	}
+
+	/**
+	 * Change the power state of a board.
+	 *
+	 * @param txrx
+	 *            The transceiver to use
+	 * @param request
+	 *            The request to carry out
+	 * @throws ProcessException
+	 *             If the transceiver chokes
+	 * @throws InterruptedException
+	 *             If interrupted
+	 * @throws IOException
+	 *             If network I/O fails
+	 */
+	private void changeBoardPowerState(TransceiverInterface txrx,
+			Request request)
+			throws ProcessException, InterruptedException, IOException {
+		// Send any power on commands
+		if (!request.change.powerOnBoards.isEmpty()) {
+			powerOnAndCheck(request.change.machine, txrx,
+					request.change.powerOnBoards);
+		}
+
+		// Process link requests next
+		for (LinkRequest linkReq : request.change.linkRequests) {
+			// Set the link state, as required
+			setLinkState(txrx, linkReq.board, linkReq.link, linkReq.power);
+		}
+
+		// Finally send any power off commands
+		if (!request.change.powerOffBoards.isEmpty()) {
+			txrx.power(POWER_OFF, 0, 0, request.change.powerOffBoards);
+		}
+
+		// Exit the retry loop if the requests all worked
+		if (request.onDone != null) {
+			request.onDone.call(null, null);
 		}
 	}
 
@@ -552,19 +581,28 @@ public class BMPController extends SQLQueries {
 		 */
 		Machine m = request.change.machine;
 		txrxFactory.getTransciever(m);
+		WorkerState ws = getWorkerState(m);
+		createWorkerIfRequired(ws);
+		ws.requests.addLast(request);
+		synchronized (this) {
+			if (!ws.requestsPending) {
+				ws.requestsPending = true;
+			}
+			notifyAll();
+		}
+	}
+
+	private synchronized WorkerState getWorkerState(Machine m) {
+		return state.computeIfAbsent(m, WorkerState::new);
+	}
+
+	private void createWorkerIfRequired(WorkerState ws) {
 		synchronized (workers) {
-			workers.computeIfAbsent(m, m1 -> {
-				executor.execute(() -> backgroundThread(m));
+			workers.computeIfAbsent(ws.machine, m1 -> {
+				executor.execute(() -> backgroundThread(ws));
 				// Temporary value; will be replaced
 				return currentThread();
 			});
-		}
-		requests.addLast(request);
-		synchronized (this) {
-			if (!requestsPending) {
-				requestsPending = true;
-			}
-			notifyAll();
 		}
 	}
 
@@ -592,54 +630,66 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
+	// Factored out here because of current object synchronization context
+
+	private synchronized void waitForPending(WorkerState ws)
+			throws InterruptedException {
+		while (!ws.requestsPending) {
+			wait();
+		}
+	}
+
+	private synchronized boolean shouldTerminate(WorkerState ws) {
+		if (ws.requests.isEmpty()) {
+			ws.requestsPending = false;
+			notifyAll();
+
+			if (stop) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private synchronized void markAllForStop() {
+		stop = true;
+	}
+
 	/**
 	 * The background thread for interacting with the BMP.
 	 *
-	 * @param machine
+	 * @param ws
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
-	void backgroundThread(Machine machine) {
-		MDC.put("machine", machine.getName());
-		try (AutoCloseable binding = new BindWorker(machine)) {
+	void backgroundThread(WorkerState ws) {
+		MDC.put("machine", ws.machine.getName());
+		try (AutoCloseable binding = new BindWorker(ws.machine)) {
 			if (onThreadStart != null) {
 				onThreadStart.run();
 			}
 
 			while (true) {
-				synchronized (this) {
-					while (!requestsPending) {
-						wait();
-					}
-				}
+				waitForPending(ws);
 
-				if (!requests.isEmpty()) {
-					processRequest(requests.removeFirst());
+				if (!ws.requests.isEmpty()) {
+					processRequest(ws.requests.removeFirst());
 				}
 
 				/*
 				 * If nothing left in the queues, clear the request flag and
 				 * break out of queue-processing loop.
 				 */
-				synchronized (this) {
-					if (requests.isEmpty()) {
-						requestsPending = false;
-						notifyAll();
-
-						/*
-						 * If we've been told to stop, actually stop the thread
-						 * now
-						 */
-						if (stop) {
-							return;
-						}
-					}
+				if (shouldTerminate(ws)) {
+					/*
+					 * If we've been told to stop, actually stop the thread
+					 * now
+					 */
+					return;
 				}
 			}
 		} catch (InterruptedException e) {
 			// Thread is being shut down
-			synchronized (this) {
-				stop = true;
-			}
+			markAllForStop();
 			log.info("worker thread '{}' was interrupted",
 					currentThread().getName());
 		} catch (Exception e) {
@@ -648,9 +698,7 @@ public class BMPController extends SQLQueries {
 			 * (not the machine), setting stop will cause setPower and
 			 * setLinkEnable to fail, hopefully propagating news of this crash.
 			 */
-			synchronized (this) {
-				stop = true;
-			}
+			markAllForStop();
 			log.error("unhandled exception for '{}'", currentThread().getName(),
 					e);
 		}
