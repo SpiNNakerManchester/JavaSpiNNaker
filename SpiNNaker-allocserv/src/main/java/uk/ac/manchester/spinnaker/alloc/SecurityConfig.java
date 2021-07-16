@@ -23,7 +23,6 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.io.IOException;
 import java.io.PrintWriter;
