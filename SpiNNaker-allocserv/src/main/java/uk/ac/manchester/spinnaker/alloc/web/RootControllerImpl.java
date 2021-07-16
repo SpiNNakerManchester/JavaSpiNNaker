@@ -17,12 +17,14 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -44,12 +46,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 
@@ -73,6 +81,8 @@ public class RootControllerImpl implements RootController {
 
 	private static final String JOB_LIST_VIEW = "listjobs";
 
+	private static final String JOB_VIEW = "jobdetails";
+
 	/**
 	 * Special delegate for building URIs only.
 	 *
@@ -88,6 +98,9 @@ public class RootControllerImpl implements RootController {
 
 	@Autowired
 	private UserControl userControl;
+
+	@Autowired
+	private JsonMapper mapper;
 
 	private static URI uri(Object selfCall) {
 		// No template variables in the overall controller, so can factor out
@@ -169,10 +182,18 @@ public class RootControllerImpl implements RootController {
 	@PreAuthorize(IS_READER)
 	public ModelAndView getMachineInfo(String machine, Principal principal) {
 		try {
-			return new ModelAndView(MACHINE_VIEW, "machine", spallocCore
-					.getMachineInfo(machine, principal.getName(), isAdmin()));
+			MachineDescription mach = spallocCore
+					.getMachineInfo(machine, principal.getName(), isAdmin())
+					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+			for (JobInfo j : mach.getJobs()) {
+				// Owners and admins may drill down further into jobs
+				if (j.getOwner().isPresent()) {
+					j.setUrl(uri(SELF.getJobInfo(j.getId())));
+				}
+			}
+			return new ModelAndView(MACHINE_VIEW, "machine", mach);
 		} catch (SQLException e) {
-			// TODO Auto-generated method stub
+			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
 	}
@@ -184,7 +205,7 @@ public class RootControllerImpl implements RootController {
 			List<JobListEntryRecord> table =
 					spallocCore.listJobs(principal.getName(), isAdmin());
 			for (JobListEntryRecord entry : table) {
-				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId(), null)));
+				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId())));
 				entry.setMachineUrl(
 						uri(SELF.getMachineInfo(entry.getMachineName(), null)));
 			}
@@ -197,8 +218,23 @@ public class RootControllerImpl implements RootController {
 
 	@Override
 	@PreAuthorize(IS_READER)
-	public ModelAndView getJobInfo(int id, Principal principal) {
-		// TODO Auto-generated method stub
-		return new ModelAndView(MVC_ERROR);
+	public ModelAndView getJobInfo(int id) {
+		try {
+			JobDescription mach = spallocCore.getJobInfo(id)
+					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+			if (mach.getRequestBytes() != null) {
+				mach.setRequest(mapper.readValue(mach.getRequestBytes(),
+						CreateJobRequest.class));
+			}
+			mach.setMachineUrl(
+					uri(SELF.getMachineInfo(mach.getMachine(), null)));
+			return new ModelAndView(JOB_VIEW, "job", mach);
+		} catch (SQLException e) {
+			log.error("database problem", e);
+			return new ModelAndView(MVC_ERROR);
+		} catch (IOException e) {
+			log.error("deserialization problem", e);
+			return new ModelAndView(MVC_ERROR);
+		}
 	}
 }

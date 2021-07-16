@@ -303,6 +303,16 @@ class DbTest {
 		}
 
 		@Test
+		void getMachineJobs() throws SQLException {
+			try (Query q = query(c, GET_MACHINE_JOBS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("job_id", "owner_name"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			}
+		}
+
+		@Test
 		void getJobIds() throws SQLException {
 			try (Query q = query(c, GET_JOB_IDS)) {
 				assertEquals(2, q.getNumArguments());
@@ -337,11 +347,46 @@ class DbTest {
 		}
 
 		@Test
+		void getJobDetails() throws SQLException {
+			try (Query q = query(c, GET_JOB_DETAILS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(
+						set("machine_name", "job_state", "keepalive_host",
+								"keepalive_interval", "create_timestamp",
+								"original_request", "owner"),
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_JOB).isPresent());
+			}
+		}
+
+		@Test
 		void getJobBoards() throws SQLException {
 			try (Query q = query(c, GET_JOB_BOARDS)) {
 				assertEquals(1, q.getNumArguments());
 				assertSetEquals(set("board_id"), q.getRowColumnNames());
 				assertFalse(q.call1(NO_JOB).isPresent());
+			}
+		}
+
+		@Test
+		void getJobBoardCoords() throws SQLException {
+			try (Query q = query(c, GET_JOB_BOARD_COORDS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("x", "y", "z", "cabinet", "frame",
+						"board_num", "address"), q.getRowColumnNames());
+				assertFalse(q.call1(NO_JOB).isPresent());
+			}
+		}
+
+		@Test
+		void getJobChipDimensions() throws SQLException {
+			try (Query q = query(c, GET_JOB_CHIP_DIMENSIONS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("width", "height"), q.getRowColumnNames());
+				Row row = q.call1(NO_JOB).get();
+				// These two are actually NULL when there's no job
+				assertEquals(0, row.getInt("width"));
+				assertEquals(0, row.getInt("height"));
 			}
 		}
 

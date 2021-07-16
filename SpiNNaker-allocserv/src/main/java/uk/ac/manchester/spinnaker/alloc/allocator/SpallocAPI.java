@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
@@ -130,9 +131,22 @@ public interface SpallocAPI {
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
-	@PostFilter(IS_ADMIN
-			+ " or filterObject.owner.orElse(null) == authentication.name")
-	List<Job> getJob(int id) throws SQLException;
+	@PostFilter(MAY_SEE_JOB_DETAILS)
+	Optional<Job> getJob(int id) throws SQLException;
+
+	/**
+	 * Get a specific job. Only owners or admins can see full job details or
+	 * manipulate the job.
+	 *
+	 * @param id
+	 *            The identifier of the job.
+	 * @return A job description, or empty if the job isn't there (or isn't
+	 *         available to you).
+	 * @throws SQLException
+	 *             If something goes wrong
+	 */
+	@PostFilter(MAY_SEE_JOB_DETAILS)
+	Optional<JobDescription> getJobInfo(int id) throws SQLException;
 
 	/**
 	 * Create a job.

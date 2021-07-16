@@ -93,13 +93,11 @@ public interface RootController {
 	 *
 	 * @param id
 	 *            Which job is being asked for
-	 * @param principal
-	 *            Who is asking for the info (which affects what they can see).
 	 * @return View and model
 	 */
 	@GetMapping("/job_info/{id}")
 	@PreAuthorize(IS_READER)
-	ModelAndView getJobInfo(@PathVariable("id") int id, Principal principal);
+	ModelAndView getJobInfo(@PathVariable("id") int id);
 
 	/**
 	 * Get the view and model for the password change form.

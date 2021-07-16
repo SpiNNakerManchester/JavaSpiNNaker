@@ -16,9 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import java.util.Optional;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
@@ -70,6 +71,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
  */
 @Service
 public class Spalloc extends SQLQueries implements SpallocAPI {
+	private static final Logger log = getLogger(Spalloc.class);
+
 	private static final int N_COORDS_COUNT = 1;
 
 	private static final int N_COORDS_RECTANGLE = 2;
@@ -279,10 +282,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public List<Job> getJob(int id) throws SQLException {
-		// Workaround for ugly Spring lack of support for filtering Optional
-		return db.execute(conn -> Optional.ofNullable((Job) getJob(id, conn)))
-				.map(Arrays::asList).orElse(emptyList());
+	public Optional<Job> getJob(int id) throws SQLException {
+		return db.execute(conn -> Optional.ofNullable((Job) getJob(id, conn)));
 	}
 
 	private JobImpl getJob(int id, Connection conn) throws SQLException {
@@ -291,6 +292,52 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return s.call1(id).map(row -> new JobImpl(epoch, conn, row))
 					.orElse(null);
 		}
+	}
+
+	@Override
+	public Optional<JobDescription> getJobInfo(int id) throws SQLException {
+		return db.execute(conn -> {
+			try (Query s = query(conn, GET_JOB_DETAILS);
+					Query chipDimensions =
+							query(conn, GET_JOB_CHIP_DIMENSIONS);
+					Query countPoweredBoards =
+							query(conn, COUNT_POWERED_BOARDS);
+					Query getCoords = query(conn, GET_JOB_BOARD_COORDS)) {
+				for (Row job : s.call(id)) {
+					return Optional.of(jobDescription(id, job, chipDimensions,
+							countPoweredBoards, getCoords));
+				}
+				return Optional.empty();
+			}
+		});
+	}
+
+	private JobDescription jobDescription(int id, Row job, Query chipDimensions,
+			Query countPoweredBoards, Query getCoords) throws SQLException {
+		JobDescription jd = new JobDescription();
+		jd.setId(id);
+		jd.setMachine(job.getString("machine_name"));
+		jd.setState(job.getEnum("job_state", JobState.class));
+		jd.setOwner(job.getString("owner"));
+		jd.setOwnerHost(job.getString("keepalive_host"));
+		jd.setStartTime(job.getInstant("create_timestamp"));
+		jd.setKeepAlive(job.getDuration("keepalive_interval"));
+		jd.setRequestBytes(job.getBytes("original_request"));
+		chipDimensions.call1(id).ifPresent(cd -> {
+			try {
+				jd.setWidth(cd.getInt("width"));
+				jd.setHeight(cd.getInt("height"));
+			} catch (SQLException e) {
+				log.error("failed to get elements", e);
+			}
+		});
+		int poweredCount = countPoweredBoards.call1(id).get().getInt("c");
+		jd.setBoards(rowsAsList(getCoords.call(id),
+				r -> new BoardCoords(r.getInt("x"), r.getInt("y"),
+						r.getInt("z"), r.getInt("cabinet"), r.getInt("frame"),
+						r.getInt("board_num"), r.getString("address"))));
+		jd.setPowered(jd.getBoards().size() == poweredCount);
+		return jd;
 	}
 
 	@Override

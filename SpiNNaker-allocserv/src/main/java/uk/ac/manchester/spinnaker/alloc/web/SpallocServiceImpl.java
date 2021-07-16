@@ -29,9 +29,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -214,7 +212,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 							log.debug("starting wait for change of job");
 							j.waitForChange(WAIT_TIMEOUT);
 							// Refresh the handle
-							Job nj = orElseThrow(core.getJob(j.getId()),
+							Job nj = core.getJob(j.getId()).orElseThrow(
 									() -> new ItsGone("no such job"));
 							return new JobStateResponse(nj, ui, mapper);
 						});
@@ -298,33 +296,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 		return machineFactory.getObject(machine, ui);
 	}
 
-	/**
-	 * Like {@link Optional#orElseThrow(Supplier)} but with singleton lists.
-	 *
-	 * @param <T>
-	 *            Type of list element.
-	 * @param <E>
-	 *            Type of exception to throw.
-	 * @param list
-	 *            The possibly-empty list.
-	 * @param exceptionSupplier
-	 *            How to get the exception to throw.
-	 * @return The value from the list, if it is there.
-	 * @throws E
-	 *             If the list is null or empty.
-	 */
-	private static <T, E extends Exception> T orElseThrow(List<T> list,
-			Supplier<E> exceptionSupplier) throws E {
-		if (list == null || list.isEmpty()) {
-			throw exceptionSupplier.get();
-		}
-		return list.get(0);
-	}
-
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
 			SecurityContext security) throws SQLException {
-		Job j = orElseThrow(core.getJob(id), () -> new NotFound("no such job"));
+		Job j = core.getJob(id).orElseThrow(() -> new NotFound("no such job"));
 		// Wrap so we can use security annotations
 		return jobFactory.getObject(j, req.getRemoteHost(), ui);
 	}

@@ -150,6 +150,39 @@ public abstract class SQLQueries {
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
 					+ "WHERE job_id = :job_id LIMIT 1";
 
+	/** Get basic information about a specific job. */
+	// TODO merge with GET_JOB
+	@Parameter("job_id")
+	@ResultColumn("machine_name")
+	@ResultColumn("job_state")
+	@ResultColumn("original_request")
+	@ResultColumn("keepalive_host")
+	@ResultColumn("keepalive_interval")
+	@ResultColumn("create_timestamp")
+	@ResultColumn("owner")
+	@SingleRowResult
+	protected static final String GET_JOB_DETAILS =
+			"SELECT machines.machine_name, job_state, original_request, "
+					+ "keepalive_host, keepalive_interval, create_timestamp, "
+					+ "user_info.user_name AS owner FROM jobs "
+					+ "JOIN user_info ON jobs.owner = user_info.user_id "
+					+ "JOIN machines ON jobs.machine_id = machines.machine_id "
+					+ "WHERE job_id = :job_id LIMIT 1";
+
+	/** Get the chip dimensions of a job. */
+	@Parameter("job_id")
+	@ResultColumn("width")
+	@ResultColumn("height")
+	@SingleRowResult
+	protected static final String GET_JOB_CHIP_DIMENSIONS =
+			"WITH b AS (SELECT * FROM boards WHERE allocated_job = :job_id), "
+			+ "c AS (SELECT root_x + chip_x AS x, root_y + chip_y AS y "
+			+ "FROM b JOIN machines ON b.machine_id = machines.machine_id "
+			+ "JOIN board_model_coords ON "
+			+ "machines.board_model = board_model_coords.model) "
+			+ "SELECT MAX(x) - MIN(x) + 1 AS width, "
+			+ "MAX(y) - MIN(y) + 1 AS height FROM c LIMIT 1";
+
 	/** Get what boards are allocated to a job (that is queued or ready). */
 	@Parameter("job_id")
 	@ResultColumn("board_id")
@@ -283,7 +316,6 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
-	// FIXME test
 	protected static final String GET_JOB_BOARD_COORDS =
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
@@ -294,11 +326,10 @@ public abstract class SQLQueries {
 	@Parameter("machine_id")
 	@ResultColumn("job_id")
 	@ResultColumn("owner_name")
-	// FIXME test
 	protected static final String GET_MACHINE_JOBS =
 			"SELECT job_id, user_info.user_name AS owner_name FROM jobs "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
-					+ "WHERE machine_id = :machine_id: AND job_state != 4 "
+					+ "WHERE machine_id = :machine_id AND job_state != 4 "
 					// job is not DESTROYED
 					+ "ORDER BY job_id ASC";
 

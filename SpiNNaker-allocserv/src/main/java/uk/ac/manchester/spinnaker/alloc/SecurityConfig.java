@@ -23,11 +23,18 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +51,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.Expression;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,6 +73,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -99,6 +112,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/** How to assert that a user must be able to read summaries. */
 	public static final String IS_READER = "hasRole('READER')";
+
+	/** How to filter out job details that a given user may see (or not). */
+	public static final String MAY_SEE_JOB_DETAILS = IS_ADMIN
+			+ " or filterObject.owner.orElse(null) == authentication.name";
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
@@ -447,6 +464,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/resources/**").addResourceLocations(
 					"classpath:/META-INF/public-web-resources/");
+		}
+	}
+
+	/**
+	 * Because Spring otherwise can't apply {@link PostFilter} to
+	 * {@link Stream}.
+	 *
+	 * @author Donal Fellows
+	 * @see <a href="https://stackoverflow.com/q/66107075/301832">Stack
+	 *      Overflow</a>
+	 */
+	@Service
+	static class AnyTypeMethodSecurityExpressionHandler
+			extends DefaultMethodSecurityExpressionHandler
+			implements MethodSecurityExpressionHandler {
+		@Override
+		public Object filter(Object target, Expression expr,
+				EvaluationContext ctx) {
+			if (target == null) {
+				// We can handle this case here!
+				return null;
+			}
+			if (target instanceof Collection || target.getClass().isArray()
+					|| target instanceof Map || target instanceof Stream) {
+				return super.filter(target, expr, ctx);
+			}
+			if (target instanceof Optional) {
+				return filterOptional((Optional<?>) target, expr, ctx);
+			} else {
+				return filterOptional(Optional.of(target), expr, ctx)
+						.orElse(null);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> Optional<T> filterOptional(Optional<T> target,
+				Expression expr, EvaluationContext ctx) {
+			// Java 8 language profile makes this a little messy
+			List<T> a = new ArrayList<T>();
+			target.ifPresent(a::add);
+			return ((Stream<T>) super.filter(a.stream(), expr, ctx))
+					.findFirst();
 		}
 	}
 }
