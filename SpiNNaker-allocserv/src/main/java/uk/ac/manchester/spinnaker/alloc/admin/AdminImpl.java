@@ -25,8 +25,6 @@ import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.Map;
@@ -72,24 +70,6 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 
 	@Autowired
 	private UserControl userController;
-
-	@Override
-	@ManagedOperation
-	public void importMachinesFromFile(String filename) {
-		log.warn("CALLED importMachinesFromFile({})", filename);
-		File f = new File(filename);
-		if (f.exists() && f.canRead()) {
-			try {
-				loader.loadMachineDefinitions(f);
-			} catch (SQLException | IOException e) {
-				throw new WebApplicationException(
-						"failed to load machine definitions", e, BAD_REQUEST);
-			}
-		} else {
-			throw new WebApplicationException(
-					"no such load machine definition file", BAD_REQUEST);
-		}
-	}
 
 	@Override
 	public void importMachinesByContent(

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
@@ -41,6 +43,7 @@ import java.util.regex.Pattern;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -520,6 +523,24 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 
 		@JsonIgnore
+		@AssertFalse(message = "machine name must not contain braces or spaces")
+		private boolean isBadMachineName() {
+			return badName(name);
+		}
+
+		@JsonIgnore
+		@AssertFalse(message = "tag must not contain braces or spaces")
+		private boolean isBadTag() {
+			return tags.stream().anyMatch(Machine::badName);
+		}
+
+		private static boolean badName(String name) {
+			return name.contains("{") || name.contains("}")
+					|| name.contains("\u0000")
+					|| name.codePoints().anyMatch(Character::isWhitespace);
+		}
+
+		@JsonIgnore
 		@AssertTrue(message = "all boards must have sane logical coordinates")
 		private boolean isCoordinateSane() {
 			return boardLocations.keySet().stream().allMatch(loc -> (loc.x >= 0)
@@ -562,21 +583,22 @@ public class MachineDefinitionLoader extends SQLQueries {
 		static class Builder {
 			private String name;
 
-			private Set<String> tags;
+			private Set<String> tags = emptySet();
 
 			private int width;
 
 			private int height;
 
-			private Set<TriadCoords> deadBoards;
+			private Set<TriadCoords> deadBoards = emptySet();
 
-			private Map<TriadCoords, EnumSet<Link>> deadLinks;
+			private Map<TriadCoords, EnumSet<Link>> deadLinks = emptyMap();
 
-			private Map<TriadCoords, BoardPhysicalCoords> boardLocations;
+			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
+					emptyMap();
 
-			private Map<BMPCoords, String> bmpIps;
+			private Map<BMPCoords, String> bmpIps = emptyMap();
 
-			private Map<TriadCoords, String> spinnakerIps;
+			private Map<TriadCoords, String> spinnakerIps = emptyMap();
 
 			public Builder withName(String name) {
 				this.name = name;
@@ -759,12 +781,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public List<Machine> readMachineDefinitions(File file)
 			throws IOException, JsonParseException, JsonMappingException {
 		Configuration cfg =  mapper.readValue(file, Configuration.class);
-		for (ConstraintViolation<?> violation : validatorFactory.getValidator()
-				.validate(cfg)) {
-			// We ought to also say the other problems...
-			throw new IOException("failed to validate configuration: "
-					+ violation.getMessage());
-		}
+		validate(cfg);
 		return cfg.getMachines();
 	}
 
@@ -786,13 +803,26 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public List<Machine> readMachineDefinitions(InputStream stream)
 			throws IOException, JsonParseException, JsonMappingException {
 		Configuration cfg =  mapper.readValue(stream, Configuration.class);
-		for (ConstraintViolation<?> violation : validatorFactory.getValidator()
-				.validate(cfg)) {
+		validate(cfg);
+		return cfg.getMachines();
+	}
+
+	/**
+	 * Validates a configuration.
+	 *
+	 * @param cfg
+	 *            The configuration to validate
+	 * @throws IOException
+	 *             If validation fails. Exception type chosen to fit with
+	 *             signature of callers.
+	 */
+	private void validate(Configuration cfg) throws IOException {
+		for (ConstraintViolation<Configuration> violation : validatorFactory
+				.getValidator().validate(cfg)) {
 			// We ought to also say the other problems...
 			throw new IOException("failed to validate configuration: "
 					+ violation.getMessage());
 		}
-		return cfg.getMachines();
 	}
 
 	/**
@@ -829,32 +859,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 			makeBMP.close();
 			makeBoard.close();
 			makeLink.close();
-		}
-	}
-
-	/**
-	 * Add the machine definitions in the given file to the database.
-	 *
-	 * @param file
-	 *            The JSON configuration file.
-	 * @throws SQLException
-	 *             If database access fails
-	 * @throws JsonParseException
-	 *             if underlying input contains invalid JSON content
-	 * @throws JsonMappingException
-	 *             if the input JSON structure does not match the structure of
-	 *             JSONified spalloc configuration
-	 * @throws IOException
-	 *             If the file can't be read
-	 */
-	public void loadMachineDefinitions(File file) throws SQLException,
-			JsonParseException, JsonMappingException, IOException {
-		List<Machine> machines = readMachineDefinitions(file);
-		try (Connection conn = db.getConnection();
-				Updates sql = new Updates(conn)) {
-			for (Machine machine : machines) {
-				transaction(conn, () -> loadMachineDefinition(sql, machine));
-			}
 		}
 	}
 

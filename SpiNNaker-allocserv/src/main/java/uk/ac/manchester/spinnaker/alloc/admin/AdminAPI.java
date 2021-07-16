@@ -125,17 +125,6 @@ public interface AdminAPI {
 	}
 
 	/**
-	 * Import a machine definition from a file.
-	 *
-	 * @param filename
-	 *            What file to load from.
-	 */
-	@POST
-	@Path(Paths.IMPORT)
-	void importMachinesFromFile(
-			@QueryParam("filename") @NotBlank String filename);
-
-	/**
 	 * Import a machine definition by posting it.
 	 *
 	 * @param definitions
