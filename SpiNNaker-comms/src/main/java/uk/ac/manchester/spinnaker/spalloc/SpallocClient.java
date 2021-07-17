@@ -230,6 +230,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return parseInt(json);
 	}
 
+	@Deprecated
 	@Override
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
