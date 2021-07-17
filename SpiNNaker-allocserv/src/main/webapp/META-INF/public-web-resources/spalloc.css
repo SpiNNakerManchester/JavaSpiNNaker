@@ -31,8 +31,11 @@ footer {
 
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
-	text-align: right
+	text-align: right;
 }
 .textColumn {
-	text-align: left
+	text-align: left;
+}
+table.lineTitle > th {
+	text-align: right;
 }
