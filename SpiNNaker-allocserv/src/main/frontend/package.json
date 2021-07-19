@@ -1,4 +1,9 @@
 {
+	"name": "spalloc-support",
+	"version": "0.0.1",
+	"description": "Support code for JavaSpiNNaker's Spalloc Service implementation",
+	"license": "GPL-3.0-only",
+	"repository": "github:SpiNNakerManchester/JavaSpiNNaker",
 	"author": "Donal K. Fellows",
 	"dependencies": {
 		"typescript": "4.3.5"
