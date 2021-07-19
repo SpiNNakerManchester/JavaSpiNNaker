@@ -13,9 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function drawBoard(ctx, x, y, scale, fill = false) {
+function drawBoard(
+		ctx : CanvasRenderingContext2D,
+		x : number, y : number, scale : number,
+		fill : boolean = false) : number[][] {
 	ctx.beginPath();
-	var coords = [];
+	var coords : number[][] = [];
 	coords.push([x, y]);
 	ctx.moveTo(x, y);
 	coords.push([x + scale, y]);
@@ -36,9 +39,13 @@ function drawBoard(ctx, x, y, scale, fill = false) {
 	return coords;
 };
 
-function drawTriadBoard(ctx, rootX, rootY, scale, x, y, z, fill = false) {
-	var bx = rootX + x * 3 * scale;
-	var by = rootY - y * 3 * scale;
+function drawTriadBoard(
+		ctx : CanvasRenderingContext2D,
+		rootX : number, rootY : number, scale : number,
+		x : number, y : number, z : number,
+		fill : boolean = false) : number[][] {
+	var bx : number = rootX + x * 3 * scale;
+	var by : number = rootY - y * 3 * scale;
 	if (z == 1) {
 		bx += 2 * scale;
 		by -= scale;
@@ -49,12 +56,16 @@ function drawTriadBoard(ctx, rootX, rootY, scale, x, y, z, fill = false) {
 	return drawBoard(ctx, bx, by, scale, fill);
 };
 
-function drawLayout(ctx, rootX, rootY, scale, width, height, depth) {
-	var tloc = new Map();
-	for (var y = 0; y < height; y++) {
-		for (var x = 0; x < width; x++) {
-			for (var z = 0; z <= depth; z++) {
-				ctx.fillStyle = 'white';
+function drawLayout(
+		ctx : CanvasRenderingContext2D,
+		rootX : number, rootY : number, scale : number,
+		width : number, height : number, depth : number,
+		fill : string = "white") : Map<number[],number[][]> {
+	var tloc : Map<number[],number[][]> = new Map();
+	for (var y : number = 0; y < height; y++) {
+		for (var x : number = 0; x < width; x++) {
+			for (var z : number = 0; z <= depth; z++) {
+				ctx.fillStyle = fill;
 				tloc.set([x,y,z], drawTriadBoard(
 						ctx, rootX, rootY, scale, x, y, z, true));
 			}
@@ -64,7 +75,9 @@ function drawLayout(ctx, rootX, rootY, scale, width, height, depth) {
 };
 
 // https://stackoverflow.com/a/29915728/301832
-function inside(x, y, tloc) {
+function inside(
+		x : number, y : number,
+		tloc : Map<number[],number[][]>) : number[] {
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
@@ -89,14 +102,17 @@ function inside(x, y, tloc) {
     return undefined;
 };
 
-function initialDraw(canvasId, rootX, rootY, scale, descriptor) {
-	var canv = document.getElementById(canvasId);
-	var ctx = canv.getContext("2d");
+function initialDrawAllocation(
+		canvasId : string,
+		rootX : number, rootY : number, scale : number,
+		descriptor) {
+	var canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	var ctx : CanvasRenderingContext2D = canv.getContext("2d");
 	ctx.strokeStyle = 'black';
 	var tloc = drawLayout(ctx, rootX, rootY, scale,
 			descriptor.width, descriptor.height, 3);
-	var current = undefined;
-	function motion(e) {
+	var current : number[] = undefined;
+	function motion(e : MouseEvent) {
 		const x = e.offsetX, y = e.offsetY;
 		var triad = inside(x, y, tloc);
 		if (triad !== undefined) {

@@ -352,6 +352,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>SECURITY.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
 							<exclude>**/.dbeaver/**</exclude>
+							<exclude>**/node_modules/**</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 					</configuration>

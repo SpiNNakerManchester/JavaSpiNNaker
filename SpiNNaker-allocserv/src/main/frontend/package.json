@@ -1,0 +1,10 @@
+{
+	"author": "Donal K. Fellows",
+	"dependencies": {
+		"typescript": "4.3.5"
+	},
+	"browser": "Chrome",
+	"scripts": {
+		"build": "tsc ../typescript/*.ts --target ES6 --outFile ../../../target/js/spinnaker.js"
+	}
+}
