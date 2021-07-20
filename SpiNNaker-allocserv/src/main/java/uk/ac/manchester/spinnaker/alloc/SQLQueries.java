@@ -936,7 +936,7 @@ public abstract class SQLQueries {
 	@Parameter("user_id")
 	@Parameter("quota")
 	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
-			"INSERT INTO quotas(user_id, machine_id, quota) "
+			"INSERT OR IGNORE INTO quotas(user_id, machine_id, quota) "
 					+ "SELECT :user_id, machine_id, :quota FROM machines";
 
 	/**

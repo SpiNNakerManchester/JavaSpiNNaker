@@ -1347,21 +1347,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
 			 * ignores that flag.
 			 */
+			int numRows;
 			try {
 				setParams(s, arguments);
 				closeResults();
-				s.executeUpdate();
+				numRows = s.executeUpdate();
 				rs = s.getGeneratedKeys();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
 			}
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;
+				private int rowCount = 0;
 
 				@Override
 				public boolean hasNext() {
 					boolean result = false;
-					if (finished) {
+					if (finished || rowCount + 1 > numRows) {
 						return false;
 					}
 					try {
@@ -1369,6 +1371,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						if (!result) {
 							closeResults();
 						}
+						rowCount++;
 					} catch (SQLException e) {
 						result = false;
 					} finally {

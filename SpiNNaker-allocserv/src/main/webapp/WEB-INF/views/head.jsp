@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%--
 Copyright (c) 2021 The University of Manchester
 
@@ -18,4 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>${param.title}</title>
 	<link rel="stylesheet" href="/system/resources/spalloc.css">
+	<c:if test="${param.spalloclib ne null }">
+		<script src="/system/resources/spinnaker.js">
+		</script>
+	</c:if>
 </head>

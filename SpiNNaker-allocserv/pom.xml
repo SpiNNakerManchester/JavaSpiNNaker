@@ -28,11 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<packaging>war</packaging>
 	<properties>
 		<spring.boot.version>2.4.6</spring.boot.version>
-		<jetty.port>8080</jetty.port>
-		<jetty.root>/</jetty.root>
+		<spring.version>5.3.9</spring.version>
 		<jackson.version>2.12.3</jackson.version>
+		<swagger.version>3.50.0</swagger.version>
+		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<npm_plugin.version>1.12.0</npm_plugin.version>
 		<node.version>v4.6.0</node.version>
+		<jetty.port>8080</jetty.port>
+		<jetty.root>/</jetty.root>
 	</properties>
 
 	<build>
@@ -44,6 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<directory>src/main/resources-filtered</directory>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>${project.build.directory}/js</directory>
+				<targetPath>META-INF/public-web-resources</targetPath>
+			</resource>
 		</resources>
 		<finalName>spalloc</finalName>
 		<plugins>
@@ -52,12 +59,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<webResources>
-						<webResource>
-							<directory>${project.build.directory}/js</directory>
-							<targetPath>META-INF/public-web-resources</targetPath>
-						</webResource>
-					</webResources>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -82,6 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<goals>
 							<goal>npm</goal>
 						</goals>
+						<!-- Uses many defaults -->
 						<phase>process-resources</phase>
 					</execution>
 					<execution>
@@ -92,13 +94,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<phase>compile</phase>
 						<configuration>
 							<arguments>run build</arguments>
+							<environmentVariables>
+								<TYPESCRIPT_SRC_DIR>${project.basedir}/src/main/typescript</TYPESCRIPT_SRC_DIR>
+								<TYPESCRIPT_TARGET>ES6</TYPESCRIPT_TARGET>
+							</environmentVariables>
 						</configuration>
 					</execution>
 				</executions>
 				<configuration>
 					<nodeVersion>${node.version}</nodeVersion>
-					<installDirectory>target</installDirectory>
-					<workingDirectory>src/main/frontend</workingDirectory>
+					<installDirectory>${project.build.directory}</installDirectory>
+					<workingDirectory>${project.basedir}/src/main/frontend</workingDirectory>
+					<environmentVariables>
+						<MAVEN_PROJECT_DIR>${project.basedir}</MAVEN_PROJECT_DIR>
+						<MAVEN_BUILD_DIR>${project.build.directory}</MAVEN_BUILD_DIR>
+					</environmentVariables>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -106,6 +116,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Import dependency management from Jackson; overrides Spring Boot -->
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
@@ -115,39 +133,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
+				<!-- Import dependency management from CXF -->
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-bom</artifactId>
+				<version>${cxf.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jdk8</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-base</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
+				<!-- Spring Boot doesn't say anything about this... -->
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
-				<version>5.3.7</version>
+				<version>${spring.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -225,17 +222,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-service-description</artifactId>
-			<version>3.1.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
-			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
-			<version>3.50.0</version>
+			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.skyscreamer</groupId>
@@ -253,13 +248,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.livesense</groupId>
+			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
+			<version>${jsontaglib.version}</version>
 		</dependency>
 	</dependencies>
 

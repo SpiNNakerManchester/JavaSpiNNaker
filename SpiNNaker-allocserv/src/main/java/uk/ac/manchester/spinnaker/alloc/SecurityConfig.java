@@ -73,7 +73,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -145,9 +144,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/** The HTTP basic authentication realm. */
 	private static final String REALM = "SpallocService";
-
-	/** Maximum size of configuration file. */
-	private static final int MAX_UPLOAD_SIZE = 1000000;
 
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
@@ -439,14 +435,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		bean.setPrefix("/WEB-INF/views/");
 		bean.setSuffix(".jsp");
 		return bean;
-	}
-
-	@Bean(name = "multipartResolver")
-	CommonsMultipartResolver multipartResolver() {
-		CommonsMultipartResolver multipartResolver =
-				new CommonsMultipartResolver();
-		multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
-		return multipartResolver;
 	}
 
 	/**
