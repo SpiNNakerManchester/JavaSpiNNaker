@@ -13,10 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+interface Foo {
+	width: number;
+	height: number;
+};
+
 function drawBoard(
 		ctx : CanvasRenderingContext2D,
 		x : number, y : number, scale : number,
-		fill : boolean = false) : number[][] {
+		fill : boolean = false,
+		label : string = undefined) : number[][] {
 	ctx.beginPath();
 	var coords : number[][] = [];
 	coords.push([x, y]);
@@ -35,6 +41,10 @@ function drawBoard(
 	if (fill) {
 		ctx.fill();
 	}
+	if (label !== undefined) {
+		ctx.textAlign = "center";
+		ctx.fillText(label, x + scale, y - scale);
+	}
 	ctx.stroke();
 	return coords;
 };
@@ -43,7 +53,8 @@ function drawTriadBoard(
 		ctx : CanvasRenderingContext2D,
 		rootX : number, rootY : number, scale : number,
 		x : number, y : number, z : number,
-		fill : boolean = false) : number[][] {
+		fill : boolean = false,
+		labeller : (x:number, y:number, z:number) => string = undefined) : number[][] {
 	var bx : number = rootX + x * 3 * scale;
 	var by : number = rootY - y * 3 * scale;
 	if (z == 1) {
@@ -53,21 +64,30 @@ function drawTriadBoard(
 		bx += scale;
 		by -= 2 * scale;
 	}
-	return drawBoard(ctx, bx, by, scale, fill);
+	var label : string = undefined;
+	if (labeller !== undefined) {
+		label = labeller(x, y, z);
+	}
+	return drawBoard(ctx, bx, by, scale, fill, label);
 };
 
 function drawLayout(
 		ctx : CanvasRenderingContext2D,
 		rootX : number, rootY : number, scale : number,
-		width : number, height : number, depth : number,
-		fill : string = "white") : Map<number[],number[][]> {
+		width : number, height : number, depth : number = 3,
+		colourer : string | ((x:number,y:number,z:number) => string) = undefined,
+		labeller : (x:number, y:number, z:number) => string = undefined) : Map<number[],number[][]> {
 	var tloc : Map<number[],number[][]> = new Map();
 	for (var y : number = 0; y < height; y++) {
 		for (var x : number = 0; x < width; x++) {
 			for (var z : number = 0; z <= depth; z++) {
-				ctx.fillStyle = fill;
+				if (typeof colourer === 'string') {
+					ctx.fillStyle = colourer;
+				} else {
+					ctx.fillStyle = colourer(x, y, z);
+				}
 				tloc.set([x,y,z], drawTriadBoard(
-						ctx, rootX, rootY, scale, x, y, z, true));
+						ctx, rootX, rootY, scale, x, y, z, true, labeller));
 			}
 		}
 	}
@@ -104,13 +124,19 @@ function inside(
 
 function initialDrawAllocation(
 		canvasId : string,
-		rootX : number, rootY : number, scale : number,
-		descriptor) {
+		descriptor : Foo) {
 	var canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	var rootX = 5;
+	var rootY = canv.height - 5;
+	var scaleX : number = (canv.width - 10) / descriptor.width;
+	var scaleY : number = (canv.height - 10) / descriptor.height;
+	var scale = (scaleX < scaleY) ? scaleX : scaleY;
 	var ctx : CanvasRenderingContext2D = canv.getContext("2d");
 	ctx.strokeStyle = 'black';
 	var tloc = drawLayout(ctx, rootX, rootY, scale,
-			descriptor.width, descriptor.height, 3);
+			descriptor.width, descriptor.height, 3,
+			"white",
+			(x, y, z) => "(" + x + "," + y + "," + z + ")");
 	var current : number[] = undefined;
 	function motion(e : MouseEvent) {
 		const x = e.offsetX, y = e.offsetY;

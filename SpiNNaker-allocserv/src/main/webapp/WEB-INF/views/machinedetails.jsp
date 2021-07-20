@@ -18,7 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Spalloc Machine" name="title"/>
+	<jsp:param name="title" value="Spalloc Machine" />
+	<jsp:param name="spalloclib" value="true" />
+</jsp:include>
+<jsp:include page="machinedetails_obj.jsp">
+	<jsp:param name="machine" value="${machine}"/>
 </jsp:include>
 <body>
 
@@ -49,7 +53,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </table
 <tr>
 <p>
-<em>TODO: live machine layout</em>
+<canvas id="machine_layout" width="300" height="200"></canvas>
+<script defer="defer">
+/* TODO what goes here? */
+</script>
 </p>
 
 <jsp:include page="basicfooter.jsp" />

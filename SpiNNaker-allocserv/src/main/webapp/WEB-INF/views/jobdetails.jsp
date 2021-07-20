@@ -20,6 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <jsp:include page="head.jsp">
 	<jsp:param value="Spalloc Job" name="title"/>
 </jsp:include>
+<jsp:include page="jobdetails_obj.jsp">
+	<jsp:param name="boards" value="${job.boards}"/>
+</jsp:include>
+<script src="spalloc.js">
+</script>
 <body>
 
 <h1>Spalloc Job</h1>
@@ -57,6 +62,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<th>Allocation:</th>
 	<td>
 		<c:if test="${ not empty job.boards }">
+			<canvas id="board_layout" width="300" height="200"></canvas>
+			<script defer="defer">
+// TODO what goes here?
+			</script>
 			<em>TODO: board layout</em>
 		</c:if>
 		<c:if test="${ empty job.boards }">

@@ -40,7 +40,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tbody>
 <c:forEach items="${machineList}" var="item">
 <tr>
-    <td class="textColumn"><code>${item.name }</code></td>
+    <td class="textColumn">
+    <c:if test="${item.detailsUrl.present }">
+    	<a href="${item.detailsUrl.get() }"><code>${item.name }</code></a>
+    </c:if>
+    <c:if test="${!item.detailsUrl.present }">
+    	<code>${item.name }</code>
+    </c:if>
+    </td>
     <td class="numberColumn">${item.numBoards }</td>
     <td class="numberColumn">${item.numInUse }</td>
     <td class="numberColumn">${item.numJobs }</td>
