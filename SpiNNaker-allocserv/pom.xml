@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<packaging>war</packaging>
 	<properties>
 		<spring.boot.version>2.4.6</spring.boot.version>
-		<spring.version>5.3.9</spring.version>
+		<spring.version>5.3.7</spring.version>
 		<jackson.version>2.12.3</jackson.version>
 		<swagger.version>3.50.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
@@ -84,14 +84,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<goal>npm</goal>
 						</goals>
 						<!-- Uses many defaults -->
-						<phase>process-resources</phase>
+						<phase>generate-resources</phase>
 					</execution>
 					<execution>
 						<id>npm run build</id>
 						<goals>
 							<goal>npm</goal>
 						</goals>
-						<phase>compile</phase>
+						<phase>generate-resources</phase>
 						<configuration>
 							<arguments>run build</arguments>
 							<environmentVariables>

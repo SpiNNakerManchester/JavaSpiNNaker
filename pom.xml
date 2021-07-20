@@ -348,8 +348,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/*.fig</exclude>
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
-							<exclude>README.md</exclude>
-							<exclude>SECURITY.md</exclude>
+							<!-- Fooling markdown parsers and RAT is hard -->
+							<exclude>**/*.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
 							<exclude>**/.dbeaver/**</exclude>
 							<exclude>**/node_modules/**</exclude>

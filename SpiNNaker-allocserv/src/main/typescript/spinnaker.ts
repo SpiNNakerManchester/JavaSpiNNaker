@@ -128,8 +128,8 @@ function initialDrawAllocation(
 	var canv = <HTMLCanvasElement> document.getElementById(canvasId);
 	var rootX = 5;
 	var rootY = canv.height - 5;
-	var scaleX : number = (canv.width - 10) / descriptor.width;
-	var scaleY : number = (canv.height - 10) / descriptor.height;
+	var scaleX : number = (canv.width - 10) / (descriptor.width * 3 + 1);
+	var scaleY : number = (canv.height - 10) / (descriptor.height * 3 + 1);
 	var scale = (scaleX < scaleY) ? scaleX : scaleY;
 	var ctx : CanvasRenderingContext2D = canv.getContext("2d");
 	ctx.strokeStyle = 'black';

@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <p>
 <canvas id="machine_layout" width="300" height="200"></canvas>
 <script defer="defer">
-/* TODO what goes here? */
+initialDrawAllocation("machine_layout", machine);
 </script>
 </p>
 
