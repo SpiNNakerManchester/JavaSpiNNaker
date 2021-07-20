@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<p>No jobs are alive!</p>
 </c:if>
 <c:if test="${not empty jobList}">
-<table border>
+<table border="1">
 <thead>
 <tr>
 	<th>ID</th>

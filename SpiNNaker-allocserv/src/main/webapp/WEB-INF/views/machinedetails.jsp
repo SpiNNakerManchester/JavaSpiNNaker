@@ -50,8 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<th>Jobs:</th>
 	<td>${machine.jobs.size() }</td>
 </tr>
-</table
-<tr>
+</table>
 <p>
 <canvas id="machine_layout" width="300" height="200"></canvas>
 <script defer="defer">

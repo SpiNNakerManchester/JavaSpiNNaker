@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th>Hostname:</th>
-	<td>${(job.boards.get(0)?.address) ?: 'not yet allocated' }</td>
+	<td>${job.boards.empty ? 'not yet allocated' : job.boards[0].address }</td>
 </tr>
 <tr>
 	<th>Width:</th>

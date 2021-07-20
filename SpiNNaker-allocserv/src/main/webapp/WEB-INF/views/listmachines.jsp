@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<p>No machines are defined!</p>
 </c:if>
 <c:if test="${not empty machineList}">
-<table border>
+<table border="1">
 <thead>
 <tr>
   	<th>Name</th>

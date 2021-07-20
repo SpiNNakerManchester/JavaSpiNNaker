@@ -33,11 +33,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    <sec:csrfInput />
     <table>
         <tr>
-            <td><label path="file">Select a configuration file to upload</label></td>
+            <td><label>Select a configuration file to upload:</label></td>
             <td><input type="file" name="file" /></td>
         </tr>
         <tr>
-            <td><input type="submit" value="Submit" /></td>
+            <td colspan="2"><input type="submit" value="Submit" /></td>
         </tr>
     </table>
 </form>
