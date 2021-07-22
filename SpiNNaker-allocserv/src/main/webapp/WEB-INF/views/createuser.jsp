@@ -43,8 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <input type="submit" value="Create" />
 </form:form>
 
-<!-- TODO Add delete link/button -->
-
 <jsp:include page="adminfooter.jsp" />
 </body>
 </html>

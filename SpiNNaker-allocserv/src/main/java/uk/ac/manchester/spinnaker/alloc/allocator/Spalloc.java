@@ -22,6 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.sql.Connection;
@@ -38,6 +39,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -284,6 +286,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
+	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(int id) throws SQLException {
 		return db.execute(conn -> Optional.ofNullable((Job) getJob(id, conn)));
 	}
@@ -297,11 +300,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
+	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<JobDescription> getJobInfo(int id) throws SQLException {
 		return db.execute(conn -> {
-			try (Query s = query(conn, GET_JOB_DETAILS);
-					Query chipDimensions =
-							query(conn, GET_JOB_CHIP_DIMENSIONS);
+			try (Query s = query(conn, GET_JOB);
+					Query chipDimensions = query(conn, GET_JOB_CHIP_DIMENSIONS);
 					Query countPoweredBoards =
 							query(conn, COUNT_POWERED_BOARDS);
 					Query getCoords = query(conn, GET_JOB_BOARD_COORDS)) {
@@ -316,6 +319,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private JobDescription jobDescription(int id, Row job, Query chipDimensions,
 			Query countPoweredBoards, Query getCoords) throws SQLException {
+		/*
+		 * We won't deliver this object to the front end unless they are allowed
+		 * to see it in its entirety.
+		 */
 		JobDescription jd = new JobDescription();
 		jd.setId(id);
 		jd.setMachine(job.getString("machine_name"));
@@ -334,10 +341,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 		});
 		int poweredCount = countPoweredBoards.call1(id).get().getInt("c");
-		jd.setBoards(rowsAsList(getCoords.call(id),
-				r -> new BoardCoords(r.getInt("x"), r.getInt("y"),
-						r.getInt("z"), r.getInt("cabinet"), r.getInt("frame"),
-						r.getInt("board_num"), r.getString("address"))));
+		jd.setBoards(
+				rowsAsList(getCoords.call(id), r -> new BoardCoords(r, false)));
 		jd.setPowered(jd.getBoards().size() == poweredCount);
 		return jd;
 	}

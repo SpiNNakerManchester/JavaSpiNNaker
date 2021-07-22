@@ -50,6 +50,24 @@ interface MachineDescriptor {
 	dead_boards: BoardLocator[];
 };
 
+interface JobDescriptor {
+	id: number;
+	owner?: string;
+	state: string;
+	start: string; // Instant
+	keep_alive: string; // Duration
+	owner_host?: string;
+	width?: number;
+	height?: number;
+	powered: boolean;
+	machine: string;
+	machine_url: string;
+	boards: BoardLocator[];
+	request?: any;
+	triad_width: number;
+	triad_height: number;
+};
+
 /**
  * Draw a single board cell. This is a distorted hexagon.
  *
@@ -219,9 +237,34 @@ function boardMap(boards: readonly BoardLocator[]) : Map<string,BoardLocator> {
 	return m;
 }
 
-function initialDrawAllocation(
-		canvasId : string,
-		tooltipId : string,
+function setTooltipCore(
+		canv: HTMLCanvasElement, tooltip: HTMLCanvasElement,
+		tooltipCtx: CanvasRenderingContext2D,
+		locmapper: ((t: BoardTriad) => HexCoords),
+		scale:number, triad?: BoardTriad, message?: string) {
+	if (triad === undefined || message === undefined) {
+		tooltip.style.left = "-2000px";
+	} else {
+		const rect = canv.getBoundingClientRect();
+		const [x, y] = locmapper(triad)[0];
+		tooltip.style.top = (rect.top + x + scale + 10) + "px";
+        tooltip.style.left = (rect.left + y - scale + 10) + "px";
+        tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
+        tooltipCtx.textAlign = "center";
+		const tx = tooltip.getBoundingClientRect().width / 2;
+		var ty = 15;
+		for (const line of message.split("\n")) {
+            tooltipCtx.fillText(line, tx, ty,
+				tooltip.getBoundingClientRect().width - 5);
+			const tm = tooltipCtx.measureText(line);
+			ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
+		}
+	}
+}
+
+
+function drawMachine(
+		canvasId : string, tooltipId : string,
 		descriptor : MachineDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
 	const rect = canv.getBoundingClientRect();
@@ -242,9 +285,9 @@ function initialDrawAllocation(
 	function lbl(key : BoardTriad) : string {
 		const [x, y, z] = key;
 		if (dead.has(tuplekey(key))) {
-			return "\u2620 (" + x + "," + y + "," + z + ")";
+			return `\u2620 (${x},${y},${z})`;
 		} else {
-			return "(" + x + "," + y + "," + z + ")";
+			return `(${x},${y},${z})`;
 		}
 	}
 
@@ -268,30 +311,13 @@ function initialDrawAllocation(
 	}
 
 	function setTooltip(triad?: BoardTriad, message?: string) {
-		if (triad === undefined || message === undefined) {
-			tooltip.style.left = "-2000px";
-		} else {
-			const rect = canv.getBoundingClientRect();
-			const [x, y] = location(triad)[0];
-			tooltip.style.top = (rect.top + x + scale + 10) + "px";
-            tooltip.style.left = (rect.left + y - scale + 10) + "px";
-            tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
-            tooltipCtx.textAlign = "center";
-			const tx = tooltip.getBoundingClientRect().width / 2;
-			var ty = 15;
-			for (const line of message.split("\n")) {
-	            tooltipCtx.fillText(line, tx, ty,
-					tooltip.getBoundingClientRect().width - 5);
-				const tm = tooltipCtx.measureText(line);
-				ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
-			}
-		}
+		setTooltipCore(canv, tooltip, tooltipCtx, location, scale, triad, message);
 	}
 
 	function triadDescription(triad: BoardTriad) : string {
 		const [x, y, z] = triad;
 		const key = tuplekey(triad);
-		var s = `Tuple: (X: ${x}, Y: ${y}, Z: ${z})`;
+		var s = `Triad: (X: ${x}, Y: ${y}, Z: ${z})`;
 		var board : BoardLocator = undefined;
 		if (live.has(key)) {
 			board = live.get(key);
@@ -361,3 +387,36 @@ function initialDrawAllocation(
 	canv.addEventListener('mouseenter', enter);
 	canv.addEventListener('mouseleave', leave);
 };
+
+function drawJob(
+		canvasId : string, tooltipId : string,
+		descriptor : JobDescriptor) {
+	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	const rect = canv.getBoundingClientRect();
+	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
+	const rootX = 5;
+	const rootY = rect.height - 5;
+	const scaleX : number = (rect.width - 10) / (descriptor.triad_width * 3 + 1);
+	const scaleY : number = (rect.height - 10) / (descriptor.triad_height * 3 + 1);
+	const scale = (scaleX < scaleY) ? scaleX : scaleY;
+	const ctx = canv.getContext("2d");
+	//TODO define tooltips and bindings for the job view
+	const tooltipCtx = tooltip.getContext("2d");
+
+	const allocated = boardMap(descriptor.boards);
+
+	ctx.strokeStyle = 'black';
+	const {x: rx, y: ry} = descriptor.boards[0].triad;
+	drawLayout(ctx, rootX, rootY, scale,
+			descriptor.triad_width, descriptor.triad_height, 3,
+			triadCoord => {
+				const [x, y, z] = triadCoord;
+				if (allocated.has(tuplekey([rx+x, ry+y, z]))) {
+					return "yellow";
+				}
+				return "white";
+			}, triadCoord => {
+				const [x, y, z] = triadCoord;
+				return `(${x},${y},${z})`;
+			});
+}

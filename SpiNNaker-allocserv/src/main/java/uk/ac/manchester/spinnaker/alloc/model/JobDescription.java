@@ -17,11 +17,13 @@
 package uk.ac.manchester.spinnaker.alloc.model;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.summarizingInt;
 
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,13 +62,13 @@ public class JobDescription {
 
 	private Duration keepAlive;
 
-	private String ownerHost;
+	private Optional<String> ownerHost = Optional.empty();
 
 	private CreateJobRequest request;
 
-	private int width;
+	private Integer width;
 
-	private int height;
+	private Integer height;
 
 	private boolean powered;
 
@@ -139,12 +141,12 @@ public class JobDescription {
 	/**
 	 * @return the owner's host (the one supplying keepalives)
 	 */
-	public String getOwnerHost() {
+	public Optional<String> getOwnerHost() {
 		return ownerHost;
 	}
 
 	public void setOwnerHost(String ownerHost) {
-		this.ownerHost = ownerHost;
+		this.ownerHost = Optional.ofNullable(ownerHost);
 	}
 
 	/**
@@ -159,10 +161,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return the width of the allocation in <em>chips</em>
+	 * @return the width of the allocation in <em>chips</em>, or
+	 *         {@link Optional#empty() empty()} if the job is not allocated.
 	 */
-	public int getWidth() {
-		return width;
+	public Optional<Integer> getWidth() {
+		return Optional.ofNullable(width);
 	}
 
 	public void setWidth(int width) {
@@ -170,10 +173,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return the height of the allocation in <em>chips</em>
+	 * @return the height of the allocation in <em>chips</em>, or
+	 *         {@link Optional#empty() empty()} if the job is not allocated.
 	 */
-	public int getHeight() {
-		return height;
+	public Optional<Integer> getHeight() {
+		return Optional.ofNullable(height);
 	}
 
 	public void setHeight(int height) {
@@ -181,7 +185,8 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return whether all boards are powered up
+	 * @return whether all boards are powered up; unallocated jobs are
+	 *         considered unpowered.
 	 */
 	public boolean isPowered() {
 		return powered;
@@ -236,4 +241,27 @@ public class JobDescription {
 		requestBytes = bytes;
 	}
 
+	/**
+	 * @return The width of the allocation in triads. 0 if not yet allocated.
+	 */
+	public int getTriadWidth() {
+		IntSummaryStatistics stats = boards.stream().map(b -> b.x)
+				.collect(summarizingInt(Integer::intValue));
+		if (stats.getCount() < 1) {
+			return 0;
+		}
+		return stats.getMax() - stats.getMin();
+	}
+
+	/**
+	 * @return The height of the allocation in triads. 0 if not yet allocated.
+	 */
+	public int getTriadHeight() {
+		IntSummaryStatistics stats = boards.stream().map(b -> b.y)
+				.collect(summarizingInt(Integer::intValue));
+		if (stats.getCount() < 1) {
+			return 0;
+		}
+		return stats.getMax() - stats.getMin();
+	}
 }

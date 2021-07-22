@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -15,10 +16,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<script>
-job_boards = (
+job = (
 <json:object>
-	<json:array name="boards" items="${boards}" var="board">
+	<json:property name="id" value="${ job.id }" />
+	<c:if test="${ job.owner.present }">
+		<json:property name="owner" value="${ job.owner.get() }" />
+		<json:property name="owner_host" value="${ job.ownerHost.get() }" />
+	</c:if>
+	<json:property name="state" value="${ job.state }" />
+	<json:property name="start" value="${ job.startTime }" />
+	<json:property name="keep_alive" value="${ job.keepAlive }" />
+	<c:if test="${ job.width.present }">
+		<json:property name="width" value="${ job.width.get() }" />
+		<json:property name="height" value="${ job.height.get() }" />
+	</c:if>
+	<json:property name="powered" value="${ job.powered }" />
+	<json:property name="machine" value="${ job.machine }" />
+	<json:property name="machine_url" value="${ job.machineUrl }" />
+	<json:array name="boards" items="${ job.boards }" var="board">
 		<json:object>
 			<json:object name="triad">
 				<json:property name="x" value="${ board.x }"/>
@@ -35,6 +50,7 @@ job_boards = (
 			</json:object>
 		</json:object>
 	</json:array>
+	<json:property name="triad_width" value="${ job.triadWidth }"/>
+	<json:property name="triad_height" value="${ job.triadHeight }"/>
 </json:object>
 );
-</script>

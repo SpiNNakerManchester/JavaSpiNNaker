@@ -337,22 +337,12 @@ class DbTest {
 		void getJob() throws SQLException {
 			try (Query q = query(c, GET_JOB)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("machine_id", "width", "height", "depth",
-						"root_id", "job_state", "keepalive_timestamp",
-						"keepalive_host", "create_timestamp", "death_reason",
-						"death_timestamp", "original_request", "owner"),
-						q.getRowColumnNames());
-				assertFalse(q.call1(NO_JOB).isPresent());
-			}
-		}
-
-		@Test
-		void getJobDetails() throws SQLException {
-			try (Query q = query(c, GET_JOB_DETAILS)) {
-				assertEquals(1, q.getNumArguments());
 				assertSetEquals(
-						set("machine_name", "job_state", "keepalive_host",
+						set("machine_id", "machine_name", "width", "height",
+								"depth", "root_id", "job_state",
+								"keepalive_timestamp", "keepalive_host",
 								"keepalive_interval", "create_timestamp",
+								"death_reason", "death_timestamp",
 								"original_request", "owner"),
 						q.getRowColumnNames());
 				assertFalse(q.call1(NO_JOB).isPresent());

@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <jsp:include page="head.jsp">
 	<jsp:param value="Spalloc Job" name="title"/>
 </jsp:include>
+<script>
 <jsp:include page="jobdetails_obj.jsp">
-	<jsp:param name="boards" value="${job.boards}"/>
+	<jsp:param name="job" value="${job}"/>
 </jsp:include>
+</script>
 <script src="spalloc.js">
 </script>
 <body>
@@ -52,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th>Owner host:</th>
-	<td>${job.ownerHost }</td>
+	<td>${job.ownerHost.orElse('[SHROUDED]') }</td>
 </tr>
 <tr>
 	<th>Request:</th>
@@ -79,11 +81,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th>Width:</th>
-	<td>${job.width }</td>
+	<td>${job.width.present ? job.width.get() : 'not yet allocated' }</td>
 </tr>
 <tr>
 	<th>Height:</th>
-	<td>${job.height }</td>
+	<td>${job.height.present ? job.height.get() : 'not yet allocated' }</td>
 </tr>
 <tr>
 	<th>Num boards:</th>

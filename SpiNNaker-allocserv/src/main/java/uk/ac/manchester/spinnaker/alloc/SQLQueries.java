@@ -129,6 +129,7 @@ public abstract class SQLQueries {
 	/** Get basic information about a specific job. */
 	@Parameter("job_id")
 	@ResultColumn("machine_id")
+	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
 	@ResultColumn("depth")
@@ -136,6 +137,7 @@ public abstract class SQLQueries {
 	@ResultColumn("job_state")
 	@ResultColumn("keepalive_timestamp")
 	@ResultColumn("keepalive_host")
+	@ResultColumn("keepalive_interval")
 	@ResultColumn("create_timestamp")
 	@ResultColumn("death_reason")
 	@ResultColumn("death_timestamp")
@@ -143,27 +145,11 @@ public abstract class SQLQueries {
 	@ResultColumn("owner")
 	@SingleRowResult
 	protected static final String GET_JOB =
-			"SELECT machine_id, width, height, depth, root_id, job_state, "
-					+ "keepalive_timestamp, keepalive_host, create_timestamp, "
-					+ "death_reason, death_timestamp, original_request, "
-					+ "user_info.user_name AS owner FROM jobs "
-					+ "JOIN user_info ON jobs.owner = user_info.user_id "
-					+ "WHERE job_id = :job_id LIMIT 1";
-
-	/** Get basic information about a specific job. */
-	// TODO merge with GET_JOB
-	@Parameter("job_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("job_state")
-	@ResultColumn("original_request")
-	@ResultColumn("keepalive_host")
-	@ResultColumn("keepalive_interval")
-	@ResultColumn("create_timestamp")
-	@ResultColumn("owner")
-	@SingleRowResult
-	protected static final String GET_JOB_DETAILS =
-			"SELECT machines.machine_name, job_state, original_request, "
+			"SELECT jobs.machine_id, machines.machine_name, "
+					+ "jobs.width, jobs.height, jobs.depth, "
+					+ "root_id, job_state, keepalive_timestamp, "
 					+ "keepalive_host, keepalive_interval, create_timestamp, "
+					+ "death_reason, death_timestamp, original_request, "
 					+ "user_info.user_name AS owner FROM jobs "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
 					+ "JOIN machines ON jobs.machine_id = machines.machine_id "
