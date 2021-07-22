@@ -16,10 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.Collections.synchronizedList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 
@@ -38,6 +43,9 @@ abstract class DatabaseCache<Conn extends Connection> {
 
 	private ThreadLocal<Conn> connectionCache =
 			ThreadLocal.withInitial(this::generateCachedDatabaseConnection);
+
+	private List<CloserThread> closerThreads =
+			synchronizedList(new ArrayList<>());
 
 	/**
 	 * Actually open a connection to the database. This should do nothing else.
@@ -63,7 +71,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			throw new RuntimeException("problem opening database connection",
 					e);
 		}
-		new CloserThread(connection);
+		closerThreads.add(new CloserThread(connection));
 		return connection;
 	}
 
@@ -109,6 +117,19 @@ abstract class DatabaseCache<Conn extends Connection> {
 			connection.close();
 		} catch (SQLException e) {
 			log.warn("problem closing database connection", e);
+		}
+	}
+
+	/**
+	 * Wait for all made threads to terminate.
+	 */
+	@PreDestroy
+	private void shutdown() {
+		for (CloserThread t : closerThreads) {
+			try {
+				t.join();
+			} catch (InterruptedException ignored) {
+			}
 		}
 	}
 
