@@ -187,7 +187,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
 					Query getTags = query(conn, GET_TAGS);
 					Query getJobs = query(conn, GET_MACHINE_JOBS);
-					Query getCoords = query(conn, GET_JOB_BOARD_COORDS)) {
+					Query getCoords = query(conn, GET_JOB_BOARD_COORDS);
+					Query getLive = query(conn, GET_LIVE_BOARDS);
+					Query getDead = query(conn, GET_DEAD_BOARDS)) {
 				MachineDescription md = null;
 				for (Row row : namedMachine.call(machine)) {
 					md = new MachineDescription();
@@ -213,13 +215,13 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					ji.setId(jobId);
 					ji.setOwner(owner);
 					ji.setBoards(rowsAsList(getCoords.call(jobId),
-							r -> new BoardCoords(r.getInt("x"), r.getInt("y"),
-									r.getInt("z"), r.getInt("cabinet"),
-									r.getInt("frame"), r.getInt("board_num"),
-									owner == null ? null
-											: r.getString("address"))));
+							r -> new BoardCoords(r, owner == null)));
 					return ji;
 				}));
+				md.setLive(rowsAsList(getLive.call(md.getId()),
+						r -> new BoardCoords(r, !isAdmin)));
+				md.setDead(rowsAsList(getDead.call(md.getId()),
+						r -> new BoardCoords(r, !isAdmin)));
 				return Optional.of(md);
 			}
 		});

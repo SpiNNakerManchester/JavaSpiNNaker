@@ -46,9 +46,28 @@ interface MachineDescriptor {
 	num_in_use: number;
 	tags: string[];
 	jobs: MachineJobDescriptor[];
-	// TODO list dead boards too
+	live_boards: BoardLocator[];
+	dead_boards: BoardLocator[];
 };
 
+/**
+ * Draw a single board cell. This is a distorted hexagon.
+ *
+ * @param {CanvasRenderingContext2D} ctx
+ *		The drawing context.
+ * @param {number} x
+ *		The canvas X coordinate.
+ * @param {number} y
+ *		The canvas Y coordinate.
+ * @param {number} scale
+ *		The fundamental length scale for the size of boards.
+ * @param {boolean} fill
+ *		Whether to fill the cell or just draw the outline.
+ * @param {string} label
+ *		What label to put in the cell, if any.
+ * @returns {HexCoords}
+ *		The coordinates of the vertices of the cell.
+ */
 function drawBoard(
 		ctx : CanvasRenderingContext2D,
 		x : number, y : number, scale : number,
@@ -81,15 +100,36 @@ function drawBoard(
 		ctx.restore();
 	}
 	return coords;
-};
+}
 
+/**
+ * Draw a single board cell, identified in machine coordinates. This is a
+ * distorted hexagon.
+ *
+ * @param {CanvasRenderingContext2D} ctx
+ *		The drawing context.
+ * @param {number} rootX
+ *		The canvas X coordinate of the bottom left of the machine.
+ * @param {number} rootY
+ *		The canvas Y coordinate of the bottom left of the machine.
+ * @param {number} scale
+ *		The fundamental length scale for the size of boards.
+ * @param {BoardTriad} triadCoords
+ *		Triad coordinates of the board to draw
+ * @param {boolean} fill
+ *		Whether to fill the cell or just draw the outline.
+ * @param {(BoardTriad) => string} labeller
+ *		Function to generate the label.
+ * @returns {HexCoords}
+ *		The coordinates of the vertices of the cell.
+ */
 function drawTriadBoard(
 		ctx : CanvasRenderingContext2D,
 		rootX : number, rootY : number, scale : number,
-		key : BoardTriad,
+		triadCoords : BoardTriad,
 		fill : boolean = false,
 		labeller : (key: BoardTriad) => string = undefined) : HexCoords {
-	const [x, y, z] = key;
+	const [x, y, z] = triadCoords;
 	var bx : number = rootX + x * 3 * scale;
 	var by : number = rootY - y * 3 * scale;
 	if (z == 1) {
@@ -101,18 +141,30 @@ function drawTriadBoard(
 	}
 	var label : string = undefined;
 	if (labeller !== undefined) {
-		label = labeller(key);
+		label = labeller(triadCoords);
 	}
 	return drawBoard(ctx, bx, by, scale, fill, label);
-};
+}
+
+/**
+ * Convert board triad coordinates into a key suitable for a Map.
+ * @param {BoardCoords} coords
+ *		The coordinates.
+ * @return {string}
+ * 		The key string
+ */
+function tuplekey(coords: BoardTriad) : string {
+	const [x, y, z] = coords;
+	return x + "," + y + "," + z;
+}
 
 function drawLayout(
 		ctx : CanvasRenderingContext2D,
 		rootX : number, rootY : number, scale : number,
 		width : number, height : number, depth : number = 3,
 		colourer : string | ((key: BoardTriad) => string) = undefined,
-		labeller : (key: BoardTriad) => string = undefined) : Map<BoardTriad,HexCoords> {
-	var tloc : Map<BoardTriad,HexCoords> = new Map();
+		labeller : (key: BoardTriad) => string = undefined) : Map<string,[BoardTriad,HexCoords]> {
+	var tloc : Map<string,[BoardTriad,HexCoords]> = new Map();
 	for (var y : number = 0; y < height; y++) {
 		for (var x : number = 0; x < width; x++) {
 			for (var z : number = 0; z < depth; z++) {
@@ -122,23 +174,23 @@ function drawLayout(
 				} else {
 					ctx.fillStyle = colourer(key);
 				}
-				tloc.set(key, drawTriadBoard(
-						ctx, rootX, rootY, scale, key, true, labeller));
+				tloc.set(tuplekey(key),[key, drawTriadBoard(
+						ctx, rootX, rootY, scale, key, true, labeller)]);
 			}
 		}
 	}
 	return tloc;
-};
+}
 
 // https://stackoverflow.com/a/29915728/301832
 function inside(
 		x : number, y : number,
-		tloc : Map<BoardTriad,HexCoords>) : BoardTriad {
+		tloc : Map<string,[BoardTriad,HexCoords]>) : BoardTriad {
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
 	for (const item of tloc) {
-		const [triad, poly] = item;
+		const [triad, poly] = item[1];
 	    var inside = false;
 	    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
 	        const [xi, yi] = poly[i];
@@ -156,29 +208,109 @@ function inside(
 	}
 
     return undefined;
-};
+}
+
+function boardMap(boards: readonly BoardLocator[]) : Map<string,BoardLocator> {
+	var m : Map<string,BoardLocator> = new Map();
+	for (const b of boards) {
+		const {x:x, y:y, z:z} = b.triad;
+		m.set(tuplekey([x,y,z]), b);
+	}
+	return m;
+}
 
 function initialDrawAllocation(
 		canvasId : string,
+		tooltipId : string,
 		descriptor : MachineDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
+	const rect = canv.getBoundingClientRect();
+	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
 	const rootX = 5;
-	const rootY = canv.height - 5;
-	const scaleX : number = (canv.width - 10) / (descriptor.width * 3 + 1);
-	const scaleY : number = (canv.height - 10) / (descriptor.height * 3 + 1);
+	const rootY = rect.height - 5;
+	const scaleX : number = (rect.width - 10) / (descriptor.width * 3 + 1);
+	const scaleY : number = (rect.height - 10) / (descriptor.height * 3 + 1);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
-	const ctx : CanvasRenderingContext2D = canv.getContext("2d");
+	const ctx = canv.getContext("2d");
+	const tooltipCtx = tooltip.getContext("2d");
+
+	const live = boardMap(descriptor.live_boards);
+	const dead = boardMap(descriptor.dead_boards);
 
 	ctx.strokeStyle = 'black';
-	function lbl(key : BoardTriad) {
+
+	function lbl(key : BoardTriad) : string {
 		const [x, y, z] = key;
-		return "(" + x + "," + y + "," + z + ")";
+		if (dead.has(tuplekey(key))) {
+			return "\u2620 (" + x + "," + y + "," + z + ")";
+		} else {
+			return "(" + x + "," + y + "," + z + ")";
+		}
 	}
+
+	function clr(key: BoardTriad) : string {
+		const k = tuplekey(key);
+		if (dead.has(k)) {
+			return "#444";
+		} else if (live.has(k)) {
+			return "white";
+		} else {
+			return "black";
+		}
+	}
+
 	const tloc = drawLayout(ctx, rootX, rootY, scale,
 			descriptor.width, descriptor.height, 3,
-			"white", lbl);
+			clr, lbl);
+	function location(triad: BoardTriad) : HexCoords {
+		const t = tloc.get(tuplekey(triad));
+		return t == undefined ? undefined : t[1];
+	}
+
+	function setTooltip(triad?: BoardTriad, message?: string) {
+		if (triad === undefined || message === undefined) {
+			tooltip.style.left = "-2000px";
+		} else {
+			const rect = canv.getBoundingClientRect();
+			const [x, y] = location(triad)[0];
+			tooltip.style.top = (rect.top + x + scale + 10) + "px";
+            tooltip.style.left = (rect.left + y - scale + 10) + "px";
+            tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
+            tooltipCtx.textAlign = "center";
+			const tx = tooltip.getBoundingClientRect().width / 2;
+			var ty = 15;
+			for (const line of message.split("\n")) {
+	            tooltipCtx.fillText(line, tx, ty,
+					tooltip.getBoundingClientRect().width - 5);
+				const tm = tooltipCtx.measureText(line);
+				ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
+			}
+		}
+	}
+
+	function triadDescription(triad: BoardTriad) : string {
+		const [x, y, z] = triad;
+		const key = tuplekey(triad);
+		var s = `Tuple: (X: ${x}, Y: ${y}, Z: ${z})`;
+		var board : BoardLocator = undefined;
+		if (live.has(key)) {
+			board = live.get(key);
+		} else if (dead.has(key)) {
+			board = dead.get(key);
+		}
+		if (board !== undefined) {
+			s += `\nPhysical: [C: ${board.physical.cabinet}, F: ${board.physical.frame}, B: ${board.physical.board}]`;
+			if (board.network !== undefined) {
+				s += "\nIP Address: " + board.network.address;
+			}
+		} else {
+			s += "\nBoard not present or\nnot managed by Spalloc."
+		}
+		return s;
+	}
+
 	var current : BoardTriad = undefined;
-	function motion(e : MouseEvent) {
+	function motion(e: MouseEvent) {
 		const x = e.offsetX, y = e.offsetY;
 		const triad = inside(x, y, tloc);
 		if (triad !== undefined) {
@@ -191,11 +323,41 @@ function initialDrawAllocation(
 			}
 			ctx.strokeStyle = 'red';
 			drawTriadBoard(ctx, rootX, rootY, scale, triad);
+			setTooltip(triad, triadDescription(triad));
 		} else if (current !== undefined) {
 			ctx.strokeStyle = 'black';
 			drawTriadBoard(ctx, rootX, rootY, scale, current);
+			setTooltip();
 		}
 		current = triad;
 	}
+	function enter(e: MouseEvent) {
+		const x = e.offsetX, y = e.offsetY;
+		const triad = inside(x, y, tloc);
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				/* Should be unreachable... */
+				if (current === triad) {
+					return;
+				}
+				ctx.strokeStyle = 'black';
+				drawTriadBoard(ctx, rootX, rootY, scale, current);
+			}
+			ctx.strokeStyle = 'red';
+			drawTriadBoard(ctx, rootX, rootY, scale, triad);
+			setTooltip(triad, triadDescription(triad));
+		}
+	}
+	function leave(e: MouseEvent) {
+		e.offsetX;
+		if (current !== undefined) {
+			ctx.strokeStyle = 'black';
+			drawTriadBoard(ctx, rootX, rootY, scale, current);
+			setTooltip();
+		}
+	}
+
 	canv.addEventListener('mousemove', motion);
+	canv.addEventListener('mouseenter', enter);
+	canv.addEventListener('mouseleave', leave);
 };

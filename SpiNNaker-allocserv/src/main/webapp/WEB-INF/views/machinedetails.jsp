@@ -21,9 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<jsp:param name="title" value="Spalloc Machine" />
 	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
+<script>
 <jsp:include page="machinedetails_obj.jsp">
 	<jsp:param name="machine" value="${machine}"/>
 </jsp:include>
+</script>
 <body>
 
 <h1>Spalloc Machine</h1>
@@ -40,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th>Dimensions:</th>
-	<td>${machine.width }&times;${machine.height }</td>
+	<td>${machine.width }&times;${machine.height }&times;3</td>
 </tr>
 <tr>
 	<th>In-use:</th>
@@ -53,8 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </table>
 <p>
 <canvas id="machine_layout" width="300" height="200"></canvas>
+<canvas id="tooltip" width="100" height="50"></canvas>
 <script defer="defer">
-initialDrawAllocation("machine_layout", machine);
+initialDrawAllocation("machine_layout", "tooltip", machine);
 </script>
 </p>
 

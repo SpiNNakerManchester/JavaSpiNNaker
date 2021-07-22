@@ -289,6 +289,24 @@ public abstract class SQLQueries {
 					+ "ORDER BY board_num ASC";
 
 	/**
+	 * Get the boards (and related info) of a machine that are in service.
+	 */
+	// FIXME test
+	@Parameter("machine_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_LIVE_BOARDS =
+			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
+
+	/**
 	 * Get the boards (and related info) of a machine that have been disabled.
 	 */
 	@Parameter("machine_id")

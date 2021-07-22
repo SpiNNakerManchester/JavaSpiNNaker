@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import java.sql.SQLException;
+
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+
 /**
  * Basic coordinates of a board.
  *
@@ -40,7 +44,10 @@ public final class BoardCoords {
 	/** Physical board number. */
 	public final int board;
 
-	/** IP address of ethernet chip. */
+	/**
+	 * IP address of ethernet chip. May be {@code null} if the current user
+	 * doesn't have permission to see the board address at this point.
+	 */
 	public final String address;
 
 	/**
@@ -59,8 +66,8 @@ public final class BoardCoords {
 	 * @param address
 	 *            IP address of ethernet chip
 	 */
-	public BoardCoords(int x, int y, int z, int cabinet, int frame,
-			int board, String address) {
+	public BoardCoords(int x, int y, int z, int cabinet, int frame, int board,
+			String address) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -68,5 +75,78 @@ public final class BoardCoords {
 		this.frame = frame;
 		this.board = board;
 		this.address = address;
+	}
+
+	/**
+	 * Construct a set of board coordinates from a database row that describes
+	 * them.
+	 *
+	 * @param row
+	 *            Database row
+	 * @param shroudAddress
+	 *            Whether the {@link #address} should be shrouded.
+	 * @throws SQLException
+	 *             If the row lacks the entry needed or this is otherwise
+	 *             misused.
+	 */
+	public BoardCoords(Row row, boolean shroudAddress) throws SQLException {
+		x = row.getInt("x");
+		y = row.getInt("y");
+		z = row.getInt("z");
+		cabinet = row.getInt("cabinet");
+		frame = row.getInt("frame");
+		board = row.getInt("board_num");
+		address = shroudAddress ? null : row.getString("address");
+	}
+
+	/**
+	 * @return Logical triad X coordinate.
+	 */
+	public int getX() {
+		return x;
+	}
+
+	/**
+	 * @return Logical triad Y coordinate.
+	 */
+	public int getY() {
+		return y;
+	}
+
+	/**
+	 * @return Logical triad Z coordinate.
+	 */
+	public int getZ() {
+		return z;
+	}
+
+	/**
+	 * @return Physical cabinet number.
+	 */
+	public int getCabinet() {
+		return cabinet;
+	}
+
+	/**
+	 * @return Physical frame number.
+	 */
+	public int getFrame() {
+		return frame;
+	}
+
+	/**
+	 * @return Physical board number.
+	 */
+	public int getBoard() {
+		return board;
+	}
+
+	/**
+	 * @return IP address of ethernet chip. May be {@code null} if the current
+	 *         user doesn't have permission to see the board address at this
+	 *         point.
+	 */
+	public String getAddress() {
+		return address;
 	}
 }

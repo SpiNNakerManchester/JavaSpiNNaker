@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<script>
 machine = (
 <json:object>
 	<json:property name="name" value="${machine.name}" />
@@ -50,6 +49,41 @@ machine = (
 			</json:array>
 		</json:object>
 	</json:array>
+	<json:array name="live_boards" items="${machine.live}" var="board">
+		<json:object>
+			<json:object name="triad">
+				<json:property name="x" value="${ board.x }" />
+				<json:property name="y" value="${ board.y }" />
+				<json:property name="z" value="${ board.z }" />
+			</json:object>
+			<json:object name="physical">
+				<json:property name="cabinet" value="${ board.cabinet }" />
+				<json:property name="frame" value="${ board.frame }" />
+				<json:property name="board" value="${ board.board }" />
+			</json:object>
+			<%-- TODO shroud for non-admins--%>
+			<json:object name="network">
+				<json:property name="address" value="${ board.address }" />
+			</json:object>
+		</json:object>
+	</json:array>
+	<json:array name="dead_boards" items="${machine.dead}" var="board">
+		<json:object>
+			<json:object name="triad">
+				<json:property name="x" value="${ board.x }" />
+				<json:property name="y" value="${ board.y }" />
+				<json:property name="z" value="${ board.z }" />
+			</json:object>
+			<json:object name="physical">
+				<json:property name="cabinet" value="${ board.cabinet }" />
+				<json:property name="frame" value="${ board.frame }" />
+				<json:property name="board" value="${ board.board }" />
+			</json:object>
+			<%-- TODO shroud for non-admins--%>
+			<json:object name="network">
+				<json:property name="address" value="${ board.address }" />
+			</json:object>
+		</json:object>
+	</json:array>
 </json:object>
 );
-</script>

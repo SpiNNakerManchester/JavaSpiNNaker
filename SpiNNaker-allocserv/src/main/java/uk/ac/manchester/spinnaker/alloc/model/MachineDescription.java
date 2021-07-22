@@ -41,6 +41,10 @@ public class MachineDescription {
 
 	private List<String> tags = new ArrayList<>();
 
+	private List<BoardCoords> dead = new ArrayList<>();
+
+	private List<BoardCoords> live;
+
 	public MachineDescription() {
 	}
 
@@ -97,6 +101,28 @@ public class MachineDescription {
 
 	public void setNumInUse(int numInUse) {
 		this.numInUse = numInUse;
+	}
+
+	/**
+	 * @return the in-service boards
+	 */
+	public List<BoardCoords> getLive() {
+		return live;
+	}
+
+	public void setLive(List<BoardCoords> live) {
+		this.live = live;
+	}
+
+	/**
+	 * @return the out-of-service boards
+	 */
+	public List<BoardCoords> getDead() {
+		return dead;
+	}
+
+	public void setDead(List<BoardCoords> dead) {
+		this.dead = dead;
 	}
 
 	/**
