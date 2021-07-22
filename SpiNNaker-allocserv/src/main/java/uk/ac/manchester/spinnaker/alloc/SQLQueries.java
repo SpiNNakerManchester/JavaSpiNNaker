@@ -77,30 +77,22 @@ public abstract class SQLQueries {
 			"SELECT machine_id, machine_name, width, height FROM machines "
 					+ "WHERE machine_name = :machine_name LIMIT 1";
 
-	/** Count how many boards are in a machine. */
+	/** Count things on a machine. */
 	@Parameter("machine_id")
-	@ResultColumn("c")
+	@ResultColumn("board_count")
+	@ResultColumn("in_use")
+	@ResultColumn("num_jobs")
 	@SingleRowResult
-	protected static final String COUNT_BOARDS =
-			"SELECT COUNT(*) AS c FROM boards "
-					+ "WHERE boards.machine_id = :machine_id";
-
-	/** Count how many boards in a machine are in use. */
-	@Parameter("machine_id")
-	@ResultColumn("c")
-	@SingleRowResult
-	protected static final String COUNT_BOARDS_IN_USE =
-			"SELECT COUNT(*) AS c FROM boards "
-					+ "WHERE boards.machine_id = :machine_id "
-					+ "AND boards.allocated_job IS NOT NULL";
-
-	/** Count how many jobs are on a machine. */
-	@Parameter("machine_id")
-	@ResultColumn("c")
-	@SingleRowResult
-	protected static final String COUNT_JOBS_ON_MACHINE =
-			"SELECT COUNT(*) AS c FROM jobs "
-					+ "WHERE jobs.machine_id = :machine_id";
+	protected static final String COUNT_MACHINE_THINGS =
+			"WITH args(m) AS (VALUES (:machine_id)), "
+					+ "b AS (SELECT * from boards,args WHERE machine_id = m), "
+					+ "bc AS (SELECT COUNT(*) AS c FROM b), "
+					+ "iu AS (SELECT COUNT(*) AS c FROM b "
+					+ "WHERE allocated_job IS NOT NULL), "
+					+ "jc AS (SELECT COUNT(*) AS c FROM jobs,args "
+					+ "WHERE machine_id = m) "
+					+ "SELECT bc.c AS board_count, iu.c AS in_use, "
+					+ "jc.c AS num_jobs FROM bc, iu, jc";
 
 	/** Get basic information about jobs. Supports paging. */
 	@Parameter("limit")

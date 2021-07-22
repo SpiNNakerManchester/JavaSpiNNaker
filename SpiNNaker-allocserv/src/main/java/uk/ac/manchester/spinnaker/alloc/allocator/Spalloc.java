@@ -119,27 +119,25 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private List<MachineListEntryRecord> listMachines(Connection conn)
 			throws SQLException {
 		try (Query listMachines = query(conn, GET_ALL_MACHINES);
-				Query countBoards = query(conn, COUNT_BOARDS);
-				Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
-				Query countJobsOnMachine = query(conn, COUNT_JOBS_ON_MACHINE);
+				Query countMachineThings = query(conn, COUNT_MACHINE_THINGS);
 				Query getTags = query(conn, GET_TAGS)) {
 			// TODO can we merge these queries?
 			return rowsAsList(listMachines.call(),
-					row -> makeMachineListEntryRecord(countBoards,
-							countBoardsInUse, countJobsOnMachine, getTags,
-							row));
+					row -> makeMachineListEntryRecord(countMachineThings,
+							getTags, row));
 		}
 	}
 
-	private MachineListEntryRecord makeMachineListEntryRecord(Query countBoards,
-			Query countBoardsInUse, Query countJobsOnMachine, Query getTags,
-			Row row) throws SQLException {
+	private MachineListEntryRecord makeMachineListEntryRecord(
+			Query countMachineThings, Query getTags, Row row)
+			throws SQLException {
 		int id = row.getInt("machine_id");
 		MachineListEntryRecord rec = new MachineListEntryRecord();
 		rec.setName(row.getString("machine_name"));
-		rec.setNumBoards(countBoards.call1(id).get().getInt("c"));
-		rec.setNumInUse(countBoardsInUse.call1(id).get().getInt("c"));
-		rec.setNumJobs(countJobsOnMachine.call1(id).get().getInt("c"));
+		Row m = countMachineThings.call1(id).get();
+		rec.setNumBoards(m.getInt("board_count"));
+		rec.setNumInUse(m.getInt("in_use"));
+		rec.setNumJobs(m.getInt("num_jobs"));
 		rec.setTags(rowsAsList(getTags.call(id),
 				tagRow -> tagRow.getString("tag")));
 		return rec;
@@ -186,7 +184,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			String currentUser, boolean isAdmin) throws SQLException {
 		return db.execute(conn -> {
 			try (Query namedMachine = query(conn, GET_NAMED_MACHINE);
-					Query countBoardsInUse = query(conn, COUNT_BOARDS_IN_USE);
+					Query countMachineThings =
+							query(conn, COUNT_MACHINE_THINGS);
 					Query getTags = query(conn, GET_TAGS);
 					Query getJobs = query(conn, GET_MACHINE_JOBS);
 					Query getCoords = query(conn, GET_JOB_BOARD_COORDS);
@@ -203,8 +202,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				if (md == null) {
 					return Optional.empty();
 				}
-				md.setNumInUse(
-						countBoardsInUse.call1(md.getId()).get().getInt("c"));
+				md.setNumInUse(countMachineThings.call1(md.getId()).get()
+						.getInt("in_use"));
 				md.setTags(rowsAsList(getTags.call(md.getId()),
 						tagRow -> tagRow.getString("tag")));
 				md.setJobs(rowsAsList(getJobs.call(md.getId()), row -> {

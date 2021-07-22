@@ -125,12 +125,16 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 */
 	@PreDestroy
 	private void shutdown() {
-		for (CloserThread t : closerThreads) {
+		log.info("waiting for all database connections to close");
+		long before = System.currentTimeMillis();
+		for (CloserThread t : new ArrayList<>(closerThreads)) {
 			try {
 				t.join();
 			} catch (InterruptedException ignored) {
 			}
 		}
+		long after = System.currentTimeMillis();
+		log.info("waited for {} milliseconds", after - before);
 	}
 
 	/**

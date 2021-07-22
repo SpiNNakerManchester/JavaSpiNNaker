@@ -829,29 +829,15 @@ class DbTest {
 		}
 
 		@Test
-		void countBoards() throws SQLException {
-			try (Query q = query(c, COUNT_BOARDS)) {
+		void countMachineThings() throws SQLException {
+			try (Query q = query(c, COUNT_MACHINE_THINGS)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("c"), q.getRowColumnNames());
-				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
-			}
-		}
-
-		@Test
-		void countBoardsInUse() throws SQLException {
-			try (Query q = query(c, COUNT_BOARDS_IN_USE)) {
-				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("c"), q.getRowColumnNames());
-				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
-			}
-		}
-
-		@Test
-		void countJobsOnMachine() throws SQLException {
-			try (Query q = query(c, COUNT_JOBS_ON_MACHINE)) {
-				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("c"), q.getRowColumnNames());
-				assertEquals(0, q.call1(NO_MACHINE).get().getInt("c"));
+				assertSetEquals(set("board_count", "in_use", "num_jobs"),
+						q.getRowColumnNames());
+				Row r = q.call1(NO_MACHINE).get();
+				assertEquals(0, r.getInt("board_count"));
+				assertEquals(0, r.getInt("in_use"));
+				assertEquals(0, r.getInt("num_jobs"));
 			}
 		}
 
