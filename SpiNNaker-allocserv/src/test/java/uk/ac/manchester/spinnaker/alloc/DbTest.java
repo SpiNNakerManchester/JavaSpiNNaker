@@ -95,6 +95,12 @@ class DbTest {
 	private static final Set<String> MSC_BOARD_COORDS = set("board_id", "x",
 			"y", "z", "cabinet", "frame", "board_num", "address");
 
+	/**
+	 * Columns expected when building {@link BoardCoords} from a {@link Row}.
+	 */
+	private static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
+			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
+
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
@@ -362,8 +368,8 @@ class DbTest {
 		void getJobBoardCoords() throws SQLException {
 			try (Query q = query(c, GET_JOB_BOARD_COORDS)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("x", "y", "z", "cabinet", "frame",
-						"board_num", "address"), q.getRowColumnNames());
+				assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
+						q.getRowColumnNames());
 				assertFalse(q.call1(NO_JOB).isPresent());
 			}
 		}
@@ -408,11 +414,21 @@ class DbTest {
 		}
 
 		@Test
+		void getLiveBoards() throws SQLException {
+			try (Query q = query(c, GET_LIVE_BOARDS)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
+						q.getRowColumnNames());
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			}
+		}
+
+		@Test
 		void getDeadBoards() throws SQLException {
 			try (Query q = query(c, GET_DEAD_BOARDS)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("x", "y", "z", "cabinet", "frame",
-						"board_num", "address"), q.getRowColumnNames());
+				assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
+						q.getRowColumnNames());
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			}
 		}

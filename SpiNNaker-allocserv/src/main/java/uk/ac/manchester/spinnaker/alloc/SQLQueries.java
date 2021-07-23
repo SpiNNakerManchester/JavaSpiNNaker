@@ -269,7 +269,6 @@ public abstract class SQLQueries {
 	/**
 	 * Get the boards (and related info) of a machine that are in service.
 	 */
-	// FIXME test
 	@Parameter("machine_id")
 	@ResultColumn("x")
 	@ResultColumn("y")

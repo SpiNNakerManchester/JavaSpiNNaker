@@ -121,7 +121,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		try (Query listMachines = query(conn, GET_ALL_MACHINES);
 				Query countMachineThings = query(conn, COUNT_MACHINE_THINGS);
 				Query getTags = query(conn, GET_TAGS)) {
-			// TODO can we merge these queries?
 			return rowsAsList(listMachines.call(),
 					row -> makeMachineListEntryRecord(countMachineThings,
 							getTags, row));
