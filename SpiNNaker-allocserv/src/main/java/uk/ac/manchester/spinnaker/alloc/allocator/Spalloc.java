@@ -266,7 +266,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		JobListEntryRecord rec = new JobListEntryRecord();
 		int id = row.getInt("job_id");
 		rec.setId(id);
-		rec.setState(row.getEnum("job_state", JobState.class).name());
+		rec.setState(row.getEnum("job_state", JobState.class));
 		Integer numBoards = (Integer) row.getObject("allocation_size");
 		rec.setNumBoards(numBoards);
 		rec.setPowered((numBoards != null)

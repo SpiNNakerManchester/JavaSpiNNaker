@@ -70,7 +70,7 @@ public class JobListEntryRecord {
 
 	private URI detailsUrl;
 
-	private String state;
+	private JobState state;
 
 	private boolean powered;
 
@@ -118,11 +118,11 @@ public class JobListEntryRecord {
 	/**
 	 * @return the job state
 	 */
-	public String getState() { // TODO use correct type
+	public JobState getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(JobState state) {
 		this.state = state;
 	}
 

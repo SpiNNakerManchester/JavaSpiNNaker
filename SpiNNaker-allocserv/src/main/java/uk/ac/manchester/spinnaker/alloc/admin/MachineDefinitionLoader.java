@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.ValidatorFactory;
@@ -68,7 +69,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -763,6 +763,13 @@ public class MachineDefinitionLoader extends SQLQueries {
 	@Autowired
 	private ValidatorFactory validatorFactory;
 
+	@PostConstruct
+	private void setUp() throws SQLException {
+		try (Connection conn = db.getConnection()) {
+			DirInfo.load(conn);
+		}
+	}
+
 	/**
 	 * Read a JSON-converted traditional spalloc configuration and get the
 	 * machine definitions from inside.
@@ -1003,7 +1010,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 					continue;
 				}
 				makeLink(sql, machine, boardIds, here, d, there, d.opposite());
-				// TODO do we need to keep the link IDs here?
 			}
 		}
 	}

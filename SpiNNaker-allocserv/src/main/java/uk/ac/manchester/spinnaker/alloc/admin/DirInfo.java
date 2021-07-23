@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.allocator;
+package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**
@@ -44,7 +43,8 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  * <img src="doc-files/DirInfo1.png" width="450">
  * <p>
  * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0 chips
- * horizontally offset from 0,0,0.
+ * horizontally offset from 0,0,0. (Also, the real boards are slightly offset
+ * from this layout.)
  *
  * @author Donal Fellows
  * @see Direction
@@ -113,7 +113,6 @@ public final class DirInfo extends SQLQueries {
 	}
 
 	static void load(Connection conn) throws SQLException {
-		// TODO this class belongs elsewhere
 		if (MAP.isEmpty()) {
 			try (Query di = query(conn, LOAD_DIR_INFO)) {
 				for (Row row : di.call()) {

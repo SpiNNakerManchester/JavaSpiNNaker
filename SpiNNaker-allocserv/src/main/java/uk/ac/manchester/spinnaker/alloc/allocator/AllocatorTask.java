@@ -34,22 +34,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
-import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
@@ -94,13 +92,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Autowired
 	private QuotaManager quotaManager;
-
-	@PostConstruct
-	private void setUp() throws SQLException {
-		try (Connection conn = db.getConnection()) {
-			DirInfo.load(conn);
-		}
-	}
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -192,6 +183,12 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
+	/**
+	 * Destroy jobs that have missed their keepalive.
+	 *
+	 * @throws SQLException
+	 *             If anything goes wrong at the DB level
+	 */
 	@Scheduled(fixedDelay = INTER_DESTROY_DELAY)
 	public void expireJobs() throws SQLException {
 		if (serviceControl.isPaused()) {
@@ -245,7 +242,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 				Update killPending = update(conn, KILL_JOB_PENDING)) {
 			setPower(conn, id, PowerState.OFF, DESTROYED);
-			// TODO can we combine these?
+			// FIXME Don't kill pending tasks that are turning things off!
 			boolean success = mark.call(reason, id) > 0;
 			if (success) {
 				killAlloc.call(id);
@@ -521,6 +518,21 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		return updated;
 	}
 
+	/**
+	 * Issue a request to change the power for the boards of a job.
+	 *
+	 * @param conn
+	 *            The DB connection
+	 * @param jobId
+	 *            The job in question
+	 * @param power
+	 *            The power state to switch to
+	 * @param targetState
+	 *            The state to put the job in afterwards
+	 * @return Whether any changes are pending
+	 * @throws SQLException
+	 *             If DB access fails
+	 */
 	private boolean setPower(Connection conn, int jobId, PowerState power,
 			JobState targetState) throws SQLException {
 		try (Query getJobBoards = query(conn, GET_JOB_BOARDS);

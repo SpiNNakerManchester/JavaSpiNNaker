@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.model;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.BANK_OFFSET_MULTIPLIER;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.DirInfo;
+import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 
 /**
  * Represents link directions of a board.
