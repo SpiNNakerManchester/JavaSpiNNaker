@@ -23,41 +23,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <script>
 <jsp:include page="machinedetails_obj.jsp">
-	<jsp:param name="machine" value="${machine}"/>
+	<jsp:param name="machine" value="${ machine }"/>
 </jsp:include>
 </script>
 <body>
 
 <h1>Spalloc Machine</h1>
-<table class="lineTitle">
+<table>
 <tr>
-	<th>Name:</th>
-	<td>${machine.name }</td>
+	<th class="lineTitle">Name:</th>
+	<td>${ machine.name }</td>
 </tr>
 <tr>
-	<th>Tags:</th>
-	<td><c:forEach items="${machine.tags }" var="tag" varStatus="loop">
-	${tag }<c:if test="${!loop.last }">,</c:if>
+	<th class="lineTitle">Tags:</th>
+	<td><c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
+	${tag }<c:if test="${ !loop.last }">,</c:if>
 	</c:forEach></td>
 </tr>
 <tr>
-	<th>Dimensions:</th>
-	<td>${machine.width }&times;${machine.height }&times;3</td>
+	<th class="lineTitle">Dimensions:</th>
+	<td>${ machine.width }&times;${ machine.height }&times;3</td>
 </tr>
 <tr>
-	<th>In-use:</th>
-	<td>${machine.numInUse }</td>
+	<th class="lineTitle">Boards in use:</th>
+	<td>${ machine.numInUse }</td>
 </tr>
 <tr>
-	<th>Jobs:</th>
-	<td>${machine.jobs.size() }</td>
+	<th class="lineTitle">Running jobs:</th>
+	<td>${ machine.jobs.size() }</td>
 </tr>
 </table>
 <p>
 <canvas id="machine_layout" width="300" height="200"></canvas>
 <canvas id="tooltip" width="100" height="50"></canvas>
 <script defer="defer">
-initialDrawAllocation("machine_layout", "tooltip", machine);
+drawMachine("machine_layout", "tooltip", machine);
 </script>
 </p>
 

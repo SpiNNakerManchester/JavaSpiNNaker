@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--
 Copyright (c) 2021 The University of Manchester
 
@@ -18,19 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 machine = (
 <json:object>
-	<json:property name="name" value="${machine.name}" />
-	<json:property name="width" value="${machine.width}" />
-	<json:property name="height" value="${machine.height}" />
-	<json:property name="num_in_use" value="${machine.numInUse}" />
-	<json:array name="tags" items="${machine.tags}" />
-	<json:array name="jobs" items="${machine.jobs}" var="job">
+	<json:property name="name" value="${ machine.name }" />
+	<json:property name="width" value="${ machine.width }" />
+	<json:property name="height" value="${ machine.height }" />
+	<json:property name="num_in_use" value="${machine.numInUse }" />
+	<json:array name="tags" items="${ machine.tags }" />
+	<json:array name="jobs" items="${ machine.jobs }" var="job">
 		<json:object>
-			<json:property name="id" value="${job.id}" />
-			<json:property name="url" value="${job.url}" />
-			<c:if test="${job.owner.present}">
-				<json:property name="id" value="${job.owner.get()}" />
+			<json:property name="id" value="${ job.id }" />
+			<c:if test="${ job.owner.present }">
+				<json:property name="url" value="${ job.url }" />
+				<json:property name="owner" value="${ job.owner.get() }" />
 			</c:if>
-			<json:array name="boards" items="${job.boards}" var="board">
+			<json:array name="boards" items="${ job.boards }" var="board">
 				<json:object>
 					<json:object name="triad">
 						<json:property name="x" value="${ board.x }" />
@@ -42,14 +43,16 @@ machine = (
 						<json:property name="frame" value="${ board.frame }" />
 						<json:property name="board" value="${ board.board }" />
 					</json:object>
-					<json:object name="network">
-						<json:property name="address" value="${ board.address }" />
-					</json:object>
+					<c:if test="${ job.owner.present }">
+						<json:object name="network">
+							<json:property name="address" value="${ board.address }" />
+						</json:object>
+					</c:if>
 				</json:object>
 			</json:array>
 		</json:object>
 	</json:array>
-	<json:array name="live_boards" items="${machine.live}" var="board">
+	<json:array name="live_boards" items="${ machine.live }" var="board">
 		<json:object>
 			<json:object name="triad">
 				<json:property name="x" value="${ board.x }" />
@@ -61,13 +64,14 @@ machine = (
 				<json:property name="frame" value="${ board.frame }" />
 				<json:property name="board" value="${ board.board }" />
 			</json:object>
-			<%-- TODO shroud for non-admins--%>
-			<json:object name="network">
-				<json:property name="address" value="${ board.address }" />
-			</json:object>
+			<sec:authorize access="hasRole('ADMIN')">
+				<json:object name="network">
+					<json:property name="address" value="${ board.address }" />
+				</json:object>
+			</sec:authorize>
 		</json:object>
 	</json:array>
-	<json:array name="dead_boards" items="${machine.dead}" var="board">
+	<json:array name="dead_boards" items="${ machine.dead }" var="board">
 		<json:object>
 			<json:object name="triad">
 				<json:property name="x" value="${ board.x }" />
@@ -79,10 +83,11 @@ machine = (
 				<json:property name="frame" value="${ board.frame }" />
 				<json:property name="board" value="${ board.board }" />
 			</json:object>
-			<%-- TODO shroud for non-admins--%>
-			<json:object name="network">
-				<json:property name="address" value="${ board.address }" />
-			</json:object>
+			<sec:authorize access="hasRole('ADMIN')">
+				<json:object name="network">
+					<json:property name="address" value="${ board.address }" />
+				</json:object>
+			</sec:authorize>
 		</json:object>
 	</json:array>
 </json:object>

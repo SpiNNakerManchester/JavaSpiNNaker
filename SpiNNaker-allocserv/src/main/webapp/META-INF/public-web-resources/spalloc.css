@@ -36,7 +36,7 @@ footer {
 .textColumn {
 	text-align: left;
 }
-table.lineTitle > th {
+.lineTitle {
 	text-align: right;
 }
 

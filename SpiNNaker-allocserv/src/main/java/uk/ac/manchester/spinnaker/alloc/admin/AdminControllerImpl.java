@@ -76,15 +76,17 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
-	private static final String MAIN_VIEW = "main";
+	private static final String MAIN_VIEW = "admin/index";
 
-	private static final String USER_LIST_VIEW = "listusers";
+	private static final String USER_LIST_VIEW = "admin/listusers";
 
-	private static final String USER_DETAILS_VIEW = "userdetails";
+	private static final String USER_DETAILS_VIEW = "admin/userdetails";
 
-	private static final String BOARD_VIEW = "board";
+	private static final String CREATE_USER_VIEW = "admin/createuser";
 
-	private static final String MACHINE_VIEW = "machine";
+	private static final String BOARD_VIEW = "admin/board";
+
+	private static final String MACHINE_VIEW = "admin/machine";
 
 	private static final String USER_OBJ = "user";
 
@@ -212,7 +214,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Override
 	@GetMapping(CREATE_USER_PATH)
 	public ModelAndView getUserCreationForm() {
-		ModelAndView mav = new ModelAndView("createuser");
+		ModelAndView mav = new ModelAndView(CREATE_USER_VIEW);
 		mav.addObject(USER_OBJ, new UserRecord());
 		return addStandardContext(mav);
 	}

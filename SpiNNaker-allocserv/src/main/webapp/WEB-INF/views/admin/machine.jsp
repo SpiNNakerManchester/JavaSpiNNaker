@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<jsp:include page="head.jsp">
+<jsp:include page="../head.jsp">
 	<jsp:param value="Machine Management" name="title"/>
 </jsp:include>
 <body>
@@ -42,6 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </table>
 </form>
 
-<jsp:include page="adminfooter.jsp" />
+<jsp:include page="footer.jsp" />
 </body>
 </html>

@@ -45,9 +45,11 @@ job = (
 				<json:property name="frame" value="${ board.frame }"/>
 				<json:property name="board" value="${ board.board }"/>
 			</json:object>
-			<json:object name="network">
-				<json:property name="address" value="${ board.address }"/>
-			</json:object>
+			<c:if test="${ job.owner.present }">
+				<json:object name="network">
+					<json:property name="address" value="${ board.address }"/>
+				</json:object>
+			</c:if>
 		</json:object>
 	</json:array>
 	<json:property name="triad_width" value="${ job.triadWidth }"/>

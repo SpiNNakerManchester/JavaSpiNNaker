@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<jsp:include page="head.jsp">
+<jsp:include page="../head.jsp">
 	<jsp:param value="Board Management" name="title"/>
 </jsp:include>
 <h1>Spalloc Board Management</h1>
@@ -60,6 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </form:form>
 <button onclick="window.location.href='${ baseuri }'">Clear form</button>
 
-<jsp:include page="adminfooter.jsp" />
+<jsp:include page="footer.jsp" />
 </body>
 </html>

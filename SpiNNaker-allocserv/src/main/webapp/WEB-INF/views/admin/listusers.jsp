@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -15,19 +16,36 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<jsp:include page="head.jsp">
-	<jsp:param value="Spalloc Service Administration" name="title"/>
+<jsp:include page="../head.jsp">
+	<jsp:param value="User List" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Spalloc Service Administration</h1>
+<h1>Spalloc Users</h1>
 <p>
-<a href="${ machineUri }">Machines</a>
+<button onclick="location.href='${ createUserUri }'"
+		type="button">Create a new user</button>
 <p>
-<a href="${ boardsUri }">Boards</a>
-<p>
-<a href="${ usersUri }">Users</a>
+<table>
+	<thead>
+		<tr>
+			<th>Username</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+    <c:forEach items="${ userlist }" var="item">
+	    <tr>
+		    <td>${item.key }</td>
+		    <td>
+		    	<button onclick="location.href='${ item.value }'"
+		    			type="button">Manage</button>
+		    </td>
+	    </tr>
+    </c:forEach>
+	</tbody>
+</table>
 
-<jsp:include page="basicfooter.jsp" />
+<jsp:include page="footer.jsp" />
 </body>
 </html>

@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <script>
 <jsp:include page="jobdetails_obj.jsp">
-	<jsp:param name="job" value="${job}"/>
+	<jsp:param name="job" value="${ job }"/>
 </jsp:include>
 </script>
 <script src="spalloc.js">
@@ -31,44 +31,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Spalloc Job</h1>
 
-<table class="lineTitle">
+<table>
 <tr>
-	<th>Job ID:</th>
-	<td>${job.id }</td>
+	<th class="lineTitle">Job ID:</th>
+	<td>${ job.id }</td>
 </tr>
 <tr>
-	<th>Owner:</th>
-	<td>${job.owner.orElse('[SHROUDED]') }</td>
+	<th class="lineTitle">Owner:</th>
+	<td>${ job.owner.orElse('[SHROUDED]') }</td>
 </tr>
 <tr>
-	<th>State:</th>
-	<td>${job.state }</td>
+	<th class="lineTitle">State:</th>
+	<td>${ job.state }</td>
 </tr>
 <tr>
-	<th>Start time:</th>
-	<td>${job.startTime }</td>
+	<th class="lineTitle">Start time:</th>
+	<td>${ job.startTime }</td>
 </tr>
 <tr>
-	<th>Keepalive:</th>
-	<td>${job.keepAlive }</td>
+	<th class="lineTitle">Keepalive:</th>
+	<td>${ job.keepAlive }</td>
 </tr>
 <tr>
-	<th>Owner host:</th>
-	<td>${job.ownerHost.orElse('[SHROUDED]') }</td>
+	<th class="lineTitle">Owner host:</th>
+	<td>${ job.ownerHost.orElse('[SHROUDED]') }</td>
 </tr>
 <tr>
-	<th>Request:</th>
-	<td>${job.request }</td>
+	<th class="lineTitle">Request:</th>
 </tr>
 <tr>
-	<th>Allocation:</th>
-	<td>
+	<td colspan="2">${ job.request }</td>
+</tr>
+<tr>
+	<th class="lineTitle">Allocation:</th>
+</tr>
+<tr>
+	<td colspan="2">
 		<c:if test="${ not empty job.boards }">
 			<canvas id="board_layout" width="300" height="200"></canvas>
+			<canvas id="tooltip" width="100" height="50"></canvas>
 			<script defer="defer">
-// TODO what goes here?
+			drawJob("board_layout", "tooltip", job);
 			</script>
-			<em>TODO: board layout</em>
 		</c:if>
 		<c:if test="${ empty job.boards }">
 			No allocation
@@ -76,28 +80,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</td>
 </tr>
 <tr>
-	<th>Hostname:</th>
-	<td>${job.boards.empty ? 'not yet allocated' : job.boards[0].address }</td>
+	<th class="lineTitle">Hostname:</th>
+	<td>${ job.boards.empty ? 'not yet allocated' : job.boards[0].address }</td>
 </tr>
 <tr>
-	<th>Width:</th>
-	<td>${job.width.present ? job.width.get() : 'not yet allocated' }</td>
+	<th class="lineTitle">Width:</th>
+	<td>${ job.width.present ? job.width.get() : 'not yet allocated' }</td>
 </tr>
 <tr>
-	<th>Height:</th>
-	<td>${job.height.present ? job.height.get() : 'not yet allocated' }</td>
+	<th class="lineTitle">Height:</th>
+	<td>${ job.height.present ? job.height.get() : 'not yet allocated' }</td>
 </tr>
 <tr>
-	<th>Num boards:</th>
-	<td>${job.boards.size() > 0 ? job.boards.size : 'not yet allocated' }</td>
+	<th class="lineTitle">Num boards:</th>
+	<td>${ job.boards.size() > 0 ? job.boards.size : 'not yet allocated' }</td>
 </tr>
 <tr>
-	<th>Board power:</th>
-	<td>${job.powered ? 'on' : 'off' }</td>
+	<th class="lineTitle">Board power:</th>
+	<td>${ job.powered ? 'on' : 'off' }</td>
 </tr>
 <tr>
-	<th>Running on:</th>
-	<td><a href="${job.machineUrl }">${job.machine }</a></td>
+	<th class="lineTitle">Running on:</th>
+	<td><a href="${ job.machineUrl }">${ job.machine }</a></td>
 </tr>
 </table>
 
