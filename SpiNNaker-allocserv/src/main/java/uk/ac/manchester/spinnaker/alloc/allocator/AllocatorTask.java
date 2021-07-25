@@ -20,6 +20,7 @@ import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
@@ -155,8 +157,17 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			return;
 		}
 
-		if (db.execute(this::allocate)) {
-			epochs.nextJobsEpoch();
+		try {
+			if (db.execute(this::allocate)) {
+				epochs.nextJobsEpoch();
+			}
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; "
+						+ "will try allocation processing later");
+				return;
+			}
+			throw e;
 		}
 	}
 
@@ -195,9 +206,18 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			return;
 		}
 
-		if (db.execute(this::expireJobs)) {
-			epochs.nextJobsEpoch();
-			epochs.nextMachineEpoch();
+		try {
+			if (db.execute(this::expireJobs)) {
+				epochs.nextJobsEpoch();
+				epochs.nextMachineEpoch();
+			}
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; "
+						+ "will try job expiry processing later");
+				return;
+			}
+			throw e;
 		}
 	}
 

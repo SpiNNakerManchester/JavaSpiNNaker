@@ -92,6 +92,8 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 	private static final String BOARD_OBJ = "board";
 
+	private static final String MACHINE_LIST_OBJ = "machineNames";
+
 	@Autowired
 	private UserControl userController;
 
@@ -315,6 +317,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	public ModelAndView boards() {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW);
 		mav.addObject(BOARD_OBJ, new BoardRecord());
+		mav.addObject(MACHINE_LIST_OBJ, getMachineNames());
 		return addStandardContext(mav);
 	}
 
@@ -361,7 +364,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 		// Get or set
 		try {
-			if (board.isEnabled() == null) {
+			if (!board.isEnabledDefined()) {
 				board.setEnabled(bs.getState());
 			} else {
 				log.info(
@@ -374,14 +377,15 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			return errors("database access failed: " + e.getMessage());
 		}
 		model.put(BOARD_OBJ, bs);
+		model.put(MACHINE_LIST_OBJ, getMachineNames());
 		return addStandardContext(mav);
 	}
 
 	@Override
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineUploadForm() {
-		return addStandardContext(new ModelAndView(MACHINE_VIEW, "machineNames",
-				getMachineNames()));
+		return addStandardContext(new ModelAndView(MACHINE_VIEW,
+				MACHINE_LIST_OBJ, getMachineNames()));
 	}
 
 	@Override
@@ -399,7 +403,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			return errors("problem with processing file: " + e.getMessage());
 		}
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW);
-		mav.addObject("machineNames", getMachineNames());
+		mav.addObject(MACHINE_LIST_OBJ, getMachineNames());
 		mav.addObject("definedMachines", machines);
 		return addStandardContext(mav);
 	}

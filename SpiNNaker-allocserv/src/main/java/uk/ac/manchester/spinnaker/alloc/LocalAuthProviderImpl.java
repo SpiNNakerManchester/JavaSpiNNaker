@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -48,6 +49,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
@@ -375,6 +377,13 @@ public class LocalAuthProviderImpl extends SQLQueries
 				log.info("automatically unlocked user {}",
 						row.getString("user_name"));
 			}
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; "
+						+ "will try user unlock processing later");
+				return;
+			}
+			throw e;
 		}
 	}
 }

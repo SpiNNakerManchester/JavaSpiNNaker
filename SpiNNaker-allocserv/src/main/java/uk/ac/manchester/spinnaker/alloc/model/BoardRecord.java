@@ -166,8 +166,15 @@ public class BoardRecord {
 	/**
 	 * @return whether the board is enabled
 	 */
-	public Boolean isEnabled() {
+	public boolean isEnabled() {
 		return enabled;
+	}
+
+	/**
+	 * @return whether the board enabled state is defined
+	 */
+	public boolean isEnabledDefined() {
+		return enabled != null;
 	}
 
 	public void setEnabled(Boolean enabled) {

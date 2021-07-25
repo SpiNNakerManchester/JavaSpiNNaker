@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <form:form method="POST" modelAttribute="board">
     <form:label path="machineName">Machine: </form:label>
     <form:select path="machineName">
-    <form:options value="${machineNames }"/>
+    <form:options items="${ machineNames }"/>
     </form:select>
     <br>
     Triad coordinates:
@@ -48,13 +48,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <form:label path="ipAddress">IP Address: </form:label>
     <form:input path="ipAddress" type="text"/>
     <br>
-    <c:if test="${ enabled != null }">
-		<form:label path="enabled"></form:label>
+    <c:if test="${ board.enabledDefined }">
+		<form:label path="enabled">Enable: </form:label>
 		<form:checkbox path="enabled"/>
 		<p>
 		<input type="submit" value="Change State" />
     </c:if>
-    <c:if test="${ enabled == null }">
+    <c:if test="${ not board.enabledDefined }">
 		<input type="submit" value="Look Up Board" />
     </c:if>
 </form:form>

@@ -25,6 +25,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -55,6 +56,7 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
@@ -164,8 +166,16 @@ public class BMPController extends SQLQueries {
 			return;
 		}
 
-		for (Request req : takeRequests()) {
-			addRequest(req);
+		try {
+			for (Request req : takeRequests()) {
+				addRequest(req);
+			}
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; will try power processing later");
+				return;
+			}
+			throw e;
 		}
 	}
 
