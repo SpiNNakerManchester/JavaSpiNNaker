@@ -248,19 +248,19 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Override
 	@GetMapping(USER_PATH)
 	public ModelAndView showUserForm(@PathVariable("id") int id) {
+		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
+		Optional<UserRecord> user;
 		try {
-			Optional<UserRecord> user = userController.getUser(id);
+			user = userController.getUser(id);
 			if (!user.isPresent()) {
 				return errors("no such user");
 			}
-			ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-			UserRecord realUser = user.get().sanitise();
-			mav.addObject(USER_OBJ, realUser);
-			mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
-			return addStandardContext(mav);
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
+		mav.addObject(USER_OBJ, user.get().sanitise());
+		mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
+		return addStandardContext(mav);
 	}
 
 	@Override
@@ -292,6 +292,8 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
 			Principal principal) {
+		ModelAndView mav = new ModelAndView(
+				"redirect:" + uri(SELF.listUsers()).getPath());
 		String adminUser = principal.getName();
 		try {
 			Optional<String> deletedUsername =
@@ -301,15 +303,13 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			}
 			log.info("deleted user ID={} username={}", id,
 					deletedUsername.get());
-			ModelAndView mav = new ModelAndView(
-					"redirect:" + uri(SELF.listUsers()).getPath());
 			// Not sure that these are the correct place
 			mav.addObject("notice", "deleted " + deletedUsername.get());
-			mav.addObject(USER_OBJ, new UserRecord());
-			return addStandardContext(mav);
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
+		mav.addObject(USER_OBJ, new UserRecord());
+		return addStandardContext(mav);
 	}
 
 	@Override
@@ -344,6 +344,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 						.findIP(board.getMachineName(), board.getIpAddress())
 						.orElse(null);
 			} else {
+				// TODO should be unreachable
 				return errors("bad address");
 			}
 		} catch (SQLException e) {

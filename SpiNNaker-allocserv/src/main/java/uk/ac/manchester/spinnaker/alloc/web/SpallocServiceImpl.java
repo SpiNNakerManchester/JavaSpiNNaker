@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -279,8 +280,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 	}
 
 	@Override
-	public ServiceDescription describeService(UriInfo ui, SecurityContext sec) {
-		return new ServiceDescription(v, ui, sec);
+	public ServiceDescription describeService(UriInfo ui, SecurityContext sec,
+			HttpServletRequest req) {
+		CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
+		return new ServiceDescription(v, ui, sec, token);
 	}
 
 	@Override

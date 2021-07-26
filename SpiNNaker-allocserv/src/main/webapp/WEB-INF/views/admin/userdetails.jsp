@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <form:input path="userName" type="text"/>
     <form:select path="trustLevel">
     <form:option value="">pick a level</form:option>
-    <form:options items="${trustLevels }"/>
+    <form:options items="${ trustLevels }"/>
     </form:select>
     <br>
     <form:label path="password">Password: </form:label>
@@ -48,8 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Last failed login: ${ user.lastFailedLogin }
     <p>
     Quotas:
-    <c:forEach items="${user.quota}" var="item">
-    <br> ${item.key } : ${item.value } board-seconds
+    <c:forEach items="${ user.quota }" var="q">
+    	<br> ${ q.key } : ${ q.value } board-seconds
+<%-- TODO add support for editing user quotas --%>
     </c:forEach>
     <p>
     <input type="submit" value="Update" />

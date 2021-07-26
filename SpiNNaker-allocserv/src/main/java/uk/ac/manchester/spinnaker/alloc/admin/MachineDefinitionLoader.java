@@ -787,7 +787,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 */
 	public List<Machine> readMachineDefinitions(File file)
 			throws IOException, JsonParseException, JsonMappingException {
-		Configuration cfg =  mapper.readValue(file, Configuration.class);
+		Configuration cfg = mapper.readValue(file, Configuration.class);
 		validate(cfg);
 		return cfg.getMachines();
 	}
@@ -809,7 +809,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 */
 	public List<Machine> readMachineDefinitions(InputStream stream)
 			throws IOException, JsonParseException, JsonMappingException {
-		Configuration cfg =  mapper.readValue(stream, Configuration.class);
+		Configuration cfg = mapper.readValue(stream, Configuration.class);
 		validate(cfg);
 		return cfg.getMachines();
 	}

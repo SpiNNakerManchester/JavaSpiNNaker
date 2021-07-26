@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <script>
-<jsp:include page="machinedetails_obj.jsp">
+<jsp:include page="data/machinedetails_obj.jsp">
 	<jsp:param name="machine" value="${ machine }"/>
 </jsp:include>
 </script>

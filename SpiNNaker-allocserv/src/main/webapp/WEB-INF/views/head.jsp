@@ -17,9 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>${param.title}</title>
+    <title>${ param.title }</title>
 	<link rel="stylesheet" href="/system/resources/spalloc.css">
-	<c:if test="${param.spalloclib ne null }">
+	<c:if test="${ param.spalloclib ne null }">
 		<script src="/system/resources/spinnaker.js">
 		</script>
 	</c:if>

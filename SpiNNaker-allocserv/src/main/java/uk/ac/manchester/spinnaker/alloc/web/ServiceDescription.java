@@ -26,6 +26,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.springframework.security.web.csrf.CsrfToken;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -44,15 +46,26 @@ public class ServiceDescription {
 	@JsonInclude(NON_NULL)
 	private URI machinesRef;
 
+	@JsonInclude(NON_NULL)
+	private String csrfHeader;
+
+	@JsonInclude(NON_NULL)
+	private String csrfToken;
+
 	public ServiceDescription() {
 	}
 
-	ServiceDescription(Version version, UriInfo ui, SecurityContext sec) {
+	ServiceDescription(Version version, UriInfo ui, SecurityContext sec,
+			CsrfToken token) {
 		this.version = version;
 		if (sec.isUserInRole("READER")) {
 			UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
 			jobsRef = ub.build(JOB);
 			machinesRef = ub.build(MACH);
+		}
+		if (token != null) {
+			csrfHeader = token.getHeaderName();
+			csrfToken = token.getToken();
 		}
 	}
 
@@ -81,5 +94,19 @@ public class ServiceDescription {
 
 	public void setMachinesRef(URI machinesRef) {
 		this.machinesRef = machinesRef;
+	}
+
+	/**
+	 * @return the name of the HTTP header to pass the CSRF token in
+	 */
+	public String getCsrfHeader() {
+		return csrfHeader;
+	}
+
+	/**
+	 * @return the CSRF token
+	 */
+	public String getCsrfToken() {
+		return csrfToken;
 	}
 }

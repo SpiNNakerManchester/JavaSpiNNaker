@@ -106,6 +106,8 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @param security
 	 *            What are the user's identity and granted permissions?
+	 * @param request
+	 *            Details about the request, used to extract the CSRF token.
 	 * @return A wrapped {@link ServiceDescription}
 	 * @throws SQLException
 	 *             If anything goes wrong.
@@ -116,7 +118,8 @@ public interface SpallocServiceAPI {
 			description = "Get a description of the overall service.")
 	@Produces(APPLICATION_JSON)
 	ServiceDescription describeService(@Context UriInfo ui,
-			@Context SecurityContext security) throws SQLException;
+			@Context SecurityContext security,
+			@Context HttpServletRequest request) throws SQLException;
 
 	/**
 	 * Get a description of the machines.

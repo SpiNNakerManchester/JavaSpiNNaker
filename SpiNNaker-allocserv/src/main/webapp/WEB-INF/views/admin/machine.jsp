@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Machine Import</h1>
 <c:if test="${ not empty definedMachines }">
-	<c:forEach items="${definedMachines}" var="item">
-		Machine called "<code>${ item.name }</code>" (${ item.width }&times;${ item.height }) defined.<br>
+	<c:forEach items="${ definedMachines }" var="m">
+		Machine called "<code>${ m.name }</code>" (${ m.width }&times;${ m.height }) defined.<br>
 	</c:forEach>
 </c:if>
 <form method="POST" enctype="multipart/form-data">

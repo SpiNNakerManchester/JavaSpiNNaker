@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<jsp:param value="Spalloc Job" name="title"/>
 </jsp:include>
 <script>
-<jsp:include page="jobdetails_obj.jsp">
+<jsp:include page="data/jobdetails_obj.jsp">
 	<jsp:param name="job" value="${ job }"/>
 </jsp:include>
 </script>

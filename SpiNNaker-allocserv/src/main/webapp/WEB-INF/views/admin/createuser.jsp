@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <form:input path="userName" type="text"/>
     <form:select path="trustLevel">
     <form:option value="">pick a level</form:option>
-    <form:options items="${trustLevels }"/>
+    <form:options items="${ trustLevels }"/>
     </form:select>
     <br>
     <form:label path="password">Password: </form:label>

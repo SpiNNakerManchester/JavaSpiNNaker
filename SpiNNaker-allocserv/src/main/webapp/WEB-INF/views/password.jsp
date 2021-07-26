@@ -29,7 +29,7 @@ This is a USER form; all users may access this to alter their own password.
 <h1>Change Password</h1>
 
 <form:form method="POST" modelAttribute="user">
-    User Name: ${user.username }
+    User Name: ${ user.username }
     <br>
     <form:label path="oldPassword">Old Password: </form:label>
     <form:input path="oldPassword" type="password" />

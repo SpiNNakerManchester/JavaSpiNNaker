@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<javadoc.version>3.3.0</javadoc.version>
 		<cxf.version>3.4.3</cxf.version>
 		<spring.version>5.2.13.RELEASE</spring.version>
+		<jackson.version>2.12.4</jackson.version>
 	</properties>
 
 	<dependencyManagement>
@@ -109,7 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>2.12.4</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -298,7 +299,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Utilities</title>
-								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*</packages>
+								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*:uk.ac.manchester.spinnaker.py2json</packages>
+							</group>
+							<group>
+								<title>Allocation Service</title>
+								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
 						</groups>
 					</configuration>
@@ -448,6 +453,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
+		<module>SpiNNaker-allocator</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -593,7 +599,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${javadoc.version}</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -673,6 +678,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<pluginManagement>
 					<plugins>
 						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<configuration>
 								<additionalOptions>
@@ -706,6 +712,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<pluginManagement>
 					<plugins>
 						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<configuration>
 								<doclint>none</doclint>

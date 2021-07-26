@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Spalloc Machines</h1>
 
-<c:if test="${empty machineList}">
+<c:if test="${ empty machineList }">
 	<p>No machines are defined!</p>
 </c:if>
-<c:if test="${not empty machineList}">
+<c:if test="${ not empty machineList }">
 <table border="1">
 <thead>
 <tr>
@@ -38,22 +38,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 </thead>
 <tbody>
-<c:forEach items="${machineList}" var="item">
+<c:forEach items="${ machineList}" var="machine">
 <tr>
     <td class="textColumn">
-    <c:if test="${item.detailsUrl.present }">
-    	<a href="${item.detailsUrl.get() }"><code>${item.name }</code></a>
+    <c:if test="${ machine.detailsUrl.present }">
+    	<a href="${ machine.detailsUrl.get() }"><code>${ machine.name }</code></a>
     </c:if>
-    <c:if test="${!item.detailsUrl.present }">
-    	<code>${item.name }</code>
+    <c:if test="${ !machine.detailsUrl.present }">
+    	<code>${ machine.name }</code>
     </c:if>
     </td>
-    <td class="numberColumn">${item.numBoards }</td>
-    <td class="numberColumn">${item.numInUse }</td>
-    <td class="numberColumn">${item.numJobs }</td>
+    <td class="numberColumn">${ machine.numBoards }</td>
+    <td class="numberColumn">${ machine.numInUse }</td>
+    <td class="numberColumn">${ machine.numJobs }</td>
     <td class="textColumn">
-    <c:forEach items="${item.tags }" var="tag">
-		<code>${tag }</code>,
+    <c:forEach items="${ machine.tags }" var="tag">
+		<code>${ tag }</code>,
     </c:forEach>
     </td>
 </tr>
