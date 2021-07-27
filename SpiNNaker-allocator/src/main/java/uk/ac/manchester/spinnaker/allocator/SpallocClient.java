@@ -36,6 +36,8 @@ public interface SpallocClient {
 
 	List<Job> listJobs() throws IOException;
 
+	Job createJob() throws IOException; // FIXME arguments
+
 	interface Machine {
 		/** @return The name of the machine. */
 		String getName();
@@ -73,63 +75,195 @@ public interface SpallocClient {
 
 		boolean getPower() throws IOException;
 
-		void setPower(boolean switchOn) throws IOException;
+		boolean setPower(boolean switchOn) throws IOException;
 
 		WhereIs whereIs(HasChipLocation chip) throws IOException;
 	}
 
 	@JsonFormat(shape = Shape.ARRAY)
 	class Triad {
-		public int x;
-		public int y;
-		public int z;
+		private int x;
+
+		private int y;
+
+		private int z;
+
+		public int getX() {
+			return x;
+		}
+
+		public void setX(int x) {
+			this.x = x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		public void setY(int y) {
+			this.y = y;
+		}
+
+		public int getZ() {
+			return z;
+		}
+
+		public void setZ(int z) {
+			this.z = z;
+		}
 
 		@Override
 		public String toString() {
-			return String.format("[X:%d, Y:%d, Z:%d]", x,y,z);
+			return String.format("[X:%d, Y:%d, Z:%d]", x, y, z);
 		}
 	}
 
 	@JsonFormat(shape = Shape.ARRAY)
 	class Physical {
-		public int cabinet;
-		public int frame;
-		public int board;
+		private int cabinet;
+
+		private int frame;
+
+		private int board;
+
+		public int getCabinet() {
+			return cabinet;
+		}
+
+		public void setCabinet(int cabinet) {
+			this.cabinet = cabinet;
+		}
+
+		public int getFrame() {
+			return frame;
+		}
+
+		public void setFrame(int frame) {
+			this.frame = frame;
+		}
+
+		public int getBoard() {
+			return board;
+		}
+
+		public void setBoard(int board) {
+			this.board = board;
+		}
 
 		@Override
 		public String toString() {
-			return String.format("[%d:%d:%d]", cabinet, frame ,board);
+			return String.format("[%d:%d:%d]", cabinet, frame, board);
 		}
 	}
 
 	class WhereIs {
 		@JsonAlias("job-id")
-		public Integer jobId;
+		private Integer jobId;
 
 		@JsonAlias("job-ref")
-		public URI jobRef;
+		private URI jobRef;
 
 		@JsonAlias("job-chip")
-		public ChipLocation jobChip;
+		private ChipLocation jobChip;
 
-		public ChipLocation chip;
+		private ChipLocation chip;
 
 		@JsonIgnore
-		public Machine machineHandle;
+		private Machine machineHandle;
 
 		@JsonAlias("machine")
-		public String machineName;
+		private String machineName;
 
 		@JsonAlias("machine-ref")
-		public URI machineRef;
+		private URI machineRef;
 
 		@JsonAlias("board-chip")
-		public ChipLocation boardChip;
+		private ChipLocation boardChip;
 
 		@JsonAlias("logical-board-coordinates")
-		public Triad logicalCoords;
+		private Triad logicalCoords;
 
 		@JsonAlias("physical-board-coordinates")
-		public Physical physicalCoords;
+		private Physical physicalCoords;
+
+		public Integer getJobId() {
+			return jobId;
+		}
+
+		public void setJobId(Integer jobId) {
+			this.jobId = jobId;
+		}
+
+		public URI getJobRef() {
+			return jobRef;
+		}
+
+		public void setJobRef(URI jobRef) {
+			this.jobRef = jobRef;
+		}
+
+		public ChipLocation getJobChip() {
+			return jobChip;
+		}
+
+		public void setJobChip(ChipLocation jobChip) {
+			this.jobChip = jobChip;
+		}
+
+		public ChipLocation getChip() {
+			return chip;
+		}
+
+		public void setChip(ChipLocation chip) {
+			this.chip = chip;
+		}
+
+		public Machine getMachineHandle() {
+			return machineHandle;
+		}
+
+		public void setMachineHandle(Machine machineHandle) {
+			this.machineHandle = machineHandle;
+		}
+
+		public String getMachineName() {
+			return machineName;
+		}
+
+		public void setMachineName(String machineName) {
+			this.machineName = machineName;
+		}
+
+		public URI getMachineRef() {
+			return machineRef;
+		}
+
+		public void setMachineRef(URI machineRef) {
+			this.machineRef = machineRef;
+		}
+
+		public ChipLocation getBoardChip() {
+			return boardChip;
+		}
+
+		public void setBoardChip(ChipLocation boardChip) {
+			this.boardChip = boardChip;
+		}
+
+		public Triad getLogicalCoords() {
+			return logicalCoords;
+		}
+
+		public void setLogicalCoords(Triad logicalCoords) {
+			this.logicalCoords = logicalCoords;
+		}
+
+		public Physical getPhysicalCoords() {
+			return physicalCoords;
+		}
+
+		public void setPhysicalCoords(Physical physicalCoords) {
+			this.physicalCoords = physicalCoords;
+		}
 	}
 }
