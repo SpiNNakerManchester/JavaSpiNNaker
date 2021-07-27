@@ -374,19 +374,16 @@ public class SpallocClientFactory {
 		 * @param action
 		 *            The action to be repeated if it fails due to session
 		 *            expiry.
-		 * @param csrfRenewer
-		 *            How to renew the CSRF token, if that's desired.
 		 * @return The result of the action
 		 * @throws IOException
 		 *             If things go wrong.
 		 */
-		<T> T withRenewal(Action<?> csrfRenewer, Action<T> action)
-				throws IOException {
+		<T> T withRenewal(Action<T> action) throws IOException {
 			try {
 				return action.act();
 			} catch (HTTPException e) {
 				if (e.getStatusCode() == HTTP_UNAUTHORIZED) {
-					renew(csrfRenewer);
+					renew(this::discoverRoot);
 					return action.act();
 				}
 				throw e;
@@ -394,17 +391,23 @@ public class SpallocClientFactory {
 		}
 
 		/**
-		 * Install the real CSRF controls. The session does not know how to
-		 * obtain these values!
+		 * Discovers the root of a Spalloc service. Also sets up the true CSRF
+		 * token handling.
 		 *
-		 * @param csrfHeader
-		 *            the name of the CSRF header
-		 * @param csrfToken
-		 *            the value to put in the CSRF header
+		 * @return The service root information.
+		 * @throws IOException
+		 *             If access fails.
 		 */
-		void setCSRF(String csrfHeader, String csrfToken) {
-			this.csrfHeader = csrfHeader;
-			this.csrf = csrfToken;
+		RootInfo discoverRoot() throws IOException {
+			HttpURLConnection conn = connection(SPALLOC_ROOT);
+			try (InputStream is = conn.getInputStream()) {
+				RootInfo root = jsonMapper.readValue(is, RootInfo.class);
+				this.csrfHeader = root.csrfHeader;
+				this.csrf = root.csrfToken;
+				root.csrfHeader = null;
+				root.csrfToken = null;
+				return root;
+			}
 		}
 	}
 
@@ -549,25 +552,10 @@ public class SpallocClientFactory {
 		URI jobs, machines;
 		Version v;
 
-		RootInfo ri = s.withRenewal(null, () -> {
-			HttpURLConnection conn = s.connection(SPALLOC_ROOT);
-			try (InputStream is = conn.getInputStream()) {
-				return jsonMapper.readValue(is, RootInfo.class);
-			}
-		});
-		s.setCSRF(ri.csrfHeader, ri.csrfToken);
+		RootInfo ri = s.discoverRoot();
 		jobs = ri.jobsURI;
 		machines = ri.machinesURI;
 		v = ri.version;
-
-		Action<Object> csrfRenew = () -> {
-			HttpURLConnection conn = s.connection(SPALLOC_ROOT);
-			try (InputStream is = conn.getInputStream()) {
-				RootInfo root = jsonMapper.readValue(is, RootInfo.class);
-				s.setCSRF(root.csrfHeader, root.csrfToken);
-			}
-			return null;
-		};
 
 		return new SpallocClient() {
 			Session session = s;
@@ -579,7 +567,7 @@ public class SpallocClientFactory {
 
 			@Override
 			public List<Job> listJobs(boolean wait) throws IOException {
-				return session.withRenewal(csrfRenew, () -> {
+				return session.withRenewal(() -> {
 					HttpURLConnection conn =
 							wait ? session.connection(jobs, WAIT_FLAG)
 									: session.connection(jobs);
@@ -595,7 +583,7 @@ public class SpallocClientFactory {
 			@Override
 			public Job createJob(CreateJob createInstructions)
 					throws IOException {
-				URI uri = session.withRenewal(csrfRenew, () -> {
+				URI uri = session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(jobs, true);
 					conn.setDoOutput(true);
 					conn.setRequestProperty("Content-Type", "application/json");
@@ -614,12 +602,12 @@ public class SpallocClientFactory {
 			}
 
 			Job job(URI uri) {
-				return new JobImpl(this, session, csrfRenew, asDir(uri));
+				return new JobImpl(this, session, asDir(uri));
 			}
 
 			@Override
 			public List<Machine> listMachines() throws IOException {
-				return session.withRenewal(csrfRenew, () -> {
+				return session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(machines);
 					try (InputStream is = conn.getInputStream()) {
 						Machines ms = jsonMapper.readValue(is, Machines.class);
@@ -627,7 +615,7 @@ public class SpallocClientFactory {
 						for (BriefMachineDescription bmd : ms.machines) {
 							machineMap.computeIfAbsent(bmd.name,
 									name -> new MachineImpl(this, session,
-											csrfRenew, bmd));
+											bmd));
 						}
 						return ms.machines.stream()
 								.map(bmd -> machineMap.get(bmd.name))
@@ -649,12 +637,9 @@ public class SpallocClientFactory {
 
 		final Session s;
 
-		final Action<?> csrfRenew;
-
-		Reinit(SpallocClient client, Session s, Action<?> csrfRenew) {
+		Reinit(SpallocClient client, Session s) {
 			this.client = client;
 			this.s = s;
-			this.csrfRenew = csrfRenew;
 		}
 
 		Machine getMachine(String name) throws IOException {
@@ -669,7 +654,7 @@ public class SpallocClientFactory {
 		}
 
 		WhereIs whereis(URI uri) throws IOException {
-			return s.withRenewal(csrfRenew, () -> {
+			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
 				WhereIs w;
 				try (InputStream is = conn.getInputStream()) {
@@ -691,15 +676,14 @@ public class SpallocClientFactory {
 	private class JobImpl extends Reinit implements Job {
 		private final URI uri;
 
-		JobImpl(SpallocClient client, Session session, Action<?> csrfRenew,
-				URI uri) {
-			super(client, session, csrfRenew);
+		JobImpl(SpallocClient client, Session session, URI uri) {
+			super(client, session);
 			this.uri = uri;
 		}
 
 		@Override
 		public JobDescription describe(boolean wait) throws IOException {
-			return s.withRenewal(csrfRenew, () -> {
+			return s.withRenewal(() -> {
 				HttpURLConnection conn =
 						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
@@ -712,7 +696,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void keepalive() throws IOException {
-			s.withRenewal(csrfRenew, () -> {
+			s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, KEEPALIVE, true);
 				conn.setRequestMethod("PUT");
 				conn.setDoOutput(true);
@@ -731,7 +715,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void delete(String reason) throws IOException {
-			s.withRenewal(csrfRenew, () -> {
+			s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri,
 						URI.create("?reason=" + encode(reason, UTF_8.name())),
 						true);
@@ -748,7 +732,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public AllocatedMachine machine() throws IOException {
-			AllocatedMachine am = s.withRenewal(csrfRenew, () -> {
+			AllocatedMachine am = s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
@@ -765,7 +749,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public boolean getPower() throws IOException {
-			return s.withRenewal(csrfRenew, () -> {
+			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, POWER);
 				try (InputStream is = conn.getInputStream()) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
@@ -783,7 +767,7 @@ public class SpallocClientFactory {
 		public boolean setPower(boolean switchOn) throws IOException {
 			Power power = new Power();
 			power.power = (switchOn ? "ON" : "OFF");
-			return s.withRenewal(csrfRenew, () -> {
+			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				conn.setRequestProperty("Content-Type", "application/json");
@@ -819,9 +803,9 @@ public class SpallocClientFactory {
 
 		private List<DeadLink> deadLinks;
 
-		MachineImpl(SpallocClient client, Session session, Action<?> csrfRenew,
+		MachineImpl(SpallocClient client, Session session,
 				BriefMachineDescription bmd) {
-			super(client, session, csrfRenew);
+			super(client, session);
 			this.bmd = bmd;
 			this.deadBoards = bmd.deadBoards;
 			this.deadLinks = bmd.deadLinks;
@@ -864,7 +848,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void waitForChange() throws IOException {
-			BriefMachineDescription nbmd = s.withRenewal(csrfRenew, () -> {
+			BriefMachineDescription nbmd = s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
 				try (InputStream is = conn.getInputStream()) {
 					return jsonMapper.readValue(is,
