@@ -18,12 +18,14 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -35,10 +37,13 @@ public interface SpallocClient {
 
 	List<Machine> listMachines() throws IOException;
 
-	List<Job> listJobs() throws IOException;
+	List<Job> listJobs(boolean waitForChange) throws IOException;
 
-	Job createJob(Object createInstructions) throws IOException;
-	// FIXME define real argument to createJob
+	default List<Job> listJobs() throws IOException {
+		return listJobs(false);
+	}
+
+	Job createJob(CreateJob createInstructions) throws IOException;
 
 	interface Machine {
 		/** @return The name of the machine. */
@@ -62,7 +67,7 @@ public interface SpallocClient {
 		/** @return The dead links of the machine. */
 		List<DeadLink> getDeadLinks();
 
-		// TODO wait-for-change
+		void waitForChange() throws IOException;
 
 		/**
 		 * Given logical triad coordinates, return more info about a board.
@@ -88,9 +93,11 @@ public interface SpallocClient {
 	}
 
 	interface Job {
-		JobDescription describe() throws IOException;
+		JobDescription describe(boolean waitForChange) throws IOException;
 
-		// TODO wait-for-change
+		default JobDescription describe() throws IOException {
+			return describe(false);
+		}
 
 		void keepalive() throws IOException;
 
@@ -105,8 +112,88 @@ public interface SpallocClient {
 		WhereIs whereIs(HasChipLocation chip) throws IOException;
 	}
 
+	class CreateJob {
+		// FIXME flesh this out
+	}
+
+	@JsonIgnoreProperties({
+		"keepalive-ref", "machine-ref", "power-ref", "chip-ref"
+	})
 	class JobDescription {
-		// FIXME is this needed?
+		// TODO state should be an enum
+		private String state;
+
+		private String owner;
+
+		private Instant startTime;
+
+		private Instant finishTime;
+
+		private String reason;
+
+		private String keepaliveHost;
+
+		private Instant keepaliveTime;
+
+		public String getState() {
+			return state;
+		}
+
+		public void setState(String state) {
+			this.state = state;
+		}
+
+		public String getOwner() {
+			return owner;
+		}
+
+		public void setOwner(String owner) {
+			this.owner = owner;
+		}
+
+		@JsonAlias("start-time")
+		public Instant getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(Instant startTime) {
+			this.startTime = startTime;
+		}
+
+		@JsonAlias("finish-time")
+		public Instant getFinishTime() {
+			return finishTime;
+		}
+
+		public void setFinishTime(Instant finishTime) {
+			this.finishTime = finishTime;
+		}
+
+		public String getReason() {
+			return reason;
+		}
+
+		public void setReason(String reason) {
+			this.reason = reason;
+		}
+
+		@JsonAlias("keepalive-host")
+		public String getKeepaliveHost() {
+			return keepaliveHost;
+		}
+
+		public void setKeepaliveHost(String keepaliveHost) {
+			this.keepaliveHost = keepaliveHost;
+		}
+
+		@JsonAlias("keepalive-time")
+		public Instant getKeepaliveTime() {
+			return keepaliveTime;
+		}
+
+		public void setKeepaliveTime(Instant keepaliveTime) {
+			this.keepaliveTime = keepaliveTime;
+		}
 	}
 
 	class BoardCoords {
@@ -317,19 +404,14 @@ public interface SpallocClient {
 		@JsonIgnore
 		private Machine machineHandle;
 
-		@JsonAlias("machine")
 		private String machineName;
 
-		@JsonAlias("machine-ref")
 		private URI machineRef;
 
-		@JsonAlias("board-chip")
 		private ChipLocation boardChip;
 
-		@JsonAlias("logical-board-coordinates")
 		private Triad logicalCoords;
 
-		@JsonAlias("physical-board-coordinates")
 		private Physical physicalCoords;
 
 		public Integer getJobId() {
@@ -372,6 +454,7 @@ public interface SpallocClient {
 			this.machineHandle = machineHandle;
 		}
 
+		@JsonAlias("machine")
 		public String getMachineName() {
 			return machineName;
 		}
@@ -396,6 +479,7 @@ public interface SpallocClient {
 			this.boardChip = boardChip;
 		}
 
+		@JsonAlias("logical-board-coordinates")
 		public Triad getLogicalCoords() {
 			return logicalCoords;
 		}
@@ -404,6 +488,7 @@ public interface SpallocClient {
 			this.logicalCoords = logicalCoords;
 		}
 
+		@JsonAlias("physical-board-coordinates")
 		public Physical getPhysicalCoords() {
 			return physicalCoords;
 		}
@@ -414,7 +499,7 @@ public interface SpallocClient {
 	}
 
 	class AllocatedMachine {
-
+		// FIXME flesh this out
 	}
 
 }

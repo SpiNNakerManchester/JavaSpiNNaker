@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -80,13 +82,17 @@ public class SpallocClientFactory {
 
 	private static final URI POWER = URI.create("power");
 
+	private static final URI WAIT_FLAG = URI.create("?wait=true");
+
 	private static final Pattern SESSION_ID_RE =
 			Pattern.compile("JSESSIONID=([A-Z0-9]+);");
 
 	private static final Pattern CSRF_ID_RE =
 			Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
 
-	private JsonMapper jsonMapper = new JsonMapper();
+	private JsonMapper jsonMapper = JsonMapper.builder().findAndAddModules()
+			.disable(WRITE_DATES_AS_TIMESTAMPS)
+			.propertyNamingStrategy(KEBAB_CASE).build();
 
 	private final Map<String, Machine> machineMap =
 			synchronizedMap(new HashMap<>());
@@ -424,9 +430,11 @@ public class SpallocClientFactory {
 			}
 
 			@Override
-			public List<Job> listJobs() throws IOException {
+			public List<Job> listJobs(boolean wait) throws IOException {
 				return session.withRenewal(() -> {
-					HttpURLConnection conn = session.connection(jobs);
+					HttpURLConnection conn =
+							wait ? session.connection(jobs, WAIT_FLAG)
+									: session.connection(jobs);
 					try (InputStream is = conn.getInputStream()) {
 						return jsonMapper.readValue(is, Jobs.class).jobs
 								.stream().map(this::job).collect(toList());
@@ -437,7 +445,8 @@ public class SpallocClientFactory {
 			}
 
 			@Override
-			public Job createJob(Object createInstructions) throws IOException {
+			public Job createJob(CreateJob createInstructions)
+					throws IOException {
 				URI uri = session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(jobs, true);
 					conn.setDoOutput(true);
@@ -537,9 +546,10 @@ public class SpallocClientFactory {
 		}
 
 		@Override
-		public JobDescription describe() throws IOException {
+		public JobDescription describe(boolean wait) throws IOException {
 			return s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri);
+				HttpURLConnection conn =
+						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
 					return jsonMapper.readValue(is, JobDescription.class);
 				} finally {
@@ -651,10 +661,16 @@ public class SpallocClientFactory {
 
 		private final BriefMachineDescription bmd;
 
+		private List<BoardCoords> deadBoards;
+
+		private List<DeadLink> deadLinks;
+
 		MachineImpl(SpallocClient client, Session session,
 				BriefMachineDescription bmd) {
 			super(client, session);
 			this.bmd = bmd;
+			this.deadBoards = bmd.deadBoards;
+			this.deadLinks = bmd.deadLinks;
 		}
 
 		@Override
@@ -684,12 +700,27 @@ public class SpallocClientFactory {
 
 		@Override
 		public List<BoardCoords> getDeadBoards() {
-			return bmd.deadBoards;
+			return deadBoards;
 		}
 
 		@Override
 		public List<DeadLink> getDeadLinks() {
-			return bmd.deadLinks;
+			return deadLinks;
+		}
+
+		@Override
+		public void waitForChange() throws IOException {
+			BriefMachineDescription nbmd = s.withRenewal(() -> {
+				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
+				try (InputStream is = conn.getInputStream()) {
+					return jsonMapper.readValue(is,
+							BriefMachineDescription.class);
+				} finally {
+					s.trackCookie(conn);
+				}
+			});
+			this.deadBoards = nbmd.deadBoards;
+			this.deadLinks = nbmd.deadLinks;
 		}
 
 		@Override
