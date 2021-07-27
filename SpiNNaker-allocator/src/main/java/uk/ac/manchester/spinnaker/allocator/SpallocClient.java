@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -36,7 +37,8 @@ public interface SpallocClient {
 
 	List<Job> listJobs() throws IOException;
 
-	Job createJob() throws IOException; // FIXME arguments
+	Job createJob(Object createInstructions) throws IOException;
+	// FIXME define real argument to createJob
 
 	interface Machine {
 		/** @return The name of the machine. */
@@ -54,6 +56,27 @@ public interface SpallocClient {
 		/** @return The (estimated) number of live boards in the machine. */
 		int getLiveBoardCount();
 
+		/** @return The dead boards of the machine. */
+		List<BoardCoords> getDeadBoards();
+
+		/** @return The dead links of the machine. */
+		List<DeadLink> getDeadLinks();
+
+		// TODO wait-for-change
+
+		/**
+		 * Given logical triad coordinates, return more info about a board.
+		 *
+		 * @param x
+		 *            Triad X coordinate
+		 * @param y
+		 *            Triad Y coordinate
+		 * @param z
+		 *            Triad Z coordinate
+		 * @return Board information
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
 		WhereIs getBoardByTriad(int x, int y, int z) throws IOException;
 
 		WhereIs getBoardByPhysicalCoords(int cabinet, int frame, int board)
@@ -65,19 +88,142 @@ public interface SpallocClient {
 	}
 
 	interface Job {
-		String describe() throws IOException;
+		JobDescription describe() throws IOException;
+
+		// TODO wait-for-change
 
 		void keepalive() throws IOException;
 
 		void delete(String reason) throws IOException;
 
-		String machine() throws IOException;
+		AllocatedMachine machine() throws IOException;
 
 		boolean getPower() throws IOException;
 
 		boolean setPower(boolean switchOn) throws IOException;
 
 		WhereIs whereIs(HasChipLocation chip) throws IOException;
+	}
+
+	class JobDescription {
+		// FIXME is this needed?
+	}
+
+	class BoardCoords {
+		/** Logical triad X coordinate. */
+		private final int x;
+
+		/** Logical triad Y coordinate. */
+		private final int y;
+
+		/** Logical triad Z coordinate. */
+		private final int z;
+
+		/** Physical cabinet number. */
+		private final int cabinet;
+
+		/** Physical frame number. */
+		private final int frame;
+
+		/** Physical board number. */
+		private final int board;
+
+		/**
+		 * IP address of ethernet chip. May be {@code null} if the current user
+		 * doesn't have permission to see the board address at this point.
+		 */
+		private final String address;
+
+		/**
+		 * @param x
+		 *            Logical triad X coordinate
+		 * @param y
+		 *            Logical triad Y coordinate
+		 * @param z
+		 *            Logical triad Z coordinate
+		 * @param cabinet
+		 *            Physical cabinet number
+		 * @param frame
+		 *            Physical frame number
+		 * @param board
+		 *            Physical board number
+		 * @param address
+		 *            IP address of ethernet chip
+		 */
+		BoardCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
+				@JsonProperty("z") int z, @JsonProperty("cabinet") int cabinet,
+				@JsonProperty("frame") int frame,
+				@JsonProperty("board") int board,
+				@JsonProperty("address") String address) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.cabinet = cabinet;
+			this.frame = frame;
+			this.board = board;
+			this.address = address;
+		}
+
+		/**
+		 * @return Logical triad X coordinate.
+		 */
+		public int getX() {
+			return x;
+		}
+
+		/**
+		 * @return Logical triad Y coordinate.
+		 */
+		public int getY() {
+			return y;
+		}
+
+		/**
+		 * @return Logical triad Z coordinate.
+		 */
+		public int getZ() {
+			return z;
+		}
+
+		/**
+		 * @return Physical cabinet number.
+		 */
+		public int getCabinet() {
+			return cabinet;
+		}
+
+		/**
+		 * @return Physical frame number.
+		 */
+		public int getFrame() {
+			return frame;
+		}
+
+		/**
+		 * @return Physical board number.
+		 */
+		public int getBoard() {
+			return board;
+		}
+
+		/**
+		 * @return IP address of ethernet chip. May be {@code null} if the
+		 *         current user doesn't have permission to see the board address
+		 *         at this point.
+		 */
+		public String getAddress() {
+			return address;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z,
+					cabinet, frame, board, address);
+		}
+	}
+
+	class DeadLink {
+
 	}
 
 	@JsonFormat(shape = Shape.ARRAY)
@@ -266,4 +412,9 @@ public interface SpallocClient {
 			this.physicalCoords = physicalCoords;
 		}
 	}
+
+	class AllocatedMachine {
+
+	}
+
 }

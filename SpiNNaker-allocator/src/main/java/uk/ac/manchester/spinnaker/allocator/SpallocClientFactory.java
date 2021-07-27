@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -56,7 +57,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import picocli.CommandLine.Parameters;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.AllocatedMachine;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.BoardCoords;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.DeadLink;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.JobDescription;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.WhereIs;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -86,6 +91,15 @@ public class SpallocClientFactory {
 	private final Map<String, Machine> machineMap =
 			synchronizedMap(new HashMap<>());
 
+	private static URI asDir(URI uri) {
+		String path = uri.getPath();
+		if (!path.endsWith("/")) {
+			path += "/";
+			uri = uri.resolve(path);
+		}
+		return uri;
+	}
+
 	private class Session {
 		private final URI baseUri;
 
@@ -101,7 +115,7 @@ public class SpallocClientFactory {
 
 		Session(URI baseURI, String username, String password)
 				throws IOException {
-			baseUri = baseURI;
+			baseUri = asDir(baseURI);
 			this.username = username;
 			this.password = password;
 			// This does the actual logging in process
@@ -114,16 +128,7 @@ public class SpallocClientFactory {
 			log.debug("will connect to {}", realUrl);
 			HttpURLConnection c =
 					(HttpURLConnection) realUrl.toURL().openConnection();
-			if (session != null) {
-				log.debug("Attaching to session {}", session);
-				c.setRequestProperty("Cookie", "JSESSIONID=" + session);
-			}
-
-			if (csrfHeader != null && csrf != null && forStateChange) {
-				log.debug("Marking session with token {}={}", csrfHeader, csrf);
-				c.setRequestProperty(csrfHeader, csrf);
-			}
-			c.setInstanceFollowRedirects(false);
+			authorizeConnection(c, forStateChange);
 			return c;
 		}
 
@@ -133,16 +138,7 @@ public class SpallocClientFactory {
 			log.debug("will connect to {}", realUrl);
 			HttpURLConnection c =
 					(HttpURLConnection) realUrl.toURL().openConnection();
-			if (session != null) {
-				log.debug("Attaching to session {}", session);
-				c.setRequestProperty("Cookie", "JSESSIONID=" + session);
-			}
-
-			if (csrfHeader != null && csrf != null && forStateChange) {
-				log.debug("Marking session with token {}={}", csrfHeader, csrf);
-				c.setRequestProperty(csrfHeader, csrf);
-			}
-			c.setInstanceFollowRedirects(false);
+			authorizeConnection(c, forStateChange);
 			return c;
 		}
 
@@ -154,6 +150,25 @@ public class SpallocClientFactory {
 			return connection(url, false);
 		}
 
+		private void authorizeConnection(HttpURLConnection c,
+				boolean forStateChange) {
+			/*
+			 * For some really stupid reason, Java doesn't let you set a cookie
+			 * manager on a per-connection basis, so we need to manage the
+			 * session cookie ourselves.
+			 */
+			if (session != null) {
+				log.debug("Attaching to session {}", session);
+				c.setRequestProperty("Cookie", "JSESSIONID=" + session);
+			}
+
+			if (csrfHeader != null && csrf != null && forStateChange) {
+				log.debug("Marking session with token {}={}", csrfHeader, csrf);
+				c.setRequestProperty(csrfHeader, csrf);
+			}
+			c.setInstanceFollowRedirects(false);
+		}
+
 		private Set<String> getCSRF(String line) {
 			Matcher m = CSRF_ID_RE.matcher(line);
 			if (!m.find()) {
@@ -162,20 +177,25 @@ public class SpallocClientFactory {
 			return singleton(m.group(1));
 		}
 
-		void trackCookie(HttpURLConnection c) throws IOException {
+		boolean trackCookie(HttpURLConnection c) throws IOException {
 			String setCookie = c.getHeaderField("Set-Cookie");
-			Matcher m = SESSION_ID_RE.matcher(setCookie);
-			if (!m.find()) {
-				throw new IOException("could not establish session");
+			if (setCookie != null) {
+				Matcher m = SESSION_ID_RE.matcher(setCookie);
+				if (m.find()) {
+					session = m.group(1);
+					return true;
+				}
 			}
-			session = m.group(1);
+			return false;
 		}
 
 		private String makeTemporarySession() throws IOException {
 			HttpURLConnection c = connection(LOGIN_FORM);
 			try (InputStream is = c.getInputStream()) {
 				// There's a session cookie at this point; we need it!
-				trackCookie(c);
+				if (!trackCookie(c)) {
+					throw new IOException("could not establish session");
+				}
 				// This is nasty; parsing the HTML source
 				return readLines(is, UTF_8).stream()
 						.flatMap(l -> getCSRF(l).stream()).findFirst()
@@ -208,8 +228,10 @@ public class SpallocClientFactory {
 					throw new IOException(
 							"login failed: " + c.getResponseCode());
 				}
-				// There's a new session cookie after login
-				trackCookie(c);
+				// There should be a new session cookie after login
+				if (!trackCookie(c)) {
+					throw new IOException("could not establish session");
+				}
 			} finally {
 				c.disconnect();
 			}
@@ -301,13 +323,6 @@ public class SpallocClientFactory {
 		/** The URI to the machine. */
 		URI uri;
 
-		public void setURI(String s) {
-			if (!s.endsWith("/")) {
-				s += "/";
-			}
-			uri = URI.create(s);
-		}
-
 		/** The width of the machine, in triads. */
 		int width;
 
@@ -315,10 +330,10 @@ public class SpallocClientFactory {
 		int height;
 
 		/** The dead boards of the machine. */
-		List<Object> deadBoards; // FIXME
+		List<BoardCoords> deadBoards;
 
 		/** The dead links of the machine. */
-		List<Object> deadLinks; // FIXME
+		List<DeadLink> deadLinks;
 
 		public void setName(String name) {
 			this.name = name;
@@ -329,7 +344,7 @@ public class SpallocClientFactory {
 		}
 
 		public void setUri(URI uri) {
-			this.uri = uri;
+			this.uri = asDir(uri);
 		}
 
 		public void setWidth(int width) {
@@ -341,12 +356,12 @@ public class SpallocClientFactory {
 		}
 
 		@JsonAlias("dead-boards")
-		public void setDeadBoards(List<Object> deadBoards) {
+		public void setDeadBoards(List<BoardCoords> deadBoards) {
 			this.deadBoards = deadBoards;
 		}
 
 		@JsonAlias("dead-links")
-		public void setDeadLinks(List<Object> deadLinks) {
+		public void setDeadLinks(List<DeadLink> deadLinks) {
 			this.deadLinks = deadLinks;
 		}
 	}
@@ -358,10 +373,6 @@ public class SpallocClientFactory {
 		public void setJobs(List<URI> jobs) {
 			this.jobs = jobs;
 		}
-	}
-
-	static class JobDescription {
-		// FIXME is this needed?
 	}
 
 	static class Power {
@@ -419,13 +430,14 @@ public class SpallocClientFactory {
 					try (InputStream is = conn.getInputStream()) {
 						return jsonMapper.readValue(is, Jobs.class).jobs
 								.stream().map(this::job).collect(toList());
+					} finally {
+						session.trackCookie(conn);
 					}
 				});
 			}
 
 			@Override
-			public Job createJob() throws IOException {
-				Object createInstructions = null; // TODO as arguments
+			public Job createJob(Object createInstructions) throws IOException {
 				URI uri = session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(jobs, true);
 					conn.setDoOutput(true);
@@ -436,6 +448,8 @@ public class SpallocClientFactory {
 					// Get the response entity... and discard it
 					try (InputStream is = conn.getInputStream()) {
 						readLines(is, UTF_8);
+					} finally {
+						session.trackCookie(conn);
 					}
 					return URI.create(conn.getHeaderField("Location"));
 				});
@@ -443,11 +457,7 @@ public class SpallocClientFactory {
 			}
 
 			Job job(URI uri) {
-				if (!uri.getPath().endsWith("/")) {
-					// Bleagh
-					uri = URI.create(uri + "/");
-				}
-				return new JobImpl(this, session, uri);
+				return new JobImpl(this, session, asDir(uri));
 			}
 
 			@Override
@@ -465,6 +475,8 @@ public class SpallocClientFactory {
 						return ms.machines.stream()
 								.map(bmd -> machineMap.get(bmd.name))
 								.collect(toList());
+					} finally {
+						session.trackCookie(conn);
 					}
 				});
 			}
@@ -501,9 +513,14 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(uri);
 				WhereIs w;
 				try (InputStream is = conn.getInputStream()) {
+					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
+						throw new IOException("machine not allocated");
+					}
 					w = jsonMapper.readValue(is, WhereIs.class);
 				} catch (FileNotFoundException e) {
 					return null;
+				} finally {
+					s.trackCookie(conn);
 				}
 				w.setMachineHandle(getMachine(w.getMachineName()));
 				return w;
@@ -520,11 +537,13 @@ public class SpallocClientFactory {
 		}
 
 		@Override
-		public String describe() throws IOException {
+		public JobDescription describe() throws IOException {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
-					return readLines(is, UTF_8).toString();
+					return jsonMapper.readValue(is, JobDescription.class);
+				} finally {
+					s.trackCookie(conn);
 				}
 			});
 		}
@@ -542,6 +561,8 @@ public class SpallocClientFactory {
 				try (InputStream is = conn.getInputStream()) {
 					return readLines(is, UTF_8);
 					// Ignore the output
+				} finally {
+					s.trackCookie(conn);
 				}
 			});
 		}
@@ -556,18 +577,24 @@ public class SpallocClientFactory {
 				try (InputStream is = conn.getInputStream()) {
 					readLines(is, UTF_8);
 					// Ignore the output
+				} finally {
+					s.trackCookie(conn);
 				}
 				return this;
 			});
 		}
 
 		@Override
-		public String machine() throws IOException {
+		public AllocatedMachine machine() throws IOException {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
-					return readLines(is, UTF_8).toString();
-					// FIXME
+					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
+						throw new IOException("machine not allocated");
+					}
+					return jsonMapper.readValue(is, AllocatedMachine.class);
+				} finally {
+					s.trackCookie(conn);
 				}
 			});
 		}
@@ -577,8 +604,13 @@ public class SpallocClientFactory {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, POWER);
 				try (InputStream is = conn.getInputStream()) {
+					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
+						throw new IOException("machine not allocated");
+					}
 					Power power = jsonMapper.readValue(is, Power.class);
 					return "ON".equals(power.power);
+				} finally {
+					s.trackCookie(conn);
 				}
 			});
 		}
@@ -596,8 +628,13 @@ public class SpallocClientFactory {
 					jsonMapper.writeValue(os, power);
 				}
 				try (InputStream is = conn.getInputStream()) {
+					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
+						throw new IOException("machine not allocated");
+					}
 					Power power2 = jsonMapper.readValue(is, Power.class);
 					return "ON".equals(power2.power);
+				} finally {
+					s.trackCookie(conn);
 				}
 			});
 		}
@@ -646,6 +683,16 @@ public class SpallocClientFactory {
 		}
 
 		@Override
+		public List<BoardCoords> getDeadBoards() {
+			return bmd.deadBoards;
+		}
+
+		@Override
+		public List<DeadLink> getDeadLinks() {
+			return bmd.deadLinks;
+		}
+
+		@Override
 		public WhereIs getBoardByTriad(int x, int y, int z) throws IOException {
 			return whereis(bmd.uri
 					.resolve(format("logical-board?x=%d&y=%d&z=%d", x, y, z)));
@@ -672,6 +719,7 @@ public class SpallocClientFactory {
 		}
 	}
 
+	// TODO move testing stuff elsewhere
 	static class TestingClientArgs {
 		@Parameters(index = "0", paramLabel = "BaseURL")
 		private URI baseUrl;
@@ -688,8 +736,9 @@ public class SpallocClientFactory {
 	public static void main(String... args)
 			throws URISyntaxException, IOException, InterruptedException {
 		TestingClientArgs a = populateCommand(new TestingClientArgs(), args);
-		SpallocClient client = new SpallocClientFactory()
-				.createClient(a.baseUrl, a.username, a.password);
+		SpallocClientFactory factory = new SpallocClientFactory();
+		SpallocClient client =
+				factory.createClient(a.baseUrl, a.username, a.password);
 
 		// Just so that the server gets its logging out the way first
 		Thread.sleep(SHORT_SLEEP);
@@ -711,5 +760,9 @@ public class SpallocClientFactory {
 			System.out.println(where.getChip());
 			System.out.println(where.getJobId());
 		}
+		// Check this directly here
+		factory.jsonMapper.readValue("{\"x\":1,\"y\":2,\"z\":3,"
+				+ "\"cabinet\":4,\"frame\":5,\"board\":6,"
+				+ "\"address\":\"127.0.0.2\"}", BoardCoords.class);
 	}
 }
