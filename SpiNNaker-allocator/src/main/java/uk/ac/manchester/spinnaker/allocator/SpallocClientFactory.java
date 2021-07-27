@@ -38,12 +38,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +68,11 @@ import uk.ac.manchester.spinnaker.allocator.SpallocClient.WhereIs;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
+/**
+ * A factory for clients to connect to the Spalloc service.
+ *
+ * @author Donal Fellows
+ */
 public class SpallocClientFactory {
 	private static final Logger log = getLogger(SpallocClientFactory.class);
 
@@ -106,6 +110,12 @@ public class SpallocClientFactory {
 		return uri;
 	}
 
+	/**
+	 * Manages the login session. This allows us to avoid the (heavy) cost of
+	 * the password hashing algorithm used, at least most of the time.
+	 *
+	 * @author Donal Fellows
+	 */
 	private class Session {
 		private final URI baseUri;
 
@@ -119,15 +129,44 @@ public class SpallocClientFactory {
 
 		private String csrf;
 
+		/**
+		 * Create a session and log it in.
+		 *
+		 * @param baseURI
+		 *            The service base URI. <em>Must</em> be absolute! <em>Must
+		 *            not</em> include a username or password!
+		 * @param username
+		 *            The username to use
+		 * @param password
+		 *            The password to use
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
 		Session(URI baseURI, String username, String password)
 				throws IOException {
 			baseUri = asDir(baseURI);
 			this.username = username;
 			this.password = password;
 			// This does the actual logging in process
-			renew();
+			renew(null);
 		}
 
+		/**
+		 * Create a connection that's part of the session.
+		 *
+		 * @param url
+		 *            The URL (relative or absolute) for where to access.
+		 * @param forStateChange
+		 *            If {@code true}, the connection will be configured so that
+		 *            it includes a relevant CSRF token.
+		 * @return the partially-configured connection;
+		 *         {@link HttpURLConnection#setRequestMethod(String)},
+		 *         {@link URLConnection#doOutput(boolean)} and
+		 *         {@link URLConnection#setRequestProperty(String,String)} may
+		 *         still need to be called.
+		 * @throws IOException
+		 *             If things go wrong
+		 */
 		HttpURLConnection connection(URI url, boolean forStateChange)
 				throws IOException {
 			URI realUrl = baseUri.resolve(url);
@@ -138,6 +177,24 @@ public class SpallocClientFactory {
 			return c;
 		}
 
+		/**
+		 * Create a connection that's part of the session.
+		 *
+		 * @param url
+		 *            The URL (relative or absolute) for where to access.
+		 * @param url2
+		 *            Secondary URL, often a path tail and/or query suffix.
+		 * @param forStateChange
+		 *            If {@code true}, the connection will be configured so that
+		 *            it includes a relevant CSRF token.
+		 * @return the partially-configured connection;
+		 *         {@link HttpURLConnection#setRequestMethod(String)},
+		 *         {@link URLConnection#doOutput(boolean)} and
+		 *         {@link URLConnection#setRequestProperty(String,String)} may
+		 *         still need to be called.
+		 * @throws IOException
+		 *             If things go wrong
+		 */
 		HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
 				throws IOException {
 			URI realUrl = baseUri.resolve(url).resolve(url2);
@@ -148,10 +205,32 @@ public class SpallocClientFactory {
 			return c;
 		}
 
+		/**
+		 * Create a connection that's part of the session.
+		 *
+		 * @param url
+		 *            The URL (relative or absolute) for where to access.
+		 * @param url2
+		 *            Secondary URL, often a path tail and/or query suffix.
+		 * @return the connection, which should not be used to change the
+		 *         service state.
+		 * @throws IOException
+		 *             If things go wrong
+		 */
 		HttpURLConnection connection(URI url, URI url2) throws IOException {
 			return connection(url, url2, false);
 		}
 
+		/**
+		 * Create a connection that's part of the session.
+		 *
+		 * @param url
+		 *            The URL (relative or absolute) for where to access.
+		 * @return the connection, which should not be used to change the
+		 *         service state.
+		 * @throws IOException
+		 *             If things go wrong
+		 */
 		HttpURLConnection connection(URI url) throws IOException {
 			return connection(url, false);
 		}
@@ -183,8 +262,17 @@ public class SpallocClientFactory {
 			return singleton(m.group(1));
 		}
 
-		boolean trackCookie(HttpURLConnection c) throws IOException {
-			String setCookie = c.getHeaderField("Set-Cookie");
+		/**
+		 * Check for and handle any session cookie changes.
+		 *
+		 * @param conn
+		 *            Connection that's had a transaction processed.
+		 * @return Whether the session cookie was set. Normally uninteresting.
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
+		boolean trackCookie(HttpURLConnection conn) {
+			String setCookie = conn.getHeaderField("Set-Cookie");
 			if (setCookie != null) {
 				Matcher m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {
@@ -195,6 +283,13 @@ public class SpallocClientFactory {
 			return false;
 		}
 
+		/**
+		 * Initialise a new anonymous temporary session.
+		 *
+		 * @return The temporary CSRF token. Allows us to log in.
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
 		private String makeTemporarySession() throws IOException {
 			HttpURLConnection c = connection(LOGIN_FORM);
 			try (InputStream is = c.getInputStream()) {
@@ -210,8 +305,15 @@ public class SpallocClientFactory {
 			}
 		}
 
-		private void logSessionIn(String tempCsrf) throws IOException,
-				ProtocolException, UnsupportedEncodingException {
+		/**
+		 * Upgrade an anonymous session to a logged-in one.
+		 *
+		 * @param tempCsrf
+		 *            The temporary CSRF token.
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
+		private void logSessionIn(String tempCsrf) throws IOException {
 			HttpURLConnection c = connection(LOGIN_HANDLER, true);
 			c.setDoOutput(true);
 			c.setRequestMethod("POST");
@@ -243,26 +345,63 @@ public class SpallocClientFactory {
 			}
 		}
 
-		private void renew() throws IOException {
+		/**
+		 * Renew the session credentials.
+		 *
+		 * @param action
+		 *            How to renew the CSRF token, if that's desired.
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
+		private void renew(Action<?> action) throws IOException {
 			// Create a temporary session so we can log in
 			String tempCsrf = makeTemporarySession();
 
 			// This makes the real session
 			logSessionIn(tempCsrf);
+
+			if (action != null) {
+				action.act();
+			}
 		}
 
-		<T> T withRenewal(Action<T> action) throws IOException {
+		/**
+		 * Carry out an action, applying session renewal <em>once</em> if
+		 * needed.
+		 *
+		 * @param <T>
+		 *            The type of the return value.
+		 * @param action
+		 *            The action to be repeated if it fails due to session
+		 *            expiry.
+		 * @param csrfRenewer
+		 *            How to renew the CSRF token, if that's desired.
+		 * @return The result of the action
+		 * @throws IOException
+		 *             If things go wrong.
+		 */
+		<T> T withRenewal(Action<?> csrfRenewer, Action<T> action)
+				throws IOException {
 			try {
 				return action.act();
 			} catch (HTTPException e) {
 				if (e.getStatusCode() == HTTP_UNAUTHORIZED) {
-					renew();
+					renew(csrfRenewer);
 					return action.act();
 				}
 				throw e;
 			}
 		}
 
+		/**
+		 * Install the real CSRF controls. The session does not know how to
+		 * obtain these values!
+		 *
+		 * @param csrfHeader
+		 *            the name of the CSRF header
+		 * @param csrfToken
+		 *            the value to put in the CSRF header
+		 */
 		void setCSRF(String csrfHeader, String csrfToken) {
 			this.csrfHeader = csrfHeader;
 			this.csrf = csrfToken;
@@ -410,7 +549,7 @@ public class SpallocClientFactory {
 		URI jobs, machines;
 		Version v;
 
-		RootInfo ri = s.withRenewal(() -> {
+		RootInfo ri = s.withRenewal(null, () -> {
 			HttpURLConnection conn = s.connection(SPALLOC_ROOT);
 			try (InputStream is = conn.getInputStream()) {
 				return jsonMapper.readValue(is, RootInfo.class);
@@ -420,6 +559,15 @@ public class SpallocClientFactory {
 		jobs = ri.jobsURI;
 		machines = ri.machinesURI;
 		v = ri.version;
+
+		Action<Object> csrfRenew = () -> {
+			HttpURLConnection conn = s.connection(SPALLOC_ROOT);
+			try (InputStream is = conn.getInputStream()) {
+				RootInfo root = jsonMapper.readValue(is, RootInfo.class);
+				s.setCSRF(root.csrfHeader, root.csrfToken);
+			}
+			return null;
+		};
 
 		return new SpallocClient() {
 			Session session = s;
@@ -431,7 +579,7 @@ public class SpallocClientFactory {
 
 			@Override
 			public List<Job> listJobs(boolean wait) throws IOException {
-				return session.withRenewal(() -> {
+				return session.withRenewal(csrfRenew, () -> {
 					HttpURLConnection conn =
 							wait ? session.connection(jobs, WAIT_FLAG)
 									: session.connection(jobs);
@@ -447,7 +595,7 @@ public class SpallocClientFactory {
 			@Override
 			public Job createJob(CreateJob createInstructions)
 					throws IOException {
-				URI uri = session.withRenewal(() -> {
+				URI uri = session.withRenewal(csrfRenew, () -> {
 					HttpURLConnection conn = session.connection(jobs, true);
 					conn.setDoOutput(true);
 					conn.setRequestProperty("Content-Type", "application/json");
@@ -466,12 +614,12 @@ public class SpallocClientFactory {
 			}
 
 			Job job(URI uri) {
-				return new JobImpl(this, session, asDir(uri));
+				return new JobImpl(this, session, csrfRenew, asDir(uri));
 			}
 
 			@Override
 			public List<Machine> listMachines() throws IOException {
-				return session.withRenewal(() -> {
+				return session.withRenewal(csrfRenew, () -> {
 					HttpURLConnection conn = session.connection(machines);
 					try (InputStream is = conn.getInputStream()) {
 						Machines ms = jsonMapper.readValue(is, Machines.class);
@@ -479,7 +627,7 @@ public class SpallocClientFactory {
 						for (BriefMachineDescription bmd : ms.machines) {
 							machineMap.computeIfAbsent(bmd.name,
 									name -> new MachineImpl(this, session,
-											bmd));
+											csrfRenew, bmd));
 						}
 						return ms.machines.stream()
 								.map(bmd -> machineMap.get(bmd.name))
@@ -501,9 +649,12 @@ public class SpallocClientFactory {
 
 		final Session s;
 
-		Reinit(SpallocClient client, Session s) {
+		final Action<?> csrfRenew;
+
+		Reinit(SpallocClient client, Session s, Action<?> csrfRenew) {
 			this.client = client;
 			this.s = s;
+			this.csrfRenew = csrfRenew;
 		}
 
 		Machine getMachine(String name) throws IOException {
@@ -518,7 +669,7 @@ public class SpallocClientFactory {
 		}
 
 		WhereIs whereis(URI uri) throws IOException {
-			return s.withRenewal(() -> {
+			return s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri);
 				WhereIs w;
 				try (InputStream is = conn.getInputStream()) {
@@ -540,14 +691,15 @@ public class SpallocClientFactory {
 	private class JobImpl extends Reinit implements Job {
 		private final URI uri;
 
-		JobImpl(SpallocClient client, Session session, URI uri) {
-			super(client, session);
+		JobImpl(SpallocClient client, Session session, Action<?> csrfRenew,
+				URI uri) {
+			super(client, session, csrfRenew);
 			this.uri = uri;
 		}
 
 		@Override
 		public JobDescription describe(boolean wait) throws IOException {
-			return s.withRenewal(() -> {
+			return s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn =
 						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
@@ -560,7 +712,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void keepalive() throws IOException {
-			s.withRenewal(() -> {
+			s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri, KEEPALIVE, true);
 				conn.setRequestMethod("PUT");
 				conn.setDoOutput(true);
@@ -579,7 +731,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void delete(String reason) throws IOException {
-			s.withRenewal(() -> {
+			s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri,
 						URI.create("?reason=" + encode(reason, UTF_8.name())),
 						true);
@@ -596,7 +748,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public AllocatedMachine machine() throws IOException {
-			return s.withRenewal(() -> {
+			AllocatedMachine am = s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri);
 				try (InputStream is = conn.getInputStream()) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
@@ -607,11 +759,13 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
+			am.setMachine(getMachine(am.getMachineName()));
+			return am;
 		}
 
 		@Override
 		public boolean getPower() throws IOException {
-			return s.withRenewal(() -> {
+			return s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri, POWER);
 				try (InputStream is = conn.getInputStream()) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
@@ -629,7 +783,7 @@ public class SpallocClientFactory {
 		public boolean setPower(boolean switchOn) throws IOException {
 			Power power = new Power();
 			power.power = (switchOn ? "ON" : "OFF");
-			return s.withRenewal(() -> {
+			return s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				conn.setRequestProperty("Content-Type", "application/json");
@@ -665,9 +819,9 @@ public class SpallocClientFactory {
 
 		private List<DeadLink> deadLinks;
 
-		MachineImpl(SpallocClient client, Session session,
+		MachineImpl(SpallocClient client, Session session, Action<?> csrfRenew,
 				BriefMachineDescription bmd) {
-			super(client, session);
+			super(client, session, csrfRenew);
 			this.bmd = bmd;
 			this.deadBoards = bmd.deadBoards;
 			this.deadLinks = bmd.deadLinks;
@@ -710,7 +864,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public void waitForChange() throws IOException {
-			BriefMachineDescription nbmd = s.withRenewal(() -> {
+			BriefMachineDescription nbmd = s.withRenewal(csrfRenew, () -> {
 				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
 				try (InputStream is = conn.getInputStream()) {
 					return jsonMapper.readValue(is,

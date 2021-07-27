@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -27,24 +29,74 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
+/**
+ * An API for talking to the Spalloc service.
+ *
+ * @see SpallocClientFactory
+ * @author Donal Fellows
+ */
 public interface SpallocClient {
+	/**
+	 * Get the server version ID.
+	 *
+	 * @return A version ID.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
 	Version getVersion() throws IOException;
 
+	/**
+	 * Get a list of all Spalloc machines.
+	 *
+	 * @return The list of machines.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
 	List<Machine> listMachines() throws IOException;
 
+	/**
+	 * List the existing non-terminated jobs.
+	 *
+	 * @param waitForChange
+	 *            If {@code true}, will wait until the list of jobs may have
+	 *            changed. (Best-effort only; waiting time is bounded at 30
+	 *            seconds.)
+	 * @return A list of jobs.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
 	List<Job> listJobs(boolean waitForChange) throws IOException;
 
+	/**
+	 * List the existing non-terminated jobs.
+	 *
+	 * @return A list of jobs.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
 	default List<Job> listJobs() throws IOException {
 		return listJobs(false);
 	}
 
+	/**
+	 * Create a job.
+	 *
+	 * @param createInstructions
+	 *            Describes the job to create.
+	 * @return A handle to the created job.
+	 * @throws IOException
+	 *             If job creation fails.
+	 */
 	Job createJob(CreateJob createInstructions) throws IOException;
 
+	/** The services offered relating to a Spalloc machine. */
 	interface Machine {
 		/** @return The name of the machine. */
 		String getName();
@@ -84,36 +136,194 @@ public interface SpallocClient {
 		 */
 		WhereIs getBoardByTriad(int x, int y, int z) throws IOException;
 
+		/**
+		 * Given physical coordinates, return more info about a board.
+		 *
+		 * @param cabinet
+		 *            Cabinet number; cabinets contain frames.
+		 * @param frame
+		 *            Frame number; frames contain boards.
+		 * @param board
+		 *            Board number
+		 * @return Board information
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
 		WhereIs getBoardByPhysicalCoords(int cabinet, int frame, int board)
 				throws IOException;
 
+		/**
+		 * Given a <em>global</em> chip location, return more info about the
+		 * board that contains it.
+		 *
+		 * @param chip
+		 *            The chip location
+		 * @return Board information
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
 		WhereIs getBoardByChip(HasChipLocation chip) throws IOException;
 
+		/**
+		 * Given an IP address, return more info about a board.
+		 *
+		 * @param address
+		 *            Board IP address
+		 * @return Board information
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
 		WhereIs getBoardByIPAddress(String address) throws IOException;
 	}
 
+	/**
+	 * The services offered relating to a Spalloc job. Jobs run on
+	 * {@linkplain Machine machines}, and have boards allocated to them while
+	 * they do so. Those boards (which will be connected) are a fundamental
+	 * resource that allows SpiNNaker programs to be run.
+	 */
 	interface Job {
+		/**
+		 * Get a description of a job. Includes the state of the job.
+		 *
+		 * @param waitForChange
+		 *            If {@code true}, will wait until the jobs may have
+		 *            changed. (Best-effort only; waiting time is bounded at 30
+		 *            seconds.)
+		 * @return The job description &amp; state. Check the state to see
+		 *         whether the job has had resources allocated yet.
+		 * @throws IOException
+		 *             If communication fails.
+		 */
 		JobDescription describe(boolean waitForChange) throws IOException;
 
+		/**
+		 * Get a description of a job. Includes the state of the job.
+		 *
+		 * @return The job description &amp; state. Check the state to see
+		 *         whether the job has had resources allocated yet.
+		 * @throws IOException
+		 *             If communication fails.
+		 */
 		default JobDescription describe() throws IOException {
 			return describe(false);
 		}
 
+		/**
+		 * Must be periodically called to prevent the service watchdog from
+		 * culling the job.
+		 *
+		 * @throws IOException
+		 *             If communication fails.
+		 */
 		void keepalive() throws IOException;
 
+		/**
+		 * Mark a job as deleted.
+		 *
+		 * @param reason
+		 *            Why the job is to be deleted.
+		 * @throws IOException
+		 *             If communication fails.
+		 */
 		void delete(String reason) throws IOException;
 
+		/**
+		 * Get a description of what's been allocated to the job.
+		 *
+		 * @return a description of the allocated resources
+		 * @throws IOException
+		 *             If communication fails, the resources have not yet been
+		 *             allocated, or the job is deleted.
+		 */
 		AllocatedMachine machine() throws IOException;
 
+		/**
+		 * Get whether the boards of the machine are all switched on.
+		 *
+		 * @return {@code true} iff the boards are all on.
+		 * @throws IOException
+		 *             If communication fails, the resources have not yet been
+		 *             allocated, or the job is deleted.
+		 */
 		boolean getPower() throws IOException;
 
+		/**
+		 * Set the power state of the boards of the machine. Note that actually
+		 * changing the power state of the boards may take some time.
+		 *
+		 * @param switchOn
+		 *            {@code true} to switch the boards on, {@code false} to
+		 *            switch them off.
+		 * @return {@code true} iff the boards are all on.
+		 * @throws IOException
+		 *             If communication fails, the resources have not yet been
+		 *             allocated, or the job is deleted.
+		 */
 		boolean setPower(boolean switchOn) throws IOException;
 
+		/**
+		 * Given the location of a chip within an allocation, return more info
+		 * about a board.
+		 *
+		 * @param chip
+		 *            Chip location (relative to the root of the allocation).
+		 * @return Board information
+		 * @throws IOException
+		 *             If communication fails, the resources have not yet been
+		 *             allocated, or the job is deleted.
+		 */
 		WhereIs whereIs(HasChipLocation chip) throws IOException;
 	}
 
+	/**
+	 * A request to create a job.
+	 *
+	 * @author Donal Fellows
+	 */
+	@SuppressWarnings("checkstyle:visibilitymodifier")
 	class CreateJob {
-		// FIXME flesh this out
+		/**
+		 * How long after a keepalive message will the job be auto-deleted?
+		 * <em>Required.</em> Must be between 30 and 300 seconds.
+		 */
+		public Duration keepaliveInterval;
+
+		/**
+		 * 0 to 3 values indicating what size of job to make.
+		 * <ol>
+		 * <li value="0">A single board job. (Default)
+		 * <li>A job with at least the given number of boards.
+		 * <li>An allocation that should incorporate the given number of triads
+		 * of boards in each direction. Be aware that this is in triads!
+		 * <li>A specific board, by X, Y, Z (<em>logical</em> coordinates).
+		 * </ol>
+		 */
+		// TODO: want to support create by XYZ, by CFB, and by board IP address
+		// There's really no need to stick to the limitations of the Python code
+		public List<Integer> dimensions;
+
+		/**
+		 * Which machine to allocate on. This and {@link #tags} are mutually
+		 * exclusive, but at least one must be given.
+		 */
+		public String machineName;
+
+		/**
+		 * The tags to select which machine to allocate on. This and
+		 * {@link #machineName} are mutually exclusive, but at least one must be
+		 * given.
+		 */
+		public List<String> tags;
+
+		/**
+		 * The maximum number of dead boards allowed in a rectangular
+		 * allocation. Note that the allocation engine might increase this if it
+		 * decides to overallocate. Defaults to {@code 0}.
+		 */
+		public Integer maxDeadBoards;
+
+		// TODO needs more work
 	}
 
 	@JsonIgnoreProperties({
@@ -309,8 +519,37 @@ public interface SpallocClient {
 		}
 	}
 
+	@JsonFormat(shape = Shape.ARRAY)
+	@JsonPropertyOrder({
+		"end1", "end2"
+	})
+	/** Describes a dead link. */
 	class DeadLink {
+		/** One end of a dead link. */
+		public static class End {
+			/** The board at the end of a dead link. */
+			public final BoardCoords board;
 
+			// TODO direction should be an enum
+			/** The direction that the dead link goes in. */
+			public final String direction;
+
+			public End(@JsonProperty("board") BoardCoords board,
+					@JsonProperty("direction") String direction) {
+				this.board = board;
+				this.direction = direction;
+			}
+		}
+
+		@JsonProperty
+		private End end1;
+
+		@JsonProperty
+		private End end2;
+
+		public List<End> getEnds() {
+			return Arrays.asList(end1, end2);
+		}
 	}
 
 	@JsonFormat(shape = Shape.ARRAY)
@@ -498,8 +737,86 @@ public interface SpallocClient {
 		}
 	}
 
+	@JsonIgnoreProperties({
+		"power", "machine", "machine-ref"
+	})
 	class AllocatedMachine {
-		// FIXME flesh this out
+		private int width;
+
+		private int height;
+
+		private int depth;
+
+		private String machineName;
+
+		private Machine machine;
+
+		private List<Object> connections;
+
+		private List<BoardCoordinates> boards;
+
+		/** @return Rectangle width. */
+		public int getWidth() {
+			return width;
+		}
+
+		public void setWidth(int width) {
+			this.width = width;
+		}
+
+		/** @return Rectangle height. */
+		public int getHeight() {
+			return height;
+		}
+
+		public void setHeight(int height) {
+			this.height = height;
+		}
+
+		/** @return Depth of rectangle. 1 or 3. */
+		public int getDepth() {
+			return depth;
+		}
+
+		public void setDepth(int depth) {
+			this.depth = depth;
+		}
+
+		/** @return On what machine. */
+		public String getMachineName() {
+			return machineName;
+		}
+
+		public void setMachineName(String machineName) {
+			this.machineName = machineName;
+		}
+
+		/** @return The hosting SpiNNaker machine. */
+		public Machine getMachine() {
+			return machine;
+		}
+
+		void setMachine(Machine machine) {
+			this.machine = machine;
+		}
+
+		/** @return How to talk to boards. */
+		public List<Object/* ConnectionInfo */> getConnections() {
+			return connections;
+		}
+
+		public void setConnections(List<Object> connections) {
+			this.connections = connections;
+		}
+
+		/** @return Where the boards are. */
+		public List<BoardCoordinates> getBoards() {
+			return boards;
+		}
+
+		public void setBoards(List<BoardCoordinates> boards) {
+			this.boards = boards;
+		}
 	}
 
 }
