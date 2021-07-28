@@ -21,7 +21,7 @@ version: 6.0.0
 url: http://spinnakermanchester.github.io/
 license: GPL-3.0-or-later
 date-released: 2021-04-09
-identifier:
+identifier: JavaSpiNNaker
 authors:
 - affiliation: University Of Manchester
   email: donal.k.fellows@manchester.ac.uk
