@@ -21,7 +21,6 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -49,8 +48,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.ws.http.HTTPException;
 
 import org.slf4j.Logger;
 
@@ -170,6 +167,9 @@ public class SpallocClientFactory {
 	 * @author Donal Fellows
 	 */
 	private class Session {
+		private static final String HTTP_UNAUTHORIZED_MESSAGE =
+				"Server returned HTTP response code: 401";
+
 		private final URI baseUri;
 
 		private final String username;
@@ -422,8 +422,9 @@ public class SpallocClientFactory {
 		<T> T withRenewal(Action<T> action) throws IOException {
 			try {
 				return action.act();
-			} catch (HTTPException e) {
-				if (e.getStatusCode() == HTTP_UNAUTHORIZED) {
+			} catch (IOException e) {
+				// Need to read the error message, like a barbarian!
+				if (e.getMessage().contains(HTTP_UNAUTHORIZED_MESSAGE)) {
 					renew(this::discoverRoot);
 					return action.act();
 				}
