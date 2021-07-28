@@ -22,7 +22,6 @@ import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -30,22 +29,23 @@ import static java.util.Collections.synchronizedMap;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
-import static picocli.CommandLine.populateCommand;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +57,6 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import picocli.CommandLine.Parameters;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.AllocatedMachine;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.BoardCoords;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.DeadLink;
@@ -94,7 +93,8 @@ public class SpallocClientFactory {
 	private static final Pattern CSRF_ID_RE =
 			Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
 
-	private JsonMapper jsonMapper = JsonMapper.builder().findAndAddModules()
+	/** Used to convert to/from JSON. */
+	JsonMapper jsonMapper = JsonMapper.builder().findAndAddModules()
 			.disable(WRITE_DATES_AS_TIMESTAMPS)
 			.propertyNamingStrategy(KEBAB_CASE).build();
 
@@ -108,6 +108,59 @@ public class SpallocClientFactory {
 			uri = uri.resolve(path);
 		}
 		return uri;
+	}
+
+	private static String encode(String string)
+			throws UnsupportedEncodingException {
+		return URLEncoder.encode(string, UTF_8.name());
+	}
+
+	private static void writeForm(HttpURLConnection connection,
+			Map<String, String> map) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (Entry<String, String> e : map.entrySet()) {
+			sb.append(sep).append(e.getKey()).append("=")
+					.append(encode(e.getValue()));
+			sep = "&";
+		}
+
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencoded");
+		try (Writer w =
+				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
+			w.write(sb.toString());
+		}
+	}
+
+	private void writeObject(HttpURLConnection connection, Object object)
+			throws IOException {
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Content-Type", "application/json");
+		try (OutputStream out = connection.getOutputStream()) {
+			jsonMapper.writeValue(out, object);
+		}
+	}
+
+	private static void writeString(HttpURLConnection connection, String string)
+			throws IOException {
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Content-Type", "text/plain");
+		try (Writer w =
+				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
+			w.write(string);
+		}
+	}
+
+	private static void checkForError(HttpURLConnection c, String errorMessage)
+			throws IOException {
+		if (c.getResponseCode() >= HTTP_BAD_REQUEST) {
+			for (String line : readLines(c.getErrorStream(), UTF_8)) {
+				log.error(line);
+			}
+			throw new IOException(errorMessage + ": " + c.getResponseCode());
+		}
 	}
 
 	/**
@@ -151,6 +204,13 @@ public class SpallocClientFactory {
 			renew(null);
 		}
 
+		private HttpURLConnection createConnection(URL url) throws IOException {
+			log.debug("will connect to {}", url);
+			HttpURLConnection c = (HttpURLConnection) url.openConnection();
+			c.setUseCaches(false);
+			return c;
+		}
+
 		/**
 		 * Create a connection that's part of the session.
 		 *
@@ -170,9 +230,7 @@ public class SpallocClientFactory {
 		HttpURLConnection connection(URI url, boolean forStateChange)
 				throws IOException {
 			URI realUrl = baseUri.resolve(url);
-			log.debug("will connect to {}", realUrl);
-			HttpURLConnection c =
-					(HttpURLConnection) realUrl.toURL().openConnection();
+			HttpURLConnection c = createConnection(realUrl.toURL());
 			authorizeConnection(c, forStateChange);
 			return c;
 		}
@@ -198,9 +256,7 @@ public class SpallocClientFactory {
 		HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
 				throws IOException {
 			URI realUrl = baseUri.resolve(url).resolve(url2);
-			log.debug("will connect to {}", realUrl);
-			HttpURLConnection c =
-					(HttpURLConnection) realUrl.toURL().openConnection();
+			HttpURLConnection c = createConnection(realUrl.toURL());
 			authorizeConnection(c, forStateChange);
 			return c;
 		}
@@ -314,34 +370,19 @@ public class SpallocClientFactory {
 		 *             If things go wrong.
 		 */
 		private void logSessionIn(String tempCsrf) throws IOException {
-			HttpURLConnection c = connection(LOGIN_HANDLER, true);
-			c.setDoOutput(true);
-			c.setRequestMethod("POST");
-			try {
-				StringBuilder body = new StringBuilder();
-				String u = UTF_8.name();
-				body.append("_csrf=").append(encode(tempCsrf, u)) //
-						.append("&username=").append(encode(username, u)) //
-						.append("&password=").append(encode(password, u)) //
-						.append("&submit=submit");
-				try (Writer wr =
-						new OutputStreamWriter(c.getOutputStream(), UTF_8)) {
-					wr.write(body.toString());
-				}
+			Map<String, String> form = new HashMap<>();
+			form.put("_csrf", tempCsrf);
+			form.put("username", username);
+			form.put("password", password);
+			form.put("submit", "submit");
 
-				if (c.getResponseCode() >= HTTP_BAD_REQUEST) {
-					for (String line : readLines(c.getErrorStream(), UTF_8)) {
-						log.error(line);
-					}
-					throw new IOException(
-							"login failed: " + c.getResponseCode());
-				}
-				// There should be a new session cookie after login
-				if (!trackCookie(c)) {
-					throw new IOException("could not establish session");
-				}
-			} finally {
-				c.disconnect();
+			HttpURLConnection c = connection(LOGIN_HANDLER, true);
+			c.setRequestMethod("POST");
+			writeForm(c, form);
+			checkForError(c, "login failed");
+			// There should be a new session cookie after login
+			if (!trackCookie(c)) {
+				throw new IOException("could not establish session");
 			}
 		}
 
@@ -585,18 +626,16 @@ public class SpallocClientFactory {
 					throws IOException {
 				URI uri = session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(jobs, true);
-					conn.setDoOutput(true);
-					conn.setRequestProperty("Content-Type", "application/json");
-					try (OutputStream os = conn.getOutputStream()) {
-						jsonMapper.writeValue(os, createInstructions);
-					}
+					writeObject(conn, createInstructions);
+					checkForError(conn, "job create failed");
 					// Get the response entity... and discard it
 					try (InputStream is = conn.getInputStream()) {
 						readLines(is, UTF_8);
+						// But we do want the Location header
+						return URI.create(conn.getHeaderField("Location"));
 					} finally {
 						session.trackCookie(conn);
 					}
-					return URI.create(conn.getHeaderField("Location"));
 				});
 				return job(uri);
 			}
@@ -609,6 +648,7 @@ public class SpallocClientFactory {
 			public List<Machine> listMachines() throws IOException {
 				return session.withRenewal(() -> {
 					HttpURLConnection conn = session.connection(machines);
+					checkForError(conn, "list machines failed");
 					try (InputStream is = conn.getInputStream()) {
 						Machines ms = jsonMapper.readValue(is, Machines.class);
 						// Assume we can cache this
@@ -699,11 +739,7 @@ public class SpallocClientFactory {
 			s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, KEEPALIVE, true);
 				conn.setRequestMethod("PUT");
-				conn.setDoOutput(true);
-				conn.setRequestProperty("Content-Type", "text/plain");
-				try (PrintWriter pw = new PrintWriter(conn.getOutputStream())) {
-					pw.println("alive");
-				}
+				writeString(conn, "alive");
 				try (InputStream is = conn.getInputStream()) {
 					return readLines(is, UTF_8);
 					// Ignore the output
@@ -717,8 +753,7 @@ public class SpallocClientFactory {
 		public void delete(String reason) throws IOException {
 			s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri,
-						URI.create("?reason=" + encode(reason, UTF_8.name())),
-						true);
+						URI.create("?reason=" + encode(reason)), true);
 				conn.setRequestMethod("DELETE");
 				try (InputStream is = conn.getInputStream()) {
 					readLines(is, UTF_8);
@@ -770,11 +805,7 @@ public class SpallocClientFactory {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
-				conn.setRequestProperty("Content-Type", "application/json");
-				conn.setDoOutput(true);
-				try (OutputStream os = conn.getOutputStream()) {
-					jsonMapper.writeValue(os, power);
-				}
+				writeObject(conn, power);
 				try (InputStream is = conn.getInputStream()) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
@@ -883,55 +914,8 @@ public class SpallocClientFactory {
 
 		@Override
 		public WhereIs getBoardByIPAddress(String address) throws IOException {
-			return whereis(bmd.uri.resolve(format("board-ip?address=%s",
-					encode(address, UTF_8.name()))));
+			return whereis(bmd.uri
+					.resolve(format("board-ip?address=%s", encode(address))));
 		}
-	}
-
-	// TODO move testing stuff elsewhere
-	static class TestingClientArgs {
-		@Parameters(index = "0", paramLabel = "BaseURL")
-		private URI baseUrl;
-
-		@Parameters(index = "1", paramLabel = "UserName")
-		private String username;
-
-		@Parameters(index = "2", paramLabel = "PassWord")
-		private String password;
-	}
-
-	private static final int SHORT_SLEEP = 100;
-
-	public static void main(String... args)
-			throws URISyntaxException, IOException, InterruptedException {
-		TestingClientArgs a = populateCommand(new TestingClientArgs(), args);
-		SpallocClientFactory factory = new SpallocClientFactory();
-		SpallocClient client =
-				factory.createClient(a.baseUrl, a.username, a.password);
-
-		// Just so that the server gets its logging out the way first
-		Thread.sleep(SHORT_SLEEP);
-
-		System.out.println(client.getVersion());
-		System.out.println(client.listMachines().stream().map(m -> m.getName())
-				.collect(toList()));
-		for (Machine m : client.listMachines()) {
-			WhereIs where = m.getBoardByTriad(0, 0, 1);
-			if (where == null) {
-				System.out
-						.println("board (0,0,1) not in machine " + m.getName());
-				continue;
-			}
-			System.out.println(where.getMachineHandle().getWidth());
-			System.out.println(where.getLogicalCoords());
-			System.out.println(where.getPhysicalCoords());
-			System.out.println(where.getBoardChip());
-			System.out.println(where.getChip());
-			System.out.println(where.getJobId());
-		}
-		// Check this directly here
-		factory.jsonMapper.readValue("{\"x\":1,\"y\":2,\"z\":3,"
-				+ "\"cabinet\":4,\"frame\":5,\"board\":6,"
-				+ "\"address\":\"127.0.0.2\"}", BoardCoords.class);
 	}
 }
