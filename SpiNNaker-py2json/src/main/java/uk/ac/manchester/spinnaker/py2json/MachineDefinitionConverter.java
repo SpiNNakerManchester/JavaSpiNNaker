@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.py2json;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static picocli.CommandLine.populateCommand;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.getattr;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.toCollectingMap;
@@ -40,6 +41,11 @@ import org.python.util.PythonInterpreter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+
+import picocli.CommandLine.ITypeConverter;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.TypeConversionException;
 
 /**
  * Converts Python configurations for classic Spalloc Server into JSON
@@ -386,25 +392,54 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	}
 
 	/**
+	 * The command line arguments of
+	 * {@link MachineDefinitionConverter#main(String[])}.
+	 */
+	private static class Arguments {
+		@Parameters(index = "0", paramLabel = "source.py",
+				description = "The file to load the configuration Python from.",
+				converter = ExistingFileConverter.class)
+		private File configFile;
+
+		@Parameters(index = "1", paramLabel = "target.json",
+				description = "The file to write the configuration JSON into.")
+		private File destination;
+	}
+
+	/**
+	 * Requires that an argument be an existing plain file.
+	 */
+	private static class ExistingFileConverter implements ITypeConverter<File> {
+		@Override
+		public File convert(String value) throws Exception {
+			File f = new File(value);
+			if (!f.isFile() || !f.canRead()) {
+				throw new TypeConversionException("file must be readable");
+			}
+			return f;
+		}
+	}
+
+	/**
 	 * Main entry point.
 	 *
 	 * @param args
 	 *            Takes two arguments: {@code <source.py>} and
 	 *            {@code <target.json>}.
-	 * @throws Exception If things go wrong
+	 * @throws Exception
+	 *             If things go wrong
 	 */
 	public static void main(String... args) throws Exception {
-		if (args.length != 2) {
-			System.err.println("takes two args: <source.py> <target.json>");
-			System.exit(1);
-		}
-		File configFile = new File(args[0]);
-		File destination = new File(args[1]);
 		try (MachineDefinitionConverter loader =
 				new MachineDefinitionConverter()) {
+			Arguments a = populateCommand(new Arguments(), args);
 			Configuration config = loader
-					.loadClassicConfigurationDefinition(configFile, false);
-			getJsonWriter().writeValue(destination, config);
+					.loadClassicConfigurationDefinition(a.configFile, false);
+			getJsonWriter().writeValue(a.destination, config);
+		} catch (ParameterException e) {
+			System.err.println(e.getMessage());
+			e.getCommandLine().usage(System.err);
+			System.exit(1);
 		}
 	}
 }

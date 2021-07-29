@@ -293,7 +293,7 @@ public interface SpallocClient {
 			}
 		}
 
-		public int getRespnseCode() {
+		public int getResponseCode() {
 			return responseCode;
 		}
 	}

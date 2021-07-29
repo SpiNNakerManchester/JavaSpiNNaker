@@ -49,6 +49,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -83,9 +84,19 @@ public class SpallocClientFactory {
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
 
+	/**
+	 * RE to find a session handle in a {@code Set-Cookie} header.
+	 * <p>
+	 * Expression: {@code SESSIONID=([A-Z0-9]+);}
+	 */
 	private static final Pattern SESSION_ID_RE =
 			Pattern.compile("JSESSIONID=([A-Z0-9]+);");
 
+	/**
+	 * RE to find a CSRF token in an HTML form.
+	 * <p>
+	 * Expression: {@code name="_csrf" value="([-a-z0-9]+)"}
+	 */
 	private static final Pattern CSRF_ID_RE =
 			Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
 
@@ -97,6 +108,13 @@ public class SpallocClientFactory {
 	private final Map<String, Machine> machineMap =
 			synchronizedMap(new HashMap<>());
 
+	/**
+	 * Add a {@code /} to the end of the path part of a URI.
+	 *
+	 * @param uri
+	 *            The URI to amend. Assumed to be HTTP or HTTPS.
+	 * @return The amended URI.
+	 */
 	static URI asDir(URI uri) {
 		String path = uri.getPath();
 		if (!path.endsWith("/")) {
@@ -330,16 +348,10 @@ public class SpallocClientFactory {
 			c.setInstanceFollowRedirects(false);
 		}
 
-		private Set<String> getCSRF(String line) {
-			Matcher m = CSRF_ID_RE.matcher(line);
-			if (!m.find()) {
-				return emptySet();
-			}
-			return singleton(m.group(1));
-		}
-
 		/**
 		 * Check for and handle any session cookie changes.
+		 * <p>
+		 * Assumes that the session key is in the {@code JSESSIONID} cookie.
 		 *
 		 * @param conn
 		 *            Connection that's had a transaction processed.
@@ -348,15 +360,36 @@ public class SpallocClientFactory {
 		 *             If things go wrong.
 		 */
 		boolean trackCookie(HttpURLConnection conn) {
-			String setCookie = conn.getHeaderField("Set-Cookie");
-			if (setCookie != null) {
-				Matcher m = SESSION_ID_RE.matcher(setCookie);
-				if (m.find()) {
-					session = m.group(1);
-					return true;
+			// Careful: spec allows for multiple Set-Cookie fields
+			boolean found = false;
+			for (int i = 0; true; i++) {
+				String key = conn.getHeaderFieldKey(i);
+				if (key == null) {
+					break;
+				}
+				if (!key.equalsIgnoreCase("Set-Cookie")) {
+					continue;
+				}
+				String setCookie = conn.getHeaderField(i);
+				if (setCookie != null) {
+					Matcher m = SESSION_ID_RE.matcher(setCookie);
+					if (m.find()) {
+						session = m.group(1);
+						found = true;
+					}
 				}
 			}
-			return false;
+			return found;
+		}
+
+		/** Helper for digging CSRF token info out of HTML. */
+		private Stream<String> getCSRF(String line) {
+			Matcher m = CSRF_ID_RE.matcher(line);
+			Set<String> s = emptySet();
+			if (m.find()) {
+				s = singleton(m.group(1));
+			}
+			return s.stream();
 		}
 
 		/**
@@ -374,9 +407,8 @@ public class SpallocClientFactory {
 					throw new IOException("could not establish session");
 				}
 				// This is nasty; parsing the HTML source
-				return readLines(is, UTF_8).stream()
-						.flatMap(l -> getCSRF(l).stream()).findFirst()
-						.orElseThrow(() -> new IOException(
+				return readLines(is, UTF_8).stream().flatMap(this::getCSRF)
+						.findFirst().orElseThrow(() -> new IOException(
 								"could not parse CSRF token"));
 			}
 		}
@@ -613,8 +645,7 @@ public class SpallocClientFactory {
 					// Assume we can cache this
 					for (BriefMachineDescription bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
-								name -> new MachineImpl(this, s,
-										bmd));
+								name -> new MachineImpl(this, s, bmd));
 					}
 					return ms.machines.stream()
 							.map(bmd -> machineMap.get(bmd.name))
@@ -822,7 +853,7 @@ public class SpallocClientFactory {
 		public WhereIs getBoardByPhysicalCoords(int cabinet, int frame,
 				int board) throws IOException {
 			return whereis(bmd.uri.resolve(
-					format("physical-board?" + "cabinet=%d&frame=%d&board=%d",
+					format("physical-board?cabinet=%d&frame=%d&board=%d",
 							cabinet, frame, board)));
 		}
 

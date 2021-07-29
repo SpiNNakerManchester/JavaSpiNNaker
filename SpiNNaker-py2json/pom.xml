@@ -25,26 +25,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<version>6.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-py2json</artifactId>
+	<name>Python Configuration to JSON Converter</name>
+	<description>Converts a spalloc server classic Python configuration file into JSON.</description>
 	<packaging>jar</packaging>
+
 	<properties>
 		<main.class>uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter</main.class>
 		<from.py>nosuchfile.py</from.py>
 		<to.json>config.json</to.json>
+		<jython.version>2.7.2</jython.version>
+		<exec.version>3.0.0</exec.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.12.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-slim</artifactId>
-			<version>2.7.2</version>
+			<version>${jython.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.skyscreamer</groupId>
@@ -52,8 +61,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<description>Converts a spalloc server classic Python configuration file into JSON.</description>
-	<name>Python Configuration to JSON Converter</name>
 	<build>
 		<resources>
 			<resource>
@@ -65,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>${exec.version}</version>
 					<configuration>
 						<mainClass>${main.class}</mainClass>
 						<arguments>
