@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
@@ -51,21 +52,19 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.AllocatedMachine;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.BoardCoords;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.DeadLink;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.JobDescription;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.WhereIs;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 /**
  * A factory for clients to connect to the Spalloc service.
+ * <p>
+ * <strong>Implementation Note:</strong>
+ * Neither this class nor the client classes it creates maintain state that
+ * needs to be closed explicitly.
  *
  * @author Donal Fellows
  */
@@ -98,7 +97,7 @@ public class SpallocClientFactory {
 	private final Map<String, Machine> machineMap =
 			synchronizedMap(new HashMap<>());
 
-	private static URI asDir(URI uri) {
+	static URI asDir(URI uri) {
 		String path = uri.getPath();
 		if (!path.endsWith("/")) {
 			path += "/";
@@ -143,21 +142,42 @@ public class SpallocClientFactory {
 	private static void writeString(HttpURLConnection connection, String string)
 			throws IOException {
 		connection.setDoOutput(true);
-		connection.setRequestProperty("Content-Type", "text/plain");
+		connection.setRequestProperty("Content-Type",
+				"text/plain; charset=UTF-8");
 		try (Writer w =
 				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
 			w.write(string);
 		}
 	}
 
-	private static void checkForError(HttpURLConnection c, String errorMessage)
-			throws IOException {
-		if (c.getResponseCode() >= HTTP_BAD_REQUEST) {
-			for (String line : readLines(c.getErrorStream(), UTF_8)) {
-				log.error(line);
-			}
-			throw new IOException(errorMessage + ": " + c.getResponseCode());
+	/**
+	 * Checks for errors in the response.
+	 *
+	 * @param conn
+	 *            The HTTP connection
+	 * @param errorMessage
+	 *            The message to use on error (describes what did not work at a
+	 *            higher level)
+	 * @return The input stream so any non-error response content can be
+	 *         obtained.
+	 * @throws IOException
+	 *             If things go wrong with comms.
+	 * @throws FileNotFoundException
+	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
+	 * @throws SpallocClient.Exception
+	 *             on other server errors
+	 */
+	private static InputStream checkForError(HttpURLConnection conn,
+			String errorMessage) throws IOException {
+		if (conn.getResponseCode() == HTTP_NOT_FOUND) {
+			// Special case
+			throw new FileNotFoundException(errorMessage);
 		}
+		if (conn.getResponseCode() >= HTTP_BAD_REQUEST) {
+			throw new SpallocClient.Exception(conn.getErrorStream(),
+					conn.getResponseCode());
+		}
+		return conn.getInputStream();
 	}
 
 	/**
@@ -166,7 +186,7 @@ public class SpallocClientFactory {
 	 *
 	 * @author Donal Fellows
 	 */
-	private class Session {
+	private final class Session {
 		private static final String HTTP_UNAUTHORIZED_MESSAGE =
 				"Server returned HTTP response code: 401";
 
@@ -348,7 +368,7 @@ public class SpallocClientFactory {
 		 */
 		private String makeTemporarySession() throws IOException {
 			HttpURLConnection c = connection(LOGIN_FORM);
-			try (InputStream is = c.getInputStream()) {
+			try (InputStream is = checkForError(c, "couldn't get login form")) {
 				// There's a session cookie at this point; we need it!
 				if (!trackCookie(c)) {
 					throw new IOException("could not establish session");
@@ -442,7 +462,8 @@ public class SpallocClientFactory {
 		 */
 		RootInfo discoverRoot() throws IOException {
 			HttpURLConnection conn = connection(SPALLOC_ROOT);
-			try (InputStream is = conn.getInputStream()) {
+			try (InputStream is =
+					checkForError(conn, "couldn't read service root")) {
 				RootInfo root = jsonMapper.readValue(is, RootInfo.class);
 				this.csrfHeader = root.csrfHeader;
 				this.csrf = root.csrfToken;
@@ -450,127 +471,6 @@ public class SpallocClientFactory {
 				root.csrfToken = null;
 				return root;
 			}
-		}
-	}
-
-	static class RootInfo {
-		/** Service version. */
-		Version version;
-
-		/** Where to look up jobs. */
-		URI jobsURI;
-
-		/** Where to look up machines. */
-		URI machinesURI;
-
-		/** CSRF header name. */
-		String csrfHeader;
-
-		/** CSRF token value. */
-		String csrfToken;
-
-		public void setVersion(Version version) {
-			this.version = version;
-		}
-
-		@JsonAlias("jobs-ref")
-		public void setJobsURI(URI jobsURI) {
-			this.jobsURI = jobsURI;
-		}
-
-		@JsonAlias("machines-ref")
-		public void setMachinesURI(URI machinesURI) {
-			this.machinesURI = machinesURI;
-		}
-
-		@JsonAlias("csrf-header")
-		public void setCsrfHeader(String csrfHeader) {
-			this.csrfHeader = csrfHeader;
-		}
-
-		@JsonAlias("csrf-token")
-		public void setCsrfToken(String csrfToken) {
-			this.csrfToken = csrfToken;
-		}
-	}
-
-	static class Machines {
-		/** The machine info. */
-		List<BriefMachineDescription> machines;
-
-		public void setMachines(List<BriefMachineDescription> machines) {
-			this.machines = machines;
-		}
-	}
-
-	static class BriefMachineDescription {
-		/** The machine name. */
-		String name;
-
-		/** The tags of the machine. */
-		List<String> tags;
-
-		/** The URI to the machine. */
-		URI uri;
-
-		/** The width of the machine, in triads. */
-		int width;
-
-		/** The height of the machine, in triads. */
-		int height;
-
-		/** The dead boards of the machine. */
-		List<BoardCoords> deadBoards;
-
-		/** The dead links of the machine. */
-		List<DeadLink> deadLinks;
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public void setTags(List<String> tags) {
-			this.tags = tags;
-		}
-
-		public void setUri(URI uri) {
-			this.uri = asDir(uri);
-		}
-
-		public void setWidth(int width) {
-			this.width = width;
-		}
-
-		public void setHeight(int height) {
-			this.height = height;
-		}
-
-		@JsonAlias("dead-boards")
-		public void setDeadBoards(List<BoardCoords> deadBoards) {
-			this.deadBoards = deadBoards;
-		}
-
-		@JsonAlias("dead-links")
-		public void setDeadLinks(List<DeadLink> deadLinks) {
-			this.deadLinks = deadLinks;
-		}
-	}
-
-	static class Jobs {
-		/** The jobs of the machine. */
-		List<URI> jobs;
-
-		public void setJobs(List<URI> jobs) {
-			this.jobs = jobs;
-		}
-	}
-
-	static class Power {
-		/** The power state. */
-		String power;
-
-		public void setPower(String power) {
-			this.power = power;
 		}
 	}
 
@@ -591,99 +491,29 @@ public class SpallocClientFactory {
 			String password) throws IOException {
 		Session s = new Session(baseUrl, username, password);
 
-		URI jobs, machines;
-		Version v;
-
-		RootInfo ri = s.discoverRoot();
-		jobs = ri.jobsURI;
-		machines = ri.machinesURI;
-		v = ri.version;
-
-		return new SpallocClient() {
-			Session session = s;
-
-			@Override
-			public Version getVersion() {
-				return v;
-			}
-
-			@Override
-			public List<Job> listJobs(boolean wait) throws IOException {
-				return session.withRenewal(() -> {
-					HttpURLConnection conn =
-							wait ? session.connection(jobs, WAIT_FLAG)
-									: session.connection(jobs);
-					try (InputStream is = conn.getInputStream()) {
-						return jsonMapper.readValue(is, Jobs.class).jobs
-								.stream().map(this::job).collect(toList());
-					} finally {
-						session.trackCookie(conn);
-					}
-				});
-			}
-
-			@Override
-			public Job createJob(CreateJob createInstructions)
-					throws IOException {
-				URI uri = session.withRenewal(() -> {
-					HttpURLConnection conn = session.connection(jobs, true);
-					writeObject(conn, createInstructions);
-					checkForError(conn, "job create failed");
-					// Get the response entity... and discard it
-					try (InputStream is = conn.getInputStream()) {
-						readLines(is, UTF_8);
-						// But we do want the Location header
-						return URI.create(conn.getHeaderField("Location"));
-					} finally {
-						session.trackCookie(conn);
-					}
-				});
-				return job(uri);
-			}
-
-			Job job(URI uri) {
-				return new JobImpl(this, session, asDir(uri));
-			}
-
-			@Override
-			public List<Machine> listMachines() throws IOException {
-				return session.withRenewal(() -> {
-					HttpURLConnection conn = session.connection(machines);
-					checkForError(conn, "list machines failed");
-					try (InputStream is = conn.getInputStream()) {
-						Machines ms = jsonMapper.readValue(is, Machines.class);
-						// Assume we can cache this
-						for (BriefMachineDescription bmd : ms.machines) {
-							machineMap.computeIfAbsent(bmd.name,
-									name -> new MachineImpl(this, session,
-											bmd));
-						}
-						return ms.machines.stream()
-								.map(bmd -> machineMap.get(bmd.name))
-								.collect(toList());
-					} finally {
-						session.trackCookie(conn);
-					}
-				});
-			}
-		};
+		return new ClientImpl(s, s.discoverRoot());
 	}
 
+	/**
+	 * An action used by {@link Session#withRenewal(Action)}.
+	 *
+	 * @param <T>
+	 */
 	private interface Action<T> {
 		T act() throws IOException;
 	}
 
-	private class Reinit {
+	private abstract class Common {
 		private final SpallocClient client;
 
 		final Session s;
 
-		Reinit(SpallocClient client, Session s) {
-			this.client = client;
+		Common(SpallocClient client, Session s) {
+			this.client = client != null ? client : (SpallocClient) this;
 			this.s = s;
 		}
 
-		Machine getMachine(String name) throws IOException {
+		final Machine getMachine(String name) throws IOException {
 			Machine m;
 			do {
 				m = machineMap.get(name);
@@ -694,11 +524,12 @@ public class SpallocClientFactory {
 			return m;
 		}
 
-		WhereIs whereis(URI uri) throws IOException {
+		final WhereIs whereis(URI uri) throws IOException {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
 				WhereIs w;
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't get board information")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -714,7 +545,88 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private class JobImpl extends Reinit implements Job {
+	private final class ClientImpl extends Common implements SpallocClient {
+		private Version v;
+
+		private URI jobs;
+
+		private URI machines;
+
+		private ClientImpl(Session s, RootInfo ri) {
+			super(null, s);
+			this.v = ri.version;
+			this.jobs = ri.jobsURI;
+			this.machines = ri.machinesURI;
+		}
+
+		@Override
+		public Version getVersion() {
+			return v;
+		}
+
+		@Override
+		public List<Job> listJobs(boolean wait) throws IOException {
+			return s.withRenewal(() -> {
+				HttpURLConnection conn =
+						wait ? s.connection(jobs, WAIT_FLAG)
+								: s.connection(jobs);
+				try (InputStream is =
+						checkForError(conn, "couldn't list jobs")) {
+					return jsonMapper.readValue(is, Jobs.class).jobs
+							.stream().map(this::job).collect(toList());
+				} finally {
+					s.trackCookie(conn);
+				}
+			});
+		}
+
+		@Override
+		public Job createJob(CreateJob createInstructions)
+				throws IOException {
+			URI uri = s.withRenewal(() -> {
+				HttpURLConnection conn = s.connection(jobs, true);
+				writeObject(conn, createInstructions);
+				// Get the response entity... and discard it
+				try (InputStream is =
+						checkForError(conn, "job create failed")) {
+					readLines(is, UTF_8);
+					// But we do want the Location header
+					return URI.create(conn.getHeaderField("Location"));
+				} finally {
+					s.trackCookie(conn);
+				}
+			});
+			return job(uri);
+		}
+
+		Job job(URI uri) {
+			return new JobImpl(this, s, asDir(uri));
+		}
+
+		@Override
+		public List<Machine> listMachines() throws IOException {
+			return s.withRenewal(() -> {
+				HttpURLConnection conn = s.connection(machines);
+				try (InputStream is =
+						checkForError(conn, "list machines failed")) {
+					Machines ms = jsonMapper.readValue(is, Machines.class);
+					// Assume we can cache this
+					for (BriefMachineDescription bmd : ms.machines) {
+						machineMap.computeIfAbsent(bmd.name,
+								name -> new MachineImpl(this, s,
+										bmd));
+					}
+					return ms.machines.stream()
+							.map(bmd -> machineMap.get(bmd.name))
+							.collect(toList());
+				} finally {
+					s.trackCookie(conn);
+				}
+			});
+		}
+	}
+
+	private final class JobImpl extends Common implements Job {
 		private final URI uri;
 
 		JobImpl(SpallocClient client, Session session, URI uri) {
@@ -727,7 +639,8 @@ public class SpallocClientFactory {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn =
 						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't get job state")) {
 					return jsonMapper.readValue(is, JobDescription.class);
 				} finally {
 					s.trackCookie(conn);
@@ -741,7 +654,8 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(uri, KEEPALIVE, true);
 				conn.setRequestMethod("PUT");
 				writeString(conn, "alive");
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't keep job alive")) {
 					return readLines(is, UTF_8);
 					// Ignore the output
 				} finally {
@@ -756,7 +670,8 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(uri,
 						URI.create("?reason=" + encode(reason)), true);
 				conn.setRequestMethod("DELETE");
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't delete job")) {
 					readLines(is, UTF_8);
 					// Ignore the output
 				} finally {
@@ -770,7 +685,8 @@ public class SpallocClientFactory {
 		public AllocatedMachine machine() throws IOException {
 			AllocatedMachine am = s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri);
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is = checkForError(conn,
+						"couldn't get allocation description")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -787,7 +703,8 @@ public class SpallocClientFactory {
 		public boolean getPower() throws IOException {
 			return s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(uri, POWER);
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't get power state")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -807,7 +724,8 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				writeObject(conn, power);
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't set power state")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -826,7 +744,7 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private class MachineImpl extends Reinit implements Machine {
+	private final class MachineImpl extends Common implements Machine {
 		private static final int TRIAD = 3;
 
 		private final BriefMachineDescription bmd;
@@ -882,7 +800,8 @@ public class SpallocClientFactory {
 		public void waitForChange() throws IOException {
 			BriefMachineDescription nbmd = s.withRenewal(() -> {
 				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
-				try (InputStream is = conn.getInputStream()) {
+				try (InputStream is =
+						checkForError(conn, "couldn't wait for state change")) {
 					return jsonMapper.readValue(is,
 							BriefMachineDescription.class);
 				} finally {

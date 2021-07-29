@@ -24,9 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import picocli.CommandLine.Parameters;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.BoardCoords;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.WhereIs;
 
 public final class CommandLineCheck {
 	private CommandLineCheck() {
