@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.util.stream.Collectors.toList;
 import static picocli.CommandLine.populateCommand;
+import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.JSON_MAPPER;
 
 import java.io.IOException;
 import java.net.URI;
@@ -72,7 +73,7 @@ public final class CommandLineCheck {
 			System.out.println(where.getJobId());
 		}
 		// Check this directly here
-		factory.jsonMapper.readValue("{\"x\":1,\"y\":2,\"z\":3,"
+		JSON_MAPPER.readValue("{\"x\":1,\"y\":2,\"z\":3,"
 				+ "\"cabinet\":4,\"frame\":5,\"board\":6,"
 				+ "\"address\":\"127.0.0.2\"}", BoardCoords.class);
 	}

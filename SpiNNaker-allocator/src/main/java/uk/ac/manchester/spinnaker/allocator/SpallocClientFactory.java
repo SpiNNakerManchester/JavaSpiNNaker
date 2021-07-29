@@ -22,6 +22,7 @@ import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -72,6 +73,19 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 public class SpallocClientFactory {
 	private static final Logger log = getLogger(SpallocClientFactory.class);
 
+	private static final String CONTENT_TYPE = "Content-Type";
+
+	private static final String COOKIE = "Cookie";
+
+	private static final String SET_COOKIE = "Set-Cookie";
+
+	private static final String TEXT_PLAIN = "text/plain; charset=UTF-8";
+
+	private static final String APPLICATION_JSON = "application/json";
+
+	private static final String FORM_ENCODED =
+			"application/x-www-form-urlencoded";
+
 	private static final URI LOGIN_FORM = URI.create("system/login.html");
 
 	private static final URI LOGIN_HANDLER = URI.create("system/perform_login");
@@ -84,27 +98,14 @@ public class SpallocClientFactory {
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
 
-	/**
-	 * RE to find a session handle in a {@code Set-Cookie} header.
-	 * <p>
-	 * Expression: {@code SESSIONID=([A-Z0-9]+);}
-	 */
-	private static final Pattern SESSION_ID_RE =
-			Pattern.compile("JSESSIONID=([A-Z0-9]+);");
-
-	/**
-	 * RE to find a CSRF token in an HTML form.
-	 * <p>
-	 * Expression: {@code name="_csrf" value="([-a-z0-9]+)"}
-	 */
-	private static final Pattern CSRF_ID_RE =
-			Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
-
 	/** Used to convert to/from JSON. */
-	JsonMapper jsonMapper = JsonMapper.builder().findAndAddModules()
-			.disable(WRITE_DATES_AS_TIMESTAMPS)
+	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
+			.findAndAddModules().disable(WRITE_DATES_AS_TIMESTAMPS)
 			.propertyNamingStrategy(KEBAB_CASE).build();
 
+	/**
+	 * Cache of machines, which don't expire.
+	 */
 	private final Map<String, Machine> machineMap =
 			synchronizedMap(new HashMap<>());
 
@@ -129,6 +130,11 @@ public class SpallocClientFactory {
 		return URLEncoder.encode(string, UTF_8.name());
 	}
 
+	private static <T> T readJson(InputStream is, Class<T> cls)
+			throws IOException {
+		return JSON_MAPPER.readValue(is, cls);
+	}
+
 	private static void writeForm(HttpURLConnection connection,
 			Map<String, String> map) throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -140,8 +146,7 @@ public class SpallocClientFactory {
 		}
 
 		connection.setDoOutput(true);
-		connection.setRequestProperty("Content-Type",
-				"application/x-www-form-urlencoded");
+		connection.setRequestProperty(CONTENT_TYPE, FORM_ENCODED);
 		try (Writer w =
 				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
 			w.write(sb.toString());
@@ -151,17 +156,16 @@ public class SpallocClientFactory {
 	private void writeObject(HttpURLConnection connection, Object object)
 			throws IOException {
 		connection.setDoOutput(true);
-		connection.setRequestProperty("Content-Type", "application/json");
+		connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
 		try (OutputStream out = connection.getOutputStream()) {
-			jsonMapper.writeValue(out, object);
+			JSON_MAPPER.writeValue(out, object);
 		}
 	}
 
 	private static void writeString(HttpURLConnection connection, String string)
 			throws IOException {
 		connection.setDoOutput(true);
-		connection.setRequestProperty("Content-Type",
-				"text/plain; charset=UTF-8");
+		connection.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
 		try (Writer w =
 				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
 			w.write(string);
@@ -204,9 +208,27 @@ public class SpallocClientFactory {
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class Session {
+	private static final class Session {
 		private static final String HTTP_UNAUTHORIZED_MESSAGE =
 				"Server returned HTTP response code: 401";
+
+		private static final String SESSION_NAME = "JSESSIONID";
+
+		/**
+		 * RE to find a session handle in a {@code Set-Cookie} header.
+		 * <p>
+		 * Expression: {@code SESSIONID=([A-Z0-9]+);}
+		 */
+		private static final Pattern SESSION_ID_RE =
+				Pattern.compile("JSESSIONID=([A-Z0-9]+);");
+
+		/**
+		 * RE to find a CSRF token in an HTML form.
+		 * <p>
+		 * Expression: {@code name="_csrf" value="([-a-z0-9]+)"}
+		 */
+		private static final Pattern CSRF_ID_RE =
+				Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
 
 		private final URI baseUri;
 
@@ -338,7 +360,7 @@ public class SpallocClientFactory {
 			 */
 			if (session != null) {
 				log.debug("Attaching to session {}", session);
-				c.setRequestProperty("Cookie", "JSESSIONID=" + session);
+				c.setRequestProperty(COOKIE, SESSION_NAME + "=" + session);
 			}
 
 			if (csrfHeader != null && csrf != null && forStateChange) {
@@ -367,7 +389,7 @@ public class SpallocClientFactory {
 				if (key == null) {
 					break;
 				}
-				if (!key.equalsIgnoreCase("Set-Cookie")) {
+				if (!key.equalsIgnoreCase(SET_COOKIE)) {
 					continue;
 				}
 				String setCookie = conn.getHeaderField(i);
@@ -474,6 +496,12 @@ public class SpallocClientFactory {
 		<T> T withRenewal(Action<T> action) throws IOException {
 			try {
 				return action.act();
+			} catch (SpallocClient.Exception e) {
+				if (e.getResponseCode() == HTTP_UNAUTHORIZED) {
+					renew(this::discoverRoot);
+					return action.act();
+				}
+				throw e;
 			} catch (IOException e) {
 				// Need to read the error message, like a barbarian!
 				if (e.getMessage().contains(HTTP_UNAUTHORIZED_MESSAGE)) {
@@ -496,7 +524,7 @@ public class SpallocClientFactory {
 			HttpURLConnection conn = connection(SPALLOC_ROOT);
 			try (InputStream is =
 					checkForError(conn, "couldn't read service root")) {
-				RootInfo root = jsonMapper.readValue(is, RootInfo.class);
+				RootInfo root = readJson(is, RootInfo.class);
 				this.csrfHeader = root.csrfHeader;
 				this.csrf = root.csrfToken;
 				root.csrfHeader = null;
@@ -530,8 +558,16 @@ public class SpallocClientFactory {
 	 * An action used by {@link Session#withRenewal(Action)}.
 	 *
 	 * @param <T>
+	 *            The type of the result of the action.
 	 */
 	private interface Action<T> {
+		/**
+		 * Perform the action.
+		 *
+		 * @return The result of the action.
+		 * @throws IOException
+		 *             If network I/O fails.
+		 */
 		T act() throws IOException;
 	}
 
@@ -565,7 +601,7 @@ public class SpallocClientFactory {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
-					w = jsonMapper.readValue(is, WhereIs.class);
+					w = readJson(is, WhereIs.class);
 				} catch (FileNotFoundException e) {
 					return null;
 				} finally {
@@ -604,8 +640,8 @@ public class SpallocClientFactory {
 								: s.connection(jobs);
 				try (InputStream is =
 						checkForError(conn, "couldn't list jobs")) {
-					return jsonMapper.readValue(is, Jobs.class).jobs
-							.stream().map(this::job).collect(toList());
+					return readJson(is, Jobs.class).jobs.stream().map(this::job)
+							.collect(toList());
 				} finally {
 					s.trackCookie(conn);
 				}
@@ -641,7 +677,7 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(machines);
 				try (InputStream is =
 						checkForError(conn, "list machines failed")) {
-					Machines ms = jsonMapper.readValue(is, Machines.class);
+					Machines ms = readJson(is, Machines.class);
 					// Assume we can cache this
 					for (BriefMachineDescription bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
@@ -672,7 +708,7 @@ public class SpallocClientFactory {
 						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
 				try (InputStream is =
 						checkForError(conn, "couldn't get job state")) {
-					return jsonMapper.readValue(is, JobDescription.class);
+					return readJson(is, JobDescription.class);
 				} finally {
 					s.trackCookie(conn);
 				}
@@ -721,7 +757,7 @@ public class SpallocClientFactory {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
-					return jsonMapper.readValue(is, AllocatedMachine.class);
+					return readJson(is, AllocatedMachine.class);
 				} finally {
 					s.trackCookie(conn);
 				}
@@ -739,7 +775,7 @@ public class SpallocClientFactory {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
-					Power power = jsonMapper.readValue(is, Power.class);
+					Power power = readJson(is, Power.class);
 					return "ON".equals(power.power);
 				} finally {
 					s.trackCookie(conn);
@@ -760,7 +796,7 @@ public class SpallocClientFactory {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
-					Power power2 = jsonMapper.readValue(is, Power.class);
+					Power power2 = readJson(is, Power.class);
 					return "ON".equals(power2.power);
 				} finally {
 					s.trackCookie(conn);
@@ -833,8 +869,7 @@ public class SpallocClientFactory {
 				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
 				try (InputStream is =
 						checkForError(conn, "couldn't wait for state change")) {
-					return jsonMapper.readValue(is,
-							BriefMachineDescription.class);
+					return readJson(is, BriefMachineDescription.class);
 				} finally {
 					s.trackCookie(conn);
 				}
