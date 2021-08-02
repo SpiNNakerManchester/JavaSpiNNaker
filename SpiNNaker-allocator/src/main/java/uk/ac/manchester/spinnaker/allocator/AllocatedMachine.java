@@ -16,11 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
 @JsonIgnoreProperties({
@@ -37,7 +42,7 @@ public class AllocatedMachine {
 
 	private Machine machine;
 
-	private List<Object> connections;
+	private List<ConnectionInfo> connections;
 
 	private List<BoardCoordinates> boards;
 
@@ -87,11 +92,11 @@ public class AllocatedMachine {
 	}
 
 	/** @return How to talk to boards. */
-	public List<Object/* ConnectionInfo */> getConnections() {
+	public List<ConnectionInfo> getConnections() {
 		return connections;
 	}
 
-	public void setConnections(List<Object> connections) {
+	public void setConnections(List<ConnectionInfo> connections) {
 		this.connections = connections;
 	}
 
@@ -102,5 +107,34 @@ public class AllocatedMachine {
 
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards;
+	}
+
+	/** Information about a connection to a board. */
+	@JsonPropertyOrder({
+		"chip", "hostname"
+	})
+	@JsonFormat(shape = ARRAY)
+	public static class ConnectionInfo {
+		private ChipLocation chip;
+
+		private String hostname;
+
+		/** @return Which root chip (of a board) is this about? */
+		public ChipLocation getChip() {
+			return chip;
+		}
+
+		public void setChip(ChipLocation chip) {
+			this.chip = chip;
+		}
+
+		/** @return What's the IP address of the chip? */
+		public String getHostname() {
+			return hostname;
+		}
+
+		public void setHostname(String hostname) {
+			this.hostname = hostname;
+		}
 	}
 }

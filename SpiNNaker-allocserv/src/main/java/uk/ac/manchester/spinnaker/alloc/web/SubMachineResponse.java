@@ -65,7 +65,7 @@ public class SubMachineResponse {
 	@JsonInclude(NON_NULL)
 	public final URI machineRef;
 
-	public SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
+	SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
 		width = m.getWidth();
 		height = m.getHeight();
 		depth = m.getDepth();

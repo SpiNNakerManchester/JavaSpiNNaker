@@ -94,6 +94,8 @@ public class SpallocClientFactory {
 
 	private static final URI KEEPALIVE = URI.create("keepalive");
 
+	private static final URI MACHINE = URI.create("machine");
+
 	private static final URI POWER = URI.create("power");
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
@@ -751,7 +753,7 @@ public class SpallocClientFactory {
 		@Override
 		public AllocatedMachine machine() throws IOException {
 			AllocatedMachine am = s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri);
+				HttpURLConnection conn = s.connection(uri, MACHINE);
 				try (InputStream is = checkForError(conn,
 						"couldn't get allocation description")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
