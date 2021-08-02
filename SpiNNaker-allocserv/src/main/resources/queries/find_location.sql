@@ -26,4 +26,4 @@ WHERE boards.machine_id = args.machine_id
 	AND boards.board_num = args.board
 	AND bmp.cabinet = args.cabinet
 	AND bmp.frame = args.frame
-	AND boards.may_be_allocated > 0;
+	AND boards.may_be_allocated;

@@ -46,6 +46,8 @@ FROM boards
 	LEFT JOIN boards AS root ON root.board_id = jobs.root_id
 WHERE
 	boards.machine_id = :machine_id
-	AND bmp.cabinet = :cabinet AND bmp.frame = :frame
+	AND bmp.cabinet = :cabinet
+	AND bmp.frame = :frame
+	AND boards.board_num IS NOT NULL
 	AND boards.board_num = :board
 LIMIT 1;

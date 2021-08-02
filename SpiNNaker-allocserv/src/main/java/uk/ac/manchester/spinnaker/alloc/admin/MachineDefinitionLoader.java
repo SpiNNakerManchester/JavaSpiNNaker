@@ -997,6 +997,14 @@ public class MachineDefinitionLoader extends SQLQueries {
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
 		}
+		for (TriadCoords triad : machine.deadBoards) {
+			int bmpID = bmpIds.get(machine.boardLocations.get(triad).bmp());
+			ChipLocation root = triad.chipLocation();
+			sql.makeBoard
+					.key(machineId, null, bmpID, null, triad.x, triad.y,
+							triad.z, root.getX(), root.getY(), false)
+					.ifPresent(id -> boardIds.put(triad, id));
+		}
 		return boardIds;
 	}
 

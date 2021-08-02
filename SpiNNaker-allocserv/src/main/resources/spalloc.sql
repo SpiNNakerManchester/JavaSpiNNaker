@@ -57,9 +57,9 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 CREATE TABLE IF NOT EXISTS boards (
 	board_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	address TEXT UNIQUE NOT NULL, -- IP address
+	address TEXT UNIQUE, -- IP address
 	bmp_id INTEGER NOT NULL REFERENCES bmp(bmp_id) ON DELETE RESTRICT,
-	board_num INTEGER NOT NULL CHECK (board_num >= 0), -- for use with the BMP
+	board_num INTEGER CHECK (board_num >= 0), -- for use with the BMP
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
 	x INTEGER NOT NULL CHECK (x >= 0), -- Board logical coordinate
 	y INTEGER NOT NULL CHECK (y >= 0), -- Board logical coordinate
@@ -71,9 +71,13 @@ CREATE TABLE IF NOT EXISTS boards (
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
 	functioning INTEGER, -- boolean
-	may_be_allocated INTEGER GENERATED ALWAYS AS ( -- generated column
-		allocated_job IS NULL AND (functioning IS NULL OR functioning != 0)
-		) VIRTUAL
+	may_be_allocated INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+		board_num IS NOT NULL
+		AND allocated_job IS NULL
+		AND (functioning IS NULL OR functioning != 0)
+		) VIRTUAL,
+	-- Ether both address and board_num are NULL, or neither is
+	CHECK ((address IS NULL) = (board_num IS NULL))
 );
 -- Every board has a unique location within its machine
 CREATE UNIQUE INDEX IF NOT EXISTS boardCoordinateSanity ON boards(

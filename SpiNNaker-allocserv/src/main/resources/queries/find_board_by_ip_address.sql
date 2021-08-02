@@ -46,5 +46,6 @@ FROM boards
 	LEFT JOIN boards AS root ON root.board_id = jobs.root_id
 WHERE
 	boards.machine_id = :machine_id
+	AND boards.address IS NOT NULL
 	AND boards.address = :address
 LIMIT 1;

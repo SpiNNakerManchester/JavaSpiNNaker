@@ -227,6 +227,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param columnLabel
 		 *            The name of the column.
+		 * @return An integer or {@code null}.
+		 * @throws SQLException
+		 *             If a problem occurs
+		 */
+		public Integer getInteger(String columnLabel) throws SQLException {
+			return (Integer) rs.getObject(columnLabel);
+		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
 		 * @return A byte array, or {@code null} on {@code NULL}.
 		 * @throws SQLException
 		 *             If a problem occurs

@@ -33,7 +33,7 @@ public class BoardPhysicalCoordinates {
 
 	private int frame;
 
-	private int board;
+	private Integer board;
 
 	/**
 	 * Create with default coordinates.
@@ -51,7 +51,7 @@ public class BoardPhysicalCoordinates {
 	 * @param board
 	 *            the board ID within the frame
 	 */
-	public BoardPhysicalCoordinates(int cabinet, int frame, int board) {
+	public BoardPhysicalCoordinates(int cabinet, int frame, Integer board) {
 		this.cabinet = cabinet;
 		this.frame = frame;
 		this.board = board;
@@ -73,11 +73,11 @@ public class BoardPhysicalCoordinates {
 		this.frame = frame;
 	}
 
-	public int getBoard() {
+	public Integer getBoard() {
 		return board;
 	}
 
-	public void setBoard(int board) {
+	public void setBoard(Integer board) {
 		this.board = board;
 	}
 

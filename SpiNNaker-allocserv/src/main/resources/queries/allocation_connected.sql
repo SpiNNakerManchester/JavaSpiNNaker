@@ -22,9 +22,11 @@ WITH RECURSIVE
 	bs AS (SELECT boards.* FROM boards
 		JOIN args ON boards.machine_id = args.machine_id
 		JOIN m
-		WHERE boards.x >= args.x AND boards.x < (args.x + args.width) % m.width
-			AND boards.y >= args.y AND boards.y < (args.y + args.height) % m.height
-			AND may_be_allocated > 0),
+		WHERE boards.x >= args.x
+			AND boards.x < (args.x + args.width) % m.width
+			AND boards.y >= args.y
+			AND boards.y < (args.y + args.height) % m.height
+			AND may_be_allocated),
 	-- Links between boards of interest
 	ls AS (SELECT links.* FROM links
 		WHERE links.board_1 IN (SELECT board_id FROM bs)

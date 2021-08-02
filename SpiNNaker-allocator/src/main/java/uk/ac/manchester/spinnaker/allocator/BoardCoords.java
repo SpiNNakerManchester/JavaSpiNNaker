@@ -35,7 +35,7 @@ public class BoardCoords {
 	private final int frame;
 
 	/** Physical board number. */
-	private final int board;
+	private final Integer board;
 
 	/**
 	 * IP address of ethernet chip. May be {@code null} if the current user
@@ -62,7 +62,7 @@ public class BoardCoords {
 	BoardCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
 			@JsonProperty("z") int z, @JsonProperty("cabinet") int cabinet,
 			@JsonProperty("frame") int frame,
-			@JsonProperty("board") int board,
+			@JsonProperty("board") Integer board,
 			@JsonProperty("address") String address) {
 		this.x = x;
 		this.y = y;

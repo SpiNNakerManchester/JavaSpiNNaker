@@ -263,6 +263,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	protected static final String GET_BOARD_NUMBERS =
 			"SELECT board_num FROM boards WHERE machine_id = :machine_id "
+					+ "AND board_num IS NOT NULL "
 					+ "AND (functioning IS NULL OR functioning != 0) "
 					+ "ORDER BY board_num ASC";
 
@@ -281,6 +282,7 @@ public abstract class SQLQueries {
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND board_num IS NOT NULL "
 					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
 
 	/**
@@ -298,7 +300,8 @@ public abstract class SQLQueries {
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
 					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE boards.machine_id = :machine_id "
-					+ "AND functioning IS 0 ORDER BY z ASC, x ASC, y ASC";
+					+ "AND (board_num IS NULL OR functioning IS 0) "
+					+ "ORDER BY z ASC, x ASC, y ASC";
 
 	/**
 	 * Get the coords of boards assigned to a job.
@@ -683,6 +686,7 @@ public abstract class SQLQueries {
 					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND bmp.cabinet = :cabinet AND bmp.frame = :frame "
+					+ "AND boards.board_num IS NOT NULL "
 					+ "AND boards.board_num = :board LIMIT 1";
 
 	/** Get a board's ID given it's IP address. */
@@ -704,6 +708,7 @@ public abstract class SQLQueries {
 					+ "ON boards.machine_id = machines.machine_id "
 					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
 					+ "WHERE machine_name = :machine_name "
+					+ "AND boards.address IS NOT NULL "
 					+ "AND boards.address = :address LIMIT 1";
 
 	/**

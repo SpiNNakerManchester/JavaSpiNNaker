@@ -135,9 +135,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		static TriadCoords get(Row row) throws SQLException {
-			Integer x = (Integer) row.getObject("x");
-			Integer y = (Integer) row.getObject("y");
-			Integer z = (Integer) row.getObject("z");
+			Integer x = row.getInteger("x");
+			Integer y = row.getInteger("y");
+			Integer z = row.getInteger("z");
 			if (x == null || y == null || z == null) {
 				return null;
 			}
@@ -358,7 +358,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		Rectangle max = new Rectangle(task.getInt("max_width"),
 				task.getInt("max_height"), TRIAD_DEPTH);
 		int maxDeadBoards = task.getInt("max_dead_boards");
-		Integer numBoards = (Integer) task.getObject("num_boards");
+		Integer numBoards = task.getInteger("num_boards");
 		if (numBoards != null && numBoards > 0) {
 			if (numBoards == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
@@ -368,8 +368,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 					maxDeadBoards);
 		}
 
-		Integer width = (Integer) task.getObject("width");
-		Integer height = (Integer) task.getObject("height");
+		Integer width = task.getInteger("width");
+		Integer height = task.getInteger("height");
 		if (width != null && height != null && width > 0 && height > 0) {
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(conn, jobId, machineId);

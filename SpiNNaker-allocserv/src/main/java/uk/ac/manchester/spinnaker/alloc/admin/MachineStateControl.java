@@ -63,7 +63,7 @@ public class MachineStateControl extends SQLQueries {
 		public final int frame;
 
 		/** The board number. */
-		public final int board;
+		public final Integer board;
 
 		/** The IP address managed by the board's root chip. */
 		public final String address;
@@ -75,7 +75,7 @@ public class MachineStateControl extends SQLQueries {
 			this.z = row.getInt("z");
 			this.cabinet = row.getInt("cabinet");
 			this.frame = row.getInt("frame");
-			this.board = row.getInt("board_num");
+			this.board = row.getInteger("board_num");
 			this.address = row.getString("address");
 		}
 

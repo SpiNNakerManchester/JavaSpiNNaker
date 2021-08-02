@@ -245,7 +245,7 @@ public class JobDescription {
 	 * @return The width of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadWidth() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.x)
+		IntSummaryStatistics stats = boards.stream().map(b -> b.getX())
 				.collect(summarizingInt(Integer::intValue));
 		if (stats.getCount() < 1) {
 			return 0;
@@ -257,7 +257,7 @@ public class JobDescription {
 	 * @return The height of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadHeight() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.y)
+		IntSummaryStatistics stats = boards.stream().map(b -> b.getY())
 				.collect(summarizingInt(Integer::intValue));
 		if (stats.getCount() < 1) {
 			return 0;

@@ -267,7 +267,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		int id = row.getInt("job_id");
 		rec.setId(id);
 		rec.setState(row.getEnum("job_state", JobState.class));
-		Integer numBoards = (Integer) row.getObject("allocation_size");
+		Integer numBoards = row.getInteger("allocation_size");
 		rec.setNumBoards(numBoards);
 		rec.setPowered((numBoards != null)
 				&& numBoards == countPoweredBoards.call1(id).get().getInt("c"));
@@ -576,7 +576,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query boardNumbers = query(conn, GET_BOARD_NUMBERS)) {
 				return transaction(conn, () -> {
 					return rowsAsList(boardNumbers.call(id),
-							row -> (Integer) row.getObject("board_num"));
+							row -> row.getInteger("board_num"));
 				});
 			}
 		}
@@ -596,7 +596,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							row -> new BoardCoords(row.getInt("x"),
 									row.getInt("y"), row.getInt("z"),
 									row.getInt("cabinet"), row.getInt("frame"),
-									row.getInt("boardNum"),
+									row.getInteger("boardNum"),
 									row.getString("address")));
 				});
 				synchronized (this) {
@@ -626,7 +626,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 											row.getInt("board_1_z"),
 											row.getInt("board_1_c"),
 											row.getInt("board_1_f"),
-											row.getInt("board_1_b"),
+											row.getInteger("board_1_b"),
 											row.getString("board_1_addr")),
 									row.getEnum("dir_1", Direction.class),
 									new BoardCoords(row.getInt("board_2_x"),
@@ -634,7 +634,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 											row.getInt("board_2_z"),
 											row.getInt("board_2_c"),
 											row.getInt("board_2_f"),
-											row.getInt("board_2_b"),
+											row.getInteger("board_2_b"),
 											row.getString("board_2_addr")),
 									row.getEnum("dir_2", Direction.class)));
 				});
@@ -654,7 +654,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							query(conn, GET_AVAILABLE_BOARD_NUMBERS)) {
 				return transaction(conn, () -> {
 					return rowsAsList(boardNumbers.call(id),
-							row -> (Integer) row.getObject("board_num"));
+							row -> row.getInteger("board_num"));
 				});
 			}
 		}
@@ -795,10 +795,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				this.epoch = epoch;
 				this.id = row.getInt("job_id");
 				this.machineId = row.getInt("machine_id");
-				width = (Integer) row.getObject("width");
-				height = (Integer) row.getObject("height");
-				depth = (Integer) row.getObject("depth");
-				root = (Integer) row.getObject("root_id");
+				width = row.getInteger("width");
+				height = row.getInteger("height");
+				depth = row.getInteger("depth");
+				root = row.getInteger("root_id");
 				owner = row.getString("owner");
 				if (root != null) {
 					try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
@@ -1092,10 +1092,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
 						row.getInt("z"));
 				physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
-						row.getInt("frame"), row.getInt("board_num"));
+						row.getInt("frame"), row.getInteger("board_num"));
 				chip = new ChipLocation(row.getInt("chip_x"),
 						row.getInt("chip_y"));
-				Integer boardX = (Integer) row.getObject("board_chip_x");
+				Integer boardX = row.getInteger("board_chip_x");
 				if (boardX != null) {
 					boardChip = new ChipLocation(boardX,
 							row.getInt("board_chip_y"));
@@ -1103,7 +1103,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					boardChip = chip;
 				}
 
-				Integer jobId = (Integer) row.getObject("job_id");
+				Integer jobId = row.getInteger("job_id");
 				if (jobId != null) {
 					// No epoch; can't wait on this
 					job = new JobImpl(null, jobId, machineId);

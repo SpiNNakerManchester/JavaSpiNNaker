@@ -26,7 +26,7 @@ public class Physical {
 
 	private int frame;
 
-	private int board;
+	private Integer board;
 
 	public int getCabinet() {
 		return cabinet;
@@ -44,16 +44,16 @@ public class Physical {
 		this.frame = frame;
 	}
 
-	public int getBoard() {
+	public Integer getBoard() {
 		return board;
 	}
 
-	public void setBoard(int board) {
+	public void setBoard(Integer board) {
 		this.board = board;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[%d:%d:%d]", cabinet, frame, board);
+		return String.format("[%d:%d:%s]", cabinet, frame, board);
 	}
 }

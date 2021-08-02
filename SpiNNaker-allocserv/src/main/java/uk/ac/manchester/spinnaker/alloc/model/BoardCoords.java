@@ -27,28 +27,32 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
  */
 public final class BoardCoords {
 	/** Logical triad X coordinate. */
-	public final int x;
+	private final int x;
 
 	/** Logical triad Y coordinate. */
-	public final int y;
+	private final int y;
 
 	/** Logical triad Z coordinate. */
-	public final int z;
+	private final int z;
 
 	/** Physical cabinet number. */
-	public final int cabinet;
+	private final int cabinet;
 
 	/** Physical frame number. */
-	public final int frame;
+	private final int frame;
 
-	/** Physical board number. */
-	public final int board;
+	/**
+	 * Physical board number. May be {@code null} if the board is dead (e.g.,
+	 * because it is outright absent from the machine).
+	 */
+	private final Integer board;
 
 	/**
 	 * IP address of ethernet chip. May be {@code null} if the current user
-	 * doesn't have permission to see the board address at this point.
+	 * doesn't have permission to see the board address at this point, or the
+	 * board is dead (e.g., because it is outright absent from the machine).
 	 */
-	public final String address;
+	private final String address;
 
 	/**
 	 * @param x
@@ -66,8 +70,8 @@ public final class BoardCoords {
 	 * @param address
 	 *            IP address of ethernet chip
 	 */
-	public BoardCoords(int x, int y, int z, int cabinet, int frame, int board,
-			String address) {
+	public BoardCoords(int x, int y, int z, int cabinet, int frame,
+			Integer board, String address) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -95,7 +99,7 @@ public final class BoardCoords {
 		z = row.getInt("z");
 		cabinet = row.getInt("cabinet");
 		frame = row.getInt("frame");
-		board = row.getInt("board_num");
+		board = row.getInteger("board_num");
 		address = shroudAddress ? null : row.getString("address");
 	}
 
@@ -135,16 +139,18 @@ public final class BoardCoords {
 	}
 
 	/**
-	 * @return Physical board number.
+	 * @return Physical board number. May be {@code null} if the board is dead
+	 *         (e.g., because it is outright absent from the machine).
 	 */
-	public int getBoard() {
+	public Integer getBoard() {
 		return board;
 	}
 
 	/**
 	 * @return IP address of ethernet chip. May be {@code null} if the current
 	 *         user doesn't have permission to see the board address at this
-	 *         point.
+	 *         point, or the board is dead (e.g., because it is outright absent
+	 *         from the machine).
 	 */
 	public String getAddress() {
 		return address;

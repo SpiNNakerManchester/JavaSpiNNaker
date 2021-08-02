@@ -64,7 +64,7 @@ public class QuotaManager extends SQLQueries {
 			Integer quota = null;
 			int userId = 0;
 			for (Row row : getQuota.call(machineId, user)) {
-				quota = (Integer) row.getObject("quota");
+				quota = row.getInteger("quota");
 				userId = row.getInt("user_id");
 			}
 			if (quota == null) {
