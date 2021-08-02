@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>1.7.32</slf4j.version>
 		<log4j.version>2.14.1</log4j.version>
 		<junit.version>5.7.2</junit.version>
-		<checkstyle.version>8.44</checkstyle.version>
+		<checkstyle.version>8.45</checkstyle.version>
 
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.7</jacoco.version>
