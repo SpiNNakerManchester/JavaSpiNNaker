@@ -61,6 +61,12 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysi
 @SpringBootTest
 @TestInstance(PER_CLASS)
 class MDefLoaderTest {
+	private static final String COUNT_LIVE_BOARDS =
+			"SELECT COUNT(*) AS c FROM boards WHERE board_num IS NOT NULL";
+
+	private static final String COUNT_LIVE_LINKS =
+			"SELECT COUNT(*) AS c FROM links WHERE live";
+
 	@Autowired
 	private MachineDefinitionLoader loader;
 
@@ -158,12 +164,12 @@ class MDefLoaderTest {
 		}
 
 		// Should be just one board
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM boards")) {
+		try (Query q = query(c, COUNT_LIVE_BOARDS)) {
 			assertEquals(1, q.call1().get().getInt("c"));
 		}
 
 		// Single-board setups have no inter-board links
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM links")) {
+		try (Query q = query(c, COUNT_LIVE_LINKS)) {
 			assertEquals(0, q.call1().get().getInt("c"));
 		}
 	}
@@ -199,12 +205,12 @@ class MDefLoaderTest {
 		}
 
 		// Should be just one board
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM boards")) {
+		try (Query q = query(c, COUNT_LIVE_BOARDS)) {
 			assertEquals(3, q.call1().get().getInt("c"));
 		}
 
 		// Single-board setups have no inter-board links
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM links")) {
+		try (Query q = query(c, COUNT_LIVE_LINKS)) {
 			assertEquals(3, q.call1().get().getInt("c"));
 		}
 	}

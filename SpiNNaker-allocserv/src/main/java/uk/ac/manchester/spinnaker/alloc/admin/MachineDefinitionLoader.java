@@ -21,6 +21,7 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -53,6 +54,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
@@ -80,6 +82,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 @Component
 public class MachineDefinitionLoader extends SQLQueries {
+	private static final Logger log = getLogger(MachineDefinitionLoader.class);
+
 	private static final int DECIMAL = 10;
 
 	/**
@@ -991,15 +995,24 @@ public class MachineDefinitionLoader extends SQLQueries {
 			int bmpID = bmpIds.get(phys.bmp());
 			String addr = machine.spinnakerIPs.get(triad);
 			ChipLocation root = triad.chipLocation();
+			log.debug("making {} board {}",
+					machine.deadBoards.contains(triad) ? "dead" : "live",
+					triad);
 			sql.makeBoard
 					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
 		}
+		BoardPhysicalCoords rootPhys =
+				machine.boardLocations.get(new TriadCoords(0, 0, 0));
 		for (TriadCoords triad : machine.deadBoards) {
-			int bmpID = bmpIds.get(machine.boardLocations.get(triad).bmp());
+			// Fake with the machine root if no real coords available
+			BoardPhysicalCoords phys =
+					machine.boardLocations.getOrDefault(triad, rootPhys);
+			int bmpID = bmpIds.get(phys.bmp());
 			ChipLocation root = triad.chipLocation();
+			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard
 					.key(machineId, null, bmpID, null, triad.x, triad.y,
 							triad.z, root.getX(), root.getY(), false)
@@ -1032,10 +1045,18 @@ public class MachineDefinitionLoader extends SQLQueries {
 			return Optional.empty();
 		}
 
-		// A link is dead if it is dead in either direction
-		boolean dead = machine.hasDeadLinkAt(here, d1)
-				|| machine.hasDeadLinkAt(there, d2);
+		/*
+		 * A link is dead if it is dead in either direction or if either board
+		 * is dead.
+		 */
+		boolean dead =
+				machine.deadBoards.contains(here)
+						|| machine.hasDeadLinkAt(here, d1)
+						|| machine.deadBoards.contains(there)
+						|| machine.hasDeadLinkAt(there, d2);
 		try {
+			log.debug("making {}:{} <-{}-> {}:{}", here, d1, dead ? "/" : "-",
+					there, d2);
 			return sql.makeLink.key(b1, d1, b2, d2, !dead);
 		} catch (SQLiteException e) {
 			// If the CHECK constraint says no, just ignore; we'll do the link
