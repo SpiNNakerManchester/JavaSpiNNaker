@@ -120,6 +120,7 @@ public abstract class SQLQueries {
 
 	/** Get basic information about a specific job. */
 	@Parameter("job_id")
+	@ResultColumn("job_id")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
@@ -137,7 +138,7 @@ public abstract class SQLQueries {
 	@ResultColumn("owner")
 	@SingleRowResult
 	protected static final String GET_JOB =
-			"SELECT jobs.machine_id, machines.machine_name, "
+			"SELECT job_id, jobs.machine_id, machines.machine_name, "
 					+ "jobs.width, jobs.height, jobs.depth, "
 					+ "root_id, job_state, keepalive_timestamp, "
 					+ "keepalive_host, keepalive_interval, create_timestamp, "

@@ -66,6 +66,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -112,8 +113,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public static final String IS_READER = "hasRole('READER')";
 
 	/** How to filter out job details that a given user may see (or not). */
-	public static final String MAY_SEE_JOB_DETAILS = IS_ADMIN
-			+ " or filterObject.owner.orElse(null) == authentication.name";
+	public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
+			+ " #permit.name == filterObject.owner.orElse(null)";
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
@@ -493,6 +494,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			target.ifPresent(a::add);
 			return ((Stream<T>) super.filter(a.stream(), expr, ctx))
 					.findFirst();
+		}
+	}
+
+	/**
+	 * Encodes what a user is permitted to do. Abstracts over several types of
+	 * security context.
+	 */
+	public static class Permit {
+		/** Is the user an admin? */
+		public final boolean admin;
+
+		/** What is the name of the user? */
+		public final String name;
+
+		public Permit(javax.ws.rs.core.SecurityContext security) {
+			// TODO which version is the right one?
+			admin = security.isUserInRole("ADMIN")
+					|| security.isUserInRole(GRANT_ADMIN);
+			name = security.getUserPrincipal().getName();
+		}
+
+		public Permit(SecurityContext context) {
+			admin = context.getAuthentication().getAuthorities().stream()
+					.anyMatch(ga -> ga.getAuthority().equals(GRANT_ADMIN));
+			name = context.getAuthentication().getName();
+		}
+
+		public boolean unveilFor(String owner) {
+			return admin || owner.equals(name);
 		}
 	}
 }

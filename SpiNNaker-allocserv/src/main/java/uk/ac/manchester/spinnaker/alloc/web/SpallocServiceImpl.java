@@ -29,7 +29,10 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -45,11 +48,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -183,6 +190,61 @@ public class SpallocServiceImpl extends BackgroundSupport
 			};
 		}
 
+		@SuppressWarnings("serial")
+		private static final class TempAuth
+				implements Authentication, AutoCloseable {
+			private final Permit permit;
+
+			TempAuth(Permit permit) {
+				this.permit = permit;
+				SecurityContextHolder.getContext().setAuthentication(this);
+			}
+
+			@Override
+			public String getName() {
+				return permit.name;
+			}
+
+			@Override
+			public Collection<? extends GrantedAuthority> getAuthorities() {
+				Set<GrantedAuthority> s = Collections.emptySet();
+				if (permit.admin) {
+					s = Collections.singleton(() -> "ROLE_ADMIN");
+				}
+				return s;
+			}
+
+			@Override
+			public Object getCredentials() {
+				return null;
+			}
+
+			@Override
+			public Object getDetails() {
+				return null;
+			}
+
+			@Override
+			public Object getPrincipal() {
+				return null;
+			}
+
+			@Override
+			public boolean isAuthenticated() {
+				return true;
+			}
+
+			@Override
+			public void setAuthenticated(boolean isAuthenticated)
+					throws IllegalArgumentException {
+			}
+
+			@Override
+			public void close() throws Exception {
+				SecurityContextHolder.getContext().setAuthentication(null);
+			}
+		}
+
 		/**
 		 * Make a job access interface.
 		 *
@@ -190,6 +252,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 		 *            The job object to wrap
 		 * @param caller
 		 *            What host made the call? Used in keepalive tracking.
+		 * @param permit
+		 *            The security permissions pertinent to the job
 		 * @param ui
 		 *            How the API was accessed
 		 * @return A machine access interface. Will be wrapped by Spring with
@@ -197,7 +261,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		 */
 		@Bean
 		@Scope("prototype")
-		public JobAPI job(Job j, String caller, UriInfo ui) {
+		public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 			return new JobAPI() {
 				@Override
 				public String keepAlive(String reqBody) throws SQLException {
@@ -213,9 +277,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 							log.debug("starting wait for change of job");
 							j.waitForChange(WAIT_TIMEOUT);
 							// Refresh the handle
-							Job nj = core.getJob(j.getId()).orElseThrow(
-									() -> new ItsGone("no such job"));
-							return new JobStateResponse(nj, ui, mapper);
+							try (TempAuth t = new TempAuth(permit)) {
+								Job nj = core.getJob(permit, j.getId())
+										.orElseThrow(() -> new ItsGone(
+												"no such job"));
+								return new JobStateResponse(nj, ui, mapper);
+							}
 						});
 					} else {
 						fgAction(response,
@@ -259,10 +326,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 					}
 					bgAction(response, () -> {
 						j.access(caller);
-						SubMachine m = j.getMachine().orElseThrow(
-								// No machine allocated yet
-								EmptyResponse::new);
-						m.setPower(reqBody.getPower());
+						try (TempAuth t = new TempAuth(permit)) {
+							SubMachine m = j.getMachine().orElseThrow(
+									// No machine allocated yet
+									EmptyResponse::new);
+							m.setPower(reqBody.getPower());
+						}
 						return accepted().build();
 					});
 				}
@@ -302,9 +371,11 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
 			SecurityContext security) throws SQLException {
-		Job j = core.getJob(id).orElseThrow(() -> new NotFound("no such job"));
+		Permit permit = new Permit(security);
+		Job j = core.getJob(permit, id)
+				.orElseThrow(() -> new NotFound("no such job"));
 		// Wrap so we can use security annotations
-		return jobFactory.getObject(j, req.getRemoteHost(), ui);
+		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
 	}
 
 	private static final int LIMIT_LIMIT = 200;

@@ -159,6 +159,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		try {
 			if (db.execute(this::allocate)) {
+				log.debug("advancing job epoch");
 				epochs.nextJobsEpoch();
 			}
 		} catch (SQLiteException e) {
@@ -185,8 +186,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 					 * the task.
 					 */
 				} finally {
+					log.debug("allocate for {}: {}", id, handled);
 					if (handled) {
-						changed = delete.call(id) > 0;
+						changed |= delete.call(id) > 0;
 					}
 				}
 			}
@@ -503,8 +505,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *             If something goes wrong with talking to the DB
 	 */
 	private boolean setAllocation(Connection conn, int jobId, Rectangle rect,
-			int machineId, TriadCoords root)
-			throws SQLException {
+			int machineId, TriadCoords root) throws SQLException {
 		try (Query getConnectedBoardIDs = query(conn, getConnectedBoards);
 				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
 				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
@@ -555,10 +556,13 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 */
 	private boolean setPower(Connection conn, int jobId, PowerState power,
 			JobState targetState) throws SQLException {
-		try (Query getJobBoards = query(conn, GET_JOB_BOARDS);
+		try (Query getJobState = query(conn, GET_JOB);
+				Query getJobBoards = query(conn, GET_JOB_BOARDS);
 				Query getPerimeter = query(conn, getPerimeterLinks);
 				Update issueChange = update(conn, issueChangeForJob);
 				Update setStatePending = update(conn, SET_STATE_PENDING)) {
+			JobState sourceState = getJobState.call1(jobId).get()
+					.getEnum("job_state", JobState.class);
 			List<Integer> boards = new ArrayList<>();
 			for (Row row : getJobBoards.call(jobId)) {
 				boards.add(row.getInt("board_id"));
@@ -591,8 +595,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				for (int boardId : boards) {
 					EnumSet<Direction> toChange =
 							perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
-					numPending += issueChange.call(jobId, boardId, true,
-							!toChange.contains(Direction.N),
+					numPending += issueChange.call(jobId, boardId, sourceState,
+							targetState, true, !toChange.contains(Direction.N),
 							!toChange.contains(Direction.E),
 							!toChange.contains(Direction.SE),
 							!toChange.contains(Direction.S),
@@ -602,8 +606,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			} else {
 				// Powering off; all links switch to off so no perimeter check
 				for (int boardId : boards) {
-					numPending += issueChange.call(jobId, boardId, false, false,
-							false, false, false, false, false);
+					numPending += issueChange.call(jobId, boardId, sourceState,
+							targetState, false, false, false, false, false,
+							false, false);
 				}
 			}
 

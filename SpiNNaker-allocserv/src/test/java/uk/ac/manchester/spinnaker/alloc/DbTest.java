@@ -344,8 +344,8 @@ class DbTest {
 			try (Query q = query(c, GET_JOB)) {
 				assertEquals(1, q.getNumArguments());
 				assertSetEquals(
-						set("machine_id", "machine_name", "width", "height",
-								"depth", "root_id", "job_state",
+						set("job_id", "machine_id", "machine_name", "width",
+								"height", "depth", "root_id", "job_state",
 								"keepalive_timestamp", "keepalive_host",
 								"keepalive_interval", "create_timestamp",
 								"death_reason", "death_timestamp",

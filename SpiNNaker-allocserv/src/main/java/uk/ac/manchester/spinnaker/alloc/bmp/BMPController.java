@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
@@ -121,6 +122,9 @@ public class BMPController extends SQLQueries {
 
 	@Autowired
 	private TransceiverFactoryAPI<?> txrxFactory;
+
+	@Autowired
+	private Epochs epochs;
 
 	private ExecutorService executor = newCachedThreadPool(WorkerThread::new);
 
@@ -577,6 +581,8 @@ public class BMPController extends SQLQueries {
 				for (int changeId : changeIds) {
 					deleteChange.call(changeId);
 				}
+				epochs.nextJobsEpoch();
+				epochs.nextMachineEpoch();
 			});
 		} catch (SQLException e) {
 			log.error("problem with database", e);

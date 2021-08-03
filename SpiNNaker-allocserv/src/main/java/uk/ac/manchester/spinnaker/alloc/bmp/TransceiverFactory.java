@@ -16,25 +16,39 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableMap;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
+import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
+import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -44,18 +58,24 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  * @author Donal Fellows
  */
 @Component("transceiverFactory")
-public class TransceiverFactory implements TransceiverFactoryAPI<Transceiver> {
+public class TransceiverFactory
+		implements TransceiverFactoryAPI<TransceiverInterface> {
 	private Map<String, Transceiver> txrxMap = new HashMap<>();
 
+	@Value("${spalloc.transceiver.dummy:false}")
+	private boolean useDummy;
+
 	@Override
-	public Transceiver getTransciever(Machine machineDescription)
+	public TransceiverInterface getTransciever(Machine machineDescription)
 			throws IOException, SQLException, SpinnmanException {
+		if (useDummy) {
+			return new DummyTransceiver(machineDescription);
+		}
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
 			Transceiver t = txrxMap.get(machineDescription.getName());
 			if (t == null) {
-				t = makeTransceiver(
-						machineDescription.getRootBoardBMPAddress(),
+				t = makeTransceiver(machineDescription.getRootBoardBMPAddress(),
 						machineDescription.getBoardNumbers());
 				txrxMap.put(machineDescription.getName(), t);
 			}
@@ -92,5 +112,70 @@ public class TransceiverFactory implements TransceiverFactoryAPI<Transceiver> {
 		for (Transceiver txrx : txrxMap.values()) {
 			txrx.close();
 		}
+	}
+}
+
+class DummyTransceiver extends BMPOnlyTransceiverBase {
+	private static final Logger log = getLogger(DummyTransceiver.class);
+
+	private static final int VERSION_INFO_SIZE = 32;
+
+	private static final short VERSION = 0x202;
+
+	private final VersionInfo version;
+
+	private Map<Integer, Boolean> status;
+
+	DummyTransceiver(Machine m) throws SQLException {
+		log.info("constructed dummy transceiver for {} ({} : {})", m.getName(),
+				m.getRootBoardBMPAddress(), m.getBoardNumbers());
+		ByteBuffer b = ByteBuffer.allocate(VERSION_INFO_SIZE);
+		b.order(ByteOrder.LITTLE_ENDIAN);
+		b.putInt(0);
+		b.putInt(0);
+		b.putInt(0);
+		b.putInt(0);
+		b.putShort((short) 0);
+		b.putShort(VERSION);
+		b.putInt(0);
+		b.put("abc/def".getBytes(UTF_8));
+		b.flip();
+		version = new VersionInfo(b);
+		status = new HashMap<>();
+	}
+
+	public Map<Integer, Boolean> getStatus() {
+		return unmodifiableMap(status);
+	}
+
+	@Override
+	public void power(PowerCommand powerCommand, BMPCoords bmp,
+			Collection<Integer> boards)
+			throws InterruptedException, IOException, ProcessException {
+		log.info("power({},{},{})", powerCommand, bmp, boards);
+		for (Integer b : boards) {
+			status.put(b, powerCommand == POWER_ON);
+		}
+	}
+
+	@Override
+	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+			int board) throws IOException, ProcessException {
+		log.info("readFPGARegister({},{},{},{})", fpgaNumber, register, bmp,
+				board);
+		return fpgaNumber;
+	}
+
+	@Override
+	public void writeFPGARegister(int fpgaNumber, int register, int value,
+			BMPCoords bmp, int board) throws IOException, ProcessException {
+		log.info("writeFPGARegister({},{},{},{},{})", fpgaNumber, register,
+				value, bmp, board);
+	}
+
+	@Override
+	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
+			throws IOException, ProcessException {
+		return version;
 	}
 }

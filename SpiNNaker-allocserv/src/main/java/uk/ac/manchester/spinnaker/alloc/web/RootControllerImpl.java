@@ -52,6 +52,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -164,7 +165,7 @@ public class RootControllerImpl implements RootController {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
 			for (MachineListEntryRecord entry : table) {
 				entry.setDetailsUrl(
-						uri(SELF.getMachineInfo(entry.getName(), null)));
+						uri(SELF.getMachineInfo(entry.getName())));
 			}
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (SQLException e) {
@@ -173,18 +174,14 @@ public class RootControllerImpl implements RootController {
 		}
 	}
 
-	private static boolean isAdmin() {
-		return getContext().getAuthentication().getAuthorities()
-				.stream().anyMatch(g -> g.getAuthority().endsWith("ADMIN"));
-	}
-
 	@Override
 	@PreAuthorize(IS_READER)
-	public ModelAndView getMachineInfo(String machine, Principal principal) {
+	public ModelAndView getMachineInfo(String machine) {
+		Permit permit = new Permit(getContext());
 		try {
-			MachineDescription mach = spallocCore
-					.getMachineInfo(machine, principal.getName(), isAdmin())
-					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+			MachineDescription mach =
+					spallocCore.getMachineInfo(machine, permit).orElseThrow(
+							() -> new ResponseStatusException(NOT_FOUND));
 			for (JobInfo j : mach.getJobs()) {
 				// Owners and admins may drill down further into jobs
 				if (j.getOwner().isPresent()) {
@@ -200,14 +197,14 @@ public class RootControllerImpl implements RootController {
 
 	@Override
 	@PreAuthorize(IS_READER)
-	public ModelAndView getJobList(Principal principal) {
+	public ModelAndView getJobList() {
+		Permit permit = new Permit(getContext());
 		try {
-			List<JobListEntryRecord> table =
-					spallocCore.listJobs(principal.getName(), isAdmin());
+			List<JobListEntryRecord> table = spallocCore.listJobs(permit);
 			for (JobListEntryRecord entry : table) {
 				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId())));
 				entry.setMachineUrl(
-						uri(SELF.getMachineInfo(entry.getMachineName(), null)));
+						uri(SELF.getMachineInfo(entry.getMachineName())));
 			}
 			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
 		} catch (SQLException e) {
@@ -219,15 +216,16 @@ public class RootControllerImpl implements RootController {
 	@Override
 	@PreAuthorize(IS_READER)
 	public ModelAndView getJobInfo(int id) {
+		Permit permit = new Permit(getContext());
 		try {
-			JobDescription mach = spallocCore.getJobInfo(id)
+			JobDescription mach = spallocCore.getJobInfo(permit, id)
 					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 			if (mach.getRequestBytes() != null) {
 				mach.setRequest(mapper.readValue(mach.getRequestBytes(),
 						CreateJobRequest.class));
 			}
 			mach.setMachineUrl(
-					uri(SELF.getMachineInfo(mach.getMachine(), null)));
+					uri(SELF.getMachineInfo(mach.getMachine())));
 			return new ModelAndView(JOB_VIEW, "job", mach);
 		} catch (SQLException e) {
 			log.error("database problem", e);

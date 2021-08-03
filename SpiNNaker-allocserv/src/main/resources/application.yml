@@ -50,5 +50,7 @@ cxf:
     classes-scan-packages:
       uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
 
+# spalloc.transceiver.dummy: true
+
 #cxf.rest.path: /
 #num.threads: 16

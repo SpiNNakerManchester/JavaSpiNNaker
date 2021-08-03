@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.springframework.security.access.prepost.PostFilter;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
@@ -80,16 +81,14 @@ public interface SpallocAPI {
 	 *
 	 * @param machine
 	 *            The name of the machine to get.
-	 * @param currentUser
-	 *            Who are we getting machine for.
-	 * @param isAdmin
-	 *            Does the user have administration authorisation?
+	 * @param permit
+	 *            Encodes what the caller may do.
 	 * @return A machine description model.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
-	Optional<MachineDescription> getMachineInfo(String machine,
-			String currentUser, boolean isAdmin) throws SQLException;
+	Optional<MachineDescription> getMachineInfo(String machine, Permit permit)
+			throws SQLException;
 
 	/**
 	 * List the jobs.
@@ -109,21 +108,20 @@ public interface SpallocAPI {
 	/**
 	 * List the active jobs.
 	 *
-	 * @param currentUser
-	 *            Who are we listing for.
-	 * @param isAdmin
-	 *            Does the user have administration authorisation?
+	 * @param permit
+	 *            Encodes what the caller may do.
 	 * @return A description of all the active jobs.
 	 * @throws SQLException
 	 *             If something goes wrong
 	 */
-	List<JobListEntryRecord> listJobs(String currentUser, boolean isAdmin)
-			throws SQLException;
+	List<JobListEntryRecord> listJobs(Permit permit) throws SQLException;
 
 	/**
 	 * Get a specific job. Only owners or admins can see full job details or
 	 * manipulate the job.
 	 *
+	 * @param permit
+	 *            Encodes what the caller may do.
 	 * @param id
 	 *            The identifier of the job.
 	 * @return A job object on which more operations can be done, or empty if
@@ -132,12 +130,14 @@ public interface SpallocAPI {
 	 *             If something goes wrong
 	 */
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	Optional<Job> getJob(int id) throws SQLException;
+	Optional<Job> getJob(Permit permit, int id) throws SQLException;
 
 	/**
 	 * Get a specific job. Only owners or admins can see full job details or
 	 * manipulate the job.
 	 *
+	 * @param permit
+	 *            Encodes what the caller may do.
 	 * @param id
 	 *            The identifier of the job.
 	 * @return A job description, or empty if the job isn't there (or isn't
@@ -146,7 +146,8 @@ public interface SpallocAPI {
 	 *             If something goes wrong
 	 */
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	Optional<JobDescription> getJobInfo(int id) throws SQLException;
+	Optional<JobDescription> getJobInfo(Permit permit, int id)
+			throws SQLException;
 
 	/**
 	 * Create a job.

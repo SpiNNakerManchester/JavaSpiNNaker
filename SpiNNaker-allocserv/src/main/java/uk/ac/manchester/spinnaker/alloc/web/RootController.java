@@ -68,25 +68,20 @@ public interface RootController {
 	 *
 	 * @param machine
 	 *            Which machine is being asked for
-	 * @param principal
-	 *            Who is asking for the info (which affects what they can see).
 	 * @return View and model
 	 */
 	@GetMapping("/machine_info/{machine}")
 	@PreAuthorize(IS_READER)
-	ModelAndView getMachineInfo(@PathVariable("machine") String machine,
-			Principal principal);
+	ModelAndView getMachineInfo(@PathVariable("machine") String machine);
 
 	/**
 	 * Get the view for the general job list.
 	 *
-	 * @param principal
-	 *            Who is asking for the list (which affects what they can see).
 	 * @return View and model
 	 */
 	@GetMapping("/list_jobs")
 	@PreAuthorize(IS_READER)
-	ModelAndView getJobList(Principal principal);
+	ModelAndView getJobList();
 
 	/**
 	 * Get the view for some job details.

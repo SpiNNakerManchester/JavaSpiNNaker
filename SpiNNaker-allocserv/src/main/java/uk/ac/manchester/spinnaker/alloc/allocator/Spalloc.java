@@ -50,6 +50,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLProblem;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
@@ -180,7 +181,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Override
 	public Optional<MachineDescription> getMachineInfo(String machine,
-			String currentUser, boolean isAdmin) throws SQLException {
+			Permit permit) throws SQLException {
 		return db.execute(conn -> {
 			try (Query namedMachine = query(conn, GET_NAMED_MACHINE);
 					Query countMachineThings =
@@ -208,10 +209,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				md.setJobs(rowsAsList(getJobs.call(md.getId()), row -> {
 					JobInfo ji = new JobInfo();
 					int jobId = row.getInt("job_id");
-					String owner =
-							(currentUser.equals(row.getString("owner_name"))
-									|| isAdmin) ? row.getString("owner_name")
-											: null;
+					String owner = permit.unveilFor(row.getString("owner_name"))
+							? row.getString("owner_name")
+							: null;
 					ji.setId(jobId);
 					ji.setOwner(owner);
 					ji.setBoards(rowsAsList(getCoords.call(jobId),
@@ -219,9 +219,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					return ji;
 				}));
 				md.setLive(rowsAsList(getLive.call(md.getId()),
-						r -> new BoardCoords(r, !isAdmin)));
+						r -> new BoardCoords(r, !permit.admin)));
 				md.setDead(rowsAsList(getDead.call(md.getId()),
-						r -> new BoardCoords(r, !isAdmin)));
+						r -> new BoardCoords(r, !permit.admin)));
 				return Optional.of(md);
 			}
 		});
@@ -247,22 +247,21 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public List<JobListEntryRecord> listJobs(String currentUser,
-			boolean isAdmin) throws SQLException {
+	public List<JobListEntryRecord> listJobs(Permit permit)
+			throws SQLException {
 		return db.execute(conn -> {
 			try (Query listLiveJobs = query(conn, LIST_LIVE_JOBS);
 					Query countPoweredBoards =
 							query(conn, COUNT_POWERED_BOARDS)) {
 				return rowsAsList(listLiveJobs.call(),
-						row -> makeJobListEntryRecord(currentUser, isAdmin,
+						row -> makeJobListEntryRecord(permit,
 								countPoweredBoards, row));
 			}
 		});
 	}
 
-	private JobListEntryRecord makeJobListEntryRecord(String currentUser,
-			boolean isAdmin, Query countPoweredBoards, Row row)
-			throws SQLException {
+	private JobListEntryRecord makeJobListEntryRecord(Permit permit,
+			Query countPoweredBoards, Row row) throws SQLException {
 		JobListEntryRecord rec = new JobListEntryRecord();
 		int id = row.getInt("job_id");
 		rec.setId(id);
@@ -276,7 +275,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
 		rec.setKeepaliveInterval(row.getDuration("keepalive_interval"));
 		String owner = row.getString("owner_name");
-		if (isAdmin || owner.equals(currentUser)) {
+		if (permit.unveilFor(owner)) {
 			rec.setOwner(owner);
 			rec.setHost(row.getString("keepalive_host"));
 		}
@@ -285,7 +284,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	public Optional<Job> getJob(int id) throws SQLException {
+	public Optional<Job> getJob(Permit permit, int id) throws SQLException {
 		return db.execute(conn -> Optional.ofNullable((Job) getJob(id, conn)));
 	}
 
@@ -299,7 +298,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	public Optional<JobDescription> getJobInfo(int id) throws SQLException {
+	public Optional<JobDescription> getJobInfo(Permit permit, int id)
+			throws SQLException {
 		return db.execute(conn -> {
 			try (Query s = query(conn, GET_JOB);
 					Query chipDimensions = query(conn, GET_JOB_CHIP_DIMENSIONS);
