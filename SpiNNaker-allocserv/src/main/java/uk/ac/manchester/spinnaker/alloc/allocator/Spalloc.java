@@ -596,7 +596,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							row -> new BoardCoords(row.getInt("x"),
 									row.getInt("y"), row.getInt("z"),
 									row.getInt("cabinet"), row.getInt("frame"),
-									row.getInteger("boardNum"),
+									row.getInteger("board_num"),
 									row.getString("address")));
 				});
 				synchronized (this) {

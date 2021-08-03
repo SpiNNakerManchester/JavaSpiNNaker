@@ -124,10 +124,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS link_1 ON links(
 	board_1 ASC, dir_1 ASC);
 CREATE UNIQUE INDEX IF NOT EXISTS link_2 ON links(
 	board_2 ASC, dir_2 ASC);
--- Technically, there can be multiple links in very small SpiNN-3 board setups
--- But we ignore that. We don't care!
-CREATE UNIQUE INDEX IF NOT EXISTS only_one_link_between_boards ON links(
-	board_1 ASC, board_2 ASC);
 
 CREATE TABLE IF NOT EXISTS job_states(
 	"id" INTEGER PRIMARY KEY,

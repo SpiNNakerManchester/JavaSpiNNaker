@@ -38,17 +38,17 @@ import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 public enum Direction {
 	// Order must match that in database
 	/** Northward, from {@code x} to {@code a}. */
-	N(2, 0, "fpga_n"),
+	N(2, 0, "fpga_n", 3),
 	/** Eastward, from {@code x} to {@code b}. */
-	E(2, 1, "fpga_e"),
+	E(2, 1, "fpga_e", 4),
 	/** Southeast, from {@code x} to {@code c}. */
-	SE(0, 0, "fpga_se"),
+	SE(0, 0, "fpga_se", 5),
 	/** Southward, from {@code x} to {@code d}. */
-	S(0, 1, "fpga_s"),
+	S(0, 1, "fpga_s", 0),
 	/** Westward, from {@code x} to {@code e}. */
-	W(1, 0, "fpga_w"),
+	W(1, 0, "fpga_w", 1),
 	/** Northwest, from {@code x} to {@code f}. */
-	NW(1, 1, "fpga_nw");
+	NW(1, 1, "fpga_nw", 2);
 
 	/**
 	 * The number of the FPGA that manages the link in this direction.
@@ -66,10 +66,14 @@ public enum Direction {
 	 */
 	public final String columnName;
 
-	Direction(int fpga, int bankSelect, String columnName) {
+	/** The number of the opposite of the link. */
+	private int oppo;
+
+	Direction(int fpga, int bankSelect, String columnName, int opposite) {
 		this.fpga = fpga;
 		this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
 		this.columnName = columnName;
+		this.oppo = opposite;
 	}
 
 	/**
@@ -79,6 +83,6 @@ public enum Direction {
 	 * @return The opposite direction.
 	 */
 	public Direction opposite() {
-		return values()[(ordinal() + values().length) % values().length];
+		return values()[oppo];
 	}
 }

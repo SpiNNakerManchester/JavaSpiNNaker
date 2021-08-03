@@ -211,7 +211,7 @@ class MDefLoaderTest {
 
 		// Single-board setups have no inter-board links
 		try (Query q = query(c, COUNT_LIVE_LINKS)) {
-			assertEquals(3, q.call1().get().getInt("c"));
+			assertEquals(9, q.call1().get().getInt("c"));
 		}
 	}
 }

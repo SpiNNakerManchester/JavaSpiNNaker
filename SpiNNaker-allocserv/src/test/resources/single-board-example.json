@@ -1,7 +1,7 @@
 {
   "machines" : [ {
     "name" : "my-board",
-    "tags" : [ "default" ],
+    "tags" : [ "single" ],
     "width" : 1,
     "height" : 1,
     "dead-boards" : [ {

@@ -32,12 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <table>
 <tr>
 	<th class="lineTitle">Name:</th>
-	<td>${ machine.name }</td>
+	<td><code>${ machine.name }</code></td>
 </tr>
 <tr>
 	<th class="lineTitle">Tags:</th>
 	<td><c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-	${tag }<c:if test="${ !loop.last }">,</c:if>
+		<code>${ tag }</code><c:if test="${ !loop.last }">,</c:if>
 	</c:forEach></td>
 </tr>
 <tr>

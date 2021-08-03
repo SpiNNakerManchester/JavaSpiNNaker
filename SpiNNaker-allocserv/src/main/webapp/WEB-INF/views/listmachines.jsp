@@ -52,9 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <td class="numberColumn">${ machine.numInUse }</td>
     <td class="numberColumn">${ machine.numJobs }</td>
     <td class="textColumn">
-    <c:forEach items="${ machine.tags }" var="tag">
-		<code>${ tag }</code>,
-    </c:forEach>
+	<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
+		<code>${ tag }</code><c:if test="${ !loop.last }">,</c:if>
+	</c:forEach>
     </td>
 </tr>
 </c:forEach>
