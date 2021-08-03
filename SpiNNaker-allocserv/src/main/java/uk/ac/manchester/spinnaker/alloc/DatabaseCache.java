@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.Runtime.getRuntime;
+import static java.lang.Thread.currentThread;
 import static java.util.Collections.synchronizedList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -71,7 +73,14 @@ abstract class DatabaseCache<Conn extends Connection> {
 			throw new RuntimeException("problem opening database connection",
 					e);
 		}
-		closerThreads.add(new CloserThread(connection));
+		if (currentThread().getName().equals("main")) {
+			// Special case for the main thread
+			getRuntime().addShutdownHook(new Thread(() -> {
+				closeDatabaseConnection(connection);
+			}, "database closer for " + currentThread()));
+		} else {
+			closerThreads.add(new CloserThread(connection));
+		}
 		return connection;
 	}
 
@@ -86,7 +95,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 		private final Conn resource;
 
 		CloserThread(Conn c) {
-			owner = Thread.currentThread();
+			owner = currentThread();
 			resource = c;
 			setName("database closer for " + owner);
 			setPriority(Thread.MAX_PRIORITY);
