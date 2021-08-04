@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.sql.Connection;
@@ -178,9 +179,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			boolean changed = false;
 			for (Row row : getTasks.call()) {
 				int id = row.getInt("req_id");
+				JobState currentState =
+						row.getEnum("job_state", JobState.class);
 				boolean handled = true;
 				try {
-					handled = allocate(conn, row);
+					// Non-queued jobs should not have allocations done!
+					if (currentState == QUEUED) {
+						handled = allocate(conn, row);
+					}
 					/*
 					 * NB: having an exception counts as handled; we will nuke
 					 * the task.
@@ -260,11 +266,15 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	private boolean destroyJob(Connection conn, int id, String reason)
 			throws SQLException {
+		log.info("destroying job {} \"{}\"", id, reason);
 		try (Update mark = update(conn, DESTROY_JOB);
 				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 				Update killPending = update(conn, KILL_JOB_PENDING)) {
-			setPower(conn, id, PowerState.OFF, DESTROYED);
-			// FIXME Don't kill pending tasks that are turning things off!
+			boolean changed = setPower(conn, id, PowerState.OFF, DESTROYED);
+			if (!changed) {
+				log.info("not destroying job {}; already unpowered", id);
+				return false;
+			}
 			boolean success = mark.call(reason, id) > 0;
 			if (success) {
 				killAlloc.call(id);
@@ -568,6 +578,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				boards.add(row.getInt("board_id"));
 			}
 			if (boards.isEmpty()) {
+				if (targetState == DESTROYED) {
+					log.info("no boards for {} in destroy", jobId);
+				}
 				return false;
 			}
 
@@ -612,6 +625,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				}
 			}
 
+			if (targetState == DESTROYED) {
+				log.info("num changes for {} in destroy: {}", jobId,
+						numPending);
+			}
 			setStatePending.call(
 					targetState == DESTROYED ? DESTROYED
 							: numPending > 0 ? POWER : targetState,

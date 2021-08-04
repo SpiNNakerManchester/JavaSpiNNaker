@@ -16,7 +16,7 @@
 WITH
 	-- Arguments and current timestamp
 	args(machine, now) AS (
-		VALUES (:machine_id, strftime('%s', 'now'))),
+		VALUES (:machine_id, CAST(strftime('%s', 'now') AS INTEGER))),
 	-- The machine on which we are allocating
 	m AS (
 		SELECT machines.* FROM machines, args

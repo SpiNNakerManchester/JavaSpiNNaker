@@ -92,10 +92,10 @@ CREATE TRIGGER IF NOT EXISTS boardStateTimestamping
 AFTER UPDATE OF board_power ON boards
 BEGIN
 	UPDATE boards
-		SET power_off_timestamp = strftime('%s','now')
+		SET power_off_timestamp = CAST(strftime('%s','now') AS INTEGER)
 		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 0 AND NEW.board_power IS 0;
 	UPDATE boards
-		SET power_on_timestamp = strftime('%s','now')
+		SET power_on_timestamp = CAST(strftime('%s','now') AS INTEGER)
 		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 1 AND NEW.board_power IS 1;
 END;
 
@@ -174,7 +174,7 @@ CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
 AFTER INSERT ON jobs
 BEGIN
 	UPDATE jobs
-		SET create_timestamp = strftime('%s','now')
+		SET create_timestamp = CAST(strftime('%s','now') AS INTEGER)
 	WHERE job_id = NEW.job_id;
 END;
 -- When the job is allocated, update the right timestamp
@@ -182,7 +182,7 @@ CREATE TRIGGER IF NOT EXISTS jobAllocationTimestamping
 AFTER UPDATE OF allocation_size ON jobs
 BEGIN
 	UPDATE jobs
-		SET allocation_timestamp = strftime('%s','now')
+		SET allocation_timestamp = CAST(strftime('%s','now') AS INTEGER)
 	WHERE job_id = OLD.job_id
 		AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
 END;
@@ -191,7 +191,7 @@ CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
 AFTER UPDATE OF job_state ON jobs
 BEGIN
 	UPDATE jobs
-		SET death_timestamp = strftime('%s','now')
+		SET death_timestamp = CAST(strftime('%s','now') AS INTEGER)
 	WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 -- DESTROYED
 		AND NEW.job_state IS 4; -- DESTROYED
 END;

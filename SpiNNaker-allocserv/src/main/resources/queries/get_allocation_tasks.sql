@@ -26,7 +26,8 @@ SELECT
 	jobs.machine_id AS machine_id,
 	job_request.max_dead_boards,
 	machines.width AS max_width,
-	machines.height AS max_height
+	machines.height AS max_height,
+	jobs.job_state AS job_state
 FROM
 	job_request
 	JOIN jobs ON job_request.job_id = jobs.job_id

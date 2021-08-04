@@ -216,7 +216,8 @@ public abstract class SQLQueries {
 			+ "machine_id, owner, keepalive_interval, original_request, "
 			+ "keepalive_timestamp, create_timestamp, job_state) "
 			+ "VALUES(:machine_id, :owner, :keepalive_interval, "
-			+ ":original_request, strftime('%s','now'), strftime('%s','now'), "
+			+ ":original_request, CAST(strftime('%s','now') AS INTEGER), "
+			+ "CAST(strftime('%s','now') AS INTEGER), "
 			+ /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
@@ -356,7 +357,8 @@ public abstract class SQLQueries {
 	@Parameter("keepalive_host")
 	@Parameter("job_id")
 	protected static final String UPDATE_KEEPALIVE =
-			"UPDATE jobs SET keepalive_timestamp = strftime('%s','now'), "
+			"UPDATE jobs SET keepalive_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER), "
 					+ "keepalive_host = :keepalive_host WHERE job_id = :job_id "
 					+ "AND job_state != 4"; // DESTROYED
 
@@ -491,7 +493,7 @@ public abstract class SQLQueries {
 			"SELECT job_id FROM jobs " //
 					+ "WHERE job_state != 4 " // DESTROYED
 					+ "AND keepalive_timestamp + keepalive_interval < "
-					+ "strftime('%s','now')";
+					+ "CAST(strftime('%s','now') AS INTEGER)";
 
 	/**
 	 * Set the state and number of pending changes for a job.
@@ -909,9 +911,10 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("user_id")
-	protected static final String MARK_LOGIN_SUCCESS = "UPDATE user_info SET "
-			+ "last_successful_login_timestamp = strftime('%s','now'), "
-			+ "failure_count = 0 WHERE user_id = :user_id";
+	protected static final String MARK_LOGIN_SUCCESS =
+			"UPDATE user_info SET last_successful_login_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER), "
+					+ "failure_count = 0 WHERE user_id = :user_id";
 
 	/**
 	 * Note the login failure.
@@ -924,7 +927,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String MARK_LOGIN_FAILURE =
 			"UPDATE user_info SET failure_count = failure_count + 1, "
-					+ "last_fail_timestamp = strftime('%s','now'), "
+					+ "last_fail_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER), "
 					+ "locked = (failure_count + 1 >= :failure_limit) "
 					+ "WHERE user_id = :user_id RETURNING locked";
 
@@ -938,7 +942,8 @@ public abstract class SQLQueries {
 	protected static final String UNLOCK_LOCKED_USERS =
 			"UPDATE user_info SET failure_count = 0, last_fail_timestamp = 0, "
 					+ "locked = 0 WHERE last_fail_timestamp + :lock_interval "
-					+ "< strftime('%s','now') AND locked RETURNING user_name";
+					+ "< CAST(strftime('%s','now') AS INTEGER) "
+					+ "AND locked RETURNING user_name";
 
 	/**
 	 * Set a quota for a user on each defined machine.

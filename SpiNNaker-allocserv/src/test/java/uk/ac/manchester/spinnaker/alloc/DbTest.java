@@ -504,7 +504,7 @@ class DbTest {
 				assertSetEquals(
 						set("req_id", "job_id", "num_boards", "width", "height",
 								"x", "y", "z", "machine_id", "max_dead_boards",
-								"max_height", "max_width"),
+								"max_height", "max_width", "job_state"),
 						q.getRowColumnNames());
 				assertFalse(q.call1().isPresent());
 			}

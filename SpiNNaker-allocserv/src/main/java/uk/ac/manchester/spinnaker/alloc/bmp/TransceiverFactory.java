@@ -60,7 +60,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 @Component("transceiverFactory")
 public class TransceiverFactory
 		implements TransceiverFactoryAPI<TransceiverInterface> {
-	private Map<String, Transceiver> txrxMap = new HashMap<>();
+	private Map<String, TransceiverInterface> txrxMap = new HashMap<>();
 
 	@Value("${spalloc.transceiver.dummy:false}")
 	private boolean useDummy;
@@ -68,15 +68,15 @@ public class TransceiverFactory
 	@Override
 	public TransceiverInterface getTransciever(Machine machineDescription)
 			throws IOException, SQLException, SpinnmanException {
-		if (useDummy) {
-			return new DummyTransceiver(machineDescription);
-		}
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
-			Transceiver t = txrxMap.get(machineDescription.getName());
+			TransceiverInterface t = txrxMap.get(machineDescription.getName());
 			if (t == null) {
-				t = makeTransceiver(machineDescription.getRootBoardBMPAddress(),
-						machineDescription.getBoardNumbers());
+				if (useDummy) {
+					t = new DummyTransceiver(machineDescription);
+				} else {
+					t = makeTransceiver(machineDescription);
+				}
 				txrxMap.put(machineDescription.getName(), t);
 			}
 			return t;
@@ -90,17 +90,19 @@ public class TransceiverFactory
 	 * root BMP; the BMPs communicate with each other if necessary. I believe
 	 * that communication is via an I<sup>2</sup>C bus, but I might be wrong.
 	 *
-	 * @param address
-	 *            The address of the BMP
-	 * @param boards
-	 *            The boards to manage at that address
+	 * @param machine
+	 *            The information about the BMP and the boards to manage.
 	 * @throws IOException
 	 *             If network access fails
 	 * @throws SpinnmanException
 	 *             If transceiver building fails
+	 * @throws SQLException
+	 *             If database access fails
 	 */
-	private Transceiver makeTransceiver(String address, List<Integer> boards)
-			throws IOException, SpinnmanException {
+	private Transceiver makeTransceiver(Machine machine)
+			throws IOException, SpinnmanException, SQLException {
+		String address  = machine.getRootBoardBMPAddress();
+		List<Integer> boards = machine.getBoardNumbers();
 		BMPConnectionData c = new BMPConnectionData(0, 0, getByName(address),
 				boards, SCP_SCAMP_PORT);
 		return new Transceiver(null, asList(new BMPConnection(c)), null, null,
@@ -109,8 +111,10 @@ public class TransceiverFactory
 
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (Transceiver txrx : txrxMap.values()) {
-			txrx.close();
+		for (TransceiverInterface txrx : txrxMap.values()) {
+			if (txrx instanceof AutoCloseable) {
+				((AutoCloseable) txrx).close();
+			}
 		}
 	}
 }
