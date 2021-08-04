@@ -26,6 +26,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -459,6 +460,16 @@ public abstract class SQLQueries {
 	protected static final String ALLOCATE_BOARDS_BOARD =
 			"UPDATE boards SET allocated_job = :job_id "
 					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Tell the boards of a job that they're no longer allocated to the job.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("job_id")
+	protected static final String DEALLOCATE_BOARDS_JOB =
+			"UPDATE boards SET allocated_job = NULL "
+					+ "WHERE allocated_job = :job_id";
 
 	/**
 	 * Set the power state of a board. Related timestamps are updated by

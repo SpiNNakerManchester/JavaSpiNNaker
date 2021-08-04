@@ -29,6 +29,7 @@ import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
@@ -551,6 +552,61 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
+	/**
+	 * The profile of {@linkplain Update updates} for {@code doneRequest()}.
+	 */
+	private static final class DoneUpdates implements AutoCloseable {
+		private final Update setBoardState;
+
+		private final Update setJobState;
+
+		private final Update setInProgress;
+
+		private final Update deallocateBoards;
+
+		private final Update deleteChange;
+
+		DoneUpdates(Connection conn) throws SQLException {
+			setBoardState = update(conn, SET_BOARD_POWER);
+			setJobState = update(conn, SET_STATE_PENDING);
+			setInProgress = update(conn, SET_IN_PROGRESS);
+			deallocateBoards = update(conn, DEALLOCATE_BOARDS_JOB);
+			deleteChange = update(conn, FINISHED_PENDING);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			deleteChange.close();
+			deallocateBoards.close();
+			setInProgress.close();
+			setJobState.close();
+			setBoardState.close();
+		}
+
+		// What follows are type-safe wrappers
+
+		int setBoardState(boolean state, int jobId) throws SQLException {
+			return setBoardState.call(state, jobId);
+		}
+
+		int setJobState(JobState state, int pending, int jobId)
+				throws SQLException {
+			return setJobState.call(state, pending, jobId);
+		}
+
+		int setInProgress(boolean progress, int changeId) throws SQLException {
+			return setInProgress.call(progress, changeId);
+		}
+
+		int deallocateBoards(int jobId) throws SQLException {
+			return deallocateBoards.call(jobId);
+		}
+
+		int deleteChange(int changeId) throws SQLException {
+			return deleteChange.call(changeId);
+		}
+	}
+
 	void doneRequest(int jobId, JobState fromState, JobState toState,
 			RequestChange change, List<Integer> changeIds, String fail,
 			Exception exn) {
@@ -559,34 +615,52 @@ public class BMPController extends SQLQueries {
 		}
 
 		try (Connection conn = db.getConnection();
-				Update setBoardState = update(conn, SET_BOARD_POWER);
-				Update deleteChange = update(conn, FINISHED_PENDING);
-				Update setJobState = update(conn, SET_STATE_PENDING);
-				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
-			transaction(conn, () -> {
-				if (fail != null) {
-					for (int changeId : changeIds) {
-						setInProgress.call(false, changeId);
-					}
-					setJobState.call(fromState, 0, jobId);
-				} else {
-					for (int board : change.powerOnBoards) {
-						setBoardState.call(true, board);
-					}
-					for (int board : change.powerOffBoards) {
-						setBoardState.call(false, board);
-					}
-					setJobState.call(toState, 0, jobId);
-				}
-				for (int changeId : changeIds) {
-					deleteChange.call(changeId);
-				}
-				epochs.nextJobsEpoch();
-				epochs.nextMachineEpoch();
-			});
+				DoneUpdates updates = new DoneUpdates(conn)) {
+			transaction(conn,
+					() -> doneRequest(jobId, fromState, toState, change,
+							changeIds, fail, updates));
 		} catch (SQLException e) {
 			log.error("problem with database", e);
+		} finally {
+			epochs.nextJobsEpoch();
+			epochs.nextMachineEpoch();
 		}
+	}
+
+	private void doneRequest(int jobId, JobState fromState, JobState toState,
+			RequestChange change, List<Integer> changeIds, String fail,
+			DoneUpdates updates) throws SQLException {
+		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
+				deallocated = 0, killed = 0;
+		if (fail != null) {
+			for (int changeId : changeIds) {
+				moved += updates.setInProgress(false, changeId);
+			}
+			jobChange += updates.setJobState(fromState, 0, jobId);
+		} else {
+			for (int board : change.powerOnBoards) {
+				turnedOn += updates.setBoardState(true, board);
+			}
+			for (int board : change.powerOffBoards) {
+				turnedOff += updates.setBoardState(false, board);
+			}
+			jobChange += updates.setJobState(toState, 0, jobId);
+			if (toState == DESTROYED) {
+				/*
+				 * Need to mark the boards as not allocated; can't do that until
+				 * they've been switched off.
+				 */
+				deallocated += updates.deallocateBoards(jobId);
+			}
+		}
+		for (int changeId : changeIds) {
+			killed += updates.deleteChange(changeId);
+		}
+		log.info(
+				"post-switch ({}:{}->{}): up:{} down:{} jobChanges:{} "
+						+ "inProgress:{} deallocated:{} bmpTasksDone:{}",
+				jobId, fromState, toState, turnedOn, turnedOff, jobChange,
+				moved, deallocated, killed);
 	}
 
 	public void addRequest(Request request)

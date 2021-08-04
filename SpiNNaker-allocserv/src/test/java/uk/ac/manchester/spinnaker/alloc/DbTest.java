@@ -987,6 +987,15 @@ class DbTest {
 		}
 
 		@Test
+		void deallocateBoardsJob() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, DEALLOCATE_BOARDS_JOB)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
 		void allocateBoardsBoard() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, ALLOCATE_BOARDS_BOARD)) {
