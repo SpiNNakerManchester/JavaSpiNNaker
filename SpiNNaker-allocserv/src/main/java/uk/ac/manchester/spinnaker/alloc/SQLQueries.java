@@ -392,7 +392,10 @@ public abstract class SQLQueries {
 	@ResultColumn("root_y")
 	protected static final String GET_BOARD_CONNECT_INFO =
 			"SELECT board_id, address, x, y, z, root_x, root_y "
-					+ "FROM boards WHERE allocated_job = :job_id "
+					+ "FROM boards JOIN jobs "
+					+ "ON boards.allocated_job = jobs.job_id "
+					+ "WHERE allocated_job = :job_id "
+					+ "AND jobs.job_state != 4 " // DESTROYED
 					+ "ORDER BY x ASC, y ASC";
 
 	/** Get the coordinates of a board. */
