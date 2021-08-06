@@ -100,12 +100,16 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 @NotThreadSafe
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);
+
 	// TODO Stop printing to System.out
 	private static BoardTestConfiguration boardConfig;
+
 	private static SpallocJob job;
 
 	private static Set<ChipLocation> downChips;
+
 	private static CoreSubsets coreSubsets;
+
 	private static Map<ChipLocation, Set<Integer>> downCores;
 
 	@BeforeAll
@@ -182,6 +186,7 @@ public class TransceiverITCase {
 	}
 
 	private static final ChipLocation SCAMP = ZERO_ZERO;
+
 	/** Where we like to read and write when testing. */
 	private static final int MEM = 0x70000000;
 

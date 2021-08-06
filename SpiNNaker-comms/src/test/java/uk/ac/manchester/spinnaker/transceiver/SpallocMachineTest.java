@@ -51,7 +51,9 @@ class SpallocMachineTest {
 	}
 
 	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+
 	private static final int PORT = 22245;
+
 	private static final int TEN_S = 10000;
 
 	@Test

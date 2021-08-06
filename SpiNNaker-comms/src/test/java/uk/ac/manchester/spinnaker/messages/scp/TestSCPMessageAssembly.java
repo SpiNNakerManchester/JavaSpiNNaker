@@ -37,28 +37,28 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewVerSCPPacket() {
-        GetVersion scp = new GetVersion(ZERO_CORE);
-        assertEquals(0, scp.argument1);
-        assertEquals(0, scp.argument2);
-        assertEquals(0, scp.argument3);
-        assertNull(scp.data);
+		GetVersion scp = new GetVersion(ZERO_CORE);
+		assertEquals(0, scp.argument1);
+		assertEquals(0, scp.argument2);
+		assertEquals(0, scp.argument3);
+		assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewLinkSCPPacket() {
-        ReadLink scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
-        assertEquals(0, scp.argument1);
-        assertEquals(252, scp.argument2);
-        assertEquals(0, scp.argument3);
-        assertNull(scp.data);
+		ReadLink scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
+		assertEquals(0, scp.argument1);
+		assertEquals(252, scp.argument2);
+		assertEquals(0, scp.argument3);
+		assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewMemorySCPPacket() {
-        ReadMemory scp = new ReadMemory(ZERO_CORE, 0, 252);
-        assertEquals(0, scp.argument1);
-        assertEquals(252, scp.argument2);
-        assertEquals(2, scp.argument3);
-        assertNull(scp.data);
+		ReadMemory scp = new ReadMemory(ZERO_CORE, 0, 252);
+		assertEquals(0, scp.argument1);
+		assertEquals(252, scp.argument2);
+		assertEquals(2, scp.argument3);
+		assertNull(scp.data);
 	}
 }

@@ -253,9 +253,13 @@ class TestTransceiver {
 class MockWriteTransceiver extends Transceiver {
 	static class Write {
 		final CoreLocation core;
+
 		final byte[] data;
+
 		final int address;
+
 		final int offset;
+
 		final int numBytes;
 
 		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {

@@ -17,7 +17,8 @@
 package testconfig;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -47,6 +48,7 @@ import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 })
 public class BoardTestConfiguration {
 	public static final String LOCALHOST = "127.0.0.1";
+
 	/**
 	 * Microsoft invalid IP address.
 	 *
@@ -55,19 +57,30 @@ public class BoardTestConfiguration {
 	 *      >Forum post</a>
 	 */
 	public static final String NOHOST = "169.254.254.254";
+
 	public static final int PORT = 54321;
+
 	private static RawConfigParser config = new RawConfigParser(
 			BoardTestConfiguration.class.getResource("test.cfg"));
+
 	private static final String MCSEC = "Machine";
+
 	private static final String SPSEC = "Spalloc";
+
 	private static final int KEEPALIVE_SECS = 60;
+
 	public static final String OWNER = "java test harness";
 
 	public String localhost;
+
 	public Integer localport;
+
 	public Inet4Address remotehost;
+
 	public MachineVersion boardVersion;
+
 	public List<BMPConnectionData> bmpNames;
+
 	public Boolean autoDetectBMP;
 
 	public BoardTestConfiguration() {

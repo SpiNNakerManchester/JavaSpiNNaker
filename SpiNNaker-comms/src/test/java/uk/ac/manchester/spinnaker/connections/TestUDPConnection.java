@@ -40,7 +40,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public class TestUDPConnection {
 	private static BoardTestConfiguration boardConfig;
+
 	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+
 	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
@@ -65,6 +67,7 @@ public class TestUDPConnection {
 	}
 
 	private static final int ADDR = 0x70000000;
+
 	private static final int LINK_SIZE = 250;
 
 	@Test

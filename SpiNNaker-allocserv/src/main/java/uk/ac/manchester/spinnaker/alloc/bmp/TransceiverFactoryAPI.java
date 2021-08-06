@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *            The actual type of transceiver produced.
  * @author Donal Fellows
  */
-public interface TransceiverFactoryAPI<T extends TransceiverInterface> {
+public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	/**
 	 * Get the transceiver for talking to a given machine's BMPs.
 	 *

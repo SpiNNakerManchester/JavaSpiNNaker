@@ -73,9 +73,9 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
@@ -216,7 +216,7 @@ public class BMPController extends SQLQueries {
 		return state.values().stream().mapToInt(s -> s.requests.size()).sum();
 	}
 
-	private boolean isGoodFPGA(Machine machine, TransceiverInterface txrx,
+	private boolean isGoodFPGA(Machine machine, BMPTransceiverInterface txrx,
 			int board, int fpga) throws ProcessException, IOException {
 		// FPGA ID is bottom two bits of FLAG register in main register bank
 		int fpgaId = txrx.readFPGARegister(fpga, BASE_ADDRESS + FLAG.offset, 0,
@@ -229,7 +229,7 @@ public class BMPController extends SQLQueries {
 		return ok;
 	}
 
-	private void setLinkState(TransceiverInterface txrx, int board,
+	private void setLinkState(BMPTransceiverInterface txrx, int board,
 			Direction link, PowerState power)
 			throws ProcessException, IOException {
 		// skip FPGA link configuration if old BMP version
@@ -241,7 +241,7 @@ public class BMPController extends SQLQueries {
 				power == PowerState.ON ? 0 : 1, new BMPCoords(0, 0), board);
 	}
 
-	private void powerOnAndCheck(Machine machine, TransceiverInterface txrx,
+	private void powerOnAndCheck(Machine machine, BMPTransceiverInterface txrx,
 			List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		List<Integer> boardsToPower = boards;
@@ -413,7 +413,7 @@ public class BMPController extends SQLQueries {
 	}
 
 	private void processRequest(Request request) throws InterruptedException {
-		TransceiverInterface txrx;
+		BMPTransceiverInterface txrx;
 		try {
 			txrx = txrxFactory.getTransciever(request.change.machine);
 		} catch (IOException | SpinnmanException | SQLException e) {
@@ -474,7 +474,7 @@ public class BMPController extends SQLQueries {
 	 * @throws IOException
 	 *             If network I/O fails
 	 */
-	private void changeBoardPowerState(TransceiverInterface txrx,
+	private void changeBoardPowerState(BMPTransceiverInterface txrx,
 			Request request)
 			throws ProcessException, InterruptedException, IOException {
 		// Send any power on commands

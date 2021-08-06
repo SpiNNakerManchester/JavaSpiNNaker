@@ -42,35 +42,42 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
  * machine only has the one BMP that is talked to, and only ever one transceiver
  * that is used to do it.
+ * <p>
+ * Can support running with a dummy transceiver (but not in production, of
+ * course). Set the {@code spalloc.transceiver.dummy} configuration value to
+ * {@code true} to enable that.
  *
  * @author Donal Fellows
  */
 @Component("transceiverFactory")
 public class TransceiverFactory
-		implements TransceiverFactoryAPI<TransceiverInterface> {
-	private Map<String, TransceiverInterface> txrxMap = new HashMap<>();
+		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
+	private Map<String, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
 	@Value("${spalloc.transceiver.dummy:false}")
 	private boolean useDummy;
 
 	@Override
-	public TransceiverInterface getTransciever(Machine machineDescription)
+	public BMPTransceiverInterface getTransciever(Machine machineDescription)
 			throws IOException, SQLException, SpinnmanException {
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
-			TransceiverInterface t = txrxMap.get(machineDescription.getName());
+			BMPTransceiverInterface t =
+					txrxMap.get(machineDescription.getName());
 			if (t == null) {
 				if (useDummy) {
 					t = new DummyTransceiver(machineDescription);
@@ -101,7 +108,7 @@ public class TransceiverFactory
 	 */
 	private Transceiver makeTransceiver(Machine machine)
 			throws IOException, SpinnmanException, SQLException {
-		String address  = machine.getRootBoardBMPAddress();
+		String address = machine.getRootBoardBMPAddress();
 		List<Integer> boards = machine.getBoardNumbers();
 		BMPConnectionData c = new BMPConnectionData(0, 0, getByName(address),
 				boards, SCP_SCAMP_PORT);
@@ -111,7 +118,7 @@ public class TransceiverFactory
 
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (TransceiverInterface txrx : txrxMap.values()) {
+		for (BMPTransceiverInterface txrx : txrxMap.values()) {
 			if (txrx instanceof AutoCloseable) {
 				((AutoCloseable) txrx).close();
 			}
@@ -119,7 +126,7 @@ public class TransceiverFactory
 	}
 }
 
-class DummyTransceiver extends BMPOnlyTransceiverBase {
+class DummyTransceiver implements BMPTransceiverInterface {
 	private static final Logger log = getLogger(DummyTransceiver.class);
 
 	private static final int VERSION_INFO_SIZE = 32;
@@ -181,5 +188,34 @@ class DummyTransceiver extends BMPOnlyTransceiverBase {
 	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
 			throws IOException, ProcessException {
 		return version;
+	}
+
+	@Deprecated
+	@Override
+	public void powerOnMachine()
+			throws InterruptedException, IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public void powerOffMachine()
+			throws InterruptedException, IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public void setLED(Collection<Integer> leds, LEDAction action,
+			BMPCoords bmp, Collection<Integer> board)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public ADCInfo readADCData(BMPCoords bmp, int board)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
 	}
 }

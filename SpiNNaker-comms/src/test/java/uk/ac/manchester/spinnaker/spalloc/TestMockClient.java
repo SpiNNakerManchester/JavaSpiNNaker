@@ -59,8 +59,10 @@ public class TestMockClient {
 	private static final int SECOND = 1000;
 
 	private static int timeout = SECOND;
+
 	private static MockConnectedClient client =
 			new MockConnectedClient(timeout);
+
 	private static final Logger log = getLogger(TestMockClient.class);
 
 	@Test

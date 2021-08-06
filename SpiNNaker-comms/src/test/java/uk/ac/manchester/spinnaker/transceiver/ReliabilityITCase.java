@@ -41,38 +41,39 @@ import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 @NotThreadSafe
 class ReliabilityITCase {
-    private static Machine jsonMachine;
+	private static Machine jsonMachine;
+
 	private static final Logger log = getLogger(ReliabilityITCase.class);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-        URL url = ReliabilityITCase.class.getResource("/spinn4.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        MachineBean fromJson = mapper.readValue(url, MachineBean.class);
-        jsonMachine = new Machine(fromJson);
+		URL url = ReliabilityITCase.class.getResource("/spinn4.json");
+		ObjectMapper mapper = MapperFactory.createMapper();
+		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		jsonMachine = new Machine(fromJson);
 	}
 
 	private static final int REPETITIONS = 8;
 
 	@Test
 	void testReliableMachine() throws Exception {
-        InetAddress host = InetAddress.getByName("spinn-4.cs.man.ac.uk");
-        assumeTrue(ping(host) == 0);
+		InetAddress host = InetAddress.getByName("spinn-4.cs.man.ac.uk");
+		assumeTrue(ping(host) == 0);
 
-        for (int i = 0; i < REPETITIONS; i++) {
-        	try (Transceiver txrx = new Transceiver(host, FIVE)) {
-        		txrx.ensureBoardIsReady();
-        		txrx.getMachineDimensions();
-        		txrx.getScampVersion();
+		for (int i = 0; i < REPETITIONS; i++) {
+			try (Transceiver txrx = new Transceiver(host, FIVE)) {
+				txrx.ensureBoardIsReady();
+				txrx.getMachineDimensions();
+				txrx.getScampVersion();
 				Machine machine = txrx.getMachineDetails();
-                assertNull(jsonMachine.difference(machine));
-            } catch (ProcessException e) {
-            	if (e.getCause() instanceof SocketTimeoutException) {
-            		log.info("ignoring timeout from " + e.getCause());
-            	} else {
-            		throw e;
-            	}
-            }
+				assertNull(jsonMachine.difference(machine));
+			} catch (ProcessException e) {
+				if (e.getCause() instanceof SocketTimeoutException) {
+					log.info("ignoring timeout from " + e.getCause());
+				} else {
+					throw e;
+				}
+			}
 		}
 	}
 }
