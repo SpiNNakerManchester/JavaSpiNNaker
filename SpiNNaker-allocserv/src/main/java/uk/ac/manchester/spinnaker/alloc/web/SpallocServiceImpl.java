@@ -31,6 +31,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -380,6 +384,51 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	private static final int LIMIT_LIMIT = 200;
 
+	/**
+	 * Adds in the {@code Link:} header with general paging info.
+	 *
+	 * @param value
+	 *            The core response.
+	 * @param ui
+	 *            Information about URIs
+	 * @param start
+	 *            The start offset.
+	 * @param limit
+	 *            The size of chunk.
+	 * @return Annotated response.
+	 */
+	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
+			int limit) {
+		ResponseBuilder r = Response.ok(value);
+		Map<String, URI> links = new HashMap<>();
+		if (start > 0) {
+			URI prev = ui.getRequestUriBuilder()
+					.replaceQueryParam("wait", false)
+					.replaceQueryParam("start", Math.max(start - limit, 0))
+					.build();
+			value.setPrev(prev);
+			links.put("prev", prev);
+		}
+		if (value.jobs.size() == limit) {
+			URI next = ui.getRequestUriBuilder()
+					.replaceQueryParam("wait", false)
+					.replaceQueryParam("start", start + limit).build();
+			value.setNext(next);
+			links.put("next", next);
+		}
+		if (!links.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			String sep = "";
+			for (Entry<String, URI> e : links.entrySet()) {
+				sb.append("<").append(e.getValue()).append(">; rel=\"")
+						.append(e.getKey()).append("\"").append(sep);
+				sep = ", ";
+			}
+			r.header("Link", sb.toString());
+		}
+		return r.build();
+	}
+
 	@Override
 	public void listJobs(boolean wait, boolean destroyed, int limit, int start,
 			UriInfo ui, AsyncResponse response) throws SQLException {
@@ -395,10 +444,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 				log.debug("starting wait for change of job list");
 				jc.waitForChange(WAIT_TIMEOUT);
 				Jobs newJc = core.getJobs(destroyed, limit, start);
-				return new ListJobsResponse(newJc, ui);
+				return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
+						limit);
 			});
 		} else {
-			fgAction(response, () -> new ListJobsResponse(jc, ui));
+			fgAction(response, () -> wrapPaging(new ListJobsResponse(jc, ui),
+					ui, start, limit));
 		}
 	}
 

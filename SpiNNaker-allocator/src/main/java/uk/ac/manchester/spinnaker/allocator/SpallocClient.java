@@ -20,9 +20,11 @@ import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.readLines;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -66,6 +68,22 @@ public interface SpallocClient {
 	List<Job> listJobs(boolean waitForChange) throws IOException;
 
 	/**
+	 * List the jobs, including the deleted ones.
+	 * <p>
+	 * <strong>NB:</strong> Care should be taken; this may produce a lot of
+	 * output.
+	 *
+	 * @param waitForChange
+	 *            If {@code true}, will wait until the list of jobs may have
+	 *            changed. (Best-effort only; waiting time is bounded at 30
+	 *            seconds.)
+	 * @return A stream of jobs.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
+	Stream<Job> listJobsWithDeleted(boolean waitForChange) throws IOException;
+
+	/**
 	 * List the existing non-terminated jobs.
 	 *
 	 * @return A list of jobs.
@@ -74,6 +92,20 @@ public interface SpallocClient {
 	 */
 	default List<Job> listJobs() throws IOException {
 		return listJobs(false);
+	}
+
+	/**
+	 * List the jobs, including the deleted ones.
+	 * <p>
+	 * <strong>NB:</strong> Care should be taken; this may produce a lot of
+	 * output.
+	 *
+	 * @return A stream of jobs.
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
+	default Stream<Job> listJobsWithDeleted() throws IOException {
+		return listJobsWithDeleted(false);
 	}
 
 	/**
@@ -122,10 +154,13 @@ public interface SpallocClient {
 		 * @param z
 		 *            Triad Z coordinate
 		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByTriad(int x, int y, int z) throws IOException;
+		WhereIs getBoardByTriad(int x, int y, int z)
+				throws FileNotFoundException, IOException;
 
 		/**
 		 * Given physical coordinates, return more info about a board.
@@ -137,11 +172,13 @@ public interface SpallocClient {
 		 * @param board
 		 *            Board number
 		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
 		WhereIs getBoardByPhysicalCoords(int cabinet, int frame, int board)
-				throws IOException;
+				throws FileNotFoundException, IOException;
 
 		/**
 		 * Given a <em>global</em> chip location, return more info about the
@@ -150,10 +187,13 @@ public interface SpallocClient {
 		 * @param chip
 		 *            The chip location
 		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByChip(HasChipLocation chip) throws IOException;
+		WhereIs getBoardByChip(HasChipLocation chip)
+				throws FileNotFoundException, IOException;
 
 		/**
 		 * Given an IP address, return more info about a board.
@@ -161,10 +201,13 @@ public interface SpallocClient {
 		 * @param address
 		 *            Board IP address
 		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist.
 		 * @throws IOException
 		 *             If communication with the server fails
 		 */
-		WhereIs getBoardByIPAddress(String address) throws IOException;
+		WhereIs getBoardByIPAddress(String address)
+				throws FileNotFoundException, IOException;
 	}
 
 	/**
@@ -260,11 +303,14 @@ public interface SpallocClient {
 		 * @param chip
 		 *            Chip location (relative to the root of the allocation).
 		 * @return Board information
+		 * @throws FileNotFoundException
+		 *             If the board doesn't exist or no boards are allocated to
+		 *             the job currently.
 		 * @throws IOException
-		 *             If communication fails, the resources have not yet been
-		 *             allocated, or the job is deleted.
+		 *             If communication fails or the job is deleted.
 		 */
-		WhereIs whereIs(HasChipLocation chip) throws IOException;
+		WhereIs whereIs(HasChipLocation chip)
+				throws FileNotFoundException, IOException;
 	}
 
 	/**
