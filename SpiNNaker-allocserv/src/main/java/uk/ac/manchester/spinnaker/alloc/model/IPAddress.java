@@ -21,6 +21,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -71,13 +73,13 @@ class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 
 	@Override
 	public void initialize(IPAddress annotation) {
-		if (pattern == null) {
+		if (isNull(pattern)) {
 			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
 	}
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		return value != null && pattern.matcher(value).matches();
+		return nonNull(value) && pattern.matcher(value).matches();
 	}
 }

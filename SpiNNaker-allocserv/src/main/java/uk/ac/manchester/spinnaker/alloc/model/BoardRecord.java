@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static java.util.Objects.nonNull;
+
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
@@ -92,7 +94,7 @@ public class BoardRecord {
 	 * @return whether we have a full set of triad coordinates
 	 */
 	public boolean isTriadCoordPresent() {
-		return x != null && y != null && z != null;
+		return nonNull(x) && nonNull(y) && nonNull(z);
 	}
 
 	/**
@@ -132,7 +134,7 @@ public class BoardRecord {
 	 * @return whether we have a full set of physical coordinates
 	 */
 	public boolean isPhysicalCoordPresent() {
-		return cabinet != null && frame != null && board != null;
+		return nonNull(cabinet) && nonNull(frame) && nonNull(board);
 	}
 
 	/**
@@ -150,7 +152,7 @@ public class BoardRecord {
 	 * @return whether we have an IP address
 	 */
 	public boolean isAddressPresent() {
-		return ipAddress != null;
+		return nonNull(ipAddress);
 	}
 
 	/**
@@ -159,7 +161,7 @@ public class BoardRecord {
 	 */
 	@AssertTrue
 	boolean isValidBoardLocator() {
-		return (machineName != null) && (isTriadCoordPresent()
+		return nonNull(machineName) && (isTriadCoordPresent()
 				|| isPhysicalCoordPresent() || isAddressPresent());
 	}
 
@@ -174,7 +176,7 @@ public class BoardRecord {
 	 * @return whether the board enabled state is defined
 	 */
 	public boolean isEnabledDefined() {
-		return enabled != null;
+		return nonNull(enabled);
 	}
 
 	public void setEnabled(Boolean enabled) {

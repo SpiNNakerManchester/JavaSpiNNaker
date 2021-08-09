@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -191,33 +193,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query getCoords = query(conn, GET_JOB_BOARD_COORDS);
 					Query getLive = query(conn, GET_LIVE_BOARDS);
 					Query getDead = query(conn, GET_DEAD_BOARDS)) {
-				MachineDescription md = null;
-				for (Row row : namedMachine.call(machine)) {
-					md = new MachineDescription();
-					md.setId(row.getInt("machine_id"));
-					md.setName(row.getString("machine_name"));
-					md.setWidth(row.getInt("width"));
-					md.setHeight(row.getInt("height"));
-				}
-				if (md == null) {
+				MachineDescription md =
+						getBasicMachineInfo(machine, namedMachine);
+				if (isNull(md)) {
 					return Optional.empty();
 				}
+
 				md.setNumInUse(countMachineThings.call1(md.getId()).get()
 						.getInt("in_use"));
 				md.setTags(rowsAsList(getTags.call(md.getId()),
 						tagRow -> tagRow.getString("tag")));
-				md.setJobs(rowsAsList(getJobs.call(md.getId()), row -> {
-					JobInfo ji = new JobInfo();
-					int jobId = row.getInt("job_id");
-					String owner = permit.unveilFor(row.getString("owner_name"))
-							? row.getString("owner_name")
-							: null;
-					ji.setId(jobId);
-					ji.setOwner(owner);
-					ji.setBoards(rowsAsList(getCoords.call(jobId),
-							r -> new BoardCoords(r, owner == null)));
-					return ji;
-				}));
+				md.setJobs(rowsAsList(getJobs.call(md.getId()),
+						row -> getMachineJobInfo(permit, getCoords, row)));
 				md.setLive(rowsAsList(getLive.call(md.getId()),
 						r -> new BoardCoords(r, !permit.admin)));
 				md.setDead(rowsAsList(getDead.call(md.getId()),
@@ -225,6 +212,34 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return Optional.of(md);
 			}
 		});
+	}
+
+	private MachineDescription getBasicMachineInfo(String machine,
+			Query namedMachine) throws SQLException {
+		MachineDescription md = null;
+		for (Row row : namedMachine.call(machine)) {
+			md = new MachineDescription();
+			md.setId(row.getInt("machine_id"));
+			md.setName(row.getString("machine_name"));
+			md.setWidth(row.getInt("width"));
+			md.setHeight(row.getInt("height"));
+		}
+		return md;
+	}
+
+	private JobInfo getMachineJobInfo(Permit permit, Query getCoords, Row row)
+			throws SQLException {
+		int jobId = row.getInt("job_id");
+		String owner = permit.unveilFor(row.getString("owner_name"))
+				? row.getString("owner_name")
+				: null;
+
+		JobInfo ji = new JobInfo();
+		ji.setId(jobId);
+		ji.setOwner(owner);
+		ji.setBoards(rowsAsList(getCoords.call(jobId),
+				r -> new BoardCoords(r, isNull(owner))));
+		return ji;
 	}
 
 	@Override
@@ -268,7 +283,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		rec.setState(row.getEnum("job_state", JobState.class));
 		Integer numBoards = row.getInteger("allocation_size");
 		rec.setNumBoards(numBoards);
-		rec.setPowered((numBoards != null)
+		rec.setPowered(nonNull(numBoards)
 				&& numBoards == countPoweredBoards.call1(id).get().getInt("c"));
 		rec.setMachineId(row.getInt("machine_id"));
 		rec.setMachineName(row.getString("machine_name"));
@@ -447,7 +462,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private Optional<MachineImpl> selectMachine(Connection conn,
 			String machineName, List<String> tags) throws SQLException {
-		if (machineName != null) {
+		if (nonNull(machineName)) {
 			return getMachine(machineName, conn);
 		} else if (!tags.isEmpty()) {
 			for (Machine m : getMachines(conn).values()) {
@@ -505,7 +520,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void waitForChange(long timeout) {
-			if (epoch == null) {
+			if (isNull(epoch)) {
 				return;
 			}
 			try {
@@ -585,7 +600,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public List<BoardCoords> getDeadBoards() throws SQLException {
 			// Assume that the list doesn't change for the duration of this obj
 			synchronized (this) {
-				if (downBoardsCache != null) {
+				if (nonNull(downBoardsCache)) {
 					return unmodifiableList(downBoardsCache);
 				}
 			}
@@ -600,7 +615,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 									row.getString("address")));
 				});
 				synchronized (this) {
-					if (downBoardsCache == null) {
+					if (isNull(downBoardsCache)) {
 						downBoardsCache = downBoards;
 					}
 				}
@@ -612,7 +627,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public List<DownLink> getDownLinks() throws SQLException {
 			// Assume that the list doesn't change for the duration of this obj
 			synchronized (this) {
-				if (downLinksCache != null) {
+				if (nonNull(downLinksCache)) {
 					return unmodifiableList(downLinksCache);
 				}
 			}
@@ -620,31 +635,28 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query boardNumbers = query(conn, getDeadLinks)) {
 				List<DownLink> downLinks = transaction(conn, () -> {
 					return rowsAsList(boardNumbers.call(id),
-							row -> new DownLink(
-									new BoardCoords(row.getInt("board_1_x"),
-											row.getInt("board_1_y"),
-											row.getInt("board_1_z"),
-											row.getInt("board_1_c"),
-											row.getInt("board_1_f"),
-											row.getInteger("board_1_b"),
-											row.getString("board_1_addr")),
-									row.getEnum("dir_1", Direction.class),
-									new BoardCoords(row.getInt("board_2_x"),
-											row.getInt("board_2_y"),
-											row.getInt("board_2_z"),
-											row.getInt("board_2_c"),
-											row.getInt("board_2_f"),
-											row.getInteger("board_2_b"),
-											row.getString("board_2_addr")),
-									row.getEnum("dir_2", Direction.class)));
+							this::makeDownLinkFromRow);
 				});
 				synchronized (this) {
-					if (downLinksCache == null) {
+					if (isNull(downLinksCache)) {
 						downLinksCache = downLinks;
 					}
 				}
 				return unmodifiableList(downLinks);
 			}
+		}
+
+		private DownLink makeDownLinkFromRow(Row row) throws SQLException {
+			BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
+					row.getInt("board_1_y"), row.getInt("board_1_z"),
+					row.getInt("board_1_c"), row.getInt("board_1_f"),
+					row.getInteger("board_1_b"), row.getString("board_1_addr"));
+			BoardCoords board2 = new BoardCoords(row.getInt("board_2_x"),
+					row.getInt("board_2_y"), row.getInt("board_2_z"),
+					row.getInt("board_2_c"), row.getInt("board_2_f"),
+					row.getInteger("board_2_b"), row.getString("board_2_addr"));
+			return new DownLink(board1, row.getEnum("dir_1", Direction.class),
+					board2, row.getEnum("dir_2", Direction.class));
 		}
 
 		@Override
@@ -697,7 +709,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void waitForChange(long timeout) {
-			if (epoch == null) {
+			if (isNull(epoch)) {
 				return;
 			}
 			try {
@@ -800,7 +812,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				depth = row.getInteger("depth");
 				root = row.getInteger("root_id");
 				owner = row.getString("owner");
-				if (root != null) {
+				if (nonNull(root)) {
 					try (Query boardRoot = query(conn, GET_ROOT_OF_BOARD)) {
 						for (Row subrow : boardRoot.call(root)) {
 							chipRoot = new ChipLocation(subrow.getInt("root_x"),
@@ -844,7 +856,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public void waitForChange(long timeout) {
-			if (epoch == null) {
+			if (isNull(epoch)) {
 				return;
 			}
 			try {
@@ -902,7 +914,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public Optional<SubMachine> getMachine() throws SQLException {
-			if (root == null) {
+			if (isNull(root)) {
 				return Optional.empty();
 			}
 			try (Connection conn = db.getConnection()) {
@@ -913,7 +925,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public Optional<BoardLocation> whereIs(int x, int y)
 				throws SQLException {
-			if (root == null) {
+			if (isNull(root)) {
 				return Optional.empty();
 			}
 			try (Connection conn = db.getConnection();
@@ -1096,7 +1108,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				chip = new ChipLocation(row.getInt("chip_x"),
 						row.getInt("chip_y"));
 				Integer boardX = row.getInteger("board_chip_x");
-				if (boardX != null) {
+				if (nonNull(boardX)) {
 					boardChip = new ChipLocation(boardX,
 							row.getInt("board_chip_y"));
 				} else {
@@ -1104,7 +1116,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 
 				Integer jobId = row.getInteger("job_id");
-				if (jobId != null) {
+				if (nonNull(jobId)) {
 					// No epoch; can't wait on this
 					job = new JobImpl(null, jobId, machineId);
 					job.chipRoot =

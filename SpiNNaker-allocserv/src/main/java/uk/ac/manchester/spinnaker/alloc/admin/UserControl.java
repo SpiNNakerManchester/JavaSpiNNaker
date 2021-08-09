@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -155,7 +157,7 @@ public class UserControl extends SQLQueries {
 				for (Row qrow : getQuotas.call(user.getUserId())) {
 					Number quotaInfo = (Number) qrow.getObject("quota");
 					Long quota =
-							quotaInfo == null ? null : quotaInfo.longValue();
+							isNull(quotaInfo) ? null : quotaInfo.longValue();
 					quotas.put(qrow.getString("machine_name"), quota);
 				}
 			}
@@ -195,10 +197,10 @@ public class UserControl extends SQLQueries {
 			return transaction(c, () -> {
 				int adminId =
 						userCheck.call1(adminUser).get().getInt("user_id");
-				if (user.getUserName() != null) {
+				if (nonNull(user.getUserName())) {
 					setUserName.call(user.getUserName(), id);
 				}
-				if (user.getPassword() != null) {
+				if (nonNull(user.getPassword())) {
 					setUserPass.call(user.getPassword(), id);
 				} else if (user.isExternallyAuthenticated()) {
 					// Forces external authentication
@@ -207,20 +209,20 @@ public class UserControl extends SQLQueries {
 					// Weren't told to set the password
 					assert true;
 				}
-				if (user.isEnabled() != null && adminId != id) {
+				if (nonNull(user.isEnabled()) && adminId != id) {
 					// Admins can't change their own disable state
 					setUserDisabled.call(!user.isEnabled(), id);
 				}
-				if (user.isLocked() != null && !user.isLocked()
+				if (nonNull(user.isLocked()) && !user.isLocked()
 						&& adminId != id) {
 					// Admins can't change their own locked state
 					setUserLocked.call(user.isLocked(), id);
 				}
-				if (user.getTrustLevel() != null && adminId != id) {
+				if (nonNull(user.getTrustLevel()) && adminId != id) {
 					// Admins can't change their own trust level
 					setUserTrust.call(user.getTrustLevel(), id);
 				}
-				if (user.getQuota() != null) {
+				if (nonNull(user.getQuota())) {
 					for (Entry<String, Long> quota : user.getQuota()
 							.entrySet()) {
 						setUserQuota.call(quota.getValue(), id, quota.getKey());

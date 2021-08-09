@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -172,13 +173,13 @@ public interface AdminAPI {
 			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
 			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
 			@QueryParam("address") String address) throws SQLException {
-		if (x != null && y != null && z != null) {
+		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return getBoardStateXYZ(machineName, x, y, z);
 		}
-		if (c != null && f != null && b != null) {
+		if (nonNull(c) && nonNull(f) && nonNull(b)) {
 			return getBoardStateCFB(machineName, c, f, b);
 		}
-		if (address != null) {
+		if (nonNull(address)) {
 			return getBoardStateAddress(machineName, address);
 		}
 		throw new RequestFailedException(BAD_REQUEST,
@@ -276,13 +277,13 @@ public interface AdminAPI {
 			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
 			@QueryParam("address") String address, boolean enabled)
 			throws SQLException {
-		if (x != null && y != null && z != null) {
+		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return setBoardStateXYZ(machineName, x, y, z, enabled);
 		}
-		if (c != null && f != null && b != null) {
+		if (nonNull(c) && nonNull(f) && nonNull(b)) {
 			return setBoardStateCFB(machineName, c, f, b, enabled);
 		}
-		if (address != null) {
+		if (nonNull(address)) {
 			return setBoardStateAddress(machineName, address, enabled);
 		}
 		throw new RequestFailedException(BAD_REQUEST,

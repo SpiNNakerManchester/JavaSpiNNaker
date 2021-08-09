@@ -20,7 +20,10 @@ logging:
     # org.springframework.security.web: TRACE
     org.springframework.security.web.csrf.CsrfFilter: DEBUG
     # Because when that filter says no it is MYSTERIOUS otherwise!
+
+    # Next, two loggers that are unacceptably noisy by default
     org.apache.jasper.servlet.TldScanner: WARN
+    javax.persistence.spi: ERROR
 
 spring:
   main:
@@ -50,7 +53,34 @@ cxf:
     classes-scan-packages:
       uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
 
-# spalloc.transceiver.dummy: true
-
-#cxf.rest.path: /
-#num.threads: 16
+# TODO: Don't set auth.add-dummy-user, transceiver.dummy or auth.debug-failures in production
+spalloc:
+  # Where's the database?
+  database-path: spalloc.sqlite3
+  auth:
+    # Support HTTP Basic Authentication (bad for browsers, OK for code)
+    basic: true
+    # Support HTTP Form Authentication (pretty necessary)
+    local-form: true
+    # Force a known local admin user to exist with a known password
+    add-dummy-user: true
+    # Whether to generate a random password for the above user.
+    # If so, the password will be written to the log.
+    dummy-random-pass: false
+    # Provide extra information to callers on auth failures
+    debug-failures: false
+    # Number of login failures before lock-out
+    max-login-failures: 3
+    # Duration of automatic log-out
+    account-lock-duration: PT24H
+  # Whether to use dummy BMPs; GREAT for testing!
+  transceiver.dummy: false
+  # Default user quota in board-seconds
+  default-quota: 100
+  sqlite:
+    # How long to wait to get a DB lock
+    timeout: PT1S
+    # Whether to send details of SQL-related exceptions to users
+    debug-failures: false
+    # Amount of effort to spend on DB optimization on application close
+    analysis-limit: 400

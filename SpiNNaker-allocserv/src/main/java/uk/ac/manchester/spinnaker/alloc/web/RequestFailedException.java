@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.GONE;
@@ -90,13 +91,13 @@ public class RequestFailedException extends RuntimeException {
 		Throwable cause = getCause();
 
 		if (code.getFamily().equals(SERVER_ERROR)) {
-			if (cause != null) {
+			if (nonNull(cause)) {
 				log.error(message, cause);
 			} else {
 				log.error(message);
 			}
 		} else {
-			if (cause != null) {
+			if (nonNull(cause)) {
 				log.debug(message, cause);
 			} else {
 				log.debug(message);

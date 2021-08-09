@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
@@ -94,7 +95,7 @@ public final class MachineResponse {
 		downBoards = machine.getDeadBoards();
 		downLinks = machine.getDownLinks();
 
-		if (ui != null) {
+		if (nonNull(ui)) {
 			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
 			lookupByPhysicalBoard = b.build(MACH_BOARD_BY_PHYSICAL);
 			lookupByLogicalBoard = b.build(MACH_BOARD_BY_LOGICAL);

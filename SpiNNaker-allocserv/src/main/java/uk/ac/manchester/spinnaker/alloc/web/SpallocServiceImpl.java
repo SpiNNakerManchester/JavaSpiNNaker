@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
@@ -29,13 +31,10 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -52,9 +51,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
@@ -102,12 +98,24 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Autowired
 	private JsonMapper mapper;
 
+	/**
+	 * Factory for {@linkplain MachineAPI machines}.
+	 */
 	@Autowired
 	private ObjectProvider<MachineAPI> machineFactory;
 
+	/**
+	 * Factory for {@linkplain JobAPI jobs}.
+	 */
 	@Autowired
 	private ObjectProvider<JobAPI> jobFactory;
 
+	/**
+	 * Create a service bean.
+	 *
+	 * @param version
+	 *            The service version, injected from build configuration.
+	 */
 	public SpallocServiceImpl(@Value("${version}") String version) {
 		v = new Version(version.replaceAll("-.*", ""));
 	}
@@ -116,6 +124,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 * Manufactures instances of {@link MachineAPI} and {@link JobAPI}. This
 	 * indirection allows Spring to insert any necessary security interceptors
 	 * on methods.
+	 * <p>
+	 * Do not call the {@link #machine(Machine,UriInfo) machine()} and
+	 * {@link #job(Job,String,Permit,UriInfo) job()} methods directly. Use the
+	 * factories.
 	 */
 	@Configuration
 	static class APIBuilder extends BackgroundSupport {
@@ -194,61 +206,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 			};
 		}
 
-		@SuppressWarnings("serial")
-		private static final class TempAuth
-				implements Authentication, AutoCloseable {
-			private final Permit permit;
-
-			TempAuth(Permit permit) {
-				this.permit = permit;
-				SecurityContextHolder.getContext().setAuthentication(this);
-			}
-
-			@Override
-			public String getName() {
-				return permit.name;
-			}
-
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				Set<GrantedAuthority> s = Collections.emptySet();
-				if (permit.admin) {
-					s = Collections.singleton(() -> "ROLE_ADMIN");
-				}
-				return s;
-			}
-
-			@Override
-			public Object getCredentials() {
-				return null;
-			}
-
-			@Override
-			public Object getDetails() {
-				return null;
-			}
-
-			@Override
-			public Object getPrincipal() {
-				return null;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return true;
-			}
-
-			@Override
-			public void setAuthenticated(boolean isAuthenticated)
-					throws IllegalArgumentException {
-			}
-
-			@Override
-			public void close() throws Exception {
-				SecurityContextHolder.getContext().setAuthentication(null);
-			}
-		}
-
 		/**
 		 * Make a job access interface.
 		 *
@@ -281,7 +238,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 							log.debug("starting wait for change of job");
 							j.waitForChange(WAIT_TIMEOUT);
 							// Refresh the handle
-							try (TempAuth t = new TempAuth(permit)) {
+							try (AutoCloseable t =
+									permit.authorizeCurrentThread()) {
 								Job nj = core.getJob(permit, j.getId())
 										.orElseThrow(() -> new ItsGone(
 												"no such job"));
@@ -296,7 +254,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 				@Override
 				public Response deleteJob(String reason) throws SQLException {
-					if (reason == null) {
+					if (isNull(reason)) {
 						reason = "unspecified";
 					}
 					j.destroy(reason);
@@ -325,12 +283,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 				public void setMachinePower(MachinePower reqBody,
 						AsyncResponse response) throws SQLException {
 					// Async because it involves getting a write lock
-					if (reqBody == null) {
+					if (isNull(reqBody)) {
 						throw new BadArgs("bad power description");
 					}
 					bgAction(response, () -> {
 						j.access(caller);
-						try (TempAuth t = new TempAuth(permit)) {
+						try (AutoCloseable t =
+								permit.authorizeCurrentThread()) {
 							SubMachine m = j.getMachine().orElseThrow(
 									// No machine allocated yet
 									EmptyResponse::new);
@@ -456,19 +415,40 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
+		validateAndApplyDefaultsToJobRequest(req, security);
+
 		// Async because it involves getting a write lock
-		if (req == null) {
+		bgAction(response, () -> {
+			Job j = core.createJob(req.owner.trim(), req.dimensions,
+					req.machineName, req.tags, req.keepaliveInterval,
+					req.maxDeadBoards, mapper.writeValueAsBytes(req));
+			if (isNull(j)) {
+				// Most likely reason for failure
+				return status(BAD_REQUEST).type(TEXT_PLAIN)
+						.entity("out of quota").build();
+			}
+			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+			return created(uri).entity(new CreateJobResponse(j, ui)).build();
+		});
+	}
+
+	private static void validateAndApplyDefaultsToJobRequest(
+			CreateJobRequest req, SecurityContext security) throws BadArgs {
+		if (isNull(req)) {
 			throw new BadArgs("request must be supplied");
 		}
-		if (!security.isUserInRole("ADMIN") || req.owner == null
+
+		if (!security.isUserInRole("ADMIN") || isNull(req.owner)
 				|| req.owner.trim().isEmpty()) {
 			req.owner = security.getUserPrincipal().getName();
 		}
-		if (req.owner == null || req.owner.trim().isEmpty()) {
+		if (isNull(req.owner) || req.owner.trim().isEmpty()) {
 			throw new BadArgs(
 					"request must be connected to an identified owner");
 		}
-		if (req.keepaliveInterval == null || req.keepaliveInterval
+		req.owner = req.owner.trim();
+
+		if (isNull(req.keepaliveInterval) || req.keepaliveInterval
 				.compareTo(MIN_KEEPALIVE_DURATION) < 0) {
 			throw new BadArgs("keepalive interval must be at least "
 					+ MIN_KEEPALIVE_DURATION);
@@ -477,48 +457,36 @@ public class SpallocServiceImpl extends BackgroundSupport
 			throw new BadArgs("keepalive interval must be no more than "
 					+ MAX_KEEPALIVE_DURATION);
 		}
-		if (req.dimensions == null) {
+
+		if (isNull(req.dimensions)) {
 			req.dimensions = new ArrayList<>();
 		}
 		if (req.dimensions.size() > MAX_CREATE_DIMENSIONS) {
 			throw new BadArgs(
 					"must be zero to " + MAX_CREATE_DIMENSIONS + " dimensions");
 		}
-		if (req.dimensions.size() == 0) {
+		if (req.dimensions.isEmpty()) {
 			req.dimensions.add(1);
-		}
-		if (req.dimensions.stream().anyMatch(x -> x < 0)) {
+		} else if (req.dimensions.stream().anyMatch(x -> x < 0)) {
 			throw new BadArgs("dimensions must not be negative");
 		}
-		if (req.tags == null) {
+
+		if (isNull(req.tags)) {
 			req.tags = new ArrayList<>();
-			if (req.machineName == null) {
+			if (isNull(req.machineName)) {
 				req.tags.add("default");
 			}
 		}
-		if (req.machineName != null && req.tags.size() > 0) {
+		if (nonNull(req.machineName) && !req.tags.isEmpty()) {
 			throw new BadArgs(
 					"must not specify machine name and tags together");
 		}
-		if (req.maxDeadBoards == null) {
+
+		if (isNull(req.maxDeadBoards)) {
 			req.maxDeadBoards = 0;
-		}
-		if (req.maxDeadBoards < 0) {
+		} else if (req.maxDeadBoards < 0) {
 			throw new BadArgs(
 					"the maximum number of dead boards must not be negative");
 		}
-
-		bgAction(response, () -> {
-			Job j = core.createJob(req.owner.trim(), req.dimensions,
-					req.machineName, req.tags, req.keepaliveInterval,
-					req.maxDeadBoards, mapper.writeValueAsBytes(req));
-			if (j == null) {
-				// Most likely reason for failure
-				return status(BAD_REQUEST).type(TEXT_PLAIN)
-						.entity("out of quota").build();
-			}
-			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
-			return created(uri).entity(new CreateJobResponse(j, ui)).build();
-		});
 	}
 }

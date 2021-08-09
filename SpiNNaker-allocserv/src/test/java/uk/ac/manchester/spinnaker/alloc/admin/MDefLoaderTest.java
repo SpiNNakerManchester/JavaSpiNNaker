@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,10 +136,10 @@ class MDefLoaderTest {
 	void loadSingleBoardExample() throws IOException, SQLException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(singleBoard.getFile());
-		Assumptions.assumeTrue(machines != null && machines.size() == 1);
+		assumeTrue(machines != null && machines.size() == 1);
 		@SuppressWarnings("null")
 		Machine machine = machines.get(0);
-		Assumptions.assumeTrue(machine != null);
+		assumeTrue(machine != null);
 
 		DatabaseEngine.transaction(c, () -> {
 			try (MachineDefinitionLoader.Updates q =
@@ -178,10 +177,10 @@ class MDefLoaderTest {
 	void loadThreeBoardExample() throws IOException, SQLException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(threeBoard.getFile());
-		Assumptions.assumeTrue(machines != null && machines.size() == 1);
+		assumeTrue(machines != null && machines.size() == 1);
 		@SuppressWarnings("null")
 		Machine machine = machines.get(0);
-		Assumptions.assumeTrue(machine != null);
+		assumeTrue(machine != null);
 
 		DatabaseEngine.transaction(c, () -> {
 			try (MachineDefinitionLoader.Updates q =

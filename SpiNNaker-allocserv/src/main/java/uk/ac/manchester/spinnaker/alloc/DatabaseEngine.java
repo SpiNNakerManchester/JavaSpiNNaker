@@ -20,6 +20,8 @@ import static java.lang.Thread.currentThread;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -33,6 +35,7 @@ import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -96,6 +99,12 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
+	/**
+	 * The name of the mounted database. Always {@code main} by SQLite
+	 * convention.
+	 */
+	private static final String MAIN_DB_NAME = "main";
+
 	@ResultColumn("c")
 	@SingleRowResult
 	private static final String COUNT_MOVEMENTS =
@@ -129,11 +138,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
 	 */
-	@Value("${sqlite.analysis_limit:" + DEFAULT_ANALYSIS_LIMIT + "}")
+	@Value("${spalloc.sqlite.analysis-limit:" + DEFAULT_ANALYSIS_LIMIT + "}")
 	private int analysisLimit = DEFAULT_ANALYSIS_LIMIT;
 
 	/** Busy timeout for SQLite. */
-	@Value("${sqlite.timeout:PT1S}")
+	@Value("${spalloc.sqlite.timeout:PT1S}")
 	private Duration busyTimeout = Duration.ofSeconds(1);
 
 	@Value("classpath:/spalloc.sql")
@@ -353,7 +362,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@Autowired
 	public DatabaseEngine(
-			@Value("${databasePath:spalloc.sqlite3}") File dbFile) {
+			@Value("${spalloc.database-path:spalloc.sqlite3}") File dbFile) {
 		dbPath = requireNonNull(dbFile, "a database file must be given")
 				.getAbsoluteFile().toPath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
@@ -505,13 +514,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 		int nArgs = -1;
 		ArgumentCount c = findAnnotation(func.getClass(), ArgumentCount.class);
-		if (c != null) {
+		if (nonNull(c)) {
 			nArgs = c.value();
 		}
 		boolean deterministic =
-				(findAnnotation(func.getClass(), Deterministic.class) != null);
+				nonNull(findAnnotation(func.getClass(), Deterministic.class));
 		boolean innocuous =
-				(findAnnotation(func.getClass(), Innocuous.class) != null);
+				nonNull(findAnnotation(func.getClass(), Innocuous.class));
 		Function.create(conn, name, func, nArgs,
 				(deterministic ? FLAG_DETERMINISTIC : 0)
 						| (innocuous ? SQLITE_INNOCUOUS : SQLITE_DIRECTONLY));
@@ -613,7 +622,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public Connection getConnection() throws SQLException {
 		try {
-			if (dbPath == null) {
+			if (isNull(dbPath)) {
 				// In-memory DB (dbPath null) always must be initialised
 				SQLiteConnection conn = openDatabaseConnection();
 				initDBConn(conn);
@@ -630,6 +639,50 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		}
+	}
+
+	/**
+	 * Creates a backup of the database. <em>This operation should only be
+	 * called by administrators.</em>
+	 *
+	 * @param backupFilename
+	 *            The backup file to create.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public void createBackup(File backupFilename) throws SQLException {
+		try (SQLiteConnection conn = (SQLiteConnection) getConnection()) {
+			conn.getDatabase().backup(MAIN_DB_NAME,
+					backupFilename.getAbsolutePath(),
+					(remaining, pageCount) -> log.info(
+							"BACKUP TO {} (remaining:{}, page count:{})",
+							backupFilename, remaining, pageCount));
+		}
+	}
+
+	/**
+	 * Restores the database from backup. <em>This operation should only be
+	 * called by administrators.</em>
+	 *
+	 * @param backupFilename
+	 *            The backup file to restore from.
+	 * @throws SQLException
+	 *             If anything goes wrong.
+	 */
+	public void restoreFromBackup(File backupFilename) throws SQLException {
+		if (!backupFilename.isFile() || !backupFilename.canRead()) {
+			throw new SQLException(
+					"backup file \"" + backupFilename
+							+ "\" doesn't exist or isn't a readable file",
+					new FileNotFoundException(backupFilename.toString()));
+		}
+		try (SQLiteConnection conn = (SQLiteConnection) getConnection()) {
+			conn.getDatabase().restore(MAIN_DB_NAME,
+					backupFilename.getAbsolutePath(),
+					(remaining, pageCount) -> log.info(
+							"RESTORE FROM {} (remaining:{}, page count:{})",
+							backupFilename, remaining, pageCount));
 		}
 	}
 
@@ -1109,7 +1162,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 
 		final void closeResults() {
-			if (rs != null) {
+			if (nonNull(rs)) {
 				try {
 					rs.close();
 				} catch (SQLException ignored) {
@@ -1511,7 +1564,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Provider
 	public static class SQLExceptionMapper
 			implements ExceptionMapper<SQLException> {
-		@Value("${sqlite.throwExceptionDetail:true}") // TODO turn off in prod
+		@Value("${spalloc.sqlite.debug-failures:false}")
 		private boolean throwDetail;
 
 		@Override

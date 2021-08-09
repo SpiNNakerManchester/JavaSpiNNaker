@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.nonNull;
+
 import java.time.Duration;
 import java.util.List;
 
@@ -101,13 +103,13 @@ public class CreateJobRequest {
 	@JsonIgnore
 	@AssertTrue(message = "either machine-name or tags must be supplied")
 	private boolean isMachineNameAndTagsMutuallyExclusive() {
-		return (machineName != null) != (tags != null);
+		return nonNull(machineName) != nonNull(tags);
 	}
 
 	@JsonIgnore
 	@AssertFalse(message = "machine-name, if given, must be non-blank")
 	private boolean isMachineNameInsane() {
-		return machineName != null && machineName.trim().isEmpty();
+		return nonNull(machineName) && machineName.trim().isEmpty();
 	}
 
 	private static final Duration MIN_KEEPALIVE = Duration.parse("PT30S");

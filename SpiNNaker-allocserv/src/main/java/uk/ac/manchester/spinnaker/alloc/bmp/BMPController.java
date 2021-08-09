@@ -21,6 +21,8 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -336,11 +338,11 @@ public class BMPController extends SQLQueries {
 				List<Integer> powerOffBoards, List<LinkRequest> linkRequests) {
 			this.machine = requireNonNull(machine);
 			this.powerOnBoards = new ArrayList<>(
-					powerOnBoards == null ? emptyList() : powerOnBoards);
+					isNull(powerOnBoards) ? emptyList() : powerOnBoards);
 			this.powerOffBoards = new ArrayList<>(
-					powerOffBoards == null ? emptyList() : powerOffBoards);
+					isNull(powerOffBoards) ? emptyList() : powerOffBoards);
 			this.linkRequests = new ArrayList<>(
-					linkRequests == null ? emptyList() : linkRequests);
+					isNull(linkRequests) ? emptyList() : linkRequests);
 		}
 	}
 
@@ -433,7 +435,7 @@ public class BMPController extends SQLQueries {
 					String reason =
 							"Requests failed on BMP " + request.change.machine;
 					log.error(reason, e);
-					if (request.onDone != null) {
+					if (nonNull(request.onDone)) {
 						request.onDone.call(reason, e);
 					}
 					throw e;
@@ -442,7 +444,7 @@ public class BMPController extends SQLQueries {
 						String reason = "Requests failed on BMP "
 								+ request.change.machine;
 						log.error(reason, e);
-						if (request.onDone != null) {
+						if (nonNull(request.onDone)) {
 							request.onDone.call(reason, e);
 						}
 						currentThread().interrupt();
@@ -495,7 +497,7 @@ public class BMPController extends SQLQueries {
 		}
 
 		// Exit the retry loop if the requests all worked
-		if (request.onDone != null) {
+		if (nonNull(request.onDone)) {
 			request.onDone.call(null, null);
 		}
 	}
@@ -610,7 +612,7 @@ public class BMPController extends SQLQueries {
 	void doneRequest(int jobId, JobState fromState, JobState toState,
 			RequestChange change, List<Integer> changeIds, String fail,
 			Exception exn) {
-		if (fail != null) {
+		if (nonNull(fail)) {
 			log.error("failed to set power on BMPs: {}", fail, exn);
 		}
 
@@ -632,7 +634,7 @@ public class BMPController extends SQLQueries {
 			DoneUpdates updates) throws SQLException {
 		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
 				deallocated = 0, killed = 0;
-		if (fail != null) {
+		if (nonNull(fail)) {
 			for (int changeId : changeIds) {
 				moved += updates.setInProgress(false, changeId);
 			}
@@ -755,7 +757,7 @@ public class BMPController extends SQLQueries {
 	void backgroundThread(WorkerState ws) {
 		MDC.put("machine", ws.machine.getName());
 		try (AutoCloseable binding = new BindWorker(ws.machine)) {
-			if (onThreadStart != null) {
+			if (nonNull(onThreadStart)) {
 				onThreadStart.run();
 			}
 

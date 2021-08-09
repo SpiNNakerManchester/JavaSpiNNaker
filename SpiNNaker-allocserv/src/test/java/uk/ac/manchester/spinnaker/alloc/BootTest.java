@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -37,13 +37,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
+import uk.ac.manchester.spinnaker.alloc.admin.AdminController;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.web.RootController;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 @SpringBootTest
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
-@TestPropertySource(properties = "databasePath=boot_test.sqlite3")
+@TestPropertySource(properties = "spalloc.database-path=boot_test.sqlite3")
 @TestInstance(PER_CLASS)
 class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
@@ -62,6 +65,15 @@ class BootTest {
 	@Autowired
 	private DatabaseEngine db;
 
+	@Autowired
+	private RootController root;
+
+	@Autowired
+	private AdminAPI admin;
+
+	@Autowired
+	private AdminController adminUI;
+
 	@BeforeAll
 	void clearDB() throws IOException {
 		Path dbp = db.getDatabasePath();
@@ -73,8 +85,12 @@ class BootTest {
 
 	@Test
 	void testContextBoot() {
+		// If all these bits are there, we declare the application to be working
 		assertNotNull(service);
 		assertNotNull(core);
 		assertNotNull(db);
+		assertNotNull(root);
+		assertNotNull(admin);
+		assertNotNull(adminUI);
 	}
 }

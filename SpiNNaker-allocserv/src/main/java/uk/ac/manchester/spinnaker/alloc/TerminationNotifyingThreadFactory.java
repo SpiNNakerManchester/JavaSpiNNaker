@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.Objects.nonNull;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
@@ -49,7 +51,7 @@ public class TerminationNotifyingThreadFactory implements ThreadFactory {
 			try {
 				r.run();
 			} finally {
-				if (terminationCallback != null) {
+				if (nonNull(terminationCallback)) {
 					terminationCallback.run();
 				}
 			}

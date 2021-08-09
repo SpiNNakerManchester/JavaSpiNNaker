@@ -26,11 +26,13 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -83,20 +85,23 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Autowired
 	private DatabaseEngine db;
 
-	@Value("${spalloc.addDummyUser:true}")
+	@Value("${spalloc.auth.add-dummy-user:true}")
 	private boolean addDummyUser;
+
+	@Value("${spalloc.auth.dummy-random-pass:false}")
+	private boolean dummyRandomPass;
 
 	/**
 	 * Trivial default allocation quota. 100 board-seconds is next to nothing.
 	 */
-	@Value("${spalloc.defaultQuota:100}")
+	@Value("${spalloc.default-quota:100}")
 	private long defaultQuota;
 
 	/** Maximum number of login failures for account to get a lock. */
-	@Value("${spalloc.maxLoginFailures:3}")
+	@Value("${spalloc.auth.max-login-failures:3}")
 	private int maxLoginFailures;
 
-	@Value("${spalloc.accountLockDuration:PT24H}")
+	@Value("${spalloc.auth.account-lock-duration:PT24H}")
 	private Duration lockInterval;
 
 	private static final String DUMMY_USER = "user1";
@@ -106,11 +111,40 @@ public class LocalAuthProviderImpl extends SQLQueries
 	/** Run the unlock task every minute. */
 	private static final long INTER_UNLOCK_DELAY = 60000;
 
+	private Random rng = null;
+
+	private static final int PASSWORD_LENGTH = 16;
+
+	/**
+	 * Generate a random password.
+	 *
+	 * @return A password consisting of 16 random ASCII printable characters.
+	 */
+	private String generatePassword() {
+		synchronized (this) {
+			if (rng == null) {
+				rng = new SecureRandom();
+			}
+		}
+		StringBuilder sb = new StringBuilder();
+		rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
+				.forEachOrdered(c -> sb.append((char) c));
+		return sb.toString();
+	}
+
 	@PostConstruct
 	private void initUserIfNecessary() throws SQLException {
 		if (addDummyUser) {
-			createUser(DUMMY_USER, DUMMY_PASSWORD, TrustLevel.ADMIN,
-					defaultQuota);
+			String pass = DUMMY_PASSWORD;
+			if (dummyRandomPass) {
+				pass = generatePassword();
+			}
+			if (createUser(DUMMY_USER, pass, TrustLevel.ADMIN, defaultQuota)) {
+				if (dummyRandomPass) {
+					log.info("admin user {} has password: {}", DUMMY_USER,
+							pass);
+				}
+			}
 		}
 	}
 

@@ -16,7 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
-import static java.lang.String.format;
+import static java.time.Instant.now;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
@@ -27,12 +29,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
@@ -64,9 +68,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -81,6 +87,8 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.sqlite.Function;
+
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.ArgumentCount;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Deterministic;
@@ -158,10 +166,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationFailureHandler authenticationFailureHandler;
 
-	@Value("${spalloc.basicAuth:true}")
+	@Value("${spalloc.auth.basic:true}")
 	private boolean supportBasicAuth;
 
-	@Value("${spalloc.localFormAuth:true}")
+	@Value("${spalloc.auth.local-form:true}")
 	private boolean supportLocalFormAuth;
 
 	@Autowired
@@ -358,7 +366,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			log.debug("encode_password() called");
 			String pass = value_text(0);
 			// Important: encodes NULL as NULL
-			if (pass != null) {
+			if (nonNull(pass)) {
 				pass = passwordEncoder.encode(pass);
 			}
 			result(pass);
@@ -391,7 +399,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// If either argument is NULL, the result is false
 			String raw = value_text(0);
 			String encoded = value_text(1);
-			boolean m = (raw != null) && (encoded != null)
+			boolean m = nonNull(raw) && nonNull(encoded)
 					&& passwordEncoder.matches(raw, encoded);
 			result(m ? 1 : 0);
 		}
@@ -400,9 +408,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Component
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
-		// TODO ensure off in prod
-		@Value("${spalloc.debugAuthFailures:false}")
+		@Value("${spalloc.auth.debug-failures:false}")
 		private boolean debugAuthFailures;
+
+		@Autowired
+		private JsonMapper mapper;
 
 		@Override
 		public void onAuthenticationFailure(HttpServletRequest request,
@@ -411,14 +421,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			log.info("auth failure", e);
 			response.setStatus(UNAUTHORIZED.value());
 
-			String jsonPayload =
-					"{\"message\" : \"%s\", \"timestamp\" : \"%s\" }";
 			String message = BLAND_AUTH_MSG;
 			if (debugAuthFailures) {
 				message += ": " + e.getLocalizedMessage();
 			}
-			response.getOutputStream().println(format(jsonPayload,
-					message, Calendar.getInstance().getTime()));
+			mapper.writeValue(response.getOutputStream(),
+					new AuthFailureObject(message));
+		}
+
+		static class AuthFailureObject {
+			private String message;
+
+			private Instant timestamp;
+
+			AuthFailureObject(String message) {
+				this.message = message;
+				this.timestamp = now();
+			}
+
+			public String getMessage() {
+				return message;
+			}
+
+			public Instant getTimestamp() {
+				return timestamp;
+			}
 		}
 	}
 
@@ -470,7 +497,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public Object filter(Object target, Expression expr,
 				EvaluationContext ctx) {
-			if (target == null) {
+			if (isNull(target)) {
 				// We can handle this case here!
 				return null;
 			}
@@ -501,28 +528,122 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * Encodes what a user is permitted to do. Abstracts over several types of
 	 * security context.
 	 */
-	public static class Permit {
+	public static final class Permit {
 		/** Is the user an admin? */
 		public final boolean admin;
 
 		/** What is the name of the user? */
 		public final String name;
 
-		public Permit(javax.ws.rs.core.SecurityContext security) {
+		/**
+		 * Build a permit.
+		 *
+		 * @param context
+		 *            The originating security context.
+		 */
+		public Permit(javax.ws.rs.core.SecurityContext context) {
 			// TODO which version is the right one?
-			admin = security.isUserInRole("ADMIN")
-					|| security.isUserInRole(GRANT_ADMIN);
-			name = security.getUserPrincipal().getName();
+			admin = context.isUserInRole("ADMIN")
+					|| context.isUserInRole(GRANT_ADMIN);
+			name = context.getUserPrincipal().getName();
 		}
 
+		/**
+		 * Build a permit.
+		 *
+		 * @param context
+		 *            The originating security context.
+		 */
 		public Permit(SecurityContext context) {
 			admin = context.getAuthentication().getAuthorities().stream()
 					.anyMatch(ga -> ga.getAuthority().equals(GRANT_ADMIN));
 			name = context.getAuthentication().getName();
 		}
 
+		/**
+		 * Can something owned by a given user can be shown to the user that
+		 * this permit is for?
+		 *
+		 * @param owner
+		 *            The owner of the object.
+		 * @return True exactly if the object (or subset of properties) may be
+		 *         shown.
+		 */
 		public boolean unveilFor(String owner) {
 			return admin || owner.equals(name);
+		}
+
+		// TODO extend Permit with authority set
+
+		/**
+		 * Mark the current thread as having permission to access objects. Used
+		 * to elevate the capabilities of an asynchronous worker thread.
+		 *
+		 * @return A handle that will de-authorize the thread when closed.
+		 */
+		public AutoCloseable authorizeCurrentThread() {
+			SecurityContext c = SecurityContextHolder.getContext();
+			c.setAuthentication(new TempAuth());
+			return () -> {
+				c.setAuthentication(null);
+			};
+		}
+
+		/**
+		 * A temporarily-installable authentication token. Allows access to
+		 * secured APIs in asynchronous worker threads, provided they provide a
+		 * {@link Permit} (obtained from a service thread) to show that they may
+		 * do so.
+		 *
+		 */
+		@SuppressWarnings("serial")
+		private final class TempAuth implements Authentication {
+			// The permit already proves we're authenticated
+			private boolean auth = true;
+
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			public Collection<? extends GrantedAuthority> getAuthorities() {
+				Set<GrantedAuthority> s = Collections.emptySet();
+				if (admin) {
+					// TODO extend Permit with authority set
+					s = Collections.singleton(() -> "ROLE_ADMIN");
+				}
+				return s;
+			}
+
+			@Override
+			public Object getCredentials() {
+				// You can never get the credentials from this
+				return null;
+			}
+
+			@Override
+			public Permit getDetails() {
+				return Permit.this;
+			}
+
+			@Override
+			public String getPrincipal() {
+				return name;
+			}
+
+			@Override
+			public boolean isAuthenticated() {
+				return auth;
+			}
+
+			@Override
+			public void setAuthenticated(boolean isAuthenticated)
+					throws IllegalArgumentException {
+				if (!isAuthenticated) {
+					auth = false;
+				}
+			}
 		}
 	}
 }

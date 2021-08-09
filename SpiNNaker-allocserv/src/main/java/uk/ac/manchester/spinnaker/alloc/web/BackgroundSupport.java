@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.isNull;
+
 import java.sql.SQLException;
 import java.util.concurrent.Executor;
 
@@ -90,7 +92,7 @@ public abstract class BackgroundSupport {
 			BackgroundAction action) {
 		try {
 			Object r = action.respond();
-			if (r == null) {
+			if (isNull(r)) {
 				// If you want something else, don't return null
 				response.resume(new NotFound("not found"));
 			} else {

@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
@@ -32,6 +36,11 @@ import org.springframework.stereotype.Component;
 public class ServiceMasterControl {
 	private boolean paused = false;
 
+	@Value("${spalloc.transceiver.dummy:false}")
+	private boolean dummyBMP = false;
+
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
 	/**
 	 * @return Whether periodic tasks should not run.
 	 */
@@ -41,6 +50,64 @@ public class ServiceMasterControl {
 	}
 
 	public synchronized void setPaused(boolean paused) {
+		boolean old = this.paused;
 		this.paused = paused;
+		pcs.firePropertyChange("paused", old, paused);
+	}
+
+	/**
+	 * Add a listener to the {@link #isPaused() paused} property.
+	 *
+	 * @param listener
+	 *            The listener to add.
+	 */
+	public void addPausedListener(PropertyChangeListener listener) {
+		pcs.addPropertyChangeListener("paused", listener);
+	}
+
+	/**
+	 * Remove a listener from the {@link #isPaused() paused} property.
+	 *
+	 * @param listener
+	 *            The listener to remove.
+	 */
+	public void removePausedListener(PropertyChangeListener listener) {
+		pcs.removePropertyChangeListener("paused", listener);
+	}
+
+	/**
+	 * @return Whether to use dummy transceivers for talking to the BMPs.
+	 */
+	@ManagedAttribute(
+			description = "Whether the service actually talks to BMPs; "
+					+ "when using a dummy, all actual hardware is ignored.")
+	public synchronized boolean isUseDummyBMP() {
+		return dummyBMP;
+	}
+
+	public synchronized void setUseDummyBMP(boolean dummyBMP) {
+		boolean old = this.dummyBMP;
+		this.dummyBMP = dummyBMP;
+		pcs.firePropertyChange("useDummyBMP", old, dummyBMP);
+	}
+
+	/**
+	 * Add a listener to the {@link #isUseDummyBMP() useDummyBMP} property.
+	 *
+	 * @param listener
+	 *            The listener to add.
+	 */
+	public void addUseDummyBMPListener(PropertyChangeListener listener) {
+		pcs.addPropertyChangeListener("useDummyBMP", listener);
+	}
+
+	/**
+	 * Remove a listener from the {@link #isUseDummyBMP() useDummyBMP} property.
+	 *
+	 * @param listener
+	 *            The listener to remove.
+	 */
+	public void removeUseDummyBMPListener(PropertyChangeListener listener) {
+		pcs.removePropertyChangeListener("useDummyBMP", listener);
 	}
 }

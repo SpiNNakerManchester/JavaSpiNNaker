@@ -21,6 +21,7 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
@@ -1040,7 +1041,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			TriadCoords there, Direction d2) throws SQLException {
 		Integer b1 = boardIds.get(here);
 		Integer b2 = boardIds.get(there);
-		if (b1 == null || b2 == null) {
+		if (isNull(b1) || isNull(b2)) {
 			// No such board? Oh well
 			return Optional.empty();
 		}

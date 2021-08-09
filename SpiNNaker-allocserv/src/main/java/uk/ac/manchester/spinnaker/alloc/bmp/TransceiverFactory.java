@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -33,12 +34,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -66,10 +69,27 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 @Component("transceiverFactory")
 public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
+	private static final Logger log = getLogger(TransceiverFactory.class);
+
 	private Map<String, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
-	@Value("${spalloc.transceiver.dummy:false}")
-	private boolean useDummy;
+	@Autowired
+	private ServiceMasterControl control;
+
+	@PostConstruct
+	private void setup() {
+		// Whenever the useDummyBMP property is changed, flush the cache
+		control.addUseDummyBMPListener(e -> {
+			synchronized (txrxMap) {
+				try {
+					closeTransceivers();
+				} catch (Exception ex) {
+					log.warn("problem closing transceivers", ex);
+				}
+				txrxMap.clear();
+			}
+		});
+	}
 
 	@Override
 	public BMPTransceiverInterface getTransciever(Machine machineDescription)
@@ -78,16 +98,27 @@ public class TransceiverFactory
 		synchronized (txrxMap) {
 			BMPTransceiverInterface t =
 					txrxMap.get(machineDescription.getName());
-			if (t == null) {
-				if (useDummy) {
-					t = new DummyTransceiver(machineDescription);
+			if (isNull(t)) {
+				BMPConnectionData connData =
+						makeConnectionData(machineDescription);
+				if (control.isUseDummyBMP()) {
+					t = new DummyTransceiver(machineDescription.getName(),
+							connData);
 				} else {
-					t = makeTransceiver(machineDescription);
+					t = makeTransceiver(connData);
 				}
 				txrxMap.put(machineDescription.getName(), t);
 			}
 			return t;
 		}
+	}
+
+	private BMPConnectionData makeConnectionData(Machine machine)
+			throws SQLException, IOException {
+		String address = machine.getRootBoardBMPAddress();
+		List<Integer> boards = machine.getBoardNumbers();
+		return new BMPConnectionData(0, 0, getByName(address), boards,
+				SCP_SCAMP_PORT);
 	}
 
 	/**
@@ -97,7 +128,7 @@ public class TransceiverFactory
 	 * root BMP; the BMPs communicate with each other if necessary. I believe
 	 * that communication is via an I<sup>2</sup>C bus, but I might be wrong.
 	 *
-	 * @param machine
+	 * @param data
 	 *            The information about the BMP and the boards to manage.
 	 * @throws IOException
 	 *             If network access fails
@@ -106,14 +137,10 @@ public class TransceiverFactory
 	 * @throws SQLException
 	 *             If database access fails
 	 */
-	private Transceiver makeTransceiver(Machine machine)
+	private Transceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException, SQLException {
-		String address = machine.getRootBoardBMPAddress();
-		List<Integer> boards = machine.getBoardNumbers();
-		BMPConnectionData c = new BMPConnectionData(0, 0, getByName(address),
-				boards, SCP_SCAMP_PORT);
-		return new Transceiver(null, asList(new BMPConnection(c)), null, null,
-				null, null, null);
+		return new Transceiver(null, asList(new BMPConnection(data)), null,
+				null, null, null, null);
 	}
 
 	@PreDestroy
@@ -137,9 +164,10 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	private Map<Integer, Boolean> status;
 
-	DummyTransceiver(Machine m) throws SQLException {
-		log.info("constructed dummy transceiver for {} ({} : {})", m.getName(),
-				m.getRootBoardBMPAddress(), m.getBoardNumbers());
+	DummyTransceiver(String machineName, BMPConnectionData data)
+			throws SQLException {
+		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
+				data.ipAddress, data.boards);
 		ByteBuffer b = ByteBuffer.allocate(VERSION_INFO_SIZE);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putInt(0);

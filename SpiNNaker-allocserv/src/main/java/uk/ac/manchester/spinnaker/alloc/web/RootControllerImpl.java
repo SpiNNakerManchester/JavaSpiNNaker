@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -151,7 +152,7 @@ public class RootControllerImpl implements RootController {
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		Authentication auth = getContext().getAuthentication();
-		if (auth != null) {
+		if (nonNull(auth)) {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
 		}
@@ -164,8 +165,7 @@ public class RootControllerImpl implements RootController {
 		try {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
 			for (MachineListEntryRecord entry : table) {
-				entry.setDetailsUrl(
-						uri(SELF.getMachineInfo(entry.getName())));
+				entry.setDetailsUrl(uri(SELF.getMachineInfo(entry.getName())));
 			}
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (SQLException e) {
@@ -220,12 +220,11 @@ public class RootControllerImpl implements RootController {
 		try {
 			JobDescription mach = spallocCore.getJobInfo(permit, id)
 					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-			if (mach.getRequestBytes() != null) {
+			if (nonNull(mach.getRequestBytes())) {
 				mach.setRequest(mapper.readValue(mach.getRequestBytes(),
 						CreateJobRequest.class));
 			}
-			mach.setMachineUrl(
-					uri(SELF.getMachineInfo(mach.getMachine())));
+			mach.setMachineUrl(uri(SELF.getMachineInfo(mach.getMachine())));
 			return new ModelAndView(JOB_VIEW, "job", mach);
 		} catch (SQLException e) {
 			log.error("database problem", e);

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
@@ -82,7 +83,7 @@ public class WhereIsResponse {
 		logicalBoardCoordinates = location.getLogical();
 		physicalBoardCoordinates = location.getPhysical();
 		Job j = location.getJob();
-		if (j != null) {
+		if (nonNull(j)) {
 			jobId = j.getId();
 			jobRef = minter.build(JOB, jobId);
 			jobChip = j.getRootChip().map(rc -> location.getChipRelativeTo(rc))

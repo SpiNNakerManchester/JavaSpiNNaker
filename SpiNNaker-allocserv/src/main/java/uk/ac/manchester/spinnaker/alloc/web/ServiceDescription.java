@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
@@ -63,7 +64,7 @@ public class ServiceDescription {
 			jobsRef = ub.build(JOB);
 			machinesRef = ub.build(MACH);
 		}
-		if (token != null) {
+		if (nonNull(token)) {
 			csrfHeader = token.getHeaderName();
 			csrfToken = token.getToken();
 		}

@@ -20,6 +20,9 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import static java.util.Objects.nonNull;
+
 import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -110,10 +113,10 @@ public final class ConnectionInfo {
 	@Override
 	public int hashCode() {
 		int hashcode = 0;
-		if (hostname != null) {
+		if (nonNull(hostname)) {
 			hashcode += 5 * hostname.hashCode();
 		}
-		if (chip != null) {
+		if (nonNull(chip)) {
 			hashcode += 7 * chip.hashCode();
 		}
 		return hashcode;

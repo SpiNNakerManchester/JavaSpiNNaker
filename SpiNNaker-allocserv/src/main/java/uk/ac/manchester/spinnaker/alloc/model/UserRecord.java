@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.model;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Collections.emptyMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.time.Instant;
 import java.util.Map;
@@ -193,11 +195,11 @@ public final class UserRecord {
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {
-		return password == null && hasPassword != null && hasPassword;
+		return isNull(password) && nonNull(hasPassword) && hasPassword;
 	}
 
 	boolean isPasswordSet() {
-		return password != null && !password.trim().isEmpty();
+		return nonNull(password) && !password.trim().isEmpty();
 	}
 
 	@AssertTrue(message = "either set a password or mark for using OpenID")
@@ -212,7 +214,7 @@ public final class UserRecord {
 	 */
 	public UserRecord sanitise() {
 		// Make SURE that the password doesn't go back
-		if (password != null) {
+		if (nonNull(password)) {
 			hasPassword = true;
 			password = null;
 		}
@@ -226,16 +228,16 @@ public final class UserRecord {
 	 */
 	public void initCreationDefaults() {
 		setUserId(null);
-		if (getTrustLevel() == null) {
+		if (isNull(getTrustLevel())) {
 			setTrustLevel(TrustLevel.USER);
 		}
-		if (getQuota() == null) {
+		if (isNull(getQuota())) {
 			setQuota(emptyMap());
 		}
-		if (isEnabled() == null) {
+		if (isNull(isEnabled())) {
 			setEnabled(true);
 		}
-		if (isLocked() == null) {
+		if (isNull(isLocked())) {
 			setLocked(false);
 		}
 	}

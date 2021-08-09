@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
@@ -350,7 +351,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
-		if (bs == null) {
+		if (isNull(bs)) {
 			return errors("no such board");
 		}
 

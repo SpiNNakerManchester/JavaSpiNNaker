@@ -142,6 +142,13 @@ public interface SpallocClient {
 		/** @return The dead links of the machine. */
 		List<DeadLink> getDeadLinks();
 
+		/**
+		 * Wait (for up to 30 seconds) until the state of the machine might have
+		 * changed.
+		 *
+		 * @throws IOException
+		 *             If communication with the server fails
+		 */
 		void waitForChange() throws IOException;
 
 		/**
@@ -339,6 +346,9 @@ public interface SpallocClient {
 			}
 		}
 
+		/**
+		 * @return The HTTP response code that triggered the exception.
+		 */
 		public int getResponseCode() {
 			return responseCode;
 		}

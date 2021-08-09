@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -139,7 +141,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			Integer x = row.getInteger("x");
 			Integer y = row.getInteger("y");
 			Integer z = row.getInteger("z");
-			if (x == null || y == null || z == null) {
+			if (isNull(x) || isNull(y) || isNull(z)) {
 				return null;
 			}
 			return new TriadCoords(x, y, z);
@@ -371,7 +373,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				task.getInt("max_height"), TRIAD_DEPTH);
 		int maxDeadBoards = task.getInt("max_dead_boards");
 		Integer numBoards = task.getInteger("num_boards");
-		if (numBoards != null && numBoards > 0) {
+		if (nonNull(numBoards) && numBoards > 0) {
 			if (numBoards == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
@@ -382,7 +384,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		Integer width = task.getInteger("width");
 		Integer height = task.getInteger("height");
-		if (width != null && height != null && width > 0 && height > 0) {
+		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(conn, jobId, machineId);
 			}
@@ -393,7 +395,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		TriadCoords root = TriadCoords.get(task);
-		if (root != null) {
+		if (nonNull(root)) {
 			// Ignores maxDeadBoards; is a single-board allocate
 			return allocateCoords(conn, jobId, machineId, root);
 		}
