@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Quotas:
     <c:forEach items="${ user.quota }" var="q">
     	<br> ${ q.key } : ${ q.value } board-seconds
-<%-- TODO add support for editing user quotas --%>
+<%-- FIXME add support for editing user quotas --%>
     </c:forEach>
     <p>
     <input type="submit" value="Update" />

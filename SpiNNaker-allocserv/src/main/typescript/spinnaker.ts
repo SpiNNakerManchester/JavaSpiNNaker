@@ -400,7 +400,7 @@ function drawJob(
 	const scaleY : number = (rect.height - 10) / (descriptor.triad_height * 3 + 1);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
 	const ctx = canv.getContext("2d");
-	//TODO define tooltips and bindings for the job view
+	//FIXME define tooltips and bindings for the job view
 	const tooltipCtx = tooltip.getContext("2d");
 
 	const allocated = boardMap(descriptor.boards);

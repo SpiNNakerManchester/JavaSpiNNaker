@@ -56,6 +56,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
+	// TODO add priority mechanism so small jobs can't lock out large ones
 	/**
 	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
 	 */

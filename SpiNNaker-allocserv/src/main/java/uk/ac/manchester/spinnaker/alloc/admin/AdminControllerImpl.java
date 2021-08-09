@@ -345,8 +345,8 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 						.findIP(board.getMachineName(), board.getIpAddress())
 						.orElse(null);
 			} else {
-				// TODO should be unreachable
-				return errors("bad address");
+				// unreachable because of validation
+				throw new UnsupportedOperationException("bad address");
 			}
 		} catch (SQLException e) {
 			return errors("database access failed: " + e.getMessage());
