@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 @Component("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
 public class ServiceMasterControl {
+	@Value("${spalloc.master.pause:false}")
 	private boolean paused = false;
 
 	@Value("${spalloc.transceiver.dummy:false}")

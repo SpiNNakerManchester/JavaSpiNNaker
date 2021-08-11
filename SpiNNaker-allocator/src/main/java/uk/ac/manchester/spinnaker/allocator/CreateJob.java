@@ -26,10 +26,14 @@ import java.util.List;
  *
  * @author Donal Fellows
  */
-public class CreateJob {
+public final class CreateJob {
 	private Duration keepaliveInterval;
 
-	private List<Integer> dimensions;
+	private Integer numBoards;
+
+	private Dimensions dimensions;
+
+	private SpecificBoard board;
 
 	private String machineName;
 
@@ -38,13 +42,146 @@ public class CreateJob {
 	private Integer maxDeadBoards;
 
 	/**
+	 * Used when asking for a rectangle of boards.
+	 */
+	public static final class Dimensions {
+		private int width;
+
+		private int height;
+
+		public Dimensions(int w, int h) {
+			width = w;
+			height = h;
+		}
+
+		/** @return The width of the allocation, in boards. */
+		public int getWidth() {
+			return width;
+		}
+
+		public void setWidth(int width) {
+			this.width = width;
+		}
+
+		/** @return The height of the allocation, in boards. */
+		public int getHeight() {
+			return height;
+		}
+
+		public void setHeight(int height) {
+			this.height = height;
+		}
+	}
+
+	/**
+	 * Used when asking for a specific board.
+	 */
+	public static final class SpecificBoard {
+		private Integer x;
+
+		private Integer y;
+
+		private Integer z;
+
+		private Integer cabinet;
+
+		private Integer frame;
+
+		private Integer board;
+
+		private String address;
+
+		public SpecificBoard() {
+		}
+
+		SpecificBoard(boolean type, int a, int b, int c) {
+			if (type) {
+				x = a;
+				y = b;
+				z = c;
+			} else {
+				cabinet = a;
+				frame = b;
+				board = c;
+			}
+		}
+
+		SpecificBoard(String addr) {
+			address = addr;
+		}
+
+		/** @return The triad X coordinate. */
+		public Integer getX() {
+			return x;
+		}
+
+		public void setX(Integer x) {
+			this.x = x;
+		}
+
+		/** @return The triad Y coordinate. */
+		public Integer getY() {
+			return y;
+		}
+
+		public void setY(Integer y) {
+			this.y = y;
+		}
+
+		/** @return The triad Z coordinate. */
+		public Integer getZ() {
+			return z;
+		}
+
+		public void setZ(Integer z) {
+			this.z = z;
+		}
+
+		/** @return The cabinet number. */
+		public Integer getCabinet() {
+			return cabinet;
+		}
+
+		public void setCabinet(Integer cabinet) {
+			this.cabinet = cabinet;
+		}
+
+		/** @return The frame number. */
+		public Integer getFrame() {
+			return frame;
+		}
+
+		public void setFrame(Integer frame) {
+			this.frame = frame;
+		}
+
+		/** @return The board number. */
+		public Integer getBoard() {
+			return board;
+		}
+
+		public void setBoard(Integer board) {
+			this.board = board;
+		}
+
+		/** @return The board IP address. */
+		public String getAddress() {
+			return address;
+		}
+
+		public void setAddress(String address) {
+			this.address = address;
+		}
+	}
+
+	/**
 	 * Create a request to run on a single board using the default machine
 	 * operated by the Spalloc service.
 	 * <p>
 	 * Note that you can configure this request further.
 	 */
 	public CreateJob() {
-		dimensions = asList(1);
+		numBoards = 1;
 		tags = asList("default");
 	}
 
@@ -64,7 +201,7 @@ public class CreateJob {
 			throw new IllegalArgumentException(
 					"number of boards must be positive");
 		}
-		dimensions = asList(numBoards);
+		this.numBoards = numBoards;
 		tags = asList("default");
 	}
 
@@ -86,7 +223,7 @@ public class CreateJob {
 			throw new IllegalArgumentException(
 					"dimensions must be positive");
 		}
-		dimensions = asList(width, height);
+		dimensions = new Dimensions(width, height);
 		tags = asList("default");
 	}
 
@@ -99,10 +236,48 @@ public class CreateJob {
 	 * @param machine
 	 *            Which machine of the service to use?
 	 * @param triad
-	 *            Which board of the machine to request?
+	 *            Which board of the machine to request? This is the logical
+	 *            coordinates.
 	 */
 	public CreateJob(String machine, Triad triad) {
-		dimensions = asList(triad.getX(), triad.getY(), triad.getZ());
+		board = new SpecificBoard(true, triad.getX(), triad.getY(),
+				triad.getZ());
+		machineName = machine;
+	}
+
+	/**
+	 * Create a request to run on a specific board of a specific machine
+	 * operated by the Spalloc service.
+	 * <p>
+	 * Note that you can configure this request further.
+	 *
+	 * @param machine
+	 *            Which machine of the service to use?
+	 * @param cabinet
+	 *            The cabinet number of the board to request.
+	 * @param frame
+	 *            The frame number of the board to request.
+	 * @param board
+	 *            The board number of the board to request.
+	 */
+	public CreateJob(String machine, int cabinet, int frame, int board) {
+		this.board = new SpecificBoard(false, cabinet, frame, board);
+		machineName = machine;
+	}
+
+	/**
+	 * Create a request to run on a specific board of a specific machine
+	 * operated by the Spalloc service.
+	 * <p>
+	 * Note that you can configure this request further.
+	 *
+	 * @param machine
+	 *            Which machine of the service to use?
+	 * @param ipAddress
+	 *            The IP address of the board of the machine to request
+	 */
+	public CreateJob(String machine, String ipAddress) {
+		board = new SpecificBoard(ipAddress);
 		machineName = machine;
 	}
 
@@ -119,25 +294,33 @@ public class CreateJob {
 	}
 
 	/**
-	 * @return 0 to 3 values indicating what size of job to make.
-	 *         <ol>
-	 *         <li value="0">A single board job. (Default)
-	 *         <li>A job with at least the given number of boards.
-	 *         <li>An allocation that should incorporate the given number of
-	 *         triads of boards in each direction. Be aware that this is in
-	 *         triads!
-	 *         <li>A specific board, by X, Y, Z (<em>logical</em> coordinates).
-	 *         </ol>
+	 * @return The number of boards to request. May be {@code null} if a
+	 *         different type of request is made.
 	 */
-	// TODO: want to support create by XYZ, by CFB, and by board IP address
-	// There's really no need to stick to the limitations of the old Python
-	// code
-	public List<Integer> getDimensions() {
+	public Integer getNumBoards() {
+		return numBoards;
+	}
+
+	public void setNumBoards(Integer numBoards) {
+		this.numBoards = numBoards;
+	}
+
+	/** @return The size of rectangle of boards to request. */
+	public Dimensions getDimensions() {
 		return dimensions;
 	}
 
-	public void setDimensions(List<Integer> dimensions) {
+	public void setDimensions(Dimensions dimensions) {
 		this.dimensions = dimensions;
+	}
+
+	/** @return The address of the specific board to request. */
+	public SpecificBoard getBoard() {
+		return board;
+	}
+
+	public void setBoard(SpecificBoard board) {
+		this.board = board;
 	}
 
 	/**

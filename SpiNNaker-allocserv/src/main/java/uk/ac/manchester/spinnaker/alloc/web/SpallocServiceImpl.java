@@ -59,6 +59,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -76,13 +80,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 	private static final Logger log = getLogger(SpallocServiceImpl.class);
 
 	private static final int WAIT_TIMEOUT = 30000; // 30s
-
-	/**
-	 * Maximum number of dimensions that can be used in
-	 * {@link #createJob(CreateJobRequest, UriInfo, AsyncResponse)
-	 * createJob(...)}.
-	 */
-	private static final int MAX_CREATE_DIMENSIONS = 3;
 
 	private static final Duration MIN_KEEPALIVE_DURATION =
 			Duration.parse("PT30S");
@@ -171,9 +168,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 					}
 				}
 
-				private WhereIsResponse makeResponse(
-						Optional<BoardLocation> boardLocation)
-						throws SQLException {
+				private WhereIsResponse
+						makeResponse(Optional<BoardLocation> boardLocation)
+								throws SQLException {
 					return new WhereIsResponse(boardLocation.orElseThrow(
 							() -> new NotFound("failed to locate board")), ui);
 				}
@@ -369,9 +366,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 			links.put("prev", prev);
 		}
 		if (value.jobs.size() == limit) {
-			URI next = ui.getRequestUriBuilder()
-					.replaceQueryParam("wait", false)
-					.replaceQueryParam("start", start + limit).build();
+			URI next =
+					ui.getRequestUriBuilder().replaceQueryParam("wait", false)
+							.replaceQueryParam("start", start + limit).build();
 			value.setNext(next);
 			links.put("next", next);
 		}
@@ -415,13 +412,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
-		validateAndApplyDefaultsToJobRequest(req, security);
+		CreateDescriptor crds =
+				validateAndApplyDefaultsToJobRequest(req, security);
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> {
-			Job j = core.createJob(req.owner.trim(), req.dimensions,
-					req.machineName, req.tags, req.keepaliveInterval,
-					req.maxDeadBoards, mapper.writeValueAsBytes(req));
+			Job j = core.createJob(req.owner.trim(), crds, req.machineName,
+					req.tags, req.keepaliveInterval, req.maxDeadBoards,
+					mapper.writeValueAsBytes(req));
 			if (isNull(j)) {
 				// Most likely reason for failure
 				return status(BAD_REQUEST).type(TEXT_PLAIN)
@@ -432,7 +430,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		});
 	}
 
-	private static void validateAndApplyDefaultsToJobRequest(
+	private static CreateDescriptor validateAndApplyDefaultsToJobRequest(
 			CreateJobRequest req, SecurityContext security) throws BadArgs {
 		if (isNull(req)) {
 			throw new BadArgs("request must be supplied");
@@ -458,19 +456,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 					+ MAX_KEEPALIVE_DURATION);
 		}
 
-		if (isNull(req.dimensions)) {
-			req.dimensions = new ArrayList<>();
-		}
-		if (req.dimensions.size() > MAX_CREATE_DIMENSIONS) {
-			throw new BadArgs(
-					"must be zero to " + MAX_CREATE_DIMENSIONS + " dimensions");
-		}
-		if (req.dimensions.isEmpty()) {
-			req.dimensions.add(1);
-		} else if (req.dimensions.stream().anyMatch(x -> x < 0)) {
-			throw new BadArgs("dimensions must not be negative");
-		}
-
 		if (isNull(req.tags)) {
 			req.tags = new ArrayList<>();
 			if (isNull(req.machineName)) {
@@ -487,6 +472,25 @@ public class SpallocServiceImpl extends BackgroundSupport
 		} else if (req.maxDeadBoards < 0) {
 			throw new BadArgs(
 					"the maximum number of dead boards must not be negative");
+		}
+
+		if (nonNull(req.numBoards)) {
+			return new CreateNumBoards(req.numBoards);
+		} else if (nonNull(req.dimensions)) {
+			return new CreateDimensions(req.dimensions.width,
+					req.dimensions.height);
+		} else if (nonNull(req.board)) {
+			if (nonNull(req.board.x)) {
+				return CreateBoard.triad(req.board.x, req.board.y, req.board.z);
+			} else if (nonNull(req.board.cabinet)) {
+				return CreateBoard.physical(req.board.cabinet, req.board.frame,
+						req.board.board);
+			} else {
+				return CreateBoard.address(req.board.address);
+			}
+		} else {
+			// It's a single board
+			return new CreateNumBoards(1);
 		}
 	}
 }

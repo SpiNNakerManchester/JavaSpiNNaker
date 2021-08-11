@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
@@ -126,26 +125,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		final int z;
 
-		private TriadCoords(int x, int y, int z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
 		TriadCoords(Row row) throws SQLException {
 			this.x = row.getInt("x");
 			this.y = row.getInt("y");
 			this.z = row.getInt("z");
-		}
-
-		static TriadCoords get(Row row) throws SQLException {
-			Integer x = row.getInteger("x");
-			Integer y = row.getInteger("y");
-			Integer z = row.getInteger("z");
-			if (isNull(x) || isNull(y) || isNull(z)) {
-				return null;
-			}
-			return new TriadCoords(x, y, z);
 		}
 	}
 
@@ -395,10 +378,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 					maxDeadBoards);
 		}
 
-		TriadCoords root = TriadCoords.get(task);
+		Integer root = task.getInteger("board_id");
 		if (nonNull(root)) {
 			// Ignores maxDeadBoards; is a single-board allocate
-			return allocateCoords(conn, jobId, machineId, root);
+			return allocateBoard(conn, jobId, machineId, root);
 		}
 
 		log.warn("job {} could not be allocated; "
@@ -476,10 +459,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		return size;
 	}
 
-	private boolean allocateCoords(Connection conn, int jobId, int machineId,
-			TriadCoords root) throws SQLException {
+	private boolean allocateBoard(Connection conn, int jobId, int machineId,
+			int boardId) throws SQLException {
 		try (Query find = query(conn, findLocation)) {
-			for (Row row : find.call(machineId, root.x, root.y, root.z)) {
+			for (Row row : find.call(machineId, boardId)) {
 				if (setAllocation(conn, jobId, ONE_BOARD, machineId,
 						new TriadCoords(row))) {
 					return true;

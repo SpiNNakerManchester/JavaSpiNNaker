@@ -21,16 +21,19 @@ import static java.util.Objects.nonNull;
 import java.time.Duration;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 
 /**
  * A request to create a job.
@@ -39,16 +42,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {
-	/**
-	 * Maximum number of dimensions that can be used in
-	 * {@link #createJob(CreateJobRequest, UriInfo, AsyncResponse)
-	 * createJob(...)}.
-	 */
-	private static final int MAX_CREATE_DIMENSIONS = 3;
-
-	/** Error message. */
-	private static final String BAD_DIM = "dimension must not be negative";
-
 	/**
 	 * Who owns the job.
 	 */
@@ -62,20 +55,28 @@ public class CreateJobRequest {
 	public Duration keepaliveInterval;
 
 	/**
-	 * 0 to 3 values indicating what size of job to make.
-	 * <ol>
-	 * <li value="0">A single board job. (Default)
-	 * <li>A job with at least the given number of boards.
-	 * <li>An allocation that should incorporate the given number of triads of
-	 * boards in each direction. Be aware that this is in triads!
-	 * <li>A specific board, by X, Y, Z (<em>logical</em> coordinates).
-	 * </ol>
+	 * The number of boards to allocate. May be {@code null} to either use the
+	 * default (1) or to let one of the other selectors ({@link #dimensions},
+	 * {@link #board}) make the choice.
 	 */
-	// TODO: want to support create by XYZ, by CFB, and by board IP address
-	// There's really no need to stick to the limitations of the Python code
-	@Size(max = MAX_CREATE_DIMENSIONS,
-			message = "only up to 3 dimensions are supported")
-	public List<@PositiveOrZero(message = BAD_DIM) Integer> dimensions;
+	@Positive(message = "number of boards must be at least 1 if given")
+	public Integer numBoards;
+
+	/**
+	 * The dimensions of rectangle of boards to allocate. May be {@code null} to
+	 * let one of the other selectors ({@link #numBoards}, {@link #board}) make
+	 * the choice.
+	 */
+	@Valid
+	public Dimensions dimensions;
+
+	/**
+	 * The specific board to allocate. May be {@code null} to let one of the
+	 * other selectors ({@link #numBoards}, {@link #dimensions}) make the
+	 * choice.
+	 */
+	@Valid
+	public SpecificBoard board;
 
 	/**
 	 * Which machine to allocate on. This and {@link #tags} are mutually
@@ -112,6 +113,23 @@ public class CreateJobRequest {
 		return nonNull(machineName) && machineName.trim().isEmpty();
 	}
 
+	@JsonIgnore
+	@AssertTrue(message = "only at most one of num-boards, dimensions and "
+			+ "board should be given")
+	private boolean isOverLocated() {
+		int count = 0;
+		if (nonNull(numBoards)) {
+			count++;
+		}
+		if (nonNull(dimensions)) {
+			count++;
+		}
+		if (nonNull(board)) {
+			count++;
+		}
+		return count <= 1;
+	}
+
 	private static final Duration MIN_KEEPALIVE = Duration.parse("PT30S");
 
 	private static final Duration MAX_KEEPALIVE = Duration.parse("PT300S");
@@ -121,5 +139,75 @@ public class CreateJobRequest {
 	private boolean isKeepaliveIntervalInRange() {
 		return keepaliveInterval.compareTo(MAX_KEEPALIVE) <= 0
 				&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0;
+	}
+
+	/** Describes a request for an allocation of given dimensions. */
+	public static class Dimensions {
+		/** The width of the rectangle of boards to allocate. */
+		@Positive(message = "width must be at least 1")
+		public int width;
+
+		/** The height of the rectangle of boards to allocate. */
+		@Positive(message = "height must be at least 1")
+		public int height;
+	}
+
+	/** Describes a request for a specific board. */
+	public static class SpecificBoard {
+		/** The X triad coordinate of the board. */
+		@PositiveOrZero(message = "x must be at least 0")
+		public Integer x;
+
+		/** The Y triad coordinate of the board. */
+		@PositiveOrZero(message = "y must be at least 0")
+		public Integer y;
+
+		/** The Z triad coordinate of the board. */
+		@Min(value = 0, message = "z must be at least 0")
+		@Max(value = 2, message = "z must be at most 2")
+		public Integer z;
+
+		/** The physical cabinet number of the board. */
+		@PositiveOrZero(message = "cabinet must be at least 0")
+		public Integer cabinet;
+
+		/** The physical frame number of the board. */
+		@PositiveOrZero(message = "frame must be at least 0")
+		public Integer frame;
+
+		/** The physical board number of the board. */
+		@PositiveOrZero(message = "board must be at least 0")
+		public Integer board;
+
+		/** The IP address of the board. */
+		@IPAddress(message = "address must be an IP address")
+		public String address;
+
+		@JsonIgnore
+		private boolean isTriadValid() {
+			return nonNull(x) && nonNull(y) && nonNull(z);
+		}
+
+		@JsonIgnore
+		private boolean isPhysicalValid() {
+			return nonNull(cabinet) && nonNull(frame) && nonNull(board);
+		}
+
+		@JsonIgnore
+		private boolean isIPValid() {
+			return nonNull(address);
+		}
+
+		/**
+		 * Does this represent a valid way of identifying a board?
+		 *
+		 * @return Yes if at least one way of giving coordinates is valid.
+		 */
+		@JsonIgnore
+		@AssertTrue(message = "at least one way of identifying a board "
+				+ "must be given")
+		private boolean isSpecificBoardValid() {
+			return isTriadValid() || isPhysicalValid() || isIPValid();
+		}
 	}
 }

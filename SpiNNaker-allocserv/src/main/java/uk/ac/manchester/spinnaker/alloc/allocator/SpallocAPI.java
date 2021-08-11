@@ -154,9 +154,8 @@ public interface SpallocAPI {
 	 *
 	 * @param owner
 	 *            Who is making this job.
-	 * @param dimensions
-	 *            List of dimensions. At least one element. No more than three.
-	 *            No negative elements.
+	 * @param descriptor
+	 *            What sort of allocation is desired?
 	 * @param machineName
 	 *            The name of the machine the user wants to allocate on, or
 	 *            {@code null} if they want to select by tags.
@@ -176,9 +175,145 @@ public interface SpallocAPI {
 	 * @throws SQLException
 	 *             If anything goes wrong at the database level.
 	 */
-	Job createJob(String owner, List<Integer> dimensions, String machineName,
+	Job createJob(String owner, CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] originalRequest) throws SQLException;
+
+	/**
+	 * Describes what sort of request to create a job this is.
+	 *
+	 * @see CreateNumBoards
+	 * @see CreateDimensions
+	 * @see CreateBoard
+	 */
+	abstract class CreateDescriptor {
+		/** Only known subclasses permitted. */
+		private CreateDescriptor() {
+		}
+	}
+
+	/**
+	 * A request for a number of boards.
+	 */
+	final class CreateNumBoards extends CreateDescriptor {
+		/** The number of boards requested. */
+		public final int numBoards;
+
+		public CreateNumBoards(int numBoards) {
+			this.numBoards = numBoards;
+		}
+	}
+
+	/**
+	 * A request for a rectangle of boards.
+	 */
+	final class CreateDimensions extends CreateDescriptor {
+		/** Width requested, in boards. */
+		public final int width;
+
+		/** Height requested, in boards. */
+		public final int height;
+
+		public CreateDimensions(int width, int height) {
+			this.width = width;
+			this.height = height;
+		}
+	}
+
+	/**
+	 * A request for a specific board.
+	 */
+	final class CreateBoard extends CreateDescriptor {
+		static final class Triad {
+			private Triad(int x, int y, int z) {
+				this.x = x;
+				this.y = y;
+				this.z = z;
+			}
+
+			/** X coordinate. */
+			public final int x;
+
+			/** Y coordinate. */
+			public final int y;
+
+			/** Z coordinate. */
+			public final int z;
+		}
+
+		static final class Phys {
+			private Phys(int cabinet, int frame, int board) {
+				this.cabinet = cabinet;
+				this.frame = frame;
+				this.board = board;
+			}
+
+			/** Cabinet number. */
+			public final int cabinet;
+
+			/** Frame number. */
+			public final int frame;
+
+			/** Board number. */
+			public final int board;
+		}
+
+		/** The logical coordinates, or {@code null}. */
+		public final Triad triad;
+
+		/** The physical coordinates, or {@code null}. */
+		public final Phys physical;
+
+		/** The network coordinates, or {@code null}. */
+		public final String ip;
+
+		private CreateBoard(Triad triad, Phys physical, String ip) {
+			this.triad = triad;
+			this.physical = physical;
+			this.ip = ip;
+		}
+
+		/**
+		 * Create a request for a specific board.
+		 *
+		 * @param x
+		 *            The X coordinate of the board.
+		 * @param y
+		 *            The Y coordinate of the board.
+		 * @param z
+		 *            The Z coordinate of the board.
+		 * @return Descriptor
+		 */
+		public static CreateBoard triad(int x, int y, int z) {
+			return new CreateBoard(new Triad(x, y, z), null, null);
+		}
+
+		/**
+		 * Create a request for a specific board.
+		 *
+		 * @param cabinet
+		 *            The cabinet number of the board.
+		 * @param frame
+		 *            The frame number of the board.
+		 * @param board
+		 *            The board number of the board.
+		 * @return Descriptor
+		 */
+		public static CreateBoard physical(int cabinet, int frame, int board) {
+			return new CreateBoard(null, new Phys(cabinet, frame, board), null);
+		}
+
+		/**
+		 * Create a request for a specific board.
+		 *
+		 * @param ip
+		 *            The network address of the board.
+		 * @return Descriptor
+		 */
+		public static CreateBoard address(String ip) {
+			return new CreateBoard(null, null, ip);
+		}
+	}
 
 	/**
 	 * A thing that may be waited upon.

@@ -503,7 +503,7 @@ class DbTest {
 				assertEquals(0, q.getNumArguments());
 				assertSetEquals(
 						set("req_id", "job_id", "num_boards", "width", "height",
-								"x", "y", "z", "machine_id", "max_dead_boards",
+								"board_id", "machine_id", "max_dead_boards",
 								"max_height", "max_width", "job_state"),
 						q.getRowColumnNames());
 				assertFalse(q.call1().isPresent());
@@ -579,9 +579,9 @@ class DbTest {
 		@Test
 		void findLocation() throws SQLException {
 			try (Query q = query(c, findLocation)) {
-				assertEquals(4, q.getNumArguments());
+				assertEquals(2, q.getNumArguments());
 				assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
-				assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+				assertFalse(q.call1(NO_MACHINE, NO_BOARD).isPresent());
 			}
 		}
 
@@ -940,13 +940,12 @@ class DbTest {
 		}
 
 		@Test
-		void insertReqLocation() throws SQLException {
+		void insertReqBoard() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
-			try (Update u = update(c, INSERT_REQ_LOCATION)) {
-				assertEquals(4, u.getNumArguments());
-				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, 0, 0, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, -1));
+			try (Update u = update(c, INSERT_REQ_BOARD)) {
+				assertEquals(2, u.getNumArguments());
+				// No such job or board
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD));
 			}
 		}
 

@@ -241,13 +241,11 @@ public abstract class SQLQueries {
 
 	/** Create a request to allocate a specific board. */
 	@Parameter("job_id")
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("z")
+	@Parameter("board_id")
 	@GeneratesID
-	protected static final String INSERT_REQ_LOCATION =
-			"INSERT INTO job_request(job_id, x, y, z) "
-					+ "VALUES (:job_id, :x, :y, :z)";
+	protected static final String INSERT_REQ_BOARD =
+			"INSERT INTO job_request(job_id, board_id) "
+					+ "VALUES (:job_id, :board_id)";
 
 	/** Get the address of the BMP of the root board of the machine. */
 	@Parameter("machine_id")
@@ -1127,14 +1125,13 @@ public abstract class SQLQueries {
 	protected Resource findRectangle;
 
 	/**
-	 * Find an allocatable board at a specific physical location.
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
 	 *
 	 * @see AllocatorTask
 	 */
 	@Parameter("machine_id")
-	@Parameter("cabinet")
-	@Parameter("frame")
-	@Parameter("board")
+	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")

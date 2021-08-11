@@ -13,17 +13,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-WITH
-	args(machine_id, cabinet, frame, board) AS (
-		VALUES (:machine_id, :cabinet, :frame, :board))
 SELECT
 	x, y, z
-FROM args
-	JOIN boards
-	JOIN bmp
-	ON boards.bmp_id = bmp.bmp_id
-WHERE boards.machine_id = args.machine_id
-	AND boards.board_num = args.board
-	AND bmp.cabinet = args.cabinet
-	AND bmp.frame = args.frame
+FROM boards
+WHERE boards.machine_id = :machine_id
+	AND boards.board_id = :board_id
 	AND boards.may_be_allocated;

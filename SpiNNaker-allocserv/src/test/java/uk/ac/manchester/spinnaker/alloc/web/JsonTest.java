@@ -23,13 +23,11 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -68,29 +66,11 @@ class JsonTest {
 		return mapper.readValue(string, cls);
 	}
 
-	private static UriInfo stubBuilder(String base) {
-		URI uri = URI.create(base);
-		UriBuilder ub = new UriBuilderImpl(uri);
-		return new UriInfo() {
-			@Override
-			public String getPath() {
-				return null;
-			}
+	private static UriInfo stubBuilder(String base) throws URISyntaxException {
+		URI uri = new URI(base);
 
-			@Override
-			public String getPath(boolean decode) {
-				return null;
-			}
-
-			@Override
-			public List<PathSegment> getPathSegments() {
-				return null;
-			}
-
-			@Override
-			public List<PathSegment> getPathSegments(boolean decode) {
-				return null;
-			}
+		return new StubUriInfo() {
+			UriBuilder ub = new UriBuilderImpl(uri);
 
 			@Override
 			public URI getRequestUri() {
@@ -120,53 +100,6 @@ class JsonTest {
 			@Override
 			public UriBuilder getBaseUriBuilder() {
 				return ub;
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getPathParameters() {
-				return null;
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getPathParameters(
-					boolean decode) {
-				return null;
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getQueryParameters() {
-				return null;
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getQueryParameters(
-					boolean decode) {
-				return null;
-			}
-
-			@Override
-			public List<String> getMatchedURIs() {
-				return null;
-			}
-
-			@Override
-			public List<String> getMatchedURIs(boolean decode) {
-				return null;
-			}
-
-			@Override
-			public List<Object> getMatchedResources() {
-				return null;
-			}
-
-			@Override
-			public URI resolve(URI uri) {
-				return null;
-			}
-
-			@Override
-			public URI relativize(URI uri) {
-				return null;
 			}
 		};
 	}
@@ -199,8 +132,8 @@ class JsonTest {
 		}
 
 		@Test
-		void testWhereIsResponse()
-				throws IOException, JSONException, SQLException {
+		void testWhereIsResponse() throws IOException, JSONException,
+				SQLException, URISyntaxException {
 			BoardLocation loc = new BoardLocation() {
 				@Override
 				public ChipLocation getBoardChip() {
@@ -277,7 +210,7 @@ class JsonTest {
 		void testCreateJobRequestComplex() throws IOException {
 			String obj =
 					"{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
-							+ "\"dimensions\": [1, 2, 3], "
+							+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
 							+ "\"tags\": [\"a\", \"b\"], "
 							+ "\"max-dead-boards\": 77, "
 							+ "\"machine-name\": \"gorp\"}";
@@ -287,8 +220,7 @@ class JsonTest {
 			assertNotNull(cjr.keepaliveInterval);
 			assertEquals(30, cjr.keepaliveInterval.getSeconds());
 			assertNotNull(cjr.dimensions);
-			assertEquals(3, cjr.dimensions.size());
-			assertEquals(1, cjr.dimensions.get(0));
+			assertEquals(1, cjr.dimensions.width);
 			assertNotNull(cjr.tags);
 			assertEquals(2, cjr.tags.size());
 			assertEquals("a", cjr.tags.get(0));

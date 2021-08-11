@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 
 /**
  * Manages user quotas.
@@ -42,6 +43,9 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 public class QuotaManager extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
+
+	@Autowired
+	private ServiceMasterControl control;
 
 	/**
 	 * Can the user create another job at this point? If not, they're currently
@@ -61,25 +65,31 @@ public class QuotaManager extends SQLQueries {
 		try (Connection c = db.getConnection();
 				Query getQuota = query(c, GET_USER_QUOTA);
 				Query getCurrentUsage = query(c, GET_CURRENT_USAGE)) {
-			Integer quota = null;
-			int userId = 0;
-			for (Row row : getQuota.call(machineId, user)) {
-				quota = row.getInteger("quota");
-				userId = row.getInt("user_id");
-			}
-			if (quota == null) {
-				return true;
-			}
-			// Quota is defined; check if current usage exceeds it
-			if (quota > 0) {
-				for (Row row : getCurrentUsage.call(machineId, userId)) {
-					quota -= row.getInt("current_usage");
-					break;
-				}
-			}
-			// If board-seconds are left, we're good to go
-			return (quota > 0);
+			return transaction(c, () -> mayCreateJob(machineId, user, getQuota,
+					getCurrentUsage));
 		}
+	}
+
+	private boolean mayCreateJob(int machineId, String user, Query getQuota,
+			Query getCurrentUsage) throws SQLException {
+		Integer quota = null;
+		int userId = 0;
+		for (Row row : getQuota.call(machineId, user)) {
+			quota = row.getInteger("quota");
+			userId = row.getInt("user_id");
+		}
+		if (quota == null) {
+			return true;
+		}
+		// Quota is defined; check if current usage exceeds it
+		if (quota > 0) {
+			for (Row row : getCurrentUsage.call(machineId, userId)) {
+				quota -= row.getInt("current_usage");
+				break;
+			}
+		}
+		// If board-seconds are left, we're good to go
+		return (quota > 0);
 	}
 
 	/**
@@ -99,15 +109,21 @@ public class QuotaManager extends SQLQueries {
 			throws SQLException {
 		try (Connection c = db.getConnection();
 				Query getUsageAndQuota = query(c, GET_JOB_USAGE_AND_QUOTA)) {
-			for (Row row : getUsageAndQuota.call(machineId, jobId)) {
-				int usage = row.getInt("usage");
-				int quota = row.getInt("quota");
-				if (usage > quota) {
-					return false;
-				}
-			}
-			return true;
+			return transaction(c, () -> mayLetJobContinue(machineId, jobId,
+					getUsageAndQuota));
 		}
+	}
+
+	private boolean mayLetJobContinue(int machineId, int jobId,
+			Query getUsageAndQuota) throws SQLException {
+		for (Row row : getUsageAndQuota.call(machineId, jobId)) {
+			int usage = row.getInt("usage");
+			int quota = row.getInt("quota");
+			if (usage > quota) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -118,18 +134,30 @@ public class QuotaManager extends SQLQueries {
 	 */
 	@Scheduled(cron = "0 0 * * * *")
 	public void consolidateQuotas() throws SQLException {
+		if (control.isPaused()) {
+			return;
+		}
+		// Split off for testability
+		doConsolidate();
+	}
+
+	final void doConsolidate() throws SQLException {
 		try (Connection c = db.getConnection();
 				Query getConsoldationTargets =
 						query(c, GET_CONSOLIDATION_TARGETS);
 				Update decrementQuota = update(c, DECREMENT_QUOTA);
 				Update markConsolidated = update(c, MARK_CONSOLIDATED)) {
-			transaction(c, () -> {
-				for (Row row : getConsoldationTargets.call()) {
-					decrementQuota.call(row.getObject("usage"),
-							row.getInt("quota_id"));
-					markConsolidated.call(row.getInt("job_id"));
-				}
-			});
+			transaction(c, () -> consolidate(getConsoldationTargets,
+					decrementQuota, markConsolidated));
+		}
+	}
+
+	private void consolidate(Query getConsoldationTargets,
+			Update decrementQuota, Update markConsolidated)
+			throws SQLException {
+		for (Row row : getConsoldationTargets.call()) {
+			decrementQuota.call(row.getObject("usage"), row.getInt("quota_id"));
+			markConsolidated.call(row.getInt("job_id"));
 		}
 	}
 }

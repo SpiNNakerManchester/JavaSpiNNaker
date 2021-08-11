@@ -202,9 +202,7 @@ CREATE TABLE IF NOT EXISTS job_request (
 	num_boards INTEGER CHECK (num_boards > 0),
 	width INTEGER CHECK (width > 0),
 	height INTEGER CHECK (height > 0),
-	x INTEGER CHECK (x >= 0),
-	y INTEGER CHECK (y >= 0),
-	z INTEGER CHECK (z >= 0),
+	board_id INTEGER REFERENCES boards(board_id) ON DELETE CASCADE,
 	max_dead_boards INTEGER NOT NULL DEFAULT (0) CHECK (max_dead_boards >= 0)
 );
 

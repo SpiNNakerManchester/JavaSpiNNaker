@@ -85,6 +85,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Autowired
 	private DatabaseEngine db;
 
+	@Autowired
+	private ServiceMasterControl control;
+
 	@Value("${spalloc.auth.add-dummy-user:true}")
 	private boolean addDummyUser;
 
@@ -405,6 +408,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Scheduled(fixedDelay = INTER_UNLOCK_DELAY)
 	public void unlockLockedUsers() throws SQLException {
 		log.debug("running user unlock task");
+		if (!control.isPaused()) {
+			doUnlock();
+		}
+	}
+
+	private void doUnlock() throws SQLException {
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
 			for (Row row : unlock.call(lockInterval)) {

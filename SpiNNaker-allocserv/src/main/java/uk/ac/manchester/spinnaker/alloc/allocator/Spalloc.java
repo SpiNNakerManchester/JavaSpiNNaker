@@ -78,12 +78,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 public class Spalloc extends SQLQueries implements SpallocAPI {
 	private static final Logger log = getLogger(Spalloc.class);
 
-	private static final int N_COORDS_COUNT = 1;
-
-	private static final int N_COORDS_RECTANGLE = 2;
-
-	private static final int N_COORDS_LOCATION = 3;
-
 	@Autowired
 	private DatabaseEngine db;
 
@@ -361,17 +355,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Job createJob(String owner, List<Integer> dimensions,
+	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] req) throws SQLException {
-		/*
-		 * TODO convert dimensions into something better
-		 *
-		 * We should allow allocation by anything that supports the
-		 * identification of a unique board (as well as by rectangle sizes and
-		 * board counts). Maybe also allow allocation that requires a specific
-		 * board to be present?
-		 */
 		return db.execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new SQLException("no such user: " + owner));
@@ -392,7 +378,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 
 			// Ask the allocator engine to do the allocation
-			insertRequest(conn, m, id, dimensions, maxDeadBoards);
+			insertRequest(conn, m, id, descriptor, maxDeadBoards);
 			return getJob(id, conn);
 		});
 	}
@@ -410,42 +396,67 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private static final int TRIAD_SIZE = 3;
 
 	private void insertRequest(Connection conn, MachineImpl machine, int id,
-			List<Integer> dims, Integer numDeadBoards) throws SQLException {
-		switch (dims.size()) {
-		case N_COORDS_COUNT:
+			CreateDescriptor descriptor, Integer numDeadBoards)
+			throws SQLException {
+		if (descriptor instanceof CreateNumBoards) {
 			// Request by number of boards
-			if (machine.getArea() < dims.get(0)) {
+			CreateNumBoards nb = (CreateNumBoards) descriptor;
+			if (machine.getArea() < nb.numBoards) {
 				throw new IllegalArgumentException(
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_N_BOARDS)) {
-				ps.call(id, dims.get(0), numDeadBoards);
+				ps.call(id, nb.numBoards, numDeadBoards);
 			}
-			break;
-		case N_COORDS_RECTANGLE:
+		} else if (descriptor instanceof CreateDimensions) {
 			// Request by specific size IN BOARDS
-			if (machine.getArea() < dims.get(0)
-					* dims.get(1)) {
+			CreateDimensions d = (CreateDimensions) descriptor;
+			if (machine.getArea() < d.width * d.height) {
 				throw new IllegalArgumentException(
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
-				ps.call(id, dims.get(0), dims.get(1), numDeadBoards);
+				ps.call(id, d.width, d.height, numDeadBoards);
 			}
-			break;
-		case N_COORDS_LOCATION:
-			// Request by specific location
-			if (machine.width < dims.get(0) || machine.height < dims.get(1)
-					|| TRIAD_SIZE <= dims.get(2)) {
+		} else {
+			/*
+			 * Request by specific location; resolve to board ID now, as that
+			 * doesn't depend on whether the board is currently in use.
+			 */
+			CreateBoard b = (CreateBoard) descriptor;
+			int boardId = -1;
+			if (nonNull(b.triad)) {
+				try (Query find = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
+					for (Row row : find.call(machine.name, b.triad.x, b.triad.y,
+							b.triad.z)) {
+						boardId = row.getInt("board_id");
+						break;
+					}
+				}
+			} else if (nonNull(b.physical)) {
+				try (Query find = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
+					for (Row row : find.call(machine.name, b.physical.cabinet,
+							b.physical.frame, b.physical.board)) {
+						boardId = row.getInt("board_id");
+						break;
+					}
+				}
+			} else {
+				try (Query find =
+						query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+					for (Row row : find.call(machine.name, b.ip)) {
+						boardId = row.getInt("board_id");
+						break;
+					}
+				}
+			}
+			if (boardId < 0) {
 				throw new IllegalArgumentException(
-						"request cannot fit on machine");
+						"request does not identify an existing board");
 			}
-			try (Update ps = update(conn, INSERT_REQ_LOCATION)) {
-				ps.call(id, dims.get(0), dims.get(1), dims.get(2));
+			try (Update ps = update(conn, INSERT_REQ_BOARD)) {
+				ps.call(id, boardId);
 			}
-			break;
-		default:
-			throw new Error("should be unreachable");
 		}
 	}
 
