@@ -793,7 +793,7 @@ class DbTest {
 		void getUserAuthorities() throws SQLException {
 			try (Query q = query(c, GET_USER_AUTHORITIES)) {
 				assertEquals(1, q.getNumArguments());
-				assertSetEquals(set("trust_level", "password"),
+				assertSetEquals(set("trust_level", "has_password"),
 						q.getRowColumnNames());
 				assertFalse(q.call1(NO_USER).isPresent());
 			}

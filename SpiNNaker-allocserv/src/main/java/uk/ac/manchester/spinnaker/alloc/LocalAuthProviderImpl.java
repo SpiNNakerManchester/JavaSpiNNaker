@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -55,9 +56,10 @@ import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.SimpleGrantedAuthority;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 
 /**
@@ -236,8 +238,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 			loginFailure = query(conn, MARK_LOGIN_FAILURE);
 		}
 
-		void transact(Transacted code) throws SQLException {
-			transaction(conn, code);
+		<T> T transact(TransactedWithResult<T> code) throws SQLException {
+			return transaction(conn, code);
 		}
 
 		@Override
@@ -257,16 +259,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *            Who are we fetching for?
 		 * @return The DB row describing them. Includes {@code user_id},
 		 *         {@code disabled} and {@code locked}.
-		 * @throws AuthenticationException
-		 *             If there is no such user.
 		 * @throws SQLException
 		 *             If DB access fails.
 		 */
-		Row getUser(String username)
-				throws AuthenticationException, SQLException {
-			return getUserBlocked.call1(username)
-					.orElseThrow(() -> new UsernameNotFoundException(
-							"no such user: " + username));
+		Optional<Row> getUser(String username) throws SQLException {
+			return getUserBlocked.call1(username);
 		}
 
 		/**
@@ -274,22 +271,18 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *
 		 * @param userId
 		 *            Who are we fetching for?
-		 * @return The DB row describing them. Includes {@code password} and
+		 * @return The DB row describing them. Includes {@code has_password} and
 		 *         {@code trust_level}.
-		 * @throws AuthenticationException
-		 *             If there is no such user.
 		 * @throws SQLException
 		 *             If DB access fails.
 		 */
-		Row getUserAuthorities(int userId)
-				throws AuthenticationException, SQLException {
+		Row getUserAuthorities(int userId) throws SQLException {
 			/*
-			 * I believe the BadCredentialsException can never be thrown; caller
+			 * I believe the NoSuchElementException can never be thrown; caller
 			 * checks the password, we just got the userId from the DB, and
 			 * we're in a transaction so the world won't change under our feet.
 			 */
-			return userAuthorities.call1(userId).orElseThrow(
-					() -> new BadCredentialsException("bad password"));
+			return userAuthorities.call1(userId).get();
 		}
 
 		boolean isUserPassMatched(int userId, String password)
@@ -347,6 +340,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 *            Filled out with permissions.
 	 * @param queries
 	 *            How to access the database.
+	 * @return Whether the user is known. If {@code false}, the database cannot
+	 *         authenticate the user and some other auth method should be tried.
 	 * @throws SQLException
 	 *             If DB access fails.
 	 * @throws UsernameNotFoundException
@@ -358,10 +353,15 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 * @throws BadCredentialsException
 	 *             If the password is invalid.
 	 */
-	private void authenticateAgainstDB(String username, String password,
+	private boolean authenticateAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities,
 			LocalAuthProviderImpl.AuthQueries queries) throws SQLException {
-		Row userInfo = queries.getUser(username);
+		Optional<Row> r = queries.getUser(username);
+		if (!r.isPresent()) {
+			// No such user
+			return false;
+		}
+		Row userInfo = r.get();
 		int userId = userInfo.getInt("user_id");
 		if (userInfo.getBoolean("disabled")) {
 			throw new DisabledException("account is disabled");
@@ -372,6 +372,13 @@ public class LocalAuthProviderImpl extends SQLQueries
 				throw new LockedException("account is locked");
 			}
 			Row authInfo = queries.getUserAuthorities(userId);
+			if (!authInfo.getBoolean("has_password")) {
+				/*
+				 * We know this user, but they can't use this authentication
+				 * method. They'll probably have to use OIDC.
+				 */
+				return false;
+			}
 			if (!queries.isUserPassMatched(userId, password)) {
 				throw new BadCredentialsException("bad password");
 			}
@@ -379,19 +386,20 @@ public class LocalAuthProviderImpl extends SQLQueries
 					authInfo.getEnum("trust_level", TrustLevel.class);
 			switch (trust) {
 			case ADMIN:
-				authorities.add(() -> GRANT_ADMIN);
+				authorities.add(new SimpleGrantedAuthority(GRANT_ADMIN));
 				// fallthrough
 			case USER:
-				authorities.add(() -> GRANT_USER);
+				authorities.add(new SimpleGrantedAuthority(GRANT_USER));
 				// fallthrough
 			case READER:
-				authorities.add(() -> GRANT_READER);
+				authorities.add(new SimpleGrantedAuthority(GRANT_READER));
 				// fallthrough
 			default:
 				// Do nothing; no grants of authority made
 			}
 			queries.noteLoginSuccessForUser(userId);
 			log.info("login success for {} at level {}", username, trust);
+			return true;
 		} catch (AuthenticationException e) {
 			queries.noteLoginFailureForUser(userId, username);
 			log.info("login failure for {}", username, e);

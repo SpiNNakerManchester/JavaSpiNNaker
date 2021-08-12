@@ -910,12 +910,11 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("user_id")
 	@ResultColumn("trust_level")
-	@ResultColumn("password")
+	@ResultColumn("has_password")
 	@SingleRowResult
-	protected static final String GET_USER_AUTHORITIES =
-			"SELECT trust_level, encrypted_password AS password FROM user_info "
-					+ "WHERE user_id = :user_id "
-					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+	protected static final String GET_USER_AUTHORITIES = "SELECT trust_level, "
+			+ "encrypted_password IS NOT NULL AS has_password FROM user_info "
+			+ "WHERE user_id = :user_id LIMIT 1";
 
 	/**
 	 * Note the login success.
@@ -1047,7 +1046,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String IS_USER_PASS_MATCHED =
 			"SELECT match_password(:password, encrypted_password) AS matches "
-					+ "FROM user_info WHERE user_id = :user_id LIMIT 1";
+					+ "FROM user_info WHERE user_id = :user_id AND "
+					+ "encrypted_password IS NOT NULL LIMIT 1";
 
 	/**
 	 * Set a user's password. Passwords are either encrypted (with bcrypt) or

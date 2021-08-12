@@ -313,6 +313,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final String BLAND_AUTH_MSG = "computer says no";
 
 	/**
+	 * Contains a single basic role grant.
+	 */
+	static class SimpleGrantedAuthority implements GrantedAuthority {
+		private static final long serialVersionUID = -668405047103939708L;
+
+		private String role;
+
+		SimpleGrantedAuthority(String role) {
+			this.role = role;
+		}
+
+		@Override
+		public String getAuthority() {
+			return role;
+		}
+	}
+
+	/**
 	 * Make access denied (from a {@code @}{@link PreAuthorize} check) not fill
 	 * the log with huge stack traces.
 	 */
@@ -615,13 +633,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				return name;
 			}
 
-			private GrantedAuthority mapper(String role) {
-				return () -> role;
-			}
-
 			@Override
 			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return authorities.stream().map(this::mapper).collect(toList());
+				return authorities.stream().map(SimpleGrantedAuthority::new)
+						.collect(toList());
 			}
 
 			@Override
