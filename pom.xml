@@ -26,9 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.release>8</maven.compiler.release>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -677,6 +674,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<activation>
 				<jdk>[1.9,)</jdk>
 			</activation>
+			<properties>
+				<maven.compiler.release>8</maven.compiler.release>
+			</properties>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -707,10 +707,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</profile>
 		<profile>
 			<id>JDK8</id>
-			<!-- work around a stupid JDK bug -->
 			<activation>
 				<jdk>1.8</jdk>
 			</activation>
+			<properties>
+				<maven.compiler.source>1.8</maven.compiler.source>
+				<maven.compiler.target>1.8</maven.compiler.target>
+			</properties>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -718,6 +721,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<configuration>
+								<!-- work around a stupid JDK bug -->
 								<doclint>none</doclint>
 							</configuration>
 						</plugin>
