@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
@@ -55,7 +56,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
-	// TODO add priority mechanism so small jobs can't lock out large ones
 	/**
 	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
 	 */
@@ -97,6 +97,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Autowired
 	private QuotaManager quotaManager;
+
+	@Value("${spalloc.allocator.importance-span:1000}")
+	private int importanceSpan;
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -160,11 +163,20 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean allocate(Connection conn) throws SQLException {
-		try (Query getTasks = query(conn, getAllocationTasks);
+		try (Update bumpImportance = update(conn, BUMP_IMPORTANCE);
+				Query getTasks = query(conn, getAllocationTasks);
 				Update delete = update(conn, DELETE_TASK)) {
+			int maxImportance = -1;
 			boolean changed = false;
 			for (Row row : getTasks.call()) {
 				int id = row.getInt("req_id");
+				int importance = row.getInt("importance");
+				if (importance > maxImportance) {
+					maxImportance = importance;
+				} else if (importance < maxImportance - importanceSpan) {
+					// Too much of a span
+					continue;
+				}
 				JobState currentState =
 						row.getEnum("job_state", JobState.class);
 				boolean handled = true;
@@ -184,6 +196,12 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 					}
 				}
 			}
+			/*
+			 * Those tasks which weren't allocated get their importance bumped
+			 * so they get considered with higher priority when the allocator
+			 * runs next time.
+			 */
+			bumpImportance.call();
 			return changed;
 		}
 	}

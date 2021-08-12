@@ -203,8 +203,12 @@ CREATE TABLE IF NOT EXISTS job_request (
 	width INTEGER CHECK (width > 0),
 	height INTEGER CHECK (height > 0),
 	board_id INTEGER REFERENCES boards(board_id) ON DELETE CASCADE,
-	max_dead_boards INTEGER NOT NULL DEFAULT (0) CHECK (max_dead_boards >= 0)
+	max_dead_boards INTEGER NOT NULL DEFAULT (0) CHECK (max_dead_boards >= 0),
+	importance INTEGER NOT NULL DEFAULT (0),
+	priority INTEGER NOT NULL DEFAULT (1)
 );
+CREATE INDEX IF NOT EXISTS job_request_importance ON job_request(
+	importance DESC, job_id ASC);
 
 CREATE TABLE IF NOT EXISTS pending_changes (
     change_id INTEGER PRIMARY KEY AUTOINCREMENT,

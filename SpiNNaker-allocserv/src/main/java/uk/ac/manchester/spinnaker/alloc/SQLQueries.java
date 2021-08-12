@@ -224,28 +224,39 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@Parameter("num_boards")
 	@Parameter("max_dead_boards")
+	@Parameter("priority")
 	@GeneratesID
 	protected static final String INSERT_REQ_N_BOARDS =
-			"INSERT INTO job_request(job_id, num_boards, max_dead_boards) "
-					+ "VALUES (:job_id, :num_boards, :max_dead_boards)";
+			"INSERT INTO job_request(job_id, num_boards, max_dead_boards, "
+					+ "priority) "
+					+ "VALUES (:job_id, :num_boards, :max_dead_boards, "
+					+ ":priority)";
 
 	/** Create a request to allocate a rectangle of boards. */
 	@Parameter("job_id")
 	@Parameter("width")
 	@Parameter("height")
 	@Parameter("max_dead_boards")
+	@Parameter("priority")
 	@GeneratesID
 	protected static final String INSERT_REQ_SIZE =
-			"INSERT INTO job_request(job_id, width, height, max_dead_boards) "
-					+ "VALUES (:job_id, :width, :height, :max_dead_boards)";
+			"INSERT INTO job_request(job_id, width, height, max_dead_boards, "
+					+ "priority) "
+					+ "VALUES (:job_id, :width, :height, :max_dead_boards, "
+					+ ":priority)";
 
 	/** Create a request to allocate a specific board. */
 	@Parameter("job_id")
 	@Parameter("board_id")
+	@Parameter("priority")
 	@GeneratesID
 	protected static final String INSERT_REQ_BOARD =
-			"INSERT INTO job_request(job_id, board_id) "
-					+ "VALUES (:job_id, :board_id)";
+			"INSERT INTO job_request(job_id, board_id, priority) "
+					+ "VALUES (:job_id, :board_id, :priority)";
+
+	/** Increases the importance of a job. */
+	protected static final String BUMP_IMPORTANCE =
+			"UPDATE job_request SET importance = importance + priority";
 
 	/** Get the address of the BMP of the root board of the machine. */
 	@Parameter("machine_id")
@@ -1394,6 +1405,7 @@ public abstract class SQLQueries {
 	@ResultColumn("max_dead_boards")
 	@ResultColumn("max_width")
 	@ResultColumn("max_height")
+	@ResultColumn("importance")
 	@Value("classpath:queries/get_allocation_tasks.sql")
 	protected Resource getAllocationTasks;
 }

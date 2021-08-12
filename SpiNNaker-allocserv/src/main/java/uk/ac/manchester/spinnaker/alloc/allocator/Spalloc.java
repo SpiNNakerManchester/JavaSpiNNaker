@@ -41,6 +41,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +90,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Autowired
 	private QuotaManager quotaManager;
+
+	@Value("${spalloc.allocator.priority-scale.size:1.0}")
+	private float sizePriorityScale;
+
+	@Value("${spalloc.allocator.priority-scale.dimensions:1.5}")
+	private float dimensionsPriorityScale;
+
+	@Value("${spalloc.allocator.priority-scale.specific-board:25.0}")
+	private float specificPriorityScale;
 
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
@@ -406,7 +416,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_N_BOARDS)) {
-				ps.call(id, nb.numBoards, numDeadBoards);
+				int priority = (int) (nb.numBoards * sizePriorityScale);
+				ps.call(id, nb.numBoards, numDeadBoards, priority);
 			}
 		} else if (descriptor instanceof CreateDimensions) {
 			// Request by specific size IN BOARDS
@@ -416,7 +427,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
-				ps.call(id, d.width, d.height, numDeadBoards);
+				int priority = (int) (d.width * d.height
+						* dimensionsPriorityScale);
+				ps.call(id, d.width, d.height, numDeadBoards, priority);
 			}
 		} else {
 			/*
@@ -455,7 +468,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request does not identify an existing board");
 			}
 			try (Update ps = update(conn, INSERT_REQ_BOARD)) {
-				ps.call(id, boardId);
+				int priority = (int) specificPriorityScale;
+				ps.call(id, boardId, priority);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc;
 import static java.time.Instant.now;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
@@ -32,11 +33,9 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
@@ -535,6 +534,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		/** What is the name of the user? */
 		public final String name;
 
+		private List<String> authorities = new ArrayList<>();
+
+		private static final String[] STDAUTH = {
+			GRANT_ADMIN, GRANT_READER, GRANT_USER
+		};
+
 		/**
 		 * Build a permit.
 		 *
@@ -542,9 +547,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The originating security context.
 		 */
 		public Permit(javax.ws.rs.core.SecurityContext context) {
-			// TODO which version is the right one?
-			admin = context.isUserInRole("ADMIN")
-					|| context.isUserInRole(GRANT_ADMIN);
+			for (String role : STDAUTH) {
+				if (context.isUserInRole(role)) {
+					authorities.add(role);
+				}
+			}
+			admin = authorities.contains(GRANT_ADMIN);
 			name = context.getUserPrincipal().getName();
 		}
 
@@ -555,8 +563,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The originating security context.
 		 */
 		public Permit(SecurityContext context) {
-			admin = context.getAuthentication().getAuthorities().stream()
-					.anyMatch(ga -> ga.getAuthority().equals(GRANT_ADMIN));
+			for (GrantedAuthority ga : context.getAuthentication()
+					.getAuthorities()) {
+				authorities.add(ga.getAuthority());
+			}
+			admin = authorities.contains(GRANT_ADMIN);
 			name = context.getAuthentication().getName();
 		}
 
@@ -572,8 +583,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public boolean unveilFor(String owner) {
 			return admin || owner.equals(name);
 		}
-
-		// TODO extend Permit with authority set
 
 		/**
 		 * Mark the current thread as having permission to access objects. Used
@@ -606,14 +615,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				return name;
 			}
 
+			private GrantedAuthority mapper(String role) {
+				return () -> role;
+			}
+
 			@Override
 			public Collection<? extends GrantedAuthority> getAuthorities() {
-				Set<GrantedAuthority> s = Collections.emptySet();
-				if (admin) {
-					// TODO extend Permit with authority set
-					s = Collections.singleton(() -> "ROLE_ADMIN");
-				}
-				return s;
+				return authorities.stream().map(this::mapper).collect(toList());
 			}
 
 			@Override

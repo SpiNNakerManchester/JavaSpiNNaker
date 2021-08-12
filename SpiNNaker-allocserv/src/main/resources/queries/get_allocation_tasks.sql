@@ -25,9 +25,10 @@ SELECT
 	job_request.max_dead_boards,
 	machines.width AS max_width,
 	machines.height AS max_height,
-	jobs.job_state AS job_state
+	jobs.job_state AS job_state,
+	job_request.importance
 FROM
 	job_request
 	JOIN jobs ON job_request.job_id = jobs.job_id
 	JOIN machines ON jobs.machine_id = machines.machine_id
-ORDER BY req_id;
+ORDER BY importance DESC, req_id ASC;

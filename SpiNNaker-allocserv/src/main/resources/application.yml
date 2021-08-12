@@ -57,6 +57,19 @@ cxf:
 spalloc:
   # Where's the database?
   database-path: spalloc.sqlite3
+  allocator:
+    # What span of importance will be considered when allocating jobs
+    importance-span: 10000
+    # Priority is the rate at which importance is accrued
+    priority-scale:
+      # Priority scaling factor for jobs specified by number of boards
+      # Will be multiplied by the number of boards
+      size: 1.0
+      # Priority scaling factor for jobs specified by rectangular dimensions
+      # Will be multiplied by the area of the allocation
+      dimensions: 1.5
+      # Priority scaling factor for jobs requesting a specific board
+      specific-board: 65.0
   auth:
     # Support HTTP Basic Authentication (bad for browsers, OK for code)
     basic: true

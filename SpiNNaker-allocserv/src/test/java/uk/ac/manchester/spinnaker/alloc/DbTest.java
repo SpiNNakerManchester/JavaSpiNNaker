@@ -501,10 +501,9 @@ class DbTest {
 		void getAllocationTasks() throws SQLException {
 			try (Query q = query(c, getAllocationTasks)) {
 				assertEquals(0, q.getNumArguments());
-				assertSetEquals(
-						set("req_id", "job_id", "num_boards", "width", "height",
-								"board_id", "machine_id", "max_dead_boards",
-								"max_height", "max_width", "job_state"),
+				assertSetEquals(set("req_id", "job_id", "num_boards", "width",
+						"height", "board_id", "machine_id", "max_dead_boards",
+						"max_height", "max_width", "job_state", "importance"),
 						q.getRowColumnNames());
 				assertFalse(q.call1().isPresent());
 			}
@@ -921,10 +920,10 @@ class DbTest {
 		void insertReqNBoards() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, INSERT_REQ_N_BOARDS)) {
-				assertEquals(3, u.getNumArguments());
+				assertEquals(4, u.getNumArguments());
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, 1, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0));
+				assertThrowsFK(() -> u.keys(NO_JOB, 1, 0, 0));
+				assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0, 0));
 			}
 		}
 
@@ -932,10 +931,10 @@ class DbTest {
 		void insertReqSize() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, INSERT_REQ_SIZE)) {
-				assertEquals(4, u.getNumArguments());
+				assertEquals(5, u.getNumArguments());
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0));
-				assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0));
+				assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0, 0));
+				assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0, 0));
 			}
 		}
 
@@ -943,9 +942,9 @@ class DbTest {
 		void insertReqBoard() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, INSERT_REQ_BOARD)) {
-				assertEquals(2, u.getNumArguments());
+				assertEquals(3, u.getNumArguments());
 				// No such job or board
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD));
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0));
 			}
 		}
 
@@ -1009,6 +1008,16 @@ class DbTest {
 			try (Update u = update(c, SET_STATE_PENDING)) {
 				assertEquals(3, u.getNumArguments());
 				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+			}
+		}
+
+		@Test
+		void bumpImportance() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, BUMP_IMPORTANCE)) {
+				assertEquals(0, u.getNumArguments());
+				// table should be empty
+				assertEquals(0, u.call());
 			}
 		}
 
