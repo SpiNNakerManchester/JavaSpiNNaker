@@ -972,11 +972,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 			final Query findBoardNet;
 
+			final Update insertReport;
+
 			BoardReportSQL(Connection conn) throws SQLException {
 				findBoardByChip = query(conn, findBoardByJobChip);
 				findBoardByTriad = query(conn, findBoardByLogicalCoords);
 				findBoardPhys = query(conn, findBoardByPhysicalCoords);
 				findBoardNet = query(conn, findBoardByIPAddress);
+
+				insertReport = update(conn, INSERT_BOARD_REPORT);
 			}
 
 			@Override
@@ -985,19 +989,23 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				findBoardByTriad.close();
 				findBoardPhys.close();
 				findBoardNet.close();
+				insertReport.close();
 			}
 		}
 
 		@Override
-		public String reportIssue(IssueReportRequest reqBody)
+		public String reportIssue(IssueReportRequest reqBody, Permit permit)
 				throws SQLException {
 			try (Connection conn = db.getConnection();
 					BoardReportSQL q = new BoardReportSQL(conn)) {
 				return transaction(conn, () -> {
+					int userId = getUser(conn, permit.name)
+							.orElseThrow(() -> new SQLException(
+									"no such user: " + permit.name));
 					int acted = 0;
 					for (ReportedBoard board : reqBody.boards) {
 						int boardId = getJobBoardForReport(q, board);
-						if (addIssueReport(q, boardId, reqBody.issue)) {
+						if (addIssueReport(q, boardId, reqBody.issue, userId)) {
 							acted++;
 						}
 					}
@@ -1076,18 +1084,21 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		/**
 		 * Record a reported issue with a board.
 		 *
-		 * @param q
+		 * @param u
 		 *            How to touch the DB
 		 * @param boardId
-		 *            What board has the issue
+		 *            What board has the issue?
 		 * @param issue
-		 *            What is the issue
+		 *            What is the issue?
+		 * @param userId
+		 *            Who is doing the report?
 		 * @return Whether action has been taken
 		 * @throws SQLException
 		 *             If access fails
 		 */
-		private boolean addIssueReport(BoardReportSQL q, int boardId,
-				String issue) throws SQLException {
+		private boolean addIssueReport(BoardReportSQL u, int boardId,
+				String issue, int userId) throws SQLException {
+			u.insertReport.call(boardId, id, issue, userId);
 			// FIXME implement this
 			return false;
 		}

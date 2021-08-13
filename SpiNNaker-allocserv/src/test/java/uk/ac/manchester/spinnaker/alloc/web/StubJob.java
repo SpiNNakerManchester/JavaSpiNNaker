@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Optional;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
@@ -120,6 +121,12 @@ public class StubJob implements SpallocAPI.Job {
 
 	@Override
 	public Optional<Integer> getDepth() throws SQLException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String reportIssue(IssueReportRequest reqBody, Permit permit)
+			throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 }

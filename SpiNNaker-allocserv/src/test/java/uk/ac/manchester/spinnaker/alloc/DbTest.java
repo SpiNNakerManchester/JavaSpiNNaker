@@ -1277,5 +1277,14 @@ class DbTest {
 				assertEquals(0, u.call(NO_USER, 0));
 			}
 		}
+
+		@Test
+		void insertBoardReport() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, INSERT_BOARD_REPORT)) {
+				assertEquals(4, u.getNumArguments());
+				assertThrowsFK(() -> u.call(NO_BOARD, NO_JOB, "gorp", NO_USER));
+			}
+		}
 	}
 }

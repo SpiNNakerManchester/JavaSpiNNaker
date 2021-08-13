@@ -313,7 +313,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 						throw new BadArgs("bad issue description");
 					}
 					bgAction(response, () -> new IssueReportResponse(
-							j.reportIssue(reqBody)));
+							j.reportIssue(reqBody, permit)));
 				}
 			};
 		}

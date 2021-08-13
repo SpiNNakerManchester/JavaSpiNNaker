@@ -1114,6 +1114,21 @@ public abstract class SQLQueries {
 					+ "SELECT :user_id, :quota, machine_id FROM machines "
 					+ "WHERE machine_name = :machine_name";
 
+	/**
+	 * Create a board issue report.
+	 *
+	 * @see Spalloc
+	 */
+	// FIXME test
+	@Parameter("board_id")
+	@Parameter("job_id")
+	@Parameter("issue")
+	@Parameter("user_id")
+	protected static final String INSERT_BOARD_REPORT =
+			"INSERT INTO board_reports("
+					+ "board_id, job_id, reported_issue, reporter) "
+					+ "VALUES(:board_id, :job_id, :issue, :user_id)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**

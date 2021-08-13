@@ -483,11 +483,14 @@ public interface SpallocAPI {
 		 *
 		 * @param reqBody
 		 *            The description of the issue.
+		 * @param permit
+		 *            Who is actually reporting this?
 		 * @return The text part of the response
 		 * @throws SQLException
 		 *             If something goes wrong
 		 */
-		String reportIssue(IssueReportRequest reqBody) throws SQLException;
+		String reportIssue(IssueReportRequest reqBody, Permit permit)
+				throws SQLException;
 	}
 
 	/**
