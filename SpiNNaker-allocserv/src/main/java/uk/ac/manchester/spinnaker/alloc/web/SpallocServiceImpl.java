@@ -304,6 +304,17 @@ public class SpallocServiceImpl extends BackgroundSupport
 							j.whereIs(x, y).orElseThrow(EmptyResponse::new);
 					return new WhereIsResponse(loc, ui);
 				}
+
+				@Override
+				public void reportBoardIssue(IssueReportRequest reqBody,
+						AsyncResponse response) throws SQLException {
+					// Async because it involves getting a write lock
+					if (isNull(reqBody)) {
+						throw new BadArgs("bad issue description");
+					}
+					bgAction(response, () -> new IssueReportResponse(
+							j.reportIssue(reqBody)));
+				}
 			};
 		}
 	}

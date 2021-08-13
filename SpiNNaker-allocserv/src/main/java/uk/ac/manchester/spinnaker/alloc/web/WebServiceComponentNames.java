@@ -55,6 +55,9 @@ public interface WebServiceComponentNames {
 	/** The job board-by-chip resource name component. */
 	String JOB_BOARD_BY_CHIP = "chip";
 
+	/** The job report-an-issue-with-a-board resource name component. */
+	String REPORT_ISSUE = "report-issue";
+
 	/** The wait-for-change query parameter name. */
 	String WAIT = "wait";
 

@@ -66,6 +66,7 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -958,6 +959,13 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return transaction(conn, () -> findBoard.call1(id, root, x, y)
 						.map(row -> new BoardLocationImpl(row, machineId)));
 			}
+		}
+
+		@Override
+		public String reportIssue(IssueReportRequest reqBody)
+				throws SQLException {
+			// FIXME implement this
+			return "operation not yet implemented";
 		}
 
 		@Override

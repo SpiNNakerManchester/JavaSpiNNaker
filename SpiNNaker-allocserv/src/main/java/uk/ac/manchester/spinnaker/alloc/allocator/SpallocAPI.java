@@ -37,6 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -476,6 +477,17 @@ public interface SpallocAPI {
 		 *             If something goes wrong
 		 */
 		Optional<Integer> getDepth() throws SQLException;
+
+		/**
+		 * Report an issue with some boards in the job.
+		 *
+		 * @param reqBody
+		 *            The description of the issue.
+		 * @return The text part of the response
+		 * @throws SQLException
+		 *             If something goes wrong
+		 */
+		String reportIssue(IssueReportRequest reqBody) throws SQLException;
 	}
 
 	/**

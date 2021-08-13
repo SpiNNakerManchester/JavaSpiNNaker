@@ -38,6 +38,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.NAME;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.REPORT_ISSUE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
@@ -592,6 +593,27 @@ public interface SpallocServiceAPI {
 				@QueryParam(CHIP_Y) @DefaultValue("0")
 				@PositiveOrZero(message = "y must be at least 0") int y)
 				throws SQLException;
+
+		/**
+		 * Report an issue with some boards.
+		 *
+		 * @param report
+		 *            The problem description.
+		 * @param response
+		 *            Filled out with a {@link IssueReportResponse}
+		 * @throws SQLException
+		 *             If anything goes wrong.
+		 */
+		@POST
+		@Description("Report an issue with some boards.")
+		@Operation(tags = T_JOB, summary = "Report an issue with some boards.",
+				responses = @ApiResponse(content = @Content(schema = @Schema(
+						implementation = IssueReportResponse.class))))
+		@Path(REPORT_ISSUE)
+		@Consumes(APPLICATION_JSON)
+		@Produces(APPLICATION_JSON)
+		void reportBoardIssue(IssueReportRequest report,
+				@Suspended AsyncResponse response) throws SQLException;
 	}
 }
 
