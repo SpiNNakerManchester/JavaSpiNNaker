@@ -125,14 +125,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS link_1 ON links(
 CREATE UNIQUE INDEX IF NOT EXISTS link_2 ON links(
 	board_2 ASC, dir_2 ASC);
 
+-- Reports of problems with boards
 CREATE TABLE IF NOT EXISTS board_reports(
 	report_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
 	job_id INTEGER NOT NULL REFERENCES jobs(job_id) ON DELETE RESTRICT,
 	reported_issue TEXT NOT NULL,
 	reporter INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE RESTRICT,
-	report_timestamp INTEGER NOT NULL -- automatically timestamped
+	report_timestamp INTEGER -- automatically timestamped
 );
+CREATE UNIQUE INDEX IF NOT EXISTS board_reports_sanity ON board_reports(
+	board_id ASC, job_id ASC, reporter ASC);
 
 -- When the issue report is created, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS boardReportsTimestamping

@@ -896,6 +896,16 @@ class DbTest {
 				assertFalse(q.call1("*", NO_USER).isPresent());
 			}
 		}
+
+		@Test
+		void getReportedBoards() throws SQLException {
+			try (Query q = query(c, getReportedBoards)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("board_id", "num_reports", "x", "y", "z",
+						"address"), q.getRowColumnNames());
+				assertFalse(q.call1(0).isPresent());
+			}
+		}
 	}
 
 	/**

@@ -18,6 +18,7 @@ logging:
     root: INFO
     # org.apache.catalina: DEBUG
     # org.springframework.security.web: TRACE
+
     org.springframework.security.web.csrf.CsrfFilter: DEBUG
     # Because when that filter says no it is MYSTERIOUS otherwise!
 
@@ -40,6 +41,17 @@ spring:
         # things inside the service; if this value is too small, performance
         # may be severely impacted or requests may fail.
         size: 16
+  mail:
+    # Configuring email is fiddly; see docs for how.
+    # See https://www.baeldung.com/spring-email
+    # See https://docs.spring.io/spring-boot/docs/2.0.6.RELEASE/reference/html/boot-features-email.html
+    host: smtp.gmail.com
+    port: 587
+    username: "${EMAIL_USER:}"
+    password: "${EMAIL_PASS:}"
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 server:
   port: 8080
@@ -70,6 +82,13 @@ spalloc:
       dimensions: 1.5
       # Priority scaling factor for jobs requesting a specific board
       specific-board: 65.0
+    report-email:
+      # In addition to configuring the email sender, you need to turn on
+      # sending here too.
+      send: false
+      from: spalloc@localhost
+      to: SPINNAKER@listserv.manchester.ac.uk
+      subject: Spalloc Board Issue
   auth:
     # Support HTTP Basic Authentication (bad for browsers, OK for code)
     basic: true

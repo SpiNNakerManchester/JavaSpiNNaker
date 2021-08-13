@@ -32,8 +32,10 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,6 +44,9 @@ import javax.ws.rs.WebApplicationException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +99,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	@Autowired
 	private QuotaManager quotaManager;
 
+	@Autowired(required = false)
+	private JavaMailSender emailSender;
+
 	@Value("${spalloc.allocator.priority-scale.size:1.0}")
 	private float sizePriorityScale;
 
@@ -102,6 +110,21 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Value("${spalloc.allocator.priority-scale.specific-board:25.0}")
 	private float specificPriorityScale;
+
+	@Value("${spalloc.allocator.report-action-threshold:2}")
+	private int serviceThreshold;
+
+	@Value("${spalloc.allocator.report-email.send:false}")
+	private boolean sendEmailNotification;
+
+	@Value("${spalloc.allocator.report-email.from:spalloc@localhost}")
+	private String emailFrom;
+
+	@Value("${spalloc.allocator.report-email.to:}")
+	private String emailTo;
+
+	@Value("${spalloc.allocator.report-email.subject:Spalloc Board Issue}")
+	private String emailSubject;
 
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
@@ -430,8 +453,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
-				int priority = (int) (d.width * d.height
-						* dimensionsPriorityScale);
+				int priority =
+						(int) (d.width * d.height * dimensionsPriorityScale);
 				ps.call(id, d.width, d.height, numDeadBoards, priority);
 			}
 		} else {
@@ -974,6 +997,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 			final Update insertReport;
 
+			final Query getReported;
+
+			final Update setFunctioning;
+
 			BoardReportSQL(Connection conn) throws SQLException {
 				findBoardByChip = query(conn, findBoardByJobChip);
 				findBoardByTriad = query(conn, findBoardByLogicalCoords);
@@ -981,6 +1008,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				findBoardNet = query(conn, findBoardByIPAddress);
 
 				insertReport = update(conn, INSERT_BOARD_REPORT);
+				getReported = query(conn, getReportedBoards);
+				setFunctioning = update(conn, SET_FUNCTIONING_FIELD);
 			}
 
 			@Override
@@ -990,31 +1019,116 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				findBoardPhys.close();
 				findBoardNet.close();
 				insertReport.close();
+				getReported.close();
+				setFunctioning.close();
+			}
+		}
+
+		private final class EmailBuilder {
+			/**
+			 * More efficient than several String.format() calls, and much
+			 * clearer than a mess of direct {@link StringBuilder} calls!
+			 */
+			private final Formatter b = new Formatter(Locale.UK);
+
+			void header(String issue, int numBoards, String who) {
+				b.format("Issues \"%s\" with %d boards reported by %s\n\n",
+						issue, numBoards, who);
+			}
+
+			void chip(ReportedBoard board) {
+				b.format("\tBoard for job (%d) chip %s\n", //
+						id, board.chip);
+			}
+
+			void triad(ReportedBoard board) {
+				b.format("\tBoard for job (%d) board (X:%d,Y:%d,Z:%d)\n", //
+						id, board.x, board.y, board.z);
+			}
+
+			void phys(ReportedBoard board) {
+				b.format(
+						"\tBoard for job (%d) board "
+								+ "[Cabinet:%d,Frame:%d,Board:%d]\n", //
+						id, board.cabinet, board.frame, board.board);
+			}
+
+			void ip(ReportedBoard board) {
+				b.format("\tBoard for job (%d) board (IP: %s)\n", //
+						id, board.address);
+			}
+
+			void issue(int issueId) {
+				b.format("\t\tAction: noted as issue #%d\n", //
+						issueId);
+			}
+
+			void footer(int numActions) {
+				b.format("\nSummary: %d boards taken out of service.\n",
+						numActions);
+			}
+
+			void serviceActionDone(Row r) throws SQLException {
+				b.format(
+						"\tAction: board (X:%d,Y:%d,Z:) (IP: %s) "
+								+ "taken out of service once not in use "
+								+ "(%d problems reported)\n",
+						r.getInt("x"), r.getInt("y"), r.getInt("z"),
+						r.getString("address"), r.getInt("numReports"));
+			}
+
+			@Override
+			public String toString() {
+				return b.toString();
 			}
 		}
 
 		@Override
-		public String reportIssue(IssueReportRequest reqBody, Permit permit)
+		public String reportIssue(IssueReportRequest report, Permit permit)
 				throws SQLException {
 			try (Connection conn = db.getConnection();
 					BoardReportSQL q = new BoardReportSQL(conn)) {
-				return transaction(conn, () -> {
+				EmailBuilder email = new EmailBuilder();
+				email.header(report.issue, report.boards.size(), permit.name);
+
+				String result = transaction(conn, () -> {
 					int userId = getUser(conn, permit.name)
 							.orElseThrow(() -> new SQLException(
 									"no such user: " + permit.name));
-					int acted = 0;
-					for (ReportedBoard board : reqBody.boards) {
-						int boardId = getJobBoardForReport(q, board);
-						if (addIssueReport(q, boardId, reqBody.issue, userId)) {
-							acted++;
-						}
+					for (ReportedBoard board : report.boards) {
+						int boardId = getJobBoardForReport(q, board, email);
+						addIssueReport(q, boardId, report.issue, userId, email);
 					}
+					int acted = takeBoardsOutOfService(q, email);
 					if (acted > 0) {
+						email.footer(acted);
 						return String.format("%d boards taken out of service",
 								acted);
 					}
 					return "report noted";
 				});
+
+				// NB: email sending is OUTSIDE the transaction
+				if (nonNull(emailSender) && nonNull(emailTo)
+						&& sendEmailNotification) {
+					SimpleMailMessage message = new SimpleMailMessage();
+					if (nonNull(emailFrom)) {
+						message.setFrom(emailFrom);
+					}
+					message.setTo(emailTo);
+					if (nonNull(emailSubject)) {
+						message.setSubject(emailSubject);
+					}
+					message.setText(email.toString());
+					try {
+						if (!emailTo.isEmpty()) {
+							emailSender.send(message);
+						}
+					} catch (MailException e) {
+						log.warn("problem when sending email", e);
+					}
+				}
+				return result;
 			} catch (ReportRollbackExn e) {
 				return e.getMessage();
 			}
@@ -1027,19 +1141,22 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		 *            How to touch the DB
 		 * @param board
 		 *            What board are we talking about
+		 * @param email
+		 *            The email we are building.
 		 * @return The board ID
 		 * @throws SQLException
 		 *             If access fails
 		 * @throws ReportRollbackExn
 		 *             If the board can't be converted to an ID
 		 */
-		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board)
-				throws SQLException, ReportRollbackExn {
+		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board,
+				EmailBuilder email) throws SQLException, ReportRollbackExn {
 			Row r;
 			if (nonNull(board.chip)) {
 				r = q.findBoardByChip
 						.call1(id, root, board.chip.getX(), board.chip.getY())
 						.orElseThrow(() -> new ReportRollbackExn(board.chip));
+				email.chip(board);
 			} else if (nonNull(board.x)) {
 				r = q.findBoardByTriad
 						.call1(machineId, board.x, board.y, board.z)
@@ -1052,6 +1169,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							"triad (%s,%s,%s) not allocated to job %d", board.x,
 							board.y, board.z, id);
 				}
+				email.triad(board);
 			} else if (nonNull(board.cabinet)) {
 				r = q.findBoardPhys
 						.call1(machineId, board.cabinet, board.frame,
@@ -1065,6 +1183,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							"physical board [%s,%s,%s] not allocated to job %d",
 							board.cabinet, board.frame, board.board, id);
 				}
+				email.phys(board);
 			} else if (nonNull(board.address)) {
 				r = q.findBoardNet.call1(machineId, board.address)
 						.orElseThrow(() -> new ReportRollbackExn(
@@ -1075,6 +1194,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 							"board at %s not allocated to job %d",
 							board.address, id);
 				}
+				email.ip(board);
 			} else {
 				throw new UnsupportedOperationException();
 			}
@@ -1092,15 +1212,40 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		 *            What is the issue?
 		 * @param userId
 		 *            Who is doing the report?
-		 * @return Whether action has been taken
+		 * @param email
+		 *            The email we are building.
 		 * @throws SQLException
 		 *             If access fails
 		 */
-		private boolean addIssueReport(BoardReportSQL u, int boardId,
-				String issue, int userId) throws SQLException {
-			u.insertReport.call(boardId, id, issue, userId);
-			// FIXME implement this
-			return false;
+		private void addIssueReport(BoardReportSQL u, int boardId, String issue,
+				int userId, EmailBuilder email) throws SQLException {
+			u.insertReport.key(boardId, id, issue, userId)
+					.ifPresent(email::issue);
+		}
+
+		/**
+		 * Take boards out of service if they've been reported frequently
+		 * enough.
+		 *
+		 * @param u
+		 *            How to touch the DB
+		 * @param email
+		 *            The email we are building.
+		 * @return The number of boards taken out of service
+		 * @throws SQLException
+		 *             If access fails
+		 */
+		private int takeBoardsOutOfService(BoardReportSQL u, EmailBuilder email)
+				throws SQLException {
+			int acted = 0;
+			for (Row r : u.getReported.call(serviceThreshold)) {
+				int boardId = r.getInt("board_id");
+				if (u.setFunctioning.call(false, boardId) > 0) {
+					email.serviceActionDone(r);
+					acted++;
+				}
+			}
+			return acted;
 		}
 
 		@Override
@@ -1346,7 +1491,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 class ReportRollbackExn extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	ReportRollbackExn(String msg, Object...args) {
+	ReportRollbackExn(String msg, Object... args) {
 		super(String.format(msg, args));
 	}
 

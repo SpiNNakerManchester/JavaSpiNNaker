@@ -1119,7 +1119,6 @@ public abstract class SQLQueries {
 	 *
 	 * @see Spalloc
 	 */
-	// FIXME test
 	@Parameter("board_id")
 	@Parameter("job_id")
 	@Parameter("issue")
@@ -1423,4 +1422,18 @@ public abstract class SQLQueries {
 	@ResultColumn("importance")
 	@Value("classpath:queries/get_allocation_tasks.sql")
 	protected Resource getAllocationTasks;
+
+	/**
+	 * Get enabled boards with at least as many reported problems as a given
+	 * threshold.
+	 */
+	@Parameter("threshold")
+	@ResultColumn("board_id")
+	@ResultColumn("num_reports")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("address")
+	@Value("classpath:queries/get_reported_boards.sql")
+	protected Resource getReportedBoards;
 }

@@ -265,6 +265,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-jul</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 	</dependencies>
 
 	<description>A board allocation service for SpiNNaker.</description>
