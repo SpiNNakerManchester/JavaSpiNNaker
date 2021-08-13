@@ -67,7 +67,9 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
+import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
@@ -961,11 +963,133 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 		}
 
+		private final class BoardReportSQL implements AutoCloseable {
+			final Query findBoardByChip;
+
+			final Query findBoardByTriad;
+
+			final Query findBoardPhys;
+
+			final Query findBoardNet;
+
+			BoardReportSQL(Connection conn) throws SQLException {
+				findBoardByChip = query(conn, findBoardByJobChip);
+				findBoardByTriad = query(conn, findBoardByLogicalCoords);
+				findBoardPhys = query(conn, findBoardByPhysicalCoords);
+				findBoardNet = query(conn, findBoardByIPAddress);
+			}
+
+			@Override
+			public void close() throws SQLException {
+				findBoardByChip.close();
+				findBoardByTriad.close();
+				findBoardPhys.close();
+				findBoardNet.close();
+			}
+		}
+
 		@Override
 		public String reportIssue(IssueReportRequest reqBody)
 				throws SQLException {
+			try (Connection conn = db.getConnection();
+					BoardReportSQL q = new BoardReportSQL(conn)) {
+				return transaction(conn, () -> {
+					int acted = 0;
+					for (ReportedBoard board : reqBody.boards) {
+						int boardId = getJobBoardForReport(q, board);
+						if (addIssueReport(q, boardId, reqBody.issue)) {
+							acted++;
+						}
+					}
+					if (acted > 0) {
+						return String.format("%d boards taken out of service",
+								acted);
+					}
+					return "report noted";
+				});
+			} catch (ReportRollbackExn e) {
+				return e.getMessage();
+			}
+		}
+
+		/**
+		 * Convert a board locator (for an issue report) into a board ID.
+		 *
+		 * @param q
+		 *            How to touch the DB
+		 * @param board
+		 *            What board are we talking about
+		 * @return The board ID
+		 * @throws SQLException
+		 *             If access fails
+		 * @throws ReportRollbackExn
+		 *             If the board can't be converted to an ID
+		 */
+		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board)
+				throws SQLException, ReportRollbackExn {
+			Row r;
+			if (nonNull(board.chip)) {
+				r = q.findBoardByChip
+						.call1(id, root, board.chip.getX(), board.chip.getY())
+						.orElseThrow(() -> new ReportRollbackExn(board.chip));
+			} else if (nonNull(board.x)) {
+				r = q.findBoardByTriad
+						.call1(machineId, board.x, board.y, board.z)
+						.orElseThrow(() -> new ReportRollbackExn(
+								"triad (%s,%s,%s) not in machine", board.x,
+								board.y, board.z));
+				Integer j = r.getInteger("job_id");
+				if (isNull(j) || id != j) {
+					throw new ReportRollbackExn(
+							"triad (%s,%s,%s) not allocated to job %d", board.x,
+							board.y, board.z, id);
+				}
+			} else if (nonNull(board.cabinet)) {
+				r = q.findBoardPhys
+						.call1(machineId, board.cabinet, board.frame,
+								board.board)
+						.orElseThrow(() -> new ReportRollbackExn(
+								"physical board [%s,%s,%s] not in machine",
+								board.cabinet, board.frame, board.board));
+				Integer j = r.getInteger("job_id");
+				if (isNull(j) || id != j) {
+					throw new ReportRollbackExn(
+							"physical board [%s,%s,%s] not allocated to job %d",
+							board.cabinet, board.frame, board.board, id);
+				}
+			} else if (nonNull(board.address)) {
+				r = q.findBoardNet.call1(machineId, board.address)
+						.orElseThrow(() -> new ReportRollbackExn(
+								"board at %s not in machine", board.address));
+				Integer j = r.getInteger("job_id");
+				if (isNull(j) || id != j) {
+					throw new ReportRollbackExn(
+							"board at %s not allocated to job %d",
+							board.address, id);
+				}
+			} else {
+				throw new UnsupportedOperationException();
+			}
+			return r.getInt("board_id");
+		}
+
+		/**
+		 * Record a reported issue with a board.
+		 *
+		 * @param q
+		 *            How to touch the DB
+		 * @param boardId
+		 *            What board has the issue
+		 * @param issue
+		 *            What is the issue
+		 * @return Whether action has been taken
+		 * @throws SQLException
+		 *             If access fails
+		 */
+		private boolean addIssueReport(BoardReportSQL q, int boardId,
+				String issue) throws SQLException {
 			// FIXME implement this
-			return "operation not yet implemented";
+			return false;
 		}
 
 		@Override
@@ -1205,5 +1329,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		PartialJobException() {
 			super("partial job only");
 		}
+	}
+}
+
+class ReportRollbackExn extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
+	ReportRollbackExn(String msg, Object...args) {
+		super(String.format(msg, args));
+	}
+
+	ReportRollbackExn(HasChipLocation chip) {
+		this("chip at (%d,%d) not in job's allocation", chip.getX(),
+				chip.getY());
 	}
 }
