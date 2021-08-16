@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -72,21 +73,19 @@ public class QuotaManager extends SQLQueries {
 
 	private boolean mayCreateJob(int machineId, String user, Query getQuota,
 			Query getCurrentUsage) throws SQLException {
-		Integer quota = null;
-		int userId = 0;
-		for (Row row : getQuota.call(machineId, user)) {
-			quota = row.getInteger("quota");
-			userId = row.getInt("user_id");
+		Optional<Row> result = getQuota.call1(machineId, user);
+		if (!result.isPresent()) {
+			return true;
 		}
-		if (quota == null) {
+		Integer quotaObj = result.get().getInteger("quota");
+		int userId = result.get().getInt("user_id");
+		if (quotaObj == null) {
 			return true;
 		}
 		// Quota is defined; check if current usage exceeds it
-		if (quota > 0) {
-			for (Row row : getCurrentUsage.call(machineId, userId)) {
-				quota -= row.getInt("current_usage");
-				break;
-			}
+		int quota = quotaObj;
+		for (Row row : getCurrentUsage.call(machineId, userId)) {
+			quota -= row.getInt("current_usage");
 		}
 		// If board-seconds are left, we're good to go
 		return (quota > 0);
@@ -116,14 +115,14 @@ public class QuotaManager extends SQLQueries {
 
 	private boolean mayLetJobContinue(int machineId, int jobId,
 			Query getUsageAndQuota) throws SQLException {
-		for (Row row : getUsageAndQuota.call(machineId, jobId)) {
-			int usage = row.getInt("usage");
-			int quota = row.getInt("quota");
-			if (usage > quota) {
-				return false;
-			}
+		Optional<Row> result = getUsageAndQuota.call1(machineId, jobId);
+		if (!result.isPresent()) {
+			return true;
 		}
-		return true;
+		Row row = result.get();
+		int usage = row.getInt("usage");
+		int quota = row.getInt("quota");
+		return usage <= quota;
 	}
 
 	/**

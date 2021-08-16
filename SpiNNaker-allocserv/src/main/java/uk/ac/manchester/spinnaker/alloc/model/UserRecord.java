@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.alloc.model;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -230,9 +229,6 @@ public final class UserRecord {
 		setUserId(null);
 		if (isNull(getTrustLevel())) {
 			setTrustLevel(TrustLevel.USER);
-		}
-		if (isNull(getQuota())) {
-			setQuota(emptyMap());
 		}
 		if (isNull(isEnabled())) {
 			setEnabled(true);

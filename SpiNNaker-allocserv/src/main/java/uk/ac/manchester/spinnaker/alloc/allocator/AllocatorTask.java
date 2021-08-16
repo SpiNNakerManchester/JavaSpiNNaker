@@ -162,7 +162,15 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
-	private boolean allocate(Connection conn) throws SQLException {
+	/**
+	 * Allocate all current requests for resources.
+	 *
+	 * @param conn The DB connection
+	 * @return Whether any changes have been done
+	 * @throws SQLException
+	 *             If anything goes wrong at the DB level
+	 */
+	boolean allocate(Connection conn) throws SQLException {
 		try (Update bumpImportance = update(conn, BUMP_IMPORTANCE);
 				Query getTasks = query(conn, getAllocationTasks);
 				Update delete = update(conn, DELETE_TASK)) {

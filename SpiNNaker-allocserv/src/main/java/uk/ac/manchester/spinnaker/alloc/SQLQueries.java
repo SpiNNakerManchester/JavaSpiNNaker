@@ -1115,6 +1115,18 @@ public abstract class SQLQueries {
 					+ "WHERE machine_name = :machine_name";
 
 	/**
+	 * Create quotas (in board-seconds) for a user for all known machines.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@GeneratesID
+	protected static final String CREATE_QUOTAS_FROM_DEFAULTS =
+			"INSERT INTO quotas(user_id, quota, machine_id) "
+					+ "SELECT :user_id, default_quota, machine_id "
+					+ "FROM machines";
+
+	/**
 	 * Create a board issue report.
 	 *
 	 * @see Spalloc

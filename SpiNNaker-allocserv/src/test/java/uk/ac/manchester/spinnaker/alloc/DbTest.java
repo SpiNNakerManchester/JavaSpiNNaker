@@ -1280,6 +1280,15 @@ class DbTest {
 		}
 
 		@Test
+		void createQuotasFromDefaults() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, CREATE_QUOTAS_FROM_DEFAULTS)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_USER));
+			}
+		}
+
+		@Test
 		void addQuotaForAllMachines() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, ADD_QUOTA_FOR_ALL_MACHINES)) {

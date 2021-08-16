@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS machines (
 	-- Minimum times (in seconds) to wait after switching a board on or off
 	-- before it can have its power state changed again.
 	on_delay INTEGER NOT NULL DEFAULT (20), -- after on delay
-	off_delay INTEGER NOT NULL DEFAULT (30) -- after off delay
+	off_delay INTEGER NOT NULL DEFAULT (30), -- after off delay
+	default_quota INTEGER -- NULL for no quota
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,

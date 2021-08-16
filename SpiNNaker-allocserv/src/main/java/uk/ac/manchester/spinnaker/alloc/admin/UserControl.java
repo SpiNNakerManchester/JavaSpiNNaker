@@ -96,6 +96,8 @@ public class UserControl extends SQLQueries {
 		try (Connection c = db.getConnection();
 				Update createUser = update(c, CREATE_USER);
 				Update makeQuotas = update(c, CREATE_QUOTA);
+				Update makeDefaultQuotas =
+						update(c, CREATE_QUOTAS_FROM_DEFAULTS);
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
 			return transaction(c, () -> {
 				Optional<Integer> key =
@@ -105,10 +107,14 @@ public class UserControl extends SQLQueries {
 					return Optional.empty();
 				}
 				int userId = key.get();
-				for (Entry<String, Long> quotaInfo : user.getQuota()
-						.entrySet()) {
-					makeQuotas.call(userId, quotaInfo.getValue(),
-							quotaInfo.getKey());
+				if (isNull(user.getQuota())) {
+					makeDefaultQuotas.call(userId);
+				} else {
+					for (Entry<String, Long> quotaInfo : user.getQuota()
+							.entrySet()) {
+						makeQuotas.call(userId, quotaInfo.getValue(),
+								quotaInfo.getKey());
+					}
 				}
 				for (Row row : getUserDetails.call(userId)) {
 					return Optional.of(getUser(c, row));
