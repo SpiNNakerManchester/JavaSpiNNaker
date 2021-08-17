@@ -174,15 +174,31 @@ public class BMPController extends SQLQueries {
 		}
 
 		try {
-			for (Request req : takeRequests()) {
-				addRequest(req);
-			}
+			processRequests();
 		} catch (SQLiteException e) {
 			if (e.getResultCode().equals(SQLITE_BUSY)) {
 				log.info("database is busy; will try power processing later");
 				return;
 			}
 			throw e;
+		}
+	}
+
+	/**
+	 * The core of {@link #mainSchedule()}. Only {@code public} for testing.
+	 *
+	 * @throws SQLException
+	 *             If DB access fails
+	 * @throws IOException
+	 *             If talking to the network fails
+	 * @throws SpinnmanException
+	 *             If a BMP sends an error back
+	 */
+	@Deprecated
+	public void processRequests()
+			throws SQLException, IOException, SpinnmanException {
+		for (Request req : takeRequests()) {
+			addRequest(req);
 		}
 	}
 

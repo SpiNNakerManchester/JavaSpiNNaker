@@ -36,6 +36,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -246,14 +247,17 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/** Encapsulates the queries and updates used in deletion. */
 	private class DestroySQL extends PowerSQL {
-		private Update markAsDestroyed;
+		private final Query getJob;
 
-		private Update killAlloc;
+		private final Update markAsDestroyed;
 
-		private Update killPending;
+		private final Update killAlloc;
+
+		private final Update killPending;
 
 		DestroySQL(Connection conn) throws SQLException {
 			super(conn);
+			getJob = query(conn, GET_JOB);
 			markAsDestroyed = update(conn, DESTROY_JOB);
 			killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
 			killPending = update(conn, KILL_JOB_PENDING);
@@ -262,6 +266,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		@Override
 		public void close() throws SQLException {
 			super.close();
+			getJob.close();
 			markAsDestroyed.close();
 			killAlloc.close();
 			killPending.close();
@@ -346,7 +351,16 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
-	private boolean expireJobs(Connection conn) throws SQLException {
+	/**
+	 * Destroy jobs that have missed their keepalive.
+	 *
+	 * @param conn
+	 *            How to talk to the DB
+	 * @return Whether any jobs have been expired.
+	 * @throws SQLException
+	 *             If anything goes wrong at the DB level
+	 */
+	boolean expireJobs(Connection conn) throws SQLException {
 		boolean changed = false;
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill = new ArrayList<>();
@@ -385,7 +399,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			throws SQLException {
 		log.debug("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
-			// TODO don't do anything if the job is aleady destroyed
+			Optional<Row> row = sql.getJob.call1(id);
+			if (!row.isPresent()) {
+				return false;
+			}
+			if (row.get().getEnum("job_state", JobState.class) == DESTROYED) {
+				// Don't do anything if the job is already destroyed
+				return false;
+			}
 			sql.killPending.call(id);
 			// Inserts into pending_changes; these run after job is dead
 			setPower(sql, id, PowerState.OFF, DESTROYED);
@@ -700,7 +721,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			// TODO Use RETURNING to combine getPerim and issueChange
+			// TODO Combine getPerimeter and issuePowerChange
 			Map<Integer, EnumSet<Direction>> perimeterLinks = new HashMap<>();
 			for (Row row : sql.getPerimeter.call(jobId)) {
 				perimeterLinks

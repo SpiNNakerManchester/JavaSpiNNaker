@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
-import static org.junit.jupiter.api.Assertions.*;
+import static java.time.Instant.now;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -45,11 +47,14 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 
 @SpringBootTest
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
@@ -57,7 +62,9 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
 	// Stop scheduled tasks from running
-	"spalloc.master.pause=true"
+	"spalloc.master.pause=true",
+	// Ensure that no real BMP is talked to
+	"spalloc.transceiver.dummy=true"
 })
 class AllocatorTest extends SQLQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
@@ -77,6 +84,9 @@ class AllocatorTest extends SQLQueries {
 
 	@Autowired
 	private AllocatorTask alloc;
+
+	@Autowired
+	private BMPController bmpCtrl;
 
 	void doTest(Transacted action) throws SQLException {
 		try (Connection c = db.getConnection()) {
@@ -174,9 +184,11 @@ class AllocatorTest extends SQLQueries {
 	private int makeJob(int time) throws SQLException {
 		try (Update u = update(conn,
 				"INSERT INTO jobs(machine_id, owner, job_state, "
-						+ "create_timestamp, keepalive_interval) "
-						+ "VALUES (?, ?, ?, 0, ?)")) {
-			for (Integer k : u.keys(MACHINE, USER, JobState.QUEUED, time)) {
+						+ "create_timestamp, keepalive_interval, "
+						+ "keepalive_timestamp) "
+						+ "VALUES (?, ?, ?, 0, ?, ?)")) {
+			for (Integer k : u.keys(MACHINE, USER, JobState.QUEUED, time,
+					now())) {
 				return k;
 			}
 		}
@@ -211,7 +223,14 @@ class AllocatorTest extends SQLQueries {
 
 	private JobState getJobState(int job) throws SQLException {
 		try (Query q = query(conn, GET_JOB)) {
-			return q.call1(job).get().getEnum("job_state", JobState.class);
+			Row r = q.call1(job).get();
+			return r.getEnum("job_state", JobState.class);
+		}
+	}
+
+	private int getJobRequestCount() throws SQLException {
+		try (Query q = query(conn, "SELECT COUNT(*) AS cnt FROM job_request")) {
+			return q.call1().get().getInt("cnt");
 		}
 	}
 
@@ -222,34 +241,48 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
+	private void assertState(int jobId, JobState state, int requestCount,
+			int powerCount) throws SQLException {
+		assertEquals(state, getJobState(jobId));
+		assertEquals(requestCount, getJobRequestCount());
+		assertEquals(powerCount, getPendingPowerChanges());
+	}
+
+	private void assumeState(int jobId, JobState state, int requestCount,
+			int powerCount) throws SQLException {
+		JobState js = getJobState(jobId);
+		assumeTrue(state == js, () -> "expected " + state + " but got " + js);
+		int c1 = getJobRequestCount();
+		assumeTrue(requestCount == c1, () -> "expected " + requestCount
+				+ " job requests but got " + c1);
+		int c2 = getPendingPowerChanges();
+		assumeTrue(powerCount == c2, () -> "expected " + requestCount
+				+ " power changes but got " + c2);
+	}
+
 	@Test
 	void testDoAllocBySize1() throws SQLException {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 0, 0);
 
 			makeAllocBySizeRequest(job, 1);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 1, 0);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.destroyJob(job, "test");
 
-			assertEquals(JobState.DESTROYED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.DESTROYED, 0, 0);
 		});
 	}
 
@@ -259,28 +292,23 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(100);
 			alloc.allocate(conn);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 0, 0);
 
 			makeAllocBySizeRequest(job, 3);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 1, 0);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(3, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 3);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(3, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 3);
 
 			alloc.destroyJob(job, "test");
 
-			assertEquals(JobState.DESTROYED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.DESTROYED, 0, 0);
 		});
 	}
 
@@ -290,28 +318,23 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(100);
 			alloc.allocate(conn);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 0, 0);
 
 			makeAllocByDimensionsRequest(job, 1, 1, 0);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 1, 0);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.destroyJob(job, "test");
 
-			assertEquals(JobState.DESTROYED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.DESTROYED, 0, 0);
 		});
 	}
 
@@ -321,29 +344,24 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(100);
 			alloc.allocate(conn);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 0, 0);
 
 			makeAllocByDimensionsRequest(job, 1, 2, 0);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 1, 0);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
 			// Allocates a whole triad
-			assertEquals(3, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 3);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(3, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 3);
 
 			alloc.destroyJob(job, "test");
 
-			assertEquals(JobState.DESTROYED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.DESTROYED, 0, 0);
 		});
 	}
 
@@ -353,28 +371,139 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(100);
 			alloc.allocate(conn);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 0, 0);
 
 			makeAllocByBoardIdRequest(job, BOARD);
 
-			assertEquals(JobState.QUEUED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.QUEUED, 1, 0);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.allocate(conn);
 
-			assertEquals(JobState.POWER, getJobState(job));
-			assertEquals(1, getPendingPowerChanges());
+			assertState(job, JobState.POWER, 0, 1);
 
 			alloc.destroyJob(job, "test");
 
-			assertEquals(JobState.DESTROYED, getJobState(job));
-			assertEquals(0, getPendingPowerChanges());
+			assertState(job, JobState.DESTROYED, 0, 0);
 		});
+	}
+
+	/**
+	 * Expiry tests need a two second sleep to get things to tick over
+	 * to *past* the expiration timestamp.
+	 */
+	private static void snooze() {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			assumeTrue(false, "sleep() was interrupted");
+		}
+	}
+
+	@Test
+	void testExpireInitial() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(1);
+			snooze();
+
+			assumeState(job, JobState.QUEUED, 0, 0);
+
+			alloc.expireJobs(conn);
+
+			assertState(job, JobState.DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	void testExpireQueued1() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(1);
+			alloc.allocate(conn);
+			snooze();
+
+			assumeState(job, JobState.QUEUED, 0, 0);
+
+			alloc.expireJobs(conn);
+
+			assertState(job, JobState.DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	void testExpireQueued2() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(1);
+			alloc.allocate(conn);
+			makeAllocBySizeRequest(job, 1);
+			snooze();
+
+			assumeState(job, JobState.QUEUED, 1, 0);
+
+			alloc.expireJobs(conn);
+
+			assertState(job, JobState.DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	void testExpirePower() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(1);
+			makeAllocBySizeRequest(job, 1);
+			alloc.allocate(conn);
+			snooze();
+
+			assumeState(job, JobState.POWER, 0, 1);
+
+			alloc.expireJobs(conn);
+
+			assertState(job, JobState.DESTROYED, 0, 0);
+		});
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	void testExpireReady() throws SQLException {
+		// This is messier; can't have a transaction open and roll it back
+		try (Connection c = db.getConnection()) {
+			this.conn = c;
+			int job = makeJob(1);
+			try {
+				makeAllocBySizeRequest(job, 1);
+				alloc.allocate(conn);
+				try {
+					bmpCtrl.processRequests();
+				} catch (IOException | SpinnmanException e) {
+					assertNull(e, "unexpected exception");
+				}
+				snooze();
+
+				assumeState(job, JobState.READY, 0, 0);
+
+				alloc.expireJobs(conn);
+
+				assertState(job, JobState.DESTROYED, 0, 1);
+
+				// HACK! Allow immediate switch off
+				update(conn, "UPDATE boards SET "
+						+ "power_on_timestamp = power_on_timestamp - 1000")
+								.call();
+				try {
+					bmpCtrl.processRequests();
+				} catch (IOException | SpinnmanException e) {
+					assertNull(e, "unexpected exception");
+				}
+				snooze();
+
+				assertState(job, JobState.DESTROYED, 0, 0);
+			} finally {
+				alloc.destroyJob(job, "test");
+				update(conn, "DELETE FROM job_request").call();
+				update(conn, "DELETE FROM pending_changes").call();
+			}
+		}
 	}
 }
