@@ -15,12 +15,10 @@
 
 WITH
 	-- Arguments and current timestamp
-	args(machine, now) AS (
+	args(machine_id, now) AS (
 		VALUES (:machine_id, CAST(strftime('%s', 'now') AS INTEGER))),
 	-- The machine on which we are allocating
-	m AS (
-		SELECT machines.* FROM machines, args
-		WHERE machines.machine_id = args.machine),
+	m AS (SELECT machines.* FROM machines JOIN args USING (machine_id)),
 	-- The set of boards that are "busy" settling after changing state
 	busy_boards AS (
 		SELECT boards.board_id FROM boards, args, m
@@ -29,17 +27,15 @@ WITH
 SELECT
 	-- The IDs of jobs
 	jobs.job_id
-FROM jobs JOIN args
+FROM jobs JOIN args USING (machine_id)
+	-- the jobs are on the machine of interest
 WHERE
-	-- the jobs ae on the machine of interest
-	jobs.machine_id == args.machine
 	-- and the jobs have some pending changes
-	AND EXISTS(
+	EXISTS(
 		SELECT 1 from pending_changes
 		WHERE pending_changes.job_id = jobs.job_id)
 	-- and the jobs do not have pending changes on the busy boards
 	AND NOT EXISTS(
 		SELECT 1 FROM
-			pending_changes JOIN busy_boards
-			ON pending_changes.board_id = busy_boards.board_id
+			pending_changes JOIN busy_boards USING (board_id)
 		WHERE pending_changes.job_id = jobs.job_id);

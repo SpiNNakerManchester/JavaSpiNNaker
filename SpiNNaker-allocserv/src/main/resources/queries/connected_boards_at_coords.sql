@@ -17,7 +17,7 @@ WITH RECURSIVE
 	args(machine_id, x, y, z, width, height, "depth") AS (
 		VALUES (:machine_id, :x, :y, :z, :width, :height, :depth)),
 	m AS (SELECT machines.* FROM machines
-		JOIN args ON machines.machine_id = args.machine_id),
+		JOIN args USING (machine_id)),
 	-- The logical rectangle of interest
 	rect(x, y, z, local_x, local_y, local_z) AS (
 		SELECT x, y, z, 0, 0, 0 FROM args
@@ -35,8 +35,8 @@ WITH RECURSIVE
 			WHERE local_z + 1 < args."depth"),
 	-- Boards on the machine in the rectangle of interest
 	bs AS (SELECT boards.* FROM boards
-		JOIN m ON boards.machine_id = m.machine_id
-		JOIN rect ON boards.x = rect.x AND boards.y = rect.y AND boards.z = rect.z
+		JOIN m USING (machine_id)
+		JOIN rect USING (x, y, z)
 		WHERE may_be_allocated),
 	-- Links between boards of interest
 	ls AS (SELECT links.* FROM links
@@ -45,8 +45,7 @@ WITH RECURSIVE
 			AND links.live),
 	-- Follow the connectivity graph; SQLite magic!
 	connected(b) AS (
-		SELECT board_id FROM bs, args
-			WHERE bs.x = args.x AND bs.y = args.y AND bs.z = args.z
+		SELECT board_id FROM bs JOIN args USING (x, y, z)
 		UNION
 		SELECT ls.board_2 FROM connected JOIN ls ON board_1 == b
 		UNION

@@ -162,21 +162,126 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
+	/** Encapsulates the queries and updates used in power control. */
+	private class PowerSQL implements AutoCloseable {
+		private final Query getJobState;
+
+		private final Query getJobBoards;
+
+		private final Query getPerimeter;
+
+		private final Update issuePowerChange;
+
+		private final Update setStatePending;
+
+		PowerSQL(Connection conn) throws SQLException {
+			getJobState = query(conn, GET_JOB);
+			getJobBoards = query(conn, GET_JOB_BOARDS);
+			getPerimeter = query(conn, getPerimeterLinks);
+			issuePowerChange = update(conn, issueChangeForJob);
+			setStatePending = update(conn, SET_STATE_PENDING);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			getJobState.close();
+			getJobBoards.close();
+			getPerimeter.close();
+			issuePowerChange.close();
+			setStatePending.close();
+		}
+	}
+
+	/** Encapsulates the queries and updates used in allocation. */
+	private final class AllocSQL extends PowerSQL {
+		private final Update bumpImportance;
+
+		private final Query getTasks;
+
+		private final Update delete;
+
+		private final Query findFreeBoard;
+
+		private final Query getRectangles;
+
+		private final Query countConnectedBoards;
+
+		private final Query findSpecificBoard;
+
+		private final Query getConnectedBoardIDs;
+
+		private final Update allocBoard;
+
+		private final Update allocJob;
+
+		AllocSQL(Connection conn) throws SQLException {
+			super(conn);
+			bumpImportance = update(conn, BUMP_IMPORTANCE);
+			getTasks = query(conn, getAllocationTasks);
+			delete = update(conn, DELETE_TASK);
+			findFreeBoard = query(conn, FIND_FREE_BOARD);
+			getRectangles = query(conn, findRectangle);
+			countConnectedBoards = query(conn, countConnected);
+			findSpecificBoard = query(conn, findLocation);
+			getConnectedBoardIDs = query(conn, getConnectedBoards);
+			allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
+			allocJob = update(conn, ALLOCATE_BOARDS_JOB);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			super.close();
+			bumpImportance.close();
+			getTasks.close();
+			delete.close();
+			findFreeBoard.close();
+			getRectangles.close();
+			countConnectedBoards.close();
+			findSpecificBoard.close();
+			getConnectedBoardIDs.close();
+			allocBoard.close();
+			allocJob.close();
+		}
+	}
+
+	/** Encapsulates the queries and updates used in deletion. */
+	private class DestroySQL extends PowerSQL {
+		private Update markAsDestroyed;
+
+		private Update killAlloc;
+
+		private Update killPending;
+
+		DestroySQL(Connection conn) throws SQLException {
+			super(conn);
+			markAsDestroyed = update(conn, DESTROY_JOB);
+			killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
+			killPending = update(conn, KILL_JOB_PENDING);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			super.close();
+			markAsDestroyed.close();
+			killAlloc.close();
+			killPending.close();
+		}
+	}
+
 	/**
 	 * Allocate all current requests for resources.
 	 *
-	 * @param conn The DB connection
+	 * @param conn
+	 *            The DB connection
 	 * @return Whether any changes have been done
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
 	boolean allocate(Connection conn) throws SQLException {
-		try (Update bumpImportance = update(conn, BUMP_IMPORTANCE);
-				Query getTasks = query(conn, getAllocationTasks);
-				Update delete = update(conn, DELETE_TASK)) {
+		try (AllocSQL sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
-			for (Row row : getTasks.call()) {
+			for (Row row : sql.getTasks.call()) {
 				int id = row.getInt("req_id");
 				int importance = row.getInt("importance");
 				if (importance > maxImportance) {
@@ -191,7 +296,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				try {
 					// Non-queued jobs should not have allocations done!
 					if (currentState == QUEUED) {
-						handled = allocate(conn, row);
+						handled = allocate(sql, row);
 					}
 					/*
 					 * NB: having an exception counts as handled; we will nuke
@@ -200,7 +305,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				} finally {
 					log.debug("allocate for {}: {}", id, handled);
 					if (handled) {
-						changed |= delete.call(id) > 0;
+						changed |= sql.delete.call(id) > 0;
 					}
 				}
 			}
@@ -209,7 +314,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			 * so they get considered with higher priority when the allocator
 			 * runs next time.
 			 */
-			bumpImportance.call();
+			sql.bumpImportance.call();
 			return changed;
 		}
 	}
@@ -278,21 +383,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	private boolean destroyJob(Connection conn, int id, String reason)
 			throws SQLException {
-		log.info("destroying job {} \"{}\"", id, reason);
-		try (Update mark = update(conn, DESTROY_JOB);
-				Update killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
-				Update killPending = update(conn, KILL_JOB_PENDING)) {
-			boolean changed = setPower(conn, id, PowerState.OFF, DESTROYED);
-			if (!changed) {
-				log.info("not destroying job {}; already unpowered", id);
-				return false;
-			}
-			boolean success = mark.call(reason, id) > 0;
-			if (success) {
-				killAlloc.call(id);
-				killPending.call(id);
-			}
-			return success;
+		log.debug("destroying job {} \"{}\"", id, reason);
+		try (DestroySQL sql = new DestroySQL(conn)) {
+			// TODO don't do anything if the job is aleady destroyed
+			sql.killPending.call(id);
+			// Inserts into pending_changes; these run after job is dead
+			setPower(sql, id, PowerState.OFF, DESTROYED);
+			sql.killAlloc.call(id);
+			return sql.markAsDestroyed.call(reason, id) > 0;
 		}
 	}
 
@@ -304,7 +402,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *
 	 * @author Donal Fellows
 	 */
-	private static class DimensionEstimate {
+	private static final class DimensionEstimate {
 		private static final double HORIZONTAL_FACTOR = 1.5;
 
 		private static final double VERTICAL_FACTOR = 2.0;
@@ -366,8 +464,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * not actually send any messages to the board's BMP (though it does
 	 * schedule them). That's an entirely different thing.
 	 *
-	 * @param conn
-	 *            The database connection
+	 * @param sql
+	 *            How to talk to the DB
 	 * @param task
 	 *            The task (as a result set).
 	 * @return {@code true} if a decision has been taken about the task, or
@@ -376,7 +474,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	private boolean allocate(Connection conn, Row task) throws SQLException {
+	private boolean allocate(AllocSQL sql, Row task) throws SQLException {
 		int jobId = task.getInt("job_id");
 		int machineId = task.getInt("machine_id");
 		Rectangle max = new Rectangle(task.getInt("max_width"),
@@ -385,10 +483,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		Integer numBoards = task.getInteger("num_boards");
 		if (nonNull(numBoards) && numBoards > 0) {
 			if (numBoards == 1) {
-				return allocateOneBoard(conn, jobId, machineId);
+				return allocateOneBoard(sql, jobId, machineId);
 			}
 			DimensionEstimate estimate = new DimensionEstimate(numBoards, max);
-			return allocateDimensions(conn, jobId, machineId, estimate,
+			return allocateDimensions(sql, jobId, machineId, estimate,
 					maxDeadBoards);
 		}
 
@@ -396,18 +494,23 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		Integer height = task.getInteger("height");
 		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
 			if (height == 1 && width == 1) {
-				return allocateOneBoard(conn, jobId, machineId);
+				return allocateOneBoard(sql, jobId, machineId);
 			}
 			DimensionEstimate estimate =
 					new DimensionEstimate(width, height, max);
-			return allocateDimensions(conn, jobId, machineId, estimate,
+			log.debug(
+					"resolved request for {}x{} boards to {}x{} triads "
+							+ "with tolerance {}",
+					width, height, estimate.width, estimate.height,
+					estimate.tolerance);
+			return allocateDimensions(sql, jobId, machineId, estimate,
 					maxDeadBoards);
 		}
 
 		Integer root = task.getInteger("board_id");
 		if (nonNull(root)) {
 			// Ignores maxDeadBoards; is a single-board allocate
-			return allocateBoard(conn, jobId, machineId, root);
+			return allocateBoard(sql, jobId, machineId, root);
 		}
 
 		log.warn("job {} could not be allocated; "
@@ -415,56 +518,51 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		return true;
 	}
 
-	private boolean allocateOneBoard(Connection conn, int jobId, int machineId)
+	private boolean allocateOneBoard(AllocSQL sql, int jobId, int machineId)
 			throws SQLException {
-		try (Query s = query(conn, FIND_FREE_BOARD)) {
-			for (Row row : s.call(machineId)) {
-				TriadCoords root = new TriadCoords(row);
-				if (setAllocation(conn, jobId, ONE_BOARD, machineId, root)) {
-					return true;
-				}
+		for (Row row : sql.findFreeBoard.call(machineId)) {
+			TriadCoords root = new TriadCoords(row);
+			if (setAllocation(sql, jobId, ONE_BOARD, machineId, root)) {
+				return true;
 			}
-			return false;
 		}
+		return false;
 	}
 
-	private boolean allocateDimensions(Connection conn, int jobId,
-			int machineId, DimensionEstimate estimate, int userMaxDead)
-			throws SQLException {
+	private boolean allocateDimensions(AllocSQL sql, int jobId, int machineId,
+			DimensionEstimate estimate, int userMaxDead) throws SQLException {
 		int tolerance = userMaxDead + estimate.tolerance;
-		try (Query getRectangles = query(conn, findRectangle);
-				Query connected = query(conn, countConnected)) {
-			for (Row rs : getRectangles.call(estimate.width, estimate.height,
-					machineId, tolerance)) {
-				TriadCoords root = new TriadCoords(rs);
-				if (estimate.width * estimate.height > 1) {
-					/*
-					 * Check that a minimum number of boards are reachable from
-					 * the proposed root board. If the root board is isolated,
-					 * we don't care if the rest of the allocation works because
-					 * the rest of the toolchain won't cope.
-					 */
-					int size = connectedSize(getRectangles, machineId, root,
-							estimate);
-					if (size < estimate.width * estimate.height - tolerance) {
-						continue;
-					}
-				}
-				if (setAllocation(conn, jobId, estimate.getRect(), machineId,
-						root)) {
-					return true;
+		int minArea =
+				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
+		for (Row rs : sql.getRectangles.call(estimate.width, estimate.height,
+				machineId, tolerance)) {
+			TriadCoords root = new TriadCoords(rs);
+			if (minArea > 1) {
+				/*
+				 * Check that a minimum number of boards are reachable from the
+				 * proposed root board. If the root board is isolated, we don't
+				 * care if the rest of the allocation works because the rest of
+				 * the toolchain won't cope.
+				 */
+				int size = connectedSize(sql, machineId, root, estimate);
+				if (size < minArea) {
+					continue;
 				}
 			}
-			return false;
+			if (setAllocation(sql, jobId, estimate.getRect(), machineId,
+					root)) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/**
 	 * Find the number of boards that are reachable from the proposed root
 	 * board.
 	 *
-	 * @param connected
-	 *            The query prepared from {@link #countConnected}
+	 * @param sql
+	 *            How to talk to the DB
 	 * @param machineId
 	 *            The machine on which the allocation is happening
 	 * @param root
@@ -475,27 +573,25 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong.
 	 */
-	private int connectedSize(Query connected, int machineId, TriadCoords root,
+	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
 			DimensionEstimate estimate) throws SQLException {
 		int size = -1;
-		for (Row row : connected.call(machineId, root.x, root.y, root.z,
+		for (Row row : sql.countConnectedBoards.call(machineId, root.x, root.y,
 				estimate.width, estimate.height)) {
 			size = row.getInt("connected_size");
 		}
 		return size;
 	}
 
-	private boolean allocateBoard(Connection conn, int jobId, int machineId,
+	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
 			int boardId) throws SQLException {
-		try (Query find = query(conn, findLocation)) {
-			for (Row row : find.call(machineId, boardId)) {
-				if (setAllocation(conn, jobId, ONE_BOARD, machineId,
-						new TriadCoords(row))) {
-					return true;
-				}
+		for (Row row : sql.findSpecificBoard.call(machineId, boardId)) {
+			if (setAllocation(sql, jobId, ONE_BOARD, machineId,
+					new TriadCoords(row))) {
+				return true;
 			}
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -511,7 +607,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * If you want a multi-board allocation, you'd better be allocating a full
 	 * triad's-worth of depth or you'll get nothing.
 	 *
-	 * @param conn
+	 * @param sql
 	 *            How to talk to the DB
 	 * @param jobId
 	 *            What job are we allocating for
@@ -526,34 +622,37 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If something goes wrong with talking to the DB
 	 */
-	private boolean setAllocation(Connection conn, int jobId, Rectangle rect,
+	private boolean setAllocation(AllocSQL sql, int jobId, Rectangle rect,
 			int machineId, TriadCoords root) throws SQLException {
-		try (Query getConnectedBoardIDs = query(conn, getConnectedBoards);
-				Update allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
-				Update allocJob = update(conn, ALLOCATE_BOARDS_JOB)) {
-			// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
-			List<Integer> boardsToAllocate = new ArrayList<>();
-			for (Row row : getConnectedBoardIDs.call(machineId, root.x, root.y,
-					root.z, rect.width, rect.height, rect.depth)) {
-				int boardId = row.getInt("board_id");
-				boardsToAllocate.add(boardId);
-				allocBoard.call(jobId, boardId);
-			}
-			if (boardsToAllocate.isEmpty()) {
-				return false;
-			}
-
-			allocJob.call(rect.width, rect.height, rect.depth,
-					boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
-			return setPower(conn, jobId, PowerState.ON, READY);
+		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
+				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
+		// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
+		List<Integer> boardsToAllocate = new ArrayList<>();
+		for (Row row : sql.getConnectedBoardIDs.call(machineId, root.x, root.y,
+				root.z, rect.width, rect.height, rect.depth)) {
+			int boardId = row.getInt("board_id");
+			boardsToAllocate.add(boardId);
+			sql.allocBoard.call(jobId, boardId);
 		}
+		if (boardsToAllocate.isEmpty()) {
+			return false;
+		}
+
+		sql.allocJob.call(rect.width, rect.height, rect.depth,
+				boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
+		log.debug("allocated {} boards to {}; issuing power up commands",
+				boardsToAllocate.size(), jobId);
+		return setPower(sql, jobId, PowerState.ON, READY);
 	}
 
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState)
 			throws SQLException {
-		boolean updated =
-				db.execute(conn -> setPower(conn, jobId, power, targetState));
+		boolean updated = db.execute(conn -> {
+			try (PowerSQL sql = new PowerSQL(conn)) {
+				return setPower(sql, jobId, power, targetState);
+			}
+		});
 		if (updated) {
 			epochs.nextMachineEpoch();
 			epochs.nextJobsEpoch();
@@ -564,8 +663,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	/**
 	 * Issue a request to change the power for the boards of a job.
 	 *
-	 * @param conn
-	 *            The DB connection
+	 * @param sql
+	 *            How to talk to the DB
 	 * @param jobId
 	 *            The job in question
 	 * @param power
@@ -576,77 +675,69 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If DB access fails
 	 */
-	private boolean setPower(Connection conn, int jobId, PowerState power,
+	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
 			JobState targetState) throws SQLException {
-		try (Query getJobState = query(conn, GET_JOB);
-				Query getJobBoards = query(conn, GET_JOB_BOARDS);
-				Query getPerimeter = query(conn, getPerimeterLinks);
-				Update issueChange = update(conn, issueChangeForJob);
-				Update setStatePending = update(conn, SET_STATE_PENDING)) {
-			JobState sourceState = getJobState.call1(jobId).get()
-					.getEnum("job_state", JobState.class);
-			List<Integer> boards = new ArrayList<>();
-			for (Row row : getJobBoards.call(jobId)) {
-				boards.add(row.getInt("board_id"));
-			}
-			if (boards.isEmpty()) {
-				if (targetState == DESTROYED) {
-					log.info("no boards for {} in destroy", jobId);
-				}
-				return false;
-			}
-
-			// Number of changes pending, one per board
-			int numPending = 0;
-
-			if (power == PowerState.ON) {
-				/*
-				 * This is a bit of a trickier case, as we need to say which
-				 * links are to be switched on or, more particularly, which are
-				 * to be switched off because they are links to boards that are
-				 * not allocated to the job. Off-board links are shut off by
-				 * default.
-				 */
-				// TODO Use RETURNING to combine getPerim and issueChange
-				Map<Integer, EnumSet<Direction>> perimeterLinks =
-						new HashMap<>();
-				for (Row row : getPerimeter.call(jobId)) {
-					perimeterLinks
-							.computeIfAbsent(row.getInt("board_id"),
-									k -> EnumSet.noneOf(Direction.class))
-							.add(row.getEnum("direction", Direction.class));
-				}
-
-				for (int boardId : boards) {
-					EnumSet<Direction> toChange =
-							perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
-					numPending += issueChange.call(jobId, boardId, sourceState,
-							targetState, true, !toChange.contains(Direction.N),
-							!toChange.contains(Direction.E),
-							!toChange.contains(Direction.SE),
-							!toChange.contains(Direction.S),
-							!toChange.contains(Direction.W),
-							!toChange.contains(Direction.NW));
-				}
-			} else {
-				// Powering off; all links switch to off so no perimeter check
-				for (int boardId : boards) {
-					numPending += issueChange.call(jobId, boardId, sourceState,
-							targetState, false, false, false, false, false,
-							false, false);
-				}
-			}
-
-			if (targetState == DESTROYED) {
-				log.info("num changes for {} in destroy: {}", jobId,
-						numPending);
-			}
-			setStatePending.call(
-					targetState == DESTROYED ? DESTROYED
-							: numPending > 0 ? POWER : targetState,
-					numPending, jobId);
-
-			return numPending > 0;
+		JobState sourceState = sql.getJobState.call1(jobId).get()
+				.getEnum("job_state", JobState.class);
+		List<Integer> boards = new ArrayList<>();
+		for (Row row : sql.getJobBoards.call(jobId)) {
+			boards.add(row.getInt("board_id"));
 		}
+		if (boards.isEmpty()) {
+			if (targetState == DESTROYED) {
+				log.info("no boards for {} in destroy", jobId);
+			}
+			return false;
+		}
+
+		// Number of changes pending, one per board
+		int numPending = 0;
+
+		if (power == PowerState.ON) {
+			/*
+			 * This is a bit of a trickier case, as we need to say which links
+			 * are to be switched on or, more particularly, which are to be
+			 * switched off because they are links to boards that are not
+			 * allocated to the job. Off-board links are shut off by default.
+			 */
+			// TODO Use RETURNING to combine getPerim and issueChange
+			Map<Integer, EnumSet<Direction>> perimeterLinks = new HashMap<>();
+			for (Row row : sql.getPerimeter.call(jobId)) {
+				perimeterLinks
+						.computeIfAbsent(row.getInt("board_id"),
+								k -> EnumSet.noneOf(Direction.class))
+						.add(row.getEnum("direction", Direction.class));
+			}
+
+			for (int boardId : boards) {
+				EnumSet<Direction> toChange =
+						perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
+				numPending += sql.issuePowerChange.call(jobId, boardId,
+						sourceState, targetState, true,
+						!toChange.contains(Direction.N),
+						!toChange.contains(Direction.E),
+						!toChange.contains(Direction.SE),
+						!toChange.contains(Direction.S),
+						!toChange.contains(Direction.W),
+						!toChange.contains(Direction.NW));
+			}
+		} else {
+			// Powering off; all links switch to off so no perimeter check
+			for (int boardId : boards) {
+				numPending += sql.issuePowerChange.call(jobId, boardId,
+						sourceState, targetState, false, false, false, false,
+						false, false, false);
+			}
+		}
+
+		if (targetState == DESTROYED) {
+			log.info("num changes for {} in destroy: {}", jobId, numPending);
+		}
+		sql.setStatePending.call(
+				targetState == DESTROYED ? DESTROYED
+						: numPending > 0 ? POWER : targetState,
+				numPending, jobId);
+
+		return numPending > 0;
 	}
 }

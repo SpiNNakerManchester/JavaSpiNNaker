@@ -18,10 +18,8 @@ WITH
 	args(width, height, machine_id, max_dead_boards) AS (
 		VALUES (:width, :height, :machine_id, :max_dead_boards)),
 	-- Profile the machines and boards to the one we care about
-	m AS (SELECT machines.* FROM machines
-		JOIN args ON machines.machine_id = args.machine_id LIMIT 1),
-	bs AS (SELECT boards.* FROM boards
-		JOIN args ON boards.machine_id = args.machine_id)
+	m AS (SELECT machines.* FROM machines JOIN args USING (machine_id) LIMIT 1),
+	bs AS (SELECT boards.* FROM boards JOIN args USING (machine_id))
 SELECT
 	root.board_id AS id,
 	root.x AS x, root.y AS y, root.z AS z,

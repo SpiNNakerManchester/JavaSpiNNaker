@@ -29,6 +29,6 @@ SELECT
 	job_request.importance
 FROM
 	job_request
-	JOIN jobs ON job_request.job_id = jobs.job_id
-	JOIN machines ON jobs.machine_id = machines.machine_id
+	JOIN jobs USING (job_id)
+	JOIN machines USING (machine_id)
 ORDER BY importance DESC, req_id ASC;

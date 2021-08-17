@@ -56,9 +56,14 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 @SpringJUnitWebConfig(QuotaManagerTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
-	"spalloc.database-path=qm_test.sqlite3", "spalloc.master.pause=true"
+	"spalloc.database-path=" + QuotaManagerTest.DB,
+	// Stop scheduled tasks from running
+	"spalloc.master.pause=true"
 })
 class QuotaManagerTest extends SQLQueries {
+	/** The DB file. */
+	static final String DB = "qm_test.sqlite3";
+
 	@Parameter("machine_id")
 	@Parameter("user_id")
 	@ResultColumn("quota")
@@ -80,7 +85,7 @@ class QuotaManagerTest extends SQLQueries {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get("qm_test.sqlite3");
+		Path dbp = Paths.get(DB);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);

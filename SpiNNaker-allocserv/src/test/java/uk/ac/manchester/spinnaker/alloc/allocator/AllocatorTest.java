@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -53,7 +55,9 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + AllocatorTest.DB, "spalloc.master.pause=true"
+	"spalloc.database-path=" + AllocatorTest.DB,
+	// Stop scheduled tasks from running
+	"spalloc.master.pause=true"
 })
 class AllocatorTest extends SQLQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
@@ -69,8 +73,23 @@ class AllocatorTest extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
 
+	private Connection conn;
+
 	@Autowired
 	private AllocatorTask alloc;
+
+	void doTest(Transacted action) throws SQLException {
+		try (Connection c = db.getConnection()) {
+			transaction(c, () -> {
+				try {
+					conn = c;
+					action.act();
+				} finally {
+					c.rollback();
+				}
+			});
+		}
+	}
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -104,19 +123,29 @@ class AllocatorTest extends SQLQueries {
 						+ "machine_id, machine_name, width, height, [depth], "
 						+ "default_quota, board_model) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, 5)")) {
-			u.call(MACHINE, "foo", 1, 1, 1, 10000);
+			u.call(MACHINE, "foo", 1, 1, 3, 10000);
 		}
 		try (Update u = update(c,
 				"INSERT OR IGNORE INTO bmp(bmp_id, machine_id, address, "
 						+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)")) {
 			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
 		}
+		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
 		try (Update u = update(c,
 				"INSERT OR IGNORE INTO boards(board_id, address, "
 						+ "bmp_id, board_num, machine_id, x, y, z, "
 						+ "root_x, root_y, board_power) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-			u.call(BOARD, "2.2.2.2", BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
+			u.call(b0, "2.2.2.2", BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
+			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
+			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
+		}
+		try (Update u = update(c,
+				"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2) "
+						+ "VALUES (?, ?, ?, ?)")) {
+			u.call(b0, 0, b1, 3);
+			u.call(b0, 1, b2, 4);
+			u.call(b1, 2, b2, 5);
 		}
 		// A disabled permission-less user with a quota
 		try (Update u = update(c,
@@ -142,106 +171,210 @@ class AllocatorTest extends SQLQueries {
 	 *            Length of time (seconds)
 	 * @return Job ID
 	 */
-	private int makeJob(Connection c, int time) throws SQLException {
-		try (Update u = update(c,
-				"INSERT INTO jobs(machine_id, owner, root_id, job_state, "
+	private int makeJob(int time) throws SQLException {
+		try (Update u = update(conn,
+				"INSERT INTO jobs(machine_id, owner, job_state, "
 						+ "create_timestamp, keepalive_interval) "
-						+ "VALUES (?, ?, ?, ?, 0, ?)")) {
-			for (Integer k : u.keys(MACHINE, USER, BOARD, JobState.QUEUED,
-					time)) {
+						+ "VALUES (?, ?, ?, 0, ?)")) {
+			for (Integer k : u.keys(MACHINE, USER, JobState.QUEUED, time)) {
 				return k;
 			}
 		}
 		throw new RuntimeException("failed to insert job");
 	}
 
-	private void makeAllocBySizeRequest(Connection c, int job, int size)
-			throws SQLException {
+	private void makeAllocBySizeRequest(int job, int size) throws SQLException {
 		try (Update u =
-				update(c, "INSERT INTO job_request(job_id, num_boards) "
+				update(conn, "INSERT INTO job_request(job_id, num_boards) "
 						+ "VALUES (?, ?)")) {
 			u.call(job, size);
 		}
 	}
 
-	private void makeAllocByDimensionsRequest(Connection c, int job, int width,
-			int height) throws SQLException {
+	private void makeAllocByDimensionsRequest(int job, int width, int height,
+			int allowedDead) throws SQLException {
 		try (Update u =
-				update(c, "INSERT INTO job_request(job_id, width, height) "
-						+ "VALUES (?, ?, ?)")) {
-			u.call(job, width, height);
+				update(conn, "INSERT INTO job_request(job_id, width, height, "
+						+ "max_dead_boards) VALUES (?, ?, ?, ?)")) {
+			u.call(job, width, height, allowedDead);
 		}
 	}
 
-	private void makeAllocByBoardIdRequest(Connection c, int job, int board)
+	private void makeAllocByBoardIdRequest(int job, int board)
 			throws SQLException {
-		try (Update u = update(c, "INSERT INTO job_request(job_id, board_id) "
-				+ "VALUES (?, ?)")) {
+		try (Update u =
+				update(conn, "INSERT INTO job_request(job_id, board_id) "
+						+ "VALUES (?, ?)")) {
 			u.call(job, board);
 		}
 	}
 
-	private JobState getJobState(Query q, int job) throws SQLException {
-		return q.call1(job).get().getEnum("job_state", JobState.class);
+	private JobState getJobState(int job) throws SQLException {
+		try (Query q = query(conn, GET_JOB)) {
+			return q.call1(job).get().getEnum("job_state", JobState.class);
+		}
+	}
+
+	private int getPendingPowerChanges() throws SQLException {
+		try (Query q =
+				query(conn, "SELECT COUNT(*) AS cnt FROM pending_changes")) {
+			return q.call1().get().getInt("cnt");
+		}
 	}
 
 	@Test
-	void testDoAllocBySize() throws SQLException {
-		db.executeVoid(c -> {
-			// Does a job get consolidated once and only once
-			try (Query q = query(c, GET_JOB)) {
-				int job = makeJob(c, 100);
-				alloc.allocate(c);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				makeAllocBySizeRequest(c, job, 1);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-			} finally {
-				c.rollback();
-			}
+	void testDoAllocBySize1() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(100);
+			alloc.allocate(conn);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			makeAllocBySizeRequest(job, 1);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.destroyJob(job, "test");
+
+			assertEquals(JobState.DESTROYED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+		});
+	}
+
+	@Test
+	void testDoAllocBySize3() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(100);
+			alloc.allocate(conn);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			makeAllocBySizeRequest(job, 3);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(3, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(3, getPendingPowerChanges());
+
+			alloc.destroyJob(job, "test");
+
+			assertEquals(JobState.DESTROYED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
 		});
 	}
 
 	@Test
 	void testDoAllocByDimensions() throws SQLException {
-		db.executeVoid(c -> {
-			// Does a job get consolidated once and only once
-			try (Query q = query(c, GET_JOB)) {
-				int job = makeJob(c, 100);
-				alloc.allocate(c);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				makeAllocByDimensionsRequest(c, job, 1, 1);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-			} finally {
-				c.rollback();
-			}
+		doTest(() -> {
+			int job = makeJob(100);
+			alloc.allocate(conn);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			makeAllocByDimensionsRequest(job, 1, 1, 0);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.destroyJob(job, "test");
+
+			assertEquals(JobState.DESTROYED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+		});
+	}
+
+	@Test
+	void testDoAllocByDimensions1x2() throws SQLException {
+		doTest(() -> {
+			int job = makeJob(100);
+			alloc.allocate(conn);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			makeAllocByDimensionsRequest(job, 1, 2, 0);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			// Allocates a whole triad
+			assertEquals(3, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(3, getPendingPowerChanges());
+
+			alloc.destroyJob(job, "test");
+
+			assertEquals(JobState.DESTROYED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
 		});
 	}
 
 	@Test
 	void testDoAllocByBoardId() throws SQLException {
-		db.executeVoid(c -> {
-			// Does a job get consolidated once and only once
-			try (Query q = query(c, GET_JOB)) {
-				int job = makeJob(c, 100);
-				alloc.allocate(c);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				makeAllocByBoardIdRequest(c, job, BOARD);
-				assertEquals(JobState.QUEUED, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-				alloc.allocate(c);
-				assertEquals(JobState.POWER, getJobState(q, job));
-			} finally {
-				c.rollback();
-			}
+		doTest(() -> {
+			int job = makeJob(100);
+			alloc.allocate(conn);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			makeAllocByBoardIdRequest(job, BOARD);
+
+			assertEquals(JobState.QUEUED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.allocate(conn);
+
+			assertEquals(JobState.POWER, getJobState(job));
+			assertEquals(1, getPendingPowerChanges());
+
+			alloc.destroyJob(job, "test");
+
+			assertEquals(JobState.DESTROYED, getJobState(job));
+			assertEquals(0, getPendingPowerChanges());
 		});
 	}
 }

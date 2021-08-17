@@ -16,25 +16,32 @@
 WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (
 		VALUES (:machine_id, :x, :y, :width, :height)),
-	m AS (SELECT machines.* FROM machines
-		JOIN args ON machines.machine_id = args.machine_id),
-	-- Boards on the machine in the rectangle of interest
+	m AS (SELECT machines.* FROM machines JOIN args USING (machine_id)),
+	-- The logical rectangle of interest
+	rect(x, y, local_x, local_y) AS (
+		SELECT x, y, 0, 0 FROM args
+		UNION
+		SELECT (rect.x + 1) % m.width, rect.y, local_x + 1, local_y
+			FROM rect, m, args
+			WHERE local_x + 1 < args.width
+		UNION
+		SELECT rect.x, (rect.y + 1) % m.height, local_x, local_y + 1
+			FROM rect, m, args
+			WHERE local_y + 1 < args.height),
+	-- Boards on the machine in the rectangle of interest that are allocatable
 	bs AS (SELECT boards.* FROM boards
-		JOIN args ON boards.machine_id = args.machine_id
-		JOIN m
-		WHERE boards.x >= args.x
-			AND boards.x < (args.x + args.width) % m.width
-			AND boards.y >= args.y
-			AND boards.y < (args.y + args.height) % m.height
-			AND may_be_allocated),
-	-- Links between boards of interest
+		JOIN m USING (machine_id)
+		-- This query ignores Z; uses whole triads always
+		JOIN rect USING (x, y)
+		WHERE may_be_allocated),
+	-- Links between boards of interest that are live
 	ls AS (SELECT links.* FROM links
 		WHERE links.board_1 IN (SELECT board_id FROM bs)
 			AND links.board_2 IN (SELECT board_id FROM bs)
 			AND links.live),
 	-- Follow the connectivity graph; SQLite magic!
 	connected(b) AS (
-		SELECT board_id FROM bs,args
+		SELECT board_id FROM bs, args
 			WHERE bs.x = args.x AND bs.y = args.y AND bs.z = 0
 		UNION
 		SELECT ls.board_2 FROM connected JOIN ls ON board_1 == b

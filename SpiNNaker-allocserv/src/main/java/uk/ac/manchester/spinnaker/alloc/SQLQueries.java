@@ -146,7 +146,7 @@ public abstract class SQLQueries {
 					+ "death_reason, death_timestamp, original_request, "
 					+ "user_info.user_name AS owner FROM jobs "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
-					+ "JOIN machines ON jobs.machine_id = machines.machine_id "
+					+ "JOIN machines USING (machine_id) "
 					+ "WHERE job_id = :job_id LIMIT 1";
 
 	/** Get the chip dimensions of a job. */
@@ -157,7 +157,7 @@ public abstract class SQLQueries {
 	protected static final String GET_JOB_CHIP_DIMENSIONS =
 			"WITH b AS (SELECT * FROM boards WHERE allocated_job = :job_id), "
 			+ "c AS (SELECT root_x + chip_x AS x, root_y + chip_y AS y "
-			+ "FROM b JOIN machines ON b.machine_id = machines.machine_id "
+			+ "FROM b JOIN machines USING (machine_id) "
 			+ "JOIN board_model_coords ON "
 			+ "machines.board_model = board_model_coords.model) "
 			+ "SELECT MAX(x) - MIN(x) + 1 AS width, "
@@ -263,9 +263,8 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	@SingleRowResult
 	protected static final String GET_ROOT_BMP_ADDRESS =
-			"SELECT bmp.address FROM bmp "
-					+ "JOIN boards ON boards.bmp_id = bmp.bmp_id WHERE "
-					+ "boards.machine_id = :machine_id "
+			"SELECT bmp.address FROM bmp JOIN boards USING (bmp_id) "
+					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND boards.x = 0 AND boards.y = 0 LIMIT 1";
 
 	/**
@@ -292,7 +291,7 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	protected static final String GET_LIVE_BOARDS =
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND board_num IS NOT NULL "
 					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
@@ -310,7 +309,7 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	protected static final String GET_DEAD_BOARDS =
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND (board_num IS NULL OR functioning IS 0) "
 					+ "ORDER BY z ASC, x ASC, y ASC";
@@ -328,7 +327,7 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	protected static final String GET_JOB_BOARD_COORDS =
 			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.allocated_job = :job_id "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
@@ -667,6 +666,19 @@ public abstract class SQLQueries {
 	protected static final String INSERT_TAG =
 			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
 
+	/**
+	 * Note down the maximum chip coordinates so we can calculate wraparounds
+	 * correctly.
+	 *
+	 * @see MachineDefinitionLoader
+	 */
+	@Parameter("max_x")
+	@Parameter("max_y")
+	@Parameter("machine_id")
+	protected static final String SET_MAX_COORDS =
+			"UPDATE machines SET max_chip_x = :max_x, max_chip_y = :max_y "
+					+ "WHERE machine_id = :machine_id";
+
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
 	@Parameter("x")
@@ -683,10 +695,9 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, "
-					+ "boards.address FROM boards JOIN machines "
-					+ "ON boards.machine_id = machines.machine_id "
-					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN machines USING (machine_id) "
+					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND x = :x AND y = :y AND z = :z LIMIT 1";
 
@@ -706,10 +717,9 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, "
-					+ "boards.address FROM boards JOIN machines "
-					+ "ON boards.machine_id = machines.machine_id "
-					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN machines USING (machine_id) "
+					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND bmp.cabinet = :cabinet AND bmp.frame = :frame "
 					+ "AND boards.board_num IS NOT NULL "
@@ -729,10 +739,9 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, "
-					+ "boards.address FROM boards JOIN machines "
-					+ "ON boards.machine_id = machines.machine_id "
-					+ "JOIN bmp ON boards.bmp_id = bmp.bmp_id "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "FROM boards JOIN machines USING (machine_id) "
+					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND boards.address IS NOT NULL "
 					+ "AND boards.address = :address LIMIT 1";
@@ -773,7 +782,7 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_USER_QUOTA =
 			"SELECT quota, user_info.user_id AS user_id FROM quotas "
-					+ "JOIN user_info ON quotas.user_id = user_info.user_id "
+					+ "JOIN user_info USING (user_id) "
 					+ "WHERE quotas.machine_id = :machine_id "
 					+ "AND user_info.user_name = :user_name LIMIT 1";
 
@@ -885,8 +894,7 @@ public abstract class SQLQueries {
 	@ResultColumn("quota")
 	protected static final String GET_QUOTA_DETAILS =
 			"SELECT machines.machine_name, quotas.quota "
-					+ "FROM quotas JOIN machines "
-					+ "ON quotas.machine_id = machines.machine_id "
+					+ "FROM quotas JOIN machines USING (machine_id) "
 					+ "WHERE quotas.user_id = :user_id";
 
 	/**
@@ -1195,7 +1203,7 @@ public abstract class SQLQueries {
 	/**
 	 * Count the number of <em>connected</em> boards (i.e., have at least one
 	 * path over enabled links to the root board of the allocation) within a
-	 * rectangle.
+	 * rectangle of triads. The triads are taken as being full depth.
 	 * <p>
 	 * Ideally this would be part of {@link #findRectangle}, but both that query
 	 * and this one are entirely complicated enough already! Also, we don't

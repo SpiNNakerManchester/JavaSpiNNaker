@@ -50,7 +50,9 @@ CREATE TABLE IF NOT EXISTS machines (
 	-- before it can have its power state changed again.
 	on_delay INTEGER NOT NULL DEFAULT (20), -- after on delay
 	off_delay INTEGER NOT NULL DEFAULT (30), -- after off delay
-	default_quota INTEGER -- NULL for no quota
+	default_quota INTEGER, -- NULL for no quota
+	max_chip_x INTEGER NOT NULL DEFAULT (0),
+	max_chip_y INTEGER NOT NULL DEFAULT (0)
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.Math.max;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
@@ -87,6 +88,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 	private static final int DECIMAL = 10;
 
+	private static final int TRIAD_SIZE = 12;
+
 	/**
 	 * Triad coordinates.
 	 *
@@ -132,8 +135,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 			y = Integer.parseInt(m.group(++idx), DECIMAL);
 			z = Integer.parseInt(m.group(++idx), DECIMAL);
 		}
-
-		private static final int TRIAD_SIZE = 12;
 
 		private static final int TRIAD_MAJOR_OFFSET = 8;
 
@@ -845,7 +846,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 * <p>
 	 * Only non-{@code private} for testing purposes.
 	 */
-	static class Updates implements AutoCloseable {
+	static final class Updates implements AutoCloseable {
 		private final Update makeMachine;
 
 		private final Update makeTag;
@@ -856,12 +857,15 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		private final Update makeLink;
 
+		private final Update setMaxCoords;
+
 		Updates(Connection conn) throws SQLException {
-			this.makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
-			this.makeTag = update(conn, INSERT_TAG);
-			this.makeBMP = update(conn, INSERT_BMP);
-			this.makeBoard = update(conn, INSERT_BOARD);
-			this.makeLink = update(conn, INSERT_LINK);
+			makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
+			makeTag = update(conn, INSERT_TAG);
+			makeBMP = update(conn, INSERT_BMP);
+			makeBoard = update(conn, INSERT_BOARD);
+			makeLink = update(conn, INSERT_LINK);
+			setMaxCoords = update(conn, SET_MAX_COORDS);
 		}
 
 		@Override
@@ -871,6 +875,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			makeBMP.close();
 			makeBoard.close();
 			makeLink.close();
+			setMaxCoords.close();
 		}
 	}
 
@@ -991,6 +996,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	private Map<TriadCoords, Integer> makeBoards(Updates sql, Machine machine,
 			int machineId, Map<BMPCoords, Integer> bmpIds) throws SQLException {
 		Map<TriadCoords, Integer> boardIds = new HashMap<>();
+		int maxX = 0, maxY = 0;
 		for (TriadCoords triad : machine.boardLocations.keySet()) {
 			BoardPhysicalCoords phys = machine.boardLocations.get(triad);
 			int bmpID = bmpIds.get(phys.bmp());
@@ -1004,7 +1010,16 @@ public class MachineDefinitionLoader extends SQLQueries {
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
+			maxX = max(maxX, triad.x * TRIAD_SIZE);
+			maxY = max(maxY, triad.y * TRIAD_SIZE);
 		}
+		/*
+		 * Note that even in single-board setups, the max coordinates are as if
+		 * there's a full triad present. It's just (in that case) that two of
+		 * the boards of the triad aren't there.
+		 */
+		sql.setMaxCoords.call(maxX + TRIAD_SIZE - 1, maxY + TRIAD_SIZE - 1,
+				machineId);
 		BoardPhysicalCoords rootPhys =
 				machine.boardLocations.get(new TriadCoords(0, 0, 0));
 		for (TriadCoords triad : machine.deadBoards) {

@@ -1140,6 +1140,16 @@ class DbTest {
 		}
 
 		@Test
+		void setMaxCoords() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, SET_MAX_COORDS)) {
+				assertEquals(3, u.getNumArguments());
+				// No machine
+				assertEquals(0, u.call(0, 0, NO_MACHINE));
+			}
+		}
+
+		@Test
 		void setFunctioningField() throws SQLException {
 			assumeFalse(c.isReadOnly(), "connection is read-only");
 			try (Update u = update(c, SET_FUNCTIONING_FIELD)) {

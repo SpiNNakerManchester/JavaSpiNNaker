@@ -19,15 +19,14 @@ package uk.ac.manchester.spinnaker.alloc;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,10 +45,14 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
-@TestPropertySource(properties = "spalloc.database-path=boot_test.sqlite3")
-@TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	"spalloc.database-path=" + BootTest.DB
+})
 class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
+
+	/** The DB file. */
+	static final String DB = "boot_test.sqlite3";
 
 	@Configuration
 	@ComponentScan
@@ -75,8 +78,8 @@ class BootTest {
 	private AdminController adminUI;
 
 	@BeforeAll
-	void clearDB() throws IOException {
-		Path dbp = db.getDatabasePath();
+	static void clearDB() throws IOException {
+		Path dbp = Paths.get(DB);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);
