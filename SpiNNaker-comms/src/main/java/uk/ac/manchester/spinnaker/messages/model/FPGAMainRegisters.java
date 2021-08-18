@@ -138,4 +138,11 @@ public enum FPGAMainRegisters {
 		this.writable = writable;
 		this.size = size;
 	}
+
+	/**
+	 * @return The address of the register in the FPGA's address space.
+	 */
+	public int getAddress() {
+		return BASE_ADDRESS + offset;
+	}
 }

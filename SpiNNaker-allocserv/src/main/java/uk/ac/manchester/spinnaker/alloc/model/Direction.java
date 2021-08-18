@@ -16,9 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.BANK_OFFSET_MULTIPLIER;
-import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
-
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 
 /**
@@ -56,13 +53,13 @@ public enum Direction {
 	public final int fpga;
 
 	/**
-	 * The address of the FPGA register bank that refers to the link.
+	 * The register bank that manages the link in this direction.
 	 */
-	public final int addr;
+	public final int bank;
 
 	/**
-	 * The name of the column in the {@code pending_changes} table
-	 *         that holds information pertaining to this link.
+	 * The name of the column in the {@code pending_changes} table that holds
+	 * information pertaining to this link.
 	 */
 	public final String columnName;
 
@@ -71,7 +68,7 @@ public enum Direction {
 
 	Direction(int fpga, int bankSelect, String columnName, int opposite) {
 		this.fpga = fpga;
-		this.addr = bankSelect * BANK_OFFSET_MULTIPLIER + STOP.offset;
+		this.bank = bankSelect;
 		this.columnName = columnName;
 		this.oppo = opposite;
 	}

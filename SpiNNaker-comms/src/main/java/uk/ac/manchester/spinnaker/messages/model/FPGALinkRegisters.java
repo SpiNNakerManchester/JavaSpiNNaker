@@ -96,4 +96,21 @@ public enum FPGALinkRegisters {
 		this.writable = writable;
 		this.size = size;
 	}
+
+	/**
+	 * Compute the address of the register in a particular register bank.
+	 *
+	 * @param registerBank
+	 *            Which register bank. Must be 0, 1, or 2.
+	 * @return The address in the FPGA's address space.
+	 * @throws IllegalArgumentException
+	 *             If a bad register bank is given.
+	 */
+	public int address(int registerBank) {
+		if (registerBank < 0 || registerBank > 2) {
+			throw new IllegalArgumentException(
+					"registerBank must be 0, 1, or 2");
+		}
+		return BANK_OFFSET_MULTIPLIER * registerBank + offset;
+	}
 }
