@@ -22,7 +22,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -32,6 +31,7 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
@@ -108,8 +108,6 @@ public class BMPController extends SQLQueries {
 
 	private volatile boolean stop;
 
-	private Runnable onThreadStart;
-
 	private Map<Machine, Thread> workers = new HashMap<>();
 
 	private Map<Machine, WorkerState> state = new HashMap<>();
@@ -137,11 +135,15 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
+	/** The state of worker threads that can be seen outside the thread. */
 	private static class WorkerState {
+		/** What machine is the worker handling? */
 		final Machine machine;
 
+		/** Queue of requests to the machine to carry out. */
 		final ConcurrentLinkedDeque<Request> requests;
 
+		/** Whether there are any requests pending. */
 		boolean requestsPending;
 
 		WorkerState(Machine machine) {
@@ -181,24 +183,30 @@ public class BMPController extends SQLQueries {
 				return;
 			}
 			throw e;
+		} catch (InterruptedException e) {
+			log.error("interrupted while spawning a worker", e);
 		}
 	}
 
 	/**
-	 * The core of {@link #mainSchedule()}. Only {@code public} for testing.
+	 * The core of {@link #mainSchedule()}.
 	 *
+	 * @deprecated Only {@code public} for testing purposes.
 	 * @throws SQLException
 	 *             If DB access fails
 	 * @throws IOException
 	 *             If talking to the network fails
 	 * @throws SpinnmanException
 	 *             If a BMP sends an error back
+	 * @throws InterruptedException
+	 *             If the wait for workers to spawn fails.
 	 */
 	@Deprecated
 	public void processRequests()
-			throws SQLException, IOException, SpinnmanException {
+			throws SQLException, IOException, SpinnmanException,
+			InterruptedException {
 		for (Request req : takeRequests()) {
-			addRequest(req);
+			addRequestToBMPQueue(req);
 		}
 	}
 
@@ -292,29 +300,58 @@ public class BMPController extends SQLQueries {
 
 	/**
 	 * Describes a request to modify the power status of a collection of boards.
-	 * The boards must be on a single machine and should all be assigned to a
+	 * The boards must be on a single machine and must all be assigned to a
 	 * single job.
 	 *
 	 * @author Donal Fellows
 	 */
-	public static class Request {
+	public final class Request {
 		private final RequestChange change;
 
-		private final OnDone onDone;
+		private int jobId;
+
+		private JobState from;
+
+		private JobState to;
+
+		private List<Integer> changeIds;
 
 		/**
 		 * Create a request.
 		 *
 		 * @param requestedChange
 		 *            What change do we want to apply?
-		 * @param onDone
-		 *            An optional callback for when the changes are fully
-		 *            processed (whether successfully or not). May be
-		 *            {@code null} if there is no callback.
+		 * @param jobId
+		 *            For what job is this?
+		 * @param from
+		 *            What state is the job moving from?
+		 * @param to
+		 *            What state is the job moving to?
+		 * @param changeIds
+		 *            The DB ids that describe the change, so we can update
+		 *            those records.
 		 */
-		public Request(RequestChange requestedChange, OnDone onDone) {
+		Request(RequestChange requestedChange, int jobId, JobState from,
+				JobState to, List<Integer> changeIds) {
 			this.change = requireNonNull(requestedChange);
-			this.onDone = onDone;
+			this.jobId = jobId;
+			this.from = from;
+			this.to = to;
+			this.changeIds = changeIds;
+		}
+
+		/**
+		 * Declare this to be a successful request.
+		 */
+		private void done() {
+			processAfterChange(jobId, from, to, change, changeIds, false);
+		}
+
+		/**
+		 * Declare this to be a failed request.
+		 */
+		private void failed() {
+			processAfterChange(jobId, from, to, change, changeIds, true);
 		}
 	}
 
@@ -339,16 +376,16 @@ public class BMPController extends SQLQueries {
 		 *            {@code null}.
 		 * @param powerOnBoards
 		 *            What boards (by physical ID) are to be powered on? May be
-		 *            {@code null}.
+		 *            {@code null}; that's equivalent to the empty list.
 		 * @param powerOffBoards
 		 *            What boards (by physical ID) are to be powered off? May be
-		 *            {@code null}.
+		 *            {@code null}; that's equivalent to the empty list.
 		 * @param linkRequests
 		 *            Any link power control requests. By default, links are on
 		 *            if their board is on and they are connected; it is
 		 *            <em>useful and relevant</em> to modify the power state of
 		 *            links on the periphery of an allocation. May be
-		 *            {@code null}.
+		 *            {@code null}; that's equivalent to the empty list.
 		 */
 		RequestChange(Machine machine, List<Integer> powerOnBoards,
 				List<Integer> powerOffBoards, List<LinkRequest> linkRequests) {
@@ -406,30 +443,6 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
-	/**
-	 * A callback handler that can be used to notify code that a BMP request has
-	 * completed. Note that the callback will be processed on a BMP controller
-	 * worker thread.
-	 *
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	public interface OnDone {
-		/**
-		 * The callback.
-		 *
-		 * @param failureReason
-		 *            Will be {@code null} on success. If the request failed,
-		 *            summary information about why.
-		 * @param exception
-		 *            The details of the reason for the failure. {@code null} on
-		 *            success. Note that the exception <em>will</em> have been
-		 *            logged if it is appropriate to do so; callbacks should not
-		 *            log.
-		 */
-		void call(String failureReason, Exception exception);
-	}
-
 	private void processRequest(Request request) throws InterruptedException {
 		BMPTransceiverInterface txrx;
 		try {
@@ -444,37 +457,38 @@ public class BMPController extends SQLQueries {
 						request.change.linkRequests.size()));
 		try {
 			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
-				try {
-					changeBoardPowerState(txrx, request);
+				if (tryChangePowerState(request, txrx,
+						nTries == N_REQUEST_TRIES)) {
 					break;
-				} catch (InterruptedException e) {
-					String reason =
-							"Requests failed on BMP " + request.change.machine;
-					log.error(reason, e);
-					if (nonNull(request.onDone)) {
-						request.onDone.call(reason, e);
-					}
-					throw e;
-				} catch (Exception e) {
-					if (nTries == N_REQUEST_TRIES) {
-						String reason = "Requests failed on BMP "
-								+ request.change.machine;
-						log.error(reason, e);
-						if (nonNull(request.onDone)) {
-							request.onDone.call(reason, e);
-						}
-						currentThread().interrupt();
-						break;
-					}
-					log.error(
-							"Retrying requests on BMP {} after {} seconds: {}",
-							request.change.machine, SECONDS_BETWEEN_TRIES,
-							e.getMessage());
-					sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
 				}
 			}
 		} finally {
 			MDC.remove("changes");
+		}
+	}
+
+	private boolean tryChangePowerState(Request request,
+			BMPTransceiverInterface txrx, boolean isLastTry)
+			throws InterruptedException {
+		try {
+			changeBoardPowerState(txrx, request);
+			return true;
+		} catch (InterruptedException e) {
+			log.error("Requests failed on BMP {}", request.change.machine, e);
+			request.failed();
+			currentThread().interrupt();
+			throw e;
+		} catch (Exception e) {
+			if (!isLastTry && !(e instanceof InterruptedException)) {
+				log.error("Retrying requests on BMP {} after {} seconds: {}",
+						request.change.machine, SECONDS_BETWEEN_TRIES,
+						e.getMessage());
+				sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
+				return false;
+			}
+			log.error("Requests failed on BMP {}", request.change.machine, e);
+			request.failed();
+			return true;
 		}
 	}
 
@@ -495,40 +509,66 @@ public class BMPController extends SQLQueries {
 	private void changeBoardPowerState(BMPTransceiverInterface txrx,
 			Request request)
 			throws ProcessException, InterruptedException, IOException {
+		RequestChange change = request.change;
 		// Send any power on commands
-		if (!request.change.powerOnBoards.isEmpty()) {
-			powerOnAndCheck(request.change.machine, txrx,
-					request.change.powerOnBoards);
+		if (!change.powerOnBoards.isEmpty()) {
+			powerOnAndCheck(change.machine, txrx, change.powerOnBoards);
 		}
 
 		// Process link requests next
-		for (LinkRequest linkReq : request.change.linkRequests) {
+		for (LinkRequest linkReq : change.linkRequests) {
 			// Set the link state, as required
 			setLinkState(txrx, linkReq.board, linkReq.link, linkReq.power);
 		}
 
 		// Finally send any power off commands
-		if (!request.change.powerOffBoards.isEmpty()) {
-			txrx.power(POWER_OFF, 0, 0, request.change.powerOffBoards);
+		if (!change.powerOffBoards.isEmpty()) {
+			txrx.power(POWER_OFF, 0, 0, change.powerOffBoards);
 		}
 
 		// Exit the retry loop if the requests all worked
-		if (nonNull(request.onDone)) {
-			request.onDone.call(null, null);
+		request.done();
+	}
+
+	private final class TakeReqsSQL implements AutoCloseable {
+		private final Query getJobIds;
+
+		private final Query getPowerChangesToDo;
+
+		private final Update setInProgress;
+
+		TakeReqsSQL(Connection conn) throws SQLException {
+			getJobIds = query(conn, getJobsWithChanges);
+			getPowerChangesToDo = query(conn, GET_CHANGES);
+			setInProgress = update(conn, SET_IN_PROGRESS);
+			// TODO can some of these be combined with RETURNING?
+		}
+
+		@Override
+		public void close() throws SQLException {
+			getJobIds.close();
+			getPowerChangesToDo.close();
+			setInProgress.close();
 		}
 	}
 
-	List<Request> takeRequests() throws SQLException {
+	/**
+	 * Copies out the requests for board power changes, marking them so that we
+	 * remember they are being worked on.
+	 *
+	 * @return List of requests to pass to the {@link WorkerThread}s.
+	 * @throws SQLException
+	 *             If DB access fails
+	 */
+	private List<Request> takeRequests() throws SQLException {
 		List<Request> requests = new ArrayList<>();
 		try (Connection conn = db.getConnection();
-				Query getJobIds = query(conn, getJobsWithChanges);
-				Query getChanges = query(conn, GET_CHANGES);
-				Update setInProgress = update(conn, SET_IN_PROGRESS)) {
+				TakeReqsSQL sql = new TakeReqsSQL(conn)) {
 			transaction(conn, () -> {
 				for (Machine machine : spallocCore.getMachines().values()) {
-					for (Row jobIds : getJobIds.call(machine.getId())) {
-						takeRequestsForJob(requests, getChanges, setInProgress,
-								machine, jobIds.getInt("job_id"));
+					for (Row jobIds : sql.getJobIds.call(machine.getId())) {
+						takeRequestsForJob(requests, sql, machine,
+								jobIds.getInt("job_id"));
 					}
 				}
 			});
@@ -536,20 +576,19 @@ public class BMPController extends SQLQueries {
 		return requests;
 	}
 
-	private void takeRequestsForJob(List<Request> requests, Query getChanges,
-			Update setInProgress, Machine machine, int jobId)
-			throws SQLException {
+	private void takeRequestsForJob(List<Request> requests, TakeReqsSQL sql,
+			Machine machine, int jobId) throws SQLException {
 		List<Integer> changeIds = new ArrayList<>();
 		List<Integer> boardsOn = new ArrayList<>();
 		List<Integer> boardsOff = new ArrayList<>();
 		List<LinkRequest> linksOff = new ArrayList<>();
-		JobState[] states = new JobState[2];
-		for (Row row : getChanges.call(jobId)) {
+		JobState from = UNKNOWN, to = UNKNOWN;
+		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInt("change_id"));
 			int board = row.getInt("board_id");
 			boolean switchOn = row.getBoolean("power");
-			states[0] = row.getEnum("from_state", JobState.class);
-			states[1] = row.getEnum("to_state", JobState.class);
+			from = row.getEnum("from_state", JobState.class);
+			to = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
 				boardsOn.add(board);
 			} else {
@@ -561,12 +600,11 @@ public class BMPController extends SQLQueries {
 				}
 			}
 		}
-		RequestChange change =
-				new RequestChange(machine, boardsOn, boardsOff, linksOff);
-		requests.add(new Request(change, (fail, exn) -> doneRequest(jobId,
-				states[0], states[1], change, changeIds, fail, exn)));
+		requests.add(new Request(
+				new RequestChange(machine, boardsOn, boardsOff, linksOff),
+				jobId, from, to, changeIds));
 		for (int changeId : changeIds) {
-			setInProgress.call(true, changeId);
+			sql.setInProgress.call(true, changeId);
 		}
 	}
 
@@ -625,18 +663,33 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
-	void doneRequest(int jobId, JobState fromState, JobState toState,
-			RequestChange change, List<Integer> changeIds, String fail,
-			Exception exn) {
-		if (nonNull(fail)) {
-			log.error("failed to set power on BMPs: {}", fail, exn);
-		}
-
+	/**
+	 * Handles what happens after a set of changes to a BMP complete,
+	 * successfully or not. Note that this happens on the BMP worker thread.
+	 *
+	 * @param jobId
+	 *            What job is this for?
+	 * @param fromState
+	 *            What state was the job coming from (it's currently in the
+	 *            {@link JobState#POWER} state).
+	 * @param toState
+	 *            What state is the job supposed to go to.
+	 * @param change
+	 *            What did we tell the BMP to do?
+	 * @param changeIds
+	 *            What database records did we get the instructions from?
+	 * @param fail
+	 *            Was this a failure? On failure, we roll back the job state to
+	 *            what it was before. On success we move to the state it
+	 *            supposed to be in.
+	 */
+	private void processAfterChange(int jobId, JobState fromState,
+			JobState toState, RequestChange change, List<Integer> changeIds,
+			boolean fail) {
 		try (Connection conn = db.getConnection();
-				DoneUpdates updates = new DoneUpdates(conn)) {
-			transaction(conn,
-					() -> doneRequest(jobId, fromState, toState, change,
-							changeIds, fail, updates));
+				DoneUpdates sql = new DoneUpdates(conn)) {
+			transaction(conn, () -> processAfterChange(jobId, fromState,
+					toState, change, changeIds, fail, sql));
 		} catch (SQLException e) {
 			log.error("problem with database", e);
 		} finally {
@@ -645,48 +698,76 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
-	private void doneRequest(int jobId, JobState fromState, JobState toState,
-			RequestChange change, List<Integer> changeIds, String fail,
-			DoneUpdates updates) throws SQLException {
+	/**
+	 * Handles the database changes after a set of changes to a BMP complete,
+	 * successfully or not.
+	 *
+	 * @param jobId
+	 *            What job is this for?
+	 * @param fromState
+	 *            What state was the job coming from (it's currently in the
+	 *            {@link JobState#POWER} state).
+	 * @param toState
+	 *            What state is the job supposed to go to.
+	 * @param change
+	 *            What did we tell the BMP to do?
+	 * @param changeIds
+	 *            What database records did we get the instructions from?
+	 * @param fail
+	 *            Was this a failure? On failure, we roll back the job state to
+	 *            what it was before. On success we move to the state it
+	 *            supposed to be in.
+	 * @param sql
+	 *            How to access the DB
+	 * @throws SQLException
+	 *             if something goes badly wrong
+	 */
+	private void processAfterChange(int jobId, JobState fromState,
+			JobState toState, RequestChange change, List<Integer> changeIds,
+			boolean failed, DoneUpdates sql) throws SQLException {
 		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
 				deallocated = 0, killed = 0;
-		if (nonNull(fail)) {
+		if (failed) {
 			for (int changeId : changeIds) {
-				moved += updates.setInProgress(false, changeId);
+				moved += sql.setInProgress(false, changeId);
 			}
-			jobChange += updates.setJobState(fromState, 0, jobId);
+			jobChange += sql.setJobState(fromState, 0, jobId);
+			// TODO what else should happen here?
 		} else {
 			for (int board : change.powerOnBoards) {
-				turnedOn += updates.setBoardState(true, board);
+				turnedOn += sql.setBoardState(true, board);
 			}
 			for (int board : change.powerOffBoards) {
-				turnedOff += updates.setBoardState(false, board);
+				turnedOff += sql.setBoardState(false, board);
 			}
-			jobChange += updates.setJobState(toState, 0, jobId);
+			jobChange += sql.setJobState(toState, 0, jobId);
 			if (toState == DESTROYED) {
 				/*
 				 * Need to mark the boards as not allocated; can't do that until
 				 * they've been switched off.
 				 */
-				deallocated += updates.deallocateBoards(jobId);
+				deallocated += sql.deallocateBoards(jobId);
+			}
+			for (int changeId : changeIds) {
+				killed += sql.deleteChange(changeId);
 			}
 		}
-		for (int changeId : changeIds) {
-			killed += updates.deleteChange(changeId);
-		}
-		log.info(
+		log.debug(
 				"post-switch ({}:{}->{}): up:{} down:{} jobChanges:{} "
 						+ "inProgress:{} deallocated:{} bmpTasksDone:{}",
 				jobId, fromState, toState, turnedOn, turnedOff, jobChange,
 				moved, deallocated, killed);
 	}
 
-	public void addRequest(Request request)
-			throws IOException, SpinnmanException, SQLException {
+	private void addRequestToBMPQueue(Request request)
+			throws IOException, SpinnmanException, SQLException,
+			InterruptedException {
+		requireNonNull(request, "request must not be null");
 		/*
 		 * Ensure that the transceiver for the machine exists while we're still
 		 * in the current thread; the connection inside Machine inside Request
-		 * is _not_ safe to hand off between threads.
+		 * is _not_ safe to hand off between threads. Fortunately, the worker
+		 * doesn't need that... provided we get the transceiver now.
 		 */
 		Machine m = request.change.machine;
 		txrxFactory.getTransciever(m);
@@ -705,13 +786,15 @@ public class BMPController extends SQLQueries {
 		return state.computeIfAbsent(m, WorkerState::new);
 	}
 
-	private void createWorkerIfRequired(WorkerState ws) {
+	private void createWorkerIfRequired(WorkerState ws)
+			throws InterruptedException {
 		synchronized (workers) {
-			workers.computeIfAbsent(ws.machine, m1 -> {
+			if (!workers.containsKey(ws.machine)) {
 				executor.execute(() -> backgroundThread(ws));
-				// Temporary value; will be replaced
-				return currentThread();
-			});
+				while (workers.get(ws.machine) == null) {
+					workers.wait();
+				}
+			}
 		}
 	}
 
@@ -728,6 +811,7 @@ public class BMPController extends SQLQueries {
 			synchronized (workers) {
 				this.machine = machine;
 				workers.put(machine, currentThread());
+				workers.notifyAll();
 			}
 		}
 
@@ -738,8 +822,6 @@ public class BMPController extends SQLQueries {
 			}
 		}
 	}
-
-	// Factored out here because of current object synchronization context
 
 	private synchronized void waitForPending(WorkerState ws)
 			throws InterruptedException {
@@ -773,15 +855,16 @@ public class BMPController extends SQLQueries {
 	void backgroundThread(WorkerState ws) {
 		MDC.put("machine", ws.machine.getName());
 		try (AutoCloseable binding = new BindWorker(ws.machine)) {
-			if (nonNull(onThreadStart)) {
-				onThreadStart.run();
-			}
-
 			while (true) {
 				waitForPending(ws);
 
+				/*
+				 * No lock needed; this is the only thread that removes from
+				 * this queue.
+				 */
 				if (!ws.requests.isEmpty()) {
-					processRequest(ws.requests.removeFirst());
+					processRequest(ws.requests.peekFirst());
+					ws.requests.removeFirst();
 				}
 
 				/*

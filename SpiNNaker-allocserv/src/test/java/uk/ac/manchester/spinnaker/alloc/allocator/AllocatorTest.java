@@ -20,7 +20,6 @@ import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -54,7 +53,6 @@ import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 
 @SpringBootTest
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
@@ -66,6 +64,7 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 	// Ensure that no real BMP is talked to
 	"spalloc.transceiver.dummy=true"
 })
+@SuppressWarnings("deprecation") // Yes, we're allowed to poke inside here
 class AllocatorTest extends SQLQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
 
@@ -464,9 +463,8 @@ class AllocatorTest extends SQLQueries {
 		});
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
-	void testExpireReady() throws SQLException {
+	void testExpireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back
 		try (Connection c = db.getConnection()) {
 			this.conn = c;
@@ -474,12 +472,7 @@ class AllocatorTest extends SQLQueries {
 			try {
 				makeAllocBySizeRequest(job, 1);
 				alloc.allocate(conn);
-				try {
-					bmpCtrl.processRequests();
-				} catch (IOException | SpinnmanException e) {
-					assertNull(e, "unexpected exception");
-				}
-				snooze();
+				processBMPRequests();
 
 				assumeState(job, JobState.READY, 0, 0);
 
@@ -487,16 +480,11 @@ class AllocatorTest extends SQLQueries {
 
 				assertState(job, JobState.DESTROYED, 0, 1);
 
-				// HACK! Allow immediate switch off
+				// HACK! Allow immediate switch off (OK because not real BMP)
 				update(conn, "UPDATE boards SET "
 						+ "power_on_timestamp = power_on_timestamp - 1000")
 								.call();
-				try {
-					bmpCtrl.processRequests();
-				} catch (IOException | SpinnmanException e) {
-					assertNull(e, "unexpected exception");
-				}
-				snooze();
+				processBMPRequests();
 
 				assertState(job, JobState.DESTROYED, 0, 0);
 			} finally {
@@ -505,5 +493,10 @@ class AllocatorTest extends SQLQueries {
 				update(conn, "DELETE FROM pending_changes").call();
 			}
 		}
+	}
+
+	private void processBMPRequests() throws Exception {
+		bmpCtrl.processRequests();
+		snooze();
 	}
 }

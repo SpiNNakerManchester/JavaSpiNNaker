@@ -282,6 +282,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
+	@Deprecated
 	boolean allocate(Connection conn) throws SQLException {
 		try (AllocSQL sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
@@ -360,6 +361,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
+	@Deprecated // INTERNAL
 	boolean expireJobs(Connection conn) throws SQLException {
 		boolean changed = false;
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
