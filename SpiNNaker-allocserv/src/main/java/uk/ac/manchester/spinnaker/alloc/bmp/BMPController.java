@@ -26,6 +26,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.slf4j.MDC.putCloseable;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
@@ -36,6 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,11 +48,12 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PreDestroy;
 
-import org.jboss.logging.MDC;
 import org.slf4j.Logger;
+import org.slf4j.MDC.MDCCloseable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -99,23 +102,6 @@ public class BMPController extends SQLQueries {
 
 	private static final int MS_PER_S = 1000;
 
-	/**
-	 * FPGA identifiers.
-	 *
-	 * @see <a href=
-	 *      "http://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5
-	 *      FPGA SATA Links</a> datasheet.
-	 */
-	// No idea if this terminology matches up elsewhere in Spalloc
-	public enum FpgaIdents {
-		/** Handles east and south. */
-		FPGA_E_S,
-		/** Handles south-west and west. */
-		FPGA_SW_W,
-		/** Handles north and north-east. */
-		FPGA_N_NE
-	}
-
 	private static final long INTER_TAKE_DELAY = 10000;
 
 	/**
@@ -149,45 +135,214 @@ public class BMPController extends SQLQueries {
 	@Autowired
 	private Epochs epochs;
 
-	private ExecutorService executor = newCachedThreadPool(Thread::new);
+	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
-	/** The state of worker threads that can be seen outside the thread. */
-	private static class WorkerState {
-		/** What machine is the worker handling? */
-		final Machine machine;
+	/** We have our own pool. */
+	private ExecutorService executor = newCachedThreadPool(this::makeThread);
 
-		/** Queue of requests to the machine to carry out. */
-		final Queue<Request> requests = new ConcurrentLinkedDeque<>();
+	/**
+	 * A {@link ThreadFactory}.
+	 *
+	 * @param target
+	 *            What the thread will be doing.
+	 * @return The thread.
+	 */
+	private Thread makeThread(Runnable target) {
+		Thread t = new Thread(group, target);
+		t.setUncaughtExceptionHandler(this::handleException);
+		return t;
+	}
 
-		/** Whether there are any requests pending. */
-		boolean requestsPending = false;
+	/**
+	 * An {@link UncaughtExceptionHandler}.
+	 *
+	 * @param thread
+	 *            The thread with the problem.
+	 * @param exception
+	 *            The exception that describes the problem.
+	 */
+	private void handleException(Thread thread, Throwable exception) {
+		log.error("uncaught exception in BMP worker {}", thread, exception);
+	}
 
-		/** What thread is serving as the worker? */
-		Thread workerThread;
+	// ----------------------------------------------------------------
+	// CORE BMP ACCESS FUNCTIONS
 
-		WorkerState(Machine machine) {
-			this.machine = machine;
+	/**
+	 * Check whether an FPGA has come up in a good state.
+	 *
+	 * @param machine
+	 *            The machine hosting the board with the FPGA.
+	 * @param txrx
+	 *            The transceiver for talking to the machine.
+	 * @param board
+	 *            Which board is the FPGA on?
+	 * @param fpga
+	 *            Which FPGA (0, 1, or 2) is being tested?
+	 * @return True if the FPGA is in a correct state, false otherwise.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If network I/O fails.
+	 */
+	private static boolean isGoodFPGA(Machine machine,
+			BMPTransceiverInterface txrx, Integer board, FpgaIdentifiers fpga)
+			throws ProcessException, IOException {
+		int flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
+		// FPGA ID is bottom two bits of FLAG register
+		int fpgaId = flag & FPGA_FLAG_ID_MASK;
+		boolean ok = fpgaId == fpga.ordinal();
+		if (!ok) {
+			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
+					board, machine.getName(), fpgaId);
+		}
+		return ok;
+	}
+
+	/**
+	 * Is a board new enough to be able to manage FPGAs?
+	 *
+	 * @param txrx
+	 *            Transceiver for talking to a BMP in a machine.
+	 * @param board
+	 *            The board number.
+	 * @return True if the board can manage FPGAs.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If network I/O fails.
+	 */
+	private static boolean canBoardManageFPGAs(BMPTransceiverInterface txrx,
+			Integer board) throws ProcessException, IOException {
+		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
+		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
+	}
+
+	/**
+	 * Turns a link off. (We never need to explicitly switch a link on; that's
+	 * implicit in switching on its board.)
+	 * <p>
+	 * Technically, switching a link off just switches off <em>sending</em> on
+	 * that link. We assume that the other end of the link also behaves.
+	 *
+	 * @param txrx
+	 *            The transceiver.
+	 * @param board
+	 *            The board.
+	 * @param link
+	 *            The link direction.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If network I/O fails.
+	 */
+	private static void setLinkOff(BMPTransceiverInterface txrx, Integer board,
+			Direction link) throws ProcessException, IOException {
+		// skip FPGA link configuration if old BMP version
+		if (!canBoardManageFPGAs(txrx, board)) {
+			return;
+		}
+		txrx.writeFPGARegister(link.fpga, link.bank, STOP, 1, ROOT_BMP, board);
+	}
+
+	/**
+	 * Switch on a collection of boards on a machine and check that they've come
+	 * up correctly.
+	 * <p>
+	 * Note that this operation can take some time.
+	 *
+	 * @param machine
+	 *            The machine containing the boards.
+	 * @param txrx
+	 *            The transceiver for talking to the machine.
+	 * @param boards
+	 *            Which boards to switch on.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	private static void powerOnAndCheck(Machine machine,
+			BMPTransceiverInterface txrx, List<Integer> boards)
+			throws ProcessException, InterruptedException, IOException {
+		List<Integer> boardsToPower = boards;
+		for (int attempt = 1; attempt <= NUM_FPGA_RETRIES; attempt++) {
+			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
+
+			/*
+			 * Check whether all the FPGAs on each board have come up correctly.
+			 * If not, we'll need to try booting that board again. The boards
+			 * that have booted correctly need no further action.
+			 */
+
+			List<Integer> retryBoards = new ArrayList<>();
+			for (Integer board : boardsToPower) {
+				// Skip board if old BMP version
+				if (!canBoardManageFPGAs(txrx, board)) {
+					continue;
+				}
+
+				for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
+					if (!isGoodFPGA(machine, txrx, board, fpga)) {
+						retryBoards.add(board);
+						/*
+						 * Stop the INNERMOST loop; we know this board needs
+						 * retrying so there's no point in continuing to look at
+						 * the FPGAs it has.
+						 */
+						break;
+					}
+				}
+			}
+			if (retryBoards.isEmpty()) {
+				// Success!
+				return;
+			}
+			boardsToPower = retryBoards;
+		}
+		throw new IOException(
+				"Could not get correct FPGA ID for " + boardsToPower.size()
+						+ " boards after " + NUM_FPGA_RETRIES + " tries");
+	}
+
+	/**
+	 * Change the power state of a board.
+	 *
+	 * @param txrx
+	 *            The transceiver to use
+	 * @param request
+	 *            The change to carry out
+	 * @throws ProcessException
+	 *             If the transceiver chokes
+	 * @throws InterruptedException
+	 *             If interrupted
+	 * @throws IOException
+	 *             If network I/O fails
+	 */
+	private static void changeBoardPowerState(BMPTransceiverInterface txrx,
+			Request request)
+			throws ProcessException, InterruptedException, IOException {
+		// Send any power on commands
+		if (!request.powerOnBoards.isEmpty()) {
+			powerOnAndCheck(request.machine, txrx, request.powerOnBoards);
 		}
 
-		void interrupt() {
-			Thread wt = workerThread;
-			if (nonNull(wt)) {
-				wt.interrupt();
-			}
+		// Process link requests next
+		for (Link linkReq : request.linkRequests) {
+			// Set the link state, as required
+			setLinkOff(txrx, linkReq.board, linkReq.link);
+		}
+
+		// Finally send any power off commands
+		if (!request.powerOffBoards.isEmpty()) {
+			txrx.power(POWER_OFF, ROOT_BMP, request.powerOffBoards);
 		}
 	}
 
-	@PreDestroy
-	private void shutDownWorkers() throws InterruptedException {
-		markAllForStop();
-		executor.shutdown();
-		synchronized (state) {
-			for (WorkerState ws : state.values()) {
-				ws.interrupt();
-			}
-		}
-		executor.awaitTermination(SECONDS_BETWEEN_TRIES, SECONDS);
-	}
+	// ----------------------------------------------------------------
+	// SERVICE IMPLEMENTATION
 
 	@Scheduled(fixedDelay = INTER_TAKE_DELAY, initialDelay = INTER_TAKE_DELAY)
 	void mainSchedule() throws SQLException, IOException, SpinnmanException {
@@ -222,9 +377,8 @@ public class BMPController extends SQLQueries {
 	 *             If the wait for workers to spawn fails.
 	 */
 	@Deprecated
-	public void processRequests()
-			throws SQLException, IOException, SpinnmanException,
-			InterruptedException {
+	public void processRequests() throws SQLException, IOException,
+			SpinnmanException, InterruptedException {
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -262,105 +416,6 @@ public class BMPController extends SQLQueries {
 		return state.values().stream().mapToInt(s -> s.requests.size()).sum();
 	}
 
-	private boolean isGoodFPGA(Machine machine, BMPTransceiverInterface txrx,
-			int board, FpgaIdents fpga) throws ProcessException, IOException {
-		int flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
-		// FPGA ID is bottom two bits of FLAG register
-		int fpgaId = flag & FPGA_FLAG_ID_MASK;
-		boolean ok = fpgaId == fpga.ordinal();
-		if (!ok) {
-			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}",
-					fpga, board, machine.getName(), fpgaId);
-		}
-		return ok;
-	}
-
-	/**
-	 * Is a board new enough to be able to manage FPGAs?
-	 *
-	 * @param txrx
-	 *            Transceiver for talking to a BMP in a machine.
-	 * @param board
-	 *            The board number.
-	 * @return True if the board can manage FPGAs.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 */
-	private boolean canBoardManageFPGAs(BMPTransceiverInterface txrx, int board)
-			throws ProcessException, IOException {
-		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
-		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
-	}
-
-	/**
-	 * Turns a link off. (We never need to explicitly switch a link on; that's
-	 * implicit in switching on its board.)
-	 *
-	 * @param txrx
-	 *            The transceiver.
-	 * @param board
-	 *            The board.
-	 * @param link
-	 *            The link direction.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 */
-	private void setLinkOff(BMPTransceiverInterface txrx, int board,
-			Direction link) throws ProcessException, IOException {
-		// skip FPGA link configuration if old BMP version
-		if (!canBoardManageFPGAs(txrx, board)) {
-			return;
-		}
-		txrx.writeFPGARegister(link.fpga, link.bank, STOP, 1, ROOT_BMP, board);
-	}
-
-	private void powerOnAndCheck(Machine machine, BMPTransceiverInterface txrx,
-			List<Integer> boards)
-			throws ProcessException, InterruptedException, IOException {
-		List<Integer> boardsToPower = boards;
-		for (int attempt = 1; attempt <= NUM_FPGA_RETRIES; attempt++) {
-			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
-
-			/*
-			 * Check whether all the FPGAs on each board have come up correctly.
-			 * If not, we'll need to try booting that board again. The boards
-			 * that have booted correctly need no further action.
-			 */
-
-			List<Integer> retryBoards = new ArrayList<>();
-			for (int board : boardsToPower) {
-				// Skip board if old BMP version
-				if (!canBoardManageFPGAs(txrx, board)) {
-					continue;
-				}
-
-				for (FpgaIdents fpga : FpgaIdents.values()) {
-					if (!isGoodFPGA(machine, txrx, board, fpga)) {
-						retryBoards.add(board);
-						/*
-						 * Stop the INNERMOST loop; we know this board needs
-						 * retrying so there's no point in continuing to look at
-						 * the FPGAs it has.
-						 */
-						break;
-					}
-				}
-			}
-			if (retryBoards.isEmpty()) {
-				// Success!
-				return;
-			}
-			boardsToPower = retryBoards;
-		}
-		throw new RuntimeException(
-				"Could not get correct FPGA ID for " + boardsToPower.size()
-						+ " boards after " + NUM_FPGA_RETRIES + " tries");
-	}
-
 	/**
 	 * Describes a request to modify the power status of a collection of boards.
 	 * The boards must be on a single machine and must all be assigned to a
@@ -380,7 +435,7 @@ public class BMPController extends SQLQueries {
 
 		private final List<Link> linkRequests;
 
-		private final int jobId;
+		private final Integer jobId;
 
 		private final JobState from;
 
@@ -419,7 +474,7 @@ public class BMPController extends SQLQueries {
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		Request(Machine machine, List<Integer> powerOnBoards,
 				List<Integer> powerOffBoards, List<Link> linkRequests,
-				int jobId, JobState from, JobState to,
+				Integer jobId, JobState from, JobState to,
 				List<Integer> changeIds) {
 			this.machine = requireNonNull(machine);
 			this.powerOnBoards = new ArrayList<>(
@@ -491,102 +546,6 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
-	private void processRequest(Request request) throws InterruptedException {
-		BMPTransceiverInterface txrx;
-		try {
-			txrx = txrxFactory.getTransciever(request.machine);
-		} catch (IOException | SpinnmanException | SQLException e) {
-			log.error("could not get transceiver", e);
-			return;
-		}
-		MDC.put("changes",
-				asList(request.powerOnBoards.size(),
-						request.powerOffBoards.size(),
-						request.linkRequests.size()));
-		try {
-			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
-				if (tryChangePowerState(request, txrx,
-						nTries == N_REQUEST_TRIES)) {
-					break;
-				}
-				sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
-			}
-		} finally {
-			MDC.remove("changes");
-		}
-	}
-
-	private boolean tryChangePowerState(Request request,
-			BMPTransceiverInterface txrx, boolean isLastTry)
-			throws InterruptedException {
-		Machine machine = request.machine;
-		try {
-			changeBoardPowerState(txrx, request);
-			request.done();
-			// Exit the retry loop (in caller) if the requests all worked
-			return true;
-		} catch (InterruptedException e) {
-			/*
-			 * We were interrupted! This happens when we're shutting down. Log
-			 * (because we're in an inconsistent state) and rethrow so that the
-			 * outside gets to clean up.
-			 */
-			log.error("Requests failed on BMP {} because of interruption",
-					machine, e);
-			request.failed();
-			currentThread().interrupt();
-			throw e;
-		} catch (Exception e) {
-			if (!isLastTry) {
-				/*
-				 * Log somewhat gently; we *might* be able to recover...
-				 */
-				log.warn("Retrying requests on BMP {} after {} seconds: {}",
-						machine, SECONDS_BETWEEN_TRIES, e.getMessage());
-				// Ask for a retry
-				return false;
-			}
-			log.error("Requests failed on BMP {}", machine, e);
-			request.failed();
-			// This is (probably) a permanent failure; stop retry loop
-			return true;
-		}
-	}
-
-	/**
-	 * Change the power state of a board.
-	 *
-	 * @param txrx
-	 *            The transceiver to use
-	 * @param request
-	 *            The change to carry out
-	 * @throws ProcessException
-	 *             If the transceiver chokes
-	 * @throws InterruptedException
-	 *             If interrupted
-	 * @throws IOException
-	 *             If network I/O fails
-	 */
-	private void changeBoardPowerState(BMPTransceiverInterface txrx,
-			Request request)
-			throws ProcessException, InterruptedException, IOException {
-		// Send any power on commands
-		if (!request.powerOnBoards.isEmpty()) {
-			powerOnAndCheck(request.machine, txrx, request.powerOnBoards);
-		}
-
-		// Process link requests next
-		for (Link linkReq : request.linkRequests) {
-			// Set the link state, as required
-			setLinkOff(txrx, linkReq.board, linkReq.link);
-		}
-
-		// Finally send any power off commands
-		if (!request.powerOffBoards.isEmpty()) {
-			txrx.power(POWER_OFF, ROOT_BMP, request.powerOffBoards);
-		}
-	}
-
 	/**
 	 * Encapsulation of a connection.
 	 */
@@ -642,15 +601,15 @@ public class BMPController extends SQLQueries {
 			super.close();
 		}
 
-		Iterable<Row> jobsWithChanges(int machineId) throws SQLException {
+		Iterable<Row> jobsWithChanges(Integer machineId) throws SQLException {
 			return getJobIdsWithChanges.call(machineId);
 		}
 
-		Iterable<Row> getPowerChangesToDo(int jobId) throws SQLException {
+		Iterable<Row> getPowerChangesToDo(Integer jobId) throws SQLException {
 			return getPowerChangesToDo.call(jobId);
 		}
 
-		int setInProgress(boolean inProgress, int changeId)
+		int setInProgress(boolean inProgress, Integer changeId)
 				throws SQLException {
 			return setInProgress.call(inProgress, changeId);
 		}
@@ -666,14 +625,14 @@ public class BMPController extends SQLQueries {
 	 */
 	private List<Request> takeRequests() throws SQLException {
 		List<Request> requestCollector = new ArrayList<>();
+		List<Machine> machines =
+				new ArrayList<>(spallocCore.getMachines().values());
 		try (TakeReqsSQL sql = new TakeReqsSQL()) {
 			sql.transaction(() -> {
-				List<Machine> machines =
-						new ArrayList<>(spallocCore.getMachines().values());
 				// The outer loop is always over a small set, fortunately
 				for (Machine machine : machines) {
 					for (Row jobIds : sql.jobsWithChanges(machine.getId())) {
-						takeRequestsForJob(machine, jobIds.getInt("job_id"),
+						takeRequestsForJob(machine, jobIds.getInteger("job_id"),
 								sql, requestCollector);
 					}
 				}
@@ -682,8 +641,9 @@ public class BMPController extends SQLQueries {
 		return requestCollector;
 	}
 
-	private void takeRequestsForJob(Machine machine, int jobId, TakeReqsSQL sql,
-			List<Request> requestCollector) throws SQLException {
+	private void takeRequestsForJob(Machine machine, Integer jobId,
+			TakeReqsSQL sql, List<Request> requestCollector)
+			throws SQLException {
 		List<Integer> changeIds = new ArrayList<>();
 		List<Integer> boardsOn = new ArrayList<>();
 		List<Integer> boardsOff = new ArrayList<>();
@@ -691,8 +651,8 @@ public class BMPController extends SQLQueries {
 		JobState from = UNKNOWN, to = UNKNOWN;
 
 		for (Row row : sql.getPowerChangesToDo(jobId)) {
-			changeIds.add(row.getInt("change_id"));
-			int board = row.getInt("board_id");
+			changeIds.add(row.getInteger("change_id"));
+			Integer board = row.getInteger("board_id");
 			boolean switchOn = row.getBoolean("power");
 			/*
 			 * Set these multiple times; we don't care as they should be the
@@ -705,6 +665,7 @@ public class BMPController extends SQLQueries {
 			} else {
 				boardsOff.add(board);
 			}
+			// Decode a collection of boolean columns
 			for (Direction link : Direction.values()) {
 				if (switchOn && !row.getBoolean(link.columnName)) {
 					linksOff.add(new Link(board, link));
@@ -719,7 +680,7 @@ public class BMPController extends SQLQueries {
 
 		requestCollector.add(new Request(machine, boardsOn, boardsOff, linksOff,
 				jobId, from, to, changeIds));
-		for (int changeId : changeIds) {
+		for (Integer changeId : changeIds) {
 			sql.setInProgress(true, changeId);
 		}
 	}
@@ -754,24 +715,25 @@ public class BMPController extends SQLQueries {
 
 		// What follows are type-safe wrappers
 
-		int setBoardState(boolean state, int jobId) throws SQLException {
-			return setBoardState.call(state, jobId);
+		int setBoardState(boolean state, Integer boardId) throws SQLException {
+			return setBoardState.call(state, boardId);
 		}
 
-		int setJobState(JobState state, int pending, int jobId)
+		int setJobState(JobState state, int pending, Integer jobId)
 				throws SQLException {
 			return setJobState.call(state, pending, jobId);
 		}
 
-		int setInProgress(boolean progress, int changeId) throws SQLException {
+		int setInProgress(boolean progress, Integer changeId)
+				throws SQLException {
 			return setInProgress.call(progress, changeId);
 		}
 
-		int deallocateBoards(int jobId) throws SQLException {
+		int deallocateBoards(Integer jobId) throws SQLException {
 			return deallocateBoards.call(jobId);
 		}
 
-		int deleteChange(int changeId) throws SQLException {
+		int deleteChange(Integer changeId) throws SQLException {
 			return deleteChange.call(changeId);
 		}
 	}
@@ -818,16 +780,16 @@ public class BMPController extends SQLQueries {
 		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
 				deallocated = 0, killed = 0;
 		if (failed) {
-			for (int changeId : request.changeIds) {
+			for (Integer changeId : request.changeIds) {
 				moved += sql.setInProgress(false, changeId);
 			}
 			jobChange += sql.setJobState(request.from, 0, request.jobId);
 			// TODO what else should happen here?
 		} else {
-			for (int board : request.powerOnBoards) {
+			for (Integer board : request.powerOnBoards) {
 				turnedOn += sql.setBoardState(true, board);
 			}
-			for (int board : request.powerOffBoards) {
+			for (Integer board : request.powerOffBoards) {
 				turnedOff += sql.setBoardState(false, board);
 			}
 			jobChange += sql.setJobState(request.to, 0, request.jobId);
@@ -838,7 +800,7 @@ public class BMPController extends SQLQueries {
 				 */
 				deallocated += sql.deallocateBoards(request.jobId);
 			}
-			for (int changeId : request.changeIds) {
+			for (Integer changeId : request.changeIds) {
 				killed += sql.deleteChange(changeId);
 			}
 		}
@@ -899,6 +861,48 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
+	// ----------------------------------------------------------------
+	// WORKER IMPLEMENTATION
+
+	/** The state of worker threads that can be seen outside the thread. */
+	private static class WorkerState {
+		/** What machine is the worker handling? */
+		final Machine machine;
+
+		/** Queue of requests to the machine to carry out. */
+		final Queue<Request> requests = new ConcurrentLinkedDeque<>();
+
+		/** Whether there are any requests pending. */
+		boolean requestsPending = false;
+
+		/** What thread is serving as the worker? */
+		Thread workerThread;
+
+		WorkerState(Machine machine) {
+			this.machine = machine;
+		}
+
+		void interrupt() {
+			Thread wt = workerThread;
+			if (nonNull(wt)) {
+				wt.interrupt();
+			}
+		}
+	}
+
+	@PreDestroy
+	private void shutDownWorkers() throws InterruptedException {
+		markAllForStop();
+		executor.shutdown();
+		synchronized (state) {
+			for (WorkerState ws : state.values()) {
+				ws.interrupt();
+			}
+		}
+		executor.awaitTermination(SECONDS_BETWEEN_TRIES, SECONDS);
+		group.interrupt();
+	}
+
 	/**
 	 * Establishes (while active) that the current thread is a worker thread for
 	 * handling a machine's communications.
@@ -957,8 +961,9 @@ public class BMPController extends SQLQueries {
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(WorkerState ws) {
-		MDC.put("machine", ws.machine.getName());
-		try (AutoCloseable binding = new BindWorker(ws, ws.machine.getName())) {
+		String name = ws.machine.getName();
+		try (MDCCloseable mdc = putCloseable("machine", name);
+				BindWorker binding = new BindWorker(ws, name)) {
 			do {
 				waitForPending(ws);
 
@@ -990,6 +995,67 @@ public class BMPController extends SQLQueries {
 			markAllForStop();
 			log.error("unhandled exception for '{}'", currentThread().getName(),
 					e);
+		}
+	}
+
+	private void processRequest(Request request) throws InterruptedException {
+		BMPTransceiverInterface txrx;
+		try {
+			txrx = txrxFactory.getTransciever(request.machine);
+		} catch (IOException | SpinnmanException | SQLException e) {
+			// Shouldn't ever happen; the transceiver ought to be pre-built
+			log.error("could not get transceiver", e);
+			return;
+		}
+
+		try (MDCCloseable mdc = putCloseable("changes",
+				asList(request.powerOnBoards.size(),
+						request.powerOffBoards.size(),
+						request.linkRequests.size()).toString())) {
+			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
+				if (tryChangePowerState(request, txrx,
+						nTries == N_REQUEST_TRIES)) {
+					break;
+				}
+				sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
+			}
+		}
+	}
+
+	private boolean tryChangePowerState(Request request,
+			BMPTransceiverInterface txrx, boolean isLastTry)
+			throws InterruptedException {
+		Machine machine = request.machine;
+		try {
+			changeBoardPowerState(txrx, request);
+			request.done();
+			// Exit the retry loop (in caller) if the requests all worked
+			return true;
+		} catch (InterruptedException e) {
+			/*
+			 * We were interrupted! This happens when we're shutting down. Log
+			 * (because we're in an inconsistent state) and rethrow so that the
+			 * outside gets to clean up.
+			 */
+			log.error("Requests failed on BMP {} because of interruption",
+					machine, e);
+			request.failed();
+			currentThread().interrupt();
+			throw e;
+		} catch (Exception e) {
+			if (!isLastTry) {
+				/*
+				 * Log somewhat gently; we *might* be able to recover...
+				 */
+				log.warn("Retrying requests on BMP {} after {} seconds: {}",
+						machine, SECONDS_BETWEEN_TRIES, e.getMessage());
+				// Ask for a retry
+				return false;
+			}
+			log.error("Requests failed on BMP {}", machine, e);
+			request.failed();
+			// This is (probably) a permanent failure; stop retry loop
+			return true;
 		}
 	}
 }
