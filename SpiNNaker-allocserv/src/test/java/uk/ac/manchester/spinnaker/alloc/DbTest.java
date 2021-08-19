@@ -1315,5 +1315,23 @@ class DbTest {
 				assertThrowsFK(() -> u.call(NO_BOARD, NO_JOB, "gorp", NO_USER));
 			}
 		}
+
+		@Test
+		void deleteJobRecord() throws SQLException {
+			assumeFalse(c.isReadOnly(), "connection is read-only");
+			try (Update u = update(c, DELETE_JOB_RECORD)) {
+				assertEquals(1, u.getNumArguments());
+				assertEquals(0, u.call(NO_JOB));
+			}
+		}
+
+		@Test
+		void copyToHistoricalData() throws SQLException {
+			try (Query q = query(c, copyToHistoricalData)) {
+				assertEquals(1, q.getNumArguments());
+				assertSetEquals(set("job_id"), q.getRowColumnNames());
+				assertFalse(q.call1(1000000).isPresent());
+			}
+		}
 	}
 }

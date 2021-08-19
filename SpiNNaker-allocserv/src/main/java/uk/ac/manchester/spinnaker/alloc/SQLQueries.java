@@ -1148,6 +1148,16 @@ public abstract class SQLQueries {
 					+ "board_id, job_id, reported_issue, reporter) "
 					+ "VALUES(:board_id, :job_id, :issue, :user_id)";
 
+	/**
+	 * Actually delete a job record. Only called by the data tombstone-r. This
+	 * is the only thing that deletes jobs from the active database.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("job_id")
+	protected static final String DELETE_JOB_RECORD =
+			"DELETE FROM jobs WHERE job_id = :job_id";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -1456,4 +1466,16 @@ public abstract class SQLQueries {
 	@ResultColumn("address")
 	@Value("classpath:queries/get_reported_boards.sql")
 	protected Resource getReportedBoards;
+
+	/**
+	 * Copy jobs to the historical data DB, and return the IDs of the jobs that
+	 * were copied (which will now be safe to delete). Only jobs that are
+	 * already completed will ever get copied.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("job_id")
+	@Value("classpath:queries/copy-to-historical-data.sql")
+	protected Resource copyToHistoricalData;
 }

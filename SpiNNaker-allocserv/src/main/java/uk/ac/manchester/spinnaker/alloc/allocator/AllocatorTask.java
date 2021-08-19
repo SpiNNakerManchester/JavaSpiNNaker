@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
@@ -31,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -101,6 +103,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Value("${spalloc.allocator.importance-span:1000}")
 	private int importanceSpan;
+
+	@Value("${spalloc.historical-data.grace-period:P14D}")
+	private Duration tombstoneGracePeriod;
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -387,6 +392,60 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			}
 		}
 		return changed;
+	}
+
+	/**
+	 * Migrates long dead jobs to the historical data DB.
+	 *
+	 * @throws SQLException
+	 *             If DB access fails.
+	 */
+	@Scheduled(cron = "${spalloc.historical-data.expiry-schedule:0 0 2 * * *}")
+	public void tombstone() throws SQLException {
+		if (serviceControl.isPaused()) {
+			return;
+		}
+
+		try (Connection conn = db.getConnection()) {
+			tombstone(conn);
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; "
+						+ "will try job tombstone processing later");
+				return;
+			}
+			throw e;
+		}
+	}
+
+	/**
+	 * Implementation of {@link #tombstone()}. This is done as two transactions
+	 * to help manage the amount of locking; nothing else ought to be updating
+	 * any of these jobs at the time this task usually runs, but we'll still try
+	 * to keep things minimally locked.
+	 *
+	 * @param conn
+	 *            The DB connection
+	 */
+	private void tombstone(Connection conn) throws SQLException {
+		try (Query copy = query(conn, copyToHistoricalData);
+				Update delete = update(conn,
+						DELETE_JOB_RECORD)) {
+			List<Integer> jobIds = new ArrayList<>();
+			transaction(conn, () -> {
+				for (Row row : copy.call(tombstoneGracePeriod)) {
+					jobIds.add(row.getInteger("job_id"));
+				}
+			});
+			transaction(conn, () -> {
+				for (Integer jobId : jobIds) {
+					// I don't think a NULL jobId is possible
+					if (nonNull(jobId)) {
+						delete.call(jobId);
+					}
+				}
+			});
+		}
 	}
 
 	@Override

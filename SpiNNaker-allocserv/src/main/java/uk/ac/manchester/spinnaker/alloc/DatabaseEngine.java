@@ -127,6 +127,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private final Path dbPath;
 
+	private String tombstoneFile;
+
 	private final String dbConnectionUrl;
 
 	private final SQLiteConfig config = new SQLiteConfig();
@@ -147,6 +149,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
+
+	@Value("classpath:/spalloc-tombstone.sql")
+	private Resource tombstoneDDLFile;
 
 	@Value("classpath:/spalloc-static-data.sql")
 	private Resource sqlInitDataFile;
@@ -359,12 +364,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param dbFile
 	 *            The file containing the database.
+	 * @param tombstoneFile
+	 *            The file containing the database of backed up dead jobs.
 	 */
 	@Autowired
 	public DatabaseEngine(
-			@Value("${spalloc.database-path:spalloc.sqlite3}") File dbFile) {
+			@Value("${spalloc.database-path:spalloc.sqlite3}") File dbFile,
+			@Value("${spalloc.historical-data.path:spalloc-history.sqlite3}")
+			File tombstoneFile) {
 		dbPath = requireNonNull(dbFile, "a database file must be given")
 				.getAbsoluteFile().toPath();
+		this.tombstoneFile = requireNonNull(tombstoneFile,
+				"an historical database file must be given").getAbsolutePath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
 		log.info("will manage database at {}", dbPath);
 	}
@@ -380,10 +391,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public DatabaseEngine(DatabaseEngine prototype) {
 		dbPath = null;
+		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage pure in-memory database");
 		busyTimeout = prototype.busyTimeout;
 		sqlDDLFile = prototype.sqlDDLFile;
+		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
 		setupConfig();
@@ -545,6 +558,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		log.info("initalising DB ({}) schema from {}", conn.libversion(),
 				sqlDDLFile);
 		exec(conn, sqlDDLFile);
+		log.info("attaching historical job DB ({}) schema from {}",
+				tombstoneFile, tombstoneDDLFile);
+		update(conn, "ATTACH DATABASE ? AS tombstone").call(tombstoneFile);
+		exec(conn, tombstoneDDLFile);
 		transaction(conn, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
 			exec(conn, sqlInitDataFile);

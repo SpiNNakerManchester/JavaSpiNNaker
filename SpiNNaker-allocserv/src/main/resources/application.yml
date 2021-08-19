@@ -69,6 +69,15 @@ cxf:
 spalloc:
   # Where's the database?
   database-path: spalloc.sqlite3
+  historical-data:
+    # Where to we back up old jobs to?
+    path: spalloc-history.sqlite3
+    # How long before we move old jobs to the historical data
+    # Defaults to 14 days (or thereabouts)
+    grace-period: P14D
+    # Cron-like expression to say when to run the migration task.
+    # Defaults to overnight at 02:00 every day
+    expiry-schedule: 0 0 2 * * *
   allocator:
     # What span of importance will be considered when allocating jobs
     importance-span: 10000

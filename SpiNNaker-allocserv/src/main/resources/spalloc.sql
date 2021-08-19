@@ -173,6 +173,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 	num_pending INTEGER NOT NULL DEFAULT (0),
 	allocation_timestamp INTEGER, -- timestamp
 	allocation_size INTEGER,
+	allocated_root INTEGER, -- set by trigger
 	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1))
 );
 
@@ -218,6 +219,14 @@ BEGIN
 		SET death_timestamp = CAST(strftime('%s','now') AS INTEGER)
 	WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 -- DESTROYED
 		AND NEW.job_state IS 4; -- DESTROYED
+END;
+-- When a job is given a root board, remember that permanently
+CREATE TRIGGER IF NOT EXISTS jobAllocationRememberRoot
+AFTER UPDATE OF root_id ON jobs
+BEGIN
+	UPDATE jobs
+		SET allocated_root = NEW.root_id
+	WHERE job_id = OLD.job_id AND NEW.root_id IS NOT NULL;
 END;
 
 CREATE TABLE IF NOT EXISTS job_request (
