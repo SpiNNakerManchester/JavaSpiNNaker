@@ -175,6 +175,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		return rec;
 	}
 
+	// TODO migrate this to DatabaseEngine as a general capability
 	private static <T> List<T> rowsAsList(Iterable<Row> rows,
 			RowMapper<T> mapper) throws SQLException {
 		List<T> result = new ArrayList<>();
