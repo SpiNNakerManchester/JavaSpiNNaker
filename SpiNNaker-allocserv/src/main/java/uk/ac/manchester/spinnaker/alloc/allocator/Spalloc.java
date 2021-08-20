@@ -22,6 +22,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
@@ -173,20 +174,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		rec.setTags(rowsAsList(getTags.call(id),
 				tagRow -> tagRow.getString("tag")));
 		return rec;
-	}
-
-	// TODO migrate this to DatabaseEngine as a general capability
-	private static <T> List<T> rowsAsList(Iterable<Row> rows,
-			RowMapper<T> mapper) throws SQLException {
-		List<T> result = new ArrayList<>();
-		for (Row row : rows) {
-			result.add(mapper.mapRow(row));
-		}
-		return result;
-	}
-
-	private interface RowMapper<T> {
-		T mapRow(Row row) throws SQLException;
 	}
 
 	@Override
@@ -571,7 +558,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public void waitForChange(long timeout) {
+		public void waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
 				return;
 			}
@@ -760,7 +747,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public void waitForChange(long timeout) {
+		public void waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
 				return;
 			}
@@ -907,7 +894,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public void waitForChange(long timeout) {
+		public void waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
 				return;
 			}

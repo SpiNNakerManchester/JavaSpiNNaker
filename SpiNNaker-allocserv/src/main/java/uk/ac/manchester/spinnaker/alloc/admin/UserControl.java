@@ -19,13 +19,13 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -66,19 +66,43 @@ public class UserControl extends SQLQueries {
 	 *             If DB access fails.
 	 */
 	public List<UserRecord> listUsers() throws SQLException {
-		List<UserRecord> result = new ArrayList<>();
 		try (Connection c = db.getConnection();
 				Query q = query(c, LIST_ALL_USERS)) {
-			transaction(c, () -> {
-				for (Row row : q.call()) {
-					UserRecord userSketch = new UserRecord();
-					userSketch.setUserId(row.getInt("user_id"));
-					userSketch.setUserName(row.getString("user_name"));
-					result.add(userSketch);
-				}
-			});
+			return transaction(c,
+					() -> rowsAsList(q.call(), UserControl::sketchUser));
 		}
-		return result;
+	}
+
+	private static UserRecord sketchUser(Row row) throws SQLException {
+		UserRecord userSketch = new UserRecord();
+		userSketch.setUserId(row.getInt("user_id"));
+		userSketch.setUserName(row.getString("user_name"));
+		return userSketch;
+	}
+
+	private static final class CreateSQL implements AutoCloseable {
+		private final Update createUser;
+
+		private final Update makeQuotas;
+
+		private final Update makeDefaultQuotas;
+
+		private final Query getUserDetails;
+
+		CreateSQL(Connection c) throws SQLException {
+			createUser = update(c, CREATE_USER);
+			makeQuotas = update(c, CREATE_QUOTA);
+			makeDefaultQuotas = update(c, CREATE_QUOTAS_FROM_DEFAULTS);
+			getUserDetails = query(c, GET_USER_DETAILS);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			createUser.close();
+			makeQuotas.close();
+			makeDefaultQuotas.close();
+			getUserDetails.close();
+		}
 	}
 
 	/**
@@ -94,34 +118,31 @@ public class UserControl extends SQLQueries {
 	public Optional<UserRecord> createUser(UserRecord user)
 			throws SQLException {
 		try (Connection c = db.getConnection();
-				Update createUser = update(c, CREATE_USER);
-				Update makeQuotas = update(c, CREATE_QUOTA);
-				Update makeDefaultQuotas =
-						update(c, CREATE_QUOTAS_FROM_DEFAULTS);
-				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			return transaction(c, () -> {
-				Optional<Integer> key =
-						createUser.key(user.getUserName(), user.getPassword(),
-								user.getTrustLevel(), !user.isEnabled());
-				if (!key.isPresent()) {
-					return Optional.empty();
-				}
-				int userId = key.get();
-				if (isNull(user.getQuota())) {
-					makeDefaultQuotas.call(userId);
-				} else {
-					for (Entry<String, Long> quotaInfo : user.getQuota()
-							.entrySet()) {
-						makeQuotas.call(userId, quotaInfo.getValue(),
-								quotaInfo.getKey());
-					}
-				}
-				for (Row row : getUserDetails.call(userId)) {
-					return Optional.of(getUser(c, row));
-				}
-				return Optional.empty();
-			});
+				CreateSQL sql = new CreateSQL(c)) {
+			return transaction(c, () -> createUser(user, c, sql));
 		}
+	}
+
+	private Optional<UserRecord> createUser(UserRecord user, Connection c,
+			CreateSQL sql) throws SQLException {
+		Optional<Integer> key = sql.createUser.key(user.getUserName(),
+				user.getPassword(), user.getTrustLevel(), !user.isEnabled());
+		if (!key.isPresent()) {
+			return Optional.empty();
+		}
+		int userId = key.get();
+		if (isNull(user.getQuota())) {
+			sql.makeDefaultQuotas.call(userId);
+		} else {
+			for (Entry<String, Long> quotaInfo : user.getQuota().entrySet()) {
+				sql.makeQuotas.call(userId, quotaInfo.getValue(),
+						quotaInfo.getKey());
+			}
+		}
+		for (Row row : sql.getUserDetails.call(userId)) {
+			return Optional.of(getUser(c, row));
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -146,7 +167,8 @@ public class UserControl extends SQLQueries {
 		}
 	}
 
-	private UserRecord getUser(Connection c, Row row) throws SQLException {
+	private static UserRecord getUser(Connection c, Row row)
+			throws SQLException {
 		UserRecord user = new UserRecord();
 		try {
 			user.setUserId(row.getInt("user_id"));
@@ -175,6 +197,43 @@ public class UserControl extends SQLQueries {
 		return user;
 	}
 
+	private static final class UpdateSQL implements AutoCloseable {
+		private final Update setUserName;
+
+		private final Update setUserPass;
+
+		private final Update setUserDisabled;
+
+		private final Update setUserLocked;
+
+		private final Update setUserTrust;
+
+		private final Update setUserQuota;
+
+		private final Query getUserDetails;
+
+		UpdateSQL(Connection c) throws SQLException {
+			setUserName = update(c, SET_USER_NAME);
+			setUserPass = update(c, SET_USER_PASS);
+			setUserDisabled = update(c, SET_USER_DISABLED);
+			setUserLocked = update(c, SET_USER_LOCKED);
+			setUserTrust = update(c, SET_USER_TRUST);
+			setUserQuota = update(c, SET_USER_QUOTA);
+			getUserDetails = query(c, GET_USER_DETAILS);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			setUserName.close();
+			setUserPass.close();
+			setUserDisabled.close();
+			setUserLocked.close();
+			setUserTrust.close();
+			setUserQuota.close();
+			getUserDetails.close();
+		}
+	}
+
 	/**
 	 * Updates a user.
 	 *
@@ -192,54 +251,65 @@ public class UserControl extends SQLQueries {
 	public Optional<UserRecord> updateUser(int id, UserRecord user,
 			String adminUser) throws SQLException {
 		try (Connection c = db.getConnection();
-				Query userCheck = query(c, GET_USER_ID);
-				Update setUserName = update(c, SET_USER_NAME);
-				Update setUserPass = update(c, SET_USER_PASS);
-				Update setUserDisabled = update(c, SET_USER_DISABLED);
-				Update setUserLocked = update(c, SET_USER_LOCKED);
-				Update setUserTrust = update(c, SET_USER_TRUST);
-				Update setUserQuota = update(c, SET_USER_QUOTA);
-				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			return transaction(c, () -> {
-				int adminId =
-						userCheck.call1(adminUser).get().getInt("user_id");
-				if (nonNull(user.getUserName())) {
-					setUserName.call(user.getUserName(), id);
-				}
-				if (nonNull(user.getPassword())) {
-					setUserPass.call(user.getPassword(), id);
-				} else if (user.isExternallyAuthenticated()) {
-					// Forces external authentication
-					setUserPass.call(null, id);
-				} else {
-					// Weren't told to set the password
-					assert true;
-				}
-				if (nonNull(user.isEnabled()) && adminId != id) {
-					// Admins can't change their own disable state
-					setUserDisabled.call(!user.isEnabled(), id);
-				}
-				if (nonNull(user.isLocked()) && !user.isLocked()
-						&& adminId != id) {
-					// Admins can't change their own locked state
-					setUserLocked.call(user.isLocked(), id);
-				}
-				if (nonNull(user.getTrustLevel()) && adminId != id) {
-					// Admins can't change their own trust level
-					setUserTrust.call(user.getTrustLevel(), id);
-				}
-				if (nonNull(user.getQuota())) {
-					for (Entry<String, Long> quota : user.getQuota()
-							.entrySet()) {
-						setUserQuota.call(quota.getValue(), id, quota.getKey());
-					}
-				}
-				for (Row row : getUserDetails.call(id)) {
-					return Optional.of(getUser(c, row));
-				}
-				return Optional.empty();
-			});
+				UpdateSQL sql = new UpdateSQL(c)) {
+			return transaction(c,
+					() -> updateUser(id, user, adminUser, c, sql));
 		}
+	}
+
+	// Use this for looking up the current user, who should exist!
+	private static int getCurrentUserId(Connection c, String userName)
+			throws SQLException {
+		try (Query userCheck = query(c, GET_USER_ID)) {
+			return userCheck.call1(userName)
+					.orElseThrow(() -> new RuntimeException(
+							"current user has unexpectedly vanshed"))
+					.getInt("user_id");
+		}
+	}
+
+	private Optional<UserRecord> updateUser(int id, UserRecord user,
+			String adminUser, Connection c, UpdateSQL sql) throws SQLException {
+		int adminId = getCurrentUserId(c, adminUser);
+
+		if (nonNull(user.getUserName())) {
+			sql.setUserName.call(user.getUserName(), id);
+		}
+
+		if (nonNull(user.getPassword())) {
+			sql.setUserPass.call(user.getPassword(), id);
+		} else if (user.isExternallyAuthenticated()) {
+			// Forces external authentication
+			sql.setUserPass.call(null, id);
+		} else {
+			// Weren't told to set the password
+			assert true;
+		}
+
+		if (nonNull(user.isEnabled()) && adminId != id) {
+			// Admins can't change their own disable state
+			sql.setUserDisabled.call(!user.isEnabled(), id);
+		}
+		if (nonNull(user.isLocked()) && !user.isLocked() && adminId != id) {
+			// Admins can't change their own locked state
+			sql.setUserLocked.call(user.isLocked(), id);
+		}
+
+		if (nonNull(user.getTrustLevel()) && adminId != id) {
+			// Admins can't change their own trust level
+			sql.setUserTrust.call(user.getTrustLevel(), id);
+		}
+
+		if (nonNull(user.getQuota())) {
+			for (Entry<String, Long> quota : user.getQuota().entrySet()) {
+				sql.setUserQuota.call(quota.getValue(), id, quota.getKey());
+			}
+		}
+
+		for (Row row : sql.getUserDetails.call(id)) {
+			return Optional.of(getUser(c, row));
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -258,11 +328,10 @@ public class UserControl extends SQLQueries {
 	public Optional<String> deleteUser(int id, String adminUser)
 			throws SQLException {
 		try (Connection c = db.getConnection();
-				Query userCheck = query(c, GET_USER_ID);
 				Query getUserName = query(c, GET_USER_DETAILS);
 				Update deleteUser = update(c, DELETE_USER)) {
 			return transaction(c, () -> {
-				if (userCheck.call1(adminUser).get().getInt("user_id") == id) {
+				if (getCurrentUserId(c, adminUser) == id) {
 					// May not delete yourself!
 					return Optional.empty();
 				}
@@ -304,6 +373,27 @@ public class UserControl extends SQLQueries {
 		}
 	}
 
+	private static final class UpdatePassSQL implements AutoCloseable {
+		private Query getPasswordedUser;
+
+		private Query isPasswordMatching;
+
+		private Update setPassword;
+
+		UpdatePassSQL(Connection c) throws SQLException {
+			getPasswordedUser = query(c, GET_LOCAL_USER_DETAILS);
+			isPasswordMatching = query(c, IS_USER_PASS_MATCHED);
+			setPassword = update(c, SET_USER_PASS);
+		}
+
+		@Override
+		public void close() throws SQLException {
+			getPasswordedUser.close();
+			isPasswordMatching.close();
+			setPassword.close();
+		}
+	}
+
 	/**
 	 * Update the local password of the current user based on a filled out model
 	 * previously provided.
@@ -323,33 +413,35 @@ public class UserControl extends SQLQueries {
 			PasswordChangeRecord user)
 			throws AuthenticationException, SQLException {
 		try (Connection c = db.getConnection();
-				Query getPasswordedUser = query(c, GET_LOCAL_USER_DETAILS);
-				Query isPasswordMatching = query(c, IS_USER_PASS_MATCHED);
-				Update setPassword = update(c, SET_USER_PASS)) {
-			return transaction(c, () -> {
-				Row row = getPasswordedUser.call1(principal.getName())
-						.orElseThrow(
-								// OpenID-authenticated user; go away
-								() -> new AuthenticationServiceException(
-										"user is managed externally; cannot "
-												+ "change password here"));
-				PasswordChangeRecord baseUser = new PasswordChangeRecord(
-						row.getInt("user_id"), row.getString("user_name"));
-				if (!isPasswordMatching.call1(user.getOldPassword(),
-						baseUser.getUserId()).get().getBoolean("matches")) {
-					throw new BadCredentialsException("bad password");
-				}
-				// Validate change; this should never fail but...
-				if (!user.isNewPasswordMatched()) {
-					throw new BadCredentialsException("bad password");
-				}
-				if (setPassword.call(user.getNewPassword(),
-						baseUser.getUserId()) != 1) {
-					throw new InternalAuthenticationServiceException(
-							"failed to update database");
-				}
-				return baseUser;
-			});
+				UpdatePassSQL sql = new UpdatePassSQL(c)) {
+			return transaction(c,
+					() -> updateUserOfPrincipal(principal, user, sql));
 		}
+	}
+
+	private PasswordChangeRecord updateUserOfPrincipal(Principal principal,
+			PasswordChangeRecord user, UpdatePassSQL sql) throws SQLException {
+		Row row = sql.getPasswordedUser.call1(principal.getName()).orElseThrow(
+				// OpenID-authenticated user; go away
+				() -> new AuthenticationServiceException(
+						"user is managed externally; cannot "
+								+ "change password here"));
+		PasswordChangeRecord baseUser = new PasswordChangeRecord(
+				row.getInt("user_id"), row.getString("user_name"));
+		if (!sql.isPasswordMatching
+				.call1(user.getOldPassword(), baseUser.getUserId()).get()
+				.getBoolean("matches")) {
+			throw new BadCredentialsException("bad password");
+		}
+		// Validate change; this should never fail but...
+		if (!user.isNewPasswordMatched()) {
+			throw new BadCredentialsException("bad password");
+		}
+		if (sql.setPassword.call(user.getNewPassword(),
+				baseUser.getUserId()) != 1) {
+			throw new InternalAuthenticationServiceException(
+					"failed to update database");
+		}
+		return baseUser;
 	}
 }

@@ -99,7 +99,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	/**
 	 * Trivial default allocation quota. 100 board-seconds is next to nothing.
 	 */
-	@Value("${spalloc.default-quota:100}")
+	@Value("${spalloc.quota.default:100}")
 	private long defaultQuota;
 
 	/** Maximum number of login failures for account to get a lock. */
@@ -112,9 +112,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 	private static final String DUMMY_USER = "user1";
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
-
-	/** Run the unlock task every minute. */
-	private static final long INTER_UNLOCK_DELAY = 60000;
 
 	private Random rng = null;
 
@@ -183,14 +180,27 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		log.info("authenticating {}", authentication.toString());
+		return authenticate(
+				(UsernamePasswordAuthenticationToken) authentication);
+	}
+
+	@Override
+	public boolean supports(Class<?> authenticationClass) {
+		return UsernamePasswordAuthenticationToken.class
+				.isAssignableFrom(authenticationClass);
+	}
+
+	private UsernamePasswordAuthenticationToken
+			authenticate(UsernamePasswordAuthenticationToken auth)
+					throws AuthenticationException {
+		log.info("authenticating {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
-		String name = authentication.getName().trim();
+		String name = auth.getName().trim();
 		if (name.isEmpty()) {
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
-		String password = authentication.getCredentials().toString();
+		String password = auth.getCredentials().toString();
 		List<GrantedAuthority> authorities = new ArrayList<>();
 
 		try {
@@ -408,25 +418,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@Override
-	public boolean supports(Class<?> authentication) {
-		return authentication.equals(UsernamePasswordAuthenticationToken.class);
-	}
-
-	@Override
-	@Scheduled(fixedDelay = INTER_UNLOCK_DELAY)
+	@Scheduled(fixedDelayString = "${spalloc.auth.unlock-period:60s}")
 	public void unlockLockedUsers() throws SQLException {
-		log.debug("running user unlock task");
-		if (!control.isPaused()) {
-			doUnlock();
-		}
-	}
-
-	private void doUnlock() throws SQLException {
-		try (Connection conn = db.getConnection();
-				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
-			for (Row row : unlock.call(lockInterval)) {
-				log.info("automatically unlocked user {}",
-						row.getString("user_name"));
+		try {
+			if (!control.isPaused()) {
+				log.debug("running user unlock task");
+				unlock();
 			}
 		} catch (SQLiteException e) {
 			if (e.getResultCode().equals(SQLITE_BUSY)) {
@@ -435,6 +432,16 @@ public class LocalAuthProviderImpl extends SQLQueries
 				return;
 			}
 			throw e;
+		}
+	}
+
+	void unlock() throws SQLException {
+		try (Connection conn = db.getConnection();
+				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
+			for (Row row : unlock.call(lockInterval)) {
+				log.info("automatically unlocked user {}",
+						row.getString("user_name"));
+			}
 		}
 	}
 }

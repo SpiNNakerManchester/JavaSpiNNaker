@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
@@ -59,16 +60,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
 @Component
 public class AllocatorTask extends SQLQueries implements PowerController {
-	/**
-	 * Time, in milliseconds, between runs of {@link #allocate()}. (5s)
-	 */
-	public static final long INTER_ALLOCATE_DELAY = 5000;
-
-	/**
-	 * Time, in milliseconds, between runs of {@link #cleanUp()}. (30s)
-	 */
-	private static final long INTER_DESTROY_DELAY = 30000;
-
 	/** Triads contain three boards. */
 	private static final int TRIAD_DEPTH = 3;
 
@@ -85,9 +76,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	/**
 	 * Maximum number of jobs that we actually run the quota check for. Used
 	 * because we are reusing a query, and we'll probably never have that many
-	 * jobs even on the big machine.
+	 * live jobs even on the big machine.
 	 */
-	private static final Integer NUMBER_OF_JOBS_TO_QUOTA_CHECK = 10000;
+	private static final Integer NUMBER_OF_JOBS_TO_QUOTA_CHECK = 100000;
 
 	@Autowired
 	private DatabaseEngine db;
@@ -147,7 +138,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelay = INTER_ALLOCATE_DELAY)
+	@Scheduled(fixedDelayString = "${spalloc.allocator.period:5s}")
 	public void allocate() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -336,7 +327,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelay = INTER_DESTROY_DELAY)
+	@Scheduled(fixedDelayString = "${spalloc.keepalive.expiry-period:30s}")
 	public void expireJobs() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -370,10 +361,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	boolean expireJobs(Connection conn) throws SQLException {
 		boolean changed = false;
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
-			List<Integer> toKill = new ArrayList<>();
-			for (Row row : find.call()) {
-				toKill.add(row.getInt("job_id"));
-			}
+			List<Integer> toKill =
+					rowsAsList(find.call(), r -> r.getInteger("job_id"));
 			for (int id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
@@ -400,7 +389,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	@Scheduled(cron = "${spalloc.historical-data.expiry-schedule:0 0 2 * * *}")
+	@Scheduled(cron = "${spalloc.historical-data.schedule:0 0 2 * * *}")
 	public void tombstone() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -431,12 +420,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query copy = query(conn, copyToHistoricalData);
 				Update delete = update(conn,
 						DELETE_JOB_RECORD)) {
-			List<Integer> jobIds = new ArrayList<>();
-			transaction(conn, () -> {
-				for (Row row : copy.call(tombstoneGracePeriod)) {
-					jobIds.add(row.getInteger("job_id"));
-				}
-			});
+			List<Integer> jobIds = transaction(conn,
+					() -> rowsAsList(copy.call(tombstoneGracePeriod),
+							row -> row.getInteger("job_id")));
 			transaction(conn, () -> {
 				for (Integer jobId : jobIds) {
 					// I don't think a NULL jobId is possible
@@ -709,15 +695,15 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
-		List<Integer> boardsToAllocate = new ArrayList<>();
-		for (Row row : sql.getConnectedBoardIDs.call(machineId, root.x, root.y,
-				root.z, rect.width, rect.height, rect.depth)) {
-			int boardId = row.getInt("board_id");
-			boardsToAllocate.add(boardId);
-			sql.allocBoard.call(jobId, boardId);
-		}
+		List<Integer> boardsToAllocate = rowsAsList(
+				sql.getConnectedBoardIDs.call(machineId, root.x, root.y, root.z,
+						rect.width, rect.height, rect.depth),
+				row -> row.getInteger("board_id"));
 		if (boardsToAllocate.isEmpty()) {
 			return false;
+		}
+		for (int boardId : boardsToAllocate) {
+			sql.allocBoard.call(jobId, boardId);
 		}
 
 		sql.allocJob.call(rect.width, rect.height, rect.depth,
@@ -761,10 +747,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			JobState targetState) throws SQLException {
 		JobState sourceState = sql.getJobState.call1(jobId).get()
 				.getEnum("job_state", JobState.class);
-		List<Integer> boards = new ArrayList<>();
-		for (Row row : sql.getJobBoards.call(jobId)) {
-			boards.add(row.getInt("board_id"));
-		}
+		List<Integer> boards = rowsAsList(sql.getJobBoards.call(jobId),
+				row -> row.getInteger("board_id"));
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
 				log.info("no boards for {} in destroy", jobId);

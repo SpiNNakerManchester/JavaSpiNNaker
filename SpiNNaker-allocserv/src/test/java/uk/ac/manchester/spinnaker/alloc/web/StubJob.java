@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public class StubJob implements SpallocAPI.Job {
 	@Override
-	public void waitForChange(long timeout) {
+	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
 	}
 

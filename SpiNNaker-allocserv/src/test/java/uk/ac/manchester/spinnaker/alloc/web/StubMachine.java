@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
  */
 public class StubMachine implements SpallocAPI.Machine {
 	@Override
-	public void waitForChange(long timeout) {
+	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -168,6 +168,15 @@ class DummyTransceiver implements BMPTransceiverInterface {
 			throws SQLException {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
 				data.ipAddress, data.boards);
+		version = new VersionInfo(syntheticVersionData());
+		status = new HashMap<>();
+	}
+
+	/**
+	 * @return The bytes of a response, correct in the places which Spalloc
+	 *         checks, and arbitrary (zero) elsewhere.
+	 */
+	private static ByteBuffer syntheticVersionData() {
 		ByteBuffer b = ByteBuffer.allocate(VERSION_INFO_SIZE);
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.putInt(0);
@@ -179,8 +188,7 @@ class DummyTransceiver implements BMPTransceiverInterface {
 		b.putInt(0);
 		b.put("abc/def".getBytes(UTF_8));
 		b.flip();
-		version = new VersionInfo(b);
-		status = new HashMap<>();
+		return b;
 	}
 
 	public Map<Integer, Boolean> getStatus() {

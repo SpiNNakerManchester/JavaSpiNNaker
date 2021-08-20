@@ -16,15 +16,15 @@
 logging:
   level:
     root: INFO
-    # org.apache.catalina: DEBUG
-    # org.springframework.security.web: TRACE
+    # "[org.apache.catalina]": DEBUG
+    # "[org.springframework.security.web]": TRACE
 
-    org.springframework.security.web.csrf.CsrfFilter: DEBUG
+    "[org.springframework.security.web.csrf.CsrfFilter]": DEBUG
     # Because when that filter says no it is MYSTERIOUS otherwise!
 
     # Next, two loggers that are unacceptably noisy by default
-    org.apache.jasper.servlet.TldScanner: WARN
-    javax.persistence.spi: ERROR
+    "[org.apache.jasper.servlet.TldScanner]": WARN
+    "[javax.persistence.spi]": ERROR
 
 spring:
   main:
@@ -50,8 +50,8 @@ spring:
     username: "${EMAIL_USER:}"
     password: "${EMAIL_PASS:}"
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
+      "[mail.smtp.auth]": true
+      "[mail.smtp.starttls.enable]": true
 
 server:
   port: 8080
@@ -69,6 +69,8 @@ cxf:
 spalloc:
   # Where's the database?
   database-path: spalloc.sqlite3
+  # How long should long calls take before returning anyway?
+  wait: 30s
   historical-data:
     # Where to we back up old jobs to?
     path: spalloc-history.sqlite3
@@ -77,8 +79,17 @@ spalloc:
     grace-period: P14D
     # Cron-like expression to say when to run the migration task.
     # Defaults to overnight at 02:00 every day
-    expiry-schedule: 0 0 2 * * *
+    schedule: "0 0 2 * * *"
+  keepalive:
+    # How long between runs of the keepalive-expiry algorithm
+    expiry-period: 30s
+    # Minimum keepalive period
+    min: 30s
+    # Maximum keepalive period
+    max: 300s
   allocator:
+    # How long between runs of the allocator algorithm
+    period: 5s
     # What span of importance will be considered when allocating jobs
     importance-span: 10000
     # Priority is the rate at which importance is accrued
@@ -114,13 +125,27 @@ spalloc:
     max-login-failures: 3
     # Duration of automatic log-out
     account-lock-duration: PT24H
-  # Whether to use dummy BMPs; GREAT for testing!
-  transceiver.dummy: false
-  # Default user quota in board-seconds
-  default-quota: 100
+    # How often do we look for users to unlock
+    unlock-period: 60s
+  quota:
+    # Default user quota in board-seconds
+    default: 100
+    # When do we consolidate job quotas into the main quota table
+    consolidation-schedule: "0 0 * * * *"
+  transceiver:
+    # How long between when we send requests to the BMP control tasks
+    period: 10s
+    # The basic wait time used by the BMP control tasks
+    probe-interval: 15s
+    # Number of attempts that will be made to switch on a board
+    power-attempts: 2
+    # Number of attempts that will be made to bring up an FPGA
+    fpga-attempts: 3
+    # Whether to use dummy BMPs; GREAT for testing!
+    dummy: false
   sqlite:
     # How long to wait to get a DB lock
-    timeout: PT1S
+    timeout: 1s
     # Whether to send details of SQL-related exceptions to users
     debug-failures: false
     # Amount of effort to spend on DB optimization on application close

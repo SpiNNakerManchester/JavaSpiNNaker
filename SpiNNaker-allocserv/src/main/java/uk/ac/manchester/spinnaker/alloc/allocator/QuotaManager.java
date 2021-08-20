@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -24,9 +26,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
@@ -42,6 +46,8 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
  */
 @Component
 public class QuotaManager extends SQLQueries {
+	private static final Logger log = getLogger(QuotaManager.class);
+
 	@Autowired
 	private DatabaseEngine db;
 
@@ -131,13 +137,22 @@ public class QuotaManager extends SQLQueries {
 	 * @throws SQLException
 	 *             If database access fails.
 	 */
-	@Scheduled(cron = "0 0 * * * *")
+	@Scheduled(cron = "${spalloc.quota.consolidation-schedule:0 0 * * * *}")
 	public void consolidateQuotas() throws SQLException {
 		if (control.isPaused()) {
 			return;
 		}
 		// Split off for testability
-		doConsolidate();
+		try {
+			doConsolidate();
+		} catch (SQLiteException e) {
+			if (e.getResultCode().equals(SQLITE_BUSY)) {
+				log.info("database is busy; "
+						+ "will try job quota consolidation processing later");
+				return;
+			}
+			throw e;
+		}
 	}
 
 	final void doConsolidate() throws SQLException {

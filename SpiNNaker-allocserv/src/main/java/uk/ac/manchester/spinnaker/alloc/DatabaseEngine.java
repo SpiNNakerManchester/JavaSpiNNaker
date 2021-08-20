@@ -50,9 +50,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -1570,6 +1572,50 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static Update update(Connection conn, Resource sqlResource)
 			throws SQLException {
 		return new Update(conn, readSQL(sqlResource));
+	}
+
+	/**
+	 * Convert an iterable of rows (see {@link DatabaseEngine.Query Query}) into
+	 * a list of objects, one per row.
+	 *
+	 * @param <T>
+	 *            The type of elements in the list
+	 * @param rows
+	 *            The rows to convert.
+	 * @param mapper
+	 *            The conversion function.
+	 * @return List of objects mapped from rows. (This list happens to be
+	 *         modifiable, but with no effect on the database.)
+	 * @throws SQLException
+	 *             If the mapper throws.
+	 */
+	public static <T> List<T> rowsAsList(Iterable<Row> rows,
+			RowMapper<T> mapper) throws SQLException {
+		List<T> result = new ArrayList<>();
+		for (Row row : rows) {
+			result.add(mapper.mapRow(row));
+		}
+		return result;
+	}
+
+	/**
+	 * Maps a row from a database to an arbitrary object.
+	 *
+	 * @param <T> The type of object produced.
+	 * @author Donal Fellows
+	 */
+	@FunctionalInterface
+	public interface RowMapper<T> {
+		/**
+		 * Map a row to an object.
+		 *
+		 * @param row
+		 *            The row to map.
+		 * @return The object produced.
+		 * @throws SQLException
+		 *             If an access to the row fails.
+		 */
+		T mapRow(Row row) throws SQLException;
 	}
 
 	/**

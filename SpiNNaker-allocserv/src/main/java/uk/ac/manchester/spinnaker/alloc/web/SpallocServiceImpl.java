@@ -79,14 +79,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 		implements SpallocServiceAPI {
 	private static final Logger log = getLogger(SpallocServiceImpl.class);
 
-	private static final int WAIT_TIMEOUT = 30000; // 30s
-
-	private static final Duration MIN_KEEPALIVE_DURATION =
-			Duration.parse("PT30S");
-
-	private static final Duration MAX_KEEPALIVE_DURATION =
-			Duration.parse("PT300S");
-
 	private final Version v;
 
 	@Autowired
@@ -94,6 +86,15 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Autowired
 	private JsonMapper mapper;
+
+	@Value("${spalloc.wait:30s}")
+	private Duration waitTimeout;
+
+	@Value("${spalloc.keepalive.min:30s}")
+	private Duration minKeepalive;
+
+	@Value("${spalloc.keepalive.max:300s}")
+	private Duration maxKeepalive;
 
 	/**
 	 * Factory for {@linkplain MachineAPI machines}.
@@ -134,6 +135,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 		@Autowired
 		private JsonMapper mapper;
 
+		@Value("${spalloc.wait:30s}")
+		private Duration waitTimeout;
+
 		/**
 		 * Make a machine access interface.
 		 *
@@ -154,7 +158,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					if (wait) {
 						bgAction(response, () -> {
 							log.debug("starting wait for change of machine");
-							machine.waitForChange(WAIT_TIMEOUT);
+							machine.waitForChange(waitTimeout);
 							/*
 							 * Assume that machines don't change often enough
 							 * for us to care about whether they vanish;
@@ -233,7 +237,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					if (wait) {
 						bgAction(response, () -> {
 							log.debug("starting wait for change of job");
-							j.waitForChange(WAIT_TIMEOUT);
+							j.waitForChange(waitTimeout);
 							// Refresh the handle
 							try (AutoCloseable t =
 									permit.authorizeCurrentThread()) {
@@ -409,7 +413,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (wait) {
 			bgAction(response, () -> {
 				log.debug("starting wait for change of job list");
-				jc.waitForChange(WAIT_TIMEOUT);
+				jc.waitForChange(waitTimeout);
 				Jobs newJc = core.getJobs(destroyed, limit, start);
 				return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
 						limit);
@@ -441,7 +445,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		});
 	}
 
-	private static CreateDescriptor validateAndApplyDefaultsToJobRequest(
+	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
 			CreateJobRequest req, SecurityContext security) throws BadArgs {
 		if (isNull(req)) {
 			throw new BadArgs("request must be supplied");
@@ -458,13 +462,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 		req.owner = req.owner.trim();
 
 		if (isNull(req.keepaliveInterval) || req.keepaliveInterval
-				.compareTo(MIN_KEEPALIVE_DURATION) < 0) {
+				.compareTo(minKeepalive) < 0) {
 			throw new BadArgs("keepalive interval must be at least "
-					+ MIN_KEEPALIVE_DURATION);
+					+ minKeepalive);
 		}
-		if (req.keepaliveInterval.compareTo(MAX_KEEPALIVE_DURATION) > 0) {
+		if (req.keepaliveInterval.compareTo(maxKeepalive) > 0) {
 			throw new BadArgs("keepalive interval must be no more than "
-					+ MAX_KEEPALIVE_DURATION);
+					+ maxKeepalive);
 		}
 
 		if (isNull(req.tags)) {

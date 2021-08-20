@@ -91,6 +91,19 @@ public class MachineDefinitionLoader extends SQLQueries {
 	private static final int TRIAD_SIZE = 12;
 
 	/**
+	 * Parse a <em>decimal</em> integer.
+	 *
+	 * @param string
+	 *            The string containing the number to parse.
+	 * @return The parsed number.
+	 * @throws NumberFormatExeption
+	 *             If the string doesn't contain such a number.
+	 */
+	private static int parseDec(String string) throws NumberFormatException {
+		return Integer.parseInt(string, DECIMAL);
+	}
+
+	/**
 	 * Triad coordinates.
 	 *
 	 * @author Donal Fellows
@@ -131,9 +144,9 @@ public class MachineDefinitionLoader extends SQLQueries {
 						"bad argument: " + serialForm);
 			}
 			int idx = 0;
-			x = Integer.parseInt(m.group(++idx), DECIMAL);
-			y = Integer.parseInt(m.group(++idx), DECIMAL);
-			z = Integer.parseInt(m.group(++idx), DECIMAL);
+			x = parseDec(m.group(++idx));
+			y = parseDec(m.group(++idx));
+			z = parseDec(m.group(++idx));
 		}
 
 		private static final int TRIAD_MAJOR_OFFSET = 8;
@@ -262,8 +275,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 						"bad argument: " + serialForm);
 			}
 			int idx = 0;
-			c = Integer.parseInt(m.group(++idx), DECIMAL);
-			f = Integer.parseInt(m.group(++idx), DECIMAL);
+			c = parseDec(m.group(++idx));
+			f = parseDec(m.group(++idx));
 		}
 
 		@Override
@@ -336,9 +349,9 @@ public class MachineDefinitionLoader extends SQLQueries {
 						"bad argument: " + serialForm);
 			}
 			int idx = 0;
-			c = Integer.parseInt(m.group(++idx), DECIMAL);
-			f = Integer.parseInt(m.group(++idx), DECIMAL);
-			b = Integer.parseInt(m.group(++idx), DECIMAL);
+			c = parseDec(m.group(++idx));
+			f = parseDec(m.group(++idx));
+			b = parseDec(m.group(++idx));
 		}
 
 		@Override

@@ -18,13 +18,14 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +57,7 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.MDC.MDCCloseable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -92,17 +95,16 @@ public class BMPController extends SQLQueries {
 
 	private static final int FPGA_FLAG_ID_MASK = 0x3;
 
-	private static final int NUM_FPGA_RETRIES = 3;
-
 	private static final int BMP_VERSION_MIN = 2;
 
-	private static final int SECONDS_BETWEEN_TRIES = 15;
+	@Value("${spalloc.transceiver.probe-interval:15s}")
+	private Duration timeBetweenTries;
 
-	private static final int N_REQUEST_TRIES = 2;
+	@Value("${spalloc.transceiver.power-attempts:2}")
+	private int numRequestTries;
 
-	private static final int MS_PER_S = 1000;
-
-	private static final long INTER_TAKE_DELAY = 10000;
+	@Value("${spalloc.transceiver.fpga-attempts:3}")
+	private int numFPGARetries;
 
 	/**
 	 * We <em>always</em> talk to the root BMP of a machine, and never directly
@@ -115,8 +117,6 @@ public class BMPController extends SQLQueries {
 	private static final BMPCoords ROOT_BMP = new BMPCoords(0, 0);
 
 	private boolean stop;
-
-	//private Map<Machine, Thread> workers = new HashMap<>();
 
 	private Map<Machine, WorkerState> state = new HashMap<>();
 
@@ -264,11 +264,11 @@ public class BMPController extends SQLQueries {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	private static void powerOnAndCheck(Machine machine,
+	private void powerOnAndCheck(Machine machine,
 			BMPTransceiverInterface txrx, List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		List<Integer> boardsToPower = boards;
-		for (int attempt = 1; attempt <= NUM_FPGA_RETRIES; attempt++) {
+		for (int attempt = 1; attempt <= numFPGARetries; attempt++) {
 			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
 
 			/*
@@ -304,7 +304,7 @@ public class BMPController extends SQLQueries {
 		}
 		throw new IOException(
 				"Could not get correct FPGA ID for " + boardsToPower.size()
-						+ " boards after " + NUM_FPGA_RETRIES + " tries");
+						+ " boards after " + numFPGARetries + " tries");
 	}
 
 	/**
@@ -321,7 +321,7 @@ public class BMPController extends SQLQueries {
 	 * @throws IOException
 	 *             If network I/O fails
 	 */
-	private static void changeBoardPowerState(BMPTransceiverInterface txrx,
+	private void changeBoardPowerState(BMPTransceiverInterface txrx,
 			Request request)
 			throws ProcessException, InterruptedException, IOException {
 		// Send any power on commands
@@ -344,7 +344,8 @@ public class BMPController extends SQLQueries {
 	// ----------------------------------------------------------------
 	// SERVICE IMPLEMENTATION
 
-	@Scheduled(fixedDelay = INTER_TAKE_DELAY, initialDelay = INTER_TAKE_DELAY)
+	@Scheduled(fixedDelayString = "${spalloc.transceiver.period:10s}",
+			initialDelayString = "${spalloc.transceiver.period:10s}")
 	void mainSchedule() throws SQLException, IOException, SpinnmanException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -899,7 +900,7 @@ public class BMPController extends SQLQueries {
 				ws.interrupt();
 			}
 		}
-		executor.awaitTermination(SECONDS_BETWEEN_TRIES, SECONDS);
+		executor.awaitTermination(timeBetweenTries.toMillis(), MILLISECONDS);
 		group.interrupt();
 	}
 
@@ -1012,12 +1013,12 @@ public class BMPController extends SQLQueries {
 				asList(request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
-			for (int nTries = 0; nTries++ < N_REQUEST_TRIES;) {
+			for (int numTries = 0; numTries++ < numRequestTries;) {
 				if (tryChangePowerState(request, txrx,
-						nTries == N_REQUEST_TRIES)) {
+						numTries == numRequestTries)) {
 					break;
 				}
-				sleep(SECONDS_BETWEEN_TRIES * MS_PER_S);
+				sleep(timeBetweenTries.get(MILLIS));
 			}
 		}
 	}
@@ -1047,8 +1048,8 @@ public class BMPController extends SQLQueries {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
 				 */
-				log.warn("Retrying requests on BMP {} after {} seconds: {}",
-						machine, SECONDS_BETWEEN_TRIES, e.getMessage());
+				log.warn("Retrying requests on BMP {} after {}: {}",
+						machine, timeBetweenTries, e.getMessage());
 				// Ask for a retry
 				return false;
 			}

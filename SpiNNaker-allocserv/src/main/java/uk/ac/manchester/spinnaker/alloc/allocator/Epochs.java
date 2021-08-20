@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.System.currentTimeMillis;
 
+import java.time.Duration;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -73,8 +75,8 @@ public class Epochs {
 		}
 	}
 
-	private static long expiry(long timeout) {
-		return currentTimeMillis() + timeout;
+	private static long expiry(Duration timeout) {
+		return currentTimeMillis() + timeout.toMillis();
 	}
 
 	private static boolean waiting(long expiry) {
@@ -99,7 +101,7 @@ public class Epochs {
 		 * @throws InterruptedException
 		 *             If the wait is interrupted.
 		 */
-		void waitForChange(long timeout) throws InterruptedException;
+		void waitForChange(Duration timeout) throws InterruptedException;
 	}
 
 	/**
@@ -117,7 +119,8 @@ public class Epochs {
 		}
 
 		@Override
-		public void waitForChange(long timeout) throws InterruptedException {
+		public void waitForChange(Duration timeout)
+				throws InterruptedException {
 			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
 				while (jobsEpoch <= epoch && waiting(expiry)) {
@@ -142,7 +145,8 @@ public class Epochs {
 		}
 
 		@Override
-		public void waitForChange(long timeout) throws InterruptedException {
+		public void waitForChange(Duration timeout)
+				throws InterruptedException {
 			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
 				while (machineEpoch <= epoch && waiting(expiry)) {

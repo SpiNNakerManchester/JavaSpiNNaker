@@ -332,9 +332,9 @@ public interface SpallocAPI {
 		 * set).
 		 *
 		 * @param timeout
-		 *            How long to wait (in milliseconds).
+		 *            How long to wait.
 		 */
-		void waitForChange(long timeout);
+		void waitForChange(Duration timeout);
 	}
 
 	/**

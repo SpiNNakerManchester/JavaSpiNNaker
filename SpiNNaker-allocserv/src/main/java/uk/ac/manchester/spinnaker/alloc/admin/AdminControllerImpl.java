@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -23,6 +24,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
@@ -32,7 +34,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +59,6 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
@@ -108,16 +108,14 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private DatabaseEngine db;
 
 	private List<String> getMachineNames() {
-		List<String> names = new ArrayList<>();
 		try (Connection conn = db.getConnection();
-				Query q = query(conn, LIST_MACHINE_NAMES)) {
-			for (Row row : q.call()) {
-				names.add(row.getString("machine_name"));
-			}
+				Query listMachines = query(conn, LIST_MACHINE_NAMES)) {
+			return rowsAsList(listMachines.call(),
+					row -> row.getString("machine_name"));
 		} catch (SQLException e) {
 			log.warn("problem when listing machines", e);
+			return emptyList();
 		}
-		return names;
 	}
 
 	/**
