@@ -66,6 +66,7 @@ cxf:
       uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
 
 # TODO: Don't set auth.add-dummy-user, transceiver.dummy or auth.debug-failures in production
+# TODO: Allow enabling an old-style interface, to ease switch-over
 spalloc:
   # Where's the database?
   database-path: spalloc.sqlite3
