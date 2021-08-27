@@ -590,6 +590,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		/**
+		 * Build a permit for a service user. The service user can create jobs
+		 * and read job details, but cannot do much with jobs owned by other
+		 * users. <em>Only used by the legacy interface.</em>
+		 *
+		 * @param serviceUser
+		 *            The user name. Must exist in order to be actually used.
+		 */
+		public Permit(String serviceUser) {
+			authorities.add(GRANT_READER);
+			authorities.add(GRANT_USER);
+			admin = false;
+			name = serviceUser;
+		}
+
+		/**
 		 * Can something owned by a given user can be shown to the user that
 		 * this permit is for?
 		 *

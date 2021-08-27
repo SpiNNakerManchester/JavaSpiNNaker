@@ -151,3 +151,12 @@ spalloc:
     debug-failures: false
     # Amount of effort to spend on DB optimization on application close
     analysis-limit: 400
+  compat:
+    # Settings relating to the v1 spalloc compatibility interface
+
+    # Whether to turn the service interface on
+    enable: false
+    # What port to run the service on
+    port: 22244
+    # What user to run as; recommended that this user exists but is disabled
+    service-user: ""

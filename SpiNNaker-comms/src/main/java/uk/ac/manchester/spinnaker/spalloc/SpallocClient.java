@@ -213,21 +213,21 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public Version version(Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new VersionCommand(), timeout);
+		String result = call(new VersionCommand(), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("version result: {}", json);
+			log.debug("version result: {}", result);
 		}
-		return new Version(json);
+		return new Version(result);
 	}
 
 	@Override
 	public int createJob(CreateJob builder, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(builder.build(), timeout);
+		String result = call(builder.build(), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("create result: {}", json);
+			log.debug("create result: {}", result);
 		}
-		return parseInt(json);
+		return parseInt(result);
 	}
 
 	@Deprecated
@@ -249,19 +249,19 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 					unwanted);
 		}
 
-		String json = call(new CreateJobCommand(args, kwargs), timeout);
+		String result = call(new CreateJobCommand(args, kwargs), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("create result: {}", json);
+			log.debug("create result: {}", result);
 		}
-		return parseInt(json);
+		return parseInt(result);
 	}
 
 	@Override
 	public void jobKeepAlive(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new JobKeepAliveCommand(jobID), timeout);
+		String result = call(new JobKeepAliveCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("keepalive result: {}", json);
+			log.debug("keepalive result: {}", result);
 		}
 	}
 
@@ -288,27 +288,27 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public void powerOnJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new PowerOnJobBoardsCommand(jobID), timeout);
+		String result = call(new PowerOnJobBoardsCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("power-on result: {}", json);
+			log.debug("power-on result: {}", result);
 		}
 	}
 
 	@Override
 	public void powerOffJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new PowerOffJobBoardsCommand(jobID), timeout);
+		String result = call(new PowerOffJobBoardsCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("power-off result: {}", json);
+			log.debug("power-off result: {}", result);
 		}
 	}
 
 	@Override
 	public void destroyJob(int jobID, String reason, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new DestroyJobCommand(jobID, reason), timeout);
+		String result = call(new DestroyJobCommand(jobID, reason), timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("destroy result: {}", json);
+			log.debug("destroy result: {}", result);
 		}
 	}
 
@@ -329,9 +329,9 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 				c = new NoNotifyJobCommand(jobID);
 			}
 		}
-		String json = call(c, timeout);
+		String result = call(c, timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("notify-job result: {}", json);
+			log.debug("notify-job result: {}", result);
 		}
 	}
 
@@ -352,9 +352,9 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 				c = new NoNotifyMachineCommand(machineName);
 			}
 		}
-		String json = call(c, timeout);
+		String result = call(c, timeout);
 		if (log.isDebugEnabled()) {
-			log.debug("notify-machine result: {}", json);
+			log.debug("notify-machine result: {}", result);
 		}
 	}
 
