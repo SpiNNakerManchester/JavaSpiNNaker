@@ -1,4 +1,49 @@
-{"properties": [
+{"groups": [
+  {
+    "name": "spalloc",
+    "description": "Configuration of the Spalloc service."
+  },
+  {
+  	"name": "spalloc.historical-data",
+  	"description": "How to handle job data that is now only of historic interest."
+  },
+  {
+    "name": "spalloc.keepalive",
+    "description": "How to handle keepalive messages."
+  },
+  {
+    "name": "spalloc.allocator",
+    "description": "Configuration of the main resource allocation engine."
+  },
+  {
+    "name": "spalloc.allocator.priority-scale",
+    "description": "Priority is the rate at which importance is accrued. Importance is determines the order in which jobs are allocated."
+  },
+  {
+    "name": "spalloc.allocator.report-email",
+    "description": "Notify an administrator about problems reported with boards."
+  },
+  {
+    "name": "spalloc.auth",
+    "description": "Authentiaction and authorization configuration."
+  },
+  {
+    "name": "spalloc.quota",
+    "description": "Quota management."
+  },
+  {
+    "name": "spalloc.transceiver",
+    "description": "Controls how Spalloc talks to BMPs on machines."
+  },
+  {
+    "name": "spalloc.sqlite",
+    "description": "Additional database configuration."
+  },
+  {
+    "name": "spalloc.compat",
+    "description": "Settings relationg to the v1 spalloc configuration interface."
+  }
+], "properties": [
   {
     "name": "cxf.jaxrs.component-scan",
     "type": "java.lang.Boolean",
@@ -215,5 +260,29 @@
     "type": "java.lang.Integer",
     "defaultValue": 400,
     "description": "Amount of effort to spend on DB optimization on application close; see SQLite documentation for meaning. Note that this is spent by every worker thread that touches the database."
+  },
+  {
+    "name": "spalloc.compat.enable",
+    "type": "java.lang.Boolean",
+    "defaultValue": false,
+    "description": "Whether to turn the spalloc version 1 compatibility service interface on."
+  },
+  {
+    "name": "spalloc.compat.thread-pool-size",
+    "type": "java.lang.Integer",
+    "defaultValue": 0,
+    "description": "The number of threads to use to service the spalloc v1 compatibility service. 0 means no limit."
+  },
+  {
+    "name": "spalloc.compat.port",
+    "type": "java.lang.Integer",
+    "defaultValue": 22244,
+    "description": "What port to run the spalloc v1 compatibility service on."
+  },
+  {
+    "name": "spalloc.compat.service-user",
+    "type": "java.lang.String",
+    "defaultValue": "",
+    "description": "What user to run jobs submitted through the spalloc v1 compatibility service as. We recommend that this user exists but is disabled (i.e., login using this service identity need not be supported)."
   }
 ]}

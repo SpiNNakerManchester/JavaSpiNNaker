@@ -44,7 +44,7 @@ public class TestState {
 		JobState fromJson = mapper.readValue(json, JobState.class);
 		assertEquals(State.POWER, fromJson.getState());
 		assertEquals(true, fromJson.getPower());
-		assertEquals(1537284307.847865f, fromJson.getStartTime());
+		assertEquals(1537284307.847865, fromJson.getStartTime());
 		assertEquals(60, fromJson.getKeepalive());
 		assertNull(fromJson.getReason());
 		assertEquals("86.82.216.229", fromJson.getKeepalivehost());

@@ -22,6 +22,7 @@ import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -39,6 +41,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -71,6 +75,8 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -115,6 +121,9 @@ public class Service {
 	@Value("${spalloc.compat.service-user:}")
 	private String serviceUser;
 
+	@Value("${spalloc.compat.thread-pool-size:0}")
+	private int poolSize;
+
 	@Autowired
 	private SpallocAPI spalloc;
 
@@ -144,7 +153,11 @@ public class Service {
 
 	@PostConstruct
 	private void open() throws IOException {
-		executor = newCachedThreadPool(r -> new Thread(GROUP, r));
+		if (poolSize > 0) {
+			executor = newFixedThreadPool(poolSize, r -> new Thread(GROUP, r));
+		} else {
+			executor = newCachedThreadPool(r -> new Thread(GROUP, r));
+		}
 		if (enable) {
 			serv = new ServerSocket(port);
 			servThread = new Thread(GROUP, this::acceptConnections);
@@ -965,67 +978,62 @@ public class Service {
 			return loc.getPhysical();
 		}
 
-		@Override
-		protected JobDescription[] listJobs() throws Exception {
-			List<JobDescription> jds = new ArrayList<>();
-			for (Job job : spalloc.getJobs(false, LOTS, 0).jobs()) {
-				JobDescription jd = new JobDescription();
-				jd.setJobID(job.getId());
-				jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-				jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-				jd.setReason(job.getReason().orElse(""));
-				jd.setStartTime(timestamp(job.getStartTime()));
-				jd.setState(state(job));
-				Optional<SubMachine> osm = job.getMachine();
-				if (osm.isPresent()) {
-					SubMachine sm = osm.get();
-					jd.setMachine(sm.getMachine().getName());
-					jd.setBoards(sm.getBoards());
-					jd.setPower(sm.getPower() == PowerState.ON);
+		@SuppressWarnings("unchecked")
+		private <T, U> U[] map(Collection<T> src, Class<U> cls,
+				CheckedFunction<T, U> fun) throws SQLException {
+			List<U> dst = new ArrayList<>();
+			for (T val : src) {
+				U target;
+				try {
+					target = cls.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					log.error("unexpected failure", e);
+					break;
 				}
-				// TODO Fill out args and kwargs? Not a priority though
-				jds.add(jd);
+				fun.call(val, target);
+				dst.add(target);
 			}
-			return jds.toArray(new JobDescription[jds.size()]);
+			return dst.toArray((U[]) Array.newInstance(cls, 0));
+		}
+
+		@Override
+		protected JobDescription[] listJobs() throws SQLException {
+			return map(spalloc.getJobs(false, LOTS, 0).jobs(),
+					JobDescription.class, (job, jd) -> {
+						jd.setJobID(job.getId());
+						jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
+						jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
+						jd.setReason(job.getReason().orElse(""));
+						jd.setStartTime(timestamp(job.getStartTime()));
+						jd.setState(state(job));
+
+						Optional<SubMachine> osm = job.getMachine();
+						if (osm.isPresent()) {
+							SubMachine sm = osm.get();
+							jd.setMachine(sm.getMachine().getName());
+							jd.setBoards(sm.getBoards());
+							jd.setPower(sm.getPower() == PowerState.ON);
+						}
+						// TODO Fill out args and kwargs? Not a priority though
+					});
 		}
 
 		@Override
 		protected uk.ac.manchester.spinnaker.spalloc.messages.Machine[]
-				listMachines() throws Exception {
-			List<uk.ac.manchester.spinnaker.spalloc.messages.Machine> mds =
-					new ArrayList<>();
-			for (Machine machine : spalloc.getMachines().values()) {
-				uk.ac.manchester.spinnaker.spalloc.messages.Machine m = new //
-						uk.ac.manchester.spinnaker.spalloc.messages.Machine();
-				m.setName(machine.getName());
-				m.setTags(machine.getTags());
-				m.setWidth(machine.getWidth());
-				m.setHeight(machine.getHeight());
-				m.setDeadBoards(machine.getDeadBoards().stream().map(c -> {
-					BoardCoordinates bc = new BoardCoordinates();
-					bc.setX(c.getX());
-					bc.setY(c.getY());
-					bc.setZ(c.getZ());
-					return bc;
-				}).collect(toList()));
-				m.setDeadLinks(machine.getDownLinks().stream().flatMap(l -> {
-					BoardLink bl1 = new BoardLink();
-					bl1.setX(l.end1.board.getX());
-					bl1.setY(l.end1.board.getY());
-					bl1.setZ(l.end1.board.getZ());
-					bl1.setLink(l.end1.direction.ordinal());
-					BoardLink bl2 = new BoardLink();
-					bl2.setX(l.end2.board.getX());
-					bl2.setY(l.end2.board.getY());
-					bl2.setZ(l.end2.board.getZ());
-					bl2.setLink(l.end2.direction.ordinal());
-					return Arrays.asList(bl1, bl2).stream();
-				}).collect(toList()));
-				mds.add(m);
-			}
-			return mds.toArray(
-					new uk.ac.manchester.spinnaker.spalloc.messages.Machine[mds
-							.size()]);
+				listMachines() throws SQLException {
+			return map(spalloc.getMachines().values(),
+					uk.ac.manchester.spinnaker.spalloc.messages.Machine.class,
+					(m, md) -> {
+						md.setName(m.getName());
+						md.setTags(m.getTags());
+						md.setWidth(m.getWidth());
+						md.setHeight(m.getHeight());
+						md.setDeadBoards(m.getDeadBoards().stream()
+								.map(Service::board).collect(toList()));
+						md.setDeadLinks(m.getDownLinks().stream()
+								.flatMap(Service::boardLinks)
+								.collect(toList()));
+					});
 		}
 
 		private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
@@ -1167,4 +1175,32 @@ public class Service {
 		void waitAndNotify()
 				throws InterruptedException, SQLException, IOException;
 	}
+
+	private static BoardCoordinates board(BoardCoords c) {
+		BoardCoordinates bc = new BoardCoordinates();
+		bc.setX(c.getX());
+		bc.setY(c.getY());
+		bc.setZ(c.getZ());
+		return bc;
+	}
+
+	private static Stream<BoardLink> boardLinks(DownLink l) {
+		BoardLink bl1 = new BoardLink();
+		bl1.setX(l.end1.board.getX());
+		bl1.setY(l.end1.board.getY());
+		bl1.setZ(l.end1.board.getZ());
+		bl1.setLink(l.end1.direction.ordinal());
+
+		BoardLink bl2 = new BoardLink();
+		bl2.setX(l.end2.board.getX());
+		bl2.setY(l.end2.board.getY());
+		bl2.setZ(l.end2.board.getZ());
+		bl2.setLink(l.end2.direction.ordinal());
+
+		return Arrays.asList(bl1, bl2).stream();
+	}
+}
+
+interface CheckedFunction<T, U> {
+	void call(T value, U receiver) throws SQLException;
 }

@@ -66,7 +66,6 @@ cxf:
       uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
 
 # TODO: Don't set auth.add-dummy-user, transceiver.dummy or auth.debug-failures in production
-# TODO: Allow enabling an old-style interface, to ease switch-over
 spalloc:
   # Where's the database?
   database-path: spalloc.sqlite3
@@ -156,6 +155,9 @@ spalloc:
 
     # Whether to turn the service interface on
     enable: false
+    # The number of threads to use for the API (including notification handlers)
+    # Use 0 for no hard limit.
+    thread-pool-size: 0
     # What port to run the service on
     port: 22244
     # What user to run as; recommended that this user exists but is disabled
