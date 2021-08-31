@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singleton;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
@@ -42,7 +43,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -59,6 +62,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
@@ -92,6 +96,11 @@ public class Service {
 
 	private static final double NANOFACTOR = 1e9;
 
+	private static final int LOTS = 10000;
+
+	private static final Duration NOTIFIER_WAIT_TIME =
+			Duration.ofSeconds(ONE_MINUTE);
+
 	private static final ThreadGroup GROUP =
 			new ThreadGroup("spalloc-legacy-service");
 
@@ -108,6 +117,9 @@ public class Service {
 
 	@Autowired
 	private SpallocAPI spalloc;
+
+	@Autowired
+	private Epochs epochs;
 
 	private ServerSocket serv;
 
@@ -182,15 +194,45 @@ public class Service {
 		}
 	}
 
-	static class Command {
+	/**
+	 * The encoded form of a command to the server.
+	 */
+	public static class Command {
 		private String command;
 
 		private List<Object> args = new ArrayList<>();
 
 		private Map<String, Object> kwargs = new HashMap<>();
+
+		/** @return The name of the command. */
+		public String getCommand() {
+			return command;
+		}
+
+		public void setCommand(String command) {
+			this.command = command;
+		}
+
+		/** @return The positional arguments to the command. */
+		public List<Object> getArgs() {
+			return args;
+		}
+
+		public void setArgs(List<Object> args) {
+			this.args = args;
+		}
+
+		/** @return The keyword arguments to the command. */
+		public Map<String, Object> getKwargs() {
+			return kwargs;
+		}
+
+		public void setKwargs(Map<String, Object> kwargs) {
+			this.kwargs = kwargs;
+		}
 	}
 
-	static class ReturnResponse {
+	private static class ReturnResponse {
 		private String returnValue;
 
 		@JsonProperty("return")
@@ -204,15 +246,48 @@ public class Service {
 		}
 	}
 
-	static class ExceptionResponse {
+	private static class ExceptionResponse {
 		private String exception;
 
+		@JsonProperty("exception")
 		public String getException() {
 			return exception;
 		}
 
 		public void setException(String exception) {
 			this.exception = exception == null ? "" : exception.toString();
+		}
+	}
+
+	private static class JobNotifyMessage {
+		private List<Integer> jobsChanged;
+
+		/**
+		 * @return the jobs changed
+		 */
+		@JsonProperty("jobs_changed")
+		public List<Integer> getJobsChanged() {
+			return jobsChanged;
+		}
+
+		public void setJobsChanged(List<Integer> jobsChanged) {
+			this.jobsChanged = jobsChanged;
+		}
+	}
+
+	private static class MachineNotifyMessage {
+		private List<String> machinesChanged;
+
+		/**
+		 * @return the machines changed
+		 */
+		@JsonProperty("machines_changed")
+		public List<String> getMachinesChanged() {
+			return machinesChanged;
+		}
+
+		public void setMachinesChanged(List<String> machinesChanged) {
+			this.machinesChanged = machinesChanged;
 		}
 	}
 
@@ -276,12 +351,16 @@ public class Service {
 			} catch (InterruptedException e) {
 				// ignored
 			} finally {
+				closeNotifiers();
 				try {
 					sock.close();
 				} catch (IOException e) {
 					log.error("problem closing socket {}", sock, e);
 				}
 			}
+		}
+
+		void closeNotifiers() {
 		}
 
 		public final boolean isClosed() {
@@ -292,7 +371,7 @@ public class Service {
 			return sock.getRemoteSocketAddress().toString();
 		}
 
-		final Command readMessage() throws IOException, InterruptedException {
+		private Command readMessage() throws IOException, InterruptedException {
 			String line = in.readLine();
 			if (line == null) {
 				if (currentThread().isInterrupted()) {
@@ -300,11 +379,11 @@ public class Service {
 				}
 				return null;
 			}
-			return mapper.readValue(line, Command.class);
-		}
-
-		private void writeMessage(Object value) throws IOException {
-			out.println(mapper.writeValueAsString(value));
+			Command c = mapper.readValue(line, Command.class);
+			if (c.command == null) {
+				throw new IOException("message did not specify a command");
+			}
+			return c;
 		}
 
 		/**
@@ -320,7 +399,7 @@ public class Service {
 			ReturnResponse rr = new ReturnResponse();
 			// Yes, this is ghastly!
 			rr.setReturnValue(mapper.writeValueAsString(response));
-			writeMessage(rr);
+			out.println(mapper.writeValueAsString(rr));
 		}
 
 		/**
@@ -334,11 +413,42 @@ public class Service {
 		protected final void writeException(Object exn) throws IOException {
 			ExceptionResponse er = new ExceptionResponse();
 			er.setException(exn.toString());
-			writeMessage(er);
+			out.println(mapper.writeValueAsString(er));
 		}
 
-		final void writeNotification() throws IOException {
-			// TODO
+		/**
+		 * Send a notification about a collection of jobs changing.
+		 *
+		 * @param jobIds
+		 *            The jobs that have changed. (Usually <em>all</em> jobs.)
+		 * @throws IOException
+		 *             If network access fails.
+		 */
+		protected final void writeJobNotification(List<Integer> jobIds)
+				throws IOException {
+			if (!jobIds.isEmpty()) {
+				JobNotifyMessage jnm = new JobNotifyMessage();
+				jnm.setJobsChanged(jobIds);
+				out.println(mapper.writeValueAsString(jnm));
+			}
+		}
+
+		/**
+		 * Send a notification about a collection of machines changing.
+		 *
+		 * @param machineNames
+		 *            The machines that have changed. (Usually <em>all</em>
+		 *            machines.)
+		 * @throws IOException
+		 *             If network access fails.
+		 */
+		protected final void writeMachineNotification(List<String> machineNames)
+				throws IOException {
+			if (!machineNames.isEmpty()) {
+				MachineNotifyMessage mnm = new MachineNotifyMessage();
+				mnm.setMachinesChanged(machineNames);
+				out.println(mapper.writeValueAsString(mnm));
+			}
 		}
 
 		/**
@@ -469,7 +579,7 @@ public class Service {
 			}
 			ReturnResponse rr = new ReturnResponse();
 			rr.setReturnValue(mapper.writeValueAsString(r));
-			writeMessage(rr);
+			out.println(mapper.writeValueAsString(rr));
 			return true;
 		}
 
@@ -711,10 +821,22 @@ public class Service {
 	class ServiceImpl extends Task {
 		private static final int TRIAD = 3;
 
-		private static final int LOTS = 10000;
-
 		ServiceImpl(Socket sock) throws IOException {
 			super(Service.this.mapper, sock);
+		}
+
+		private Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
+
+		private Map<String, Future<Void>> machNotifiers = new HashMap<>();
+
+		@Override
+		void closeNotifiers() {
+			for (Future<Void> n : jobNotifiers.values()) {
+				n.cancel(true);
+			}
+			for (Future<Void> n : machNotifiers.values()) {
+				n.cancel(true);
+			}
 		}
 
 		@Override
@@ -906,6 +1028,20 @@ public class Service {
 							.size()]);
 		}
 
+		private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
+				boolean wantNotify, Notifier notifier) {
+			if (wantNotify) {
+				if (!notifiers.containsKey(key)) {
+					notifiers.put(key, executor.submit(notifier));
+				}
+			} else {
+				Future<Void> n = notifiers.remove(key);
+				if (n != null) {
+					n.cancel(true);
+				}
+			}
+		}
+
 		@Override
 		protected void notifyJob(Integer jobId, boolean wantNotify)
 				throws Exception {
@@ -913,16 +1049,33 @@ public class Service {
 				Job job = getJob(jobId);
 				job.access(host());
 			}
-			// TODO Auto-generated method stub
+			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+				spalloc.getJobs(false, LOTS, 0)
+						.waitForChange(NOTIFIER_WAIT_TIME);
+				List<Integer> actual = spalloc.getJobs(false, LOTS, 0).ids();
+				if (jobId != null) {
+					actual.retainAll(singleton(jobId));
+				}
+				writeJobNotification(actual);
+			});
 		}
 
 		@Override
-		protected void notifyMachine(String machineName, boolean wantNotify)
+		protected void notifyMachine(String machine, boolean wantNotify)
 				throws Exception {
-			if (machineName != null) {
-				getMachine(machineName);
+			if (machine != null) {
+				// Validate
+				getMachine(machine);
 			}
-			// TODO Auto-generated method stub
+			manageNotifier(machNotifiers, machine, wantNotify, () -> {
+				epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
+				List<String> actual =
+						new ArrayList<String>(spalloc.getMachines().keySet());
+				if (machine != null) {
+					actual.retainAll(singleton(machine));
+				}
+				writeMachineNotification(actual);
+			});
 		}
 
 		@Override
@@ -991,5 +1144,27 @@ public class Service {
 			return spalloc.getMachine(machineName)
 					.orElseThrow(() -> new Exception("no such machine"));
 		}
+	}
+
+	@FunctionalInterface
+	interface Notifier extends Callable<Void> {
+		@Override
+		default Void call() {
+			try {
+				while (!Thread.interrupted()) {
+					waitAndNotify();
+				}
+			} catch (SQLException e) {
+				log.error("SQL failure", e);
+			} catch (IOException e) {
+				log.warn("failed to notify", e);
+			} catch (InterruptedException ignored) {
+				// Nothing to do
+			}
+			return null;
+		}
+
+		void waitAndNotify()
+				throws InterruptedException, SQLException, IOException;
 	}
 }
