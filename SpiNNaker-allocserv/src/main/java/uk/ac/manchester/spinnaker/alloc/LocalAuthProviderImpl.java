@@ -418,7 +418,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@Override
-	@Scheduled(fixedDelayString = "${spalloc.auth.unlock-period:60s}")
+	@Scheduled(fixedDelayString = "${spalloc.auth.unlock-period:PT60S}")
 	public void unlockLockedUsers() throws SQLException {
 		try {
 			if (!control.isPaused()) {

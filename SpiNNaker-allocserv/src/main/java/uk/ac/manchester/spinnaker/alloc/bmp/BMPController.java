@@ -344,8 +344,8 @@ public class BMPController extends SQLQueries {
 	// ----------------------------------------------------------------
 	// SERVICE IMPLEMENTATION
 
-	@Scheduled(fixedDelayString = "${spalloc.transceiver.period:10s}",
-			initialDelayString = "${spalloc.transceiver.period:10s}")
+	@Scheduled(fixedDelayString = "${spalloc.transceiver.period:PT10S}",
+			initialDelayString = "${spalloc.transceiver.period:PT10S}")
 	void mainSchedule() throws SQLException, IOException, SpinnmanException {
 		if (serviceControl.isPaused()) {
 			return;

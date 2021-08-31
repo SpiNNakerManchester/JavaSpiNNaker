@@ -81,20 +81,20 @@
   {
     "name": "spalloc.historical-data.grace-period",
     "type": "java.time.Duration",
-    "defaultValue": "PT14D",
+    "defaultValue": "P14D",
     "description": "How long after job completion should we wait before moving the data?"
   },
   {
     "name": "spalloc.allocator.period",
     "type": "java.time.Duration",
-    "defaultValue": "5s",
-    "description": "Time between runs of the main allocation algorithm."
+    "defaultValue": "PT5S",
+    "description": "Time between runs of the main allocation algorithm. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
   },
   {
     "name": "spalloc.keepalive.expiry-period",
     "type": "java.time.Duration",
-    "defaultValue": "30s",
-    "description": "Time between runs of the keepalive-expiry algorithm."
+    "defaultValue": "PT30S",
+    "description": "Time between runs of the keepalive-expiry algorithm. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
   },
   {
     "name": "spalloc.keepalive.min",
@@ -162,8 +162,8 @@
   {
     "name": "spalloc.transceiver.period",
     "type": "java.time.Duration",
-    "defaultValue": "10s",
-    "description": "How long between when we send requests to the BMP control tasks."
+    "defaultValue": "PT10S",
+    "description": "How long between when we send requests to the BMP control tasks. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
   },
   {
     "name": "spalloc.transceiver.probe-interval",
@@ -228,8 +228,8 @@
   {
     "name": "spalloc.auth.unlock-period",
     "type": "java.time.Duration",
-    "defaultValue": "60s",
-    "description": "How often do we look for users to end their lock-out?"
+    "defaultValue": "PT60S",
+    "description": "How often do we look for users to end their lock-out? Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
   },
   {
     "name": "spalloc.quota.default",

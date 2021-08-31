@@ -94,7 +94,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * @author Donal Fellows
  */
-@Component
+@Component("spalloc-v1-compatibility-service")
 public class Service {
 	private static final int BASE_TEN = 10;
 

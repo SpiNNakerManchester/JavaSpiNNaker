@@ -82,14 +82,14 @@ spalloc:
     schedule: "0 0 2 * * *"
   keepalive:
     # How long between runs of the keepalive-expiry algorithm
-    expiry-period: 30s
+    expiry-period: PT30S
     # Minimum keepalive period
     min: 30s
     # Maximum keepalive period
     max: 300s
   allocator:
     # How long between runs of the allocator algorithm
-    period: 5s
+    period: PT5S
     # What span of importance will be considered when allocating jobs
     importance-span: 10000
     # Priority is the rate at which importance is accrued
@@ -126,7 +126,7 @@ spalloc:
     # Duration of automatic log-out
     account-lock-duration: PT24H
     # How often do we look for users to unlock
-    unlock-period: 60s
+    unlock-period: PT60S
   quota:
     # Default user quota in board-seconds
     default: 100
@@ -134,7 +134,7 @@ spalloc:
     consolidation-schedule: "0 0 * * * *"
   transceiver:
     # How long between when we send requests to the BMP control tasks
-    period: 10s
+    period: PT10S
     # The basic wait time used by the BMP control tasks
     probe-interval: 15s
     # Number of attempts that will be made to switch on a board

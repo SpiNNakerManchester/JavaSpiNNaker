@@ -138,7 +138,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelayString = "${spalloc.allocator.period:5s}")
+	@Scheduled(fixedDelayString = "${spalloc.allocator.period:PT5S}")
 	public void allocate() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -327,7 +327,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelayString = "${spalloc.keepalive.expiry-period:30s}")
+	@Scheduled(fixedDelayString = "${spalloc.keepalive.expiry-period:PT30S}")
 	public void expireJobs() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
