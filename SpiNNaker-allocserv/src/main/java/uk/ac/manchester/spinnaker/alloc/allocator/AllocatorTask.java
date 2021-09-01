@@ -418,8 +418,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 */
 	private void tombstone(Connection conn) throws SQLException {
 		try (Query copy = query(conn, copyToHistoricalData);
-				Update delete = update(conn,
-						DELETE_JOB_RECORD)) {
+				Update delete = update(conn, DELETE_JOB_RECORD)) {
 			List<Integer> jobIds = transaction(conn,
 					() -> rowsAsList(copy.call(tombstoneGracePeriod),
 							row -> row.getInteger("job_id")));

@@ -44,7 +44,7 @@ public class Epochs {
 
 	/**
 	 * Advance the jobs epoch. Will wake any thread waiting on changes to the
-	 * epoch with {@link JobsEpoch#waitForChange(long)}.
+	 * epoch with {@link JobsEpoch#waitForChange(Duration)}.
 	 */
 	public synchronized void nextJobsEpoch() {
 		try {
@@ -65,7 +65,7 @@ public class Epochs {
 
 	/**
 	 * Advance the machine epoch. Will wake any thread waiting on changes to the
-	 * epoch with {@link MachineEpoch#waitForChange(long)}.
+	 * epoch with {@link MachineEpoch#waitForChange(Duration)}.
 	 */
 	public synchronized void nextMachineEpoch() {
 		try {

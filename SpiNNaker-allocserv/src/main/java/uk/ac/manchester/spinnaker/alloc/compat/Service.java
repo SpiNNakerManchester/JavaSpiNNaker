@@ -20,36 +20,28 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singleton;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.sql.SQLException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -65,28 +57,17 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
-import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
-import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.BoardLink;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
-import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
@@ -96,59 +77,66 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  */
 @Component("spalloc-v1-compatibility-service")
 public class Service {
-	private static final int BASE_TEN = 10;
+	/** In seconds. */
+	private static final int SHUTDOWN_TIMEOUT = 3;
 
-	private static final int ONE_MINUTE = 60;
-
-	private static final double NANOFACTOR = 1e9;
-
-	private static final int LOTS = 10000;
-
-	private static final Duration NOTIFIER_WAIT_TIME =
-			Duration.ofSeconds(ONE_MINUTE);
+	private static final int TRIAD = 3;
 
 	private static final ThreadGroup GROUP =
 			new ThreadGroup("spalloc-legacy-service");
 
 	private static final Logger log = getLogger(Service.class);
 
+	/** Whether to turn this service on. */
 	@Value("${spalloc.compat.enable:false}")
 	private boolean enable;
 
+	/** The port that we listen on. */
 	@Value("${spalloc.compat.port:22244}")
 	private int port;
 
+	/** The service user. Should be distinct from all users that can log in. */
 	@Value("${spalloc.compat.service-user:}")
-	private String serviceUser;
+	String serviceUser;
 
+	/** The size of the pool of worker threads. */
 	@Value("${spalloc.compat.thread-pool-size:0}")
 	private int poolSize;
 
+	/** The core spalloc service. */
 	@Autowired
-	private SpallocAPI spalloc;
+	SpallocAPI spalloc;
 
+	/** The epoch manager. */
 	@Autowired
-	private Epochs epochs;
+	Epochs epochs;
 
+	/** The database. */
+	@Autowired
+	DatabaseEngine db;
+
+	/** The service socket. */
 	private ServerSocket serv;
 
+	/** The main network service listener thread. */
 	private Thread servThread;
 
-	private ObjectMapper mapper;
+	/** How to serialize and deserialize JSON. */
+	final ObjectMapper mapper;
 
-	private Permit serviceUserPermit;
+	/** How the majority of threads are launched by the service. */
+	ExecutorService executor;
 
-	private ExecutorService executor;
+	/** The version of the service. */
+	final Version version;
 
-	private Version version;
-
-	private TaskFactory factory;
+	/** How we make connection handlers. */
+	private TaskFactory factory = s -> new ServiceImpl(this, s);
 
 	public Service(@Value("${version}") String version) {
 		this.version = new Version(version.replaceAll("-.*", ""));
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
-		factory = ServiceImpl::new;
 	}
 
 	@PostConstruct
@@ -158,26 +146,27 @@ public class Service {
 		} else {
 			executor = newCachedThreadPool(r -> new Thread(GROUP, r));
 		}
+
 		if (enable) {
 			serv = new ServerSocket(port);
 			servThread = new Thread(GROUP, this::acceptConnections);
 			servThread.setName("service-master");
 			servThread.start();
-		} else {
-			serv = null;
 		}
-		serviceUserPermit = new Permit(serviceUser);
 	}
 
 	@PreDestroy
 	private void close() throws IOException, InterruptedException {
-		if (serv != null) {
+		if (nonNull(serv)) {
+			// Shut down the server socket first; no new clients
 			servThread.interrupt();
 			serv.close();
 			servThread.join();
+
+			// Shut down the clients
 			executor.shutdown();
 			executor.shutdownNow();
-			executor.awaitTermination(2, SECONDS);
+			executor.awaitTermination(SHUTDOWN_TIMEOUT, SECONDS);
 		}
 	}
 
@@ -197,121 +186,38 @@ public class Service {
 	}
 
 	private void acceptConnections() {
-		while (!interrupted()) {
+		try {
+			while (!interrupted()) {
+				try {
+					Task service = factory.getTask(serv.accept());
+					executor.execute(() -> service.handleConnection());
+				} catch (SocketException e) {
+					if (interrupted()) {
+						return;
+					}
+					if (serv.isClosed()) {
+						return;
+					}
+					log.warn("IO error", e);
+				} catch (IOException e) {
+					log.warn("IO error", e);
+				}
+			}
+		} finally {
 			try {
-				Task service = factory.getTask(serv.accept());
-				executor.execute(() -> service.handleConnection());
+				serv.close();
 			} catch (IOException e) {
 				log.warn("IO error", e);
 			}
 		}
 	}
 
-	/**
-	 * The encoded form of a command to the server.
-	 */
-	public static class Command {
-		private String command;
-
-		private List<Object> args = new ArrayList<>();
-
-		private Map<String, Object> kwargs = new HashMap<>();
-
-		/** @return The name of the command. */
-		public String getCommand() {
-			return command;
-		}
-
-		public void setCommand(String command) {
-			this.command = command;
-		}
-
-		/** @return The positional arguments to the command. */
-		public List<Object> getArgs() {
-			return args;
-		}
-
-		public void setArgs(List<Object> args) {
-			this.args = args;
-		}
-
-		/** @return The keyword arguments to the command. */
-		public Map<String, Object> getKwargs() {
-			return kwargs;
-		}
-
-		public void setKwargs(Map<String, Object> kwargs) {
-			this.kwargs = kwargs;
-		}
+	private static Integer optInt(List<Object> args) {
+		return args.isEmpty() ? null : parseDec(args, 0);
 	}
 
-	private static class ReturnResponse {
-		private String returnValue;
-
-		@JsonProperty("return")
-		public String getReturnValue() {
-			return returnValue;
-		}
-
-		public void setReturnValue(String returnValue) {
-			this.returnValue =
-					returnValue == null ? "" : returnValue.toString();
-		}
-	}
-
-	private static class ExceptionResponse {
-		private String exception;
-
-		@JsonProperty("exception")
-		public String getException() {
-			return exception;
-		}
-
-		public void setException(String exception) {
-			this.exception = exception == null ? "" : exception.toString();
-		}
-	}
-
-	private static class JobNotifyMessage {
-		private List<Integer> jobsChanged;
-
-		/**
-		 * @return the jobs changed
-		 */
-		@JsonProperty("jobs_changed")
-		public List<Integer> getJobsChanged() {
-			return jobsChanged;
-		}
-
-		public void setJobsChanged(List<Integer> jobsChanged) {
-			this.jobsChanged = jobsChanged;
-		}
-	}
-
-	private static class MachineNotifyMessage {
-		private List<String> machinesChanged;
-
-		/**
-		 * @return the machines changed
-		 */
-		@JsonProperty("machines_changed")
-		public List<String> getMachinesChanged() {
-			return machinesChanged;
-		}
-
-		public void setMachinesChanged(List<String> machinesChanged) {
-			this.machinesChanged = machinesChanged;
-		}
-	}
-
-	private static int parseDec(Object value) {
-		return Integer.parseInt((String) value, BASE_TEN);
-	}
-
-	private static double timestamp(Instant i) {
-		double ts = i.getEpochSecond();
-		ts += i.getNano() / NANOFACTOR;
-		return ts;
+	private static String optStr(List<Object> args) {
+		return args.isEmpty() ? null : args.get(0).toString();
 	}
 
 	/**
@@ -319,33 +225,41 @@ public class Service {
 	 *
 	 * @author Donal Fellows
 	 */
-	public abstract static class Task {
+	public abstract class Task {
+		/**
+		 * How long to wait for a message, in milliseconds. Failure to receive
+		 * in this time triggers an exception, but it needs to be fairly
+		 * frequent or the thread can't be interrupted.
+		 */
 		private static final int TASK_BASIC_WAIT_TIMEOUT = 2000;
 
 		/**
 		 * The socket that this task is handling.
 		 */
-		protected final Socket sock;
-
-		private final BufferedReader in;
-
-		private final PrintWriter out;
-
-		private final ObjectMapper mapper;
+		private final Socket sock;
 
 		/**
-		 * @param mapper
-		 *            Used to convert between JSON and objects.
+		 * How to read from the socket. The protocol expects messages to be
+		 * UTF-8 lines, with each line being a JSON document.
+		 */
+		private final BufferedReader in;
+
+		/**
+		 * How to write to the socket. The protocol expects messages to be UTF-8
+		 * lines, with each line being a JSON document.
+		 */
+		private final PrintWriter out;
+
+		/**
 		 * @param sock
 		 *            The socket that talks to the client.
 		 * @throws IOException
 		 *             If access to the socket fails.
 		 */
-		protected Task(ObjectMapper mapper, Socket sock) throws IOException {
+		protected Task(Socket sock) throws IOException {
 			this.sock = sock;
 			sock.setTcpNoDelay(true);
 			sock.setSoTimeout(TASK_BASIC_WAIT_TIMEOUT);
-			this.mapper = mapper;
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream(), UTF_8));
 			out = new PrintWriter(
@@ -373,12 +287,10 @@ public class Service {
 			}
 		}
 
-		void closeNotifiers() {
-		}
-
-		public final boolean isClosed() {
-			return sock.isClosed();
-		}
+		/**
+		 * Stop any current running notifiers.
+		 */
+		protected abstract void closeNotifiers();
 
 		public final String host() {
 			return sock.getRemoteSocketAddress().toString();
@@ -386,14 +298,14 @@ public class Service {
 
 		private Command readMessage() throws IOException, InterruptedException {
 			String line = in.readLine();
-			if (line == null) {
+			if (isNull(line)) {
 				if (currentThread().isInterrupted()) {
 					throw new InterruptedException();
 				}
 				return null;
 			}
 			Command c = mapper.readValue(line, Command.class);
-			if (c.command == null) {
+			if (isNull(c.getCommand())) {
 				throw new IOException("message did not specify a command");
 			}
 			return c;
@@ -409,10 +321,12 @@ public class Service {
 		 *             as JSON or a suitable primitive.
 		 */
 		protected final void writeResponse(Object response) throws IOException {
-			ReturnResponse rr = new ReturnResponse();
-			// Yes, this is ghastly!
-			rr.setReturnValue(mapper.writeValueAsString(response));
-			out.println(mapper.writeValueAsString(rr));
+			if (!sock.isClosed()) {
+				ReturnResponse rr = new ReturnResponse();
+				// Yes, this is ghastly!
+				rr.setReturnValue(mapper.writeValueAsString(response));
+				out.println(mapper.writeValueAsString(rr));
+			}
 		}
 
 		/**
@@ -424,9 +338,11 @@ public class Service {
 		 *             If network access fails.
 		 */
 		protected final void writeException(Object exn) throws IOException {
-			ExceptionResponse er = new ExceptionResponse();
-			er.setException(exn.toString());
-			out.println(mapper.writeValueAsString(er));
+			if (!sock.isClosed()) {
+				ExceptionResponse er = new ExceptionResponse();
+				er.setException(exn.toString());
+				out.println(mapper.writeValueAsString(er));
+			}
 		}
 
 		/**
@@ -439,7 +355,7 @@ public class Service {
 		 */
 		protected final void writeJobNotification(List<Integer> jobIds)
 				throws IOException {
-			if (!jobIds.isEmpty()) {
+			if (!jobIds.isEmpty() && !sock.isClosed()) {
 				JobNotifyMessage jnm = new JobNotifyMessage();
 				jnm.setJobsChanged(jobIds);
 				out.println(mapper.writeValueAsString(jnm));
@@ -457,7 +373,7 @@ public class Service {
 		 */
 		protected final void writeMachineNotification(List<String> machineNames)
 				throws IOException {
-			if (!machineNames.isEmpty()) {
+			if (!machineNames.isEmpty() && !sock.isClosed()) {
 				MachineNotifyMessage mnm = new MachineNotifyMessage();
 				mnm.setMachinesChanged(machineNames);
 				out.println(mapper.writeValueAsString(mnm));
@@ -478,129 +394,144 @@ public class Service {
 			Command c;
 			try {
 				c = readMessage();
-				if (c == null) {
+				if (isNull(c)) {
 					return false;
 				}
 			} catch (SocketTimeoutException e) {
+				// Message was not read by time timeout expired
 				return !currentThread().isInterrupted();
 			} catch (JsonMappingException | JsonParseException e) {
 				writeException(e);
 				return true;
 			}
+
 			Object r = null;
 			try {
-				switch (c.command) {
-				case "create_job":
-					r = createJob(c.args, c.kwargs, c);
-					break;
-				case "destroy_job":
-					destroyJob(parseDec(c.args.get(0)),
-							(String) c.kwargs.get("reason"));
-					break;
-				case "get_board_at_position":
-					r = getBoardAtPhysicalPosition(
-							(String) c.kwargs.get("machine_name"),
-							parseDec(c.kwargs.get("x")),
-							parseDec(c.kwargs.get("y")),
-							parseDec(c.kwargs.get("z")));
-					break;
-				case "get_board_position":
-					r = getBoardAtLogicalPosition(
-							(String) c.kwargs.get("machine_name"),
-							parseDec(c.kwargs.get("x")),
-							parseDec(c.kwargs.get("y")),
-							parseDec(c.kwargs.get("z")));
-					break;
-				case "get_job_machine_info":
-					r = getJobMachineInfo(parseDec(c.args.get(0)));
-					break;
-				case "get_job_state":
-					r = getJobState(parseDec(c.args.get(0)));
-				case "job_keepalive":
-					jobKeepalive(parseDec(c.args.get(0)));
-					break;
-				case "list_jobs":
-					r = listJobs();
-					break;
-				case "list_machines":
-					r = listMachines();
-					break;
-				case "no_notify_job":
-					notifyJob(c.args.isEmpty() ? null : parseDec(c.args.get(0)),
-							false);
-					break;
-				case "no_notify_machine":
-					notifyMachine(
-							c.args.isEmpty() ? null : (String) c.args.get(0),
-							false);
-					break;
-				case "notify_job":
-					notifyJob(c.args.isEmpty() ? null : parseDec(c.args.get(0)),
-							true);
-					break;
-				case "notify_machine":
-					notifyMachine(
-							c.args.isEmpty() ? null : (String) c.args.get(0),
-							true);
-					break;
-				case "power_off_job_boards":
-					powerJobBoards(parseDec(c.args.get(0)), PowerState.OFF);
-					break;
-				case "power_on_job_boards":
-					powerJobBoards(parseDec(c.args.get(0)), PowerState.ON);
-					break;
-				case "version":
-					r = version();
-					break;
-				case "where_is":
-					if (c.kwargs.containsKey("job_id")) {
-						r = whereIsJobChip(parseDec(c.kwargs.get("job_id")),
-								parseDec(c.kwargs.get("chip_x")),
-								parseDec(c.kwargs.get("chip_y")));
-					} else if (!c.kwargs.containsKey("machine")) {
-						writeException("missing parameter");
-						return true;
-					} else {
-						String m = (String) c.kwargs.get("machine");
-						if (c.kwargs.containsKey("chip_x")) {
-							r = whereIsMachineChip(m,
-									parseDec(c.kwargs.get("chip_x")),
-									parseDec(c.kwargs.get("chip_y")));
-						} else if (c.kwargs.containsKey("x")) {
-							r = whereIsMachineLogicalBoard(m,
-									parseDec(c.kwargs.get("x")),
-									parseDec(c.kwargs.get("y")),
-									parseDec(c.kwargs.get("z")));
-						} else if (c.kwargs.containsKey("cabinet")) {
-							r = whereIsMachinePhysicalBoard(m,
-									parseDec(c.kwargs.get("cabinet")),
-									parseDec(c.kwargs.get("frame")),
-									parseDec(c.kwargs.get("board")));
-						} else {
-							writeException("missing parameter");
-							return true;
-						}
-					}
-					break;
-				default:
-					writeException("unknown command: " + c.command);
-					return true;
-				}
+				r = callOperation(c);
 			} catch (Exception e) {
 				writeException(e);
 				return true;
 			}
-			ReturnResponse rr = new ReturnResponse();
-			rr.setReturnValue(mapper.writeValueAsString(r));
-			out.println(mapper.writeValueAsString(rr));
+
+			writeResponse(r);
 			return true;
 		}
 
 		/**
-		 * Create a job.
+		 * Decode the command to convert into a method to call.
 		 *
-		 * @param args
-		 *            Argument list. Should contain numbers.
+		 * @param c
+		 *            The command.
+		 * @return The result of the command.
+		 * @throws Exception
+		 *             If things go wrong
+		 */
+		private Object callOperation(Command c) throws Exception {
+			switch (c.getCommand()) {
+			case "create_job":
+				// This is three operations really
+				switch (c.getArgs().size()) {
+				case 0:
+					return createJobNumBoards(1, c.getKwargs(), c);
+				case 1:
+					return createJobNumBoards(parseDec(c.getArgs(), 0),
+							c.getKwargs(), c);
+				case 2:
+					return createJobRectangle(parseDec(c.getArgs(), 0),
+							parseDec(c.getArgs(), 1), c.getKwargs(), c);
+				case TRIAD:
+					return createJobSpecificBoard(new TriadCoords(
+							parseDec(c.getArgs(), 0), parseDec(c.getArgs(), 1),
+							parseDec(c.getArgs(), 2)), c.getKwargs(), c);
+				default:
+					throw new Oops("unsupported number of arguments: "
+							+ c.getArgs().size());
+				}
+			case "destroy_job":
+				destroyJob(parseDec(c.getArgs(), 0),
+						(String) c.getKwargs().get("reason"));
+				break;
+			case "get_board_at_position":
+				return getBoardAtPhysicalPosition(
+						(String) c.getKwargs().get("machine_name"),
+						parseDec(c.getKwargs(), "x"),
+						parseDec(c.getKwargs(), "y"),
+						parseDec(c.getKwargs(), "z"));
+			case "get_board_position":
+				return getBoardAtLogicalPosition(
+						(String) c.getKwargs().get("machine_name"),
+						parseDec(c.getKwargs(), "x"),
+						parseDec(c.getKwargs(), "y"),
+						parseDec(c.getKwargs(), "z"));
+			case "get_job_machine_info":
+				return getJobMachineInfo(parseDec(c.getArgs(), 0));
+			case "get_job_state":
+				return getJobState(parseDec(c.getArgs(), 0));
+			case "job_keepalive":
+				jobKeepalive(parseDec(c.getArgs(), 0));
+				break;
+			case "list_jobs":
+				return listJobs();
+			case "list_machines":
+				return listMachines();
+			case "no_notify_job":
+				notifyJob(optInt(c.getArgs()), false);
+				break;
+			case "no_notify_machine":
+				notifyMachine(optStr(c.getArgs()), false);
+				break;
+			case "notify_job":
+				notifyJob(optInt(c.getArgs()), true);
+				break;
+			case "notify_machine":
+				notifyMachine(optStr(c.getArgs()), true);
+				break;
+			case "power_off_job_boards":
+				powerJobBoards(parseDec(c.getArgs(), 0), OFF);
+				break;
+			case "power_on_job_boards":
+				powerJobBoards(parseDec(c.getArgs(), 0), ON);
+				break;
+			case "version":
+				return version();
+			case "where_is":
+				// This is four operations in a trench coat
+				if (c.getKwargs().containsKey("job_id")) {
+					return whereIsJobChip(parseDec(c.getKwargs(), "job_id"),
+							parseDec(c.getKwargs(), "chip_x"),
+							parseDec(c.getKwargs(), "chip_y"));
+				} else if (!c.getKwargs().containsKey("machine")) {
+					throw new Oops("missing parameter");
+				}
+				String m = (String) c.getKwargs().get("machine");
+				if (c.getKwargs().containsKey("chip_x")) {
+					return whereIsMachineChip(m,
+							parseDec(c.getKwargs(), "chip_x"),
+							parseDec(c.getKwargs(), "chip_y"));
+				} else if (c.getKwargs().containsKey("x")) {
+					return whereIsMachineLogicalBoard(m,
+							parseDec(c.getKwargs(), "x"),
+							parseDec(c.getKwargs(), "y"),
+							parseDec(c.getKwargs(), "z"));
+				} else if (c.getKwargs().containsKey("cabinet")) {
+					return whereIsMachinePhysicalBoard(m,
+							parseDec(c.getKwargs(), "cabinet"),
+							parseDec(c.getKwargs(), "frame"),
+							parseDec(c.getKwargs(), "board"));
+				} else {
+					throw new Oops("missing parameter");
+				}
+			default:
+				throw new Oops("unknown command: " + c.getCommand());
+			}
+			return null;
+		}
+
+		/**
+		 * Create a job asking for a number of boards.
+		 *
+		 * @param numBoards
+		 *            Number of boards.
 		 * @param kwargs
 		 *            Keyword argument map.
 		 * @param cmd
@@ -609,7 +540,41 @@ public class Service {
 		 * @throws Exception
 		 *             If anything goes wrong.
 		 */
-		protected abstract Integer createJob(List<Object> args,
+		protected abstract Integer createJobNumBoards(int numBoards,
+				Map<String, Object> kwargs, Object cmd) throws Exception;
+
+		/**
+		 * Create a job asking for a rectangle of boards.
+		 *
+		 * @param width
+		 *            Width of rectangle in boards.
+		 * @param height
+		 *            Height of rectangle in boards.
+		 * @param kwargs
+		 *            Keyword argument map.
+		 * @param cmd
+		 *            The actual command, as a serializable object.
+		 * @return Job identifier.
+		 * @throws Exception
+		 *             If anything goes wrong.
+		 */
+		protected abstract Integer createJobRectangle(int width, int height,
+				Map<String, Object> kwargs, Object cmd) throws Exception;
+
+		/**
+		 * Create a job asking for a specific board.
+		 *
+		 * @param coords
+		 *            Which board, by its logical coordinates.
+		 * @param kwargs
+		 *            Keyword argument map.
+		 * @param cmd
+		 *            The actual command, as a serializable object.
+		 * @return Job identifier.
+		 * @throws Exception
+		 *             If anything goes wrong.
+		 */
+		protected abstract Integer createJobSpecificBoard(TriadCoords coords,
 				Map<String, Object> kwargs, Object cmd) throws Exception;
 
 		/**
@@ -830,377 +795,71 @@ public class Service {
 				throws Exception;
 	}
 
-	/** Concrete implementation. */
-	class ServiceImpl extends Task {
-		private static final int TRIAD = 3;
+	/** Indicates a failure to parse a command. */
+	private static final class Oops extends RuntimeException {
+		private static final long serialVersionUID = 1L;
 
-		ServiceImpl(Socket sock) throws IOException {
-			super(Service.this.mapper, sock);
-		}
-
-		private Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
-
-		private Map<String, Future<Void>> machNotifiers = new HashMap<>();
-
-		@Override
-		void closeNotifiers() {
-			for (Future<Void> n : jobNotifiers.values()) {
-				n.cancel(true);
-			}
-			for (Future<Void> n : machNotifiers.values()) {
-				n.cancel(true);
-			}
-		}
-
-		@Override
-		protected String version() {
-			return version.toString();
-		}
-
-		@Override
-		protected JobMachineInfo getJobMachineInfo(int jobId) throws Exception {
-			Job job = getJob(jobId);
-			job.access(host());
-			SubMachine machine = job.getMachine()
-					.orElseThrow(() -> new Exception("boards not allocated"));
-			JobMachineInfo jmi = new JobMachineInfo();
-			jmi.setMachineName(machine.getMachine().getName());
-			jmi.setBoards(machine.getBoards());
-			jmi.setConnections(machine.getConnections().stream().map(ci -> {
-				Connection c = new Connection();
-				c.setChip(ci.getChip());
-				c.setHostname(ci.getHostname());
-				return c;
-			}).collect(toList()));
-			jmi.setWidth(job.getWidth().orElse(0));
-			jmi.setHeight(job.getHeight().orElse(0));
-			return null;
-		}
-
-		private State state(Job job) throws SQLException {
-			switch (job.getState()) {
-			case QUEUED:
-				return State.QUEUED;
-			case POWER:
-				return State.POWER;
-			case READY:
-				return State.READY;
-			case DESTROYED:
-				return State.DESTROYED;
-			default:
-				return State.UNKNOWN;
-			}
-		}
-
-		@Override
-		protected JobState getJobState(int jobId) throws Exception {
-			Job job = getJob(jobId);
-			job.access(host());
-			JobState js = new JobState();
-			js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
-			js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
-			js.setPower(job.getMachine().map(m -> {
-				try {
-					return m.getPower().equals(PowerState.ON);
-				} catch (SQLException e) {
-					log.warn("problem getting job power state", e);
-					return false;
-				}
-			}).orElse(false));
-			js.setReason(job.getReason().orElse(""));
-			js.setStartTime(timestamp(job.getStartTime()));
-			js.setState(state(job));
-			return js;
-		}
-
-		@Override
-		protected void jobKeepalive(int jobId) throws Exception {
-			getJob(jobId).access(host());
-		}
-
-		@Override
-		protected Integer createJob(List<Object> args,
-				Map<String, Object> kwargs, Object cmd) throws Exception {
-			SpallocAPI.CreateDescriptor create;
-			switch (args.size()) {
-			case 0:
-				create = new CreateNumBoards(1);
-				break;
-			case 1:
-				create = new CreateNumBoards(parseDec(args.get(0)));
-				break;
-			case 2:
-				create = new CreateDimensions(parseDec(args.get(0)),
-						parseDec(args.get(1)));
-				break;
-			case TRIAD:
-				create = CreateBoard.triad(parseDec(args.get(0)),
-						parseDec(args.get(1)), parseDec(args.get(2)));
-				break;
-			default:
-				throw new Exception("bad number of args");
-			}
-
-			Integer maxDead = (Integer) kwargs.get("max_dead_boards");
-			Number keepalive = (Number) kwargs.get("keepalive");
-			@SuppressWarnings({
-				"unchecked", "rawtypes"
-			})
-			Job job = spalloc.createJob(serviceUser, create,
-					(String) kwargs.get("machine"), (List) kwargs.get("tags"),
-					Duration.ofSeconds(keepalive == null ? ONE_MINUTE
-							: keepalive.intValue()),
-					maxDead, mapper.writeValueAsBytes(cmd));
-			return job.getId();
-		}
-
-		@Override
-		protected void destroyJob(int jobId, String reason) throws Exception {
-			getJob(jobId).destroy(reason);
-		}
-
-		@Override
-		protected BoardCoordinates getBoardAtPhysicalPosition(
-				String machineName, int cabinet, int frame, int board)
-				throws Exception {
-			BoardLocation loc = getMachine(machineName)
-					.getBoardByPhysicalCoords(cabinet, frame, board)
-					.orElseThrow(() -> new Exception("no such board"));
-			return loc.getLogical();
-		}
-
-		@Override
-		protected BoardPhysicalCoordinates getBoardAtLogicalPosition(
-				String machineName, int x, int y, int z) throws Exception {
-			BoardLocation loc =
-					getMachine(machineName).getBoardByLogicalCoords(x, y, z)
-							.orElseThrow(() -> new Exception("no such board"));
-			return loc.getPhysical();
-		}
-
-		@SuppressWarnings("unchecked")
-		private <T, U> U[] map(Collection<T> src, Class<U> cls,
-				CheckedFunction<T, U> fun) throws SQLException {
-			List<U> dst = new ArrayList<>();
-			for (T val : src) {
-				U target;
-				try {
-					target = cls.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					log.error("unexpected failure", e);
-					break;
-				}
-				fun.call(val, target);
-				dst.add(target);
-			}
-			return dst.toArray((U[]) Array.newInstance(cls, 0));
-		}
-
-		@Override
-		protected JobDescription[] listJobs() throws SQLException {
-			return map(spalloc.getJobs(false, LOTS, 0).jobs(),
-					JobDescription.class, (job, jd) -> {
-						jd.setJobID(job.getId());
-						jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-						jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-						jd.setReason(job.getReason().orElse(""));
-						jd.setStartTime(timestamp(job.getStartTime()));
-						jd.setState(state(job));
-
-						Optional<SubMachine> osm = job.getMachine();
-						if (osm.isPresent()) {
-							SubMachine sm = osm.get();
-							jd.setMachine(sm.getMachine().getName());
-							jd.setBoards(sm.getBoards());
-							jd.setPower(sm.getPower() == PowerState.ON);
-						}
-						// TODO Fill out args and kwargs? Not a priority though
-					});
-		}
-
-		@Override
-		protected uk.ac.manchester.spinnaker.spalloc.messages.Machine[]
-				listMachines() throws SQLException {
-			return map(spalloc.getMachines().values(),
-					uk.ac.manchester.spinnaker.spalloc.messages.Machine.class,
-					(m, md) -> {
-						md.setName(m.getName());
-						md.setTags(m.getTags());
-						md.setWidth(m.getWidth());
-						md.setHeight(m.getHeight());
-						md.setDeadBoards(m.getDeadBoards().stream()
-								.map(Service::board).collect(toList()));
-						md.setDeadLinks(m.getDownLinks().stream()
-								.flatMap(Service::boardLinks)
-								.collect(toList()));
-					});
-		}
-
-		private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
-				boolean wantNotify, Notifier notifier) {
-			if (wantNotify) {
-				if (!notifiers.containsKey(key)) {
-					notifiers.put(key, executor.submit(notifier));
-				}
-			} else {
-				Future<Void> n = notifiers.remove(key);
-				if (n != null) {
-					n.cancel(true);
-				}
-			}
-		}
-
-		@Override
-		protected void notifyJob(Integer jobId, boolean wantNotify)
-				throws Exception {
-			if (jobId != null) {
-				Job job = getJob(jobId);
-				job.access(host());
-			}
-			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-				spalloc.getJobs(false, LOTS, 0)
-						.waitForChange(NOTIFIER_WAIT_TIME);
-				List<Integer> actual = spalloc.getJobs(false, LOTS, 0).ids();
-				if (jobId != null) {
-					actual.retainAll(singleton(jobId));
-				}
-				writeJobNotification(actual);
-			});
-		}
-
-		@Override
-		protected void notifyMachine(String machine, boolean wantNotify)
-				throws Exception {
-			if (machine != null) {
-				// Validate
-				getMachine(machine);
-			}
-			manageNotifier(machNotifiers, machine, wantNotify, () -> {
-				epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
-				List<String> actual =
-						new ArrayList<String>(spalloc.getMachines().keySet());
-				if (machine != null) {
-					actual.retainAll(singleton(machine));
-				}
-				writeMachineNotification(actual);
-			});
-		}
-
-		@Override
-		protected void powerJobBoards(int jobId, PowerState switchOn)
-				throws Exception {
-			Job job = getJob(jobId);
-			job.access(host());
-			job.getMachine().orElseThrow(
-					() -> new Exception("no boards currently allocated"))
-					.setPower(switchOn);
-		}
-
-		@Override
-		protected WhereIs whereIsJobChip(int jobId, int x, int y)
-				throws Exception {
-			Job job = getJob(jobId);
-			job.access(host());
-			return whereis(job.whereIs(x, y).orElseThrow(
-					() -> new Exception("no boards currently allocated")));
-		}
-
-		private WhereIs whereis(BoardLocation bl) throws SQLException {
-			WhereIs wi = new WhereIs();
-			wi.setMachine(bl.getMachine());
-			wi.setLogical(bl.getLogical());
-			wi.setPhysical(bl.getPhysical());
-			wi.setChip(bl.getChip());
-			wi.setBoardChip(bl.getBoardChip());
-			Job j = bl.getJob();
-			if (j != null) {
-				wi.setJobId(j.getId());
-				wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().get()));
-			}
-			return wi;
-		}
-
-		@Override
-		protected WhereIs whereIsMachineChip(String machineName, int x, int y)
-				throws Exception {
-			return whereis(getMachine(machineName).getBoardByChip(x, y)
-					.orElseThrow(() -> new Exception("no such board")));
-		}
-
-		@Override
-		protected WhereIs whereIsMachineLogicalBoard(String machineName, int x,
-				int y, int z) throws Exception {
-			return whereis(
-					getMachine(machineName).getBoardByLogicalCoords(x, y, z)
-							.orElseThrow(() -> new Exception("no such board")));
-		}
-
-		@Override
-		protected WhereIs whereIsMachinePhysicalBoard(String machineName, int c,
-				int f, int b) throws Exception {
-			return whereis(
-					getMachine(machineName).getBoardByPhysicalCoords(c, f, b)
-							.orElseThrow(() -> new Exception("no such board")));
-		}
-
-		private Job getJob(int jobId) throws Exception {
-			return spalloc.getJob(serviceUserPermit, jobId)
-					.orElseThrow(() -> new Exception("no such job"));
-		}
-
-		private Machine getMachine(String machineName) throws Exception {
-			return spalloc.getMachine(machineName)
-					.orElseThrow(() -> new Exception("no such machine"));
+		Oops(String msg) {
+			super(msg);
 		}
 	}
 
-	@FunctionalInterface
-	interface Notifier extends Callable<Void> {
-		@Override
-		default Void call() {
-			try {
-				while (!Thread.interrupted()) {
-					waitAndNotify();
-				}
-			} catch (SQLException e) {
-				log.error("SQL failure", e);
-			} catch (IOException e) {
-				log.warn("failed to notify", e);
-			} catch (InterruptedException ignored) {
-				// Nothing to do
-			}
-			return null;
+	private static final class ReturnResponse {
+		private String returnValue;
+
+		@JsonProperty("return")
+		public String getReturnValue() {
+			return returnValue;
 		}
 
-		void waitAndNotify()
-				throws InterruptedException, SQLException, IOException;
+		public void setReturnValue(String returnValue) {
+			this.returnValue =
+					isNull(returnValue) ? "" : returnValue.toString();
+		}
 	}
 
-	private static BoardCoordinates board(BoardCoords c) {
-		BoardCoordinates bc = new BoardCoordinates();
-		bc.setX(c.getX());
-		bc.setY(c.getY());
-		bc.setZ(c.getZ());
-		return bc;
+	private static final class ExceptionResponse {
+		private String exception;
+
+		@JsonProperty("exception")
+		public String getException() {
+			return exception;
+		}
+
+		public void setException(String exception) {
+			this.exception = isNull(exception) ? "" : exception.toString();
+		}
 	}
 
-	private static Stream<BoardLink> boardLinks(DownLink l) {
-		BoardLink bl1 = new BoardLink();
-		bl1.setX(l.end1.board.getX());
-		bl1.setY(l.end1.board.getY());
-		bl1.setZ(l.end1.board.getZ());
-		bl1.setLink(l.end1.direction.ordinal());
+	private static final class JobNotifyMessage {
+		private List<Integer> jobsChanged;
 
-		BoardLink bl2 = new BoardLink();
-		bl2.setX(l.end2.board.getX());
-		bl2.setY(l.end2.board.getY());
-		bl2.setZ(l.end2.board.getZ());
-		bl2.setLink(l.end2.direction.ordinal());
+		/**
+		 * @return the jobs changed
+		 */
+		@JsonProperty("jobs_changed")
+		public List<Integer> getJobsChanged() {
+			return jobsChanged;
+		}
 
-		return Arrays.asList(bl1, bl2).stream();
+		public void setJobsChanged(List<Integer> jobsChanged) {
+			this.jobsChanged = jobsChanged;
+		}
 	}
-}
 
-interface CheckedFunction<T, U> {
-	void call(T value, U receiver) throws SQLException;
+	private static final class MachineNotifyMessage {
+		private List<String> machinesChanged;
+
+		/**
+		 * @return the machines changed
+		 */
+		@JsonProperty("machines_changed")
+		public List<String> getMachinesChanged() {
+			return machinesChanged;
+		}
+
+		public void setMachinesChanged(List<String> machinesChanged) {
+			this.machinesChanged = machinesChanged;
+		}
+	}
 }

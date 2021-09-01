@@ -400,6 +400,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				// Insert failed
 				return null;
 			}
+			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
 			insertRequest(conn, m, id, descriptor, maxDeadBoards);
