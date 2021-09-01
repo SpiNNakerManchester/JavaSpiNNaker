@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardLink;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 /**
- * Utility functions to support {@link Service}.
+ * Utility functions to support {@link V1CompatService}.
  *
  * @author Donal Fellows
  */
@@ -51,7 +51,7 @@ abstract class Utils {
 
 	private static final double NANOFACTOR = 1e9;
 
-	private static final Logger log = getLogger(Service.class);
+	private static final Logger log = getLogger(V1CompatService.class);
 
 	private Utils() {
 	}

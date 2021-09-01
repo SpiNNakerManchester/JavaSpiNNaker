@@ -68,7 +68,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * @author Donal Fellows
  */
-class ServiceImpl extends Service.Task {
+class ServiceImpl extends V1CompatService.Task {
 	private static final int ONE_MINUTE = 60;
 
 	private static final int LOTS = 10000;
@@ -76,13 +76,13 @@ class ServiceImpl extends Service.Task {
 	private static final Duration NOTIFIER_WAIT_TIME =
 			Duration.ofSeconds(ONE_MINUTE);
 
-	private static final Logger log = getLogger(Service.class);
+	private static final Logger log = getLogger(V1CompatService.class);
 
 	private Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
 	private Map<String, Future<Void>> machNotifiers = new HashMap<>();
 
-	private final Service srv;
+	private final V1CompatService srv;
 
 	private final SpallocAPI spalloc;
 
@@ -91,7 +91,7 @@ class ServiceImpl extends Service.Task {
 	/** Encoded form of our special permissions token. */
 	private final Permit serviceUserPermit;
 
-	ServiceImpl(Service srv, Socket sock) throws IOException {
+	ServiceImpl(V1CompatService srv, Socket sock) throws IOException {
 		srv.super(sock);
 		this.srv = srv;
 		this.spalloc = srv.spalloc;

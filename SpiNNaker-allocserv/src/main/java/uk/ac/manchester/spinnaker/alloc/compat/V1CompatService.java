@@ -76,7 +76,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * @author Donal Fellows
  */
 @Component("spalloc-v1-compatibility-service")
-public class Service {
+public class V1CompatService {
 	/** In seconds. */
 	private static final int SHUTDOWN_TIMEOUT = 3;
 
@@ -85,7 +85,7 @@ public class Service {
 	private static final ThreadGroup GROUP =
 			new ThreadGroup("spalloc-legacy-service");
 
-	private static final Logger log = getLogger(Service.class);
+	private static final Logger log = getLogger(V1CompatService.class);
 
 	/** Whether to turn this service on. */
 	@Value("${spalloc.compat.enable:false}")
@@ -133,7 +133,7 @@ public class Service {
 	/** How we make connection handlers. */
 	private TaskFactory factory = s -> new ServiceImpl(this, s);
 
-	public Service(@Value("${version}") String version) {
+	public V1CompatService(@Value("${version}") String version) {
 		this.version = new Version(version.replaceAll("-.*", ""));
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
