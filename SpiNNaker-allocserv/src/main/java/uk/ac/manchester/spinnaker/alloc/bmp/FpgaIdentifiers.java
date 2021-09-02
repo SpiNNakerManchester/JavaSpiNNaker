@@ -17,11 +17,11 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 /**
- * SpiNNaker FPGA identifiers.
- *
- * @see <a href=
- *      "http://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5 FPGA
- *      SATA Links</a> datasheet.
+ * SpiNNaker FPGA identifiers, taken from the
+ * <a href="http://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5
+ * FPGA SATA Links</a> datasheet.
+ * <p>
+ * Use {@link Enum#ordinal() ordinal()} to get the ID.
  */
 // No idea if this terminology matches up elsewhere in Spalloc
 public enum FpgaIdentifiers {
