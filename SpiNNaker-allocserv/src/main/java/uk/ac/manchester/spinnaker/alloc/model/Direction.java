@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_E_S;
+import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_N_NE;
+import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_SW_W;
+
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 
 /**
@@ -35,22 +39,25 @@ import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 public enum Direction {
 	// Order must match that in database
 	/** Northward, from {@code x} to {@code a}. */
-	N(2, 0, "fpga_n", 3),
+	N(FPGA_N_NE, 0, "fpga_n", 3),
 	/** Eastward, from {@code x} to {@code b}. */
-	E(2, 1, "fpga_e", 4),
+	E(FPGA_N_NE, 1, "fpga_e", 4),
 	/** Southeast, from {@code x} to {@code c}. */
-	SE(0, 0, "fpga_se", 5),
+	SE(FPGA_E_S, 0, "fpga_se", 5),
 	/** Southward, from {@code x} to {@code d}. */
-	S(0, 1, "fpga_s", 0),
+	S(FPGA_E_S, 1, "fpga_s", 0),
 	/** Westward, from {@code x} to {@code e}. */
-	W(1, 0, "fpga_w", 1),
+	W(FPGA_SW_W, 0, "fpga_w", 1),
 	/** Northwest, from {@code x} to {@code f}. */
-	NW(1, 1, "fpga_nw", 2);
+	NW(FPGA_SW_W, 1, "fpga_nw", 2);
 
 	/**
-	 * The number of the FPGA that manages the link in this direction.
+	 * The FPGA that manages the link in this direction. Note that the names of
+	 * FPGA identifiers don't exactly match up with the direction names in this
+	 * class. This <em>mostly</em> doesn't matter; the only real confusion is
+	 * right here in the definitions of these directions.
 	 */
-	public final int fpga;
+	public final FpgaIdentifiers fpga;
 
 	/**
 	 * The register bank that manages the link in this direction.
@@ -66,7 +73,8 @@ public enum Direction {
 	/** The number of the opposite of the link. */
 	private int oppo;
 
-	Direction(int fpga, int bankSelect, String columnName, int opposite) {
+	Direction(FpgaIdentifiers fpga, int bankSelect, String columnName,
+			int opposite) {
 		this.fpga = fpga;
 		this.bank = bankSelect;
 		this.columnName = columnName;

@@ -76,6 +76,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
@@ -242,7 +243,8 @@ public class BMPController extends SQLQueries {
 		if (!canBoardManageFPGAs(txrx, board)) {
 			return;
 		}
-		txrx.writeFPGARegister(link.fpga, link.bank, STOP, 1, ROOT_BMP, board);
+		txrx.writeFPGARegister(link.fpga.ordinal(), link.bank, STOP, 1,
+				ROOT_BMP, board);
 	}
 
 	/**

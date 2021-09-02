@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.bmp;
+package uk.ac.manchester.spinnaker.alloc.model;
 
 /**
  * SpiNNaker FPGA identifiers, taken from the
@@ -23,7 +23,6 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
  * <p>
  * Use {@link Enum#ordinal() ordinal()} to get the ID.
  */
-// No idea if this terminology matches up elsewhere in Spalloc
 public enum FpgaIdentifiers {
 	/** Handles east and south. */
 	FPGA_E_S,
