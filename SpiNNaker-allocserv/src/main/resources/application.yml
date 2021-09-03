@@ -52,6 +52,17 @@ spring:
     properties:
       "[mail.smtp.auth]": true
       "[mail.smtp.starttls.enable]": true
+  security:
+    oauth2:
+      client:
+        registration:
+          hbp-ebrains:
+            client-id: ${HBP_CLIENT_ID:}
+            client-secret: ${HBP_CLIENT_SECRET:}
+        provider:
+          hbp-ebrains:
+            # FIXME check if this URL is correct!
+            issuer-uri: https://iam.ebrains.eu/
 
 server:
   port: 8080
