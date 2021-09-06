@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>3.50.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<npm_plugin.version>1.12.0</npm_plugin.version>
-		<node.version>v4.6.0</node.version>
+		<node.version>v14.17.6</node.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.root>/</jetty.root>
 	</properties>
