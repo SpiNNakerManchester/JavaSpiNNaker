@@ -57,12 +57,26 @@ spring:
       client:
         registration:
           hbp-ebrains:
-            client-id: ${HBP_CLIENT_ID:}
-            client-secret: ${HBP_CLIENT_SECRET:}
+            client-id: ${spalloc.auth.openid.id}
+            client-secret: ${spalloc.auth.openid.secret}
+            scope:
+            - openid
+            - profile
+            - team
+            - group
         provider:
           hbp-ebrains:
-            # FIXME check if this URL is correct!
-            issuer-uri: https://iam.ebrains.eu/
+            authorization-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
+            jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp
+            token-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
+            user-info-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp
+        opaquetoken:
+          client-id: ${spalloc.auth.openid.id}
+          client-secret: ${spalloc.auth.openid.secret}
 
 server:
   port: 8080
@@ -125,6 +139,8 @@ spalloc:
     basic: true
     # Support HTTP Form Authentication (pretty necessary)
     local-form: true
+    # Support OIDC
+    oidc: true
     # Force a known local admin user to exist with a known password
     add-dummy-user: true
     # Whether to generate a random password for the above user.
@@ -138,6 +154,10 @@ spalloc:
     account-lock-duration: PT24H
     # How often do we look for users to unlock
     unlock-period: PT60S
+    openid:
+      # The credentials for HBP/EBRAINS go here
+      id: XYZZY_OVERRIDE_THIS
+      secret: XYZZY_OVERRIDE_THIS
   quota:
     # Default user quota in board-seconds
     default: 100

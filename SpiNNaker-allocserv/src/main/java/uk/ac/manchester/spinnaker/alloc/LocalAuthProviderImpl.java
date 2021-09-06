@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -25,6 +26,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -42,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -51,6 +54,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
+import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
 
@@ -178,20 +183,29 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@Override
-	public Authentication authenticate(Authentication authentication)
+	public Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
-		return authenticate(
-				(UsernamePasswordAuthenticationToken) authentication);
+		if (auth instanceof UsernamePasswordAuthenticationToken) {
+			return authenticateDirect(
+					(UsernamePasswordAuthenticationToken) auth);
+		} else if (auth instanceof OAuth2LoginAuthenticationToken) {
+			return authenticateOpenId((OAuth2LoginAuthenticationToken) auth);
+		} else {
+			return authenticateOpenId(
+					(OAuth2AuthorizationCodeAuthenticationToken) auth);
+		}
 	}
 
 	@Override
-	public boolean supports(Class<?> authenticationClass) {
-		return UsernamePasswordAuthenticationToken.class
-				.isAssignableFrom(authenticationClass);
+	public boolean supports(Class<?> cls) {
+		return UsernamePasswordAuthenticationToken.class.isAssignableFrom(cls)
+				|| OAuth2AuthorizationCodeAuthenticationToken.class
+						.isAssignableFrom(cls)
+				|| OAuth2LoginAuthenticationToken.class.isAssignableFrom(cls);
 	}
 
 	private UsernamePasswordAuthenticationToken
-			authenticate(UsernamePasswordAuthenticationToken auth)
+			authenticateDirect(UsernamePasswordAuthenticationToken auth)
 					throws AuthenticationException {
 		log.info("authenticating {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
@@ -213,6 +227,56 @@ public class LocalAuthProviderImpl extends SQLQueries
 		} catch (SQLException e) {
 			throw new InternalAuthenticationServiceException(
 					"database access problem", e);
+		}
+	}
+
+	private Authentication
+			authenticateOpenId(OAuth2LoginAuthenticationToken auth)
+					throws AuthenticationException {
+		// FIXME how to get username from login token?
+		return authenticateOpenId(auth.getPrincipal()
+				.getAttribute("preferred_username").toString());
+	}
+
+	private Authentication
+			authenticateOpenId(OAuth2AuthorizationCodeAuthenticationToken auth)
+					throws AuthenticationException {
+		// FIXME how to get username from auth code token?
+		return authenticateOpenId(auth.getPrincipal().toString());
+	}
+
+	private AuthenticationToken authenticateOpenId(String name) {
+		String prefixedName = "openid." + name;
+		try (AuthQueries queries = new AuthQueries()) {
+			queries.transact(
+					() -> authorizeOpenIDAgainstDB(prefixedName, queries));
+			return new AuthenticationToken(prefixedName);
+		} catch (SQLException e) {
+			throw new InternalAuthenticationServiceException(
+					"database access problem", e);
+		}
+	}
+
+	private static final class AuthenticationToken
+			extends AbstractAuthenticationToken {
+		private static final long serialVersionUID = 1L;
+
+		private final String who;
+
+		private AuthenticationToken(String who) {
+			super(asList(new SimpleGrantedAuthority(GRANT_USER)));
+			this.who = who;
+		}
+
+		@Override
+		public Object getCredentials() {
+			// We never have credentials available
+			return null;
+		}
+
+		@Override
+		public Object getPrincipal() {
+			return who;
 		}
 	}
 
@@ -409,6 +473,43 @@ public class LocalAuthProviderImpl extends SQLQueries
 			}
 			queries.noteLoginSuccessForUser(userId);
 			log.info("login success for {} at level {}", username, trust);
+			return true;
+		} catch (AuthenticationException e) {
+			queries.noteLoginFailureForUser(userId, username);
+			log.info("login failure for {}", username, e);
+			throw e;
+		}
+	}
+
+	private boolean authorizeOpenIDAgainstDB(String username,
+			LocalAuthProviderImpl.AuthQueries queries) throws SQLException {
+		Optional<Row> r = queries.getUser(username);
+		if (!r.isPresent()) {
+			// No such user; need to inflate one
+			createUser(username, null, USER, defaultQuota);
+			// Must exist and be allowed; just made it!
+			return true;
+		}
+		Row userInfo = r.get();
+		int userId = userInfo.getInt("user_id");
+		if (userInfo.getBoolean("disabled")) {
+			throw new DisabledException("account is disabled");
+		}
+		try {
+			if (userInfo.getBoolean("locked")) {
+				// Note that this extends the lock!
+				throw new LockedException("account is locked");
+			}
+			Row authInfo = queries.getUserAuthorities(userId);
+			if (authInfo.getBoolean("has_password")) {
+				/*
+				 * We know this user, but they can't use this authentication
+				 * method. They'll probably have to use username+password.
+				 */
+				return false;
+			}
+			queries.noteLoginSuccessForUser(userId);
+			log.info("login success for {}", username);
 			return true;
 		} catch (AuthenticationException e) {
 			queries.noteLoginFailureForUser(userId, username);

@@ -196,6 +196,24 @@
     "description": "Whether to enable HTTP form+session authentication. Much faster than BASIC, but requires a more complex client. You must enable this if you are supporting the Web UI."
   },
   {
+    "name": "spalloc.auth.oidc",
+    "type": "java.lang.Boolean",
+    "defaultValue": true,
+    "description": "Whether to enable OIDC authentication. Required for allowing people to use HBP/EBRAINS identities."
+  },
+  {
+    "name": "spalloc.auth.openid.id",
+    "type": "java.lang.String",
+    "defaultValue": "CHANGE THIS",
+    "description": "The application installation identity. Required for allowing people to use HBP/EBRAINS identities."
+  },
+  {
+    "name": "spalloc.auth.openid.secret",
+    "type": "java.lang.String",
+    "defaultValue": "CHANGE THIS",
+    "description": "The application installation secret. Required for allowing people to use HBP/EBRAINS identities."
+  },
+  {
     "name": "spalloc.auth.add-dummy-user",
     "type": "java.lang.Boolean",
     "defaultValue": false,

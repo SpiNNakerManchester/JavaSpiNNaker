@@ -29,6 +29,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -60,8 +61,8 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -73,6 +74,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -171,6 +173,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Value("${spalloc.auth.local-form:true}")
 	private boolean supportLocalFormAuth;
 
+	@Value("${spalloc.auth.oidc:true}")
+	private boolean supportOIDCAuth;
+
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
@@ -246,6 +251,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO what other operations should there be?
 	}
 
+	private static final String MAIN_PAGE = "/system";
+
+	private static final String LOGIN_PAGE = "/system/login.html";
+
+	private static final String LOGIN_ERROR_PAGE = LOGIN_PAGE + "?error=true";
+
+	private static final String LOGIN_ACTION_URL = "/system/perform_login";
+
+	private static final String LOGOUT_ACTION_URL = "/system/perform_logout";
+
+	private static final String SESSION_COOKIE = "JSESSIONID";
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -268,21 +285,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		if (supportLocalFormAuth) {
-			http.formLogin().loginPage("/system/login.html")
-					.loginProcessingUrl("/system/perform_login")
-					.defaultSuccessUrl("/system/", true)
-					.failureUrl("/system/login.html?error=true")
+			http.formLogin().loginPage(LOGIN_PAGE)
+					.loginProcessingUrl(LOGIN_ACTION_URL)
+					.defaultSuccessUrl(MAIN_PAGE, true)
+					.failureUrl(LOGIN_ERROR_PAGE)
 					.failureHandler(authenticationFailureHandler);
+		}
+		if (supportOIDCAuth) {
+			/*
+			 * We're both, so we can have logins AND tokens. The logins are for
+			 * using the HTML UI, and the tokens are for using from SpiNNaker
+			 * tools (especially within the collabratory and the Jupyter
+			 * notebook).
+			 */
+			http.oauth2Login().loginPage(LOGIN_PAGE)
+					.loginProcessingUrl(LOGIN_ACTION_URL)
+					.defaultSuccessUrl(MAIN_PAGE, true)
+					.failureUrl(LOGIN_ERROR_PAGE)
+					.failureHandler(authenticationFailureHandler)
+					//
+					.and().oauth2ResourceServer();
 		}
 		/*
 		 * Logging out is common code, but pretty pointless for Basic Auth as
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl("/system/perform_logout")
-				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl("/system/login.html");
-		// FIXME add support for HBP/EBRAINS OpenID Connect
+		http.logout().logoutUrl(LOGOUT_ACTION_URL).deleteCookies(SESSION_COOKIE)
+				.invalidateHttpSession(true).logoutSuccessUrl(LOGIN_PAGE);
 	}
 
 	/**
@@ -336,7 +366,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Component
 	@Provider
-	static class SpringAccessDeniedExceptionExceptionMapper
+	static class AccessDeniedExceptionMapper
 			implements ExceptionMapper<AccessDeniedException> {
 		@Context
 		private UriInfo ui;
@@ -347,14 +377,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public Response toResponse(AccessDeniedException exception) {
 			// Actually produce useful logging; the default is ghastly!
-			UsernamePasswordAuthenticationToken who =
-					(UsernamePasswordAuthenticationToken) req
-							.getUserPrincipal();
-			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
-					who.getName(),
-					who.getAuthorities().stream()
-							.map(GrantedAuthority::getAuthority)
-							.collect(toSet()));
+			Principal p = req.getUserPrincipal();
+			if (p instanceof AbstractAuthenticationToken) {
+				AbstractAuthenticationToken who =
+						(AbstractAuthenticationToken) p;
+				log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+						who.getName(),
+						who.getAuthorities().stream()
+								.map(GrantedAuthority::getAuthority)
+								.collect(toSet()));
+			} else if (p instanceof OAuth2AuthenticatedPrincipal) {
+				OAuth2AuthenticatedPrincipal who =
+						(OAuth2AuthenticatedPrincipal) p;
+				log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+						who.getName(),
+						who.getAuthorities().stream()
+								.map(GrantedAuthority::getAuthority)
+								.collect(toSet()));
+			}
 			// But the user gets a bland response
 			return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
 		}
