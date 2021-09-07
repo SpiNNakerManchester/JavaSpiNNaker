@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.security.SecureRandom;
@@ -114,6 +115,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Value("${spalloc.auth.account-lock-duration:PT24H}")
 	private Duration lockInterval;
 
+	@Value("${spalloc.auth.openid.username-prefix:openid.}")
+	private String openidUsernamePrefix;
+
 	private static final String DUMMY_USER = "user1";
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
@@ -146,7 +150,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			if (dummyRandomPass) {
 				pass = generatePassword();
 			}
-			if (createUser(DUMMY_USER, pass, TrustLevel.ADMIN, defaultQuota)) {
+			if (createUser(DUMMY_USER, pass, ADMIN, defaultQuota)) {
 				if (dummyRandomPass) {
 					log.info("admin user {} has password: {}", DUMMY_USER,
 							pass);
@@ -167,19 +171,24 @@ public class LocalAuthProviderImpl extends SQLQueries
 		try (Connection conn = db.getConnection();
 				Update createUser = update(conn, CREATE_USER);
 				Update addQuota = update(conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
-			return transaction(conn, () -> {
-				for (int userId : createUser.keys(username, password,
-						trustLevel, false)) {
-					addQuota.call(userId, quota);
-					log.info(
-							"added user {} with trust level {} "
-									+ "and quota {} board-seconds",
-							username, trustLevel, quota);
-					return true;
-				}
-				return false;
-			});
+			return transaction(conn, () -> createUser(username, password,
+					trustLevel, quota, createUser, addQuota));
 		}
+	}
+
+	private Boolean createUser(String username, String password,
+			TrustLevel trustLevel, long quota, Update createUser,
+			Update addQuota) throws SQLException {
+		for (int userId : createUser.keys(username, password, trustLevel,
+				false)) {
+			addQuota.call(userId, quota);
+			log.info(
+					"added user {} with trust level {} and "
+							+ "quota {} board-seconds",
+					username, trustLevel, quota);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -190,24 +199,34 @@ public class LocalAuthProviderImpl extends SQLQueries
 					(UsernamePasswordAuthenticationToken) auth);
 		} else if (auth instanceof OAuth2LoginAuthenticationToken) {
 			return authenticateOpenId((OAuth2LoginAuthenticationToken) auth);
-		} else {
+		} else if (auth instanceof OAuth2AuthorizationCodeAuthenticationToken) {
 			return authenticateOpenId(
 					(OAuth2AuthorizationCodeAuthenticationToken) auth);
+		} else {
+			return null;
 		}
 	}
 
+	private static final Class<?>[] SUPPORTED_CLASSES = {
+		UsernamePasswordAuthenticationToken.class,
+		OAuth2AuthorizationCodeAuthenticationToken.class,
+		OAuth2LoginAuthenticationToken.class
+	};
+
 	@Override
-	public boolean supports(Class<?> cls) {
-		return UsernamePasswordAuthenticationToken.class.isAssignableFrom(cls)
-				|| OAuth2AuthorizationCodeAuthenticationToken.class
-						.isAssignableFrom(cls)
-				|| OAuth2LoginAuthenticationToken.class.isAssignableFrom(cls);
+	public final boolean supports(Class<?> cls) {
+		for (Class<?> c : SUPPORTED_CLASSES) {
+			if (c.isAssignableFrom(cls)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private UsernamePasswordAuthenticationToken
 			authenticateDirect(UsernamePasswordAuthenticationToken auth)
 					throws AuthenticationException {
-		log.info("authenticating {}", auth.toString());
+		log.info("authenticating Local Login {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
 		String name = auth.getName().trim();
 		if (name.isEmpty()) {
@@ -219,8 +238,10 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 		try {
 			try (AuthQueries queries = new AuthQueries()) {
-				queries.transact(() -> authenticateAgainstDB(name, password,
-						authorities, queries));
+				if (!queries.transact(() -> authenticateAgainstDB(name,
+						password, authorities, queries))) {
+					return null;
+				}
 			}
 			return new UsernamePasswordAuthenticationToken(name, password,
 					authorities);
@@ -233,28 +254,38 @@ public class LocalAuthProviderImpl extends SQLQueries
 	private Authentication
 			authenticateOpenId(OAuth2LoginAuthenticationToken auth)
 					throws AuthenticationException {
+		log.info("authenticating OpenID Login {}", auth.toString());
 		// FIXME how to get username from login token?
-		return authenticateOpenId(auth.getPrincipal()
+		return authenticateOpenId(openidUsernamePrefix + auth.getPrincipal()
 				.getAttribute("preferred_username").toString());
 	}
 
 	private Authentication
 			authenticateOpenId(OAuth2AuthorizationCodeAuthenticationToken auth)
 					throws AuthenticationException {
+		log.info("authenticating OpenID Token {}", auth.toString());
 		// FIXME how to get username from auth code token?
-		return authenticateOpenId(auth.getPrincipal().toString());
+		return authenticateOpenId(
+				openidUsernamePrefix + auth.getPrincipal().toString());
 	}
 
 	private AuthenticationToken authenticateOpenId(String name) {
-		String prefixedName = "openid." + name;
+		if (name.equals(openidUsernamePrefix)) {
+			// No actual name there?
+			log.warn("failed to handle OpenID user with no real user name");
+			return null;
+		}
 		try (AuthQueries queries = new AuthQueries()) {
-			queries.transact(
-					() -> authorizeOpenIDAgainstDB(prefixedName, queries));
-			return new AuthenticationToken(prefixedName);
+			if (!queries
+					.transact(() -> authorizeOpenIDAgainstDB(name, queries))) {
+				return null;
+			}
 		} catch (SQLException e) {
 			throw new InternalAuthenticationServiceException(
 					"database access problem", e);
 		}
+		// Users from OpenID always have the same permissions
+		return new AuthenticationToken(name);
 	}
 
 	private static final class AuthenticationToken
@@ -486,9 +517,13 @@ public class LocalAuthProviderImpl extends SQLQueries
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			// No such user; need to inflate one
-			createUser(username, null, USER, defaultQuota);
-			// Must exist and be allowed; just made it!
-			return true;
+			try (Update createUser = update(queries.conn, CREATE_USER);
+					Update addQuota =
+							update(queries.conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
+				// If we successfully make the user, they're authorized
+				return createUser(username, null, USER, defaultQuota,
+						createUser, addQuota);
+			}
 		}
 		Row userInfo = r.get();
 		int userId = userInfo.getInt("user_id");

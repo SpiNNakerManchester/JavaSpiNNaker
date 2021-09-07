@@ -47,18 +47,18 @@
   {
     "name": "cxf.jaxrs.component-scan",
     "type": "java.lang.Boolean",
-    "description": "Whether to scan for Spring components"
+    "description": "Whether to scan for Spring components."
   },
   {
     "name": "cxf.jaxrs.classes-scan-packages",
     "type": "java.lang.String",
-    "description": "Comma-separated list (in a string) of package names to scan"
+    "description": "Comma-separated list (in a string) of package names to scan."
   },
   {
     "name": "spalloc.database-path",
     "type": "java.lang.String",
     "defaultValue": "spalloc.sqlite3",
-    "description": "Path to the main database file"
+    "description": "Path to the main database file."
   },
   {
     "name": "spalloc.wait",
@@ -70,13 +70,13 @@
     "name": "spalloc.historical-data.path",
     "type": "java.lang.String",
     "defaultValue": "spalloc-history.sqlite3",
-    "description": "Path to the historical job database file"
+    "description": "Path to the historical job database file."
   },
   {
     "name": "spalloc.historical-data.schedule",
     "type": "java.lang.String",
     "defaultValue": "0 0 2 * * *",
-    "description": "Cron expression saying when to move completed jobs to the historical database"
+    "description": "Cron expression saying when to move completed jobs to the historical database."
   },
   {
     "name": "spalloc.historical-data.grace-period",
@@ -118,40 +118,40 @@
     "name": "spalloc.allocator.priority-scale.size",
     "type": "java.lang.Double",
     "defaultValue": 1.0,
-    "description": "Priority scaling factor for jobs given by number of boards"
+    "description": "Priority scaling factor for jobs given by number of boards."
   },
   {
     "name": "spalloc.allocator.priority-scale.dimensions",
     "type": "java.lang.Double",
     "defaultValue": 1.5,
-    "description": "Priority scaling factor for jobs given by rectangular dimensions"
+    "description": "Priority scaling factor for jobs given by rectangular dimensions."
   },
   {
     "name": "spalloc.allocator.priority-scale.specific-board",
     "type": "java.lang.Double",
     "defaultValue": 65.0,
-    "description": "Priority scaling factor for jobs requiring a specific board"
+    "description": "Priority scaling factor for jobs requiring a specific board."
   },
   {
     "name": "spalloc.allocator.report-email.send",
     "type": "java.lang.Boolean",
     "defaultValue": false,
-    "description": "Whether to send an email about reported boards"
+    "description": "Whether to send an email about reported boards."
   },
   {
     "name": "spalloc.allocator.report-email.from",
     "type": "java.lang.String",
-    "description": "From: email address"
+    "description": "Email header field. From: email address"
   },
   {
     "name": "spalloc.allocator.report-email.to",
     "type": "java.lang.String",
-    "description": "To: email address"
+    "description": "Email header field. To: email address"
   },
   {
     "name": "spalloc.allocator.report-email.subject",
     "type": "java.lang.String",
-    "description": "Email subject"
+    "description": "Email header field. Subject: any text"
   },
   {
     "name": "spalloc.transceiver.dummy",
@@ -214,10 +214,16 @@
     "description": "The application installation secret. Required for allowing people to use HBP/EBRAINS identities."
   },
   {
+    "name": "spalloc.auth.openid.username-prefix",
+    "type": "java.lang.String",
+    "defaultValue": "openid.",
+    "description": "Prefix for user names originating from OpenID auto-registration."
+  },
+  {
     "name": "spalloc.auth.add-dummy-user",
     "type": "java.lang.Boolean",
     "defaultValue": false,
-    "description": "Force a known local admin user to exist with a known password"
+    "description": "Force a known local admin user to exist with a known password."
   },
   {
     "name": "spalloc.auth.dummy-random-pass",
@@ -229,19 +235,19 @@
     "name": "spalloc.auth.debug-failures",
     "type": "java.lang.Boolean",
     "defaultValue": false,
-    "description": "Provide extra information to callers on auth failures"
+    "description": "Provide extra information to callers on auth failures."
   },
   {
     "name": "spalloc.auth.max-login-failures",
     "type": "java.lang.Integer",
     "defaultValue": 3,
-    "description": "Number of login failures before automatic lock-out"
+    "description": "Number of login failures before automatic lock-out."
   },
   {
     "name": "spalloc.auth.account-lock-duration",
     "type": "java.time.Duration",
     "defaultValue": "PT24H",
-    "description": "Length of time that automatic lock-out lasts"
+    "description": "Length of time that automatic lock-out lasts."
   },
   {
     "name": "spalloc.auth.unlock-period",
@@ -253,7 +259,7 @@
     "name": "spalloc.quota.default",
     "type": "java.lang.Integer",
     "defaultValue": 100,
-    "description": "Default user quota in board-seconds"
+    "description": "Default user quota in board-seconds."
   },
   {
     "name": "spalloc.quota.consolidation-schedule",
@@ -265,13 +271,13 @@
     "name": "spalloc.sqlite.timeout",
     "type": "java.time.Duration",
     "defaultValue": "1s",
-    "description": "How long to wait to get a database lock"
+    "description": "How long to wait to get a database lock."
   },
   {
     "name": "spalloc.sqlite.debug-failures",
     "type": "java.lang.Boolean",
     "defaultValue": false,
-    "description": "Whether to send details of SQL-related exceptions to users"
+    "description": "Whether to send details of SQL-related exceptions to users."
   },
   {
     "name": "spalloc.sqlite.analysis-limit",

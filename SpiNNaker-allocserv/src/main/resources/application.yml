@@ -158,6 +158,8 @@ spalloc:
       # The credentials for HBP/EBRAINS go here
       id: XYZZY_OVERRIDE_THIS
       secret: XYZZY_OVERRIDE_THIS
+      # Prefix all OpenID-sourced names with this
+      username-prefix: "openid."
   quota:
     # Default user quota in board-seconds
     default: 100
