@@ -2,287 +2,56 @@
   {
     "name": "spalloc",
     "description": "Configuration of the Spalloc service."
-  },
-  {
-  	"name": "spalloc.historical-data",
-  	"description": "How to handle job data that is now only of historic interest."
-  },
-  {
-    "name": "spalloc.keepalive",
-    "description": "How to handle keepalive messages."
-  },
-  {
-    "name": "spalloc.allocator",
-    "description": "Configuration of the main resource allocation engine."
-  },
-  {
-    "name": "spalloc.allocator.priority-scale",
-    "description": "Priority is the rate at which importance is accrued. Importance is determines the order in which jobs are allocated."
-  },
-  {
-    "name": "spalloc.allocator.report-email",
-    "description": "Notify an administrator about problems reported with boards."
-  },
-  {
-    "name": "spalloc.auth",
-    "description": "Authentiaction and authorization configuration."
-  },
-  {
-    "name": "spalloc.quota",
-    "description": "Quota management."
-  },
-  {
-    "name": "spalloc.transceiver",
-    "description": "Controls how Spalloc talks to BMPs on machines."
-  },
-  {
-    "name": "spalloc.sqlite",
-    "description": "Additional database configuration."
-  },
-  {
-    "name": "spalloc.compat",
-    "description": "Settings relationg to the v1 spalloc configuration interface."
   }
 ], "properties": [
   {
     "name": "cxf.jaxrs.component-scan",
     "type": "java.lang.Boolean",
-    "description": "Whether to scan for Spring components"
+    "description": "Whether to scan for Spring components."
   },
   {
     "name": "cxf.jaxrs.classes-scan-packages",
     "type": "java.lang.String",
-    "description": "Comma-separated list (in a string) of package names to scan"
+    "description": "Comma-separated list (in a string) of package names to scan."
   },
-  {
-    "name": "spalloc.database-path",
-    "type": "java.lang.String",
-    "defaultValue": "spalloc.sqlite3",
-    "description": "Path to the main database file"
-  },
-  {
-    "name": "spalloc.wait",
-    "type": "java.time.Duration",
-    "defaultValue": "30s",
-    "description": "How long should long calls take before returning anyway?"
-  },
-  {
-    "name": "spalloc.historical-data.path",
-    "type": "java.lang.String",
-    "defaultValue": "spalloc-history.sqlite3",
-    "description": "Path to the historical job database file"
-  },
-  {
-    "name": "spalloc.historical-data.schedule",
-    "type": "java.lang.String",
-    "defaultValue": "0 0 2 * * *",
-    "description": "Cron expression saying when to move completed jobs to the historical database"
-  },
-  {
-    "name": "spalloc.historical-data.grace-period",
-    "type": "java.time.Duration",
-    "defaultValue": "P14D",
-    "description": "How long after job completion should we wait before moving the data?"
-  },
-  {
-    "name": "spalloc.allocator.period",
-    "type": "java.time.Duration",
-    "defaultValue": "PT5S",
-    "description": "Time between runs of the main allocation algorithm. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
-  },
-  {
-    "name": "spalloc.keepalive.expiry-period",
-    "type": "java.time.Duration",
-    "defaultValue": "PT30S",
-    "description": "Time between runs of the keepalive-expiry algorithm. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
-  },
-  {
-    "name": "spalloc.keepalive.min",
-    "type": "java.time.Duration",
-    "defaultValue": "30s",
-    "description": "Minimum keepalive period."
-  },
-  {
-    "name": "spalloc.keepalive.max",
-    "type": "java.time.Duration",
-    "defaultValue": "300s",
-    "description": "Maximum keepalive period."
-  },
-  {
-    "name": "spalloc.allocator.importance-span",
-    "type": "java.lang.Integer",
-    "defaultValue": 10000,
-    "description": "Maximum span of job importance that will be allocated at once. Priority is the rate at which importance is accrued."
-  },
-  {
-    "name": "spalloc.allocator.priority-scale.size",
-    "type": "java.lang.Double",
-    "defaultValue": 1.0,
-    "description": "Priority scaling factor for jobs given by number of boards"
-  },
-  {
-    "name": "spalloc.allocator.priority-scale.dimensions",
-    "type": "java.lang.Double",
-    "defaultValue": 1.5,
-    "description": "Priority scaling factor for jobs given by rectangular dimensions"
-  },
-  {
-    "name": "spalloc.allocator.priority-scale.specific-board",
-    "type": "java.lang.Double",
-    "defaultValue": 65.0,
-    "description": "Priority scaling factor for jobs requiring a specific board"
-  },
-  {
-    "name": "spalloc.allocator.report-email.send",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Whether to send an email about reported boards"
-  },
-  {
-    "name": "spalloc.allocator.report-email.from",
-    "type": "java.lang.String",
-    "description": "From: email address"
-  },
-  {
-    "name": "spalloc.allocator.report-email.to",
-    "type": "java.lang.String",
-    "description": "To: email address"
-  },
-  {
-    "name": "spalloc.allocator.report-email.subject",
-    "type": "java.lang.String",
-    "description": "Email subject"
-  },
-  {
-    "name": "spalloc.transceiver.dummy",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Whether to use a dummy transceiver. Useful for testing only."
-  },
-  {
-    "name": "spalloc.transceiver.period",
-    "type": "java.time.Duration",
-    "defaultValue": "PT10S",
-    "description": "How long between when we send requests to the BMP control tasks. Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
-  },
-  {
-    "name": "spalloc.transceiver.probe-interval",
-    "type": "java.time.Duration",
-    "defaultValue": "15s",
-    "description": "The basic wait time used by the BMP control tasks."
-  },
-  {
-    "name": "spalloc.transceiver.power-attempts",
-    "type": "java.lang.Integer",
-    "defaultValue": 2,
-    "description": "Number of attempts that will be made to switch on a board."
-  },
-  {
-    "name": "spalloc.transceiver.fpga-attempts",
-    "type": "java.lang.Integer",
-    "defaultValue": 3,
-    "description": "Number of attempts that will be made to bring up an FPGA."
-  },
-  {
-    "name": "spalloc.auth.basic",
-    "type": "java.lang.Boolean",
-    "defaultValue": true,
-    "description": "Whether to enable HTTP BASIC authentication. Useful for simple clients."
-  },
-  {
-    "name": "spalloc.auth.local-form",
-    "type": "java.lang.Boolean",
-    "defaultValue": true,
-    "description": "Whether to enable HTTP form+session authentication. Much faster than BASIC, but requires a more complex client. You must enable this if you are supporting the Web UI."
-  },
-  {
-    "name": "spalloc.auth.add-dummy-user",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Force a known local admin user to exist with a known password"
-  },
-  {
-    "name": "spalloc.auth.dummy-random-pass",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Whether to generate a random password for the above user. If so, the password will be written to the log."
-  },
-  {
-    "name": "spalloc.auth.debug-failures",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Provide extra information to callers on auth failures"
-  },
-  {
-    "name": "spalloc.auth.max-login-failures",
-    "type": "java.lang.Integer",
-    "defaultValue": 3,
-    "description": "Number of login failures before automatic lock-out"
-  },
-  {
-    "name": "spalloc.auth.account-lock-duration",
-    "type": "java.time.Duration",
-    "defaultValue": "PT24H",
-    "description": "Length of time that automatic lock-out lasts"
-  },
-  {
-    "name": "spalloc.auth.unlock-period",
-    "type": "java.time.Duration",
-    "defaultValue": "PT60S",
-    "description": "How often do we look for users to end their lock-out? Note that this must be given as either a true Duration or a count of milliseconds, but *not* as an abbreviated form duration. That's a Spring bug."
-  },
-  {
-    "name": "spalloc.quota.default",
-    "type": "java.lang.Integer",
-    "defaultValue": 100,
-    "description": "Default user quota in board-seconds"
-  },
-  {
-    "name": "spalloc.quota.consolidation-schedule",
-    "type": "java.lang.String",
-    "defaultValue": "0 0 * * * *",
-    "description": "Cron expression that says when we consolidate job quotas into the main quota table."
-  },
-  {
-    "name": "spalloc.sqlite.timeout",
-    "type": "java.time.Duration",
-    "defaultValue": "1s",
-    "description": "How long to wait to get a database lock"
-  },
-  {
-    "name": "spalloc.sqlite.debug-failures",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Whether to send details of SQL-related exceptions to users"
-  },
-  {
-    "name": "spalloc.sqlite.analysis-limit",
-    "type": "java.lang.Integer",
-    "defaultValue": 400,
-    "description": "Amount of effort to spend on DB optimization on application close; see SQLite documentation for meaning. Note that this is spent by every worker thread that touches the database."
-  },
-  {
-    "name": "spalloc.compat.enable",
-    "type": "java.lang.Boolean",
-    "defaultValue": false,
-    "description": "Whether to turn the spalloc version 1 compatibility service interface on."
-  },
-  {
-    "name": "spalloc.compat.thread-pool-size",
-    "type": "java.lang.Integer",
-    "defaultValue": 0,
-    "description": "The number of threads to use to service the spalloc v1 compatibility service. 0 means no limit."
-  },
-  {
-    "name": "spalloc.compat.port",
-    "type": "java.lang.Integer",
-    "defaultValue": 22244,
-    "description": "What port to run the spalloc v1 compatibility service on."
-  },
-  {
-    "name": "spalloc.compat.service-user",
-    "type": "java.lang.String",
-    "defaultValue": "",
-    "description": "What user to run jobs submitted through the spalloc v1 compatibility service as. We recommend that this user exists but is disabled (i.e., login using this service identity need not be supported)."
-  }
+  {"name": "spalloc.database-path"},
+  {"name": "spalloc.wait"},
+  {"name": "spalloc.pause"},
+  {"name": "spalloc.historical-data.path"},
+  {"name": "spalloc.historical-data.schedule"},
+  {"name": "spalloc.historical-data.grace-period"},
+  {"name": "spalloc.allocator.period"},
+  {"name": "spalloc.keepalive.expiry-period"},
+  {"name": "spalloc.keepalive.min"},
+  {"name": "spalloc.keepalive.max"},
+  {"name": "spalloc.allocator.importance-span"},
+  {"name": "spalloc.allocator.priority-scale.size"},
+  {"name": "spalloc.allocator.priority-scale.dimensions"},
+  {"name": "spalloc.allocator.priority-scale.specific-board"},
+  {"name": "spalloc.allocator.report-email.send"},
+  {"name": "spalloc.allocator.report-email.from"},
+  {"name": "spalloc.allocator.report-email.to"},
+  {"name": "spalloc.allocator.report-email.subject"},
+  {"name": "spalloc.transceiver.dummy"},
+  {"name": "spalloc.transceiver.period"},
+  {"name": "spalloc.transceiver.probe-interval"},
+  {"name": "spalloc.transceiver.power-attempts"},
+  {"name": "spalloc.transceiver.fpga-attempts"},
+  {"name": "spalloc.auth.basic"},
+  {"name": "spalloc.auth.local-form"},
+  {"name": "spalloc.auth.add-dummy-user"},
+  {"name": "spalloc.auth.dummy-random-pass"},
+  {"name": "spalloc.auth.debug-failures"},
+  {"name": "spalloc.auth.max-login-failures"},
+  {"name": "spalloc.auth.account-lock-duration"},
+  {"name": "spalloc.auth.unlock-period"},
+  {"name": "spalloc.quota.default-quota"},
+  {"name": "spalloc.quota.consolidation-schedule"},
+  {"name": "spalloc.sqlite.timeout"},
+  {"name": "spalloc.sqlite.debug-failures"},
+  {"name": "spalloc.sqlite.analysis-limit"},
+  {"name": "spalloc.compat.enable"},
+  {"name": "spalloc.compat.thread-pool-size"},
+  {"name": "spalloc.compat.port"},
+  {"name": "spalloc.compat.service-user"}
 ]}

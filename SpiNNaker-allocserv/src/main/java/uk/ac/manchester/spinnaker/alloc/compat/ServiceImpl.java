@@ -76,6 +76,9 @@ class ServiceImpl extends V1CompatService.Task {
 	private static final Duration NOTIFIER_WAIT_TIME =
 			Duration.ofSeconds(ONE_MINUTE);
 
+	private static final Duration DEFAULT_KEEPALIVE =
+			Duration.ofSeconds(ONE_MINUTE);
+
 	private static final Logger log = getLogger(V1CompatService.class);
 
 	private Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
@@ -96,7 +99,7 @@ class ServiceImpl extends V1CompatService.Task {
 		this.srv = srv;
 		this.spalloc = srv.spalloc;
 		this.mapper = srv.mapper;
-		serviceUserPermit = new Permit(srv.serviceUser);
+		serviceUserPermit = new Permit(srv.props.getServiceUser());
 	}
 
 	@Override
@@ -193,10 +196,11 @@ class ServiceImpl extends V1CompatService.Task {
 			Map<String, Object> kwargs, Object cmd) throws Exception {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
-		Job job = spalloc.createJob(srv.serviceUser, create,
-				(String) kwargs.get("machine"), tags(kwargs.get("tags")),
-				Duration.ofSeconds(
-						isNull(keepalive) ? ONE_MINUTE : keepalive.intValue()),
+		String machineName = (String) kwargs.get("machine");
+		Job job = spalloc.createJob(srv.props.getServiceUser(),
+				create, machineName, tags(kwargs.get("tags")),
+				isNull(keepalive) ? DEFAULT_KEEPALIVE
+						: Duration.ofSeconds(keepalive.intValue()),
 				maxDead, mapper.writeValueAsBytes(cmd));
 		return job.getId();
 	}

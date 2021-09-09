@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +56,6 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.MDC.MDCCloseable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -72,6 +70,7 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -97,15 +96,6 @@ public class BMPController extends SQLQueries {
 	private static final int FPGA_FLAG_ID_MASK = 0x3;
 
 	private static final int BMP_VERSION_MIN = 2;
-
-	@Value("${spalloc.transceiver.probe-interval:15s}")
-	private Duration timeBetweenTries;
-
-	@Value("${spalloc.transceiver.power-attempts:2}")
-	private int numRequestTries;
-
-	@Value("${spalloc.transceiver.fpga-attempts:3}")
-	private int numFPGARetries;
 
 	/**
 	 * We <em>always</em> talk to the root BMP of a machine, and never directly
@@ -135,6 +125,9 @@ public class BMPController extends SQLQueries {
 
 	@Autowired
 	private Epochs epochs;
+
+	@Autowired
+	private TxrxProperties props;
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
@@ -266,11 +259,11 @@ public class BMPController extends SQLQueries {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	private void powerOnAndCheck(Machine machine,
-			BMPTransceiverInterface txrx, List<Integer> boards)
+	private void powerOnAndCheck(Machine machine, BMPTransceiverInterface txrx,
+			List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		List<Integer> boardsToPower = boards;
-		for (int attempt = 1; attempt <= numFPGARetries; attempt++) {
+		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
 
 			/*
@@ -304,9 +297,9 @@ public class BMPController extends SQLQueries {
 			}
 			boardsToPower = retryBoards;
 		}
-		throw new IOException(
-				"Could not get correct FPGA ID for " + boardsToPower.size()
-						+ " boards after " + numFPGARetries + " tries");
+		throw new IOException("Could not get correct FPGA ID for "
+				+ boardsToPower.size() + " boards after "
+				+ props.getFpgaAttempts() + " tries");
 	}
 
 	/**
@@ -346,8 +339,8 @@ public class BMPController extends SQLQueries {
 	// ----------------------------------------------------------------
 	// SERVICE IMPLEMENTATION
 
-	@Scheduled(fixedDelayString = "${spalloc.transceiver.period:PT10S}",
-			initialDelayString = "${spalloc.transceiver.period:PT10S}")
+	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
+			initialDelayString = "#{txrxProperties.period}")
 	void mainSchedule() throws SQLException, IOException, SpinnmanException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -508,8 +501,8 @@ public class BMPController extends SQLQueries {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("Request(for=")
-					.append(machine.getName());
+			StringBuilder sb =
+					new StringBuilder("Request(for=").append(machine.getName());
 			sb.append(";on=").append(powerOnBoards);
 			sb.append(",off=").append(powerOffBoards);
 			sb.append(",links=").append(linkRequests);
@@ -814,9 +807,8 @@ public class BMPController extends SQLQueries {
 				jobChange, moved, deallocated, killed);
 	}
 
-	private void addRequestToBMPQueue(Request request)
-			throws IOException, SpinnmanException, SQLException,
-			InterruptedException {
+	private void addRequestToBMPQueue(Request request) throws IOException,
+			SpinnmanException, SQLException, InterruptedException {
 		requireNonNull(request, "request must not be null");
 		/*
 		 * Ensure that the transceiver for the machine exists while we're still
@@ -902,7 +894,8 @@ public class BMPController extends SQLQueries {
 				ws.interrupt();
 			}
 		}
-		executor.awaitTermination(timeBetweenTries.toMillis(), MILLISECONDS);
+		executor.awaitTermination(props.getProbeInterval().toMillis(),
+				MILLISECONDS);
 		group.interrupt();
 	}
 
@@ -1015,12 +1008,12 @@ public class BMPController extends SQLQueries {
 				asList(request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
-			for (int numTries = 0; numTries++ < numRequestTries;) {
+			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
 				if (tryChangePowerState(request, txrx,
-						numTries == numRequestTries)) {
+						numTries == props.getPowerAttempts())) {
 					break;
 				}
-				sleep(timeBetweenTries.get(MILLIS));
+				sleep(props.getProbeInterval().get(MILLIS));
 			}
 		}
 	}
@@ -1050,8 +1043,8 @@ public class BMPController extends SQLQueries {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
 				 */
-				log.warn("Retrying requests on BMP {} after {}: {}",
-						machine, timeBetweenTries, e.getMessage());
+				log.warn("Retrying requests on BMP {} after {}: {}", machine,
+						props.getProbeInterval(), e.getMessage());
 				// Ask for a retry
 				return false;
 			}

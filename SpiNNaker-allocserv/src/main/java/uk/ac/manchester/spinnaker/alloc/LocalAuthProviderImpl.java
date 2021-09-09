@@ -29,7 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +38,6 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -61,6 +59,8 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.SimpleGrantedAuthority;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -90,24 +90,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Autowired
 	private ServiceMasterControl control;
 
-	@Value("${spalloc.auth.add-dummy-user:true}")
-	private boolean addDummyUser;
+	@Autowired
+	private AuthProperties authProps;
 
-	@Value("${spalloc.auth.dummy-random-pass:false}")
-	private boolean dummyRandomPass;
-
-	/**
-	 * Trivial default allocation quota. 100 board-seconds is next to nothing.
-	 */
-	@Value("${spalloc.quota.default:100}")
-	private long defaultQuota;
-
-	/** Maximum number of login failures for account to get a lock. */
-	@Value("${spalloc.auth.max-login-failures:3}")
-	private int maxLoginFailures;
-
-	@Value("${spalloc.auth.account-lock-duration:PT24H}")
-	private Duration lockInterval;
+	@Autowired
+	private QuotaProperties quotaProps;
 
 	private static final String DUMMY_USER = "user1";
 
@@ -136,13 +123,14 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	@PostConstruct
 	private void initUserIfNecessary() throws SQLException {
-		if (addDummyUser) {
+		if (authProps.isAddDummyUser()) {
 			String pass = DUMMY_PASSWORD;
-			if (dummyRandomPass) {
+			if (authProps.isDummyRandomPass()) {
 				pass = generatePassword();
 			}
-			if (createUser(DUMMY_USER, pass, TrustLevel.ADMIN, defaultQuota)) {
-				if (dummyRandomPass) {
+			if (createUser(DUMMY_USER, pass, TrustLevel.ADMIN,
+					quotaProps.getDefaultQuota())) {
+				if (authProps.isDummyRandomPass()) {
 					log.info("admin user {} has password: {}", DUMMY_USER,
 							pass);
 				}
@@ -330,10 +318,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 */
 		void noteLoginFailureForUser(int userId, String username)
 				throws SQLException {
-			for (Row row : loginFailure.call(maxLoginFailures, userId)) {
+			for (Row row : loginFailure.call(authProps.getMaxLoginFailures(),
+					userId)) {
 				if (row.getBoolean("locked")) {
 					log.warn("automatically locking user {} for {}", username,
-							lockInterval);
+							authProps.getAccountLockDuration());
 				}
 			}
 		}
@@ -418,7 +407,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@Override
-	@Scheduled(fixedDelayString = "${spalloc.auth.unlock-period:PT60S}")
+	@Scheduled(fixedDelayString = "#{authProperties.unlockPeriod}")
 	public void unlockLockedUsers() throws SQLException {
 		try {
 			if (!control.isPaused()) {
@@ -438,7 +427,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	void unlock() throws SQLException {
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
-			for (Row row : unlock.call(lockInterval)) {
+			for (Row row : unlock.call(authProps.getAccountLockDuration())) {
 				log.info("automatically unlocked user {}",
 						row.getString("user_name"));
 			}

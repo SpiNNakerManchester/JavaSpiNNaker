@@ -33,7 +33,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
@@ -54,6 +52,8 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -92,11 +92,11 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	@Autowired
 	private QuotaManager quotaManager;
 
-	@Value("${spalloc.allocator.importance-span:1000}")
-	private int importanceSpan;
+	@Autowired
+	private AllocatorProperties allocProps;
 
-	@Value("${spalloc.historical-data.grace-period:P14D}")
-	private Duration tombstoneGracePeriod;
+	@Autowired
+	private HistoricalDataProperties historyProps;
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -138,7 +138,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelayString = "${spalloc.allocator.period:PT5S}")
+	@Scheduled(fixedDelayString = "#{allocatorProperties.period}")
 	public void allocate() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -288,7 +288,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				int importance = row.getInt("importance");
 				if (importance > maxImportance) {
 					maxImportance = importance;
-				} else if (importance < maxImportance - importanceSpan) {
+				} else if (importance < maxImportance
+						- allocProps.getImportanceSpan()) {
 					// Too much of a span
 					continue;
 				}
@@ -327,7 +328,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If anything goes wrong at the DB level
 	 */
-	@Scheduled(fixedDelayString = "${spalloc.keepalive.expiry-period:PT30S}")
+	@Scheduled(fixedDelayString = "#{keepaliveProperties.expiryPeriod}")
 	public void expireJobs() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -389,7 +390,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @throws SQLException
 	 *             If DB access fails.
 	 */
-	@Scheduled(cron = "${spalloc.historical-data.schedule:0 0 2 * * *}")
+	@Scheduled(cron = "#{historyProperties.schedule}")
 	public void tombstone() throws SQLException {
 		if (serviceControl.isPaused()) {
 			return;
@@ -419,9 +420,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private void tombstone(Connection conn) throws SQLException {
 		try (Query copy = query(conn, copyToHistoricalData);
 				Update delete = update(conn, DELETE_JOB_RECORD)) {
-			List<Integer> jobIds = transaction(conn,
-					() -> rowsAsList(copy.call(tombstoneGracePeriod),
-							row -> row.getInteger("job_id")));
+			List<Integer> jobIds = transaction(conn, () -> rowsAsList(
+					copy.call(historyProps.getGracePeriod()),
+					row -> row.getInteger("job_id")));
 			transaction(conn, () -> {
 				for (Integer jobId : jobIds) {
 					// I don't think a NULL jobId is possible

@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
@@ -87,13 +88,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Autowired
 	private JsonMapper mapper;
 
-	@Value("${spalloc.wait:30s}")
 	private Duration waitTimeout;
 
-	@Value("${spalloc.keepalive.min:30s}")
 	private Duration minKeepalive;
 
-	@Value("${spalloc.keepalive.max:300s}")
 	private Duration maxKeepalive;
 
 	/**
@@ -113,9 +111,16 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 *
 	 * @param version
 	 *            The service version, injected from build configuration.
+	 * @param properties
+	 *            The service properties.
 	 */
-	public SpallocServiceImpl(@Value("${version}") String version) {
+	@Autowired
+	public SpallocServiceImpl(@Value("${version}") String version,
+			SpallocProperties properties) {
 		v = new Version(version.replaceAll("-.*", ""));
+		waitTimeout = properties.getWait();
+		minKeepalive = properties.getKeepalive().getMin();
+		maxKeepalive = properties.getKeepalive().getMax();
 	}
 
 	/**
@@ -135,8 +140,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 		@Autowired
 		private JsonMapper mapper;
 
-		@Value("${spalloc.wait:30s}")
-		private Duration waitTimeout;
+		@Autowired
+		private SpallocProperties props;
 
 		/**
 		 * Make a machine access interface.
@@ -158,7 +163,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					if (wait) {
 						bgAction(response, () -> {
 							log.debug("starting wait for change of machine");
-							machine.waitForChange(waitTimeout);
+							machine.waitForChange(props.getWait());
 							/*
 							 * Assume that machines don't change often enough
 							 * for us to care about whether they vanish;
@@ -237,7 +242,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					if (wait) {
 						bgAction(response, () -> {
 							log.debug("starting wait for change of job");
-							j.waitForChange(waitTimeout);
+							j.waitForChange(props.getWait());
 							// Refresh the handle
 							try (AutoCloseable t =
 									permit.authorizeCurrentThread()) {
