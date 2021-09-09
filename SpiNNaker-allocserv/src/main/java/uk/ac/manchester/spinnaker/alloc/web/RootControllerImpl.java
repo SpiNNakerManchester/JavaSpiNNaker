@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +36,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -122,7 +122,7 @@ public class RootControllerImpl implements RootController {
 		try {
 			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
 					userControl.getUserForPrincipal(principal));
-		} catch (AuthenticationException | SQLException e) {
+		} catch (AuthenticationException | DataAccessException e) {
 			return new ModelAndView(MVC_ERROR);
 		}
 		return mav;
@@ -141,7 +141,7 @@ public class RootControllerImpl implements RootController {
 		try {
 			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
 					userControl.updateUserOfPrincipal(principal, user));
-		} catch (AuthenticationException | SQLException e) {
+		} catch (AuthenticationException | DataAccessException e) {
 			return new ModelAndView(MVC_ERROR);
 		}
 		return mav;
@@ -168,7 +168,7 @@ public class RootControllerImpl implements RootController {
 				entry.setDetailsUrl(uri(SELF.getMachineInfo(entry.getName())));
 			}
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
@@ -189,7 +189,7 @@ public class RootControllerImpl implements RootController {
 				}
 			}
 			return new ModelAndView(MACHINE_VIEW, "machine", mach);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
@@ -207,7 +207,7 @@ public class RootControllerImpl implements RootController {
 						uri(SELF.getMachineInfo(entry.getMachineName())));
 			}
 			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
@@ -226,7 +226,7 @@ public class RootControllerImpl implements RootController {
 			}
 			mach.setMachineUrl(uri(SELF.getMachineInfo(mach.getMachine())));
 			return new ModelAndView(JOB_VIEW, "job", mach);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("database problem", e);
 			return new ModelAndView(MVC_ERROR);
 		} catch (IOException e) {

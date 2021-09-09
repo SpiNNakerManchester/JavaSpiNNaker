@@ -18,13 +18,14 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -132,8 +133,8 @@ class JsonTest {
 		}
 
 		@Test
-		void testWhereIsResponse() throws IOException, JSONException,
-				SQLException, URISyntaxException {
+		void testWhereIsResponse()
+				throws IOException, JSONException, URISyntaxException {
 			BoardLocation loc = new BoardLocation() {
 				@Override
 				public ChipLocation getBoardChip() {

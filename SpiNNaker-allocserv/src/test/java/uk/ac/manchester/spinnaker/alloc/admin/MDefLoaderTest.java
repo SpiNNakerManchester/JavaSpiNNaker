@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +41,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
@@ -82,8 +81,8 @@ class MDefLoaderTest {
 
 	private Connection c;
 
-	private static <T extends Comparable<T>> void assertSetEquals(
-			Set<T> expected, Set<T> actual) {
+	private static <T extends Comparable<T>> void
+			assertSetEquals(Set<T> expected, Set<T> actual) {
 		List<T> e = new ArrayList<>(expected);
 		Collections.sort(e);
 		List<T> a = new ArrayList<>(actual);
@@ -98,13 +97,13 @@ class MDefLoaderTest {
 	}
 
 	@BeforeEach
-	void getConnection() throws SQLException {
+	void getConnection() {
 		c = memdb.getConnection();
 		assumeTrue(c != null, "connection not generated");
 	}
 
 	@AfterEach
-	void closeConnection() throws SQLException {
+	void closeConnection() {
 		c.close();
 	}
 
@@ -127,13 +126,12 @@ class MDefLoaderTest {
 		assertSetEquals(set(new TriadCoords(0, 0, 0)),
 				m.getSpinnakerIPs().keySet());
 		assertSetEquals(set(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
-		assertSetEquals(
-				set(new BoardPhysicalCoords(0, 0, 0)),
+		assertSetEquals(set(new BoardPhysicalCoords(0, 0, 0)),
 				new HashSet<>(m.getBoardLocations().values()));
 	}
 
 	@Test
-	void loadSingleBoardExample() throws IOException, SQLException {
+	void loadSingleBoardExample() throws IOException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(singleBoard.getFile());
 		assumeTrue(machines != null && machines.size() == 1);
@@ -174,7 +172,7 @@ class MDefLoaderTest {
 	}
 
 	@Test
-	void loadThreeBoardExample() throws IOException, SQLException {
+	void loadThreeBoardExample() throws IOException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(threeBoard.getFile());
 		assumeTrue(machines != null && machines.size() == 1);

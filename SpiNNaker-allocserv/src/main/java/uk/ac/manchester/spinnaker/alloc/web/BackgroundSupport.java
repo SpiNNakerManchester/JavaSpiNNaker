@@ -18,13 +18,13 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
 
-import java.sql.SQLException;
 import java.util.concurrent.Executor;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 
@@ -98,7 +98,7 @@ public abstract class BackgroundSupport {
 			} else {
 				response.resume(r);
 			}
-		} catch (RequestFailedException | SQLException e) {
+		} catch (RequestFailedException | DataAccessException e) {
 			// Known exception mappers for these
 			response.resume(e);
 		} catch (Exception e) {

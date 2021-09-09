@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static java.util.Collections.unmodifiableList;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +81,7 @@ public final class MachinesResponse {
 	/** The list of machines known to the service. */
 	public final List<BriefMachineDescription> machines;
 
-	MachinesResponse(Map<String, Machine> machines, UriInfo ui)
-			throws SQLException {
+	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
 		List<BriefMachineDescription> mlist = new ArrayList<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
 		for (Entry<String, Machine> ment : machines.entrySet()) {

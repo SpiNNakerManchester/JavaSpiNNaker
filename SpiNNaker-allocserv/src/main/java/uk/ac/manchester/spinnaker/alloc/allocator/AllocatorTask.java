@@ -21,7 +21,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
@@ -31,8 +31,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -42,11 +40,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
@@ -125,7 +124,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		final int z;
 
-		TriadCoords(Row row) throws SQLException {
+		TriadCoords(Row row) {
 			this.x = row.getInt("x");
 			this.y = row.getInt("y");
 			this.z = row.getInt("z");
@@ -134,12 +133,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/**
 	 * Allocate all current requests for resources.
-	 *
-	 * @throws SQLException
-	 *             If anything goes wrong at the DB level
 	 */
 	@Scheduled(fixedDelayString = "#{allocatorProperties.period}")
-	public void allocate() throws SQLException {
+	public void allocate() {
 		if (serviceControl.isPaused()) {
 			return;
 		}
@@ -149,8 +145,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				log.debug("advancing job epoch");
 				epochs.nextJobsEpoch();
 			}
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; "
 						+ "will try allocation processing later");
 				return;
@@ -171,7 +167,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		private final Update setStatePending;
 
-		PowerSQL(Connection conn) throws SQLException {
+		PowerSQL(Connection conn) {
 			getJobState = query(conn, GET_JOB);
 			getJobBoards = query(conn, GET_JOB_BOARDS);
 			getPerimeter = query(conn, getPerimeterLinks);
@@ -180,7 +176,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			getJobState.close();
 			getJobBoards.close();
 			getPerimeter.close();
@@ -211,7 +207,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		private final Update allocJob;
 
-		AllocSQL(Connection conn) throws SQLException {
+		AllocSQL(Connection conn) {
 			super(conn);
 			bumpImportance = update(conn, BUMP_IMPORTANCE);
 			getTasks = query(conn, getAllocationTasks);
@@ -226,7 +222,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			super.close();
 			bumpImportance.close();
 			getTasks.close();
@@ -251,7 +247,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		private final Update killPending;
 
-		DestroySQL(Connection conn) throws SQLException {
+		DestroySQL(Connection conn) {
 			super(conn);
 			getJob = query(conn, GET_JOB);
 			markAsDestroyed = update(conn, DESTROY_JOB);
@@ -260,7 +256,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			super.close();
 			getJob.close();
 			markAsDestroyed.close();
@@ -275,11 +271,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param conn
 	 *            The DB connection
 	 * @return Whether any changes have been done
-	 * @throws SQLException
-	 *             If anything goes wrong at the DB level
 	 */
 	@Deprecated
-	boolean allocate(Connection conn) throws SQLException {
+	boolean allocate(Connection conn) {
 		try (AllocSQL sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
@@ -324,12 +318,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/**
 	 * Destroy jobs that have missed their keepalive.
-	 *
-	 * @throws SQLException
-	 *             If anything goes wrong at the DB level
 	 */
 	@Scheduled(fixedDelayString = "#{keepaliveProperties.expiryPeriod}")
-	public void expireJobs() throws SQLException {
+	public void expireJobs() {
 		if (serviceControl.isPaused()) {
 			return;
 		}
@@ -339,8 +330,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				epochs.nextJobsEpoch();
 				epochs.nextMachineEpoch();
 			}
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; "
 						+ "will try job expiry processing later");
 				return;
@@ -355,11 +346,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param conn
 	 *            How to talk to the DB
 	 * @return Whether any jobs have been expired.
-	 * @throws SQLException
-	 *             If anything goes wrong at the DB level
 	 */
 	@Deprecated // INTERNAL
-	boolean expireJobs(Connection conn) throws SQLException {
+	boolean expireJobs(Connection conn) {
 		boolean changed = false;
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill =
@@ -386,20 +375,17 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/**
 	 * Migrates long dead jobs to the historical data DB.
-	 *
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@Scheduled(cron = "#{historyProperties.schedule}")
-	public void tombstone() throws SQLException {
+	public void tombstone() {
 		if (serviceControl.isPaused()) {
 			return;
 		}
 
 		try (Connection conn = db.getConnection()) {
 			tombstone(conn);
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; "
 						+ "will try job tombstone processing later");
 				return;
@@ -417,12 +403,12 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param conn
 	 *            The DB connection
 	 */
-	private void tombstone(Connection conn) throws SQLException {
+	private void tombstone(Connection conn) {
 		try (Query copy = query(conn, copyToHistoricalData);
 				Update delete = update(conn, DELETE_JOB_RECORD)) {
-			List<Integer> jobIds = transaction(conn, () -> rowsAsList(
-					copy.call(historyProps.getGracePeriod()),
-					row -> row.getInteger("job_id")));
+			List<Integer> jobIds = transaction(conn,
+					() -> rowsAsList(copy.call(historyProps.getGracePeriod()),
+							row -> row.getInteger("job_id")));
 			transaction(conn, () -> {
 				for (Integer jobId : jobIds) {
 					// I don't think a NULL jobId is possible
@@ -435,15 +421,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	@Override
-	public void destroyJob(int id, String reason) throws SQLException {
+	public void destroyJob(int id, String reason) {
 		if (db.execute(conn -> destroyJob(conn, id, reason))) {
 			epochs.nextJobsEpoch();
 			epochs.nextMachineEpoch();
 		}
 	}
 
-	private boolean destroyJob(Connection conn, int id, String reason)
-			throws SQLException {
+	private boolean destroyJob(Connection conn, int id, String reason) {
 		log.debug("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
 			Optional<Row> row = sql.getJob.call1(id);
@@ -539,10 +524,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @return {@code true} if a decision has been taken about the task, or
 	 *         {@code false} if the task is to have the allocator run again in
 	 *         the next schedule slot.
-	 * @throws SQLException
-	 *             If anything goes wrong at the DB level
 	 */
-	private boolean allocate(AllocSQL sql, Row task) throws SQLException {
+	private boolean allocate(AllocSQL sql, Row task) {
 		int jobId = task.getInt("job_id");
 		int machineId = task.getInt("machine_id");
 		Rectangle max = new Rectangle(task.getInt("max_width"),
@@ -586,8 +569,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		return true;
 	}
 
-	private boolean allocateOneBoard(AllocSQL sql, int jobId, int machineId)
-			throws SQLException {
+	private boolean allocateOneBoard(AllocSQL sql, int jobId, int machineId) {
 		for (Row row : sql.findFreeBoard.call(machineId)) {
 			TriadCoords root = new TriadCoords(row);
 			if (setAllocation(sql, jobId, ONE_BOARD, machineId, root)) {
@@ -598,7 +580,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean allocateDimensions(AllocSQL sql, int jobId, int machineId,
-			DimensionEstimate estimate, int userMaxDead) throws SQLException {
+			DimensionEstimate estimate, int userMaxDead) {
 		int tolerance = userMaxDead + estimate.tolerance;
 		int minArea =
 				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
@@ -638,11 +620,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param estimate
 	 *            The planned allocation dimensions
 	 * @return How many boards in the allocation are reachable.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
-			DimensionEstimate estimate) throws SQLException {
+			DimensionEstimate estimate) {
 		int size = -1;
 		for (Row row : sql.countConnectedBoards.call(machineId, root.x, root.y,
 				estimate.width, estimate.height)) {
@@ -652,7 +632,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
-			int boardId) throws SQLException {
+			int boardId) {
 		for (Row row : sql.findSpecificBoard.call(machineId, boardId)) {
 			if (setAllocation(sql, jobId, ONE_BOARD, machineId,
 					new TriadCoords(row))) {
@@ -687,11 +667,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *            Proposed root coordinates
 	 * @return Whether we have successfully allocated (the allocation is stored
 	 *         in the DB)
-	 * @throws SQLException
-	 *             If something goes wrong with talking to the DB
 	 */
 	private boolean setAllocation(AllocSQL sql, int jobId, Rectangle rect,
-			int machineId, TriadCoords root) throws SQLException {
+			int machineId, TriadCoords root) {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
@@ -714,8 +692,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	@Override
-	public boolean setPower(int jobId, PowerState power, JobState targetState)
-			throws SQLException {
+	public boolean setPower(int jobId, PowerState power, JobState targetState) {
 		boolean updated = db.execute(conn -> {
 			try (PowerSQL sql = new PowerSQL(conn)) {
 				return setPower(sql, jobId, power, targetState);
@@ -740,11 +717,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param targetState
 	 *            The state to put the job in afterwards
 	 * @return Whether any changes are pending
-	 * @throws SQLException
-	 *             If DB access fails
 	 */
 	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
-			JobState targetState) throws SQLException {
+			JobState targetState) {
 		JobState sourceState = sql.getJobState.call1(jobId).get()
 				.getEnum("job_state", JobState.class);
 		List<Integer> boards = rowsAsList(sql.getJobBoards.call(jobId),

@@ -24,12 +24,13 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import org.springframework.dao.DataAccessException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -95,14 +96,13 @@ public class JobStateResponse {
 				return null;
 			}
 			return mapper.readValue(data.get(), CreateJobRequest.class);
-		} catch (IOException | SQLException e) {
+		} catch (IOException | DataAccessException e) {
 			// Non-critical; this can be just dropped if it doesn't work
 			return null;
 		}
 	}
 
-	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper)
-			throws SQLException {
+	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper) {
 		state = job.getState();
 		startTime = job.getStartTime();
 		reason = job.getReason().orElse(null);

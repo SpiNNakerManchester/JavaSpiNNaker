@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import java.sql.SQLException;
-
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
@@ -35,10 +33,8 @@ public interface PowerController {
 	 *            The ID of the job.
 	 * @param reason
 	 *            Why is the job being destroyed.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	void destroyJob(int jobId, String reason) throws SQLException;
+	void destroyJob(int jobId, String reason);
 
 	/**
 	 * Issue a power change for a job.
@@ -52,9 +48,6 @@ public interface PowerController {
 	 *            has been switched. Should be {@link JobState#READY} or
 	 *            {@link JobState#DESTROYED}.
 	 * @return Whether any change has been requested.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	boolean setPower(int jobId, PowerState power, JobState targetState)
-			throws SQLException;
+	boolean setPower(int jobId, PowerState power, JobState targetState);
 }

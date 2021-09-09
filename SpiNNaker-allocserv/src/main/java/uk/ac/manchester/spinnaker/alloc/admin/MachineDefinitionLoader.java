@@ -31,8 +31,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +56,7 @@ import javax.validation.constraints.PositiveOrZero;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteException;
 
@@ -71,6 +70,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
@@ -461,8 +461,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		private Map<TriadCoords, EnumSet<Link>> deadLinks;
 
-		private Map<TriadCoords,
-				BoardPhysicalCoords> boardLocations;
+		private Map<TriadCoords, BoardPhysicalCoords> boardLocations;
 
 		private Map<BMPCoords, String> bmpIPs;
 
@@ -644,8 +643,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 				return this;
 			}
 
-			public Builder withDeadLinks(
-					Map<TriadCoords, EnumSet<Link>> deadLinks) {
+			public Builder
+					withDeadLinks(Map<TriadCoords, EnumSet<Link>> deadLinks) {
 				this.deadLinks = deadLinks;
 				return this;
 			}
@@ -661,8 +660,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 				return this;
 			}
 
-			public Builder withSpinnakerIps(
-					Map<TriadCoords, String> spinnakerIps) {
+			public Builder
+					withSpinnakerIps(Map<TriadCoords, String> spinnakerIps) {
 				this.spinnakerIps = spinnakerIps;
 				return this;
 			}
@@ -783,7 +782,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	private ValidatorFactory validatorFactory;
 
 	@PostConstruct
-	private void setUp() throws SQLException {
+	private void setUp() {
 		try (Connection conn = db.getConnection()) {
 			DirInfo.load(conn);
 		}
@@ -872,7 +871,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 		private final Update setMaxCoords;
 
-		Updates(Connection conn) throws SQLException {
+		Updates(Connection conn) {
 			makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
 			makeTag = update(conn, INSERT_TAG);
 			makeBMP = update(conn, INSERT_BMP);
@@ -882,7 +881,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			makeMachine.close();
 			makeTag.close();
 			makeBMP.close();
@@ -897,8 +896,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *
 	 * @param stream
 	 *            The JSON configuration file.
-	 * @throws SQLException
-	 *             If database access fails
 	 * @throws JsonParseException
 	 *             if underlying input contains invalid JSON content
 	 * @throws JsonMappingException
@@ -907,8 +904,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 * @throws IOException
 	 *             If the file can't be read
 	 */
-	public void loadMachineDefinitions(InputStream stream) throws SQLException,
-			JsonParseException, JsonMappingException, IOException {
+	public void loadMachineDefinitions(InputStream stream)
+			throws JsonParseException, JsonMappingException, IOException {
 		List<Machine> machines = readMachineDefinitions(stream);
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
@@ -923,11 +920,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *
 	 * @param configuration
 	 *            The configuration.
-	 * @throws SQLException
-	 *             If database access fails
 	 */
-	public void loadMachineDefinitions(Configuration configuration)
-			throws SQLException {
+	public void loadMachineDefinitions(Configuration configuration) {
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
 			for (Machine machine : configuration.getMachines()) {
@@ -941,10 +935,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *
 	 * @param machine
 	 *            The machine definition.
-	 * @throws SQLException
-	 *             If database access fails
 	 */
-	public void loadMachineDefinition(Machine machine) throws SQLException {
+	public void loadMachineDefinition(Machine machine) {
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
 			transaction(conn, () -> loadMachineDefinition(sql, machine));
@@ -956,7 +948,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static class InsertFailedException extends SQLException {
+	public static class InsertFailedException extends RuntimeException {
 		private static final long serialVersionUID = -4930512416142843777L;
 
 		InsertFailedException(String table) {
@@ -972,11 +964,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *            INSERTs).
 	 * @param machine
 	 *            The description of the machine to add.
-	 * @throws SQLException
-	 *             If database access fails
 	 */
-	void loadMachineDefinition(Updates sql, Machine machine)
-			throws SQLException {
+	void loadMachineDefinition(Updates sql, Machine machine) {
 		int machineId = makeMachine(sql, machine);
 		Map<BMPCoords, Integer> bmpIds = makeBMPs(sql, machine, machineId);
 		Map<TriadCoords, Integer> boardIds =
@@ -985,7 +974,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	private int makeMachine(Updates sql, Machine machine)
-			throws InsertFailedException, SQLException {
+			throws InsertFailedException {
 		int machineId = sql.makeMachine.key(machine.getName(),
 				machine.getWidth(), machine.getHeight(), machine.getDepth())
 				.orElseThrow(() -> new InsertFailedException("machines"));
@@ -997,7 +986,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	private Map<BMPCoords, Integer> makeBMPs(Updates sql, Machine machine,
-			int machineId) throws SQLException {
+			int machineId) {
 		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
 		for (BMPCoords bmp : machine.bmpIPs.keySet()) {
 			sql.makeBMP.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
@@ -1007,7 +996,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	private Map<TriadCoords, Integer> makeBoards(Updates sql, Machine machine,
-			int machineId, Map<BMPCoords, Integer> bmpIds) throws SQLException {
+			int machineId, Map<BMPCoords, Integer> bmpIds) {
 		Map<TriadCoords, Integer> boardIds = new HashMap<>();
 		int maxX = 0, maxY = 0;
 		for (TriadCoords triad : machine.boardLocations.keySet()) {
@@ -1051,7 +1040,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	private void makeLinks(Updates sql, Machine machine,
-			Map<TriadCoords, Integer> boardIds) throws SQLException {
+			Map<TriadCoords, Integer> boardIds) {
 		for (Entry<TriadCoords, Integer> b : boardIds.entrySet()) {
 			TriadCoords here = b.getKey();
 			for (Direction d : Direction.values()) {
@@ -1066,7 +1055,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 	private Optional<Integer> makeLink(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds, TriadCoords here, Direction d1,
-			TriadCoords there, Direction d2) throws SQLException {
+			TriadCoords there, Direction d2) {
 		Integer b1 = boardIds.get(here);
 		Integer b2 = boardIds.get(there);
 		if (isNull(b1) || isNull(b2)) {
@@ -1078,21 +1067,26 @@ public class MachineDefinitionLoader extends SQLQueries {
 		 * A link is dead if it is dead in either direction or if either board
 		 * is dead.
 		 */
-		boolean dead =
-				machine.deadBoards.contains(here)
-						|| machine.hasDeadLinkAt(here, d1)
-						|| machine.deadBoards.contains(there)
-						|| machine.hasDeadLinkAt(there, d2);
+		boolean dead = machine.deadBoards.contains(here)
+				|| machine.hasDeadLinkAt(here, d1)
+				|| machine.deadBoards.contains(there)
+				|| machine.hasDeadLinkAt(there, d2);
 		try {
 			log.debug("making {}:{} <-{}-> {}:{}", here, d1, dead ? "/" : "-",
 					there, d2);
 			return sql.makeLink.key(b1, d1, b2, d2, !dead);
-		} catch (SQLiteException e) {
-			// If the CHECK constraint says no, just ignore; we'll do the link
-			// from the other direction. This does mean we're doing too much
-			// work, but better to do too much and be reliable
-			if (e.getResultCode() == SQLITE_CONSTRAINT_CHECK) {
-				return Optional.empty();
+		} catch (DataAccessException e) {
+			if (e.getMostSpecificCause() instanceof SQLiteException) {
+				SQLiteException exn =
+						(SQLiteException) e.getMostSpecificCause();
+				/*
+				 * If the CHECK constraint says no, just ignore; we'll do the
+				 * link from the other direction. This does mean we're doing too
+				 * much work, but better to do too much and be reliable.
+				 */
+				if (exn.getResultCode() == SQLITE_CONSTRAINT_CHECK) {
+					return Optional.empty();
+				}
 			}
 			throw e;
 		}

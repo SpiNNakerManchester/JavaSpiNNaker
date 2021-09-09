@@ -17,22 +17,21 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
@@ -64,11 +63,8 @@ public class QuotaManager extends SQLQueries {
 	 * @param user
 	 *            Who wants to create the job.
 	 * @return True if they can make a job. False if they can't.
-	 * @throws SQLException
-	 *             If database access fails.
 	 */
-	public boolean hasQuotaRemaining(int machineId, String user)
-			throws SQLException {
+	public boolean hasQuotaRemaining(int machineId, String user) {
 		try (Connection c = db.getConnection();
 				Query getQuota = query(c, GET_USER_QUOTA);
 				Query getCurrentUsage = query(c, GET_CURRENT_USAGE)) {
@@ -78,7 +74,7 @@ public class QuotaManager extends SQLQueries {
 	}
 
 	private boolean mayCreateJob(int machineId, String user, Query getQuota,
-			Query getCurrentUsage) throws SQLException {
+			Query getCurrentUsage) {
 		Optional<Row> result = getQuota.call1(machineId, user);
 		if (!result.isPresent()) {
 			return true;
@@ -107,11 +103,8 @@ public class QuotaManager extends SQLQueries {
 	 * @param jobId
 	 *            What job is consuming resources?
 	 * @return True if the job can continue to run. False if it can't.
-	 * @throws SQLException
-	 *             If database access fails.
 	 */
-	public boolean hasQuotaRemaining(int machineId, int jobId)
-			throws SQLException {
+	public boolean hasQuotaRemaining(int machineId, int jobId) {
 		try (Connection c = db.getConnection();
 				Query getUsageAndQuota = query(c, GET_JOB_USAGE_AND_QUOTA)) {
 			return transaction(c, () -> mayLetJobContinue(machineId, jobId,
@@ -120,7 +113,7 @@ public class QuotaManager extends SQLQueries {
 	}
 
 	private boolean mayLetJobContinue(int machineId, int jobId,
-			Query getUsageAndQuota) throws SQLException {
+			Query getUsageAndQuota) {
 		Optional<Row> result = getUsageAndQuota.call1(machineId, jobId);
 		if (!result.isPresent()) {
 			return true;
@@ -133,20 +126,17 @@ public class QuotaManager extends SQLQueries {
 
 	/**
 	 * Consolidates usage from finished jobs onto quotas. Runs hourly.
-	 *
-	 * @throws SQLException
-	 *             If database access fails.
 	 */
 	@Scheduled(cron = "#{quotaProperties.consolidationSchedule}")
-	public void consolidateQuotas() throws SQLException {
+	public void consolidateQuotas() {
 		if (control.isPaused()) {
 			return;
 		}
 		// Split off for testability
 		try {
 			doConsolidate();
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; "
 						+ "will try job quota consolidation processing later");
 				return;
@@ -155,7 +145,7 @@ public class QuotaManager extends SQLQueries {
 		}
 	}
 
-	final void doConsolidate() throws SQLException {
+	final void doConsolidate() {
 		try (Connection c = db.getConnection();
 				Query getConsoldationTargets =
 						query(c, GET_CONSOLIDATION_TARGETS);
@@ -167,8 +157,7 @@ public class QuotaManager extends SQLQueries {
 	}
 
 	private void consolidate(Query getConsoldationTargets,
-			Update decrementQuota, Update markConsolidated)
-			throws SQLException {
+			Update decrementQuota, Update markConsolidated) {
 		for (Row row : getConsoldationTargets.call()) {
 			decrementQuota.call(row.getObject("usage"), row.getInt("quota_id"));
 			markConsolidated.call(row.getInt("job_id"));

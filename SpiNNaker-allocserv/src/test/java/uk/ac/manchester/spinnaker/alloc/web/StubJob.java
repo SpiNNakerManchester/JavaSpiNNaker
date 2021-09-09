@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -46,88 +45,87 @@ public class StubJob implements SpallocAPI.Job {
 	}
 
 	@Override
-	public void access(String keepaliveAddress) throws SQLException {
+	public void access(String keepaliveAddress) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void destroy(String reason) throws SQLException {
+	public void destroy(String reason) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public JobState getState() throws SQLException {
+	public JobState getState() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Instant getStartTime() throws SQLException {
+	public Instant getStartTime() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<String> getKeepaliveHost() throws SQLException {
+	public Optional<String> getKeepaliveHost() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Instant getKeepaliveTimestamp() throws SQLException {
+	public Instant getKeepaliveTimestamp() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<String> getOwner() throws SQLException {
+	public Optional<String> getOwner() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<byte[]> getOriginalRequest() throws SQLException {
+	public Optional<byte[]> getOriginalRequest() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<Instant> getFinishTime() throws SQLException {
+	public Optional<Instant> getFinishTime() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<String> getReason() throws SQLException {
+	public Optional<String> getReason() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<SubMachine> getMachine() throws SQLException {
+	public Optional<SubMachine> getMachine() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> whereIs(int x, int y) throws SQLException {
+	public Optional<BoardLocation> whereIs(int x, int y) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<ChipLocation> getRootChip() throws SQLException {
+	public Optional<ChipLocation> getRootChip() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<Integer> getWidth() throws SQLException {
+	public Optional<Integer> getWidth() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<Integer> getHeight() throws SQLException {
+	public Optional<Integer> getHeight() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<Integer> getDepth() throws SQLException {
+	public Optional<Integer> getDepth() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String reportIssue(IssueReportRequest reqBody, Permit permit)
-			throws SQLException {
+	public String reportIssue(IssueReportRequest reqBody, Permit permit) {
 		throw new UnsupportedOperationException();
 	}
 }

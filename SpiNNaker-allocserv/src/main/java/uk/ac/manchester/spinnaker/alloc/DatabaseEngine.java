@@ -42,12 +42,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
-import java.sql.Connection;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -57,7 +67,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -70,6 +82,13 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.dao.RecoverableDataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Component;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
@@ -119,8 +138,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final String OPTIMIZE_DB =
 			"PRAGMA analysis_limit=%d; PRAGMA optimize;";
 
-	private static final int DEFAULT_ANALYSIS_LIMIT = 400;
-
 	/**
 	 * Used to validate the database contents. Number of items in
 	 * {@code movement_directions} table.
@@ -142,7 +159,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
 	 */
-	private int analysisLimit = DEFAULT_ANALYSIS_LIMIT;
+	private int analysisLimit;
 
 	/** Busy timeout for SQLite. */
 	private Duration busyTimeout = Duration.ofSeconds(1);
@@ -171,6 +188,97 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return names;
 	}
 
+	private static DataAccessException mapException(SQLException e) {
+		if (!(e instanceof SQLiteException)) {
+			return new UncategorizedSQLException("general SQL exception", null,
+					e);
+		}
+		SQLiteException exn = (SQLiteException) e;
+		switch (exn.getResultCode()) {
+		case SQLITE_CONSTRAINT:
+		case SQLITE_CONSTRAINT_CHECK:
+		case SQLITE_CONSTRAINT_COMMITHOOK:
+		case SQLITE_CONSTRAINT_FOREIGNKEY:
+		case SQLITE_CONSTRAINT_FUNCTION:
+		case SQLITE_CONSTRAINT_PRIMARYKEY:
+		case SQLITE_CONSTRAINT_UNIQUE:
+		case SQLITE_CONSTRAINT_NOTNULL:
+		case SQLITE_CONSTRAINT_TRIGGER:
+		case SQLITE_CONSTRAINT_ROWID:
+		case SQLITE_CONSTRAINT_VTAB:
+		case SQLITE_MISMATCH:
+			return new DataIntegrityViolationException(exn.getMessage(), exn);
+
+		case SQLITE_BUSY:
+		case SQLITE_BUSY_RECOVERY:
+		case SQLITE_BUSY_SNAPSHOT:
+		case SQLITE_LOCKED:
+		case SQLITE_LOCKED_SHAREDCACHE:
+			return new PessimisticLockingFailureException(exn.getMessage(),
+					exn);
+
+		case SQLITE_ABORT:
+		case SQLITE_ABORT_ROLLBACK:
+		case SQLITE_FULL:
+		case SQLITE_EMPTY:
+			return new RecoverableDataAccessException(exn.getMessage(), exn);
+
+		case SQLITE_SCHEMA:
+		case SQLITE_TOOBIG:
+		case SQLITE_RANGE:
+			return new InvalidDataAccessResourceUsageException(exn.getMessage(),
+					exn);
+
+		case SQLITE_IOERR:
+		case SQLITE_IOERR_SHORT_READ:
+		case SQLITE_IOERR_READ:
+		case SQLITE_IOERR_WRITE:
+		case SQLITE_IOERR_FSYNC:
+		case SQLITE_IOERR_DIR_FSYNC:
+		case SQLITE_IOERR_TRUNCATE:
+		case SQLITE_IOERR_FSTAT:
+		case SQLITE_IOERR_UNLOCK:
+		case SQLITE_IOERR_RDLOCK:
+		case SQLITE_IOERR_DELETE:
+		case SQLITE_IOERR_NOMEM:
+		case SQLITE_IOERR_ACCESS:
+		case SQLITE_IOERR_CHECKRESERVEDLOCK:
+		case SQLITE_IOERR_LOCK:
+		case SQLITE_IOERR_CLOSE:
+		case SQLITE_IOERR_SHMOPEN:
+		case SQLITE_IOERR_SHMSIZE:
+		case SQLITE_IOERR_SHMMAP:
+		case SQLITE_IOERR_SEEK:
+		case SQLITE_IOERR_DELETE_NOENT:
+		case SQLITE_IOERR_MMAP:
+		case SQLITE_IOERR_GETTEMPPATH:
+		case SQLITE_IOERR_CONVPATH:
+		case SQLITE_PERM:
+		case SQLITE_READONLY:
+		case SQLITE_READONLY_RECOVERY:
+		case SQLITE_READONLY_CANTLOCK:
+		case SQLITE_READONLY_ROLLBACK:
+		case SQLITE_READONLY_DBMOVED:
+		case SQLITE_AUTH:
+		case SQLITE_MISUSE:
+		case SQLITE_NOLFS:
+		case SQLITE_CORRUPT:
+		case SQLITE_CORRUPT_VTAB:
+		case SQLITE_CANTOPEN:
+		case SQLITE_CANTOPEN_ISDIR:
+		case SQLITE_CANTOPEN_FULLPATH:
+		case SQLITE_CANTOPEN_CONVPATH:
+		case SQLITE_NOTADB:
+		case SQLITE_FORMAT:
+			return new DataAccessResourceFailureException(exn.getMessage(),
+					exn);
+
+		default:
+			return new UncategorizedSQLException("general SQL exception", null,
+					e);
+		}
+	}
+
 	/**
 	 * A restricted form of result set. Note that this object <em>must not</em>
 	 * be saved outside the context of iteration over its' query's results.
@@ -191,10 +299,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         the order is unimportant. (The set returned will iterate over
 		 *         the names in the order they are in the underlying result set,
 		 *         but this is considered "unimportant".)
-		 * @throws SQLException
 		 */
-		public Set<String> getColumnNames() throws SQLException {
-			return columnNames(rs.getMetaData());
+		public Set<String> getColumnNames() {
+			try {
+				return columnNames(rs.getMetaData());
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -203,11 +314,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return A string, or {@code null} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public String getString(String columnLabel) throws SQLException {
-			return rs.getString(columnLabel);
+		public String getString(String columnLabel) {
+			try {
+				return rs.getString(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -216,11 +329,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return A boolean, or {@code false} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public boolean getBoolean(String columnLabel) throws SQLException {
-			return rs.getBoolean(columnLabel);
+		public boolean getBoolean(String columnLabel) {
+			try {
+				return rs.getBoolean(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -229,11 +344,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return An integer, or {@code 0} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public int getInt(String columnLabel) throws SQLException {
-			return rs.getInt(columnLabel);
+		public int getInt(String columnLabel) {
+			try {
+				return rs.getInt(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -242,11 +359,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return An integer or {@code null}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public Integer getInteger(String columnLabel) throws SQLException {
-			return (Integer) rs.getObject(columnLabel);
+		public Integer getInteger(String columnLabel) {
+			try {
+				return (Integer) rs.getObject(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -255,11 +374,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return A byte array, or {@code null} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public byte[] getBytes(String columnLabel) throws SQLException {
-			return rs.getBytes(columnLabel);
+		public byte[] getBytes(String columnLabel) {
+			try {
+				return rs.getBytes(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -268,15 +389,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return An instant, or {@code null} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public Instant getInstant(String columnLabel) throws SQLException {
-			long moment = rs.getLong(columnLabel);
-			if (rs.wasNull()) {
-				return null;
+		public Instant getInstant(String columnLabel) {
+			try {
+				long moment = rs.getLong(columnLabel);
+				if (rs.wasNull()) {
+					return null;
+				}
+				return Instant.ofEpochSecond(moment);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
-			return Instant.ofEpochSecond(moment);
 		}
 
 		/**
@@ -285,15 +408,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param columnLabel
 		 *            The name of the column.
 		 * @return A duration, or {@code null} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public Duration getDuration(String columnLabel) throws SQLException {
-			long span = rs.getLong(columnLabel);
-			if (rs.wasNull()) {
-				return null;
+		public Duration getDuration(String columnLabel) {
+			try {
+				long span = rs.getLong(columnLabel);
+				if (rs.wasNull()) {
+					return null;
+				}
+				return Duration.ofSeconds(span);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
-			return Duration.ofSeconds(span);
 		}
 
 		/**
@@ -303,11 +428,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            The name of the column.
 		 * @return An automatically-decoded object, or {@code null} on
 		 *         {@code NULL}. (Only returns basic types.)
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public Object getObject(String columnLabel) throws SQLException {
-			return rs.getObject(columnLabel);
+		public Object getObject(String columnLabel) {
+			try {
+				return rs.getObject(columnLabel);
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
 		}
 
 		/**
@@ -320,16 +447,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param type
 		 *            The enumeration type class.
 		 * @return An enum value, or {@code null} on {@code NULL}.
-		 * @throws SQLException
-		 *             If a problem occurs
 		 */
-		public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type)
-				throws SQLException {
-			int value = rs.getInt(columnLabel);
-			if (rs.wasNull()) {
-				return null;
+		public <T extends Enum<T>> T getEnum(String columnLabel,
+				Class<T> type) {
+			try {
+				int value = rs.getInt(columnLabel);
+				if (rs.wasNull()) {
+					return null;
+				}
+				return type.getEnumConstants()[value];
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
-			return type.getEnumConstants()[value];
 		}
 	}
 
@@ -392,6 +521,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage pure in-memory database");
 		busyTimeout = prototype.busyTimeout;
+		analysisLimit = prototype.analysisLimit;
 		sqlDDLFile = prototype.sqlDDLFile;
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
@@ -554,14 +684,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void initDBConn(SQLiteConnection conn) throws SQLException {
 		log.info("initalising DB ({}) schema from {}", conn.libversion(),
 				sqlDDLFile);
-		exec(conn, sqlDDLFile);
+		Connection wrapper = new Connection(conn);
+		exec(wrapper, sqlDDLFile);
 		log.info("attaching historical job DB ({}) schema from {}",
 				tombstoneFile, tombstoneDDLFile);
-		update(conn, "ATTACH DATABASE ? AS tombstone").call(tombstoneFile);
-		exec(conn, tombstoneDDLFile);
-		transaction(conn, () -> {
+		update(wrapper, "ATTACH DATABASE ? AS tombstone").call(tombstoneFile);
+		exec(wrapper, tombstoneDDLFile);
+		transaction(wrapper, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
-			exec(conn, sqlInitDataFile);
+			exec(wrapper, sqlInitDataFile);
 		});
 	}
 
@@ -600,13 +731,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
 				exec(conn, String.format(OPTIMIZE_DB, analysisLimit));
-			} catch (SQLiteException e) {
+			} catch (DataAccessException e) {
 				/*
 				 * If we're busy, just don't bother; it's optional to optimise
 				 * the DB at this point. If we miss one, eventually another
 				 * thread will pick it up.
 				 */
-				if (e.getResultCode() != SQLITE_BUSY) {
+				if (!isBusy(e)) {
 					throw e;
 				}
 			}
@@ -616,6 +747,315 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			log.warn("failed to optimise DB pre-close", e);
 		} finally {
 			optimiseSerialisationLock.unlock();
+		}
+	}
+
+	/**
+	 * A connection that guarantees to not throw {@link SQLException} from its
+	 * {@code close()} method.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class Connection implements java.sql.Connection {
+		private final java.sql.Connection c;
+
+		private Connection(java.sql.Connection c) {
+			this.c = c;
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return c.unwrap(iface);
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return c.isWrapperFor(iface);
+		}
+
+		@Override
+		public Statement createStatement() throws SQLException {
+			return c.createStatement();
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql)
+				throws SQLException {
+			return c.prepareStatement(sql);
+		}
+
+		@Override
+		public CallableStatement prepareCall(String sql) throws SQLException {
+			return c.prepareCall(sql);
+		}
+
+		@Override
+		public String nativeSQL(String sql) throws SQLException {
+			return c.nativeSQL(sql);
+		}
+
+		@Override
+		public void setAutoCommit(boolean autoCommit) throws SQLException {
+			c.setAutoCommit(autoCommit);
+		}
+
+		@Override
+		public boolean getAutoCommit() throws SQLException {
+			return c.getAutoCommit();
+		}
+
+		@Override
+		public void commit() throws SQLException {
+			c.commit();
+		}
+
+		@Override
+		public void rollback() throws SQLException {
+			c.rollback();
+		}
+
+		@Override
+		public void close() {
+			try {
+				c.close();
+			} catch (SQLException e) {
+				throw mapException(e);
+			}
+		}
+
+		@Override
+		public boolean isClosed() throws SQLException {
+			return c.isClosed();
+		}
+
+		@Override
+		public DatabaseMetaData getMetaData() throws SQLException {
+			return c.getMetaData();
+		}
+
+		@Override
+		public void setReadOnly(boolean readOnly) throws SQLException {
+			c.setReadOnly(readOnly);
+		}
+
+		@Override
+		public boolean isReadOnly() throws SQLException {
+			return c.isReadOnly();
+		}
+
+		@Override
+		public void setCatalog(String catalog) throws SQLException {
+			c.setCatalog(catalog);
+		}
+
+		@Override
+		public String getCatalog() throws SQLException {
+			return c.getCatalog();
+		}
+
+		@Override
+		public void setTransactionIsolation(int level) throws SQLException {
+			c.setTransactionIsolation(level);
+		}
+
+		@Override
+		public int getTransactionIsolation() throws SQLException {
+			return c.getTransactionIsolation();
+		}
+
+		@Override
+		public SQLWarning getWarnings() throws SQLException {
+			return c.getWarnings();
+		}
+
+		@Override
+		public void clearWarnings() throws SQLException {
+			c.clearWarnings();
+		}
+
+		@Override
+		public Statement createStatement(int resultSetType,
+				int resultSetConcurrency) throws SQLException {
+			return c.createStatement(resultSetType, resultSetConcurrency);
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql, int resultSetType,
+				int resultSetConcurrency) throws SQLException {
+			return c.prepareStatement(sql, resultSetType, resultSetConcurrency);
+		}
+
+		@Override
+		public CallableStatement prepareCall(String sql, int resultSetType,
+				int resultSetConcurrency) throws SQLException {
+			return c.prepareCall(sql, resultSetType, resultSetConcurrency);
+		}
+
+		@Override
+		public Map<String, Class<?>> getTypeMap() throws SQLException {
+			return c.getTypeMap();
+		}
+
+		@Override
+		public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+			c.setTypeMap(map);
+		}
+
+		@Override
+		public void setHoldability(int holdability) throws SQLException {
+			c.setHoldability(holdability);
+		}
+
+		@Override
+		public int getHoldability() throws SQLException {
+			return c.getHoldability();
+		}
+
+		@Override
+		public Savepoint setSavepoint() throws SQLException {
+			return c.setSavepoint();
+		}
+
+		@Override
+		public Savepoint setSavepoint(String name) throws SQLException {
+			return c.setSavepoint(name);
+		}
+
+		@Override
+		public void rollback(Savepoint savepoint) throws SQLException {
+			c.rollback(savepoint);
+		}
+
+		@Override
+		public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+			c.releaseSavepoint(savepoint);
+		}
+
+		@Override
+		public Statement createStatement(int resultSetType,
+				int resultSetConcurrency, int resultSetHoldability)
+				throws SQLException {
+			return c.createStatement(resultSetType, resultSetConcurrency,
+					resultSetHoldability);
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql, int resultSetType,
+				int resultSetConcurrency, int resultSetHoldability)
+				throws SQLException {
+			return c.prepareStatement(sql, resultSetType, resultSetConcurrency,
+					resultSetHoldability);
+		}
+
+		@Override
+		public CallableStatement prepareCall(String sql, int resultSetType,
+				int resultSetConcurrency, int resultSetHoldability)
+				throws SQLException {
+			return c.prepareCall(sql, resultSetType, resultSetConcurrency,
+					resultSetHoldability);
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql,
+				int autoGeneratedKeys) throws SQLException {
+			return c.prepareStatement(sql, autoGeneratedKeys);
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql,
+				int[] columnIndexes) throws SQLException {
+			return c.prepareStatement(sql, columnIndexes);
+		}
+
+		@Override
+		public PreparedStatement prepareStatement(String sql,
+				String[] columnNames) throws SQLException {
+			return c.prepareStatement(sql, columnNames);
+		}
+
+		@Override
+		public Clob createClob() throws SQLException {
+			return c.createClob();
+		}
+
+		@Override
+		public Blob createBlob() throws SQLException {
+			return c.createBlob();
+		}
+
+		@Override
+		public NClob createNClob() throws SQLException {
+			return c.createNClob();
+		}
+
+		@Override
+		public SQLXML createSQLXML() throws SQLException {
+			return c.createSQLXML();
+		}
+
+		@Override
+		public boolean isValid(int timeout) throws SQLException {
+			return c.isValid(timeout);
+		}
+
+		@Override
+		public void setClientInfo(String name, String value)
+				throws SQLClientInfoException {
+			c.setClientInfo(name, value);
+		}
+
+		@Override
+		public void setClientInfo(Properties properties)
+				throws SQLClientInfoException {
+			c.setClientInfo(properties);
+		}
+
+		@Override
+		public String getClientInfo(String name) throws SQLException {
+			return c.getClientInfo(name);
+		}
+
+		@Override
+		public Properties getClientInfo() throws SQLException {
+			return c.getClientInfo();
+		}
+
+		@Override
+		public Array createArrayOf(String typeName, Object[] elements)
+				throws SQLException {
+			return c.createArrayOf(typeName, elements);
+		}
+
+		@Override
+		public Struct createStruct(String typeName, Object[] attributes)
+				throws SQLException {
+			return c.createStruct(typeName, attributes);
+		}
+
+		@Override
+		public void setSchema(String schema) throws SQLException {
+			c.setSchema(schema);
+		}
+
+		@Override
+		public String getSchema() throws SQLException {
+			return c.getSchema();
+		}
+
+		@Override
+		public void abort(Executor executor) throws SQLException {
+			c.abort(executor);
+		}
+
+		@Override
+		public void setNetworkTimeout(Executor executor, int milliseconds)
+				throws SQLException {
+			c.setNetworkTimeout(executor, milliseconds);
+		}
+
+		@Override
+		public int getNetworkTimeout() throws SQLException {
+			return c.getNetworkTimeout();
 		}
 	}
 
@@ -631,16 +1071,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * another one) will get an independent database.
 	 *
 	 * @return A configured initialised connection to the database.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public Connection getConnection() throws SQLException {
+	public Connection getConnection() {
 		try {
 			if (isNull(dbPath)) {
 				// In-memory DB (dbPath null) always must be initialised
 				SQLiteConnection conn = openDatabaseConnection();
 				initDBConn(conn);
-				return conn;
+				return new Connection(conn);
 			}
 			synchronized (this) {
 				boolean doInit = !initialised || !exists(dbPath);
@@ -649,10 +1087,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					initDBConn(conn);
 					initialised = true;
 				}
-				return uncloseableThreadBound(conn);
+				return new Connection(uncloseableThreadBound(conn));
 			}
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -662,16 +1102,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param backupFilename
 	 *            The backup file to create.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public void createBackup(File backupFilename) throws SQLException {
-		try (SQLiteConnection conn = (SQLiteConnection) getConnection()) {
+	public void createBackup(File backupFilename) {
+		try (SQLiteConnection conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().backup(MAIN_DB_NAME,
 					backupFilename.getAbsolutePath(),
 					(remaining, pageCount) -> log.info(
 							"BACKUP TO {} (remaining:{}, page count:{})",
 							backupFilename, remaining, pageCount));
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -681,22 +1121,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param backupFilename
 	 *            The backup file to restore from.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public void restoreFromBackup(File backupFilename) throws SQLException {
+	public void restoreFromBackup(File backupFilename) {
 		if (!backupFilename.isFile() || !backupFilename.canRead()) {
-			throw new SQLException(
+			throw mapException(new SQLException(
 					"backup file \"" + backupFilename
 							+ "\" doesn't exist or isn't a readable file",
-					new FileNotFoundException(backupFilename.toString()));
+					new FileNotFoundException(backupFilename.toString())));
 		}
-		try (SQLiteConnection conn = (SQLiteConnection) getConnection()) {
+		try (SQLiteConnection conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().restore(MAIN_DB_NAME,
 					backupFilename.getAbsolutePath(),
 					(remaining, pageCount) -> log.info(
 							"RESTORE FROM {} (remaining:{}, page count:{})",
 							backupFilename, remaining, pageCount));
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -716,29 +1156,30 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            The statement to set the parameters for.
 	 * @param arguments
 	 *            The values to set the parameters to.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public static void setParams(PreparedStatement s, Object... arguments)
-			throws SQLException {
-		int idx = 0;
-		int paramCount = s.getParameterMetaData().getParameterCount();
-		if (paramCount == 0 && arguments.length > 0) {
-			throw new SQLException("prepared statement takes no arguments");
-		} else if (paramCount != arguments.length) {
-			throw new SQLException("prepared statement takes " + paramCount
-					+ " arguments, not " + arguments.length);
-		}
-		s.clearParameters();
-		for (Object arg : arguments) {
-			if (arg instanceof Instant) {
-				arg = ((Instant) arg).getEpochSecond();
-			} else if (arg instanceof Duration) {
-				arg = ((Duration) arg).getSeconds();
-			} else if (arg instanceof Enum) {
-				arg = ((Enum<?>) arg).ordinal();
+	public static void setParams(PreparedStatement s, Object... arguments) {
+		try {
+			int idx = 0;
+			int paramCount = s.getParameterMetaData().getParameterCount();
+			if (paramCount == 0 && arguments.length > 0) {
+				throw new SQLException("prepared statement takes no arguments");
+			} else if (paramCount != arguments.length) {
+				throw new SQLException("prepared statement takes " + paramCount
+						+ " arguments, not " + arguments.length);
 			}
-			s.setObject(++idx, arg);
+			s.clearParameters();
+			for (Object arg : arguments) {
+				if (arg instanceof Instant) {
+					arg = ((Instant) arg).getEpochSecond();
+				} else if (arg instanceof Duration) {
+					arg = ((Duration) arg).getSeconds();
+				} else if (arg instanceof Enum) {
+					arg = ((Enum<?>) arg).ordinal();
+				}
+				s.setObject(++idx, arg);
+			}
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -750,16 +1191,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param arguments
 	 *            The arguments to supply to the statement
 	 * @return The number of affected rows
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public static int runUpdate(PreparedStatement s, Object... arguments)
-			throws SQLException {
+	public static int runUpdate(PreparedStatement s, Object... arguments) {
 		try {
 			setParams(s, arguments);
 			return s.executeUpdate();
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -771,16 +1211,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param arguments
 	 *            The arguments to supply to the statement
 	 * @return The result set of the query
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public static ResultSet runQuery(PreparedStatement s, Object... arguments)
-			throws SQLException {
+	public static ResultSet runQuery(PreparedStatement s, Object... arguments) {
 		try {
 			setParams(s, arguments);
 			return s.executeQuery();
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -796,7 +1235,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			for (StackTraceElement frame : currentThread().getStackTrace()) {
 				String name = frame.getClassName();
 				if (name.startsWith("java.") || name.startsWith("javax.")
-						// MAGIC!
+				// MAGIC!
 						|| name.startsWith("sun.")) {
 					continue;
 				}
@@ -823,14 +1262,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            The database connection
 	 * @param operation
 	 *            The operation to run
-	 * @throws SQLException
-	 *             If something goes wrong with database access.
 	 * @throws RuntimeException
-	 *             If something other than database access goes wrong with the
+	 *             If something goes wrong with the database access or the
 	 *             contained code.
 	 */
-	public static void transaction(Connection conn, Transacted operation)
-			throws SQLException {
+	public static void transaction(Connection conn, Transacted operation) {
 		try {
 			if (!conn.getAutoCommit()) {
 				// Already in a transaction; just run the operation
@@ -843,6 +1279,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			conn.setAutoCommit(false);
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 		boolean done = false;
 		try {
@@ -853,8 +1291,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				throw rewriteException(e);
 			}
 			done = true;
-		} catch (SQLException | RuntimeException e) {
+		} catch (RuntimeException e) {
 			throw e;
+		} catch (SQLException e) {
+			throw mapException(e);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
@@ -865,6 +1305,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				conn.setAutoCommit(true);
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 			log.debug("finish transaction");
 		}
@@ -882,14 +1324,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param operation
 	 *            The operation to run
 	 * @return the value returned by {@code operation}
-	 * @throws SQLException
-	 *             If something goes wrong with database access.
 	 * @throws RuntimeException
-	 *             If something other than database access goes wrong with the
+	 *             If something goes wrong with the database access or the
 	 *             contained code.
 	 */
 	public static <T> T transaction(Connection conn,
-			TransactedWithResult<T> operation) throws SQLException {
+			TransactedWithResult<T> operation) {
 		try {
 			if (!conn.getAutoCommit()) {
 				// Already in a transaction; just run the operation
@@ -901,6 +1341,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			conn.setAutoCommit(false);
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 		boolean done = false;
 		try {
@@ -912,8 +1354,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			done = true;
 			return result;
-		} catch (SQLException | RuntimeException e) {
+		} catch (RuntimeException e) {
 			throw e;
+		} catch (SQLException e) {
+			throw mapException(e);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
@@ -924,6 +1368,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				conn.setAutoCommit(true);
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 			log.debug("finish transaction");
 		}
@@ -937,13 +1383,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param operation
 	 *            The operation to run
-	 * @throws SQLException
-	 *             If something goes wrong with database access.
 	 * @throws RuntimeException
-	 *             If something other than database access goes wrong with the
+	 *             If something goes wrong with the database access or the
 	 *             contained code.
 	 */
-	public void executeVoid(Connected operation) throws SQLException {
+	public void executeVoid(Connected operation) {
 		try (Connection conn = getConnection()) {
 			transaction(conn, () -> operation.act(conn));
 		}
@@ -966,8 +1410,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             If something other than database access goes wrong with the
 	 *             contained code.
 	 */
-	public <T> T execute(ConnectedWithResult<T> operation)
-			throws SQLException {
+	public <T> T execute(ConnectedWithResult<T> operation) {
 		try (Connection conn = getConnection()) {
 			return transaction(conn, () -> operation.act(conn));
 		}
@@ -980,11 +1423,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public interface Transacted {
 		/**
 		 * The operation to run.
-		 *
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		void act() throws SQLException;
+		void act();
 	}
 
 	/**
@@ -999,10 +1439,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * The operation to run.
 		 *
 		 * @return The result of the operation.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		T act() throws SQLException;
+		T act();
 	}
 
 	/**
@@ -1017,10 +1455,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param connection
 		 *            The newly-created connection. Do not save beyond the scope
 		 *            of this action.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		void act(Connection connection) throws SQLException;
+		void act(Connection connection);
 	}
 
 	/**
@@ -1039,10 +1475,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            The newly-created connection. Do not save beyond the scope
 		 *            of this action.
 		 * @return The result of the operation.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		T act(Connection connection) throws SQLException;
+		T act(Connection connection);
 	}
 
 	/**
@@ -1051,10 +1485,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param resource
 	 *            The resource to load from
 	 * @return The content of the resource
-	 * @throws SQLException
-	 *             If anything goes wrong
 	 */
-	public static String readSQL(Resource resource) throws SQLException {
+	public static String readSQL(Resource resource) {
 		synchronized (QUERY_CACHE) {
 			if (QUERY_CACHE.containsKey(resource)) {
 				return QUERY_CACHE.get(resource);
@@ -1070,8 +1502,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			return s;
 		} catch (IOException e) {
-			throw new SQLException("could not load SQL file from " + resource,
-					e);
+			throw mapException(new SQLException(
+					"could not load SQL file from " + resource, e));
 		}
 	}
 
@@ -1083,15 +1515,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL to run. Probably DDL. This may contain multiple
 	 *            statements.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public static void exec(Connection conn, String sql) throws SQLException {
+	public static void exec(Connection conn, String sql) {
 		try (Statement s = conn.createStatement()) {
 			// MUST be executeUpdate() to run multiple statements at once!
 			s.executeUpdate(sql);
 		} catch (SQLiteException e) {
 			throw rewriteException(e);
+		} catch (SQLException e) {
+			throw mapException(e);
 		}
 	}
 
@@ -1103,11 +1535,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL to run. Probably DDL. This may contain
 	 *            multiple statements.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public static void exec(Connection conn, Resource sqlResource)
-			throws SQLException {
+	public static void exec(Connection conn, Resource sqlResource) {
 		exec(conn, readSQL(sqlResource));
 	}
 
@@ -1117,10 +1546,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL to run. Probably DDL. This may contain multiple
 	 *            statements.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public void exec(String sql) throws SQLException {
+	public void exec(String sql) {
 		try (Connection conn = getConnection()) {
 			exec(conn, sql);
 		}
@@ -1132,16 +1559,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL to run. Probably DDL. This may contain
 	 *            multiple statements.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	public void exec(Resource sqlResource) throws SQLException {
+	public void exec(Resource sqlResource) {
 		try (Connection conn = getConnection()) {
 			exec(conn, sqlResource);
 		}
 	}
 
-	private static SQLiteException rewriteException(SQLiteException e) {
+	private static DataAccessException rewriteException(SQLiteException e) {
 		// Sometimes, exception messages obscure rather than illuminate
 		String msg = e.getMessage();
 		if (msg.contains("SQL error or missing database (")) {
@@ -1149,9 +1574,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					"$1");
 			SQLiteException e2 = new SQLiteException(msg, e.getResultCode());
 			e2.setStackTrace(e.getStackTrace());
-			return e2;
+			return mapException(e2);
 		}
-		return e;
+		return mapException(e);
 	}
 
 	/**
@@ -1166,11 +1591,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/** The result set from the statement that we will manage. */
 		ResultSet rs;
 
-		StatementWrapper(Connection conn, String sql) throws SQLException {
+		StatementWrapper(Connection conn, String sql) {
 			try {
 				s = conn.prepareStatement(sql);
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 			rs = null;
 		}
@@ -1189,14 +1616,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * Get the number of arguments expected when calling this statement.
 		 *
 		 * @return The number of arguments. Types are arbitrary (because SQLite)
-		 * @throws SQLException
-		 *             If anything goes wrong
 		 */
-		public final int getNumArguments() throws SQLException {
+		public final int getNumArguments() {
 			try {
 				return s.getParameterMetaData().getParameterCount();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 		}
 
@@ -1205,24 +1632,26 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @return A set of names. The order is the order in the SQL producing
 		 *         the result set, but this should normally be insignificant.
-		 * @throws SQLException
-		 *             If anything goes wrong
 		 */
-		public final Set<String> getRowColumnNames() throws SQLException {
+		public final Set<String> getRowColumnNames() {
 			try {
 				return columnNames(s.getMetaData());
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 		}
 
 		@Override
-		public final void close() throws SQLException {
+		public final void close() {
 			try {
 				closeResults();
 				s.close();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 		}
 
@@ -1250,7 +1679,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @author Donal Fellows
 	 */
 	public static final class Query extends StatementWrapper {
-		private Query(Connection conn, String sql) throws SQLException {
+		private Query(Connection conn, String sql) {
 			super(conn, sql);
 		}
 
@@ -1260,16 +1689,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param arguments
 		 *            Positional argument to the query
 		 * @return The results, wrapped as a one-shot iterable
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		public Iterable<Row> call(Object... arguments) throws SQLException {
+		public Iterable<Row> call(Object... arguments) {
 			try {
 				setParams(s, arguments);
 				closeResults();
 				rs = s.executeQuery();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 			Row row = new Row(rs);
 			return () -> new Iterator<Row>() {
@@ -1313,12 +1742,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param arguments
 		 *            Positional argument to the query
-		 * @return The single row with the results, or empty if there is
-		 *         no such row.
-		 * @throws SQLException
-		 *             If anything goes wrong.
+		 * @return The single row with the results, or empty if there is no such
+		 *         row.
 		 */
-		public Optional<Row> call1(Object... arguments) throws SQLException {
+		public Optional<Row> call1(Object... arguments) {
 			try {
 				setParams(s, arguments);
 				closeResults();
@@ -1330,6 +1757,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 		}
 	}
@@ -1350,11 +1779,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL of the query.
 	 * @return The query object.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	// @formatter:on
-	public static Query query(Connection conn, String sql) throws SQLException {
+	public static Query query(Connection conn, String sql) {
 		return new Query(conn, sql);
 	}
 
@@ -1374,12 +1801,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL of the query.
 	 * @return The query object.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	// @formatter:on
-	public static Query query(Connection conn, Resource sqlResource)
-			throws SQLException {
+	public static Query query(Connection conn, Resource sqlResource) {
 		return new Query(conn, readSQL(sqlResource));
 	}
 
@@ -1389,7 +1813,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @author Donal Fellows
 	 */
 	public static final class Update extends StatementWrapper {
-		private Update(Connection conn, String sql) throws SQLException {
+		private Update(Connection conn, String sql) {
 			super(conn, sql);
 		}
 
@@ -1399,16 +1823,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param arguments
 		 *            Positional argument to the query
 		 * @return The number of rows updated
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		public int call(Object... arguments) throws SQLException {
+		public int call(Object... arguments) {
 			try {
 				setParams(s, arguments);
 				closeResults();
 				return s.executeUpdate();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 		}
 
@@ -1418,10 +1842,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param arguments
 		 *            Positional arguments to the query
 		 * @return The integer primary keys generated by the update.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		public Iterable<Integer> keys(Object... arguments) throws SQLException {
+		public Iterable<Integer> keys(Object... arguments) {
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
@@ -1435,6 +1857,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				rs = s.getGeneratedKeys();
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			}
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;
@@ -1485,10 +1909,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param arguments
 		 *            Positional arguments to the query
 		 * @return The integer primary key generated by the update.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		public Optional<Integer> key(Object... arguments) throws SQLException {
+		public Optional<Integer> key(Object... arguments) {
 			try {
 				setParams(s, arguments);
 				closeResults();
@@ -1501,6 +1923,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 			} catch (SQLiteException e) {
 				throw rewriteException(e);
+			} catch (SQLException e) {
+				throw mapException(e);
 			} finally {
 				closeResults();
 			}
@@ -1529,12 +1953,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL of the update.
 	 * @return The update object.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	// @formatter:on
-	public static Update update(Connection conn, String sql)
-			throws SQLException {
+	public static Update update(Connection conn, String sql) {
 		return new Update(conn, sql);
 	}
 
@@ -1560,13 +1981,24 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL of the update.
 	 * @return The update object.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	// @formatter:on
-	public static Update update(Connection conn, Resource sqlResource)
-			throws SQLException {
+	public static Update update(Connection conn, Resource sqlResource) {
 		return new Update(conn, readSQL(sqlResource));
+	}
+
+	/**
+	 * Utility for testing whether an exception was thrown because the database
+	 * was busy.
+	 *
+	 * @param e
+	 *            The outer wrapping exception.
+	 * @return Whether it was caused by the database being busy.
+	 */
+	public static boolean isBusy(DataAccessException e) {
+		return e.getMostSpecificCause() instanceof SQLiteException
+				&& ((SQLiteException) e.getMostSpecificCause()).getResultCode()
+						.equals(SQLITE_BUSY);
 	}
 
 	/**
@@ -1581,11 +2013,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            The conversion function.
 	 * @return List of objects mapped from rows. (This list happens to be
 	 *         modifiable, but with no effect on the database.)
-	 * @throws SQLException
-	 *             If the mapper throws.
 	 */
 	public static <T> List<T> rowsAsList(Iterable<Row> rows,
-			RowMapper<T> mapper) throws SQLException {
+			RowMapper<T> mapper) {
 		List<T> result = new ArrayList<>();
 		for (Row row : rows) {
 			result.add(mapper.mapRow(row));
@@ -1596,7 +2026,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	/**
 	 * Maps a row from a database to an arbitrary object.
 	 *
-	 * @param <T> The type of object produced.
+	 * @param <T>
+	 *            The type of object produced.
 	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
@@ -1607,10 +2038,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param row
 		 *            The row to map.
 		 * @return The object produced.
-		 * @throws SQLException
-		 *             If an access to the row fails.
 		 */
-		T mapRow(Row row) throws SQLException;
+		T mapRow(Row row);
 	}
 
 	/**
@@ -1627,6 +2056,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		@Override
 		public Response toResponse(SQLException exception) {
+			log.warn("uncaught SQL exception", exception);
+			if (properties.getSqlite().isDebugFailures()) {
+				return status(INTERNAL_SERVER_ERROR)
+						.entity("failed: " + exception.getMessage()).build();
+			}
+			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
+		}
+	}
+
+	/**
+	 * Handler for {@link DataAccessException}.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Component
+	@Provider
+	public static class DataAccessExceptionMapper
+			implements ExceptionMapper<DataAccessException> {
+		@Autowired
+		private SpallocProperties properties;
+
+		@Override
+		public Response toResponse(DataAccessException exception) {
 			log.warn("uncaught SQL exception", exception);
 			if (properties.getSqlite().isDebugFailures()) {
 				return status(INTERNAL_SERVER_ERROR)

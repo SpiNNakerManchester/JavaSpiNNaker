@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class MachineStateControl extends SQLQueries {
 		/** The IP address managed by the board's root chip. */
 		public final String address;
 
-		private BoardState(Row row) throws SQLException {
+		private BoardState(Row row) {
 			this.boardId = row.getInt("board_id");
 			this.x = row.getInt("x");
 			this.y = row.getInt("y");
@@ -81,10 +80,8 @@ public class MachineStateControl extends SQLQueries {
 
 		/**
 		 * @return The state of the board.
-		 * @throws SQLException
-		 *             if something goes wrong
 		 */
-		public boolean getState() throws SQLException {
+		public boolean getState() {
 			return db.execute(c -> {
 				try (Query q = query(c, GET_FUNCTIONING_FIELD)) {
 					Optional<Row> result = q.call1(boardId);
@@ -96,7 +93,7 @@ public class MachineStateControl extends SQLQueries {
 			});
 		}
 
-		public void setState(boolean newValue) throws SQLException {
+		public void setState(boolean newValue) {
 			db.executeVoid(c -> {
 				try (Update u = update(c, SET_FUNCTIONING_FIELD)) {
 					u.call(newValue, boardId);
@@ -117,11 +114,8 @@ public class MachineStateControl extends SQLQueries {
 	 * @param z
 	 *            Z coordinate
 	 * @return Board state manager
-	 * @throws SQLException
-	 *             If anything goes wrong
 	 */
-	public Optional<BoardState> findTriad(String machine, int x, int y, int z)
-			throws SQLException {
+	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
 				for (Row row : q.call(machine, x, y, z)) {
@@ -144,11 +138,9 @@ public class MachineStateControl extends SQLQueries {
 	 * @param b
 	 *            Board number
 	 * @return Board state manager
-	 * @throws SQLException
-	 *             If anything goes wrong
 	 */
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
-			int b) throws SQLException {
+			int b) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
 				for (Row row : q.call(machine, c, f, b)) {
@@ -167,11 +159,8 @@ public class MachineStateControl extends SQLQueries {
 	 * @param address
 	 *            Board IP address
 	 * @return Board state manager
-	 * @throws SQLException
-	 *             If anything goes wrong
 	 */
-	public Optional<BoardState> findIP(String machine, String address)
-			throws SQLException {
+	public Optional<BoardState> findIP(String machine, String address) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				for (Row row : q.call(machine, address)) {

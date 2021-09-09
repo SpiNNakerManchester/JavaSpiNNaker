@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -44,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
@@ -93,7 +93,7 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() throws SQLException {
+	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			setupDB(c);
@@ -108,7 +108,7 @@ class QuotaManagerTest extends SQLQueries {
 
 	private static final int USER = 4000;
 
-	private void setupDB(Connection c) throws SQLException {
+	private void setupDB(Connection c) {
 		// A simple machine
 		try (Update u = update(c,
 				"INSERT OR IGNORE INTO machines("
@@ -152,7 +152,7 @@ class QuotaManagerTest extends SQLQueries {
 	 *            Length of time (seconds)
 	 * @return Job ID
 	 */
-	private int makeJob(Connection c, int size, int time) throws SQLException {
+	private int makeJob(Connection c, int size, int time) {
 		try (Update u = update(c,
 				"INSERT INTO jobs(machine_id, owner, root_id, job_state, "
 						+ "create_timestamp, allocation_timestamp, "
@@ -169,7 +169,7 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoConsolidate() throws SQLException {
+	void testDoConsolidate() {
 		db.executeVoid(c -> {
 			// Does a job get consolidated once and only once
 			try (Query q = query(c, GET_QUOTA)) {
@@ -183,26 +183,34 @@ class QuotaManagerTest extends SQLQueries {
 				assertEquals(924,
 						q.call1(MACHINE, USER).get().getObject("quota"));
 			} finally {
-				c.rollback();
+				try {
+					c.rollback();
+				} catch (SQLException e) {
+					throw new RuntimeException("database problem", e);
+				}
 			}
 		});
 	}
 
 	@Test
-	void testDoNoConsolidate() throws SQLException {
+	void testDoNoConsolidate() {
 		db.executeVoid(c -> {
-			try (Statement s = c.createStatement();
-					Query q = query(c, GET_QUOTA)) {
-				// Delete the quota
-				s.execute("UPDATE quotas SET quota = NULL "
-						+ "WHERE user_id = 4000");
-				makeJob(c, 1, 100);
-				// Does a job NOT get consolidated if there's no quota
-				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-				qm.doConsolidate();
-				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-			} finally {
-				c.rollback();
+			try {
+				try (Statement s = c.createStatement();
+						Query q = query(c, GET_QUOTA)) {
+					// Delete the quota
+					s.execute("UPDATE quotas SET quota = NULL "
+							+ "WHERE user_id = 4000");
+					makeJob(c, 1, 100);
+					// Does a job NOT get consolidated if there's no quota
+					assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
+					qm.doConsolidate();
+					assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
+				} finally {
+					c.rollback();
+				}
+			} catch (SQLException e) {
+				throw new RuntimeException("database problem", e);
 			}
 		});
 	}
