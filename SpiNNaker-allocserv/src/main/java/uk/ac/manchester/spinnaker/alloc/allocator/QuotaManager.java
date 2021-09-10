@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -66,6 +67,7 @@ public class QuotaManager extends SQLQueries {
 	 */
 	public boolean hasQuotaRemaining(int machineId, String user) {
 		try (Connection c = db.getConnection();
+				// These could be combined, but they're complicated enough
 				Query getQuota = query(c, GET_USER_QUOTA);
 				Query getCurrentUsage = query(c, GET_CURRENT_USAGE)) {
 			return transaction(c, () -> mayCreateJob(machineId, user, getQuota,
@@ -81,14 +83,12 @@ public class QuotaManager extends SQLQueries {
 		}
 		Integer quotaObj = result.get().getInteger("quota");
 		int userId = result.get().getInt("user_id");
-		if (quotaObj == null) {
+		if (isNull(quotaObj)) {
 			return true;
 		}
 		// Quota is defined; check if current usage exceeds it
-		int quota = quotaObj;
-		for (Row row : getCurrentUsage.call(machineId, userId)) {
-			quota -= row.getInt("current_usage");
-		}
+		int quota = quotaObj - getCurrentUsage.call1(machineId, userId)
+				.map(row -> row.getInteger("current_usage")).orElse(0);
 		// If board-seconds are left, we're good to go
 		return (quota > 0);
 	}
@@ -114,14 +114,11 @@ public class QuotaManager extends SQLQueries {
 
 	private boolean mayLetJobContinue(int machineId, int jobId,
 			Query getUsageAndQuota) {
-		Optional<Row> result = getUsageAndQuota.call1(machineId, jobId);
-		if (!result.isPresent()) {
-			return true;
-		}
-		Row row = result.get();
-		int usage = row.getInt("usage");
-		int quota = row.getInt("quota");
-		return usage <= quota;
+		return getUsageAndQuota.call1(machineId, jobId)
+				// If we have an entry, check if usage <= quota
+				.map(row -> row.getInt("usage") <= row.getInt("quota"))
+				// Otherwise, we'll just allow it
+				.orElse(true);
 	}
 
 	/**

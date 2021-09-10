@@ -2015,31 +2015,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *         modifiable, but with no effect on the database.)
 	 */
 	public static <T> List<T> rowsAsList(Iterable<Row> rows,
-			RowMapper<T> mapper) {
+			java.util.function.Function<Row, T> mapper) {
 		List<T> result = new ArrayList<>();
 		for (Row row : rows) {
-			result.add(mapper.mapRow(row));
+			result.add(mapper.apply(row));
 		}
 		return result;
-	}
-
-	/**
-	 * Maps a row from a database to an arbitrary object.
-	 *
-	 * @param <T>
-	 *            The type of object produced.
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	public interface RowMapper<T> {
-		/**
-		 * Map a row to an object.
-		 *
-		 * @param row
-		 *            The row to map.
-		 * @return The object produced.
-		 */
-		T mapRow(Row row);
 	}
 
 	/**

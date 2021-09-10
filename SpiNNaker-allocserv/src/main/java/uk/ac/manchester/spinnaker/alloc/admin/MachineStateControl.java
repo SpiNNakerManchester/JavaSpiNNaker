@@ -84,11 +84,9 @@ public class MachineStateControl extends SQLQueries {
 		public boolean getState() {
 			return db.execute(c -> {
 				try (Query q = query(c, GET_FUNCTIONING_FIELD)) {
-					Optional<Row> result = q.call1(boardId);
-					if (result.isPresent()) {
-						return result.get().getBoolean("functioning");
-					}
-					return false;
+					return q.call1(boardId)
+							.map(row -> row.getBoolean("functioning"))
+							.orElse(false);
 				}
 			});
 		}
@@ -118,11 +116,8 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
-				for (Row row : q.call(machine, x, y, z)) {
-					return Optional.of(new BoardState(row));
-				}
+				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
-			return Optional.empty();
 		});
 	}
 
@@ -143,11 +138,8 @@ public class MachineStateControl extends SQLQueries {
 			int b) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
-				for (Row row : q.call(machine, c, f, b)) {
-					return Optional.of(new BoardState(row));
-				}
+				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
-			return Optional.empty();
 		});
 	}
 
@@ -163,11 +155,8 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findIP(String machine, String address) {
 		return db.execute(conn -> {
 			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
-				for (Row row : q.call(machine, address)) {
-					return Optional.of(new BoardState(row));
-				}
+				return q.call1(machine, address).map(BoardState::new);
 			}
-			return Optional.empty();
 		});
 	}
 }

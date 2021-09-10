@@ -305,13 +305,14 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			for (Row row : loginFailure.call(authProps.getMaxLoginFailures(),
-					userId)) {
-				if (row.getBoolean("locked")) {
-					log.warn("automatically locking user {} for {}", username,
-							authProps.getAccountLockDuration());
-				}
-			}
+			loginFailure.call1(authProps.getMaxLoginFailures(), userId)
+					.ifPresent(row -> {
+						if (row.getBoolean("locked")) {
+							log.warn("automatically locking user {} for {}",
+									username,
+									authProps.getAccountLockDuration());
+						}
+					});
 		}
 	}
 
@@ -412,10 +413,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 	void unlock() throws SQLException {
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
-			for (Row row : unlock.call(authProps.getAccountLockDuration())) {
-				log.info("automatically unlocked user {}",
-						row.getString("user_name"));
-			}
+			unlock.call(authProps.getAccountLockDuration())
+					.forEach(row -> log.info("automatically unlocked user {}",
+							row.getString("user_name")));
 		}
 	}
 }

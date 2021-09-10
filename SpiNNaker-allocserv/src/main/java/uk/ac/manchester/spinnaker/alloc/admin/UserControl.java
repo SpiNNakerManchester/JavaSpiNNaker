@@ -119,24 +119,22 @@ public class UserControl extends SQLQueries {
 
 	private Optional<UserRecord> createUser(UserRecord user, Connection c,
 			CreateSQL sql) {
-		Optional<Integer> key = sql.createUser.key(user.getUserName(),
-				user.getPassword(), user.getTrustLevel(), !user.isEnabled());
-		if (!key.isPresent()) {
-			return Optional.empty();
-		}
-		int userId = key.get();
-		if (isNull(user.getQuota())) {
-			sql.makeDefaultQuotas.call(userId);
-		} else {
-			for (Entry<String, Long> quotaInfo : user.getQuota().entrySet()) {
-				sql.makeQuotas.call(userId, quotaInfo.getValue(),
-						quotaInfo.getKey());
-			}
-		}
-		for (Row row : sql.getUserDetails.call(userId)) {
-			return Optional.of(getUser(c, row));
-		}
-		return Optional.empty();
+		return sql.createUser
+				.key(user.getUserName(), user.getPassword(),
+						user.getTrustLevel(), !user.isEnabled())
+				.flatMap(userId -> {
+					if (isNull(user.getQuota())) {
+						sql.makeDefaultQuotas.call(userId);
+					} else {
+						for (Entry<String, Long> quotaInfo : user.getQuota()
+								.entrySet()) {
+							sql.makeQuotas.call(userId, quotaInfo.getValue(),
+									quotaInfo.getKey());
+						}
+					}
+					return sql.getUserDetails.call1(userId)
+							.map(row -> getUser(c, row));
+				});
 	}
 
 	/**
@@ -150,12 +148,8 @@ public class UserControl extends SQLQueries {
 	public Optional<UserRecord> getUser(int id) {
 		try (Connection c = db.getConnection();
 				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			return transaction(c, () -> {
-				for (Row row : getUserDetails.call(id)) {
-					return Optional.of(getUser(c, row));
-				}
-				return Optional.empty();
-			});
+			return transaction(c,
+					() -> getUserDetails.call1(id).map(row -> getUser(c, row)));
 		}
 	}
 
@@ -173,12 +167,12 @@ public class UserControl extends SQLQueries {
 			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
 			HashMap<String, Long> quotas = new HashMap<>();
 			try (Query getQuotas = query(c, GET_QUOTA_DETAILS)) {
-				for (Row qrow : getQuotas.call(user.getUserId())) {
+				getQuotas.call(user.getUserId()).forEach(qrow -> {
 					Number quotaInfo = (Number) qrow.getObject("quota");
 					Long quota =
 							isNull(quotaInfo) ? null : quotaInfo.longValue();
 					quotas.put(qrow.getString("machine_name"), quota);
-				}
+				});
 			}
 			user.setQuota(quotas);
 		} finally {
@@ -294,10 +288,7 @@ public class UserControl extends SQLQueries {
 			}
 		}
 
-		for (Row row : sql.getUserDetails.call(id)) {
-			return Optional.of(getUser(c, row));
-		}
-		return Optional.empty();
+		return sql.getUserDetails.call1(id).map(row -> getUser(c, row));
 	}
 
 	/**
@@ -320,12 +311,11 @@ public class UserControl extends SQLQueries {
 					// May not delete yourself!
 					return Optional.empty();
 				}
-				String userName =
-						getUserName.call1(id).get().getString("user_name");
-				if (deleteUser.call(id) == 1) {
-					return Optional.of(userName);
-				}
-				return Optional.empty();
+				return getUserName.call1(id).flatMap(row -> {
+					String userName = row.getString("user_name");
+					return Optional.ofNullable(
+							deleteUser.call(id) == 1 ? userName : null);
+				});
 			});
 		}
 	}
@@ -344,15 +334,14 @@ public class UserControl extends SQLQueries {
 			throws AuthenticationException {
 		try (Connection c = db.getConnection();
 				Query q = query(c, GET_LOCAL_USER_DETAILS)) {
-			return transaction(c, () -> {
-				Row row = q.call1(principal.getName()).orElseThrow(
-						// OpenID-authenticated user; go away
-						() -> new AuthenticationServiceException(
-								"user is managed externally; "
-										+ "cannot manage password here"));
-				return new PasswordChangeRecord(row.getInt("user_id"),
-						row.getString("user_name"));
-			});
+			return transaction(c, () -> q.call1(principal.getName())
+					.map(row -> new PasswordChangeRecord(
+							row.getInt("user_id"), row.getString("user_name")))
+					.orElseThrow(
+							// OpenID-authenticated user; go away
+							() -> new AuthenticationServiceException(
+									"user is managed externally; "
+											+ "cannot manage password here")));
 		}
 	}
 

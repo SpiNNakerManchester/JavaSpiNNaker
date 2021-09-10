@@ -36,7 +36,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -431,12 +430,13 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	private boolean destroyJob(Connection conn, int id, String reason) {
 		log.debug("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
-			Optional<Row> row = sql.getJob.call1(id);
-			if (!row.isPresent()) {
-				return false;
-			}
-			if (row.get().getEnum("job_state", JobState.class) == DESTROYED) {
-				// Don't do anything if the job is already destroyed
+			if (sql.getJob.call1(id)
+					.map(row -> row.getEnum("job_state", JobState.class))
+					.orElse(DESTROYED) == DESTROYED) {
+				/*
+				 * Don't do anything if the job doesn't exist or is already
+				 * destroyed
+				 */
 				return false;
 			}
 			sql.killPending.call(id);
@@ -570,13 +570,11 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	private boolean allocateOneBoard(AllocSQL sql, int jobId, int machineId) {
-		for (Row row : sql.findFreeBoard.call(machineId)) {
-			TriadCoords root = new TriadCoords(row);
-			if (setAllocation(sql, jobId, ONE_BOARD, machineId, root)) {
-				return true;
-			}
-		}
-		return false;
+		// This is simplified; no subsidiary searching needed
+		return sql.findFreeBoard
+				.call1(machineId).map(row -> setAllocation(sql, jobId,
+						ONE_BOARD, machineId, new TriadCoords(row)))
+				.orElse(false);
 	}
 
 	private boolean allocateDimensions(AllocSQL sql, int jobId, int machineId,
@@ -623,23 +621,18 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 */
 	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
 			DimensionEstimate estimate) {
-		int size = -1;
-		for (Row row : sql.countConnectedBoards.call(machineId, root.x, root.y,
-				estimate.width, estimate.height)) {
-			size = row.getInt("connected_size");
-		}
-		return size;
+		return sql.countConnectedBoards
+				.call1(machineId, root.x, root.y, estimate.width,
+						estimate.height)
+				.map(row -> row.getInt("connected_size")).orElse(-1);
 	}
 
 	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
 			int boardId) {
-		for (Row row : sql.findSpecificBoard.call(machineId, boardId)) {
-			if (setAllocation(sql, jobId, ONE_BOARD, machineId,
-					new TriadCoords(row))) {
-				return true;
-			}
-		}
-		return false;
+		return sql.findSpecificBoard
+				.call1(machineId, boardId).map(row -> setAllocation(sql, jobId,
+						ONE_BOARD, machineId, new TriadCoords(row)))
+				.orElse(false);
 	}
 
 	/**
