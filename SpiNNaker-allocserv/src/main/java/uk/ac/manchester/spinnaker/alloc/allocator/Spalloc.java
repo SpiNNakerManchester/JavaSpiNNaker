@@ -44,7 +44,6 @@ import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -60,6 +59,9 @@ import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.SQLProblem;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ReportProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
@@ -103,29 +105,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	@Autowired(required = false)
 	private JavaMailSender emailSender;
 
-	@Value("${spalloc.allocator.priority-scale.size:1.0}")
-	private float sizePriorityScale;
-
-	@Value("${spalloc.allocator.priority-scale.dimensions:1.5}")
-	private float dimensionsPriorityScale;
-
-	@Value("${spalloc.allocator.priority-scale.specific-board:25.0}")
-	private float specificPriorityScale;
-
-	@Value("${spalloc.allocator.report-action-threshold:2}")
-	private int serviceThreshold;
-
-	@Value("${spalloc.allocator.report-email.send:false}")
-	private boolean sendEmailNotification;
-
-	@Value("${spalloc.allocator.report-email.from:spalloc@localhost}")
-	private String emailFrom;
-
-	@Value("${spalloc.allocator.report-email.to:}")
-	private String emailTo;
-
-	@Value("${spalloc.allocator.report-email.subject:Spalloc Board Issue}")
-	private String emailSubject;
+	@Autowired
+	private AllocatorProperties props;
 
 	@Override
 	public Map<String, Machine> getMachines() throws SQLException {
@@ -423,6 +404,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private void insertRequest(Connection conn, MachineImpl machine, int id,
 			CreateDescriptor descriptor, Integer numDeadBoards)
 			throws SQLException {
+		PriorityScale scale = props.getPriorityScale();
 		if (descriptor instanceof CreateNumBoards) {
 			// Request by number of boards
 			CreateNumBoards nb = (CreateNumBoards) descriptor;
@@ -431,7 +413,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = update(conn, INSERT_REQ_N_BOARDS)) {
-				int priority = (int) (nb.numBoards * sizePriorityScale);
+				int priority = (int) (nb.numBoards * scale.getSize());
 				ps.call(id, nb.numBoards, numDeadBoards, priority);
 			}
 		} else if (descriptor instanceof CreateDimensions) {
@@ -443,7 +425,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 			try (Update ps = update(conn, INSERT_REQ_SIZE)) {
 				int priority =
-						(int) (d.width * d.height * dimensionsPriorityScale);
+						(int) (d.width * d.height * scale.getDimensions());
 				ps.call(id, d.width, d.height, numDeadBoards, priority);
 			}
 		} else {
@@ -483,7 +465,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						"request does not identify an existing board");
 			}
 			try (Update ps = update(conn, INSERT_REQ_BOARD)) {
-				int priority = (int) specificPriorityScale;
+				int priority = (int) scale.getSpecificBoard();
 				ps.call(id, boardId, priority);
 			}
 		}
@@ -1098,19 +1080,20 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				});
 
 				// NB: email sending is OUTSIDE the transaction
-				if (nonNull(emailSender) && nonNull(emailTo)
-						&& sendEmailNotification) {
+				ReportProperties mail = props.getReportEmail();
+				if (nonNull(emailSender) && nonNull(mail.getTo())
+						&& mail.isSend()) {
 					SimpleMailMessage message = new SimpleMailMessage();
-					if (nonNull(emailFrom)) {
-						message.setFrom(emailFrom);
+					if (nonNull(mail.getFrom())) {
+						message.setFrom(mail.getFrom());
 					}
-					message.setTo(emailTo);
-					if (nonNull(emailSubject)) {
-						message.setSubject(emailSubject);
+					message.setTo(mail.getTo());
+					if (nonNull(mail.getSubject())) {
+						message.setSubject(mail.getSubject());
 					}
 					message.setText(email.toString());
 					try {
-						if (!emailTo.isEmpty()) {
+						if (!mail.getTo().isEmpty()) {
 							emailSender.send(message);
 						}
 					} catch (MailException e) {
@@ -1227,7 +1210,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private int takeBoardsOutOfService(BoardReportSQL u, EmailBuilder email)
 				throws SQLException {
 			int acted = 0;
-			for (Row r : u.getReported.call(serviceThreshold)) {
+			for (Row r : u.getReported.call(props.getReportActionThreshold())) {
 				int boardId = r.getInt("board_id");
 				if (u.setFunctioning.call(false, boardId) > 0) {
 					email.serviceActionDone(r);

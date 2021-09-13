@@ -58,6 +58,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -87,21 +89,12 @@ public class V1CompatService {
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
-	/** Whether to turn this service on. */
-	@Value("${spalloc.compat.enable:false}")
-	private boolean enable;
+	/** The overall service properties. */
+	@Autowired
+	private SpallocProperties mainProps;
 
-	/** The port that we listen on. */
-	@Value("${spalloc.compat.port:22244}")
-	private int port;
-
-	/** The service user. Should be distinct from all users that can log in. */
-	@Value("${spalloc.compat.service-user:}")
-	String serviceUser;
-
-	/** The size of the pool of worker threads. */
-	@Value("${spalloc.compat.thread-pool-size:0}")
-	private int poolSize;
+	/** Configuration. */
+	CompatibilityProperties props;
 
 	/** The core spalloc service. */
 	@Autowired
@@ -141,14 +134,16 @@ public class V1CompatService {
 
 	@PostConstruct
 	private void open() throws IOException {
-		if (poolSize > 0) {
-			executor = newFixedThreadPool(poolSize, r -> new Thread(GROUP, r));
+		props = mainProps.getCompat();
+		if (props.getThreadPoolSize() > 0) {
+			executor = newFixedThreadPool(props.getThreadPoolSize(),
+					r -> new Thread(GROUP, r));
 		} else {
 			executor = newCachedThreadPool(r -> new Thread(GROUP, r));
 		}
 
-		if (enable) {
-			serv = new ServerSocket(port);
+		if (props.isEnable()) {
+			serv = new ServerSocket(props.getPort());
 			servThread = new Thread(GROUP, this::acceptConnections);
 			servThread.setName("service-master");
 			servThread.start();

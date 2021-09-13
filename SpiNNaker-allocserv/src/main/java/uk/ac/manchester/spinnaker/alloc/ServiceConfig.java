@@ -51,6 +51,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -66,6 +67,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
@@ -81,6 +88,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @EnableScheduling
 @SpringBootApplication
 @ApplicationPath("spalloc")
+@EnableConfigurationProperties(SpallocProperties.class)
 public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
@@ -196,6 +204,42 @@ public class ServiceConfig extends Application {
 
 	@Autowired
 	private ApplicationContext ctx;
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	AllocatorProperties allocatorProperties(SpallocProperties properties) {
+		return properties.getAllocator();
+	}
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	KeepaliveProperties keepaliveProperties(SpallocProperties properties) {
+		return properties.getKeepalive();
+	}
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	HistoricalDataProperties historyProperties(SpallocProperties properties) {
+		return properties.getHistoricalData();
+	}
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	QuotaProperties quotaProperties(SpallocProperties properties) {
+		return properties.getQuota();
+	}
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	TxrxProperties txrxProperties(SpallocProperties properties) {
+		return properties.getTransceiver();
+	}
+
+	// Exported so we can use a short name in SpEL in @Scheduled annotations
+	@Bean
+	AuthProperties authProperties(SpallocProperties properties) {
+		return properties.getAuth();
+	}
 
 	@Bean
 	PasswordEncoder passwordEncoder() {

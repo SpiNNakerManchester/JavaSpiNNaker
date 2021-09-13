@@ -93,6 +93,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.ArgumentCount;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Deterministic;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 /**
  * The security and administration configuration of the service.
@@ -167,11 +168,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationFailureHandler authenticationFailureHandler;
 
-	@Value("${spalloc.auth.basic:true}")
-	private boolean supportBasicAuth;
-
-	@Value("${spalloc.auth.local-form:true}")
-	private boolean supportLocalFormAuth;
+	@Autowired
+	private AuthProperties properties;
 
 	@Value("${spalloc.auth.oidc:true}")
 	private boolean supportOIDCAuth;
@@ -281,10 +279,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
-		if (supportBasicAuth) {
+		if (properties.isBasic()) {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
-		if (supportLocalFormAuth) {
+		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(LOGIN_PAGE)
 					.loginProcessingUrl(LOGIN_ACTION_URL)
 					.defaultSuccessUrl(MAIN_PAGE, true)
@@ -465,8 +463,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Component
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
-		@Value("${spalloc.auth.debug-failures:false}")
-		private boolean debugAuthFailures;
+		@Autowired private AuthProperties properties;
 
 		@Autowired
 		private JsonMapper mapper;
@@ -479,7 +476,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			response.setStatus(UNAUTHORIZED.value());
 
 			String message = BLAND_AUTH_MSG;
-			if (debugAuthFailures) {
+			if (properties.isDebugFailures()) {
 				message += ": " + e.getLocalizedMessage();
 			}
 			mapper.writeValue(response.getOutputStream(),

@@ -142,11 +142,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
 	 */
-	@Value("${spalloc.sqlite.analysis-limit:" + DEFAULT_ANALYSIS_LIMIT + "}")
 	private int analysisLimit = DEFAULT_ANALYSIS_LIMIT;
 
 	/** Busy timeout for SQLite. */
-	@Value("${spalloc.sqlite.timeout:PT1S}")
 	private Duration busyTimeout = Duration.ofSeconds(1);
 
 	@Value("classpath:/spalloc.sql")
@@ -364,21 +362,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * Create an engine interface for a particular database. This constructor
 	 * assumes that it is being called by Spring.
 	 *
-	 * @param dbFile
-	 *            The file containing the database.
-	 * @param tombstoneFile
-	 *            The file containing the database of backed up dead jobs.
+	 * @param properties
+	 *            The application configuration.
 	 */
 	@Autowired
-	public DatabaseEngine(
-			@Value("${spalloc.database-path:spalloc.sqlite3}") File dbFile,
-			@Value("${spalloc.historical-data.path:spalloc-history.sqlite3}")
-			File tombstoneFile) {
-		dbPath = requireNonNull(dbFile, "a database file must be given")
-				.getAbsoluteFile().toPath();
-		this.tombstoneFile = requireNonNull(tombstoneFile,
+	public DatabaseEngine(SpallocProperties properties) {
+		dbPath = requireNonNull(properties.getDatabasePath(),
+				"a database file must be given").getAbsoluteFile().toPath();
+		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
 				"an historical database file must be given").getAbsolutePath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
+		analysisLimit = properties.getSqlite().getAnalysisLimit();
+		busyTimeout = properties.getSqlite().getTimeout();
 		log.info("will manage database at {}", dbPath);
 	}
 
@@ -1627,13 +1622,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Provider
 	public static class SQLExceptionMapper
 			implements ExceptionMapper<SQLException> {
-		@Value("${spalloc.sqlite.debug-failures:false}")
-		private boolean throwDetail;
+		@Autowired
+		private SpallocProperties properties;
 
 		@Override
 		public Response toResponse(SQLException exception) {
 			log.warn("uncaught SQL exception", exception);
-			if (throwDetail) {
+			if (properties.getSqlite().isDebugFailures()) {
 				return status(INTERNAL_SERVER_ERROR)
 						.entity("failed: " + exception.getMessage()).build();
 			}

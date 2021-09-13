@@ -137,7 +137,7 @@ public class QuotaManager extends SQLQueries {
 	 * @throws SQLException
 	 *             If database access fails.
 	 */
-	@Scheduled(cron = "${spalloc.quota.consolidation-schedule:0 0 * * * *}")
+	@Scheduled(cron = "#{quotaProperties.consolidationSchedule}")
 	public void consolidateQuotas() throws SQLException {
 		if (control.isPaused()) {
 			return;

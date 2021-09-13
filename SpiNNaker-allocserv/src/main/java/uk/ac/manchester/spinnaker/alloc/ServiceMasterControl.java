@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
@@ -34,13 +34,17 @@ import org.springframework.stereotype.Component;
 @Component("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
 public class ServiceMasterControl {
-	@Value("${spalloc.master.pause:false}")
 	private boolean paused = false;
 
-	@Value("${spalloc.transceiver.dummy:false}")
 	private boolean dummyBMP = false;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+	@Autowired
+	public ServiceMasterControl(SpallocProperties properties) {
+		this.paused = properties.isPause();
+		this.dummyBMP = properties.getTransceiver().isDummy();
+	}
 
 	/**
 	 * @return Whether periodic tasks should not run.
