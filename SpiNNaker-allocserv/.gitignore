@@ -4,3 +4,4 @@
 .dbeaver
 *.bak
 node
+/.factorypath
