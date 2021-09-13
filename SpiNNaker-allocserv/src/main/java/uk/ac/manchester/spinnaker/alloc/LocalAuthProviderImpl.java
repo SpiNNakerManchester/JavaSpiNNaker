@@ -41,7 +41,6 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -102,9 +101,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	@Autowired
 	private QuotaProperties quotaProps;
-
-	@Value("${spalloc.auth.openid.username-prefix:openid.}")
-	private String openidUsernamePrefix;
 
 	private static final String DUMMY_USER = "user1";
 
@@ -245,8 +241,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 					throws AuthenticationException {
 		log.info("authenticating OpenID Login {}", auth.toString());
 		// FIXME how to get username from login token?
-		return authenticateOpenId(openidUsernamePrefix + auth.getPrincipal()
-				.getAttribute("preferred_username").toString());
+		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
+				+ auth.getPrincipal().getAttribute("preferred_username"));
 	}
 
 	private Authentication
@@ -254,19 +250,19 @@ public class LocalAuthProviderImpl extends SQLQueries
 					throws AuthenticationException {
 		log.info("authenticating OpenID Token {}", auth.toString());
 		// FIXME how to get username from auth code token?
-		return authenticateOpenId(
-				openidUsernamePrefix + auth.getPrincipal().toString());
+		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
+				+ auth.getPrincipal());
 	}
 
 	private AuthenticationToken authenticateOpenId(String name) {
-		if (name.equals(openidUsernamePrefix)) {
+		if (name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
 			log.warn("failed to handle OpenID user with no real user name");
 			return null;
 		}
 		try (AuthQueries queries = new AuthQueries()) {
-			if (!queries
-					.transact(() -> authorizeOpenIDAgainstDB(name, queries))) {
+			if (!queries.transact(//
+					() -> authorizeOpenIDAgainstDB(name, queries))) {
 				return null;
 			}
 		} catch (SQLException e) {

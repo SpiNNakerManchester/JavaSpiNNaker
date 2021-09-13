@@ -660,6 +660,12 @@ public class SpallocProperties {
 		 */
 		private Duration unlockPeriod;
 
+		/**
+		 * OpenID-related security properties. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 */
+		private OpenIDProperties openid;
+
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
@@ -669,7 +675,8 @@ public class SpallocProperties {
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("3") int maxLoginFailures,
 				@DefaultValue("PT24H") Duration accountLockDuration,
-				@DefaultValue("PT60S") Duration unlockPeriod) {
+				@DefaultValue("PT60S") Duration unlockPeriod,
+				@DefaultValue OpenIDProperties openid) {
 			this.basic = basic;
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
@@ -678,6 +685,7 @@ public class SpallocProperties {
 			this.maxLoginFailures = maxLoginFailures;
 			this.accountLockDuration = accountLockDuration;
 			this.unlockPeriod = unlockPeriod;
+			this.setOpenid(openid);
 		}
 
 		/**
@@ -780,6 +788,121 @@ public class SpallocProperties {
 
 		public void setUnlockPeriod(Duration unlockPeriod) {
 			this.unlockPeriod = unlockPeriod;
+		}
+
+		/**
+		 * OpenID-related security properties. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 *
+		 * @return OpenID-related security properties.
+		 */
+		public OpenIDProperties getOpenid() {
+			return openid;
+		}
+
+		public void setOpenid(OpenIDProperties openid) {
+			this.openid = openid;
+		}
+	}
+
+	/**
+	 * OpenID-related security properties. Required for allowing people to use
+	 * HBP/EBRAINS identities.
+	 */
+	public static class OpenIDProperties {
+		/**
+		 * Whether to enable OIDC authentication. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 */
+		private boolean enable;
+
+		/**
+		 * The application installation identity. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 */
+		private String id;
+
+		/**
+		 * The application installation secret. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 */
+		private String secret;
+
+		/** Prefix for user names originating from OpenID auto-registration. */
+		private String usernamePrefix;
+
+		public OpenIDProperties(@DefaultValue("false") boolean enable,
+				@DefaultValue("") String id, //
+				@DefaultValue("") String secret,
+				@DefaultValue("openid.") String usernamePrefix) {
+			this.enable = enable;
+			this.id = id;
+			this.secret = secret;
+			this.usernamePrefix = usernamePrefix;
+		}
+
+		/**
+		 * Whether to enable OIDC authentication. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 *
+		 * @return Whether to enable OIDC authentication.
+		 */
+		public boolean isEnable() {
+			return enable;
+		}
+
+		public void setEnable(boolean enable) {
+			this.enable = enable;
+		}
+
+		/**
+		 * The application installation identity. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 *
+		 * @return The application installation identity.
+		 */
+		public String getId() {
+			return id == null ? null : id.trim();
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		/**
+		 * The application installation secret. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 *
+		 * @return The application installation secret.
+		 */
+		public String getSecret() {
+			return secret == null ? null : secret.trim();
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		/**
+		 * Prefix for user names originating from OpenID auto-registration. Not
+		 * a good idea to modify this frequently!
+		 *
+		 * @return Prefix for user names originating from OpenID
+		 *         auto-registration.
+		 */
+		public String getUsernamePrefix() {
+			return usernamePrefix;
+		}
+
+		public void setUsernamePrefix(String usernamePrefix) {
+			this.usernamePrefix = usernamePrefix;
+		}
+
+		@AssertTrue(
+				message = "id and secret must be given if OpenID is enabled")
+		private boolean isValid() {
+			return !enable || (nonNull(id) && !id.trim().isEmpty()
+					&& nonNull(secret) && !secret.trim().isEmpty());
 		}
 	}
 

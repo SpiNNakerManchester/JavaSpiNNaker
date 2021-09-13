@@ -50,7 +50,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -171,9 +170,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthProperties properties;
 
-	@Value("${spalloc.auth.oidc:true}")
-	private boolean supportOIDCAuth;
-
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
@@ -289,7 +285,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(LOGIN_ERROR_PAGE)
 					.failureHandler(authenticationFailureHandler);
 		}
-		if (supportOIDCAuth) {
+		if (properties.getOpenid().isEnable()) {
 			/*
 			 * We're both, so we can have logins AND tokens. The logins are for
 			 * using the HTML UI, and the tokens are for using from SpiNNaker
