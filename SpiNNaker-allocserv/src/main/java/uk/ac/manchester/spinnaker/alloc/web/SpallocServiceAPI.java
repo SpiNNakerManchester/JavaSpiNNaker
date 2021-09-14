@@ -42,8 +42,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.REPO
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
-import java.sql.SQLException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -110,8 +108,6 @@ public interface SpallocServiceAPI {
 	 * @param request
 	 *            Details about the request, used to extract the CSRF token.
 	 * @return A wrapped {@link ServiceDescription}
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("Get a description of the overall service.")
@@ -120,7 +116,7 @@ public interface SpallocServiceAPI {
 	@Produces(APPLICATION_JSON)
 	ServiceDescription describeService(@Context UriInfo ui,
 			@Context SecurityContext security,
-			@Context HttpServletRequest request) throws SQLException;
+			@Context HttpServletRequest request);
 
 	/**
 	 * Get a description of the machines.
@@ -128,8 +124,6 @@ public interface SpallocServiceAPI {
 	 * @param ui
 	 *            How to build URIs
 	 * @return A list of machines
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("Get a description of the machines.")
@@ -140,7 +134,7 @@ public interface SpallocServiceAPI {
 	@Path(MACH)
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_READER)
-	MachinesResponse getMachines(@Context UriInfo ui) throws SQLException;
+	MachinesResponse getMachines(@Context UriInfo ui);
 	// No paging; not expecting very many!
 
 	/**
@@ -151,8 +145,6 @@ public interface SpallocServiceAPI {
 	 * @param ui
 	 *            How to build URIs
 	 * @return The sub-resource
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@Path(MACH + "/{name}")
 	@Description("Operations on a specific machine.")
@@ -160,7 +152,7 @@ public interface SpallocServiceAPI {
 	MachineAPI getMachine(
 			@Description("The name of the machine.") @PathParam(NAME)
 			@NotBlank(message = "machine name must not be blank") String name,
-			@Context UriInfo ui) throws SQLException;
+			@Context UriInfo ui);
 
 	/**
 	 * List jobs.
@@ -177,8 +169,6 @@ public interface SpallocServiceAPI {
 	 *            How to build URIs
 	 * @param response
 	 *            Filled out with a {@link ListJobsResponse}
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@GET
 	@Description("List the jobs.")
@@ -204,8 +194,7 @@ public interface SpallocServiceAPI {
 			@Description("Paging support: offset to start at.")
 			@QueryParam("start") @DefaultValue("0")
 			@PositiveOrZero(message = "start must be at least 0") int start,
-			@Context UriInfo ui, @Suspended AsyncResponse response)
-			throws SQLException;
+			@Context UriInfo ui, @Suspended AsyncResponse response);
 
 	/**
 	 * Create a job.
@@ -218,8 +207,6 @@ public interface SpallocServiceAPI {
 	 *            Information about the user
 	 * @param response
 	 *            Filled out with a {@link CreateJobResponse}
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@POST
 	@Description("Create a new job.")
@@ -235,7 +222,7 @@ public interface SpallocServiceAPI {
 			@Description("What sort of job should be created?") @NotNull
 			@Valid CreateJobRequest req, @Context UriInfo ui,
 			@Context SecurityContext security,
-			@Suspended AsyncResponse response) throws SQLException;
+			@Suspended AsyncResponse response);
 
 	/**
 	 * Get a sub-resource for managing a job.
@@ -249,8 +236,6 @@ public interface SpallocServiceAPI {
 	 * @param security
 	 *            Information about the user
 	 * @return The sub-resource
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
 	@Description("Operations on a specific job.")
 	@Operation(tags = T_JOB)
@@ -261,7 +246,7 @@ public interface SpallocServiceAPI {
 			@Description("ID of the job.") @PathParam(ID)
 			@Positive(message = "job ID must be positive") int id,
 			@Context UriInfo ui, @Context HttpServletRequest request,
-			@Context SecurityContext security) throws SQLException;
+			@Context SecurityContext security);
 
 	/**
 	 * Interface to a particular machine.
@@ -277,8 +262,6 @@ public interface SpallocServiceAPI {
 		 *            Whether to wait for a change.
 		 * @param response
 		 *            Filled out with a {@link MachineResponse}
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
@@ -299,7 +282,7 @@ public interface SpallocServiceAPI {
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Suspended AsyncResponse response) throws SQLException;
+				@Suspended AsyncResponse response);
 
 		/**
 		 * Get the location description of a board given its logical coords.
@@ -311,12 +294,10 @@ public interface SpallocServiceAPI {
 		 * @param z
 		 *            Logical Z coordinate (deprecated).
 		 * @return A board location description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
-		@Description(
-				"Map from logical coordinates to a description of a board.")
+		@Description("Map from logical coordinates to "
+				+ "a description of a board.")
 		@Operation(tags = T_MCH, summary = "Find board by logical coordinates",
 				description = "Get the location description of a board given "
 						+ "its logical coordinates.",
@@ -333,8 +314,7 @@ public interface SpallocServiceAPI {
 				@Description("Triad Z (internal member select) coordinate")
 				@QueryParam("z") @DefaultValue("0")
 				@PositiveOrZero(message = "z must be 0, 1 or 2")
-				@Max(value = 2, message = "z must be 0, 1 or 2") int z)
-				throws SQLException;
+				@Max(value = 2, message = "z must be 0, 1 or 2") int z);
 
 		/**
 		 * Get the location description of a board given its physical coords.
@@ -346,12 +326,10 @@ public interface SpallocServiceAPI {
 		 * @param board
 		 *            Board number
 		 * @return A board location description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
-		@Description(
-				"Map from physical coordinates to a description of a board.")
+		@Description("Map from physical coordinates to "
+				+ "a description of a board.")
 		@Operation(tags = T_MCH, summary = "Find board by physical coordinates",
 				parameters = @Parameter(in = PATH, name = NAME,
 						description = "Machine name",
@@ -367,8 +345,8 @@ public interface SpallocServiceAPI {
 				@DefaultValue("0")
 				@PositiveOrZero(message = "frame must be at least 0") int frame,
 				@Description("Board number") @QueryParam("board")
-				@PositiveOrZero(message = "board must be at least 0") int board)
-				throws SQLException;
+				@PositiveOrZero(
+						message = "board must be at least 0") int board);
 
 		/**
 		 * Get the location description of a board given the global coordinates
@@ -379,12 +357,10 @@ public interface SpallocServiceAPI {
 		 * @param y
 		 *            Global chip Y coordinate
 		 * @return A board location description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
-		@Description(
-				"Map from global chip coordinates to a description of a board.")
+		@Description("Map from global chip coordinates to "
+				+ "a description of a board.")
 		@Operation(tags = T_MCH, summary = "Find board holding a chip",
 				parameters = @Parameter(in = PATH, name = NAME,
 						description = "Machine name",
@@ -395,8 +371,7 @@ public interface SpallocServiceAPI {
 				@Description("Global chip X coordinate") @QueryParam(CHIP_X)
 				@PositiveOrZero(message = "x must be at least 0") int x,
 				@Description("Global chip Y coordinate") @QueryParam(CHIP_Y)
-				@PositiveOrZero(message = "y must be at least 0") int y)
-				throws SQLException;
+				@PositiveOrZero(message = "y must be at least 0") int y);
 
 		/**
 		 * Get the location description of a board given its ethernet chip's IP
@@ -405,8 +380,6 @@ public interface SpallocServiceAPI {
 		 * @param address
 		 *            IP address
 		 * @return A board location description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Map from IP address to a description of a board.")
@@ -419,10 +392,8 @@ public interface SpallocServiceAPI {
 		@Path(MACH_BOARD_BY_ADDRESS)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse
-				whereIsIPAddress(
-						@Description("Ethernet chip IP address")
-						@QueryParam("address") @IPAddress String address)
-						throws SQLException;
+				whereIsIPAddress(@Description("Ethernet chip IP address")
+				@QueryParam("address") @IPAddress String address);
 	}
 
 	/**
@@ -438,9 +409,7 @@ public interface SpallocServiceAPI {
 		 * @param wait
 		 *            Whether to wait for a change.
 		 * @param response
-		 *            Filled out with a {@link JobStateResponse}
-		 * @throws SQLException
-		 *             If anything goes wrong.
+		 *            Filled out with a {@link JobStateResponse}.
 		 */
 		@GET
 		@Description("Describe basic details of a machine.")
@@ -457,7 +426,7 @@ public interface SpallocServiceAPI {
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
-				@Suspended AsyncResponse response) throws SQLException;
+				@Suspended AsyncResponse response);
 
 		/**
 		 * Keep the job alive.
@@ -465,8 +434,6 @@ public interface SpallocServiceAPI {
 		 * @param req
 		 *            Arbitrary ignored text
 		 * @return A constant response
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@PUT
 		@Description("Keep the job alive. Must be called regularly.")
@@ -477,8 +444,7 @@ public interface SpallocServiceAPI {
 		@Path(JOB_KEEPALIVE)
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
-		String keepAlive(@Description("Arbitrary string; ignored") String req)
-				throws SQLException;
+		String keepAlive(@Description("Arbitrary string; ignored") String req);
 
 		/**
 		 * Delete the job, or at least mark it as destroyed.
@@ -486,8 +452,6 @@ public interface SpallocServiceAPI {
 		 * @param reason
 		 *            Why the job is destroyed
 		 * @return No content
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@DELETE
 		@Description("Delete a job.")
@@ -499,15 +463,12 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		Response deleteJob(
 				@Description("Some indication of why the delete is being done.")
-				@QueryParam("reason") @DefaultValue("") String reason)
-				throws SQLException;
+				@QueryParam("reason") @DefaultValue("") String reason);
 
 		/**
 		 * Get a description of the (sub-)machine of the job.
 		 *
 		 * @return An allocated sub-machine description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Describe a job's machine allocation.")
@@ -517,14 +478,12 @@ public interface SpallocServiceAPI {
 						schema = @Schema(implementation = Integer.class)))
 		@Path(JOB_MACHINE)
 		@Produces(APPLICATION_JSON)
-		SubMachineResponse getMachine() throws SQLException;
+		SubMachineResponse getMachine();
 
 		/**
 		 * Get the current power state of the job's sub-machine.
 		 *
 		 * @return A power descriptor
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
 		@Description("Get the power status of a job.")
@@ -534,7 +493,7 @@ public interface SpallocServiceAPI {
 						schema = @Schema(implementation = Integer.class)))
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Produces(APPLICATION_JSON)
-		MachinePower getMachinePower() throws SQLException;
+		MachinePower getMachinePower();
 
 		/**
 		 * Set the power state of the job's sub-machine. Note that the actual
@@ -544,8 +503,6 @@ public interface SpallocServiceAPI {
 		 *            What to change to.
 		 * @param response
 		 *            Filled out with a {@link MachinePower}.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@POST
 		@Description("Set the power status of a job.")
@@ -558,10 +515,9 @@ public interface SpallocServiceAPI {
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
-		void setMachinePower(
+		void setMachinePower(//
 				@Description("What to set the power status to.") @NotNull
-				@Valid MachinePower req, @Suspended AsyncResponse response)
-				throws SQLException;
+				@Valid MachinePower req, @Suspended AsyncResponse response);
 
 		/**
 		 * Get the location description of a board given the job-local
@@ -572,12 +528,10 @@ public interface SpallocServiceAPI {
 		 * @param y
 		 *            Chip Y coordinate
 		 * @return A board location description
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
 		@GET
-		@Description(
-				"Describe a board in an allocation by a chip on that board.")
+		@Description("Describe a board in an allocation by "
+				+ "a chip on that board.")
 		@Operation(tags = T_JOB,
 				summary = "Get location info within job's allocation",
 				parameters = @Parameter(in = PATH, name = ID,
@@ -591,8 +545,7 @@ public interface SpallocServiceAPI {
 				@PositiveOrZero(message = "x must be at least 0") int x,
 				@Description("Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0")
-				@PositiveOrZero(message = "y must be at least 0") int y)
-				throws SQLException;
+				@PositiveOrZero(message = "y must be at least 0") int y);
 
 		/**
 		 * Report an issue with some boards.
@@ -600,9 +553,7 @@ public interface SpallocServiceAPI {
 		 * @param report
 		 *            The problem description.
 		 * @param response
-		 *            Filled out with a {@link IssueReportResponse}
-		 * @throws SQLException
-		 *             If anything goes wrong.
+		 *            Filled out with an {@link IssueReportResponse}.
 		 */
 		@POST
 		@Description("Report an issue with some boards.")
@@ -613,7 +564,7 @@ public interface SpallocServiceAPI {
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
 		void reportBoardIssue(IssueReportRequest report,
-				@Suspended AsyncResponse response) throws SQLException;
+				@Suspended AsyncResponse response);
 	}
 }
 

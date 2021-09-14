@@ -164,7 +164,8 @@ class DbTest {
 	 */
 	private static void assertThrowsFK(Executable op) {
 		DataAccessException e = assertThrows(DataAccessException.class, op);
-		assertEquals(SQLiteException.class, e.getMostSpecificCause());
+		assertEquals(SQLiteException.class,
+				e.getMostSpecificCause().getClass());
 		SQLiteException exn = (SQLiteException) e.getMostSpecificCause();
 		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode());
 	}
@@ -178,7 +179,8 @@ class DbTest {
 	 */
 	private static void assertThrowsCheck(Executable op) {
 		DataAccessException e = assertThrows(DataAccessException.class, op);
-		assertEquals(SQLiteException.class, e.getMostSpecificCause());
+		assertEquals(SQLiteException.class,
+				e.getMostSpecificCause().getClass());
 		SQLiteException exn = (SQLiteException) e.getMostSpecificCause();
 		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode());
 	}

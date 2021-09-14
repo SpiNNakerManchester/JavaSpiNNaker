@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.security.SecureRandom;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +121,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@PostConstruct
-	private void initUserIfNecessary() throws SQLException {
+	private void initUserIfNecessary() {
 		if (authProps.isAddDummyUser()) {
 			String pass = DUMMY_PASSWORD;
 			if (authProps.isDummyRandomPass()) {
@@ -394,7 +393,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	@Override
 	@Scheduled(fixedDelayString = "#{authProperties.unlockPeriod}")
-	public void unlockLockedUsers() throws SQLException {
+	public void unlockLockedUsers() {
 		try {
 			if (!control.isPaused()) {
 				log.debug("running user unlock task");
@@ -410,7 +409,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 	}
 
-	void unlock() throws SQLException {
+	void unlock() {
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
 			unlock.call(authProps.getAccountLockDuration())

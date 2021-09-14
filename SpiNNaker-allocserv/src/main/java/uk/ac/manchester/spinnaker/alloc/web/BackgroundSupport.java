@@ -26,6 +26,8 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit.QuietCloseable;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 
 /**
@@ -78,6 +80,27 @@ public abstract class BackgroundSupport {
 	 */
 	protected void bgAction(AsyncResponse response, BackgroundAction action) {
 		executor.execute(() -> fgAction(response, action));
+	}
+
+	/**
+	 * Run the action in the background and wrap it into the response when it
+	 * completes.
+	 *
+	 * @param response
+	 *            The asynchronous response.
+	 * @param permit
+	 *            The permissions granted to the asynchronous task from the
+	 *            context that asked for it to happen.
+	 * @param action
+	 *            The action that generates a {@link Response}
+	 */
+	protected void bgAction(AsyncResponse response, Permit permit,
+			BackgroundAction action) {
+		executor.execute(() -> {
+			try (QuietCloseable t = permit.authorizeCurrentThread()) {
+				fgAction(response, action);
+			}
+		});
 	}
 
 	/**

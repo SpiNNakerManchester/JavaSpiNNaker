@@ -86,9 +86,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Component;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
@@ -188,9 +190,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return names;
 	}
 
-	private static DataAccessException mapException(SQLException e) {
+	private static DataAccessException mapException(SQLException e,
+			String sql) {
 		if (!(e instanceof SQLiteException)) {
-			return new UncategorizedSQLException("general SQL exception", null,
+			return new UncategorizedSQLException("general SQL exception", sql,
 					e);
 		}
 		SQLiteException exn = (SQLiteException) e;
@@ -274,7 +277,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					exn);
 
 		default:
-			return new UncategorizedSQLException("general SQL exception", null,
+			return new UncategorizedSQLException("general SQL exception", sql,
 					e);
 		}
 	}
@@ -304,7 +307,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return columnNames(rs.getMetaData());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -319,7 +322,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return rs.getString(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -334,7 +337,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return rs.getBoolean(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -349,7 +352,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return rs.getInt(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -364,7 +367,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return (Integer) rs.getObject(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -379,7 +382,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return rs.getBytes(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -398,7 +401,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				return Instant.ofEpochSecond(moment);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -417,7 +420,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				return Duration.ofSeconds(span);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -433,7 +436,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return rs.getObject(columnLabel);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -457,21 +460,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				return type.getEnumConstants()[value];
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 	}
 
 	@PostConstruct
-	private void ensureDBsetup() throws SQLException {
+	private void ensureDBsetup() {
 		threadFactory.setTerminationCallback(this::optimiseDB);
 		setupConfig();
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
-			Row row = countMovements.call1().get();
-			if (row.getInt("c") != EXPECTED_NUM_MOVEMENTS) {
+			int numMovements = countMovements.call1().get().getInt("c");
+			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
-						dbConnectionUrl, row.getInt("c"),
+						dbConnectionUrl, numMovements,
 						EXPECTED_NUM_MOVEMENTS);
 			} else {
 				log.debug("database {} ready", dbConnectionUrl);
@@ -637,7 +640,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param conn
 	 *            The database connection to install the function in.
 	 * @param name
-	 *            The name of the function. Usually the bean name.
+	 *            The name of the function. Usually the bean name. Note that the
+	 *            prefix "{@code function.}" will be removed.
 	 * @param func
 	 *            The implementation of the function.
 	 * @throws SQLException
@@ -650,7 +654,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			name = name.substring(FUN_NAME_PREFIX.length());
 		}
 		if (name.isEmpty()) {
-			throw new SQLException("crazy function name");
+			throw new UncategorizedScriptException("crazy function name");
 		}
 		int nArgs = -1;
 		ArgumentCount c = findAnnotation(func.getClass(), ArgumentCount.class);
@@ -819,7 +823,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				c.close();
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 		}
 
@@ -1090,9 +1094,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				return new Connection(uncloseableThreadBound(conn));
 			}
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, null);
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		}
 	}
 
@@ -1111,7 +1115,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 							"BACKUP TO {} (remaining:{}, page count:{})",
 							backupFilename, remaining, pageCount));
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		}
 	}
 
@@ -1121,13 +1125,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param backupFilename
 	 *            The backup file to restore from.
+	 * @throws PermissionDeniedDataAccessException
+	 *             If the backup cannot be read.
 	 */
 	public void restoreFromBackup(File backupFilename) {
 		if (!backupFilename.isFile() || !backupFilename.canRead()) {
-			throw mapException(new SQLException(
+			throw new PermissionDeniedDataAccessException(
 					"backup file \"" + backupFilename
 							+ "\" doesn't exist or isn't a readable file",
-					new FileNotFoundException(backupFilename.toString())));
+					new FileNotFoundException(backupFilename.toString()));
 		}
 		try (SQLiteConnection conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().restore(MAIN_DB_NAME,
@@ -1136,7 +1142,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 							"RESTORE FROM {} (remaining:{}, page count:{})",
 							backupFilename, remaining, pageCount));
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		}
 	}
 
@@ -1162,10 +1168,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			int idx = 0;
 			int paramCount = s.getParameterMetaData().getParameterCount();
 			if (paramCount == 0 && arguments.length > 0) {
-				throw new SQLException("prepared statement takes no arguments");
+				throw new InvalidDataAccessResourceUsageException(
+						"prepared statement takes no arguments");
 			} else if (paramCount != arguments.length) {
-				throw new SQLException("prepared statement takes " + paramCount
-						+ " arguments, not " + arguments.length);
+				throw new InvalidDataAccessResourceUsageException(
+						"prepared statement takes " + paramCount
+								+ " arguments, not " + arguments.length);
 			}
 			s.clearParameters();
 			for (Object arg : arguments) {
@@ -1179,7 +1187,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				s.setObject(++idx, arg);
 			}
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, s.toString());
 		}
 	}
 
@@ -1197,9 +1205,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			setParams(s, arguments);
 			return s.executeUpdate();
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, s.toString());
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, s.toString());
 		}
 	}
 
@@ -1217,9 +1225,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			setParams(s, arguments);
 			return s.executeQuery();
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, s.toString());
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, s.toString());
 		}
 	}
 
@@ -1278,9 +1286,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			conn.setAutoCommit(false);
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, null);
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		}
 		boolean done = false;
 		try {
@@ -1288,13 +1296,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				conn.commit();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, null);
 			}
 			done = true;
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
@@ -1304,9 +1312,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				conn.setAutoCommit(true);
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, null);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 			log.debug("finish transaction");
 		}
@@ -1340,9 +1348,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			conn.setAutoCommit(false);
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, null);
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		}
 		boolean done = false;
 		try {
@@ -1350,14 +1358,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				conn.commit();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, null);
 			}
 			done = true;
 			return result;
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, null);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
@@ -1367,9 +1375,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				conn.setAutoCommit(true);
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, null);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, null);
 			}
 			log.debug("finish transaction");
 		}
@@ -1485,6 +1493,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param resource
 	 *            The resource to load from
 	 * @return The content of the resource
+	 * @throws UncategorizedScriptException
+	 *             If the resource can't be loaded.
 	 */
 	public static String readSQL(Resource resource) {
 		synchronized (QUERY_CACHE) {
@@ -1502,8 +1512,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			return s;
 		} catch (IOException e) {
-			throw mapException(new SQLException(
-					"could not load SQL file from " + resource, e));
+			throw new UncategorizedScriptException(
+					"could not load SQL file from " + resource, e);
 		}
 	}
 
@@ -1521,9 +1531,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// MUST be executeUpdate() to run multiple statements at once!
 			s.executeUpdate(sql);
 		} catch (SQLiteException e) {
-			throw rewriteException(e);
+			throw rewriteException(e, sql);
 		} catch (SQLException e) {
-			throw mapException(e);
+			throw mapException(e, sql);
 		}
 	}
 
@@ -1566,7 +1576,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	private static DataAccessException rewriteException(SQLiteException e) {
+	private static DataAccessException rewriteException(SQLiteException e,
+			String sql) {
 		// Sometimes, exception messages obscure rather than illuminate
 		String msg = e.getMessage();
 		if (msg.contains("SQL error or missing database (")) {
@@ -1574,9 +1585,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					"$1");
 			SQLiteException e2 = new SQLiteException(msg, e.getResultCode());
 			e2.setStackTrace(e.getStackTrace());
-			return mapException(e2);
+			return mapException(e2, sql);
 		}
-		return mapException(e);
+		return mapException(e, sql);
 	}
 
 	/**
@@ -1595,9 +1606,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				s = conn.prepareStatement(sql);
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, sql);
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, sql);
 			}
 			rs = null;
 		}
@@ -1621,9 +1632,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return s.getParameterMetaData().getParameterCount();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 		}
 
@@ -1637,9 +1648,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				return columnNames(s.getMetaData());
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 		}
 
@@ -1649,9 +1660,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				closeResults();
 				s.close();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 		}
 
@@ -1696,9 +1707,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				closeResults();
 				rs = s.executeQuery();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 			Row row = new Row(rs);
 			return () -> new Iterator<Row>() {
@@ -1756,9 +1767,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					return Optional.empty();
 				}
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 		}
 	}
@@ -1830,9 +1841,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				closeResults();
 				return s.executeUpdate();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 		}
 
@@ -1856,9 +1867,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				numRows = s.executeUpdate();
 				rs = s.getGeneratedKeys();
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			}
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;
@@ -1922,9 +1933,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					return Optional.empty();
 				}
 			} catch (SQLiteException e) {
-				throw rewriteException(e);
+				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
-				throw mapException(e);
+				throw mapException(e, s.toString());
 			} finally {
 				closeResults();
 			}

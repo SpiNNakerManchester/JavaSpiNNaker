@@ -28,7 +28,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,35 +177,33 @@ public class SpallocServiceImpl extends BackgroundSupport
 				}
 
 				private WhereIsResponse
-						makeResponse(Optional<BoardLocation> boardLocation)
-								throws SQLException {
+						makeResponse(Optional<BoardLocation> boardLocation) {
 					return new WhereIsResponse(boardLocation.orElseThrow(
 							() -> new NotFound("failed to locate board")), ui);
 				}
 
 				@Override
 				public WhereIsResponse whereIsLogicalPosition(int x, int y,
-						int z) throws SQLException {
+						int z) {
 					return makeResponse(
 							machine.getBoardByLogicalCoords(x, y, z));
 				}
 
 				@Override
 				public WhereIsResponse whereIsPhysicalPosition(int cabinet,
-						int frame, int board) throws SQLException {
+						int frame, int board) {
 					return makeResponse(machine
 							.getBoardByPhysicalCoords(cabinet, frame, board));
 				}
 
 				@Override
-				public WhereIsResponse whereIsMachineChipLocation(int x, int y)
-						throws SQLException {
+				public WhereIsResponse whereIsMachineChipLocation(int x,
+						int y) {
 					return makeResponse(machine.getBoardByChip(x, y));
 				}
 
 				@Override
-				public WhereIsResponse whereIsIPAddress(String address)
-						throws SQLException {
+				public WhereIsResponse whereIsIPAddress(String address) {
 					return makeResponse(machine.getBoardByIPAddress(address));
 				}
 			};
@@ -231,7 +228,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 			return new JobAPI() {
 				@Override
-				public String keepAlive(String reqBody) throws SQLException {
+				public String keepAlive(String reqBody) {
 					log.debug("keeping job {} alive: {}", j.getId(), caller);
 					j.access(caller);
 					return "ok";
@@ -240,17 +237,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 				@Override
 				public void getState(boolean wait, AsyncResponse response) {
 					if (wait) {
-						bgAction(response, () -> {
+						bgAction(response, permit, () -> {
 							log.debug("starting wait for change of job");
 							j.waitForChange(props.getWait());
 							// Refresh the handle
-							try (AutoCloseable t =
-									permit.authorizeCurrentThread()) {
-								Job nj = core.getJob(permit, j.getId())
-										.orElseThrow(() -> new ItsGone(
-												"no such job"));
-								return new JobStateResponse(nj, ui, mapper);
-							}
+							Job nj = core.getJob(permit, j.getId()).orElseThrow(
+									() -> new ItsGone("no such job"));
+							return new JobStateResponse(nj, ui, mapper);
 						});
 					} else {
 						fgAction(response,
@@ -259,7 +252,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 				}
 
 				@Override
-				public Response deleteJob(String reason) throws SQLException {
+				public Response deleteJob(String reason) {
 					if (isNull(reason)) {
 						reason = "unspecified";
 					}
@@ -267,47 +260,40 @@ public class SpallocServiceImpl extends BackgroundSupport
 					return noContent().build();
 				}
 
-				@Override
-				public SubMachineResponse getMachine() throws SQLException {
-					j.access(caller);
-					SubMachine m = j.getMachine().orElseThrow(
+				private SubMachine allocation() {
+					return j.getMachine().orElseThrow(
 							// No machine allocated yet
 							EmptyResponse::new);
-					return new SubMachineResponse(m, ui);
 				}
 
 				@Override
-				public MachinePower getMachinePower() throws SQLException {
+				public SubMachineResponse getMachine() {
 					j.access(caller);
-					SubMachine m = j.getMachine().orElseThrow(
-							// No machine allocated yet
-							EmptyResponse::new);
-					return new MachinePower(m.getPower());
+					return new SubMachineResponse(allocation(), ui);
+				}
+
+				@Override
+				public MachinePower getMachinePower() {
+					j.access(caller);
+					return new MachinePower(allocation().getPower());
 				}
 
 				@Override
 				public void setMachinePower(MachinePower reqBody,
-						AsyncResponse response) throws SQLException {
+						AsyncResponse response) {
 					// Async because it involves getting a write lock
 					if (isNull(reqBody)) {
 						throw new BadArgs("bad power description");
 					}
-					bgAction(response, () -> {
+					bgAction(response, permit, () -> {
 						j.access(caller);
-						try (AutoCloseable t =
-								permit.authorizeCurrentThread()) {
-							SubMachine m = j.getMachine().orElseThrow(
-									// No machine allocated yet
-									EmptyResponse::new);
-							m.setPower(reqBody.getPower());
-						}
+						allocation().setPower(reqBody.getPower());
 						return accepted().build();
 					});
 				}
 
 				@Override
-				public WhereIsResponse getJobChipLocation(int x, int y)
-						throws SQLException {
+				public WhereIsResponse getJobChipLocation(int x, int y) {
 					j.access(caller);
 					BoardLocation loc =
 							j.whereIs(x, y).orElseThrow(EmptyResponse::new);
@@ -316,7 +302,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 				@Override
 				public void reportBoardIssue(IssueReportRequest reqBody,
-						AsyncResponse response) throws SQLException {
+						AsyncResponse response) {
 					// Async because it involves getting a write lock
 					if (isNull(reqBody)) {
 						throw new BadArgs("bad issue description");
@@ -336,12 +322,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 	}
 
 	@Override
-	public MachinesResponse getMachines(UriInfo ui) throws SQLException {
+	public MachinesResponse getMachines(UriInfo ui) {
 		return new MachinesResponse(core.getMachines(), ui);
 	}
 
 	@Override
-	public MachineAPI getMachine(String name, UriInfo ui) throws SQLException {
+	public MachineAPI getMachine(String name, UriInfo ui) {
 		Machine machine = core.getMachine(name)
 				.orElseThrow(() -> new NotFound("no such machine"));
 		// Wrap so we can use security annotations
@@ -350,7 +336,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
-			SecurityContext security) throws SQLException {
+			SecurityContext security) {
 		Permit permit = new Permit(security);
 		Job j = core.getJob(permit, id)
 				.orElseThrow(() -> new NotFound("no such job"));
@@ -407,7 +393,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Override
 	public void listJobs(boolean wait, boolean destroyed, int limit, int start,
-			UriInfo ui, AsyncResponse response) throws SQLException {
+			UriInfo ui, AsyncResponse response) {
 		if (limit > LIMIT_LIMIT || limit < 1) {
 			throw new BadArgs("limit must not be bigger than " + LIMIT_LIMIT);
 		}
