@@ -32,6 +32,7 @@ import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.UncheckedConnection.mapException;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
@@ -42,22 +43,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Struct;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -67,9 +57,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -83,13 +71,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.dao.RecoverableDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Component;
 import org.sqlite.Function;
@@ -188,98 +171,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			names.add(md.getColumnName(i));
 		}
 		return names;
-	}
-
-	private static DataAccessException mapException(SQLException e,
-			String sql) {
-		if (!(e instanceof SQLiteException)) {
-			return new UncategorizedSQLException("general SQL exception", sql,
-					e);
-		}
-		SQLiteException exn = (SQLiteException) e;
-		switch (exn.getResultCode()) {
-		case SQLITE_CONSTRAINT:
-		case SQLITE_CONSTRAINT_CHECK:
-		case SQLITE_CONSTRAINT_COMMITHOOK:
-		case SQLITE_CONSTRAINT_FOREIGNKEY:
-		case SQLITE_CONSTRAINT_FUNCTION:
-		case SQLITE_CONSTRAINT_PRIMARYKEY:
-		case SQLITE_CONSTRAINT_UNIQUE:
-		case SQLITE_CONSTRAINT_NOTNULL:
-		case SQLITE_CONSTRAINT_TRIGGER:
-		case SQLITE_CONSTRAINT_ROWID:
-		case SQLITE_CONSTRAINT_VTAB:
-		case SQLITE_MISMATCH:
-			return new DataIntegrityViolationException(exn.getMessage(), exn);
-
-		case SQLITE_BUSY:
-		case SQLITE_BUSY_RECOVERY:
-		case SQLITE_BUSY_SNAPSHOT:
-		case SQLITE_LOCKED:
-		case SQLITE_LOCKED_SHAREDCACHE:
-			return new PessimisticLockingFailureException(exn.getMessage(),
-					exn);
-
-		case SQLITE_ABORT:
-		case SQLITE_ABORT_ROLLBACK:
-		case SQLITE_FULL:
-		case SQLITE_EMPTY:
-			return new RecoverableDataAccessException(exn.getMessage(), exn);
-
-		case SQLITE_SCHEMA:
-		case SQLITE_TOOBIG:
-		case SQLITE_RANGE:
-			return new InvalidDataAccessResourceUsageException(exn.getMessage(),
-					exn);
-
-		case SQLITE_IOERR:
-		case SQLITE_IOERR_SHORT_READ:
-		case SQLITE_IOERR_READ:
-		case SQLITE_IOERR_WRITE:
-		case SQLITE_IOERR_FSYNC:
-		case SQLITE_IOERR_DIR_FSYNC:
-		case SQLITE_IOERR_TRUNCATE:
-		case SQLITE_IOERR_FSTAT:
-		case SQLITE_IOERR_UNLOCK:
-		case SQLITE_IOERR_RDLOCK:
-		case SQLITE_IOERR_DELETE:
-		case SQLITE_IOERR_NOMEM:
-		case SQLITE_IOERR_ACCESS:
-		case SQLITE_IOERR_CHECKRESERVEDLOCK:
-		case SQLITE_IOERR_LOCK:
-		case SQLITE_IOERR_CLOSE:
-		case SQLITE_IOERR_SHMOPEN:
-		case SQLITE_IOERR_SHMSIZE:
-		case SQLITE_IOERR_SHMMAP:
-		case SQLITE_IOERR_SEEK:
-		case SQLITE_IOERR_DELETE_NOENT:
-		case SQLITE_IOERR_MMAP:
-		case SQLITE_IOERR_GETTEMPPATH:
-		case SQLITE_IOERR_CONVPATH:
-		case SQLITE_PERM:
-		case SQLITE_READONLY:
-		case SQLITE_READONLY_RECOVERY:
-		case SQLITE_READONLY_CANTLOCK:
-		case SQLITE_READONLY_ROLLBACK:
-		case SQLITE_READONLY_DBMOVED:
-		case SQLITE_AUTH:
-		case SQLITE_MISUSE:
-		case SQLITE_NOLFS:
-		case SQLITE_CORRUPT:
-		case SQLITE_CORRUPT_VTAB:
-		case SQLITE_CANTOPEN:
-		case SQLITE_CANTOPEN_ISDIR:
-		case SQLITE_CANTOPEN_FULLPATH:
-		case SQLITE_CANTOPEN_CONVPATH:
-		case SQLITE_NOTADB:
-		case SQLITE_FORMAT:
-			return new DataAccessResourceFailureException(exn.getMessage(),
-					exn);
-
-		default:
-			return new UncategorizedSQLException("general SQL exception", sql,
-					e);
-		}
 	}
 
 	/**
@@ -474,8 +365,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			int numMovements = countMovements.call1().get().getInt("c");
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
-						dbConnectionUrl, numMovements,
-						EXPECTED_NUM_MOVEMENTS);
+						dbConnectionUrl, numMovements, EXPECTED_NUM_MOVEMENTS);
 			} else {
 				log.debug("database {} ready", dbConnectionUrl);
 			}
@@ -688,6 +578,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void initDBConn(SQLiteConnection conn) throws SQLException {
 		log.info("initalising DB ({}) schema from {}", conn.libversion(),
 				sqlDDLFile);
+		// Note that we don't close the wrapper
 		Connection wrapper = new Connection(conn);
 		exec(wrapper, sqlDDLFile);
 		log.info("attaching historical job DB ({}) schema from {}",
@@ -755,311 +646,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * A connection that guarantees to not throw {@link SQLException} from its
-	 * {@code close()} method.
-	 *
-	 * @author Donal Fellows
+	 * Connections made by the database engine bean. Its methods do not throw
+	 * checked exceptions. The connection is thread-bound, and will be cleaned
+	 * up correctly when the thread exits (ideal for thread pools).
 	 */
-	public static final class Connection implements java.sql.Connection {
-		private final java.sql.Connection c;
-
+	public static final class Connection extends UncheckedConnection {
 		private Connection(java.sql.Connection c) {
-			this.c = c;
-		}
-
-		@Override
-		public <T> T unwrap(Class<T> iface) throws SQLException {
-			return c.unwrap(iface);
-		}
-
-		@Override
-		public boolean isWrapperFor(Class<?> iface) throws SQLException {
-			return c.isWrapperFor(iface);
-		}
-
-		@Override
-		public Statement createStatement() throws SQLException {
-			return c.createStatement();
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql)
-				throws SQLException {
-			return c.prepareStatement(sql);
-		}
-
-		@Override
-		public CallableStatement prepareCall(String sql) throws SQLException {
-			return c.prepareCall(sql);
-		}
-
-		@Override
-		public String nativeSQL(String sql) throws SQLException {
-			return c.nativeSQL(sql);
-		}
-
-		@Override
-		public void setAutoCommit(boolean autoCommit) throws SQLException {
-			c.setAutoCommit(autoCommit);
-		}
-
-		@Override
-		public boolean getAutoCommit() throws SQLException {
-			return c.getAutoCommit();
-		}
-
-		@Override
-		public void commit() throws SQLException {
-			c.commit();
-		}
-
-		@Override
-		public void rollback() throws SQLException {
-			c.rollback();
-		}
-
-		@Override
-		public void close() {
-			try {
-				c.close();
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		@Override
-		public boolean isClosed() throws SQLException {
-			return c.isClosed();
-		}
-
-		@Override
-		public DatabaseMetaData getMetaData() throws SQLException {
-			return c.getMetaData();
-		}
-
-		@Override
-		public void setReadOnly(boolean readOnly) throws SQLException {
-			c.setReadOnly(readOnly);
-		}
-
-		@Override
-		public boolean isReadOnly() throws SQLException {
-			return c.isReadOnly();
-		}
-
-		@Override
-		public void setCatalog(String catalog) throws SQLException {
-			c.setCatalog(catalog);
-		}
-
-		@Override
-		public String getCatalog() throws SQLException {
-			return c.getCatalog();
-		}
-
-		@Override
-		public void setTransactionIsolation(int level) throws SQLException {
-			c.setTransactionIsolation(level);
-		}
-
-		@Override
-		public int getTransactionIsolation() throws SQLException {
-			return c.getTransactionIsolation();
-		}
-
-		@Override
-		public SQLWarning getWarnings() throws SQLException {
-			return c.getWarnings();
-		}
-
-		@Override
-		public void clearWarnings() throws SQLException {
-			c.clearWarnings();
-		}
-
-		@Override
-		public Statement createStatement(int resultSetType,
-				int resultSetConcurrency) throws SQLException {
-			return c.createStatement(resultSetType, resultSetConcurrency);
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql, int resultSetType,
-				int resultSetConcurrency) throws SQLException {
-			return c.prepareStatement(sql, resultSetType, resultSetConcurrency);
-		}
-
-		@Override
-		public CallableStatement prepareCall(String sql, int resultSetType,
-				int resultSetConcurrency) throws SQLException {
-			return c.prepareCall(sql, resultSetType, resultSetConcurrency);
-		}
-
-		@Override
-		public Map<String, Class<?>> getTypeMap() throws SQLException {
-			return c.getTypeMap();
-		}
-
-		@Override
-		public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-			c.setTypeMap(map);
-		}
-
-		@Override
-		public void setHoldability(int holdability) throws SQLException {
-			c.setHoldability(holdability);
-		}
-
-		@Override
-		public int getHoldability() throws SQLException {
-			return c.getHoldability();
-		}
-
-		@Override
-		public Savepoint setSavepoint() throws SQLException {
-			return c.setSavepoint();
-		}
-
-		@Override
-		public Savepoint setSavepoint(String name) throws SQLException {
-			return c.setSavepoint(name);
-		}
-
-		@Override
-		public void rollback(Savepoint savepoint) throws SQLException {
-			c.rollback(savepoint);
-		}
-
-		@Override
-		public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-			c.releaseSavepoint(savepoint);
-		}
-
-		@Override
-		public Statement createStatement(int resultSetType,
-				int resultSetConcurrency, int resultSetHoldability)
-				throws SQLException {
-			return c.createStatement(resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql, int resultSetType,
-				int resultSetConcurrency, int resultSetHoldability)
-				throws SQLException {
-			return c.prepareStatement(sql, resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		}
-
-		@Override
-		public CallableStatement prepareCall(String sql, int resultSetType,
-				int resultSetConcurrency, int resultSetHoldability)
-				throws SQLException {
-			return c.prepareCall(sql, resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql,
-				int autoGeneratedKeys) throws SQLException {
-			return c.prepareStatement(sql, autoGeneratedKeys);
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql,
-				int[] columnIndexes) throws SQLException {
-			return c.prepareStatement(sql, columnIndexes);
-		}
-
-		@Override
-		public PreparedStatement prepareStatement(String sql,
-				String[] columnNames) throws SQLException {
-			return c.prepareStatement(sql, columnNames);
-		}
-
-		@Override
-		public Clob createClob() throws SQLException {
-			return c.createClob();
-		}
-
-		@Override
-		public Blob createBlob() throws SQLException {
-			return c.createBlob();
-		}
-
-		@Override
-		public NClob createNClob() throws SQLException {
-			return c.createNClob();
-		}
-
-		@Override
-		public SQLXML createSQLXML() throws SQLException {
-			return c.createSQLXML();
-		}
-
-		@Override
-		public boolean isValid(int timeout) throws SQLException {
-			return c.isValid(timeout);
-		}
-
-		@Override
-		public void setClientInfo(String name, String value)
-				throws SQLClientInfoException {
-			c.setClientInfo(name, value);
-		}
-
-		@Override
-		public void setClientInfo(Properties properties)
-				throws SQLClientInfoException {
-			c.setClientInfo(properties);
-		}
-
-		@Override
-		public String getClientInfo(String name) throws SQLException {
-			return c.getClientInfo(name);
-		}
-
-		@Override
-		public Properties getClientInfo() throws SQLException {
-			return c.getClientInfo();
-		}
-
-		@Override
-		public Array createArrayOf(String typeName, Object[] elements)
-				throws SQLException {
-			return c.createArrayOf(typeName, elements);
-		}
-
-		@Override
-		public Struct createStruct(String typeName, Object[] attributes)
-				throws SQLException {
-			return c.createStruct(typeName, attributes);
-		}
-
-		@Override
-		public void setSchema(String schema) throws SQLException {
-			c.setSchema(schema);
-		}
-
-		@Override
-		public String getSchema() throws SQLException {
-			return c.getSchema();
-		}
-
-		@Override
-		public void abort(Executor executor) throws SQLException {
-			c.abort(executor);
-		}
-
-		@Override
-		public void setNetworkTimeout(Executor executor, int milliseconds)
-				throws SQLException {
-			c.setNetworkTimeout(executor, milliseconds);
-		}
-
-		@Override
-		public int getNetworkTimeout() throws SQLException {
-			return c.getNetworkTimeout();
+			super(c);
 		}
 	}
 
@@ -1072,7 +665,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * {@linkplain #DatabaseEngine(DatabaseEngine) alternate constructor}, that
 	 * DB can <em>only</em> be accessed from the connection returned from this
 	 * method; the next call to this method (whether from the current thread or
-	 * another one) will get an independent database.
+	 * another one) will get an independent database. Such in-memory databases
+	 * are not subject to thread-bound cleanup actions; they're simply deleted
+	 * from memory when no longer used (but the connection should be
+	 * {@code close()}d after use for efficiency nonetheless).
 	 *
 	 * @return A configured initialised connection to the database.
 	 */
@@ -1093,8 +689,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 				return new Connection(uncloseableThreadBound(conn));
 			}
-		} catch (SQLiteException e) {
-			throw rewriteException(e, null);
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -1165,7 +759,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public static void setParams(PreparedStatement s, Object... arguments) {
 		try {
-			int idx = 0;
 			int paramCount = s.getParameterMetaData().getParameterCount();
 			if (paramCount == 0 && arguments.length > 0) {
 				throw new InvalidDataAccessResourceUsageException(
@@ -1176,7 +769,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 								+ " arguments, not " + arguments.length);
 			}
 			s.clearParameters();
+
+			int idx = 0;
 			for (Object arg : arguments) {
+				// The classes we augment the DB driver with
 				if (arg instanceof Instant) {
 					arg = ((Instant) arg).getEpochSecond();
 				} else if (arg instanceof Duration) {
@@ -1204,8 +800,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			setParams(s, arguments);
 			return s.executeUpdate();
-		} catch (SQLiteException e) {
-			throw rewriteException(e, s.toString());
 		} catch (SQLException e) {
 			throw mapException(e, s.toString());
 		}
@@ -1224,8 +818,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			setParams(s, arguments);
 			return s.executeQuery();
-		} catch (SQLiteException e) {
-			throw rewriteException(e, s.toString());
 		} catch (SQLException e) {
 			throw mapException(e, s.toString());
 		}
@@ -1275,47 +867,30 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             contained code.
 	 */
 	public static void transaction(Connection conn, Transacted operation) {
-		try {
-			if (!conn.getAutoCommit()) {
-				// Already in a transaction; just run the operation
-				operation.act();
-				return;
-			}
-			if (log.isDebugEnabled()) {
-				log.debug("start transaction: {}", getCaller());
-			}
-			conn.setAutoCommit(false);
-		} catch (SQLiteException e) {
-			throw rewriteException(e, null);
-		} catch (SQLException e) {
-			throw mapException(e, null);
+		if (!conn.getAutoCommit()) {
+			// Already in a transaction; just run the operation
+			operation.act();
+			return;
 		}
+		if (log.isDebugEnabled()) {
+			log.debug("start transaction: {}", getCaller());
+		}
+		conn.setAutoCommit(false);
 		boolean done = false;
 		try {
 			operation.act();
-			try {
-				conn.commit();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, null);
-			}
+			conn.commit();
 			done = true;
+			return;
 		} catch (RuntimeException e) {
 			throw e;
-		} catch (SQLException e) {
-			throw mapException(e, null);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
-			try {
-				if (!done) {
-					conn.rollback();
-				}
-				conn.setAutoCommit(true);
-			} catch (SQLiteException e) {
-				throw rewriteException(e, null);
-			} catch (SQLException e) {
-				throw mapException(e, null);
+			if (!done) {
+				conn.rollback();
 			}
+			conn.setAutoCommit(true);
 			log.debug("finish transaction");
 		}
 	}
@@ -1338,47 +913,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public static <T> T transaction(Connection conn,
 			TransactedWithResult<T> operation) {
-		try {
-			if (!conn.getAutoCommit()) {
-				// Already in a transaction; just run the operation
-				return operation.act();
-			}
-			if (log.isDebugEnabled()) {
-				log.debug("start transaction:\n{}", getCaller());
-			}
-			conn.setAutoCommit(false);
-		} catch (SQLiteException e) {
-			throw rewriteException(e, null);
-		} catch (SQLException e) {
-			throw mapException(e, null);
+		if (!conn.getAutoCommit()) {
+			// Already in a transaction; just run the operation
+			return operation.act();
 		}
+		if (log.isDebugEnabled()) {
+			log.debug("start transaction:\n{}", getCaller());
+		}
+		conn.setAutoCommit(false);
 		boolean done = false;
 		try {
 			T result = operation.act();
-			try {
-				conn.commit();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, null);
-			}
+			conn.commit();
 			done = true;
 			return result;
 		} catch (RuntimeException e) {
 			throw e;
-		} catch (SQLException e) {
-			throw mapException(e, null);
 		} catch (Exception e) {
 			throw new RuntimeException("unexpected exception", e);
 		} finally {
-			try {
-				if (!done) {
-					conn.rollback();
-				}
-				conn.setAutoCommit(true);
-			} catch (SQLiteException e) {
-				throw rewriteException(e, null);
-			} catch (SQLException e) {
-				throw mapException(e, null);
+			if (!done) {
+				conn.rollback();
 			}
+			conn.setAutoCommit(true);
 			log.debug("finish transaction");
 		}
 	}
@@ -1530,8 +1087,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try (Statement s = conn.createStatement()) {
 			// MUST be executeUpdate() to run multiple statements at once!
 			s.executeUpdate(sql);
-		} catch (SQLiteException e) {
-			throw rewriteException(e, sql);
 		} catch (SQLException e) {
 			throw mapException(e, sql);
 		}
@@ -1576,20 +1131,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	private static DataAccessException rewriteException(SQLiteException e,
-			String sql) {
-		// Sometimes, exception messages obscure rather than illuminate
-		String msg = e.getMessage();
-		if (msg.contains("SQL error or missing database (")) {
-			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
-					"$1");
-			SQLiteException e2 = new SQLiteException(msg, e.getResultCode());
-			e2.setStackTrace(e.getStackTrace());
-			return mapException(e2, sql);
-		}
-		return mapException(e, sql);
-	}
-
 	/**
 	 * Common shared code between {@link Query} and {@link Update}.
 	 *
@@ -1603,13 +1144,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		ResultSet rs;
 
 		StatementWrapper(Connection conn, String sql) {
-			try {
-				s = conn.prepareStatement(sql);
-			} catch (SQLiteException e) {
-				throw rewriteException(e, sql);
-			} catch (SQLException e) {
-				throw mapException(e, sql);
-			}
+			s = conn.prepareStatement(sql);
 			rs = null;
 		}
 
@@ -1631,8 +1166,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public final int getNumArguments() {
 			try {
 				return s.getParameterMetaData().getParameterCount();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1647,8 +1180,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public final Set<String> getRowColumnNames() {
 			try {
 				return columnNames(s.getMetaData());
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1659,8 +1190,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				closeResults();
 				s.close();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1702,34 +1231,30 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The results, wrapped as a one-shot iterable
 		 */
 		public Iterable<Row> call(Object... arguments) {
-			try {
-				setParams(s, arguments);
-				closeResults();
-				rs = s.executeQuery();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
-			Row row = new Row(rs);
+			closeResults();
+			rs = runQuery(s, arguments);
 			return () -> new Iterator<Row>() {
 				private boolean finished = false;
+				private boolean consumed = true;
+				// Share this row
+				private final Row row = new Row(rs);
 
 				@Override
 				public boolean hasNext() {
-					boolean result = false;
 					if (finished) {
 						return false;
 					}
+					if (!consumed) {
+						return true;
+					}
+					boolean result = false;
 					try {
 						result = rs.next();
-						if (!result) {
-							closeResults();
-						}
 					} catch (SQLException e) {
-						result = false;
 					} finally {
-						if (!result) {
+						if (result) {
+							consumed = false;
+						} else {
 							finished = true;
 							closeResults();
 						}
@@ -1742,6 +1267,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (finished) {
 						return null;
 					}
+					consumed = true;
 					return row;
 				}
 			};
@@ -1766,8 +1292,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				} else {
 					return Optional.empty();
 				}
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1836,15 +1360,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The number of rows updated
 		 */
 		public int call(Object... arguments) {
-			try {
-				setParams(s, arguments);
-				closeResults();
-				return s.executeUpdate();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
-			} catch (SQLException e) {
-				throw mapException(e, s.toString());
-			}
+			closeResults();
+			return runUpdate(s, arguments);
 		}
 
 		/**
@@ -1860,40 +1377,39 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
 			 * ignores that flag.
 			 */
-			int numRows;
+			closeResults();
+			int numRows = runUpdate(s, arguments);
 			try {
-				setParams(s, arguments);
-				closeResults();
-				numRows = s.executeUpdate();
 				rs = s.getGeneratedKeys();
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
 			return () -> new Iterator<Integer>() {
 				private boolean finished = false;
 				private int rowCount = 0;
+				private boolean consumed = true;
 
 				@Override
 				public boolean hasNext() {
-					boolean result = false;
 					if (finished || rowCount + 1 > numRows) {
 						return false;
 					}
+					if (!consumed) {
+						return true;
+					}
+					boolean result = false;
 					try {
 						result = rs.next();
-						if (!result) {
-							closeResults();
-						}
 						rowCount++;
 					} catch (SQLException e) {
-						result = false;
 					} finally {
 						if (!result) {
 							finished = true;
 							closeResults();
 						}
+					}
+					if (result) {
+						consumed = false;
 					}
 					return result;
 				}
@@ -1904,11 +1420,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						return null;
 					}
 					try {
+						// Assume that keys fit in 31 bits
 						return (Integer) rs.getObject(1);
 					} catch (SQLException e) {
 						closeResults();
 						finished = true;
 						return null;
+					} finally {
+						consumed = true;
 					}
 				}
 			};
@@ -1922,18 +1441,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary key generated by the update.
 		 */
 		public Optional<Integer> key(Object... arguments) {
+			closeResults();
+			runUpdate(s, arguments);
 			try {
-				setParams(s, arguments);
-				closeResults();
-				s.executeUpdate();
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
 					return Optional.ofNullable((Integer) rs.getObject(1));
 				} else {
 					return Optional.empty();
 				}
-			} catch (SQLiteException e) {
-				throw rewriteException(e, s.toString());
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			} finally {
@@ -2028,6 +1544,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static <T> List<T> rowsAsList(Iterable<Row> rows,
 			java.util.function.Function<Row, T> mapper) {
 		List<T> result = new ArrayList<>();
+		for (Row row : rows) {
+			result.add(mapper.apply(row));
+		}
+		return result;
+	}
+
+	/**
+	 * Convert an iterable of rows (see {@link DatabaseEngine.Query Query}) into
+	 * a set of objects, one per row.
+	 *
+	 * @param <T>
+	 *            The type of elements in the set
+	 * @param rows
+	 *            The rows to convert.
+	 * @param mapper
+	 *            The conversion function.
+	 * @return Set of objects mapped from rows. (This set happens to be
+	 *         modifiable, but with no effect on the database. The set's natural
+	 *         ordering is the order of the elements in the database.)
+	 */
+	public static <T> Set<T> rowsAsSet(Iterable<Row> rows,
+			java.util.function.Function<Row, T> mapper) {
+		Set<T> result = new LinkedHashSet<>();
 		for (Row row : rows) {
 			result.add(mapper.apply(row));
 		}

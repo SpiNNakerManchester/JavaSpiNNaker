@@ -29,7 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,11 +93,7 @@ class AllocatorTest extends SQLQueries {
 					conn = c;
 					action.act();
 				} finally {
-					try {
-						c.rollback();
-					} catch (SQLException e) {
-						log.error("unexpected SQL failure", e);
-					}
+					c.rollback();
 				}
 			});
 		}

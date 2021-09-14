@@ -29,7 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.exec;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -217,11 +216,7 @@ class DbTest {
 	}
 
 	private static void assumeWritable(Connection c) {
-		try {
-			assumeFalse(c.isReadOnly(), "connection is read-only");
-		} catch (SQLException e0) {
-			throw new RuntimeException("unexpected exception", e0);
-		}
+		assumeFalse(c.isReadOnly(), "connection is read-only");
 	}
 
 	@Test

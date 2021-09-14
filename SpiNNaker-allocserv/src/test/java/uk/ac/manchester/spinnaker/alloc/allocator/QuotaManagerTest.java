@@ -183,11 +183,7 @@ class QuotaManagerTest extends SQLQueries {
 				assertEquals(924,
 						q.call1(MACHINE, USER).get().getObject("quota"));
 			} finally {
-				try {
-					c.rollback();
-				} catch (SQLException e) {
-					throw new RuntimeException("database problem", e);
-				}
+				c.rollback();
 			}
 		});
 	}
@@ -195,22 +191,20 @@ class QuotaManagerTest extends SQLQueries {
 	@Test
 	void testDoNoConsolidate() {
 		db.executeVoid(c -> {
-			try {
-				try (Statement s = c.createStatement();
-						Query q = query(c, GET_QUOTA)) {
-					// Delete the quota
-					s.execute("UPDATE quotas SET quota = NULL "
-							+ "WHERE user_id = 4000");
-					makeJob(c, 1, 100);
-					// Does a job NOT get consolidated if there's no quota
-					assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-					qm.doConsolidate();
-					assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-				} finally {
-					c.rollback();
-				}
+			try (Statement s = c.createStatement();
+					Query q = query(c, GET_QUOTA)) {
+				// Delete the quota
+				s.execute("UPDATE quotas SET quota = NULL "
+						+ "WHERE user_id = 4000");
+				makeJob(c, 1, 100);
+				// Does a job NOT get consolidated if there's no quota
+				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
+				qm.doConsolidate();
+				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
 			} catch (SQLException e) {
 				throw new RuntimeException("database problem", e);
+			} finally {
+				c.rollback();
 			}
 		});
 	}
