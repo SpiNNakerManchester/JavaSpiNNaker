@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
@@ -48,7 +49,7 @@ public class StubMachine implements SpallocAPI.Machine {
 	}
 
 	@Override
-	public List<String> getTags() {
+	public Set<String> getTags() {
 		throw new UnsupportedOperationException();
 	}
 

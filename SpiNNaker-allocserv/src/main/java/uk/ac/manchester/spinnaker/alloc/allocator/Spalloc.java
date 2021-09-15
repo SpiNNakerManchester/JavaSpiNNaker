@@ -17,12 +17,14 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsSet;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -476,7 +479,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		private final String name;
 
-		private final List<String> tags;
+		private final Set<String> tags;
 
 		private final int width;
 
@@ -496,7 +499,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			try (Query getTags = query(conn, GET_TAGS)) {
-				tags = rowsAsList(getTags.call(id),
+				tags = rowsAsSet(getTags.call(id),
 						row -> row.getString("tag"));
 			}
 		}
@@ -657,8 +660,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 
 		@Override
-		public List<String> getTags() {
-			return unmodifiableList(tags);
+		public Set<String> getTags() {
+			return unmodifiableSet(tags);
 		}
 
 		@Override

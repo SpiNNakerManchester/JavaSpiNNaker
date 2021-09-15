@@ -88,16 +88,6 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * connections, each of which is bound to a specific thread. The connections are
  * closed when the thread in question terminates. <em>Assumes</em> that you are
  * using a thread pool.
- * <p>
- * Key configuration properties:
- * <dl>
- * <dt>sqlite.analysis_limit
- * <dd>The <a href="https://sqlite.org/lang_analyze.html">analysis limit</a>.
- * Defaults to {@code 400}.
- * <dt>sqlite.timeout
- * <dd>The timeout for waiting for a transaction. Defaults to {@code PT1S} (a
- * {@link Duration}).
- * </dl>
  *
  * @author Donal Fellows
  */
@@ -360,6 +350,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void ensureDBsetup() {
 		threadFactory.setTerminationCallback(this::optimiseDB);
 		setupConfig();
+		// Check that the connection is correct
 		try (Connection conn = getConnection();
 				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
 			int numMovements = countMovements.call1().get().getInt("c");
@@ -408,7 +399,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            Used to initialise fields normally set by injection. Must not
 	 *            be {@code null}.
 	 */
-	public DatabaseEngine(DatabaseEngine prototype) {
+	private DatabaseEngine(DatabaseEngine prototype) {
 		dbPath = null;
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
@@ -420,6 +411,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
 		setupConfig();
+	}
+
+	/**
+	 * Create an engine interface for an in-memory database. This is intended
+	 * mainly for testing purposes. Note that various coupled automatic services
+	 * are disabled, in particular connections are not closed automatically.
+	 *
+	 * @return The in-memory database interface.
+	 */
+	public DatabaseEngine getInMemoryDB() {
+		return new DatabaseEngine(this);
 	}
 
 	/**
@@ -535,7 +537,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param func
 	 *            The implementation of the function.
 	 * @throws SQLException
-	 *             If installation fails.
+	 *             If installation fails. Caller handles mapping.
 	 */
 	private static void installFunction(SQLiteConnection conn, String name,
 			Function func) throws SQLException {
@@ -572,12 +574,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param conn
 	 *            The connection to the database.
-	 * @throws SQLException
-	 *             If anything goes wrong.
 	 */
-	private void initDBConn(SQLiteConnection conn) throws SQLException {
-		log.info("initalising DB ({}) schema from {}", conn.libversion(),
-				sqlDDLFile);
+	private void initDBConn(SQLiteConnection conn) {
+		try {
+			log.info("initalising DB ({}) schema from {}", conn.libversion(),
+					sqlDDLFile);
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
 		// Note that we don't close the wrapper
 		Connection wrapper = new Connection(conn);
 		exec(wrapper, sqlDDLFile);
@@ -592,15 +596,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	@Override
-	SQLiteConnection openDatabaseConnection() throws SQLException {
+	SQLiteConnection openDatabaseConnection() {
 		log.debug("opening database connection {}", dbConnectionUrl);
-		SQLiteConnection conn =
-				(SQLiteConnection) config.createConnection(dbConnectionUrl);
-		// Has to be done for every connection; can't be cached
-		for (String s : functions.keySet()) {
-			installFunction(conn, s, functions.get(s));
+		try {
+			SQLiteConnection conn =
+					(SQLiteConnection) config.createConnection(dbConnectionUrl);
+			// Has to be done for every connection; can't be cached
+			for (String s : functions.keySet()) {
+				installFunction(conn, s, functions.get(s));
+			}
+			return conn;
+		} catch (SQLException e) {
+			throw mapException(e, null);
 		}
-		return conn;
 	}
 
 	/**
@@ -673,24 +681,20 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @return A configured initialised connection to the database.
 	 */
 	public Connection getConnection() {
-		try {
-			if (isNull(dbPath)) {
-				// In-memory DB (dbPath null) always must be initialised
-				SQLiteConnection conn = openDatabaseConnection();
+		if (isNull(dbPath)) {
+			// In-memory DB (dbPath null) always must be initialised
+			SQLiteConnection conn = openDatabaseConnection();
+			initDBConn(conn);
+			return new Connection(conn);
+		}
+		synchronized (this) {
+			boolean doInit = !initialised || !exists(dbPath);
+			SQLiteConnection conn = getCachedDatabaseConnection();
+			if (doInit) {
 				initDBConn(conn);
-				return new Connection(conn);
+				initialised = true;
 			}
-			synchronized (this) {
-				boolean doInit = !initialised || !exists(dbPath);
-				SQLiteConnection conn = getCachedDatabaseConnection();
-				if (doInit) {
-					initDBConn(conn);
-					initialised = true;
-				}
-				return new Connection(uncloseableThreadBound(conn));
-			}
-		} catch (SQLException e) {
-			throw mapException(e, null);
+			return new Connection(uncloseableThreadBound(conn));
 		}
 	}
 
@@ -862,9 +866,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            The database connection
 	 * @param operation
 	 *            The operation to run
+	 * @throws DataAccessException
+	 *             If something goes wrong with the database access.
 	 * @throws RuntimeException
-	 *             If something goes wrong with the database access or the
-	 *             contained code.
+	 *             If something unexpected goes wrong with the contained code.
 	 */
 	public static void transaction(Connection conn, Transacted operation) {
 		if (!conn.getAutoCommit()) {
@@ -907,9 +912,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param operation
 	 *            The operation to run
 	 * @return the value returned by {@code operation}
+	 * @throws DataAccessException
+	 *             If something goes wrong with the database access.
 	 * @throws RuntimeException
-	 *             If something goes wrong with the database access or the
-	 *             contained code.
+	 *             If something unexpected goes wrong with the contained code.
 	 */
 	public static <T> T transaction(Connection conn,
 			TransactedWithResult<T> operation) {
@@ -969,8 +975,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param operation
 	 *            The operation to run
 	 * @return the value returned by {@code operation}
-	 * @throws SQLException
-	 *             If something goes wrong with database access.
 	 * @throws RuntimeException
 	 *             If something other than database access goes wrong with the
 	 *             contained code.
@@ -1228,7 +1232,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param arguments
 		 *            Positional argument to the query
-		 * @return The results, wrapped as a one-shot iterable
+		 * @return The results, wrapped as a one-shot iterable. The
+		 *         {@linkplain Row rows} in the iterable <em>must not</em> be
+		 *         retained by callers; they may share state and might not
+		 *         outlive the iteration.
 		 */
 		public Iterable<Row> call(Object... arguments) {
 			closeResults();
@@ -1236,7 +1243,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			return () -> new Iterator<Row>() {
 				private boolean finished = false;
 				private boolean consumed = true;
-				// Share this row
+				// Share this row wrapper; underlying row changes
 				private final Row row = new Row(rs);
 
 				@Override

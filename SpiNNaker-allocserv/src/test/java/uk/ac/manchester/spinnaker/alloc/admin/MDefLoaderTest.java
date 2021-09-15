@@ -93,7 +93,7 @@ class MDefLoaderTest {
 	@BeforeAll
 	void makeMemoryDatabase() {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = new DatabaseEngine(mainDBEngine);
+		memdb = mainDBEngine.getInMemoryDB();
 	}
 
 	@BeforeEach

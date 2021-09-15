@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.access.prepost.PostFilter;
 
@@ -471,7 +472,7 @@ public interface SpallocAPI {
 		/**
 		 * @return The tags associated with the machine.
 		 */
-		List<String> getTags();
+		Set<String> getTags();
 
 		/**
 		 * @return The width of the machine.

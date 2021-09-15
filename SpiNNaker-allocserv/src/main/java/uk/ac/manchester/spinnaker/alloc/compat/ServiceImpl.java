@@ -267,7 +267,7 @@ class ServiceImpl extends V1CompatService.Task {
 		return mapArrayTx(() -> spalloc.getMachines().values(), Machine.class,
 				(m, md) -> {
 					md.setName(m.getName());
-					md.setTags(m.getTags());
+					md.setTags(new ArrayList<>(m.getTags()));
 					md.setWidth(m.getWidth());
 					md.setHeight(m.getHeight());
 					md.setDeadBoards(m.getDeadBoards().stream()

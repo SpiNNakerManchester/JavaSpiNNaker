@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -66,13 +67,13 @@ public final class MachinesResponse {
 		public final List<DownLink> deadLinks;
 
 		private BriefMachineDescription(String name, URI uri, int width,
-				int height, List<String> tags, List<BoardCoords> deadBoards,
+				int height, Set<String> tags, List<BoardCoords> deadBoards,
 				List<DownLink> deadLinks) {
 			this.name = name;
 			this.uri = uri;
 			this.width = width;
 			this.height = height;
-			this.tags = unmodifiableList(tags);
+			this.tags = unmodifiableList(new ArrayList<>(tags));
 			this.deadBoards = unmodifiableList(deadBoards);
 			this.deadLinks = unmodifiableList(deadLinks);
 		}
