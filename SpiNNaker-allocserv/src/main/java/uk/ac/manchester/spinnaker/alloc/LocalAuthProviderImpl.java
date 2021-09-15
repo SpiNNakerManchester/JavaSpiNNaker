@@ -71,17 +71,8 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
  * Does authentication against users defined entirely in the database. This
  * includes keeping the users' (encrypted) password in the database. This is
  * primarily focused on the {@code user_info} database table.
- * <p>
- * Key configuration properties:
- * <ul>
- * <li>{@code spalloc.addDummyUser} &mdash; Turn off in production!
- * <li>{@code spalloc.defaultQuota} &mdash; Default number of board-seconds to
- * allocate.
- * <li>{@code spalloc.maxLoginFailures} &mdash; How many failures before account
- * lock-out?
- * <li>{@code spalloc.accountLockDuration} &mdash; Length of account lock-out.
- * </ul>
  *
+ * @see AuthProperties Configuration properties
  * @author Donal Fellows
  */
 @Component
@@ -162,7 +153,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	private Boolean createUser(String username, String password,
 			TrustLevel trustLevel, long quota, Update createUser,
-			Update addQuota) throws SQLException {
+			Update addQuota) {
 		for (int userId : createUser.keys(username, password, trustLevel,
 				false)) {
 			addQuota.call(userId, quota);
@@ -178,16 +169,23 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Override
 	public Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
-		if (auth instanceof UsernamePasswordAuthenticationToken) {
-			return authenticateDirect(
-					(UsernamePasswordAuthenticationToken) auth);
-		} else if (auth instanceof OAuth2LoginAuthenticationToken) {
-			return authenticateOpenId((OAuth2LoginAuthenticationToken) auth);
-		} else if (auth instanceof OAuth2AuthorizationCodeAuthenticationToken) {
-			return authenticateOpenId(
-					(OAuth2AuthorizationCodeAuthenticationToken) auth);
-		} else {
-			return null;
+		try {
+			if (auth instanceof UsernamePasswordAuthenticationToken) {
+				return authenticateDirect(
+						(UsernamePasswordAuthenticationToken) auth);
+			} else if (auth instanceof OAuth2LoginAuthenticationToken) {
+				return authenticateOpenId(
+						(OAuth2LoginAuthenticationToken) auth);
+			} else if (auth//
+					instanceof OAuth2AuthorizationCodeAuthenticationToken) {
+				return authenticateOpenId(
+						(OAuth2AuthorizationCodeAuthenticationToken) auth);
+			} else {
+				return null;
+			}
+		} catch (DataAccessException e) {
+			throw new InternalAuthenticationServiceException(
+					"database access problem", e);
 		}
 	}
 
@@ -220,33 +218,26 @@ public class LocalAuthProviderImpl extends SQLQueries
 		String password = auth.getCredentials().toString();
 		List<GrantedAuthority> authorities = new ArrayList<>();
 
-		try {
-			try (AuthQueries queries = new AuthQueries()) {
-				if (!queries.transact(() -> authenticateAgainstDB(name,
-						password, authorities, queries))) {
-					return null;
-				}
+		try (AuthQueries queries = new AuthQueries()) {
+			if (!queries.transact(() -> authLocalAgainstDB(name, password,
+					authorities, queries))) {
+				return null;
 			}
-			return new UsernamePasswordAuthenticationToken(name, password,
-					authorities);
-		} catch (RuntimeException e) {
-			throw new InternalAuthenticationServiceException(
-					"database access problem", e);
 		}
+		return new UsernamePasswordAuthenticationToken(name, password,
+				authorities);
 	}
 
 	private Authentication
-			authenticateOpenId(OAuth2LoginAuthenticationToken auth)
-					throws AuthenticationException {
+			authenticateOpenId(OAuth2LoginAuthenticationToken auth) {
 		log.info("authenticating OpenID Login {}", auth.toString());
 		// FIXME how to get username from login token?
 		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ auth.getPrincipal().getAttribute("preferred_username"));
 	}
 
-	private Authentication
-			authenticateOpenId(OAuth2AuthorizationCodeAuthenticationToken auth)
-					throws AuthenticationException {
+	private Authentication authenticateOpenId(
+			OAuth2AuthorizationCodeAuthenticationToken auth) {
 		log.info("authenticating OpenID Token {}", auth.toString());
 		// FIXME how to get username from auth code token?
 		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
@@ -261,12 +252,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 		try (AuthQueries queries = new AuthQueries()) {
 			if (!queries.transact(//
-					() -> authorizeOpenIDAgainstDB(name, queries))) {
+					() -> authOpenIDAgainstDB(name, queries))) {
 				return null;
 			}
-		} catch (SQLException e) {
-			throw new InternalAuthenticationServiceException(
-					"database access problem", e);
 		}
 		// Users from OpenID always have the same permissions
 		return new AuthenticationToken(name);
@@ -396,14 +384,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *            gets a temporary lock applied.
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
-			loginFailure.call1(authProps.getMaxLoginFailures(), userId)
-					.ifPresent(row -> {
-						if (row.getBoolean("locked")) {
-							log.warn("automatically locking user {} for {}",
-									username,
-									authProps.getAccountLockDuration());
-						}
-					});
+			if (loginFailure.call1(authProps.getMaxLoginFailures(), userId)
+					.map(row -> row.getBoolean("locked")).orElse(false)) {
+				log.warn("automatically locking user {} for {}", username,
+						authProps.getAccountLockDuration());
+			}
 		}
 	}
 
@@ -429,9 +414,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 * @throws BadCredentialsException
 	 *             If the password is invalid.
 	 */
-	private boolean authenticateAgainstDB(String username, String password,
-			List<GrantedAuthority> authorities,
-			LocalAuthProviderImpl.AuthQueries queries) {
+	private boolean authLocalAgainstDB(String username, String password,
+			List<GrantedAuthority> authorities, AuthQueries queries) {
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			// No such user
@@ -483,8 +467,22 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 	}
 
-	private boolean authorizeOpenIDAgainstDB(String username,
-			LocalAuthProviderImpl.AuthQueries queries) throws SQLException {
+	/**
+	 * Check if an OpenID user can use the service.
+	 *
+	 * @param username
+	 *            The username, already obtained and verified.
+	 * @param queries
+	 *            How to access the database.
+	 * @return Whether the user is allowed to use the service. If {@code false},
+	 *         the database cannot authorize the user and some other auth method
+	 *         should be tried.
+	 * @throws DisabledException
+	 *             If the account is administratively disabled.
+	 * @throws LockedException
+	 *             If the account is temporarily locked.
+	 */
+	private boolean authOpenIDAgainstDB(String username, AuthQueries queries) {
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			// No such user; need to inflate one
